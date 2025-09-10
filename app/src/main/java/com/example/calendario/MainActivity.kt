@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -343,7 +342,7 @@ fun CalendarioScreen() {
                                     ) {
                                         val formattedDay = String.format("%02d", date.dayOfMonth)
                                         Text(
-                                            text = "$formattedDay",
+                                            text = formattedDay, // <--- CAMBIO AQUÍ
                                             color = currentDayNumberColor,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp
