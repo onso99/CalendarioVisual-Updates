@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
+// import android.net.Uri // Se mantiene si "Optimize Imports" no la elimina, de lo contrario, se elimina.
+// Ejecuta Ctrl+Alt+O (Cmd+Option+O en Mac) para verificar.
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -50,12 +52,13 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit // KTX para SharedPreferences
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
-// V2.51.2 (o V2.53) - Corrección isAllDay
+// V2.53 - Añadida opción de menú Widget y pantalla de configuración básica
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,6 +140,9 @@ fun CalendarioScreen() {
         mutableStateOf(ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
     }
 
+    // Nuevo estado para la pantalla/diálogo de configuración del widget
+    var showWidgetConfigDialog by remember { mutableStateOf(false) }
+
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -184,7 +190,7 @@ fun CalendarioScreen() {
                 TopAppBar(
                     title = {
                         Text(
-                            "Calendario Visual V2.52", // O V2.53
+                            "Calendario Visual V2.53", // Nombre de versión actualizado
                             fontSize = 20.sp,
                             color = Color.White,
                             modifier = Modifier.fillMaxWidth(),
@@ -213,6 +219,15 @@ fun CalendarioScreen() {
                                         }
                                     }
                                 )
+                                // --- NUEVA OPCIÓN DE MENÚ ---
+                                DropdownMenuItem(
+                                    text = { Text("Widget", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
+                                    onClick = {
+                                        menuExpanded = false
+                                        showWidgetConfigDialog = true
+                                    }
+                                )
+                                // --- FIN DE NUEVA OPCIÓN DE MENÚ ---
                                 DropdownMenuItem(
                                     text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
                                     onClick = { menuExpanded = false; showHelpDialog = true }
@@ -342,7 +357,7 @@ fun CalendarioScreen() {
                                     ) {
                                         val formattedDay = String.format("%02d", date.dayOfMonth)
                                         Text(
-                                            text = formattedDay, // <--- CAMBIO AQUÍ
+                                            text = formattedDay, // CORREGIDO: sin plantilla de string
                                             color = currentDayNumberColor,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp
@@ -389,7 +404,7 @@ fun CalendarioScreen() {
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Calendario Visual V2.52", fontSize = 16.sp) // O V2.53
+                            Text("Calendario Visual V2.53", fontSize = 16.sp) // Nombre de versión actualizado
                             Text("Asistente IA / Android Studio", fontSize = 16.sp)
                             Text("Onso/agosto 2025", fontSize = 16.sp)
                         }
@@ -425,6 +440,14 @@ fun CalendarioScreen() {
                     }
                 )
             }
+
+            // --- NUEVO DIÁLOGO/PANTALLA PARA CONFIGURACIÓN DEL WIDGET ---
+            if (showWidgetConfigDialog) {
+                WidgetConfigScreen(
+                    onDismissRequest = { showWidgetConfigDialog = false }
+                )
+            }
+            // --- FIN DE NUEVO DIÁLOGO/PANTALLA ---
         }
     }
 }
@@ -443,7 +466,9 @@ fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festiv
                 )
             }
         }
-    prefs.edit().putString("events", gson.toJson(mapToSave)).apply()
+    prefs.edit { // CORREGIDO: Usando KTX
+        putString("events", gson.toJson(mapToSave))
+    }
     Log.d("Prefs", "Eventos (con hora/allday) guardados en SharedPreferences.")
 }
 
@@ -458,14 +483,21 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     val type = object : TypeToken<Map<String, List<FestivoDto>>>() {}.type
     val mapFromString: Map<String, List<FestivoDto>> = try {
         gson.fromJson(json, type)
-    } catch (e: Exception) {
+    } catch (e: Exception) { // 'e' se usa
         Log.e("Prefs", "Error al deserializar eventos (con hora/allday) desde SharedPreferences", e)
-        prefs.edit().remove("events").apply()
+        prefs.edit { // CORREGIDO: Usando KTX
+            remove("events")
+        }
         return emptyMap()
     }
 
     return mapFromString.mapNotNull { (dateStr, dtoList) ->
-        val date = try { LocalDate.parse(dateStr) } catch (e: Exception) { null }
+        val date = try {
+            LocalDate.parse(dateStr)
+        } catch (e: Exception) { // 'e' se usa
+            Log.e("LoadEvents", "Error parseando fecha desde SharedPreferences: '$dateStr'", e)
+            null
+        }
         if (date != null) {
             date to dtoList.map { dto ->
                 Festivo(
@@ -473,7 +505,14 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     description = dto.desc,
                     calendarId = dto.id,
                     isFromHolidaySource = false,
-                    startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("PrefsLoadTime", "Error parseando LocalTime: $it"); null } },
+                    startTime = dto.startTimeStr?.let { timeStr -> // Renombrar 'it' para claridad
+                        try {
+                            LocalTime.parse(timeStr)
+                        } catch (e: Exception) { // 'e' se usa
+                            Log.e("PrefsLoadTime", "Error parseando LocalTime: '$timeStr'", e)
+                            null
+                        }
+                    },
                     isAllDay = dto.isAllDay
                 )
             }
@@ -487,14 +526,23 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
 
 fun saveSelectedCalendarIds(context: Context, selectedIds: Set<Long>) {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
-    prefs.edit().putStringSet("selected_calendar_ids", selectedIds.map { it.toString() }.toSet()).apply()
+    prefs.edit { // CORREGIDO: Usando KTX
+        putStringSet("selected_calendar_ids", selectedIds.map { it.toString() }.toSet())
+    }
     Log.d("Prefs", "IDs de calendario seleccionados guardados: $selectedIds")
 }
 
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
     return prefs.getStringSet("selected_calendar_ids", emptySet())
-        ?.mapNotNull { try { it.toLong() } catch (e: NumberFormatException) { null } }
+        ?.mapNotNull { idStr -> // Renombrar 'it' para claridad
+            try {
+                idStr.toLong()
+            } catch (e: NumberFormatException) { // 'e' se usa
+                Log.e("LoadSelectedIds", "Error parseando ID de calendario: '$idStr'", e)
+                null
+            }
+        }
         ?.toSet() ?: emptySet()
 }
 
@@ -522,7 +570,7 @@ fun loadAvailableCalendars(context: Context, callback: (List<CalendarInfo>) -> U
             val id = it.getLong(idColumn)
             val displayName = it.getString(displayNameColumn) ?: "Calendario sin nombre"
             val accountName = it.getString(accountNameColumn) ?: "Cuenta desconocida"
-            val colorInt = try { it.getInt(colorColumn) } catch (e: Exception) { null }
+            val colorInt = try { it.getInt(colorColumn) } catch (_: Exception) { null } // CORREGIDO: Usando '_'
             calendarsList.add(CalendarInfo(id, displayName, accountName, colorInt))
         }
     }
@@ -602,10 +650,6 @@ fun readFestivosFromCalendars(
                 }
 
                 val actualStartTimeForEvent = if (isAllDayEvent) null else beginDateTimeAtSystemZone.toLocalTime()
-
-                // Descomentar para depuración de la lógica isAllDay y horas
-                // Log.d("ReadFestivosDebug", "Event: '$title', StartDate: $startDate, ParsedLocalStartTime: $actualStartTimeForEvent, IsAllDay: $isAllDayEvent, DurationHours: ${duration.toHours()}, BeginUTC: $beginInstant, BeginAtSystemZone: $beginDateTimeAtSystemZone")
-
                 val loopEndDate = if (isAllDayEvent && duration.toDays() >= 1) {
                     endInstant.atZone(systemZoneId).toLocalDate().minusDays(1)
                 } else {
@@ -630,7 +674,7 @@ fun readFestivosFromCalendars(
                 }
             }
         }
-    } catch (e: Exception) {
+    } catch (e: Exception) { // 'e' se usa
         Log.e("ReadFestivos", "Error querying calendar instances", e)
     }
     callback(map)
@@ -772,7 +816,7 @@ fun MonthlyCalendar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("$dayNum", fontWeight = currentFontWeight, color = textColor, fontSize = 22.sp)
+                    Text("$dayNum", fontWeight = currentFontWeight, color = textColor, fontSize = 22.sp) // $dayNum es un Int, está bien aquí
                     if (hasOtherEvents) {
                         Spacer(modifier = Modifier.height(2.dp))
                         Box(modifier = Modifier.size(6.dp).background(puntoEventoColor, CircleShape))
@@ -832,7 +876,7 @@ fun YearlyCalendar(
                         MiniMonthCalendar(month, today, eventsByDate)
                     }
                 }
-                if (monthRow.size < 3) {
+                if (monthRow.size < 3) { // Asegurar que las filas se llenen con Spacers si es necesario
                     for (i in 0 until (3 - monthRow.size)) {
                         Spacer(Modifier.weight(1f).padding(2.dp))
                     }
@@ -916,7 +960,7 @@ fun MiniMonthCalendar(
                                     )
                                 }
                                 Text(
-                                    text = "${date.dayOfMonth}",
+                                    text = "${date.dayOfMonth}", // $ es para Int, está bien
                                     fontSize = 9.sp,
                                     fontWeight = currentFontWeight,
                                     color = textColor
@@ -993,3 +1037,73 @@ fun DayEventsDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WidgetConfigScreen(
+    onDismissRequest: () -> Unit
+    // initialEventCount: Int = 4, // Para cargar desde SharedPreferences
+    // onSaveConfiguration: (eventCount: Int) -> Unit // Para guardar
+) {
+    var eventCountSliderValue by remember { mutableStateOf(4f) } // Valor por defecto 4f
+
+    // Simulación de carga y guardado (para integrar con SharedPreferences más adelante)
+    // val context = LocalContext.current
+    // val WIDGET_EVENT_COUNT_KEY = "widget_event_count"
+
+    // LaunchedEffect(Unit) {
+    // Cargarías desde SharedPreferences aquí si esta pantalla fuera una Activity de configuración
+    // val savedCount = context.getSharedPreferences("widget_prefs", Context.MODE_PRIVATE)
+    // .getInt(WIDGET_EVENT_COUNT_KEY, 4)
+    // eventCountSliderValue = savedCount.toFloat()
+    // }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Configuración del Widget", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        text = {
+            Column {
+                Text(
+                    "Define cuántos eventos próximos se mostrarán en el widget.",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    "Número de eventos a mostrar: ${eventCountSliderValue.toInt()}",
+                    fontSize = 16.sp
+                )
+                Slider(
+                    value = eventCountSliderValue,
+                    onValueChange = { newValue ->
+                        eventCountSliderValue = newValue
+                    },
+                    valueRange = 1f..12f,
+                    steps = 10, // Para tener valores enteros de 1 a 12
+                    modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                )
+
+                Text("Otras opciones (ejemplos):", fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 16.dp))
+                Text("- Calendarios a mostrar")
+                Text("- Diseño (claro/oscuro)")
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                // Aquí guardarías el valor en SharedPreferences
+                // context.getSharedPreferences("widget_prefs", Context.MODE_PRIVATE).edit {
+                // putInt(WIDGET_EVENT_COUNT_KEY, eventCountSliderValue.toInt())
+                // }
+                Log.d("WidgetConfig", "Guardando configuración del widget: ${eventCountSliderValue.toInt()} eventos.")
+                // onSaveConfiguration(eventCountSliderValue.toInt())
+                onDismissRequest()
+            }) {
+                Text("Guardar", fontSize = 16.sp)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancelar", fontSize = 16.sp)
+            }
+        }
+    )
+}
