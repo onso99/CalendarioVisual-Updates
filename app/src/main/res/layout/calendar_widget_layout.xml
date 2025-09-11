@@ -5,32 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="#FFFFFF">
+    android:padding="4dp"
+    android:background="@android:color/transparent">
 
-<TextView
-android:id="@+id/widget_title"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:text="Próximos Eventos"
-android:textSize="16sp"
-android:textStyle="bold"
-android:textColor="#000000"
-android:paddingBottom="4dp"/>
+    <!-- El TextView del título ha sido eliminado -->
 
-<ListView
-android:id="@+id/widget_event_list"
-android:layout_width="match_parent"
-android:layout_height="0dp"
-android:layout_weight="1"
-tools:listitem="@layout/widget_list_item"/>
+    <ListView
+        android:id="@+id/widget_event_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        tools:listitem="@layout/widget_list_item"/>
 
-<TextView
-android:id="@+id/widget_empty_view"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:gravity="center"
-android:text="No hay eventos próximos."
-android:textColor="#808080"
-android:visibility="gone"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/widget_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="No hay eventos próximos."
+        android:textColor="#B0B0B0"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="14sp"
+        android:visibility="gone"/>
+</LinearLayout>

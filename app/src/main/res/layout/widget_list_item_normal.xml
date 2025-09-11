@@ -11,14 +11,14 @@
     <TextView
         android:id="@+id/widget_item_day_of_week"
         android:layout_width="wrap_content"
-        android:minWidth="25dp"
+        android:minWidth="30dp"
     android:layout_height="wrap_content"
     android:fontFamily="sans-serif-condensed"
     android:textSize="18sp"
     android:textColor="#A9A9A9"
     android:text="Vie"
     android:gravity="start"
-    android:layout_marginEnd="0dp"/>
+    android:layout_marginEnd="2dp"/>
 
     <TextView
         android:id="@+id/widget_item_date_formatted"
@@ -39,7 +39,8 @@
         android:layout_weight="1"
         android:fontFamily="sans-serif-condensed"
         android:textSize="18sp"
-        android:textColor="#A9A9A9"
-        android:gravity="start"
-        android:text="Descripción del evento muy larga para probar el wrap y el espacio"/>
+    android:textColor="#A9A9A9"
+    android:gravity="start"
+    android:text="Descripción del evento muy larga para probar el wrap y el espacio"/>
 </LinearLayout>
+
