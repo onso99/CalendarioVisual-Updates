@@ -1,12 +1,13 @@
 package com.example.calendario
 
+import android.appwidget.AppWidgetManager // NUEVO IMPORT
+import android.content.ComponentName     // NUEVO IMPORT
 import android.content.ContentUris
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
-// import android.net.Uri // Se mantiene si "Optimize Imports" no la elimina, de lo contrario, se elimina.
-// Ejecuta Ctrl+Alt+O (Cmd+Option+O en Mac) para verificar.
+// import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -57,6 +58,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import kotlin.math.roundToInt // Para el Slider
 
 // V2.53 - Añadida opción de menú Widget y pantalla de configuración básica
 class MainActivity : ComponentActivity() {
@@ -80,6 +82,7 @@ data class CalendarInfo(
     val color: Int? = null
 )
 
+// Asegúrate de que Festivo sea accesible para CalendarWidgetFactory
 data class Festivo(
     val date: LocalDate,
     val description: String,
@@ -112,6 +115,37 @@ fun CalendarioApp() {
     }
 }
 
+// Nueva función para notificar a los widgets sobre cambios en la configuración
+fun notifyCalendarWidgetsConfigurationChanged(context: Context) {
+    Log.d("MainActivity", "Intentando notificar a los widgets sobre cambio de configuración.")
+    val appWidgetManager = AppWidgetManager.getInstance(context)
+    val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
+    val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+
+    if (appWidgetIds.isNotEmpty()) {
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+        Log.d("MainActivity", "Notificación enviada a los widgets para actualizar por cambio de configuración.")
+    } else {
+        Log.d("MainActivity", "No hay widgets activos para notificar por cambio de configuración.")
+    }
+}
+
+// Nueva función para notificar a los widgets sobre cambios en los datos de eventos
+fun notifyCalendarWidgetsDataChanged(context: Context) {
+    Log.d("MainActivity", "Intentando notificar a los widgets sobre cambio de datos de eventos.")
+    val appWidgetManager = AppWidgetManager.getInstance(context)
+    val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java) // Asegúrate que el nombre de la clase es correcto
+    val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+
+    if (appWidgetIds.isNotEmpty()) {
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list) // R.id.widget_event_list es el ID de tu ListView en el widget
+        Log.d("MainActivity", "Notificación enviada a los widgets para actualizar datos de eventos.")
+    } else {
+        Log.d("MainActivity", "No hay widgets activos para notificar sobre cambio de datos de eventos.")
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarioScreen() {
@@ -140,7 +174,6 @@ fun CalendarioScreen() {
         mutableStateOf(ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
     }
 
-    // Nuevo estado para la pantalla/diálogo de configuración del widget
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -156,12 +189,15 @@ fun CalendarioScreen() {
                 readFestivosFromCalendars(context, selectedCalendarIds, freshCalendars) { festivos ->
                     eventsByDate = festivos
                     saveEventsToPrefs(context, festivos)
+                    notifyCalendarWidgetsDataChanged(context) // NOTIFICAR AL WIDGET
                 }
             }
         } else {
             Toast.makeText(context, "Permiso de calendario denegado", Toast.LENGTH_SHORT).show()
             eventsByDate = emptyMap()
             availableCalendars = emptyList()
+            saveEventsToPrefs(context, eventsByDate) // Guardar lista vacía
+            notifyCalendarWidgetsDataChanged(context) // NOTIFICAR AL WIDGET
         }
     }
 
@@ -173,14 +209,20 @@ fun CalendarioScreen() {
                 if (validSelectedIds != selectedCalendarIds) {
                     selectedCalendarIds = validSelectedIds
                     saveSelectedCalendarIds(context, validSelectedIds)
+                    // La recarga de eventos se hará si selectedCalendarIds cambia y dispara la lectura
                 }
+                // Siempre leer festivos, incluso si los IDs no cambian, por si los eventos del calendario sí
                 readFestivosFromCalendars(context, selectedCalendarIds, freshAvailableCalendars) { festivos ->
                     eventsByDate = festivos
+                    saveEventsToPrefs(context, festivos) // Asegurar que se guardan los datos más frescos
+                    notifyCalendarWidgetsDataChanged(context) // NOTIFICAR AL WIDGET
                 }
             }
         } else {
             eventsByDate = emptyMap()
             availableCalendars = emptyList()
+            saveEventsToPrefs(context, eventsByDate)
+            notifyCalendarWidgetsDataChanged(context) // NOTIFICAR AL WIDGET
         }
     }
 
@@ -190,7 +232,7 @@ fun CalendarioScreen() {
                 TopAppBar(
                     title = {
                         Text(
-                            "Calendario Visual V2.53", // Nombre de versión actualizado
+                            "Calendario Visual V2.53",
                             fontSize = 20.sp,
                             color = Color.White,
                             modifier = Modifier.fillMaxWidth(),
@@ -219,7 +261,6 @@ fun CalendarioScreen() {
                                         }
                                     }
                                 )
-                                // --- NUEVA OPCIÓN DE MENÚ ---
                                 DropdownMenuItem(
                                     text = { Text("Widget", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
                                     onClick = {
@@ -227,7 +268,6 @@ fun CalendarioScreen() {
                                         showWidgetConfigDialog = true
                                     }
                                 )
-                                // --- FIN DE NUEVA OPCIÓN DE MENÚ ---
                                 DropdownMenuItem(
                                     text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
                                     onClick = { menuExpanded = false; showHelpDialog = true }
@@ -256,6 +296,8 @@ fun CalendarioScreen() {
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // ... (Resto de tu UI de CalendarioScreen sin cambios significativos aquí, solo el llamado a WidgetConfigScreen)
+
             Row( // Botones de Navegación
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -357,7 +399,7 @@ fun CalendarioScreen() {
                                     ) {
                                         val formattedDay = String.format("%02d", date.dayOfMonth)
                                         Text(
-                                            text = formattedDay, // CORREGIDO: sin plantilla de string
+                                            text = formattedDay,
                                             color = currentDayNumberColor,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp
@@ -393,6 +435,7 @@ fun CalendarioScreen() {
                         readFestivosFromCalendars(context, newSelectedIds, availableCalendars) { festivos ->
                             eventsByDate = festivos
                             saveEventsToPrefs(context, eventsByDate)
+                            notifyCalendarWidgetsDataChanged(context) // NOTIFICAR AL WIDGET
                         }
                         showSelectCalendarsDialog = false
                     }
@@ -404,7 +447,7 @@ fun CalendarioScreen() {
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Calendario Visual V2.53", fontSize = 16.sp) // Nombre de versión actualizado
+                            Text("Calendario Visual V2.53", fontSize = 16.sp)
                             Text("Asistente IA / Android Studio", fontSize = 16.sp)
                             Text("Onso/agosto 2025", fontSize = 16.sp)
                         }
@@ -441,17 +484,16 @@ fun CalendarioScreen() {
                 )
             }
 
-            // --- NUEVO DIÁLOGO/PANTALLA PARA CONFIGURACIÓN DEL WIDGET ---
             if (showWidgetConfigDialog) {
-                WidgetConfigScreen(
+                WidgetConfigScreen( // Llamada actualizada
                     onDismissRequest = { showWidgetConfigDialog = false }
                 )
             }
-            // --- FIN DE NUEVO DIÁLOGO/PANTALLA ---
         }
     }
 }
 
+// Asegúrate de que esta función es accesible para CalendarWidgetFactory
 fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festivo>>) {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
     val gson = Gson()
@@ -466,12 +508,13 @@ fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festiv
                 )
             }
         }
-    prefs.edit { // CORREGIDO: Usando KTX
+    prefs.edit {
         putString("events", gson.toJson(mapToSave))
     }
-    Log.d("Prefs", "Eventos (con hora/allday) guardados en SharedPreferences.")
+    Log.d("Prefs", "Eventos guardados en SharedPreferences.")
 }
 
+// Asegúrate de que esta función es accesible para CalendarWidgetFactory
 fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
     val json = prefs.getString("events", null)
@@ -483,50 +526,37 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     val type = object : TypeToken<Map<String, List<FestivoDto>>>() {}.type
     val mapFromString: Map<String, List<FestivoDto>> = try {
         gson.fromJson(json, type)
-    } catch (e: Exception) { // 'e' se usa
-        Log.e("Prefs", "Error al deserializar eventos (con hora/allday) desde SharedPreferences", e)
-        prefs.edit { // CORREGIDO: Usando KTX
+    } catch (e: Exception) {
+        Log.e("Prefs", "Error al deserializar eventos desde SharedPreferences", e)
+        prefs.edit {
             remove("events")
         }
         return emptyMap()
     }
 
     return mapFromString.mapNotNull { (dateStr, dtoList) ->
-        val date = try {
-            LocalDate.parse(dateStr)
-        } catch (e: Exception) { // 'e' se usa
-            Log.e("LoadEvents", "Error parseando fecha desde SharedPreferences: '$dateStr'", e)
-            null
-        }
+        val date = try { LocalDate.parse(dateStr) } catch (e: Exception) { Log.e("LoadEvents", "Error parseando fecha: '$dateStr'", e); null }
         if (date != null) {
             date to dtoList.map { dto ->
                 Festivo(
                     date = date,
                     description = dto.desc,
                     calendarId = dto.id,
-                    isFromHolidaySource = false,
-                    startTime = dto.startTimeStr?.let { timeStr -> // Renombrar 'it' para claridad
-                        try {
-                            LocalTime.parse(timeStr)
-                        } catch (e: Exception) { // 'e' se usa
-                            Log.e("PrefsLoadTime", "Error parseando LocalTime: '$timeStr'", e)
-                            null
-                        }
-                    },
+                    isFromHolidaySource = false, // La información de isFromHolidaySource se reconstruye en readFestivosFromCalendars
+                    startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("PrefsLoadTime", "Error parseando LocalTime: '$it'", e); null } },
                     isAllDay = dto.isAllDay
                 )
             }
-        } else {
-            null
-        }
+        } else { null }
     }.toMap().also {
-        Log.d("Prefs", "Eventos (con hora/allday) cargados: ${it.size} días.")
+        Log.d("Prefs", "Eventos cargados: ${it.size} días.")
     }
 }
 
+
 fun saveSelectedCalendarIds(context: Context, selectedIds: Set<Long>) {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
-    prefs.edit { // CORREGIDO: Usando KTX
+    prefs.edit {
         putStringSet("selected_calendar_ids", selectedIds.map { it.toString() }.toSet())
     }
     Log.d("Prefs", "IDs de calendario seleccionados guardados: $selectedIds")
@@ -535,14 +565,7 @@ fun saveSelectedCalendarIds(context: Context, selectedIds: Set<Long>) {
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
     return prefs.getStringSet("selected_calendar_ids", emptySet())
-        ?.mapNotNull { idStr -> // Renombrar 'it' para claridad
-            try {
-                idStr.toLong()
-            } catch (e: NumberFormatException) { // 'e' se usa
-                Log.e("LoadSelectedIds", "Error parseando ID de calendario: '$idStr'", e)
-                null
-            }
-        }
+        ?.mapNotNull { idStr -> try { idStr.toLong() } catch (e: NumberFormatException) { Log.e("LoadSelectedIds", "Error parseando ID: '$idStr'", e); null } }
         ?.toSet() ?: emptySet()
 }
 
@@ -570,7 +593,7 @@ fun loadAvailableCalendars(context: Context, callback: (List<CalendarInfo>) -> U
             val id = it.getLong(idColumn)
             val displayName = it.getString(displayNameColumn) ?: "Calendario sin nombre"
             val accountName = it.getString(accountNameColumn) ?: "Cuenta desconocida"
-            val colorInt = try { it.getInt(colorColumn) } catch (_: Exception) { null } // CORREGIDO: Usando '_'
+            val colorInt = try { it.getInt(colorColumn) } catch (_: Exception) { null }
             calendarsList.add(CalendarInfo(id, displayName, accountName, colorInt))
         }
     }
@@ -598,8 +621,9 @@ fun readFestivosFromCalendars(
     val resolver = context.contentResolver
     val map = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val now = Instant.now()
-    val startRangeMillis = now.minus(Duration.ofDays(365)).toEpochMilli()
-    val endRangeMillis = now.plus(Duration.ofDays(730)).toEpochMilli()
+    // Rango de fechas más amplio para asegurar que el widget tenga eventos futuros si los hay
+    val startRangeMillis = now.minus(Duration.ofDays(60)).toEpochMilli() // Menos histórico necesario para el widget
+    val endRangeMillis = now.plus(Duration.ofDays(365)).toEpochMilli() // Un año en el futuro para el widget
 
     val builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
     ContentUris.appendId(builder, startRangeMillis)
@@ -610,7 +634,8 @@ fun readFestivosFromCalendars(
         CalendarContract.Instances.CALENDAR_ID,
         CalendarContract.Instances.BEGIN,
         CalendarContract.Instances.END,
-        CalendarContract.Instances.TITLE
+        CalendarContract.Instances.TITLE,
+        CalendarContract.Instances.ALL_DAY // Usar la columna ALL_DAY directamente
     )
     val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
@@ -621,42 +646,40 @@ fun readFestivosFromCalendars(
             val beginColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
             val endColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.END)
             val titleColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
+            val allDayColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
 
             while (c.moveToNext()) {
                 val calId = c.getLong(calIdColumn)
                 val beginMillis = c.getLong(beginColumn)
-                val endMillisFromCursor = c.getLong(endColumn)
+                // val endMillisFromCursor = c.getLong(endColumn) // No tan necesario si usamos ALL_DAY
                 val title = c.getString(titleColumn)?.trim() ?: ""
-
-                val beginInstant = Instant.ofEpochMilli(beginMillis)
-                val endInstant = Instant.ofEpochMilli(endMillisFromCursor)
+                val isAllDayEventFromProvider = c.getInt(allDayColumn) == 1
 
                 val systemZoneId = ZoneId.systemDefault()
+                val beginInstant = Instant.ofEpochMilli(beginMillis)
                 val beginDateTimeAtSystemZone = beginInstant.atZone(systemZoneId)
 
-                val startDate = beginDateTimeAtSystemZone.toLocalDate()
-                val duration = Duration.between(beginInstant, endInstant)
+                var startDate = beginDateTimeAtSystemZone.toLocalDate()
+                val actualStartTimeForEvent = if (isAllDayEventFromProvider) null else beginDateTimeAtSystemZone.toLocalTime()
 
-                val beginInstantIsAtMidnightUTC = beginInstant.atZone(ZoneId.of("UTC")).toLocalTime() == LocalTime.MIDNIGHT
-
-                val isAllDayEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    beginInstantIsAtMidnightUTC &&
-                            duration.toHours() > 0 && duration.toHours() % 24 == 0L &&
-                            duration.minusDays(duration.toDays()).isZero
-                } else {
-                    beginInstantIsAtMidnightUTC &&
-                            duration.toHours() > 0 && duration.toHours() % 24 == 0L &&
-                            (duration.toMinutes() % (24 * 60) == 0L)
-                }
-
-                val actualStartTimeForEvent = if (isAllDayEvent) null else beginDateTimeAtSystemZone.toLocalTime()
-                val loopEndDate = if (isAllDayEvent && duration.toDays() >= 1) {
-                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1)
-                } else {
-                    endInstant.atZone(systemZoneId).toLocalDate()
-                }
+                // Para eventos de todo el día que podrían extenderse, necesitamos iterar
+                // Pero si es solo un día, el bucle solo se ejecuta una vez.
+                // Calendar Provider a veces devuelve eventos de todo el día con end time a la medianoche del día SIGUIENTE.
+                // O con start y end el mismo día pero marcados como all_day.
 
                 val isFromHolidayCal = holidayCalendarIds.contains(calId)
+
+                // Lógica simplificada: si es todo el día, solo para la fecha de inicio.
+                // Si la lógica original de iterar días es necesaria para tu app, se puede mantener,
+                // pero para el widget, generalmente solo interesa la primera ocurrencia o el día específico.
+                // Por ahora, lo mantendré como estaba para consistencia con tu app,
+                // el widget filtrará por fecha.
+                val endInstant = Instant.ofEpochMilli(c.getLong(endColumn))
+                val loopEndDate = if (isAllDayEventFromProvider && Duration.between(beginInstant, endInstant).toDays() >= 1) {
+                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1) // Si dura varios días, el final es inclusivo al día anterior
+                } else {
+                    beginInstant.atZone(systemZoneId).toLocalDate() // Si no, solo el día de inicio
+                }
                 var currentDateIterator = startDate
                 while (!currentDateIterator.isAfter(loopEndDate)) {
                     val list = map.getOrPut(currentDateIterator) { mutableListOf() }
@@ -667,14 +690,14 @@ fun readFestivosFromCalendars(
                             calendarId = calId,
                             isFromHolidaySource = isFromHolidayCal,
                             startTime = actualStartTimeForEvent,
-                            isAllDay = isAllDayEvent
+                            isAllDay = isAllDayEventFromProvider
                         )
                     )
                     currentDateIterator = currentDateIterator.plusDays(1)
                 }
             }
         }
-    } catch (e: Exception) { // 'e' se usa
+    } catch (e: Exception) {
         Log.e("ReadFestivos", "Error querying calendar instances", e)
     }
     callback(map)
@@ -694,7 +717,9 @@ fun SelectCalendarsDialog(
     LaunchedEffect(Unit) {
         loadAvailableCalendars(context) { calendars ->
             localAvailableCalendars = calendars
-            currentSelectedIdsInDialog = loadSelectedCalendarIds(context).filter { id -> calendars.any { it.id == id } }.toSet()
+            // Cargar los IDs previamente seleccionados y filtrarlos por los que aún existen
+            val previouslySelected = loadSelectedCalendarIds(context)
+            currentSelectedIdsInDialog = previouslySelected.filter { id -> calendars.any { cal -> cal.id == id } }.toSet()
         }
     }
 
@@ -769,24 +794,41 @@ fun MonthlyCalendar(
 ) {
     val daysOfWeek = listOf("L", "M", "X", "J", "V", "S", "D")
     val firstDayOfMonth = currentMonth.atDay(1)
-    val firstDayOfWeek = (firstDayOfMonth.dayOfWeek.value + 6) % 7
+    val firstDayOfWeek = (firstDayOfMonth.dayOfWeek.value + 6) % 7 // Lunes = 0
     val daysInMonth = currentMonth.lengthOfMonth()
     val cells = mutableListOf<@Composable () -> Unit>()
 
+    // Encabezados de días de la semana
     daysOfWeek.forEach { day ->
-        cells.add { Box(modifier = Modifier.fillMaxSize().background(Color(0xFFadd1fa)).border(1.dp, Color(0xFFCCCCCC)), contentAlignment = Alignment.Center) { Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold) } }
+        cells.add {
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color(0xFFadd1fa)).border(1.dp, Color(0xFFCCCCCC)),
+                contentAlignment = Alignment.Center
+            ) { Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+        }
     }
-    for (i in 0 until firstDayOfWeek) cells.add { Box(Modifier.fillMaxSize().border(1.dp, Color(0xFFCCCCCC))) }
+    // Celdas vacías al inicio del mes
+    for (i in 0 until firstDayOfWeek) {
+        cells.add { Box(Modifier.fillMaxSize().border(1.dp, Color(0xFFCCCCCC))) }
+    }
 
+    // Días del mes
     for (dayNum in 1..daysInMonth) {
         val thisDate = currentMonth.atDay(dayNum)
         val isToday = thisDate == today
         val isSunday = thisDate.dayOfWeek == java.time.DayOfWeek.SUNDAY
         val dayEvents = eventsByDate[thisDate].orEmpty()
-        val dayEventsConAlgunaInfo = dayEvents.any { !it.isAllDay || it.description.isNotBlank() }
+        val dayEventsConAlgunaInfo = dayEvents.any { festivo ->
+            val desc = festivo.description.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+            desc.isNotBlank()
+        }
 
         val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
-        val hasOtherEvents = dayEvents.any { !it.isFromHolidaySource && ((!it.isAllDay && it.startTime != null) || it.description.isNotBlank()) }
+        val hasOtherEvents = dayEvents.any {
+            !it.isFromHolidaySource &&
+                    ( (it.startTime != null && !it.isAllDay) || it.description.isNotBlank() )
+        }
+
 
         val textColor: Color
         val currentFontWeight: FontWeight = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
@@ -807,8 +849,11 @@ fun MonthlyCalendar(
                         color = if (isToday) azulCabeceraBorde else Color(0xFFCCCCCC),
                         shape = RoundedCornerShape(4.dp)
                     )
-                    .clickable(enabled = dayEventsConAlgunaInfo) {
-                        onDayClick(thisDate, dayEvents)
+                    .clickable(enabled = dayEventsConAlgunaInfo) { // Solo clickable si hay algo que mostrar
+                        onDayClick(thisDate, dayEvents.filter { festivo ->
+                            val desc = festivo.description.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+                            desc.isNotBlank()
+                        })
                     }
             ) {
                 Column(
@@ -816,21 +861,25 @@ fun MonthlyCalendar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("$dayNum", fontWeight = currentFontWeight, color = textColor, fontSize = 22.sp) // $dayNum es un Int, está bien aquí
+                    Text("$dayNum", fontWeight = currentFontWeight, color = textColor, fontSize = 22.sp)
                     if (hasOtherEvents) {
                         Spacer(modifier = Modifier.height(2.dp))
                         Box(modifier = Modifier.size(6.dp).background(puntoEventoColor, CircleShape))
                     } else {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp)) // Para mantener altura consistente
                     }
                 }
             }
         }
     }
+    // Celdas vacías al final del mes para completar la cuadrícula
     val remainder = cells.size % 7
     if (remainder != 0) {
-        for (i in 0 until (7 - remainder)) cells.add { Box(Modifier.fillMaxSize().border(1.dp, Color(0xFFCCCCCC))) }
+        for (i in 0 until (7 - remainder)) {
+            cells.add { Box(Modifier.fillMaxSize().border(1.dp, Color(0xFFCCCCCC))) }
+        }
     }
+
     Box(
         modifier = Modifier.fillMaxWidth().background(Color(0xFFf1f7fe), RoundedCornerShape(8.dp))
             .border(1.dp, Color(0xFFCCCCCC), RoundedCornerShape(8.dp)).padding(4.dp)
@@ -840,9 +889,11 @@ fun MonthlyCalendar(
                 Row(modifier = Modifier.fillMaxWidth()) {
                     for (colIndex in 0 until 7) {
                         Box(
-                            modifier = Modifier.weight(1f).aspectRatio(1f).padding(1.dp),
+                            modifier = Modifier.weight(1f).aspectRatio(1f).padding(1.dp), // aspect ratio 1:1
                             contentAlignment = Alignment.Center
-                        ) { cells[rowIndex * 7 + colIndex].invoke() }
+                        ) {
+                            cells[rowIndex * 7 + colIndex].invoke()
+                        }
                     }
                 }
             }
@@ -860,7 +911,7 @@ fun YearlyCalendar(
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        months.chunked(3).forEach { monthRow ->
+        months.chunked(3).forEach { monthRow -> // Muestra 3 meses por fila
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -869,14 +920,15 @@ fun YearlyCalendar(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 2.dp, vertical = 4.dp)
+                            .padding(horizontal = 2.dp, vertical = 4.dp) // Espaciado entre mini calendarios
                             .clickable { onMonthSelected(month) },
-                        contentAlignment = Alignment.TopCenter
+                        contentAlignment = Alignment.TopCenter // Alinea el contenido del mini calendario arriba
                     ) {
                         MiniMonthCalendar(month, today, eventsByDate)
                     }
                 }
-                if (monthRow.size < 3) { // Asegurar que las filas se llenen con Spacers si es necesario
+                // Si la última fila no tiene 3 meses, añade spacers para mantener la alineación
+                if (monthRow.size < 3) {
                     for (i in 0 until (3 - monthRow.size)) {
                         Spacer(Modifier.weight(1f).padding(2.dp))
                     }
@@ -890,29 +942,32 @@ fun YearlyCalendar(
 fun MiniMonthCalendar(
     month: YearMonth,
     today: LocalDate,
-    eventsByDate: Map<LocalDate, List<Festivo>>
+    eventsByDate: Map<LocalDate, List<Festivo>> // Para marcar días con eventos
 ) {
     val daysOfWeek = listOf("L", "M", "X", "J", "V", "S", "D")
     val firstDayOfMonth = month.atDay(1)
-    val firstDayOfWeekIndex = (firstDayOfMonth.dayOfWeek.value - 1 + 7) % 7
+    val firstDayOfWeekIndex = (firstDayOfMonth.dayOfWeek.value - 1 + 7) % 7 // Lunes = 0
     val daysInMonth = month.lengthOfMonth()
-    val totalCellsToDisplay = 6 * 7
+    val totalCellsToDisplay = 6 * 7 // Para una cuadrícula de 6x7 (máximo necesario)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(1.dp),
+        verticalArrangement = Arrangement.spacedBy(1.dp), // Espacio entre filas de días
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFF0F0F0), RoundedCornerShape(6.dp))
             .border(1.dp, Color(0xFFDCDCDC), RoundedCornerShape(6.dp))
             .padding(vertical = 3.dp, horizontal = 2.dp)
     ) {
+        // Nombre del Mes
         Text(
             month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
-            fontSize = 13.sp,
+            fontSize = 13.sp, // Tamaño ajustado para mini calendario
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 2.dp)
         )
+
+        // Cabecera de Días de la Semana
         Row(
             modifier = Modifier.fillMaxWidth().background(Color(0xFFE0E0E0)).padding(vertical = 1.dp),
             horizontalArrangement = Arrangement.SpaceAround
@@ -923,45 +978,58 @@ fun MiniMonthCalendar(
                 }
             }
         }
-        val dayCellsData = remember(month) {
+
+        // Días del Mes
+        val dayCellsData = remember(month) { // Optimización: calcular solo si el mes cambia
             List(totalCellsToDisplay) { cellIndex ->
                 val dayNumber = cellIndex - firstDayOfWeekIndex + 1
                 if (dayNumber in 1..daysInMonth) month.atDay(dayNumber) else null
             }
         }
+
         dayCellsData.chunked(7).forEach { weekDates ->
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround // Distribuye el espacio entre los días
+            ) {
                 weekDates.forEach { date ->
                     Box(
-                        modifier = Modifier.weight(1f).aspectRatio(1f).padding(0.5.dp),
+                        modifier = Modifier.weight(1f).aspectRatio(1f).padding(0.5.dp), // Celdas cuadradas
                         contentAlignment = Alignment.Center
                     ) {
                         if (date != null) {
                             val isToday = date == today
                             val dayEvents = eventsByDate[date].orEmpty()
                             val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
+                            // val hasOtherEvents = dayEvents.any { !it.isFromHolidaySource && it.description.isNotBlank()} // Podría usarse para un punto
                             val azulCabeceraBorde = Color(0xFF2196F3)
 
                             val textColor = when {
                                 isHoliday -> Color.Red
                                 date.dayOfWeek == java.time.DayOfWeek.SUNDAY -> Color.Red.copy(alpha = 0.7f)
-                                isToday -> Color.Blue
+                                isToday -> Color.Blue // Resaltar "hoy" en el mini calendario
                                 else -> Color.Black.copy(alpha = 0.8f)
                             }
                             val currentFontWeight = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                if (isToday && !isHoliday) {
+
+                            // Contenedor para el número y posible resaltado
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                if (isToday && !isHoliday) { // Resaltado sutil para "hoy" si no es festivo
                                     Box(
                                         modifier = Modifier
-                                            .offset(y = 3.dp)
-                                            .size(19.dp)
-                                            .clip(RoundedCornerShape(4.dp))
+                                            // .matchParentSize() // Para que el fondo ocupe toda la celda
+                                            .offset(y = 3.dp) // Ajuste para que el texto quede centrado sobre el fondo
+                                            .size(19.dp) // Tamaño del resaltado, ajustar según el tamaño del texto
+                                            .clip(RoundedCornerShape(4.dp)) // Forma del resaltado
                                             .background(azulCabeceraBorde.copy(alpha = 0.30f))
                                     )
                                 }
                                 Text(
-                                    text = "${date.dayOfMonth}", // $ es para Int, está bien
-                                    fontSize = 9.sp,
+                                    text = "${date.dayOfMonth}",
+                                    fontSize = 9.sp, // Tamaño de fuente para mini calendario
                                     fontWeight = currentFontWeight,
                                     color = textColor
                                 )
@@ -1041,21 +1109,13 @@ fun DayEventsDialog(
 @Composable
 fun WidgetConfigScreen(
     onDismissRequest: () -> Unit
-    // initialEventCount: Int = 4, // Para cargar desde SharedPreferences
-    // onSaveConfiguration: (eventCount: Int) -> Unit // Para guardar
 ) {
-    var eventCountSliderValue by remember { mutableStateOf(4f) } // Valor por defecto 4f
-
-    // Simulación de carga y guardado (para integrar con SharedPreferences más adelante)
-    // val context = LocalContext.current
-    // val WIDGET_EVENT_COUNT_KEY = "widget_event_count"
-
-    // LaunchedEffect(Unit) {
-    // Cargarías desde SharedPreferences aquí si esta pantalla fuera una Activity de configuración
-    // val savedCount = context.getSharedPreferences("widget_prefs", Context.MODE_PRIVATE)
-    // .getInt(WIDGET_EVENT_COUNT_KEY, 4)
-    // eventCountSliderValue = savedCount.toFloat()
-    // }
+    val context = LocalContext.current
+    val initialEventCount = remember { // Cargar el valor inicial desde SharedPreferences
+        val prefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+    }
+    var eventCountSliderValue by remember { mutableFloatStateOf(initialEventCount.toFloat()) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -1069,7 +1129,7 @@ fun WidgetConfigScreen(
                 )
 
                 Text(
-                    "Número de eventos a mostrar: ${eventCountSliderValue.toInt()}",
+                    "Número de eventos a mostrar: ${eventCountSliderValue.roundToInt()}",
                     fontSize = 16.sp
                 )
                 Slider(
@@ -1077,24 +1137,23 @@ fun WidgetConfigScreen(
                     onValueChange = { newValue ->
                         eventCountSliderValue = newValue
                     },
-                    valueRange = 1f..12f,
-                    steps = 10, // Para tener valores enteros de 1 a 12
+                    valueRange = 1f..12f, // Rango de 1 a 12 eventos
+                    steps = 10, // (12 - 1 - 1) = 10 steps para valores enteros entre 1 y 12
                     modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
                 )
-
-                Text("Otras opciones (ejemplos):", fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 16.dp))
-                Text("- Calendarios a mostrar")
-                Text("- Diseño (claro/oscuro)")
+                // Aquí podrías añadir más opciones de configuración en el futuro
             }
         },
         confirmButton = {
             Button(onClick = {
-                // Aquí guardarías el valor en SharedPreferences
-                // context.getSharedPreferences("widget_prefs", Context.MODE_PRIVATE).edit {
-                // putInt(WIDGET_EVENT_COUNT_KEY, eventCountSliderValue.toInt())
-                // }
-                Log.d("WidgetConfig", "Guardando configuración del widget: ${eventCountSliderValue.toInt()} eventos.")
-                // onSaveConfiguration(eventCountSliderValue.toInt())
+                val newEventCount = eventCountSliderValue.roundToInt()
+                val prefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+                prefs.edit {
+                    putInt(WidgetConstants.KEY_EVENT_COUNT, newEventCount)
+                    apply()
+                }
+                Log.d("WidgetConfig", "Guardando configuración del widget: $newEventCount eventos.")
+                notifyCalendarWidgetsConfigurationChanged(context) // Notificar a los widgets del cambio
                 onDismissRequest()
             }) {
                 Text("Guardar", fontSize = 16.sp)
@@ -1107,3 +1166,4 @@ fun WidgetConfigScreen(
         }
     )
 }
+

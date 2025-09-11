@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="#FFFFFF">
+
+<TextView
+android:id="@+id/widget_title"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Próximos Eventos"
+android:textSize="16sp"
+android:textStyle="bold"
+android:textColor="#000000"
+android:paddingBottom="4dp"/>
+
+<ListView
+android:id="@+id/widget_event_list"
+android:layout_width="match_parent"
+android:layout_height="0dp"
+android:layout_weight="1"
+tools:listitem="@layout/widget_list_item"/>
+
+<TextView
+android:id="@+id/widget_empty_view"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center"
+android:text="No hay eventos próximos."
+android:textColor="#808080"
+android:visibility="gone"/>
+    </LinearLayout>

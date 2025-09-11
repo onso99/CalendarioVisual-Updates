@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Calendario</string>
+    <string name="calendar_widget_description">Muestra tus próximos eventos del calendario</string>
 </resources>
