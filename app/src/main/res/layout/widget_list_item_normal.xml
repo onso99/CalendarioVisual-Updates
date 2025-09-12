@@ -17,7 +17,7 @@ android:fontFamily="sans-serif-condensed"
 android:textSize="14sp"
 android:textColor="#A9A9A9"
 android:text="Vi"
-android:gravity="start"
+android:gravity="end"
 android:layout_marginEnd="2dp"/>
 
 <TextView
