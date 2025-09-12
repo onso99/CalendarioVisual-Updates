@@ -11,7 +11,7 @@
 <TextView
 android:id="@+id/widget_item_day_of_week"
 android:layout_width="wrap_content"
-android:minWidth="32dp"
+android:minWidth="33dp"
 android:layout_height="wrap_content"
 android:fontFamily="sans-serif-condensed"
 android:textSize="14sp"
