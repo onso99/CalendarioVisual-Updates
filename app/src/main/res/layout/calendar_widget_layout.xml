@@ -5,28 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="4dp"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent"
+    tools:context=".CalendarAppWidgetProvider">
 
-    <!-- El TextView del título ha sido eliminado -->
-
-    <ListView
-        android:id="@+id/widget_event_list"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        tools:listitem="@layout/widget_list_item"/>
+        android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/widget_empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="No hay eventos próximos."
-        android:textColor="#B0B0B0"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="14sp"
-        android:visibility="gone"/>
+        <ListView
+            android:id="@+id/widget_event_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            tools:listitem="@layout/widget_list_item_normal"/>
+
+        <TextView
+            android:id="@+id/widget_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="No hay eventos (desde empty_view)"
+            android:textColor="#CCCCCC"
+            android:background="#000088"
+            android:visibility="visible"/>
+    </FrameLayout>
+
 </LinearLayout>
