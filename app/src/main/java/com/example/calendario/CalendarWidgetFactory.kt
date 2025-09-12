@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle // Asegúrate que este import esté presente
 import java.util.Locale
 
 // Asegúrate que WidgetConstants es importable (ej. si está en WidgetConstants.kt)
@@ -90,14 +91,20 @@ class CalendarWidgetFactory(
         }
         val views = RemoteViews(context.packageName, layoutId)
 
-        // Formato de texto y descripción
-        val dayOfWeekFormatter = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
-        var dayOfWeekStr = actualEvent.date.format(dayOfWeekFormatter)
-        if (dayOfWeekStr.isNotEmpty()) {
-            dayOfWeekStr = dayOfWeekStr.substring(0, 1).uppercase(Locale.getDefault()) +
-                    (if (dayOfWeekStr.length > 1) dayOfWeekStr.substring(1).lowercase(Locale.getDefault()) else "")
+        // ***** INICIO: CÓDIGO PARA EL DÍA DE LA SEMANA CON DOS LETRAS *****
+        val eventDate: LocalDate = actualEvent.date
+        val dayOfWeekShortOriginal = eventDate.dayOfWeek.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault())
+        val dayOfWeekFormatted: String
+        if (dayOfWeekShortOriginal.length >= 2) {
+            dayOfWeekFormatted = dayOfWeekShortOriginal.substring(0, 1).uppercase(Locale.getDefault()) +
+                    dayOfWeekShortOriginal.substring(1, 2).lowercase(Locale.getDefault())
+        } else if (dayOfWeekShortOriginal.isNotEmpty()) {
+            dayOfWeekFormatted = dayOfWeekShortOriginal.uppercase(Locale.getDefault())
+        } else {
+            dayOfWeekFormatted = ""
         }
-        views.setTextViewText(R.id.widget_item_day_of_week, dayOfWeekStr)
+        views.setTextViewText(R.id.widget_item_day_of_week, dayOfWeekFormatted)
+        // ***** FIN: CÓDIGO PARA EL DÍA DE LA SEMANA CON DOS LETRAS *****
 
         val dateOnlyFormatter = DateTimeFormatter.ofPattern("dd/MM", Locale.getDefault())
         views.setTextViewText(R.id.widget_item_date_formatted, actualEvent.date.format(dateOnlyFormatter))
@@ -111,33 +118,31 @@ class CalendarWidgetFactory(
         }
         views.setTextViewText(R.id.widget_item_description, displayDescription)
 
-        // Lógica de color para eventos del día actual
+        // ***** INICIO: LÓGICA DE COLOR CORREGIDA *****
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
 
-        val defaultTextColor = Color.parseColor("#A9A9A9")
-        val todayTextColor = Color.parseColor("#FFC107")
+        val defaultTextColor = Color.parseColor("#A9A9A9") // Gris para todos los textos por defecto
+        val todayHighlightColor = Color.parseColor("#FFC107")   // Amarillo/Naranja para resaltar hoy
 
-        val currentTextColor = if (isTodayEvent) todayTextColor else defaultTextColor
+        val currentTextColor = if (isTodayEvent) todayHighlightColor else defaultTextColor
+
         views.setTextColor(R.id.widget_item_day_of_week, currentTextColor)
         views.setTextColor(R.id.widget_item_date_formatted, currentTextColor)
-        views.setTextColor(R.id.widget_item_description, currentTextColor)
+        views.setTextColor(R.id.widget_item_description, currentTextColor) // Descripción usa el mismo currentTextColor
+        // ***** FIN: LÓGICA DE COLOR CORREGIDA *****
 
-        // ***** INICIO: CÓDIGO MODIFICADO PARA EL PASO 4.1.b *****
+
         // Configurar el fill-in intent para manejar clics en ítems individuales.
         val fillInIntent = Intent()
         // Opcional: Añade datos específicos del ítem aquí si quieres que MainActivity los reciba.
-        // Ejemplo:
         // fillInIntent.putExtra("EVENT_DESCRIPTION_EXTRA", actualEvent.description)
         // fillInIntent.putExtra("EVENT_DATE_EXTRA", actualEvent.date.toString())
-        // fillInIntent.putExtra("WIDGET_ITEM_CLICKED_ID_EXTRA", actualEvent.calendarId) // o un ID único del evento
-        // fillInIntent.action = "com.example.calendario.ACTION_VIEW_EVENT_DETAILS" // Acción personalizada
+        // fillInIntent.putExtra("WIDGET_ITEM_CLICKED_ID_EXTRA", actualEvent.calendarId)
+        // fillInIntent.action = "com.example.calendario.ACTION_VIEW_EVENT_DETAILS"
 
-        // Asegúrate de que R.id.widget_list_item_root existe en tus layouts de ítem de lista.
-        // Este ID será añadido en el siguiente paso (4.1.c) a los XMLs.
         views.setOnClickFillInIntent(R.id.widget_list_item_root, fillInIntent)
-        Log.d("WidgetFactory", "setOnClickFillInIntent configurado para el ítem en posición $position con R.id.widget_list_item_root")
-        // ***** FIN: CÓDIGO MODIFICADO PARA EL PASO 4.1.b *****
+        // Log.d("WidgetFactory", "setOnClickFillInIntent configurado para el ítem en posición $position con R.id.widget_list_item_root")
 
         return views
     }
@@ -157,7 +162,7 @@ class CalendarWidgetFactory(
             val uniqueString = "${event.date}-${event.startTime}-${event.description}-${event.calendarId}"
             uniqueString.hashCode().toLong()
         } else {
-            System.currentTimeMillis() + position // Fallback
+            System.currentTimeMillis() + position
         }
     }
 
@@ -177,24 +182,24 @@ class CalendarWidgetFactory(
                     compareBy(nullsLast()) { it.startTime }
                 )
                 for (event in eventsOnDate) {
-                    val hasMeaningfulDescription = event.description.isNotBlank()
+                    val hasMeaningfulDescription = event.description.isNotBlank() && event.description != "(Sin título)"
                     val isTimedEvent = !event.isAllDay && event.startTime != null
 
                     if (date.isEqual(today)) {
-                        if (event.isAllDay || (isTimedEvent && event.startTime!!.isAfter(LocalTime.now())) || (hasMeaningfulDescription && !isTimedEvent)) {
+                        if (event.isAllDay ||
+                            (isTimedEvent && event.startTime!!.isAfter(LocalTime.now())) ||
+                            (hasMeaningfulDescription && !isTimedEvent && !event.isAllDay)
+                        ) {
                             upcomingEvents.add(event)
                         } else if (isTimedEvent && !event.startTime!!.isAfter(LocalTime.now())) {
-                            // Log.d("WidgetFactory", "Evento de hoy omitido (ya pasó): ${event.description}")
+                            // Log.d("WidgetFactory", "Evento de hoy omitido (ya pasó): ${event.description} a las ${event.startTime}")
                         }
-                    } else { // Eventos futuros
+                    } else {
                         upcomingEvents.add(event)
                     }
                 }
             }
-        eventsList = upcomingEvents // Aquí podrías querer aplicar un .take(eventCountToShow * ALGUN_FACTOR_DE_BUFFER) si el filtrado final es muy agresivo
-        // o si eventCountToShow se aplica solo en getCount y getViewAt.
-        // Actualmente, se filtran todos los eventos futuros y luego se toma el `eventCountToShow` en `getCount` y `getViewAt`.
-
+        eventsList = upcomingEvents
         Log.d("WidgetFactory", "Eventos futuros procesados para el widget: ${eventsList.size}")
     }
 
@@ -225,7 +230,7 @@ class CalendarWidgetFactory(
                         date = date,
                         description = dto.desc,
                         calendarId = dto.id,
-                        isFromHolidaySource = false, // Considera si necesitas persistir esto
+                        isFromHolidaySource = false,
                         startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) {
                             Log.e("WidgetFactory", "loadEventsFromPrefs: Error parseando LocalTime '$it'", e); null } },
                         isAllDay = dto.isAllDay

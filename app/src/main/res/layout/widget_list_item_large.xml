@@ -11,12 +11,12 @@
     <TextView
         android:id="@+id/widget_item_day_of_week"
         android:layout_width="wrap_content"
-        android:minWidth="34dp"
+        android:minWidth="25dp"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-condensed"
         android:textSize="17sp"
         android:textColor="#A9A9A9"
-        android:text="Vie"
+        android:text="Vi"
         android:gravity="start"
         android:layout_marginEnd="3dp"/>
 
