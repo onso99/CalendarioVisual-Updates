@@ -8,4 +8,5 @@
     android:description="@string/calendar_widget_description"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen">
-    </appwidget-provider>
+</appwidget-provider>
+

@@ -29,11 +29,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!-- 1. Declaración del AppWidgetProvider -->
         <receiver
             android:name=".CalendarAppWidgetProvider"
             android:exported="false"
-            android:label="@string/calendar_widget_description">  <!-- Puedes usar la misma string que en widget_info -->
+            android:label="@string/calendar_widget_description">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
