@@ -233,7 +233,7 @@ fun CalendarioScreen() {
                 TopAppBar(
                     title = {
                         Text(
-                            "Calendario Visual V2.53", // Puedes actualizar la versión aquí si quieres
+                            "Calendario Visual V2.54", // Puedes actualizar la versión aquí si quieres
                             fontSize = 20.sp,
                             color = Color.White,
                             modifier = Modifier.fillMaxWidth(),
@@ -409,7 +409,7 @@ fun CalendarioScreen() {
                                             text = ": $displayDescription",
                                             color = currentDescriptionColor,
                                             fontSize = 16.sp,
-                                            maxLines = 2,
+                                            maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                             modifier = Modifier.padding(start = 4.dp)
                                         )
@@ -448,7 +448,7 @@ fun CalendarioScreen() {
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Calendario Visual V2.53", fontSize = 16.sp) // Puedes actualizar la versión aquí
+                            Text("Calendario Visual V2.54", fontSize = 16.sp) // Puedes actualizar la versión aquí
                             Text("Asistente IA / Android Studio", fontSize = 16.sp)
                             Text("Onso/agosto 2025", fontSize = 16.sp)
                         }
