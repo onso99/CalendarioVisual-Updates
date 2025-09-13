@@ -478,7 +478,7 @@ fun CalendarioScreen() {
                                 modifier = Modifier.padding(bottom = 4.dp) // Espacio menor
                             )
                             Text(
-                                "Las flechas laterales permiten navegar mes a mes o año a año.", // Aquí no especificamos el rango para mantenerlo general
+                                "Las flechas laterales permiten navegar mes a mes y año a año.", // Aquí no especificamos el rango para mantenerlo general
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
@@ -967,13 +967,25 @@ fun MonthlyCalendar(
             !it.isFromHolidaySource &&
                     ( (it.startTime != null && !it.isAllDay) || it.description.isNotBlank() )
         }
-        val textColor: Color
-        val currentFontWeight: FontWeight = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
-        when {
-            isHoliday -> textColor = Color.Red
-            isSunday -> textColor = Color.Red.copy(alpha = 0.7f)
-            else -> textColor = Color.Black
+
+        // --- Corrección Aplicada Aquí ---
+        // 1. Determinar el fontWeight basado SOLAMENTE en las condiciones de contenido (ej. festivo)
+        val currentFontWeight: FontWeight = if (isHoliday) { // Solo 'isHoliday' causa negrita ahora
+            FontWeight.Bold
+        } else {
+            FontWeight.Normal
         }
+
+        // 2. Determinar el textColor
+        val textColor: Color = when {
+            isHoliday -> Color.Red // Festivos en rojo
+            isSunday -> Color.Red.copy(alpha = 0.7f) // Domingos en rojo claro
+            // Opcional: si quieres que "hoy" tenga un color de texto diferente SI NO ES FESTIVO NI DOMINGO
+            // isToday && !isHoliday && !isSunday -> MaterialTheme.colorScheme.primary // Por ejemplo, el color primario
+            else -> Color.Black // Días normales
+        }
+        // --- Fin de la Corrección ---
+
         val azulCabeceraBorde = Color(0xFF2196F3)
 
         cells.add {
@@ -999,7 +1011,12 @@ fun MonthlyCalendar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("$dayNum", fontWeight = currentFontWeight, color = textColor, fontSize = 22.sp)
+                    Text(
+                        "$dayNum",
+                        fontWeight = currentFontWeight, // fontWeight corregido
+                        color = textColor,             // textColor determinado
+                        fontSize = 22.sp
+                    )
                     if (hasOtherEvents) {
                         Spacer(modifier = Modifier.height(2.dp))
                         Box(modifier = Modifier
@@ -1047,6 +1064,7 @@ fun MonthlyCalendar(
         }
     }
 }
+
 
 
 @Composable
