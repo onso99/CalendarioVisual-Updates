@@ -256,7 +256,7 @@ fun CalendarioScreen() {
                                 modifier = Modifier.background(Color.White)
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Seleccionar Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
+                                    text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
                                     onClick = {
                                         menuExpanded = false
                                         if (hasCalendarPermission) {
@@ -472,11 +472,24 @@ fun CalendarioScreen() {
                     title = { Text("Ayuda", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Días festivos en rojo. Eventos de hoy resaltados.", fontSize = 16.sp)
-                            Text("Las flechas permiten navegar. Pulsar mes/año cambia vista.", fontSize = 16.sp)
-                            Text("Desde el menú (⋮) puedes seleccionar calendarios.", fontSize = 16.sp)
-                            Text("Los eventos pueden mostrar su hora de inicio.", fontSize = 16.sp)
+                            Text(
+                                "El botón con el mes alterna entre calendario mensual y anual.",
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 4.dp) // Espacio menor
+                            )
+                            Text(
+                                "Las flechas laterales permiten navegar mes a mes o año a año.", // Aquí no especificamos el rango para mantenerlo general
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                "El menú ⋮ muestra las opciones para elegir calendarios y modificar el widget.",
+                                fontSize = 16.sp
+                            )
+                            // Si quieres añadir la info de la hora de inicio:
+                            // Text("Los eventos pueden mostrar su hora de inicio.", fontSize = 16.sp, modifier = Modifier.padding(top = 4.dp))
                         }
+
                     },
                     confirmButton = { TextButton(onClick = { showHelpDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
@@ -709,32 +722,40 @@ fun loadAvailableCalendars(context: Context, callback: (List<CalendarInfo>) -> U
 fun readFestivosFromCalendars(
     context: Context,
     selectedCalendarIds: Set<Long>,
-    availableCalendars: List<CalendarInfo>,
+    availableCalendars: List<CalendarInfo>, // Esta lista debe ser proporcionada por una función como loadAvailableCalendars
     callback: (Map<LocalDate, List<Festivo>>) -> Unit
 ) {
-    if (selectedCalendarIds.isEmpty() || ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+    if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        Log.w("ReadFestivos", "Permiso READ_CALENDAR no concedido.")
+        callback(emptyMap()); return
+    }
+    if (selectedCalendarIds.isEmpty()) {
+        Log.i("ReadFestivos", "No hay calendarios seleccionados por el usuario.")
         callback(emptyMap()); return
     }
 
-    val holidayCalendarKeywords = listOf("Festivo", "Holiday", "Vacaciones", "Cumpleaños")
-    val holidayCalendarIds = availableCalendars
-        .filter { calInfo ->
-            selectedCalendarIds.contains(calInfo.id) &&
-                    holidayCalendarKeywords.any { keyword -> calInfo.displayName.contains(keyword, ignoreCase = true) }
-        }
-        .map { it.id }.toSet()
+    // Identificar el ID del calendario que se considera la fuente principal de festivos.
+    // Según tus logs y aclaraciones, este es el ID 2 para "Festivos en España".
+    val specificHolidaySourceCalendarId = 2L
+    val holidayCalendarIds = if (selectedCalendarIds.contains(specificHolidaySourceCalendarId)) {
+        setOf(specificHolidaySourceCalendarId)
+    } else {
+        emptySet<Long>()
+    }
+
+    if (holidayCalendarIds.isEmpty() && selectedCalendarIds.contains(specificHolidaySourceCalendarId)) {
+        Log.w("ReadFestivos", "El calendario fuente de festivos (ID $specificHolidaySourceCalendarId) fue seleccionado pero no se pudo identificar como tal. Revisa la lógica si esto ocurre.")
+    } else if (holidayCalendarIds.isEmpty() && selectedCalendarIds.isNotEmpty()) {
+        Log.i("ReadFestivos", "El calendario fuente de festivos (ID $specificHolidaySourceCalendarId) no está entre los seleccionados o no se identificó ninguno.")
+    }
 
     val resolver = context.contentResolver
     val map = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val now = Instant.now()
 
-    // --- ÚNICO CAMBIO: RANGO DE FECHAS A +/- 2 AÑOS ---
-    val daysInTwoYears = 730L // Usamos 730L para definirlo como Long
+    val daysInTwoYears = 730L // Aproximadamente +/- 2 años
     val startRangeMillis = now.minus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
     val endRangeMillis = now.plus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
-    // --- FIN DEL ÚNICO CAMBIO ---
-
-    Log.d("ReadFestivosRange", "Rango consulta: desde ${Instant.ofEpochMilli(startRangeMillis)} hasta ${Instant.ofEpochMilli(endRangeMillis)}") // Log para verificar
 
     val builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
     ContentUris.appendId(builder, startRangeMillis)
@@ -748,6 +769,8 @@ fun readFestivosFromCalendars(
         CalendarContract.Instances.TITLE,
         CalendarContract.Instances.ALL_DAY
     )
+
+    // Consultar solo los calendarios que el usuario ha seleccionado
     val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
     try {
@@ -760,34 +783,26 @@ fun readFestivosFromCalendars(
             val allDayColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
 
             while (c.moveToNext()) {
-                val calId = c.getLong(calIdColumn)
+                val eventCalId = c.getLong(calIdColumn)
                 val beginMillis = c.getLong(beginColumn)
-                val title = c.getString(titleColumn)?.trim() ?: ""
-                val isAllDayEventFromProviderAsBoolean = c.getInt(allDayColumn) == 1 // Convertido a Boolean aquí
+                val title = c.getString(titleColumn)?.trim() ?: "(Sin título)"
+                val isAllDayEvent = c.getInt(allDayColumn) == 1
 
                 val systemZoneId = ZoneId.systemDefault()
                 val beginInstant = Instant.ofEpochMilli(beginMillis)
                 val beginDateTimeAtSystemZone = beginInstant.atZone(systemZoneId)
-                // Usar el Booleano para determinar startTime
-                val actualStartTimeForEvent = if (isAllDayEventFromProviderAsBoolean) null else beginDateTimeAtSystemZone.toLocalTime()
-                val isFromHolidayCal = holidayCalendarIds.contains(calId)
+
+                val isFromHolidaySource = holidayCalendarIds.contains(eventCalId)
+                val actualStartTime = if (isAllDayEvent) null else beginDateTimeAtSystemZone.toLocalTime()
 
                 val endInstant = Instant.ofEpochMilli(c.getLong(endColumn))
                 var currentDateIterator = beginDateTimeAtSystemZone.toLocalDate()
 
-                // Lógica original para loopEndDate, asegurando comparación Long con Int
-                val loopEndDate = if (isAllDayEventFromProviderAsBoolean && Duration.between(beginInstant, endInstant).toDays() >= 1L) { // >= 1L (Long)
-                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1L) // .minusDays(1L) (Long)
+                val loopEndDate = if (isAllDayEvent && Duration.between(beginInstant, endInstant).toDays() >= 1L) {
+                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1L)
                 } else {
-                    // Si no es un evento de todo el día que dura al menos 1 día, o si es un evento con hora,
-                    // el evento se considera solo para la fecha de inicio en esta lógica original simplificada.
-                    // OJO: Esta lógica original para eventos con hora que duran varios días
-                    // solo los procesará para el primer día.
-                    // Si el evento NO es de todo el día pero SÍ dura varios días, esta lógica
-                    // original lo tratará como un evento de un solo día.
-                    beginDateTimeAtSystemZone.toLocalDate() // <-- Lógica original para el 'else'
+                    beginDateTimeAtSystemZone.toLocalDate()
                 }
-
 
                 while (!currentDateIterator.isAfter(loopEndDate)) {
                     val list = map.getOrPut(currentDateIterator) { mutableListOf() }
@@ -795,21 +810,27 @@ fun readFestivosFromCalendars(
                         Festivo(
                             date = currentDateIterator,
                             description = title,
-                            calendarId = calId,
-                            isFromHolidaySource = isFromHolidayCal,
-                            startTime = actualStartTimeForEvent, // startTime se propaga tal cual, la lógica original lo hacía
-                            isAllDay = isAllDayEventFromProviderAsBoolean // Usar el Booleano
+                            calendarId = eventCalId,
+                            isFromHolidaySource = isFromHolidaySource,
+                            startTime = actualStartTime,
+                            isAllDay = isAllDayEvent
                         )
                     )
-                    currentDateIterator = currentDateIterator.plusDays(1L) // .plusDays(1L) (Long)
+                    currentDateIterator = currentDateIterator.plusDays(1L)
                 }
             }
         }
     } catch (e: Exception) {
-        Log.e("ReadFestivos", "Error querying calendar instances", e)
+        Log.e("ReadFestivos", "Error al consultar las instancias del calendario", e)
     }
+
+    val totalFestivosEnMapa = map.values.flatten().count { it.isFromHolidaySource }
+    Log.i("ReadFestivos", "Callback con mapa. Días con eventos: ${map.size}. Festivos (isFromHolidaySource=true): $totalFestivosEnMapa.")
+
     callback(map)
 }
+
+
 
 
 
