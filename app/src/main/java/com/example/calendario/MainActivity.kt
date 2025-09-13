@@ -522,12 +522,12 @@ fun CalendarioScreen() {
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                "Las flechas laterales permiten navegar mes a mes y año a año.",
+                                "Las flechas laterales permiten navegar entre los meses y los años.",
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                "El menú ⋮ muestra las opciones para elegir calendarios y modificar el widget.",
+                                "Pulsando en un día con eventos se mostrará una lista de ellos. ",
                                 fontSize = 16.sp
                             )
                         }
@@ -557,9 +557,6 @@ fun CalendarioScreen() {
         }
     }
 }
-
-
-
 
 
 // --- WidgetConfigScreen Composable (MODIFICADO) ---
@@ -875,9 +872,6 @@ fun readFestivosFromCalendars(
 }
 
 
-
-
-
 // --- OTROS COMPOSABLES (SelectCalendarsDialog, MonthlyCalendar, YearlyCalendar, MiniMonthCalendar, DayEventsDialog) ---
 // (Tu código para estos composables va aquí, sin cambios respecto a tu versión anterior)
 
@@ -1110,7 +1104,6 @@ fun MonthlyCalendar(
 }
 
 
-
 @Composable
 fun YearlyCalendar(
     currentYear: Year,
@@ -1119,84 +1112,97 @@ fun YearlyCalendar(
     onMonthSelected: (YearMonth) -> Unit
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
+
+    val horizontalSpacingBetweenMonths = 4.dp
+    val verticalSpacingBetweenMonthRows = 4.dp
+
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        months.chunked(3).forEach { monthRow ->
+        months.chunked(3).forEachIndexed { rowIndex, monthRow ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.spacedBy(horizontalSpacingBetweenMonths)
             ) {
                 monthRow.forEach { month ->
+                    // Este Box exterior toma el peso, define la forma (cuadrada) y es clickeable
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 2.dp, vertical = 4.dp)
+                            .aspectRatio(1f) // FORZAR CELDA CUADRADA
                             .clickable { onMonthSelected(month) },
-                        contentAlignment = Alignment.TopCenter
+                        contentAlignment = Alignment.Center // Centrar MiniMonthCalendar dentro de la celda cuadrada
                     ) {
-                        MiniMonthCalendar(month, today, eventsByDate)
+                        // MiniMonthCalendar ahora debe usar fillMaxSize()
+                        MiniMonthCalendar(
+                            month = month,
+                            today = today,
+                            eventsByDate = eventsByDate,
+                            // Pasamos un Modifier para que MiniMonthCalendar sepa que debe llenar el espacio
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
+                // Rellenar las celdas restantes en la fila si es necesario
                 if (monthRow.size < 3) {
                     for (i in 0 until (3 - monthRow.size)) {
-                        Spacer(Modifier
-                            .weight(1f)
-                            .padding(2.dp))
+                        Spacer(Modifier.weight(1f).aspectRatio(1f)) // Mantener proporción también para los spacers
                     }
                 }
+            }
+
+            // Espaciador vertical entre las filas de meses
+            if (rowIndex < months.chunked(3).size - 1) {
+                Spacer(modifier = Modifier.height(verticalSpacingBetweenMonthRows))
             }
         }
     }
 }
 
+
+
+
 @Composable
 fun MiniMonthCalendar(
     month: YearMonth,
     today: LocalDate,
-    eventsByDate: Map<LocalDate, List<Festivo>>
+    eventsByDate: Map<LocalDate, List<Festivo>>,
+    modifier: Modifier = Modifier
 ) {
     val daysOfWeekShort = listOf("L", "M", "X", "J", "V", "S", "D")
     val firstDayOfMonth = month.atDay(1)
-    // Corrección para el primer día de la semana: Lunes es 0, Domingo es 6
     val firstDayOfWeekIndex = (firstDayOfMonth.dayOfWeek.value - 1 + 7) % 7
     val daysInMonth = month.lengthOfMonth()
-    val totalCellsToDisplay = 6 * 7 // Para asegurar un layout de 6 semanas
+    val totalCellsToDisplay = 6 * 7
 
-    // --- Definición de Tamaños de Fuente (en sp) ---
     val monthNameFontSize = 9.sp
     val dayHeadersFontSize = 7.sp
     val dayNumberFontSize = 8.sp
 
-    // Estilo común para texto compacto
     val compactTextStyle = LocalTextStyle.current.copy(
         platformStyle = PlatformTextStyle(includeFontPadding = false)
     )
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        // verticalArrangement = Arrangement.Top, // Alinea el contenido hacia arriba
-        modifier = Modifier
-            .fillMaxWidth() // Usa todo el ancho que le da el contenedor con weight(1f)
+        modifier = modifier
             .background(Color(0xFFF0F0F0), RoundedCornerShape(4.dp))
             .border(1.dp, Color(0xFFDCDCDC), RoundedCornerShape(4.dp))
-            .padding(horizontal = 1.dp, vertical = 1.dp) // Padding general mínimo del MiniMonthCalendar
+            .padding(horizontal = 2.dp, vertical = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- NOMBRE DEL MES ---
         Text(
             text = month.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
             fontSize = monthNameFontSize,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = compactTextStyle.copy(lineHeight = monthNameFontSize * 0.95f), // Ajusta lineHeight
-            modifier = Modifier.padding(top = 2.dp, bottom = 2.dp) // <--- LIGERO PADDING VERTICAL AQUÍ
+            style = compactTextStyle.copy(lineHeight = monthNameFontSize * 0.95f),
+            modifier = Modifier.padding(bottom = 2.dp)
         )
 
-        // --- FILA DE DÍAS DE LA SEMANA (L, M, X...) ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFFE0E0E0))
-                .padding(vertical = 1.dp), // <--- LIGERO PADDING VERTICAL AQUÍ
+                .padding(vertical = 1.dp),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             daysOfWeekShort.forEach { day ->
@@ -1209,71 +1215,75 @@ fun MiniMonthCalendar(
                         fontSize = dayHeadersFontSize,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
-                        style = compactTextStyle.copy(lineHeight = dayHeadersFontSize * 0.95f) // Ajusta lineHeight
+                        style = compactTextStyle.copy(lineHeight = dayHeadersFontSize * 0.95f)
                     )
                 }
             }
         }
 
-        // Spacer(modifier = Modifier.height(1.dp)) // Opcional pequeño espacio antes de la cuadrícula
-
-        // --- CUADRÍCULA DE DÍAS ---
-        val dayCellsData = remember(month, daysInMonth, firstDayOfWeekIndex) {
-            List(totalCellsToDisplay) { cellIndex ->
-                val dayNumber = cellIndex - firstDayOfWeekIndex + 1
-                if (dayNumber in 1..daysInMonth) month.atDay(dayNumber) else null
+        Column(
+            modifier = Modifier.weight(1f), // Columna de la cuadrícula de días toma espacio vertical
+            // Ya no necesitamos verticalArrangement aquí si cada Row toma weight
+        ) {
+            val dayCellsData = remember(month, daysInMonth, firstDayOfWeekIndex) {
+                List(totalCellsToDisplay) { cellIndex ->
+                    val dayNumber = cellIndex - firstDayOfWeekIndex + 1
+                    if (dayNumber in 1..daysInMonth) month.atDay(dayNumber) else null
+                }
             }
-        }
 
-        dayCellsData.chunked(7).forEach { weekDates ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround // Distribuye las celdas
-            ) {
-                weekDates.forEach { date ->
-                    Box(
-                        modifier = Modifier
-                            .weight(1f) // Cada celda toma el mismo ancho
-                            .aspectRatio(1f) // Hace la celda cuadrada
-                            .padding(0.dp),  // Sin padding interno para maximizar espacio para el número
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (date != null) {
-                            val isToday = date == today
-                            val dayEvents = eventsByDate[date].orEmpty()
-                            val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
-                            val azulResaltadoHoy = Color(0xFF2196F3)
+            dayCellsData.chunked(7).forEach { weekDates -> // Esto itera 6 veces
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f), // <--- CADA FILA DE SEMANA TOMA 1/6 DE LA ALTURA DISPONIBLE PARA LA CUADRÍCULA
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically // Centrar celdas de día verticalmente en la Row
+                ) {
+                    weekDates.forEach { date ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f) // Esto ahora se basa en el ancho Y altura dados por los weights
+                                .padding(0.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (date != null) {
+                                val isToday = date == today
+                                val dayEvents = eventsByDate[date].orEmpty()
+                                val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
+                                val azulResaltadoHoy = Color(0xFF2196F3)
 
-                            val baseTextColor = when {
-                                isHoliday -> Color.Red
-                                date.dayOfWeek == java.time.DayOfWeek.SUNDAY -> Color.Red.copy(alpha = 0.7f)
-                                else -> Color.Black.copy(alpha = 0.9f)
-                            }
-                            // Hoy tiene prioridad de color sobre domingo si no es festivo
-                            val finalTextColor = if (isToday && !isHoliday) Color.Blue.copy(alpha = 0.9f) else baseTextColor
-                            val currentFontWeight = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
+                                val baseTextColor = when {
+                                    isHoliday -> Color.Red
+                                    date.dayOfWeek == java.time.DayOfWeek.SUNDAY -> Color.Red.copy(alpha = 0.7f)
+                                    else -> Color.Black.copy(alpha = 0.9f)
+                                }
+                                val finalTextColor = if (isToday && !isHoliday) Color.Blue.copy(alpha = 0.9f) else baseTextColor
+                                val currentFontWeight = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
 
-                            Box( // Contenedor para el fondo del día de hoy y el número
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxSize() // Ocupa toda la celda
-                            ) {
-                                if (isToday && !isHoliday) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size((dayNumberFontSize.value * 2.2f).dp) // Tamaño relativo al texto para el círculo/cuadrado
-                                            .clip(RoundedCornerShape(3.dp))
-                                            .background(azulResaltadoHoy.copy(alpha = 0.15f))
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    if (isToday && !isHoliday) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size((dayNumberFontSize.value * 2.2f).dp)
+                                                .clip(RoundedCornerShape(3.dp))
+                                                .background(azulResaltadoHoy.copy(alpha = 0.15f))
+                                        )
+                                    }
+                                    Text(
+                                        text = "${date.dayOfMonth}",
+                                        fontSize = dayNumberFontSize,
+                                        fontWeight = currentFontWeight,
+                                        color = finalTextColor,
+                                        maxLines = 1,
+                                        textAlign = TextAlign.Center,
+                                        style = compactTextStyle.copy(lineHeight = dayNumberFontSize * 0.95f)
                                     )
                                 }
-                                Text(
-                                    text = "${date.dayOfMonth}",
-                                    fontSize = dayNumberFontSize,
-                                    fontWeight = currentFontWeight,
-                                    color = finalTextColor,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.Center,
-                                    style = compactTextStyle.copy(lineHeight = dayNumberFontSize * 0.95f) // lineHeight ajustado
-                                )
                             }
                         }
                     }
@@ -1282,7 +1292,6 @@ fun MiniMonthCalendar(
         }
     }
 }
-
 
 
 
