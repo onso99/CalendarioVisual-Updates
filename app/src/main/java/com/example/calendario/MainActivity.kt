@@ -727,8 +727,14 @@ fun readFestivosFromCalendars(
     val resolver = context.contentResolver
     val map = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val now = Instant.now()
-    val startRangeMillis = now.minus(Duration.ofDays(60)).toEpochMilli()
-    val endRangeMillis = now.plus(Duration.ofDays(365)).toEpochMilli()
+
+    // --- ÚNICO CAMBIO: RANGO DE FECHAS A +/- 2 AÑOS ---
+    val daysInTwoYears = 730L // Usamos 730L para definirlo como Long
+    val startRangeMillis = now.minus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
+    val endRangeMillis = now.plus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
+    // --- FIN DEL ÚNICO CAMBIO ---
+
+    Log.d("ReadFestivosRange", "Rango consulta: desde ${Instant.ofEpochMilli(startRangeMillis)} hasta ${Instant.ofEpochMilli(endRangeMillis)}") // Log para verificar
 
     val builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
     ContentUris.appendId(builder, startRangeMillis)
@@ -757,21 +763,31 @@ fun readFestivosFromCalendars(
                 val calId = c.getLong(calIdColumn)
                 val beginMillis = c.getLong(beginColumn)
                 val title = c.getString(titleColumn)?.trim() ?: ""
-                val isAllDayEventFromProvider = c.getInt(allDayColumn) == 1
+                val isAllDayEventFromProviderAsBoolean = c.getInt(allDayColumn) == 1 // Convertido a Boolean aquí
 
                 val systemZoneId = ZoneId.systemDefault()
                 val beginInstant = Instant.ofEpochMilli(beginMillis)
                 val beginDateTimeAtSystemZone = beginInstant.atZone(systemZoneId)
-                val actualStartTimeForEvent = if (isAllDayEventFromProvider) null else beginDateTimeAtSystemZone.toLocalTime()
+                // Usar el Booleano para determinar startTime
+                val actualStartTimeForEvent = if (isAllDayEventFromProviderAsBoolean) null else beginDateTimeAtSystemZone.toLocalTime()
                 val isFromHolidayCal = holidayCalendarIds.contains(calId)
 
                 val endInstant = Instant.ofEpochMilli(c.getLong(endColumn))
                 var currentDateIterator = beginDateTimeAtSystemZone.toLocalDate()
-                val loopEndDate = if (isAllDayEventFromProvider && Duration.between(beginInstant, endInstant).toDays() >= 1) {
-                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1)
+
+                // Lógica original para loopEndDate, asegurando comparación Long con Int
+                val loopEndDate = if (isAllDayEventFromProviderAsBoolean && Duration.between(beginInstant, endInstant).toDays() >= 1L) { // >= 1L (Long)
+                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1L) // .minusDays(1L) (Long)
                 } else {
-                    currentDateIterator
+                    // Si no es un evento de todo el día que dura al menos 1 día, o si es un evento con hora,
+                    // el evento se considera solo para la fecha de inicio en esta lógica original simplificada.
+                    // OJO: Esta lógica original para eventos con hora que duran varios días
+                    // solo los procesará para el primer día.
+                    // Si el evento NO es de todo el día pero SÍ dura varios días, esta lógica
+                    // original lo tratará como un evento de un solo día.
+                    beginDateTimeAtSystemZone.toLocalDate() // <-- Lógica original para el 'else'
                 }
+
 
                 while (!currentDateIterator.isAfter(loopEndDate)) {
                     val list = map.getOrPut(currentDateIterator) { mutableListOf() }
@@ -781,11 +797,11 @@ fun readFestivosFromCalendars(
                             description = title,
                             calendarId = calId,
                             isFromHolidaySource = isFromHolidayCal,
-                            startTime = actualStartTimeForEvent,
-                            isAllDay = isAllDayEventFromProvider
+                            startTime = actualStartTimeForEvent, // startTime se propaga tal cual, la lógica original lo hacía
+                            isAllDay = isAllDayEventFromProviderAsBoolean // Usar el Booleano
                         )
                     )
-                    currentDateIterator = currentDateIterator.plusDays(1)
+                    currentDateIterator = currentDateIterator.plusDays(1L) // .plusDays(1L) (Long)
                 }
             }
         }
@@ -794,6 +810,7 @@ fun readFestivosFromCalendars(
     }
     callback(map)
 }
+
 
 
 // --- OTROS COMPOSABLES (SelectCalendarsDialog, MonthlyCalendar, YearlyCalendar, MiniMonthCalendar, DayEventsDialog) ---
