@@ -502,7 +502,7 @@ fun CalendarioScreen() {
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Calendario Visual V1.2.55", fontSize = 16.sp)
+                            Text("Calendario Visual V1.2.55.1", fontSize = 16.sp)
                             Text("Asistente IA / Android Studio", fontSize = 16.sp)
                             Text("Onso/agosto 2025", fontSize = 16.sp)
                         }
