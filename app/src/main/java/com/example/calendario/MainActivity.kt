@@ -154,8 +154,29 @@ fun notifyCalendarWidgetsDataChanged(context: Context) {
 @Composable
 fun CalendarioScreen() {
     val context = LocalContext.current
-    val azulFijo = Color(0xFF2196F3)
-    val colorResaltadoEventosHoy = Color(0xFF0080ff)
+
+    // --- Paleta de Colores Principal de la Pantalla ---
+    val azulFijo = Color(0xFF2196F3) // Azul primario para TopAppBar y punto de evento en el calendario
+
+    // Define el color de fondo de la pantalla aquí para fácil modificación
+    val colorDeFondoPantalla = Color(0xFFfafafa) // Ejemplo: Azul cielo claro
+    // Alternativas que puedes probar descomentando:
+    // val colorDeFondoPantalla = Color.Black
+    // val colorDeFondoPantalla = Color(0xFF001f3f) // Azul marino oscuro
+    // val colorDeFondoPantalla = Color(0xFF121212) // Gris oscuro estándar para temas dark
+    // val colorDeFondoPantalla = Color(0xFF263238) // Azul grisáceo oscuro
+
+    // Colores para elementos sobre el colorDeFondoPantalla
+    val colorTextoNormalSobreFondo = Color.Black
+    val colorTextoSecundarioSobreFondo = Color.DarkGray // Para mensajes como "lista vacía"
+    val colorResaltadoFestivos = Color.Red // Para festivos en la lista
+    val colorResaltadoEventosHoyLista = azulFijo // Eventos de hoy en la lista (tu azul primario)
+
+    // Colores para los botones de navegación (flechas, mes/año)
+    val colorFondoBotonesNavegacion = Color(0xFFffbb77) // Gris claro
+    val colorContenidoBotonesNavegacion = Color.Black    // Iconos/texto negro
+    // --- Fin de la Paleta de Colores ---
+
 
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     var currentYear by remember { mutableStateOf(Year.now()) }
@@ -177,8 +198,6 @@ fun CalendarioScreen() {
     var hasCalendarPermission by remember {
         mutableStateOf(ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
     }
-
-    // Estado para mostrar el diálogo de configuración del widget
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -232,14 +251,14 @@ fun CalendarioScreen() {
     Scaffold(
         topBar = {
             Column(modifier = Modifier
-                .background(azulFijo)
+                .background(azulFijo) // El TopAppBar sigue siendo azulFijo
                 .statusBarsPadding()) {
                 TopAppBar(
                     title = {
                         Text(
-                            "Calendario Visual", // Puedes actualizar la versión aquí si quieres
+                            "Calendario Visual",
                             fontSize = 20.sp,
-                            color = Color.White,
+                            color = Color.White, // Texto del TopAppBar es blanco
                             modifier = Modifier.fillMaxWidth(),
                             fontWeight = FontWeight.Bold
                         )
@@ -253,7 +272,7 @@ fun CalendarioScreen() {
                                 expanded = menuExpanded,
                                 onDismissRequest = { menuExpanded = false },
                                 shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.background(Color.White)
+                                modifier = Modifier.background(Color.White) // Fondo del menú desplegable claro
                             ) {
                                 DropdownMenuItem(
                                     text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
@@ -267,10 +286,10 @@ fun CalendarioScreen() {
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("Widget", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) }, // Esta es la opción para abrir el diálogo
+                                    text = { Text("Widget", fontSize = 18.sp, modifier = Modifier.padding(8.dp)) },
                                     onClick = {
                                         menuExpanded = false
-                                        showWidgetConfigDialog = true // Mostrar el diálogo de configuración
+                                        showWidgetConfigDialog = true
                                     }
                                 )
                                 DropdownMenuItem(
@@ -297,13 +316,14 @@ fun CalendarioScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(colorDeFondoPantalla) // Usando la variable para el fondo de pantalla
                 .padding(paddingValues)
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ... (Resto de tu UI de CalendarioScreen sin cambios)
 
-            Row( // Botones de Navegación
+            // --- Controles de Navegación y Título del Mes/Año ---
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -314,15 +334,21 @@ fun CalendarioScreen() {
                         else currentYear = currentYear.minusYears(1)
                     },
                     modifier = Modifier.size(44.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color(0xFFDDDDDD))
-                ) { Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior", tint = Color.Black) }
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = colorFondoBotonesNavegacion,
+                        contentColor = colorContenidoBotonesNavegacion
+                    )
+                ) { Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior") }
 
                 Button(
                     onClick = {
                         viewMode = if (viewMode == CalendarViewMode.MONTHLY) CalendarViewMode.YEARLY
                         else { currentMonth = YearMonth.now(); CalendarViewMode.MONTHLY }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDDDDDD)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorFondoBotonesNavegacion,
+                        contentColor = colorContenidoBotonesNavegacion
+                    ),
                     shape = RoundedCornerShape(16.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                 ) {
@@ -330,7 +356,7 @@ fun CalendarioScreen() {
                         if (viewMode == CalendarViewMode.MONTHLY)
                             "${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }} ${currentMonth.year}"
                         else "${currentYear.value}",
-                        fontSize = 20.sp, color = Color.Black
+                        fontSize = 20.sp // El color se hereda de colorContenidoBotonesNavegacion
                     )
                 }
 
@@ -340,18 +366,21 @@ fun CalendarioScreen() {
                         else currentYear = currentYear.plusYears(1)
                     },
                     modifier = Modifier.size(44.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color(0xFFDDDDDD))
-                ) { Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente", tint = Color.Black) }
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = colorFondoBotonesNavegacion,
+                        contentColor = colorContenidoBotonesNavegacion
+                    )
+                ) { Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente") }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             if (viewMode == CalendarViewMode.MONTHLY) {
-                MonthlyCalendar(
+                MonthlyCalendar( // MonthlyCalendar mantiene su apariencia clara interna
                     currentMonth = currentMonth,
                     today = today,
                     eventsByDate = eventsByDate,
-                    puntoEventoColor = azulFijo,
+                    puntoEventoColor = azulFijo, // Punto de evento en calendario sigue siendo azulFijo
                     onDayClick = { date, events ->
                         selectedDateForDialog = date
                         eventsForDialog = events
@@ -372,14 +401,25 @@ fun CalendarioScreen() {
                 Spacer(modifier = Modifier.height(12.dp))
                 val listTitle = if (isCurrentMonthView) "Eventos Pendientes de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
                 else "Eventos de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
-                Text(listTitle, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 6.dp))
+
+                Text(
+                    listTitle,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 6.dp),
+                    color = colorTextoNormalSobreFondo // Usando variable
+                )
 
                 if (finalEventsToList.isEmpty()) {
                     Box(modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f), contentAlignment = Alignment.Center) {
                         val emptyListMessage = if (isCurrentMonthView) "No hay eventos pendientes para este mes." else "No hay eventos para este mes."
-                        Text(emptyListMessage, fontSize = 16.sp, color = Color.Gray)
+                        Text(
+                            emptyListMessage,
+                            fontSize = 16.sp,
+                            color = colorTextoSecundarioSobreFondo // Usando variable
+                        )
                     }
                 } else {
                     Column(modifier = Modifier
@@ -391,11 +431,11 @@ fun CalendarioScreen() {
                             val isTodayEvents = isCurrentMonthView && date == today
 
                             festivos.forEach { festivo ->
-                                val defaultDayTextColor = if (festivo.isFromHolidaySource) Color.Red else Color.Black
-                                val defaultDescriptionTextColor = Color.Black
+                                val baseDayTextColor = if (festivo.isFromHolidaySource) colorResaltadoFestivos else colorTextoNormalSobreFondo
+                                val baseDescriptionTextColor = if (festivo.isFromHolidaySource) colorResaltadoFestivos else colorTextoNormalSobreFondo
 
-                                val currentDayNumberColor = if (isTodayEvents && !festivo.isFromHolidaySource) colorResaltadoEventosHoy else defaultDayTextColor
-                                val currentDescriptionColor = if (isTodayEvents) colorResaltadoEventosHoy else defaultDescriptionTextColor
+                                val currentDayNumberColor = if (isTodayEvents && !festivo.isFromHolidaySource) colorResaltadoEventosHoyLista else baseDayTextColor
+                                val currentDescriptionColor = if (isTodayEvents && !festivo.isFromHolidaySource) colorResaltadoEventosHoyLista else baseDescriptionTextColor
 
                                 val displayDescription = if (!festivo.isAllDay && festivo.startTime != null) {
                                     "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.description.ifEmpty { "(Sin título)" }}"
@@ -411,13 +451,13 @@ fun CalendarioScreen() {
                                         val formattedDay = String.format("%02d", date.dayOfMonth)
                                         Text(
                                             text = formattedDay,
-                                            color = currentDayNumberColor,
+                                            color = currentDayNumberColor, // Usando variable aplicada
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp
                                         )
                                         Text(
                                             text = ": $displayDescription",
-                                            color = currentDescriptionColor,
+                                            color = currentDescriptionColor, // Usando variable aplicada
                                             fontSize = 16.sp,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
@@ -430,7 +470,11 @@ fun CalendarioScreen() {
                     }
                 }
             } else { // Yearly View
-                YearlyCalendar(currentYear, today, eventsByDate) { selectedMonth ->
+                YearlyCalendar( // YearlyCalendar también mantiene su apariencia clara interna
+                    currentYear,
+                    today,
+                    eventsByDate
+                ) { selectedMonth ->
                     currentMonth = selectedMonth
                     viewMode = CalendarViewMode.MONTHLY
                 }
@@ -445,8 +489,8 @@ fun CalendarioScreen() {
                         saveSelectedCalendarIds(context, newSelectedIds)
                         readFestivosFromCalendars(context, newSelectedIds, availableCalendars) { festivos ->
                             eventsByDate = festivos
-                            saveEventsToPrefs(context, eventsByDate)
-                            notifyCalendarWidgetsDataChanged(context)
+                            saveEventsToPrefs(context, festivos)
+                            notifyCalendarWidgetsDataChanged(context) // Notificar widgets
                         }
                         showSelectCalendarsDialog = false
                     }
@@ -458,7 +502,7 @@ fun CalendarioScreen() {
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Calendario Visual V1.2.55", fontSize = 16.sp) // Puedes actualizar la versión aquí
+                            Text("Calendario Visual V1.2.55", fontSize = 16.sp)
                             Text("Asistente IA / Android Studio", fontSize = 16.sp)
                             Text("Onso/agosto 2025", fontSize = 16.sp)
                         }
@@ -475,10 +519,10 @@ fun CalendarioScreen() {
                             Text(
                                 "El botón con el mes alterna entre calendario mensual y anual.",
                                 fontSize = 16.sp,
-                                modifier = Modifier.padding(bottom = 4.dp) // Espacio menor
+                                modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                "Las flechas laterales permiten navegar mes a mes y año a año.", // Aquí no especificamos el rango para mantenerlo general
+                                "Las flechas laterales permiten navegar mes a mes y año a año.",
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
@@ -486,10 +530,7 @@ fun CalendarioScreen() {
                                 "El menú ⋮ muestra las opciones para elegir calendarios y modificar el widget.",
                                 fontSize = 16.sp
                             )
-                            // Si quieres añadir la info de la hora de inicio:
-                            // Text("Los eventos pueden mostrar su hora de inicio.", fontSize = 16.sp, modifier = Modifier.padding(top = 4.dp))
                         }
-
                     },
                     confirmButton = { TextButton(onClick = { showHelpDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
@@ -508,7 +549,6 @@ fun CalendarioScreen() {
                 )
             }
 
-            // --- MOSTRAR EL DIÁLOGO DE CONFIGURACIÓN DEL WIDGET ---
             if (showWidgetConfigDialog) {
                 WidgetConfigScreen(
                     onDismissRequest = { showWidgetConfigDialog = false }
@@ -517,6 +557,10 @@ fun CalendarioScreen() {
         }
     }
 }
+
+
+
+
 
 // --- WidgetConfigScreen Composable (MODIFICADO) ---
 @OptIn(ExperimentalMaterial3Api::class)
