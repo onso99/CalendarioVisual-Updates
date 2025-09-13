@@ -448,7 +448,7 @@ fun CalendarioScreen() {
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                     text = {
                         Column {
-                            Text("Calendario Visual V1.2.54", fontSize = 16.sp) // Puedes actualizar la versión aquí
+                            Text("Calendario Visual V1.2.55", fontSize = 16.sp) // Puedes actualizar la versión aquí
                             Text("Asistente IA / Android Studio", fontSize = 16.sp)
                             Text("Onso/agosto 2025", fontSize = 16.sp)
                         }
@@ -549,7 +549,7 @@ fun WidgetConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Letra grande en el widget",
+                        "Letra grande",
                         fontSize = 16.sp
                     )
                     Switch(
