@@ -313,6 +313,7 @@ fun CalendarioScreen(
     val colorFondoBotonesNavegacion = Color(0xFFffbb77)
     val colorContenidoBotonesNavegacion = Color.Black
     val AzulMarinoCumpleanos = Color(0xFF0000ff)
+    val colorGrisClaroParaFondoTitulo = Color(0xFFeaeaea) // Color para el fondo del título
 
     Scaffold(
         topBar = {
@@ -468,16 +469,29 @@ fun CalendarioScreen(
                             )
 
                         val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-                        val listTitle = if (isCurrentMonthView) "Eventos pendientes de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
+                        val listTitleText = if (isCurrentMonthView) "Eventos pendientes de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
                         else "Eventos de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
 
                         Text(
-                            listTitle,
+                            text = listTitleText,
                             fontSize = 18.sp,
+                            color = azulFijo,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 6.dp),
-                            color = azulFijo
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = colorGrisClaroParaFondoTitulo,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(vertical = 6.dp, horizontal = 12.dp)
+                            // .padding(bottom = 6.dp) // Eliminado o ajustado si el padding interno es suficiente. Se puede añadir si se necesita más espacio debajo.
+                            // Si quieres un espacio específico debajo del título ANTES de la lista,
+                            // considera un Spacer después de este Text y antes del if/else de la lista.
                         )
+
+                        Spacer(modifier = Modifier.height(8.dp)) // Espacio entre el título y la lista
+
                         if (finalEventsToList.isEmpty()) {
                             Box(
                                 modifier = Modifier.fillMaxWidth().weight(1f),
@@ -492,7 +506,7 @@ fun CalendarioScreen(
                                     .fillMaxWidth()
                                     .weight(1f)
                                     .verticalScroll(rememberScrollState())
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp) // Padding para la propia lista de eventos
                             ) {
                                 finalEventsToList.forEach { (date, festivos) ->
                                     val isTodayEvents = isCurrentMonthView && date == today
@@ -522,8 +536,8 @@ fun CalendarioScreen(
                                             fontWeightNumeroDiaLista = FontWeight.Bold
                                             fontWeightDescripcionLista = FontWeight.Bold
                                         } else {
-                                            fontWeightNumeroDiaLista = FontWeight.Normal // Otros días, número normal
-                                            fontWeightDescripcionLista = FontWeight.Normal // Otros días, descripción normal
+                                            fontWeightNumeroDiaLista = FontWeight.Normal
+                                            fontWeightDescripcionLista = FontWeight.Normal
                                         }
 
                                         val displayDescription = if (!festivo.isAllDay && festivo.startTime != null) {
@@ -539,13 +553,13 @@ fun CalendarioScreen(
                                             ) {
                                                 val formattedDay = String.format("%02d", date.dayOfMonth)
                                                 Text(
-                                                    text = "${formattedDay}:", // Dos puntos pegados al día
+                                                    text = "${formattedDay}:",
                                                     color = colorDelNumeroDiaLista,
                                                     fontWeight = fontWeightNumeroDiaLista,
                                                     fontSize = 16.sp
                                                 )
                                                 Text(
-                                                    text = displayDescription, // Sin espacio inicial
+                                                    text = displayDescription,
                                                     color = colorDescripcionLista,
                                                     fontWeight = fontWeightDescripcionLista,
                                                     fontSize = 16.sp,
@@ -639,6 +653,7 @@ fun CalendarioScreen(
         }
     }
 }
+
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
