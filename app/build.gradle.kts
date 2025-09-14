@@ -73,4 +73,5 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
 
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.0") // O verifica la última versión estable en developer.android.com
 }

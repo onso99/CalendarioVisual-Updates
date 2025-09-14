@@ -2,11 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.calendario">
 
-    <!-- Permisos para acceder a los calendarios del dispositivo -->
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
-    <!-- <uses-permission android:name="android.permission.WRITE_CALENDAR"/> -->
 
     <application
+        android:name=".CalendarioApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -30,7 +29,6 @@
             </intent-filter>
         </activity>
 
-        <!-- 1. Declaración del AppWidgetProvider -->
         <receiver
             android:name=".CalendarAppWidgetProvider"
             android:exported="false"
@@ -43,7 +41,6 @@
                 android:resource="@xml/calendar_widget_info" />
         </receiver>
 
-        <!-- 2. Declaración del RemoteViewsService -->
         <service
             android:name=".CalendarWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"
