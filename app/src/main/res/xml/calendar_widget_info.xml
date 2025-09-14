@@ -3,10 +3,9 @@
     android:minWidth="200dp"
     android:minHeight="40dp"
     android:updatePeriodMillis="1800000"
-    android:previewImage="@mipmap/ic_launcher"
+    android:previewImage="@drawable/widget_preview"
     android:initialLayout="@layout/calendar_widget_layout"
     android:description="@string/calendar_widget_description"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen">
 </appwidget-provider>
-
