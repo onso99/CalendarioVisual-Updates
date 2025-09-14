@@ -1004,9 +1004,9 @@ fun MiniMonthCalendar(
 
     // Para un mini calendario, 6 semanas son suficientes para cualquier mes.
     val totalCellsToDisplay = 6 * 7
-    val monthNameFontSize = 9.sp
-    val dayHeadersFontSize = 7.sp
-    val dayNumberFontSize = 8.sp
+    val monthNameFontSize = 12.sp
+    val dayHeadersFontSize = 8.sp
+    val dayNumberFontSize = 9.sp
 
     // Estilo compacto para el texto para evitar padding extra de fuentes
     val compactTextStyle = LocalTextStyle.current.copy(
@@ -1029,7 +1029,7 @@ fun MiniMonthCalendar(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = compactTextStyle.copy(lineHeight = monthNameFontSize * 0.95f), // Ajustar altura de línea
-            modifier = Modifier.padding(bottom = 2.dp)
+            modifier = Modifier.padding(bottom = 4.dp)
         )
 
         // Cabeceras de los días de la semana (L, M, X...)
@@ -1037,7 +1037,7 @@ fun MiniMonthCalendar(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFFE0E0E0)) // Fondo ligeramente más oscuro para cabeceras
-                .padding(vertical = 1.dp),
+                .padding(vertical = 3.dp),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             daysOfWeekShort.forEach { day ->
