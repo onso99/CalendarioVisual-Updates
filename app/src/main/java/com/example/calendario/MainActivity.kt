@@ -304,14 +304,15 @@ fun CalendarioScreen(
         }
     }
 
+    // Definición de colores
     val azulFijo = Color(0xFF2196F3)
     val colorDeFondoPantalla = Color(0xFFfafafa)
     val colorTextoNormalSobreFondo = Color.Black
     val colorTextoSecundarioSobreFondo = Color.DarkGray
     val colorResaltadoFestivos = Color.Red
-    val colorResaltadoEventosHoyLista = azulFijo
     val colorFondoBotonesNavegacion = Color(0xFFffbb77)
     val colorContenidoBotonesNavegacion = Color.Black
+    val AzulMarinoCumpleanos = Color(0xFF0000ff)
 
     Scaffold(
         topBar = {
@@ -467,7 +468,7 @@ fun CalendarioScreen(
                             )
 
                         val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-                        val listTitle = if (isCurrentMonthView) "Eventos Pendientes de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
+                        val listTitle = if (isCurrentMonthView) "Eventos pendientes de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
                         else "Eventos de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
 
                         Text(
@@ -475,7 +476,7 @@ fun CalendarioScreen(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 6.dp),
-                            color = colorTextoNormalSobreFondo
+                            color = azulFijo
                         )
                         if (finalEventsToList.isEmpty()) {
                             Box(
@@ -495,11 +496,35 @@ fun CalendarioScreen(
                             ) {
                                 finalEventsToList.forEach { (date, festivos) ->
                                     val isTodayEvents = isCurrentMonthView && date == today
+
                                     festivos.forEach { festivo ->
-                                        val baseDayTextColor = if (festivo.isFromHolidaySource) colorResaltadoFestivos else colorTextoNormalSobreFondo
-                                        val baseDescriptionTextColor = if (festivo.isFromHolidaySource) colorResaltadoFestivos else colorTextoNormalSobreFondo
-                                        val currentDayNumberColor = if (isTodayEvents && !festivo.isFromHolidaySource) colorResaltadoEventosHoyLista else baseDayTextColor
-                                        val currentDescriptionColor = if (isTodayEvents && !festivo.isFromHolidaySource) colorResaltadoEventosHoyLista else baseDescriptionTextColor
+                                        val esCumpleanos = festivo.description.contains("cumpleaños", ignoreCase = true) ||
+                                                festivo.description.contains("aniversario", ignoreCase = true)
+
+                                        val colorDelNumeroDiaLista: Color
+                                        val colorDescripcionLista: Color
+
+                                        var fontWeightNumeroDiaLista: FontWeight
+                                        var fontWeightDescripcionLista: FontWeight
+
+                                        if (esCumpleanos) {
+                                            colorDelNumeroDiaLista = AzulMarinoCumpleanos
+                                            colorDescripcionLista = AzulMarinoCumpleanos
+                                        } else if (festivo.isFromHolidaySource) {
+                                            colorDelNumeroDiaLista = colorResaltadoFestivos
+                                            colorDescripcionLista = colorResaltadoFestivos
+                                        } else {
+                                            colorDelNumeroDiaLista = colorTextoNormalSobreFondo
+                                            colorDescripcionLista = colorTextoNormalSobreFondo
+                                        }
+
+                                        if (isTodayEvents) {
+                                            fontWeightNumeroDiaLista = FontWeight.Bold
+                                            fontWeightDescripcionLista = FontWeight.Bold
+                                        } else {
+                                            fontWeightNumeroDiaLista = FontWeight.Normal // Otros días, número normal
+                                            fontWeightDescripcionLista = FontWeight.Normal // Otros días, descripción normal
+                                        }
 
                                         val displayDescription = if (!festivo.isAllDay && festivo.startTime != null) {
                                             "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.description.ifEmpty { "(Sin título)" }}"
@@ -514,14 +539,15 @@ fun CalendarioScreen(
                                             ) {
                                                 val formattedDay = String.format("%02d", date.dayOfMonth)
                                                 Text(
-                                                    text = formattedDay,
-                                                    color = currentDayNumberColor,
-                                                    fontWeight = FontWeight.Bold,
+                                                    text = "${formattedDay}:", // Dos puntos pegados al día
+                                                    color = colorDelNumeroDiaLista,
+                                                    fontWeight = fontWeightNumeroDiaLista,
                                                     fontSize = 16.sp
                                                 )
                                                 Text(
-                                                    text = ": $displayDescription",
-                                                    color = currentDescriptionColor,
+                                                    text = displayDescription, // Sin espacio inicial
+                                                    color = colorDescripcionLista,
+                                                    fontWeight = fontWeightDescripcionLista,
                                                     fontSize = 16.sp,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis,
@@ -730,7 +756,6 @@ fun SelectCalendarsDialog(
                                 Text(calendar.displayName, fontWeight = FontWeight.Medium, fontSize = 16.sp)
                                 Text(calendar.accountName, style = MaterialTheme.typography.bodySmall, color = Color.Gray, fontSize = 12.sp)
                             }
-                            // Círculo de color ELIMINADO de aquí
                         }
                     }
                 }
@@ -760,6 +785,8 @@ fun MonthlyCalendar(
     val daysInMonth = currentMonth.lengthOfMonth()
     val cells = mutableListOf<@Composable () -> Unit>()
 
+    val colorBordeDiaActual = MaterialTheme.colorScheme.primary
+
     daysOfWeek.forEach { day ->
         cells.add {
             Box(
@@ -782,15 +809,15 @@ fun MonthlyCalendar(
             festivo.description.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }.isNotBlank()
         }
         val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
-        val hasOtherEvents = dayEvents.any { !it.isFromHolidaySource && ((it.startTime != null && !it.isAllDay) || it.description.isNotBlank()) }
+        val hasOtherEventsForPoint = dayEvents.any { !it.isFromHolidaySource && ((it.startTime != null && !it.isAllDay) || it.description.isNotBlank()) }
 
-        val currentFontWeight: FontWeight = if (isHoliday) FontWeight.Bold else FontWeight.Normal
-        val textColor: Color = when {
+        val numeroDiaFontWeight: FontWeight = if (isHoliday) FontWeight.Bold else FontWeight.Normal
+
+        val numeroDiaColor: Color = when {
             isHoliday -> Color.Red
             isSunday -> Color.Red.copy(alpha = 0.7f)
             else -> Color.Black
         }
-        val azulCabeceraBorde = Color(0xFF2196F3)
 
         cells.add {
             Box(
@@ -799,7 +826,7 @@ fun MonthlyCalendar(
                     .background(Color.White)
                     .border(
                         width = if (isToday) 2.dp else 1.dp,
-                        color = if (isToday) azulCabeceraBorde else Color(0xFFCCCCCC),
+                        color = if (isToday) colorBordeDiaActual else Color(0xFFCCCCCC),
                         shape = RoundedCornerShape(4.dp)
                     )
                     .clickable(enabled = dayEventsConAlgunaInfo) {
@@ -813,8 +840,13 @@ fun MonthlyCalendar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("$dayNum", fontWeight = currentFontWeight, color = textColor, fontSize = 22.sp)
-                    if (hasOtherEvents) {
+                    Text(
+                        text = "$dayNum",
+                        fontWeight = numeroDiaFontWeight,
+                        color = numeroDiaColor,
+                        fontSize = 22.sp
+                    )
+                    if (hasOtherEventsForPoint) {
                         Spacer(modifier = Modifier.height(2.dp))
                         Box(modifier = Modifier.size(6.dp).background(puntoEventoColor, CircleShape))
                     } else {
@@ -964,12 +996,13 @@ fun MiniMonthCalendar(
                                 val isToday = date == today
                                 val dayEvents = eventsByDate[date].orEmpty()
                                 val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
-                                val azulResaltadoHoy = Color(0xFF2196F3)
+                                val azulResaltadoHoy = Color(0xFF2196F3) // Color para el recuadro del día actual en minimapa
                                 val baseTextColor = when {
                                     isHoliday -> Color.Red
                                     date.dayOfWeek == java.time.DayOfWeek.SUNDAY -> Color.Red.copy(alpha = 0.7f)
                                     else -> Color.Black.copy(alpha = 0.9f)
                                 }
+                                // En el minimapa, "hoy" sigue resaltado en azul si no es festivo
                                 val finalTextColor = if (isToday && !isHoliday) Color.Blue.copy(alpha = 0.9f) else baseTextColor
                                 val currentFontWeight = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
                                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -997,6 +1030,11 @@ fun DayEventsDialog(
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(dateFormatter).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } }
+
+    val AzulMarinoCumpleanos = Color(0xFF0000ff)
+    // val today = LocalDate.now() // No es necesario aquí si no afecta la lógica
+    // val isDialogForToday = date == today // No es necesario aquí si no afecta la lógica
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(text = formattedDate, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
@@ -1009,6 +1047,7 @@ fun DayEventsDialog(
                 }
                 if (displayDescription.isNotBlank()) festivo to displayDescription else null
             }
+
             if (eventsToDisplay.isEmpty()) {
                 Text("No hay eventos con detalle para este día.", fontSize = 16.sp)
             } else {
@@ -1018,14 +1057,33 @@ fun DayEventsDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                         ) {
-                            val itemColor = if (festivo.isFromHolidaySource) Color.Red else Color.Black
+                            val itemColor: Color
+                            val itemFontWeight: FontWeight = FontWeight.Normal // En el diálogo, la fuente siempre normal
+
+                            val esCumpleanos = festivo.description.contains("cumpleaños", ignoreCase = true) ||
+                                    festivo.description.contains("aniversario", ignoreCase = true)
+
+                            itemColor = when {
+                                esCumpleanos -> AzulMarinoCumpleanos
+                                festivo.isFromHolidaySource -> Color.Red
+                                else -> Color.Black
+                            }
+
                             val calendarInfo = availableCalendars.find { it.id == festivo.calendarId }
-                            val eventColorInt = calendarInfo?.color // Todavía se lee, podría usarse en otro lugar o eliminarse de CalendarInfo si no
-                            eventColorInt?.let { colorInt -> // Aunque no se muestre aquí, la lógica de lectura puede permanecer por si se usa en otro lado
+                            val eventColorInt = calendarInfo?.color
+
+                            eventColorInt?.let { colorInt ->
                                 Box(modifier = Modifier.size(10.dp).background(Color(colorInt), CircleShape).border(0.5.dp, Color.DarkGray.copy(alpha = 0.5f), CircleShape))
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
-                            Text(text = displayDescription, color = itemColor, fontSize = 16.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                text = displayDescription,
+                                color = itemColor,
+                                fontWeight = itemFontWeight,
+                                fontSize = 16.sp,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
