@@ -48,12 +48,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-// import androidx.compose.runtime.getValue // No es necesario si usas 'by'
-// import androidx.compose.runtime.setValue // No es necesario si usas 'by'
+// import androidx.compose.runtime.getValue
+// import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
-import kotlin.math.roundToInt // Usado en WidgetConfigScreen
+import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 
@@ -406,11 +406,10 @@ fun CalendarioScreen(
                 Button(
                     onClick = {
                         if (viewMode == CalendarViewMode.MONTHLY) {
-                            // ★★★ CAMBIO APLICADO AQUÍ ★★★
-                            currentYear = Year.of(currentMonth.year) // Establecer el año de la vista anual
+                            currentYear = Year.of(currentMonth.year)
                             viewMode = CalendarViewMode.YEARLY
                         } else {
-                            currentMonth = YearMonth.now() // Resetear a la vista mensual actual
+                            currentMonth = YearMonth.now()
                             viewMode = CalendarViewMode.MONTHLY
                         }
                     },
@@ -731,15 +730,7 @@ fun SelectCalendarsDialog(
                                 Text(calendar.displayName, fontWeight = FontWeight.Medium, fontSize = 16.sp)
                                 Text(calendar.accountName, style = MaterialTheme.typography.bodySmall, color = Color.Gray, fontSize = 12.sp)
                             }
-                            calendar.color?.let {
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                        .background(Color(it), CircleShape)
-                                        .border(1.dp, Color.DarkGray.copy(alpha = 0.5f), CircleShape)
-                                )
-                            }
+                            // Círculo de color ELIMINADO de aquí
                         }
                     }
                 }
@@ -1029,8 +1020,8 @@ fun DayEventsDialog(
                         ) {
                             val itemColor = if (festivo.isFromHolidaySource) Color.Red else Color.Black
                             val calendarInfo = availableCalendars.find { it.id == festivo.calendarId }
-                            val eventColorInt = calendarInfo?.color
-                            eventColorInt?.let { colorInt ->
+                            val eventColorInt = calendarInfo?.color // Todavía se lee, podría usarse en otro lugar o eliminarse de CalendarInfo si no
+                            eventColorInt?.let { colorInt -> // Aunque no se muestre aquí, la lógica de lectura puede permanecer por si se usa en otro lado
                                 Box(modifier = Modifier.size(10.dp).background(Color(colorInt), CircleShape).border(0.5.dp, Color.DarkGray.copy(alpha = 0.5f), CircleShape))
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
@@ -1043,3 +1034,4 @@ fun DayEventsDialog(
         confirmButton = { TextButton(onClick = onDismissRequest) { Text("Cerrar", fontSize = 16.sp) } }
     )
 }
+
