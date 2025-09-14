@@ -16,6 +16,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.YearMonth // ★ AÑADIDO PARA processEventsForDisplay ★
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -73,7 +74,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     date = date,
                     description = dto.desc,
                     calendarId = dto.id,
-                    isFromHolidaySource = false,
+                    isFromHolidaySource = false, // Este valor se determina al leer del provider, no al cargar de prefs
                     startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("CalendarDataUtils", "Error parseando LocalTime: '$it'", e); null } },
                     isAllDay = dto.isAllDay
                 )
@@ -97,6 +98,43 @@ fun loadSelectedCalendarIds(context: Context): Set<Long> {
     return prefs.getStringSet("selected_calendar_ids", emptySet())
         ?.mapNotNull { idStr -> try { idStr.toLong() } catch (e: NumberFormatException) { Log.e("CalendarDataUtils", "Error parseando ID: '$idStr'", e); null } }
         ?.toSet() ?: emptySet()
+}
+
+// --- ★ NUEVA FUNCIÓN AÑADIDA ★ ---
+/**
+ * Procesa el mapa de eventos por fecha para obtener una lista de pares (Fecha, Lista de Festivos)
+ * para mostrar, típicamente para un mes específico y filtrando días pasados
+ * si es el mes actual.
+ *
+ * @param eventsByDate El mapa completo de eventos.
+ * @param targetMonth El mes para el cual se quieren los eventos.
+ * @param today La fecha actual, para filtrar eventos pasados del mes actual.
+ * @return Una lista de pares (Fecha, Lista de Festivos) ordenada por fecha,
+ *         conteniendo solo eventos relevantes para la visualización.
+ */
+fun processEventsForDisplay(
+    eventsByDate: Map<LocalDate, List<Festivo>>,
+    targetMonth: YearMonth,
+    today: LocalDate
+): List<Pair<LocalDate, List<Festivo>>> {
+    val isCurrentMonthView = targetMonth.year == today.year && targetMonth.month == today.month
+
+    val eventsForSelectedMonth = eventsByDate
+        .filterKeys { date -> date.month == targetMonth.month && date.year == targetMonth.year }
+        .let { eventsInMonth ->
+            if (isCurrentMonthView) {
+                // Para el mes actual, solo mostrar eventos desde hoy en adelante
+                eventsInMonth.filterKeys { date -> !date.isBefore(today) }
+            } else {
+                // Para otros meses, mostrar todos los eventos
+                eventsInMonth
+            }
+        }
+        .filterValues { festivos -> festivos.isNotEmpty() } // Asegurarse de que solo incluimos días que realmente tienen eventos
+        .toSortedMap() // Ordenar por fecha para una visualización consistente
+
+    // Convertir el mapa ordenado a una lista de Pares para iterar fácilmente en Compose
+    return eventsForSelectedMonth.toList()
 }
 
 
@@ -165,7 +203,7 @@ suspend fun readFestivosFromCalendarsSuspend(
         return@suspendCancellableCoroutine
     }
 
-    val specificHolidaySourceCalendarId = 2L
+    val specificHolidaySourceCalendarId = 2L // Considera hacer esto configurable si es necesario
     val holidayCalendarIds = if (selectedCalendarIds.contains(specificHolidaySourceCalendarId)) {
         setOf(specificHolidaySourceCalendarId)
     } else {
@@ -175,7 +213,7 @@ suspend fun readFestivosFromCalendarsSuspend(
     val resolver = context.contentResolver
     val map = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val now = Instant.now()
-    val daysInTwoYears = 730L
+    val daysInTwoYears = 730L // Rango de eventos a leer
     val startRangeMillis = now.minus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
     val endRangeMillis = now.plus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
 
@@ -216,7 +254,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                 val endInstant = Instant.ofEpochMilli(c.getLong(endColumn))
                 var currentDateIterator = beginDateTimeAtSystemZone.toLocalDate()
                 val loopEndDate = if (isAllDayEvent && Duration.between(beginInstant, endInstant).toDays() >= 1L) {
-                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1L)
+                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1L) // Para eventos de varios días, no incluir el día final si es a las 00:00
                 } else {
                     beginDateTimeAtSystemZone.toLocalDate()
                 }
@@ -249,4 +287,3 @@ suspend fun readFestivosFromCalendarsSuspend(
         }
     }
 }
-
