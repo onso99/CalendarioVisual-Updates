@@ -5,7 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
+// import android.graphics.Color // No es necesario si obtenemos ARGB de constantes
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
@@ -18,12 +18,10 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 // Imports para tus clases/objetos definidos en otros archivos
-// Asegúrate de que estos imports sean correctos y que los archivos existan
-import com.example.calendario.WidgetConstants // <--- IMPORTA WidgetConstants
-import com.example.calendario.Festivo         // <--- IMPORTA Festivo
-import com.example.calendario.FestivoDto      // <--- IMPORTA FestivoDto
-// No necesitas importar R si está en el mismo paquete base de la app (com.example.calendario.R)
-// import com.example.calendario.R
+import com.example.calendario.WidgetConstants
+import com.example.calendario.Festivo
+import com.example.calendario.FestivoDto
+// import com.example.calendario.R // R se resuelve automáticamente
 
 
 class CalendarWidgetFactory(
@@ -32,8 +30,13 @@ class CalendarWidgetFactory(
 ) : RemoteViewsService.RemoteViewsFactory {
 
     private var eventsList: List<Festivo> = emptyList()
-    private var eventCountToShow: Int = WidgetConstants.DEFAULT_EVENT_COUNT // Ahora usa el WidgetConstants importado
+    private var eventCountToShow: Int = WidgetConstants.DEFAULT_EVENT_COUNT
     private var useLargeFontForFactory: Boolean = false
+
+    // --- ★★★ VARIABLES MIEMBRO PARA COLORES CARGADOS/POR DEFECTO ★★★ ---
+    private var widgetEventColor: Int = WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
+    private var widgetTodayEventColor: Int = WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
+    // --- FIN DE VARIABLES MIEMBRO ---
 
     private val appWidgetId: Int = intent.getIntExtra(
         AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -42,26 +45,37 @@ class CalendarWidgetFactory(
 
     override fun onCreate() {
         Log.d("WidgetFactory", "onCreate - Widget ID: $appWidgetId. Cargando ajustes iniciales y eventos.")
-        loadWidgetSettings()
+        loadWidgetSettings() // Esto ahora cargará los colores también
         loadCalendarEvents()
     }
 
     override fun onDataSetChanged() {
         Log.d("WidgetFactory", "onDataSetChanged - Widget ID: $appWidgetId. Recargando ajustes y eventos.")
-        loadWidgetSettings()
+        loadWidgetSettings() // Esto ahora cargará los colores también
         loadCalendarEvents()
         Log.d("WidgetFactory", "Eventos cargados en onDataSetChanged: ${eventsList.size}, mostrando hasta: $eventCountToShow")
     }
 
     private fun loadWidgetSettings() {
         val prefs: SharedPreferences = context.getSharedPreferences(
-            WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, // Usa el importado
+            WidgetConstants.GLOBAL_WIDGET_PREFS_NAME,
             Context.MODE_PRIVATE
         )
-        eventCountToShow = prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) // Usa el importado
-        useLargeFontForFactory = prefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) // Usa el importado
+        eventCountToShow = prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        useLargeFontForFactory = prefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false)
 
-        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, LetraGrande=$useLargeFontForFactory")
+        // --- ★★★ LEER COLORES DE PREFERENCIAS ★★★ ---
+        widgetEventColor = prefs.getInt(
+            WidgetConstants.KEY_WIDGET_EVENT_COLOR,
+            WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB // Fallback a constante
+        )
+        widgetTodayEventColor = prefs.getInt(
+            WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR,
+            WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB // Fallback a constante
+        )
+        // --- FIN DE LEER COLORES ---
+
+        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, LetraGrande=$useLargeFontForFactory, ColorEvento=0x${Integer.toHexString(widgetEventColor)}, ColorHoy=0x${Integer.toHexString(widgetTodayEventColor)}")
     }
 
     override fun onDestroy() {
@@ -71,18 +85,18 @@ class CalendarWidgetFactory(
 
     override fun getCount(): Int {
         val count = eventsList.take(eventCountToShow).size
-        Log.d("WidgetFactory", "getCount: $count (Total eventos procesados: ${eventsList.size}, Límite: $eventCountToShow)")
+        // Log.d("WidgetFactory", "getCount: $count (Total eventos procesados: ${eventsList.size}, Límite: $eventCountToShow)") // Puede ser muy verboso
         return count
     }
 
     override fun getViewAt(position: Int): RemoteViews? {
         if (position < 0 || position >= eventsList.take(eventCountToShow).size) {
-            Log.w("WidgetFactory", "getViewAt: Posición inválida $position. Mostrando ${eventsList.take(eventCountToShow).size} de ${eventsList.size} eventos.")
+            Log.w("WidgetFactory", "getViewAt: Posición inválida $position.")
             return null
         }
 
-        val actualEvent = eventsList.take(eventCountToShow)[position] // Usa Festivo importado
-        Log.d("WidgetFactory", "getViewAt($position): Evento - ${actualEvent.description}, Fecha: ${actualEvent.date}")
+        val actualEvent = eventsList.take(eventCountToShow)[position]
+        // Log.d("WidgetFactory", "getViewAt($position): Evento - ${actualEvent.description}, Fecha: ${actualEvent.date}") // Puede ser verboso
 
         val layoutId = if (useLargeFontForFactory) {
             R.layout.widget_list_item_large
@@ -93,14 +107,13 @@ class CalendarWidgetFactory(
 
         val eventDate: LocalDate = actualEvent.date
         val dayOfWeekShortOriginal = eventDate.dayOfWeek.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault())
-        val dayOfWeekFormatted: String
-        if (dayOfWeekShortOriginal.length >= 2) {
-            dayOfWeekFormatted = dayOfWeekShortOriginal.substring(0, 1).uppercase(Locale.getDefault()) +
+        val dayOfWeekFormatted: String = if (dayOfWeekShortOriginal.length >= 2) {
+            dayOfWeekShortOriginal.substring(0, 1).uppercase(Locale.getDefault()) +
                     dayOfWeekShortOriginal.substring(1, 2).lowercase(Locale.getDefault())
         } else if (dayOfWeekShortOriginal.isNotEmpty()) {
-            dayOfWeekFormatted = dayOfWeekShortOriginal.uppercase(Locale.getDefault())
+            dayOfWeekShortOriginal.uppercase(Locale.getDefault())
         } else {
-            dayOfWeekFormatted = ""
+            ""
         }
         views.setTextViewText(R.id.widget_item_day_of_week, dayOfWeekFormatted)
 
@@ -118,74 +131,91 @@ class CalendarWidgetFactory(
 
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
-        val defaultTextColor = Color.parseColor("#A9A9A9")
-        val todayHighlightColor = Color.parseColor("#FFC107")
-        val currentTextColor = if (isTodayEvent) todayHighlightColor else defaultTextColor
+
+        // --- ★★★ USAR COLORES CARGADOS/POR DEFECTO DE LAS VARIABLES MIEMBRO ★★★ ---
+        val currentTextColor = if (isTodayEvent) widgetTodayEventColor else widgetEventColor
+        // --- FIN DE USAR COLORES CARGADOS ---
+
         views.setTextColor(R.id.widget_item_day_of_week, currentTextColor)
         views.setTextColor(R.id.widget_item_date_formatted, currentTextColor)
         views.setTextColor(R.id.widget_item_description, currentTextColor)
 
-        val fillInIntent = Intent()
+        // Configurar el intent de relleno para clics en elementos de la lista
+        val fillInIntent = Intent().apply {
+            // Puedes añadir extras aquí si quieres pasar datos específicos al PendingIntent de la plantilla en CalendarAppWidgetProvider
+            // Por ejemplo, para abrir la app en una fecha específica o mostrar detalles del evento.
+            // putExtra("EVENT_ID_OR_DATE", actualEvent.date.toString()) // Ejemplo
+        }
         views.setOnClickFillInIntent(R.id.widget_list_item_root, fillInIntent)
 
         return views
     }
 
     override fun getLoadingView(): RemoteViews? {
+        // Puedes retornar un RemoteViews aquí si quieres una vista de carga personalizada mientras se cargan los datos.
+        // Por ahora, null está bien.
         return null
     }
 
     override fun getViewTypeCount(): Int {
-        return 2
+        return 2 // Porque usas widget_list_item_large y widget_list_item_normal
     }
 
     override fun getItemId(position: Int): Long {
         return if (position < eventsList.take(eventCountToShow).size && position >= 0) {
             val event = eventsList.take(eventCountToShow)[position]
-            val uniqueString = "${event.date}-${event.startTime}-${event.description}-${event.calendarId}-${event.isAllDay}"
-            uniqueString.hashCode().toLong()
+            // Crear un ID más robusto si es posible. El hashCode puede tener colisiones,
+            // pero para una lista pequeña y con estos campos suele ser suficiente.
+            // Considerar una combinación de `event.date.toEpochDay()` y otros identificadores si es necesario.
+            "${event.date}-${event.startTime}-${event.description}-${event.calendarId}-${event.isAllDay}".hashCode().toLong()
         } else {
-            System.currentTimeMillis() + position.toLong()
+            // Fallback para posiciones inválidas, aunque idealmente no debería llegar aquí si getCount() es correcto.
+            System.currentTimeMillis() + position.toLong() // No es ideal, pero es un fallback
         }
     }
 
     override fun hasStableIds(): Boolean {
+        // Devuelve true porque getItemId devuelve IDs únicos y consistentes para los mismos elementos.
         return true
     }
 
     private fun loadCalendarEvents() {
-        val allEventsByDateMap = loadEventsFromPrefs(context) // Devuelve Map<LocalDate, List<Festivo>>
+        val allEventsByDateMap = loadEventsFromPrefsFromFactory(context) // Cambiado para claridad, misma lógica
         val today = LocalDate.now()
-        val upcomingEvents = mutableListOf<Festivo>() // Lista de Festivo
+        val upcomingEvents = mutableListOf<Festivo>()
 
         allEventsByDateMap.keys.sorted()
-            .filter { date -> !date.isBefore(today) }
+            .filter { date -> !date.isBefore(today) } // Solo fechas de hoy en adelante
             .forEach { date ->
                 val eventsOnDate = allEventsByDateMap[date].orEmpty().sortedWith(
-                    compareBy<Festivo> { it.isAllDay }.reversed()
-                        .thenBy(nullsLast()) { it.startTime }
+                    compareBy<Festivo> { it.isAllDay }.reversed() // Eventos de todo el día primero
+                        .thenBy(nullsLast()) { it.startTime } // Luego por hora de inicio
                 )
                 for (event in eventsOnDate) {
-                    val isTodayEvent = date.isEqual(today)
+                    val isEventToday = date.isEqual(today)
                     val isTimedEvent = !event.isAllDay && event.startTime != null
-                    if (isTodayEvent) {
+
+                    if (isEventToday) {
+                        // Para hoy: eventos de todo el día, o eventos con hora que no hayan pasado (o que empiecen "ahora mismo")
                         if (event.isAllDay || (isTimedEvent && event.startTime!!.isAfter(LocalTime.now().minusMinutes(1)))) {
                             upcomingEvents.add(event)
                         } else if (isTimedEvent && !event.startTime!!.isAfter(LocalTime.now())) {
-                            Log.d("WidgetFactory", "Evento de hoy omitido (ya pasó): ${event.description} a las ${event.startTime}")
-                        } else if (!isTimedEvent && !event.isAllDay) {
-                            upcomingEvents.add(event)
+                            // Log.d("WidgetFactory", "Evento de hoy omitido (ya pasó): ${event.description} a las ${event.startTime}")
+                        } else if (!isTimedEvent && !event.isAllDay) { // Eventos sin hora asignada, pero no de todo el día (¿casos raros?)
+                            upcomingEvents.add(event) // Se añaden si son de hoy y no tienen hora
                         }
-                    } else {
+                    } else { // Eventos de días futuros
                         upcomingEvents.add(event)
                     }
                 }
             }
-        eventsList = upcomingEvents
+        eventsList = upcomingEvents // Actualiza la lista de eventos del widget
         Log.d("WidgetFactory", "Eventos futuros procesados para el widget: ${eventsList.size}. Mostrando hasta: $eventCountToShow")
     }
 
-    private fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> { // Devuelve Festivo
+    // Renombrado para evitar confusión con la función global, pero es la misma lógica.
+    // Podrías mover esta lógica a CalendarDataUtils.kt si no está ya allí y es compartida.
+    private fun loadEventsFromPrefsFromFactory(context: Context): Map<LocalDate, List<Festivo>> {
         val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
         val json = prefs.getString("events", null)
         if (json == null) {
@@ -193,7 +223,7 @@ class CalendarWidgetFactory(
             return emptyMap()
         }
         val gson = Gson()
-        val type = object : TypeToken<Map<String, List<FestivoDto>>>() {}.type // Deserializa FestivoDto
+        val type = object : TypeToken<Map<String, List<FestivoDto>>>() {}.type
         val mapFromString: Map<String, List<FestivoDto>> = try {
             gson.fromJson(json, type)
         } catch (e: Exception) {
@@ -206,12 +236,12 @@ class CalendarWidgetFactory(
                 Log.e("WidgetFactory", "loadEventsFromPrefs: Error parseando fecha '$dateStr'", e); null
             }
             if (date != null) {
-                date to dtoList.map { dto -> // Mapea FestivoDto a Festivo
+                date to dtoList.map { dto ->
                     Festivo(
                         date = date,
                         description = dto.desc,
                         calendarId = dto.id,
-                        isFromHolidaySource = false,
+                        isFromHolidaySource = false, // Deberías tener una forma de determinar esto si es relevante
                         startTime = dto.startTimeStr?.let {
                             try { LocalTime.parse(it) } catch (e: Exception) {
                                 Log.e("WidgetFactory", "loadEventsFromPrefs: Error parseando LocalTime '$it' para fecha $dateStr", e); null
@@ -222,7 +252,7 @@ class CalendarWidgetFactory(
                 }
             } else { null }
         }.toMap().also {
-            Log.d("WidgetFactory", "loadEventsFromPrefs: Eventos cargados, ${it.size} días con eventos.")
+            // Log.d("WidgetFactory", "loadEventsFromPrefs: Eventos cargados, ${it.size} días con eventos.") // Puede ser verboso
         }
     }
 }
