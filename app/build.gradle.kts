@@ -74,4 +74,9 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0") // O verifica la última versión estable en developer.android.com
+    implementation(platform("androidx.compose:compose-bom:2024.06.00")) // O la versión de BOM que estés usando
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-core") // Para iconos básicos
+    implementation("androidx.compose.material:material-icons-extended") // ¡PARA Brightness4 y Brightness7!
+
 }
