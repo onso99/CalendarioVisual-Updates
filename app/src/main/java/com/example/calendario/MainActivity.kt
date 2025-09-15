@@ -593,7 +593,7 @@ fun CalendarioScreen(
                     onDismissRequest = { showAboutDialog = false },
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    text = { Column { Text("Calendario Visual V1.32", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                    text = { Column { Text("Calendario Visual V1.32b", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                     confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
             }
@@ -859,34 +859,30 @@ fun MonthlyCalendar(
 
     val colorBordeDiaActual = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder else AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder
 
+    // Cabecera de días de la semana (sin cambios)
     daysOfWeek.forEach { day ->
         cells.add {
             Box(
-                Modifier
-                    .fillMaxSize()
+                Modifier.fillMaxSize()
                     .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground else AppThemeSetup.LightColors.monthlyCalendarHeaderBackground)
-                    .border(
-                        1.dp,
-                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder
-                    ),
+                    .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder),
                 Alignment.Center
             ) {
                 Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText)
             }
         }
     }
+
+    // Celdas vacías al principio del mes (sin cambios)
     repeat(firstDayOfWeek) {
         cells.add {
-            Box(Modifier
-                .fillMaxSize()
+            Box(Modifier.fillMaxSize()
                 .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                .border(
-                    1.dp,
-                    if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
-                ))
+                .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder))
         }
     }
 
+    // Días del mes
     (1..daysInMonth).forEach { dayNum ->
         val thisDate = currentMonth.atDay(dayNum)
         val isToday = thisDate == today
@@ -905,73 +901,87 @@ fun MonthlyCalendar(
         val currentDayCellBorderColor = if (isToday) colorBordeDiaActual else (if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder)
 
         cells.add {
-            Box(
+            Box( // Contenedor principal de la celda del día
                 Modifier
                     .fillMaxSize()
                     .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                    .border(
-                        if (isToday) 2.dp else 1.dp,
-                        currentDayCellBorderColor,
-                        RoundedCornerShape(4.dp)
-                    )
-                    .clickable(enabled = dayEventsConAlgunaInfo) {
-                        onDayClick(
-                            thisDate,
-                            dayEvents.filter {
-                                it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }
-                                    .isNotBlank()
-                            })
-                    }
+                    .border(if (isToday) 2.dp else 1.dp, currentDayCellBorderColor, RoundedCornerShape(4.dp))
+                    .clickable(enabled = dayEventsConAlgunaInfo) { onDayClick(thisDate, dayEvents.filter { it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }.isNotBlank() }) }
             ) {
-                Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                    Text("$dayNum", fontWeight = fontWeightNum, color = colorNum, fontSize = 22.sp)
-                    if (hasOtherEventsPoint) {
-                        Spacer(Modifier.height(2.dp))
-                        Box(Modifier
+                // --- NÚMERO CENTRADO EN LA CELDA ---
+                Text(
+                    text = "$dayNum",
+                    fontWeight = fontWeightNum,
+                    color = colorNum,
+                    fontSize = 22.sp,
+                    modifier = Modifier.align(Alignment.Center) // ESTO CENTRA EL NÚMERO
+                )
+
+                // --- PUNTO DEBAJO DEL ÁREA DEL NÚMERO, PERO INDEPENDIENTE DE SU CENTRADO ---
+                if (hasOtherEventsPoint) {
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomCenter) // Alinea el punto al centro inferior del Box padre
+                            .padding(bottom = 6.dp)      // Sube el punto desde el borde inferior. Ajusta este valor.
+                            // Si quieres un control más fino que padding, puedes usar .offset(y = -X.dp)
+                            // .offset(y = (-6).dp) // Alternativa a padding(bottom)
                             .size(6.dp)
                             .background(
-                                if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEventIndicator else AppThemeSetup.LightColors.monthlyCalendarEventIndicator,
-                                CircleShape
-                            ))
-                    } else {
-                        Spacer(Modifier.height(8.dp))
+                                color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEventIndicator else AppThemeSetup.LightColors.monthlyCalendarEventIndicator,
+                                shape = CircleShape
+                            )
+                    )
+                }
+            }
+        }
+    }
+
+    // Celdas vacías al final del mes (sin cambios)
+    repeat((7 - cells.size % 7) % 7) {
+        cells.add {
+            Box(Modifier.fillMaxSize()
+                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
+                .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder))
+        }
+    }
+
+    // Contenedor de la cuadrícula (sin cambios)
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground else AppThemeSetup.LightColors.monthlyCalendarGridBackground, RoundedCornerShape(8.dp))
+            .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder, RoundedCornerShape(8.dp))
+            .padding(4.dp)
+    ) {
+        Column {
+            cells.chunked(7).forEach { weekCells ->
+                Row(Modifier.fillMaxWidth()) {
+                    weekCells.forEach { cellComposable ->
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .padding(1.dp),
+                            Alignment.Center // Este Center es para el contenido de cellComposable DENTRO de este Box
+                        ) {
+                            cellComposable() // cellComposable es el Box de la celda del día
+                        }
                     }
                 }
             }
         }
     }
-    repeat((7 - cells.size % 7) % 7) {
-        cells.add {
-            Box(Modifier
-                .fillMaxSize()
-                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                .border(
-                    1.dp,
-                    if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
-                ))
-        }
-    }
-
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .background(
-                if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground else AppThemeSetup.LightColors.monthlyCalendarGridBackground,
-                RoundedCornerShape(8.dp)
-            )
-            .border(
-                1.dp,
-                if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder,
-                RoundedCornerShape(8.dp)
-            )
-            .padding(4.dp)
-    ) {
-        Column { cells.chunked(7).forEach { weekCells -> Row(Modifier.fillMaxWidth()) { weekCells.forEach { cell -> Box(Modifier
-            .weight(1f)
-            .aspectRatio(1f)
-            .padding(1.dp), Alignment.Center) { cell() } } } } }
-    }
 }
+
+
+
+
+
+
+
+
+
+
 
 @Composable
 fun YearlyCalendar(
