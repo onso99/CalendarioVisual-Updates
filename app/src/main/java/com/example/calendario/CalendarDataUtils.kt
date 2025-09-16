@@ -1,40 +1,46 @@
 package com.example.calendario
 
+// Android SDK & AndroidX
 import android.content.ContentUris
-import androidx.core.content.edit
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import android.content.Context
+import android.content.pm.PackageManager
+import android.database.Cursor // Aunque .use lo maneja, el tipo explícito puede ser útil
+import android.provider.CalendarContract
+import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.core.content.edit // Para SharedPreferences
+import androidx.core.database.getStringOrNull // Para leer del cursor de forma segura
+
+// Kotlin Coroutines
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.time.Duration
+import kotlinx.coroutines.withContext // Si mueves loadAvailableCalendars aquí
+
+// Java Time API
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.YearMonth // ★ AÑADIDO PARA processEventsForDisplay ★
+import java.time.YearMonth // Para processEventsForDisplay
+
+// Kotlin Standard Library
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+// import java.time.Duration // No usado en la última versión de readFestivosFromCalendarsSuspend
 
-import com.example.calendario.hasVisibleEvents
+// Gson para SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-// Imports para tus clases de datos (desde DataModels.kt)
-
+// Tus clases de datos y otras utilidades del proyecto
+import com.example.calendario.CalendarInfo
 import com.example.calendario.Festivo
 import com.example.calendario.FestivoDto
+import com.example.calendario.hasVisibleEvents // Asumo que esta es una función tuya
 
-import com.example.calendario.hasVisibleEvents // <-- IMPORTANTE: Importa tu función de CalendarDataCheck.kt
-// import com.example.calendario.CalendarInfo // Asegúrate de que CalendarInfo esté accesible/importada
-
-// Asegúrate de tener estos imports al principio de tu archivo MainActivity.kt
-import android.content.Context
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.provider.CalendarContract
-import android.util.Log
-import androidx.core.content.ContextCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import com.example.calendario.hasVisibleEvents // De CalendarDataCheck.kt
-import com.example.calendario.CalendarInfo // De DataModels.kt
+// Si tienes java.util.Locale en alguna otra parte, se quedaría, si no, no es necesario
+// para la última versión de readFestivosFromCalendarsSuspend que usa .lowercase()
+// import java.util.Locale
 
 // --- FUNCIONES DE PERSISTENCIA (SIN CAMBIOS) ---
 
@@ -82,12 +88,14 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
         if (date != null) {
             date to dtoList.map { dto ->
                 Festivo(
-                    date = date,
+                    id = -1L, // ID de evento no disponible desde SharedPreferences
+                    title = dto.desc.takeIf { it.isNotBlank() }?.take(40)?.trim() ?: "(Evento guardado)", // Placeholder para el título
                     description = dto.desc,
+                    date = date,
+                    startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("CalendarDataUtils", "Error parseando LocalTime en load: '$it'", e); null } },
+                    isAllDay = dto.isAllDay,
                     calendarId = dto.id,
-                    isFromHolidaySource = false, // Este valor se determina al leer del provider, no al cargar de prefs
-                    startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("CalendarDataUtils", "Error parseando LocalTime: '$it'", e); null } },
-                    isAllDay = dto.isAllDay
+                    isFromHolidaySource = false
                 )
             }
         } else { null }
@@ -228,7 +236,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 suspend fun readFestivosFromCalendarsSuspend(
     context: Context,
     selectedCalendarIds: Set<Long>,
-    availableCalendars: List<CalendarInfo> // Mantenemos este parámetro por si lo usas para algo más que el ID de festivos
+    availableCalendars: List<CalendarInfo> // Necesitamos esta lista para obtener displayName
 ): Map<LocalDate, List<Festivo>> = suspendCancellableCoroutine { continuation ->
     if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
         Log.w("CalendarDataUtils", "Permiso READ_CALENDAR no concedido en readFestivosFromCalendarsSuspend.")
@@ -241,19 +249,17 @@ suspend fun readFestivosFromCalendarsSuspend(
         return@suspendCancellableCoroutine
     }
 
-    val specificHolidaySourceCalendarId = 2L // Considera hacer esto configurable si es necesario
-    val holidayCalendarIds = if (selectedCalendarIds.contains(specificHolidaySourceCalendarId)) {
-        setOf(specificHolidaySourceCalendarId)
-    } else {
-        emptySet<Long>()
-    }
-
     val resolver = context.contentResolver
     val map = mutableMapOf<LocalDate, MutableList<Festivo>>()
-    val now = Instant.now()
-    val daysInTwoYears = 730L // Rango de eventos a leer
-    val startRangeMillis = now.minus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
-    val endRangeMillis = now.plus(Duration.ofDays(daysInTwoYears)).toEpochMilli()
+
+    // Define un rango de fechas razonable para la consulta de instancias
+    // Por ejemplo, 1 año hacia atrás y 2 años hacia adelante desde hoy.
+    val today = LocalDate.now()
+    val startRangeDate = today.minusYears(1).withDayOfYear(1) // Inicio del año pasado
+    val endRangeDate = today.plusYears(2).withDayOfYear(today.plusYears(2).lengthOfYear()) // Fin de dentro de dos años
+
+    val startRangeMillis = startRangeDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    val endRangeMillis = endRangeDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli() // Exclusivo
 
     val builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
     ContentUris.appendId(builder, startRangeMillis)
@@ -261,67 +267,117 @@ suspend fun readFestivosFromCalendarsSuspend(
     val instancesUri = builder.build()
 
     val projection = arrayOf(
-        CalendarContract.Instances.CALENDAR_ID,
-        CalendarContract.Instances.BEGIN,
-        CalendarContract.Instances.END,
+        CalendarContract.Instances.EVENT_ID,       // ID original del evento
+        CalendarContract.Instances.CALENDAR_ID,    // ID del calendario
+        CalendarContract.Instances.BEGIN,          // Inicio de la instancia (UTC)
+        CalendarContract.Instances.END,            // Fin de la instancia (UTC)
         CalendarContract.Instances.TITLE,
         CalendarContract.Instances.ALL_DAY
+        // Nota: CalendarContract.Instances no tiene un campo DESCRIPTION directo.
+        // Si necesitas la descripción original del evento, tendrías que hacer una consulta
+        // separada a CalendarContract.Events usando EVENT_ID, o considerar si el título es suficiente.
     )
     val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
     try {
         val cursor = resolver.query(instancesUri, projection, selection, null, "${CalendarContract.Instances.BEGIN} ASC")
         cursor?.use { c ->
+            val eventOriginalIdColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
             val calIdColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
             val beginColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
-            val endColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.END)
+            // val endColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.END) // No lo usamos directamente para construir Festivo aquí
             val titleColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
             val allDayColumn = c.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
 
+            Log.d("ReadFestivos", "Procesando ${c.count} instancias de eventos del provider.")
+
             while (c.moveToNext()) {
-                if (!continuation.isActive) break
+                if (!continuation.isActive) break // Corutina cancelada
+
+                val eventOriginalId = c.getLong(eventOriginalIdColumn)
                 val eventCalId = c.getLong(calIdColumn)
                 val beginMillis = c.getLong(beginColumn)
-                val title = c.getString(titleColumn)?.trim() ?: "(Sin título)"
+
+                // Título del evento
+                val eventTitleFromProvider = c.getStringOrNull(titleColumn)?.trim()
+                val finalEventTitle = if (eventTitleFromProvider.isNullOrBlank()) "(Sin título)" else eventTitleFromProvider
+
                 val isAllDayEvent = c.getInt(allDayColumn) == 1
-                val systemZoneId = ZoneId.systemDefault()
-                val beginInstant = Instant.ofEpochMilli(beginMillis)
-                val beginDateTimeAtSystemZone = beginInstant.atZone(systemZoneId)
-                val isFromHolidaySource = holidayCalendarIds.contains(eventCalId)
-                val actualStartTime = if (isAllDayEvent) null else beginDateTimeAtSystemZone.toLocalTime()
-                val endInstant = Instant.ofEpochMilli(c.getLong(endColumn))
-                var currentDateIterator = beginDateTimeAtSystemZone.toLocalDate()
-                val loopEndDate = if (isAllDayEvent && Duration.between(beginInstant, endInstant).toDays() >= 1L) {
-                    endInstant.atZone(systemZoneId).toLocalDate().minusDays(1L) // Para eventos de varios días, no incluir el día final si es a las 00:00
-                } else {
-                    beginDateTimeAtSystemZone.toLocalDate()
+
+                // Obtener información del calendario (nombre y color)
+                val calendarInfo = availableCalendars.find { it.id == eventCalId }
+                val calendarDisplayName = calendarInfo?.displayName ?: "DESCONOCIDO_CAL_ID_$eventCalId"
+                // No estamos usando el color del evento individual, así que no necesitamos calendarColor aquí
+
+                // --- LÓGICA DE isFromHolidaySource MEJORADA ---
+                var isEventFromHolidaySource = false
+                if (calendarDisplayName != "DESCONOCIDO_CAL_ID_$eventCalId") {
+                    val lowerCaseDisplayName = calendarDisplayName.lowercase() // Usa root locale por defecto
+                    val holidayKeywords = listOf(
+                        "festivo", "festivos",
+                        "holiday", "holidays",
+                        "fiesta", "fiestas",
+                        "feriado", "feriados",
+                        "national", "nacional"
+                        // Puedes añadir más palabras clave si es necesario
+                    )
+                    if (holidayKeywords.any { keyword -> lowerCaseDisplayName.contains(keyword) }) {
+                        isEventFromHolidaySource = true
+                    }
                 }
 
-                while (!currentDateIterator.isAfter(loopEndDate)) {
-                    if (!continuation.isActive) break
-                    val list = map.getOrPut(currentDateIterator) { mutableListOf() }
-                    list.add(
-                        Festivo(
-                            date = currentDateIterator,
-                            description = title,
-                            calendarId = eventCalId,
-                            isFromHolidaySource = isFromHolidaySource,
-                            startTime = actualStartTime,
-                            isAllDay = isAllDayEvent
-                        )
-                    )
-                    currentDateIterator = currentDateIterator.plusDays(1L)
+                // Log de depuración para la lógica de festivos
+                if (isEventFromHolidaySource || calendarDisplayName.lowercase().contains("festivo")) {
+                    Log.i("FestivoLogic", "Evento: '$finalEventTitle' (ID: $eventOriginalId) | Cal: '$calendarDisplayName' (ID: $eventCalId) | EsFuente: $isEventFromHolidaySource")
                 }
-                if (!continuation.isActive) break
-            }
-        }
+                // --- FIN LÓGICA isFromHolidaySource ---
+
+                // Conversión de tiempo: Instances.BEGIN está en UTC. Convertimos a la zona del sistema para LocalDate/LocalTime.
+                // Para una precisión absoluta, si el evento tiene su propia EVENT_TIMEZONE, deberías usarla.
+                // CalendarContract.Instances no expone directamente EVENT_TIMEZONE. Tendrías que obtenerla de CalendarContract.Events.
+                // Por simplicidad aquí, convertiremos UTC a la zona por defecto del sistema.
+                val beginInstant = Instant.ofEpochMilli(beginMillis)
+                val beginDateTimeInSystemZone = beginInstant.atZone(ZoneId.systemDefault())
+
+                val eventDate = beginDateTimeInSystemZone.toLocalDate()
+                val actualStartTime = if (isAllDayEvent) null else beginDateTimeInSystemZone.toLocalTime()
+
+                // Descripción: Como Instances no tiene descripción, usamos el título.
+                val eventDescriptionToUse = finalEventTitle
+
+                // Crear el objeto Festivo
+                val festivoEntry = Festivo(
+                    id = eventOriginalId,
+                    title = finalEventTitle,
+                    description = eventDescriptionToUse, // Usando título como descripción
+                    date = eventDate,
+                    startTime = actualStartTime,
+                    isAllDay = isAllDayEvent,
+                    // color = ..., // No incluimos color aquí según tu aclaración
+                    calendarId = eventCalId,
+                    isFromHolidaySource = isEventFromHolidaySource
+                )
+
+                // Añadir a la lista del mapa
+                // CalendarContract.Instances ya expande eventos de varios días y recurrentes,
+                // así que cada fila del cursor debería corresponder a una aparición en un día específico.
+                val listForDate = map.getOrPut(eventDate) { mutableListOf() }
+                listForDate.add(festivoEntry)
+
+            } // Fin while (cursor.moveToNext())
+        } ?: Log.w("ReadFestivos", "El cursor de instancias de eventos fue nulo.")
+
         if (continuation.isActive) {
+            Log.d("ReadFestivos", "Lectura de instancias completada. Total días con eventos en mapa: ${map.size}, Total Festivos individuales: ${map.values.sumOf { it.size }}")
             continuation.resume(map)
         }
+
+    } catch (e: SecurityException) {
+        Log.e("ReadFestivosError", "Excepción de seguridad al leer instancias: ${e.message}", e)
+        if (continuation.isActive) continuation.resumeWithException(e) // O resume(emptyMap())
     } catch (e: Exception) {
-        if (continuation.isActive) {
-            Log.e("CalendarDataUtils", "Error en readFestivosFromCalendarsSuspend", e)
-            continuation.resumeWithException(e)
-        }
+        Log.e("ReadFestivosError", "Error general al leer instancias de eventos: ${e.message}", e)
+        if (continuation.isActive) continuation.resumeWithException(e) // O resume(emptyMap())
     }
 }
+

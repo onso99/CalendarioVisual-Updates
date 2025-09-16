@@ -238,13 +238,26 @@ class CalendarWidgetFactory(
             if (date != null) {
                 date to dtoList.map { dto ->
                     Festivo(
-                        date = date,
+                        id = -1L, // ID de evento no disponible desde SharedPreferences
+                        title = dto.desc.takeIf { it.isNotBlank() }?.take(40)?.trim() ?: "(Evento widget)", // Placeholder para el título
                         description = dto.desc,
-                        calendarId = dto.id,
-                        isFromHolidaySource = false, // Deberías tener una forma de determinar esto si es relevante
+                        date = date,
+                        calendarId = dto.id, // Recordar que dto.id en FestivoDto es el calendarId
+                        isFromHolidaySource = false, // Este valor no se persiste/carga para el widget de forma simple.
+                        // El widget se basa en los datos ya procesados por la app principal.
+                        // O, si el widget tuviera que determinar esto independientemente,
+                        // necesitaría acceso a `availableCalendars` y la lógica de keywords aquí mismo.
+                        // Por simplicidad en el widget, se asume que la app principal actualiza
+                        // las SharedPreferences con datos donde `isFromHolidaySource` ya fue
+                        // determinado por `readFestivosFromCalendarsSuspend`, aunque `FestivoDto`
+                        // no lo guarde.
+                        // ¡Esto es un punto importante! La `isFromHolidaySource` que usa
+                        // el widget actualmente proviene de `FestivoDto` (que no tiene ese campo)
+                        // y se establece a `false`. Si el widget necesita este flag,
+                        // la persistencia debe cambiar.
                         startTime = dto.startTimeStr?.let {
                             try { LocalTime.parse(it) } catch (e: Exception) {
-                                Log.e("WidgetFactory", "loadEventsFromPrefs: Error parseando LocalTime '$it' para fecha $dateStr", e); null
+                                Log.e("WidgetFactory", "loadEventsFromPrefsFromFactory: Error parseando LocalTime '$it' para fecha $dateStr", e); null
                             }
                         },
                         isAllDay = dto.isAllDay
