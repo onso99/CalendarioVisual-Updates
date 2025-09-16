@@ -1,12 +1,6 @@
 package com.example.calendario
 
 import android.content.ContentUris
-import android.content.Context
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.provider.CalendarContract
-import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -20,10 +14,27 @@ import java.time.YearMonth // ★ AÑADIDO PARA processEventsForDisplay ★
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+import com.example.calendario.hasVisibleEvents
+
 // Imports para tus clases de datos (desde DataModels.kt)
-import com.example.calendario.CalendarInfo
+
 import com.example.calendario.Festivo
 import com.example.calendario.FestivoDto
+
+import com.example.calendario.hasVisibleEvents // <-- IMPORTANTE: Importa tu función de CalendarDataCheck.kt
+// import com.example.calendario.CalendarInfo // Asegúrate de que CalendarInfo esté accesible/importada
+
+// Asegúrate de tener estos imports al principio de tu archivo MainActivity.kt
+import android.content.Context
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.provider.CalendarContract
+import android.util.Log
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.example.calendario.hasVisibleEvents // De CalendarDataCheck.kt
+import com.example.calendario.CalendarInfo // De DataModels.kt
 
 // --- FUNCIONES DE PERSISTENCIA (SIN CAMBIOS) ---
 
@@ -138,54 +149,81 @@ fun processEventsForDisplay(
 }
 
 
-// --- FUNCIONES DE LECTURA DE CALENDARIO (REFACTORIZADAS A SUSPEND) ---
 
-suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> =
-    suspendCancellableCoroutine { continuation ->
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            Log.w("CalendarDataUtils", "Permiso denegado en loadAvailableCalendarsSuspend")
-            if (continuation.isActive) continuation.resume(emptyList())
-            return@suspendCancellableCoroutine
-        }
+suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> {
+    if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        Log.w("CalendarDataUtils", "Permiso denegado en loadAvailableCalendarsSuspend. Devolviendo lista vacía.")
+        return emptyList()
+    }
 
-        val calendarsList = mutableListOf<CalendarInfo>()
+    return withContext(Dispatchers.IO) {
+        val calendarsListWithEvents = mutableListOf<CalendarInfo>()
+        // Ajustamos la proyección para que NO incluya IS_PRIMARY, ya que CalendarInfo no lo tiene
         val projection = arrayOf(
-            CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-            CalendarContract.Calendars.ACCOUNT_NAME, CalendarContract.Calendars.CALENDAR_COLOR,
-            CalendarContract.Calendars.ACCOUNT_TYPE
+            CalendarContract.Calendars._ID,
+            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+            CalendarContract.Calendars.ACCOUNT_NAME,
+            CalendarContract.Calendars.CALENDAR_COLOR,
+            CalendarContract.Calendars.ACCOUNT_TYPE // Lo mantenemos por si lo usabas, aunque no en CalendarInfo
         )
 
         try {
             val cursor: Cursor? = context.contentResolver.query(
-                CalendarContract.Calendars.CONTENT_URI, projection, null, null,
+                CalendarContract.Calendars.CONTENT_URI,
+                projection,
+                null, // selection
+                null, // selectionArgs
                 "${CalendarContract.Calendars.CALENDAR_DISPLAY_NAME} ASC"
             )
 
             cursor?.use {
+                Log.d("LoadCalendars", "Cursor de calendarios del sistema obtenido con ${it.count} entradas.")
                 val idColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
                 val displayNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
                 val accountNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_NAME)
                 val colorColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_COLOR)
+                // val accountTypeColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_TYPE)
 
                 while (it.moveToNext()) {
-                    if (!continuation.isActive) break // Verificar cancelación antes de procesar
                     val id = it.getLong(idColumn)
                     val displayName = it.getString(displayNameColumn) ?: "Calendario sin nombre"
                     val accountName = it.getString(accountNameColumn) ?: "Cuenta desconocida"
-                    val colorInt = try { it.getInt(colorColumn) } catch (_: Exception) { null }
-                    calendarsList.add(CalendarInfo(id, displayName, accountName, colorInt))
+                    val colorInt = try {
+                        if (it.isNull(colorColumn)) null else it.getInt(colorColumn)
+                    } catch (_: Exception) {
+                        null
+                    }
+                    // val accountType = it.getString(accountTypeColumn)
+
+                    if (hasVisibleEvents(context, id)) {
+                        // --- CREACIÓN DE CalendarInfo CORREGIDA ---
+                        // Ahora solo pasamos los parámetros que tu CalendarInfo realmente define.
+                        calendarsListWithEvents.add(
+                            CalendarInfo(
+                                id = id,
+                                displayName = displayName,
+                                accountName = accountName,
+                                color = colorInt // 'color' en CalendarInfo puede ser null
+                            )
+                        )
+                        Log.i("LoadCalendars", "Calendario AÑADIDO (tiene eventos visibles): '$displayName' (ID: $id)")
+                    } else {
+                        Log.i("LoadCalendars", "Calendario IGNORADO (sin eventos visibles o error): '$displayName' (ID: $id)")
+                    }
                 }
-            }
-            if (continuation.isActive) {
-                continuation.resume(calendarsList)
-            }
+            } ?: Log.w("LoadCalendars", "El cursor de calendarios del ContentResolver fue nulo.")
+
+            Log.i("LoadCalendars", "Total de calendarios con eventos visibles que se devolverán: ${calendarsListWithEvents.size}")
+            calendarsListWithEvents
+        } catch (e: SecurityException) {
+            Log.e("LoadCalendars", "Excepción de seguridad al cargar calendarios: ${e.message}", e)
+            emptyList<CalendarInfo>()
         } catch (e: Exception) {
-            if (continuation.isActive) {
-                Log.e("CalendarDataUtils", "Error en loadAvailableCalendarsSuspend", e)
-                continuation.resumeWithException(e)
-            }
+            Log.e("LoadCalendars", "Error general en loadAvailableCalendarsSuspend: ${e.message}", e)
+            emptyList<CalendarInfo>()
         }
     }
+}
 
 suspend fun readFestivosFromCalendarsSuspend(
     context: Context,

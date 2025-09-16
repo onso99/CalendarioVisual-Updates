@@ -48,7 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import android.database.Cursor
 import androidx.lifecycle.lifecycleScope
+import android.provider.CalendarContract
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Year
@@ -57,6 +59,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.roundToInt
+import com.example.calendario.hasVisibleEvents
+import com.example.calendario.hasVisibleEvents // De CalendarDataCheck.kt
+import com.example.calendario.CalendarInfo // De DataModels.kt
+
 
 // --- Definiciones de Colores y Constantes de Tema Directamente en este Archivo ---
 object AppThemeSetup {
@@ -972,16 +978,6 @@ fun MonthlyCalendar(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 @Composable
 fun YearlyCalendar(
