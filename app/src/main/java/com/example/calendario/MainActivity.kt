@@ -121,7 +121,7 @@ object AppThemeSetup {
     }
 
     object DarkColors {
-        val primary = Color(0xFF0D47A1)
+        val primary = Color(0xFF2173ed)
         val onPrimary = Color.White
         val background = Color(0xFF121212)
         val surface = Color(0xFF1E1E1E)
