@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -9,14 +10,27 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.annotation.IdRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,15 +38,45 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.Icons // Import general, bueno tenerlo
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // ESENCIAL para la flecha atrás
+import androidx.compose.material.icons.automirrored.filled.ArrowForward // ESENCIAL para la flecha adelante
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,20 +92,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
-import android.database.Cursor
 import androidx.lifecycle.lifecycleScope
-import android.provider.CalendarContract
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.util.*
+import java.util.Locale
 import kotlin.math.roundToInt
-import com.example.calendario.hasVisibleEvents
-import com.example.calendario.hasVisibleEvents // De CalendarDataCheck.kt
-import com.example.calendario.CalendarInfo // De DataModels.kt
 
 
 // --- Definiciones de Colores y Constantes de Tema Directamente en este Archivo ---
@@ -84,8 +123,6 @@ object AppThemeSetup {
         val screenBackground = background
         val onScreenTextNormal = onBackground
         val onScreenTextSecondary = Color.DarkGray
-        val topAppBarBackground = primary
-        val topAppBarContent = onPrimary
         val dropdownMenuBackground = Color.White
         val navigationButtonBackground = Color(0xFFffbb77)
         val navigationButtonContent = Color.Black
@@ -132,8 +169,6 @@ object AppThemeSetup {
         val screenBackground = background
         val onScreenTextNormal = onBackground
         val onScreenTextSecondary = Color(0xFFA0A0A0)
-        val topAppBarBackground = primary
-        val topAppBarContent = onPrimary
         val dropdownMenuBackground = Color(0xFF2C2C2C)
         val navigationButtonBackground = Color(0xFFB87333)
         val navigationButtonContent = Color.White
@@ -176,7 +211,7 @@ class MainActivity : ComponentActivity() {
     private var availableCalendarsState by mutableStateOf<List<CalendarInfo>>(emptyList())
     private var selectedCalendarIdsState by mutableStateOf<Set<Long>>(emptySet())
     private var hasCalendarPermissionState by mutableStateOf(false)
-
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (resources.configuration.smallestScreenWidthDp < 600) {
@@ -187,7 +222,7 @@ class MainActivity : ComponentActivity() {
         selectedCalendarIdsState = loadSelectedCalendarIds(this)
         hasCalendarPermissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
 
-        val appPrefs = getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val appPrefs = getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, MODE_PRIVATE)
         val systemIsDark = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
         val initialDarkTheme = appPrefs.getBoolean(AppThemeSetup.KEY_DARK_THEME_ENABLED, systemIsDark)
 
@@ -296,20 +331,34 @@ class MainActivity : ComponentActivity() {
 fun notifyCalendarWidgetsConfigurationChangedMainActivity(context: Context) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
     val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-    val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-    if (appWidgetIds.isNotEmpty()) {
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
-        Log.d("MainActivityNotifier", "Notificación enviada para actualizar widgets por CAMBIO DE CONFIGURACIÓN.")
+    val appWidgetIdsArray: IntArray? = appWidgetManager.getAppWidgetIds(componentName)
+
+    @IdRes val remoteViewId: Int = R.id.widget_event_list // Declara explícitamente como @IdRes Int
+
+    if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
+        for (widgetId: Int in appWidgetIdsArray) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId) // Usa la variable
+        }
+        Log.d("MainActivityNotifier", "Notificación enviada para actualizar widgets por CAMBIO DE CONFIGURACIÓN (IdRes explícito).")
+    } else {
+        Log.d("MainActivityNotifier", "No hay widgets que notificar para cambio de configuración.")
     }
 }
 
 fun notifyCalendarWidgetsDataChangedMainActivity(context: Context) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
     val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-    val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-    if (appWidgetIds.isNotEmpty()) {
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
-        Log.d("MainActivityNotifier", "Notificación enviada para actualizar datos de EVENTOS en widgets.")
+    val appWidgetIdsArray: IntArray? = appWidgetManager.getAppWidgetIds(componentName)
+
+    @IdRes val remoteViewId: Int = R.id.widget_event_list // Declara explícitamente como @IdRes Int
+
+    if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
+        for (widgetId: Int in appWidgetIdsArray) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId) // Usa la variable
+        }
+        Log.d("MainActivityNotifier", "Notificación enviada para actualizar datos de EVENTOS en widgets (IdRes explícito).")
+    } else {
+        Log.d("MainActivityNotifier", "No hay widgets que notificar para cambio de datos de eventos.")
     }
 }
 
@@ -409,7 +458,9 @@ fun CalendarioScreen(
     }
 
     LaunchedEffect(hasCalendarPermissionExternal) {
-        if (hasCalendarPermissionExternal) onRefreshRequest()
+        if (hasCalendarPermissionExternal) {
+            onRefreshRequest()
+        }
     }
 
     Scaffold(
@@ -440,16 +491,27 @@ fun CalendarioScreen(
                                 val dropdownTextColor = if (isDarkTheme) AppThemeSetup.DarkColors.onScreenTextNormal else AppThemeSetup.LightColors.onScreenTextNormal
                                 DropdownMenuItem(
                                     text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor ) },
-                                    onClick = { menuExpanded = false; if (hasCalendarPermissionExternal) showSelectCalendarsDialog = true else requestPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR) })
+                                    onClick = {
+                                        menuExpanded = false
+                                        if (hasCalendarPermissionExternal) {
+                                            showSelectCalendarsDialog = true
+                                        } else {
+                                            requestPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
+                                        }
+                                    }
+                                )
                                 DropdownMenuItem(
                                     text = { Text("Widget", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
-                                    onClick = { menuExpanded = false; showWidgetConfigDialog = true })
+                                    onClick = { menuExpanded = false; showWidgetConfigDialog = true }
+                                )
                                 DropdownMenuItem(
                                     text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
-                                    onClick = { menuExpanded = false; showHelpDialog = true })
+                                    onClick = { menuExpanded = false; showHelpDialog = true }
+                                )
                                 DropdownMenuItem(
                                     text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
-                                    onClick = { menuExpanded = false; showAboutDialog = true })
+                                    onClick = { menuExpanded = false; showAboutDialog = true }
+                                )
                             }
                         }
                     },
@@ -475,15 +537,41 @@ fun CalendarioScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FilledIconButton(onClick = { if (viewMode == CalendarViewMode.MONTHLY) currentMonth = currentMonth.minusMonths(1) else currentYear = currentYear.minusYears(1) }, modifier = Modifier.size(44.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)) { Icon(Icons.Filled.ArrowBack, "Anterior") }
+                FilledIconButton(
+                    onClick = { if (viewMode == CalendarViewMode.MONTHLY) currentMonth = currentMonth.minusMonths(1) else currentYear = currentYear.minusYears(1) },
+                    modifier = Modifier.size(44.dp),
+                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack, // <-- CAMBIO AQUÍ
+                        contentDescription = "Anterior"
+                    )
+                }
                 Button(
                     onClick = { if (viewMode == CalendarViewMode.MONTHLY) { currentYear = Year.of(currentMonth.year); viewMode = CalendarViewMode.YEARLY } else { currentMonth = YearMonth.now(); viewMode = CalendarViewMode.MONTHLY } },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     shape = RoundedCornerShape(16.dp), elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                ) { Text(if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }} ${currentMonth.year}" else "${currentYear.value}", fontSize = 20.sp) }
-                FilledIconButton(onClick = { if (viewMode == CalendarViewMode.MONTHLY) currentMonth = currentMonth.plusMonths(1) else currentYear = currentYear.plusYears(1) }, modifier = Modifier.size(44.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)) { Icon(Icons.Filled.ArrowForward, "Siguiente") }
+                ) {
+                    Text(
+                        if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }} ${currentMonth.year}" else "${currentYear.value}",
+                        fontSize = 20.sp
+                    )
+                }
+                FilledIconButton(
+                    onClick = { if (viewMode == CalendarViewMode.MONTHLY) currentMonth = currentMonth.plusMonths(1) else currentYear = currentYear.plusYears(1) },
+                    modifier = Modifier.size(44.dp),
+                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward, // <-- CAMBIO AQUÍ
+                        contentDescription = "Siguiente"
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
+
+            // ... (El resto de la función CalendarioScreen sigue igual) ...
+            // (He omitido el resto para brevedad, ya que los cambios solo afectan a los iconos de las flechas)
 
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -562,7 +650,7 @@ fun CalendarioScreen(
                             }
                         }
                     }
-                } else {
+                } else { // Vista Anual
                     YearlyCalendar(
                         currentYear = currentYear,
                         today = today,
@@ -576,24 +664,27 @@ fun CalendarioScreen(
                 }
             }
 
+            // --- Diálogos ---
             if (showSelectCalendarsDialog) {
                 SelectCalendarsDialog(
+                    initialSelectedIds = selectedCalendarIdsExternal,
+                    availableCalendars = availableCalendarsExternal,
                     isDarkTheme = isDarkTheme,
                     onDismissRequest = { showSelectCalendarsDialog = false }
-                ) { ids ->
+                ) { newlySelectedIds ->
+                    showSelectCalendarsDialog = false
                     scope.launch {
                         try {
-                            val avail = if (availableCalendarsExternal.isNotEmpty()) availableCalendarsExternal else loadAvailableCalendarsSuspend(context)
-                            val fest = readFestivosFromCalendarsSuspend(context, ids, avail)
-                            onCalendarDataUpdated(fest, avail, ids)
+                            val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, availableCalendarsExternal)
+                            onCalendarDataUpdated(updatedFestivosMap, availableCalendarsExternal, newlySelectedIds)
                         } catch (e: Exception) {
-                            Log.e("CalendarioScreen", "Error aplicando selección: ${e.localizedMessage}", e); Toast.makeText(context, "Error.", Toast.LENGTH_SHORT).show()
-                        } finally {
-                            showSelectCalendarsDialog = false
+                            Log.e("CalendarioScreen", "Error aplicando selección de calendarios: ${e.localizedMessage}", e)
+                            Toast.makeText(context, "Error al aplicar selección.", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
+
             if (showAboutDialog) {
                 AlertDialog(
                     onDismissRequest = { showAboutDialog = false },
@@ -630,6 +721,9 @@ fun CalendarioScreen(
         }
     }
 }
+
+
+
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
@@ -791,43 +885,88 @@ fun ColorPaletteDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectCalendarsDialog(isDarkTheme: Boolean, onDismissRequest: () -> Unit, onApplySelection: (selectedIds: Set<Long>) -> Unit) {
-    val context = LocalContext.current
-    var localAvailableCalendars by remember { mutableStateOf<List<CalendarInfo>>(emptyList()) }
-    var currentSelectedIdsInDialog by remember { mutableStateOf(emptySet<Long>()) }
+fun SelectCalendarsDialog(
+    initialSelectedIds: Set<Long>, // <-- PARÁMETRO PARA IDs INICIALES
+    availableCalendars: List<CalendarInfo>, // <-- PARÁMETRO PARA CALENDARIOS DISPONIBLES
+    isDarkTheme: Boolean,
+    onDismissRequest: () -> Unit,
+    onApplySelection: (selectedIds: Set<Long>) -> Unit
+) {
+    // Ya no se necesita el 'context' aquí para cargar los calendarios o los IDs iniciales si se pasan como parámetros.
+    // Podría seguir siendo necesario si haces otras cosas específicas del contexto dentro del diálogo.
+    // val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        try {
-            val calendars = loadAvailableCalendarsSuspend(context)
-            localAvailableCalendars = calendars
-            currentSelectedIdsInDialog = loadSelectedCalendarIds(context).filter { id -> calendars.any { cal -> cal.id == id } }.toSet()
-        } catch (e: Exception) { Log.e("SelectCalendarsDialog", "Error cargando calendarios: ${e.localizedMessage}", e); localAvailableCalendars = emptyList() }
+    // Estado para los calendarios disponibles dentro del diálogo, inicializado desde el parámetro.
+    // Usamos 'remember' con 'availableCalendars' como clave para que se actualice si la lista externa cambia
+    // mientras el diálogo está potencialmente abierto (aunque usualmente los diálogos son de corta duración).
+    var localAvailableCalendars by remember(availableCalendars) { mutableStateOf(availableCalendars) }
+
+    // Estado para los IDs seleccionados actualmente dentro del diálogo.
+    // Se inicializa con 'initialSelectedIds', filtrando aquellos que realmente existen en 'availableCalendars'.
+    var currentSelectedIdsInDialog by remember(initialSelectedIds, availableCalendars) {
+        mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
     }
+
+    // Si 'availableCalendars' o 'initialSelectedIds' pudieran cambiar desde fuera MIENTRAS el diálogo está visible
+    // y necesitas que el diálogo reaccione a esos cambios, este LaunchedEffect ayuda a sincronizar.
+    // Si 'availableCalendars' e 'initialSelectedIds' son estables una vez que el diálogo se muestra,
+    // la inicialización en 'remember' podría ser suficiente.
+    LaunchedEffect(availableCalendars, initialSelectedIds) {
+        localAvailableCalendars = availableCalendars
+        currentSelectedIdsInDialog = initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet()
+    }
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        title = { Text("Seleccionar Calendarios", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = {
+            Text(
+                "Seleccionar Calendarios",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
         text = {
-            if (localAvailableCalendars.isEmpty()) { Text("No se encontraron calendarios.", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            else {
-                LazyColumn(modifier = Modifier
-                    .heightIn(max = 400.dp)
-                    .fillMaxWidth()) {
+            if (localAvailableCalendars.isEmpty()) {
+                Text(
+                    "No se encontraron calendarios disponibles.", // Mensaje más específico
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .heightIn(max = 400.dp) // Limita la altura del diálogo
+                        .fillMaxWidth()
+                ) {
                     items(localAvailableCalendars, key = { it.id }) { calendar ->
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val newSet =
-                                    currentSelectedIdsInDialog.toMutableSet(); if (newSet.contains(
-                                    calendar.id
-                                )
-                            ) newSet.remove(calendar.id) else newSet.add(calendar.id); currentSelectedIdsInDialog =
-                                newSet
-                            }
-                            .padding(vertical = 6.dp, horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val newSet = currentSelectedIdsInDialog.toMutableSet()
+                                    if (newSet.contains(calendar.id)) {
+                                        newSet.remove(calendar.id)
+                                    } else {
+                                        newSet.add(calendar.id)
+                                    }
+                                    currentSelectedIdsInDialog = newSet
+                                }
+                                .padding(vertical = 6.dp, horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Checkbox(
                                 checked = currentSelectedIdsInDialog.contains(calendar.id),
-                                onCheckedChange = { isChecked -> val newSet = currentSelectedIdsInDialog.toMutableSet(); if (isChecked) newSet.add(calendar.id) else newSet.remove(calendar.id); currentSelectedIdsInDialog = newSet },
+                                onCheckedChange = { isChecked ->
+                                    val newSet = currentSelectedIdsInDialog.toMutableSet()
+                                    if (isChecked) {
+                                        newSet.add(calendar.id)
+                                    } else {
+                                        newSet.remove(calendar.id)
+                                    }
+                                    currentSelectedIdsInDialog = newSet
+                                },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = MaterialTheme.colorScheme.primary,
                                     uncheckedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -836,16 +975,37 @@ fun SelectCalendarsDialog(isDarkTheme: Boolean, onDismissRequest: () -> Unit, on
                             )
                             Spacer(Modifier.width(10.dp))
                             Column(Modifier.weight(1f)) {
-                                Text(calendar.displayName, fontWeight = FontWeight.Medium, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text(calendar.accountName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), fontSize = 12.sp)
+                                Text(
+                                    calendar.displayName,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    calendar.accountName,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                    fontSize = 12.sp
+                                )
                             }
                         }
                     }
                 }
             }
         },
-        confirmButton = { Button(onClick = { onApplySelection(currentSelectedIdsInDialog) }, enabled = localAvailableCalendars.isNotEmpty()) { Text("Aplicar", fontSize = 16.sp) } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", fontSize = 16.sp) } }
+        confirmButton = {
+            Button(
+                onClick = { onApplySelection(currentSelectedIdsInDialog) },
+                enabled = localAvailableCalendars.isNotEmpty() // El botón aplicar solo se habilita si hay calendarios
+            ) {
+                Text("Aplicar", fontSize = 16.sp)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancelar", fontSize = 16.sp)
+            }
+        }
     )
 }
 
@@ -869,9 +1029,13 @@ fun MonthlyCalendar(
     daysOfWeek.forEach { day ->
         cells.add {
             Box(
-                Modifier.fillMaxSize()
+                Modifier
+                    .fillMaxSize()
                     .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground else AppThemeSetup.LightColors.monthlyCalendarHeaderBackground)
-                    .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder),
+                    .border(
+                        1.dp,
+                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder
+                    ),
                 Alignment.Center
             ) {
                 Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText)
@@ -882,9 +1046,13 @@ fun MonthlyCalendar(
     // Celdas vacías al principio del mes (sin cambios)
     repeat(firstDayOfWeek) {
         cells.add {
-            Box(Modifier.fillMaxSize()
+            Box(Modifier
+                .fillMaxSize()
                 .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder))
+                .border(
+                    1.dp,
+                    if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
+                ))
         }
     }
 
@@ -911,8 +1079,19 @@ fun MonthlyCalendar(
                 Modifier
                     .fillMaxSize()
                     .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                    .border(if (isToday) 2.dp else 1.dp, currentDayCellBorderColor, RoundedCornerShape(4.dp))
-                    .clickable(enabled = dayEventsConAlgunaInfo) { onDayClick(thisDate, dayEvents.filter { it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }.isNotBlank() }) }
+                    .border(
+                        if (isToday) 2.dp else 1.dp,
+                        currentDayCellBorderColor,
+                        RoundedCornerShape(4.dp)
+                    )
+                    .clickable(enabled = dayEventsConAlgunaInfo) {
+                        onDayClick(
+                            thisDate,
+                            dayEvents.filter {
+                                it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }
+                                    .isNotBlank()
+                            })
+                    }
             ) {
                 // --- NÚMERO CENTRADO EN LA CELDA ---
                 Text(
@@ -945,9 +1124,13 @@ fun MonthlyCalendar(
     // Celdas vacías al final del mes (sin cambios)
     repeat((7 - cells.size % 7) % 7) {
         cells.add {
-            Box(Modifier.fillMaxSize()
+            Box(Modifier
+                .fillMaxSize()
                 .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder))
+                .border(
+                    1.dp,
+                    if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
+                ))
         }
     }
 
@@ -955,8 +1138,15 @@ fun MonthlyCalendar(
     Box(
         Modifier
             .fillMaxWidth()
-            .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground else AppThemeSetup.LightColors.monthlyCalendarGridBackground, RoundedCornerShape(8.dp))
-            .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder, RoundedCornerShape(8.dp))
+            .background(
+                if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground else AppThemeSetup.LightColors.monthlyCalendarGridBackground,
+                RoundedCornerShape(8.dp)
+            )
+            .border(
+                1.dp,
+                if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder,
+                RoundedCornerShape(8.dp)
+            )
             .padding(4.dp)
     ) {
         Column {
