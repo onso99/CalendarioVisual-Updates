@@ -38,9 +38,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons // Import general, bueno tenerlo
-import androidx.compose.material.icons.automirrored.filled.ArrowBack // ESENCIAL para la flecha atrás
-import androidx.compose.material.icons.automirrored.filled.ArrowForward // ESENCIAL para la flecha adelante
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
 import androidx.compose.material.icons.filled.MoreVert
@@ -103,7 +103,6 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 
-// --- Definiciones de Colores y Constantes de Tema Directamente en este Archivo ---
 object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
@@ -203,7 +202,6 @@ object AppThemeSetup {
         val dialogCalendarColorIndicatorBorder = Color(0xFFA0A0A0).copy(alpha = 0.5f)
     }
 }
-// --- FIN DEFINICIONES DE COLORES ---
 
 class MainActivity : ComponentActivity() {
 
@@ -211,6 +209,9 @@ class MainActivity : ComponentActivity() {
     private var availableCalendarsState by mutableStateOf<List<CalendarInfo>>(emptyList())
     private var selectedCalendarIdsState by mutableStateOf<Set<Long>>(emptySet())
     private var hasCalendarPermissionState by mutableStateOf(false)
+    private var initialDarkThemeLoadedState by mutableStateOf(false)
+
+
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,19 +219,31 @@ class MainActivity : ComponentActivity() {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
 
-        eventsByDateState = loadEventsFromPrefs(this)
-        selectedCalendarIdsState = loadSelectedCalendarIds(this)
-        hasCalendarPermissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+        lifecycleScope.launch {
+            val context = this@MainActivity
+            eventsByDateState = loadEventsFromPrefs(context)
+            selectedCalendarIdsState = loadSelectedCalendarIds(context)
+            hasCalendarPermissionState = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
 
-        val appPrefs = getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, MODE_PRIVATE)
-        val systemIsDark = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
-        val initialDarkTheme = appPrefs.getBoolean(AppThemeSetup.KEY_DARK_THEME_ENABLED, systemIsDark)
+            val appPrefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, MODE_PRIVATE)
+            val systemIsDark = context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            initialDarkThemeLoadedState = appPrefs.getBoolean(AppThemeSetup.KEY_DARK_THEME_ENABLED, systemIsDark)
+
+            if (hasCalendarPermissionState) {
+                refreshDataFromCalendarProviderAndUpdateStatesInternal()
+            }
+        }
 
         setContent {
-            var isDarkThemeEnabled by remember { mutableStateOf(initialDarkTheme) }
+            var isDarkThemeEnabled by remember(initialDarkThemeLoadedState) { mutableStateOf(initialDarkThemeLoadedState) }
+
+            LaunchedEffect(initialDarkThemeLoadedState) {
+                isDarkThemeEnabled = initialDarkThemeLoadedState
+            }
 
             val toggleTheme: (Boolean) -> Unit = { newThemeState ->
                 isDarkThemeEnabled = newThemeState
+                val appPrefs = getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, MODE_PRIVATE)
                 appPrefs.edit {
                     putBoolean(AppThemeSetup.KEY_DARK_THEME_ENABLED, newThemeState)
                     apply()
@@ -245,84 +258,116 @@ class MainActivity : ComponentActivity() {
                 initialSelectedCalendarIds = selectedCalendarIdsState,
                 initialHasPermission = hasCalendarPermissionState,
                 onRefreshRequest = {
-                    refreshDataFromCalendarProviderAndUpdateStates()
+                    refreshDataFromCalendarProviderAndUpdateStatesInternal()
                 },
                 onCalendarDataUpdated = { newEvents, newAvailable, newSelectedIds ->
                     eventsByDateState = newEvents
                     availableCalendarsState = newAvailable
                     selectedCalendarIdsState = newSelectedIds
-                    saveEventsToPrefs(this, newEvents)
-                    saveSelectedCalendarIds(this, newSelectedIds)
-                    notifyCalendarWidgetsDataChangedMainActivity(this)
+                    lifecycleScope.launch {
+                        saveEventsToPrefs(this@MainActivity, newEvents)
+                        saveSelectedCalendarIds(this@MainActivity, newSelectedIds)
+                        notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+                    }
                 },
                 onPermissionUpdated = { newPermissionState ->
                     hasCalendarPermissionState = newPermissionState
                     if (newPermissionState) {
-                        refreshDataFromCalendarProviderAndUpdateStates()
+                        refreshDataFromCalendarProviderAndUpdateStatesInternal()
                     } else {
                         eventsByDateState = emptyMap()
                         availableCalendarsState = emptyList()
-                        saveEventsToPrefs(this, emptyMap())
-                        notifyCalendarWidgetsDataChangedMainActivity(this)
+                        lifecycleScope.launch {
+                            saveEventsToPrefs(this@MainActivity, emptyMap())
+                            notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+                        }
                     }
                 }
             )
-        }
-
-        if (hasCalendarPermissionState) {
-            refreshDataFromCalendarProviderAndUpdateStates()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        hasCalendarPermissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-        if (hasCalendarPermissionState) {
-            refreshDataFromCalendarProviderAndUpdateStates()
-        } else {
-            eventsByDateState = emptyMap()
-            availableCalendarsState = emptyList()
+        lifecycleScope.launch {
+            val context = this@MainActivity
+            val hasPermissionNow = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+            val permissionStateChanged = hasCalendarPermissionState != hasPermissionNow
+            hasCalendarPermissionState = hasPermissionNow
+
+            if (hasPermissionNow) {
+                refreshDataFromCalendarProviderAndUpdateStatesInternal()
+            } else {
+                if (permissionStateChanged || eventsByDateState.isNotEmpty() || availableCalendarsState.isNotEmpty()) {
+                    eventsByDateState = emptyMap()
+                    availableCalendarsState = emptyList()
+                    saveEventsToPrefs(context, emptyMap())
+                    notifyCalendarWidgetsDataChangedMainActivity(context)
+                }
+            }
         }
     }
 
-    private fun refreshDataFromCalendarProviderAndUpdateStates() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            hasCalendarPermissionState = false
-            eventsByDateState = emptyMap()
-            availableCalendarsState = emptyList()
-            saveEventsToPrefs(this, emptyMap())
-            notifyCalendarWidgetsDataChangedMainActivity(this)
-            return
-        }
-        if (!hasCalendarPermissionState) hasCalendarPermissionState = true
-
+    private fun refreshDataFromCalendarProviderAndUpdateStatesInternal() {
         lifecycleScope.launch {
+            val context = this@MainActivity
+            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                if (hasCalendarPermissionState) { // Only update if state changed
+                    hasCalendarPermissionState = false
+                    eventsByDateState = emptyMap()
+                    availableCalendarsState = emptyList()
+                    saveEventsToPrefs(context, emptyMap())
+                    notifyCalendarWidgetsDataChangedMainActivity(context)
+                }
+                return@launch
+            }
+
+            if (!hasCalendarPermissionState) {
+                hasCalendarPermissionState = true
+            }
+
             try {
-                val currentSelectedIds = loadSelectedCalendarIds(this@MainActivity)
-                val freshAvailableCalendars = loadAvailableCalendarsSuspend(this@MainActivity)
-                availableCalendarsState = freshAvailableCalendars
+                val currentSelectedIds = loadSelectedCalendarIds(context)
+                val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
+
+                var dataChanged = false
+
+                if (availableCalendarsState != freshAvailableCalendars) {
+                    availableCalendarsState = freshAvailableCalendars
+                    dataChanged = true
+                }
 
                 val validSelectedIds = currentSelectedIds.filter { sid -> freshAvailableCalendars.any { cal -> cal.id == sid } }.toSet()
                 if (validSelectedIds != selectedCalendarIdsState) {
                     selectedCalendarIdsState = validSelectedIds
-                    saveSelectedCalendarIds(this@MainActivity, validSelectedIds)
+                    saveSelectedCalendarIds(context, validSelectedIds)
+                    dataChanged = true
                 }
 
                 val freshEventsMap = if (selectedCalendarIdsState.isNotEmpty() || freshAvailableCalendars.isNotEmpty()) {
-                    readFestivosFromCalendarsSuspend(this@MainActivity, selectedCalendarIdsState, freshAvailableCalendars)
+                    readFestivosFromCalendarsSuspend(context, selectedCalendarIdsState, freshAvailableCalendars)
                 } else {
                     emptyMap()
                 }
-                eventsByDateState = freshEventsMap
-                saveEventsToPrefs(this@MainActivity, freshEventsMap)
-                notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+
+                if (eventsByDateState != freshEventsMap) {
+                    eventsByDateState = freshEventsMap
+                    saveEventsToPrefs(context, freshEventsMap)
+                    dataChanged = true
+                }
+
+                if (dataChanged) {
+                    notifyCalendarWidgetsDataChangedMainActivity(context)
+                }
+
             } catch (e: Exception) {
                 Log.e("MainActivity", "Error refrescando datos del calendario", e)
-                Toast.makeText(this@MainActivity, "Error al actualizar datos.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error al actualizar datos.", Toast.LENGTH_SHORT).show()
+
                 eventsByDateState = emptyMap()
                 availableCalendarsState = emptyList()
-                saveEventsToPrefs(this@MainActivity, emptyMap())
-                notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+                saveEventsToPrefs(context, emptyMap())
+                notifyCalendarWidgetsDataChangedMainActivity(context)
             }
         }
     }
@@ -333,11 +378,11 @@ fun notifyCalendarWidgetsConfigurationChangedMainActivity(context: Context) {
     val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
     val appWidgetIdsArray: IntArray? = appWidgetManager.getAppWidgetIds(componentName)
 
-    @IdRes val remoteViewId: Int = R.id.widget_event_list // Declara explícitamente como @IdRes Int
+    @IdRes val remoteViewId: Int = R.id.widget_event_list
 
     if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
         for (widgetId: Int in appWidgetIdsArray) {
-            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId) // Usa la variable
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId)
         }
         Log.d("MainActivityNotifier", "Notificación enviada para actualizar widgets por CAMBIO DE CONFIGURACIÓN (IdRes explícito).")
     } else {
@@ -350,11 +395,11 @@ fun notifyCalendarWidgetsDataChangedMainActivity(context: Context) {
     val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
     val appWidgetIdsArray: IntArray? = appWidgetManager.getAppWidgetIds(componentName)
 
-    @IdRes val remoteViewId: Int = R.id.widget_event_list // Declara explícitamente como @IdRes Int
+    @IdRes val remoteViewId: Int = R.id.widget_event_list
 
     if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
         for (widgetId: Int in appWidgetIdsArray) {
-            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId) // Usa la variable
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId)
         }
         Log.d("MainActivityNotifier", "Notificación enviada para actualizar datos de EVENTOS en widgets (IdRes explícito).")
     } else {
@@ -543,7 +588,7 @@ fun CalendarioScreen(
                     colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack, // <-- CAMBIO AQUÍ
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Anterior"
                     )
                 }
@@ -563,15 +608,12 @@ fun CalendarioScreen(
                     colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward, // <-- CAMBIO AQUÍ
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Siguiente"
                     )
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-
-            // ... (El resto de la función CalendarioScreen sigue igual) ...
-            // (He omitido el resto para brevedad, ya que los cambios solo afectan a los iconos de las flechas)
 
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -650,7 +692,7 @@ fun CalendarioScreen(
                             }
                         }
                     }
-                } else { // Vista Anual
+                } else {
                     YearlyCalendar(
                         currentYear = currentYear,
                         today = today,
@@ -664,7 +706,6 @@ fun CalendarioScreen(
                 }
             }
 
-            // --- Diálogos ---
             if (showSelectCalendarsDialog) {
                 SelectCalendarsDialog(
                     initialSelectedIds = selectedCalendarIdsExternal,
@@ -690,7 +731,7 @@ fun CalendarioScreen(
                     onDismissRequest = { showAboutDialog = false },
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    text = { Column { Text("Calendario Visual V1.34", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                    text = { Column { Text("Calendario Visual V1.35", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                     confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
             }
@@ -721,9 +762,6 @@ fun CalendarioScreen(
         }
     }
 }
-
-
-
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
@@ -886,31 +924,17 @@ fun ColorPaletteDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectCalendarsDialog(
-    initialSelectedIds: Set<Long>, // <-- PARÁMETRO PARA IDs INICIALES
-    availableCalendars: List<CalendarInfo>, // <-- PARÁMETRO PARA CALENDARIOS DISPONIBLES
+    initialSelectedIds: Set<Long>,
+    availableCalendars: List<CalendarInfo>,
     isDarkTheme: Boolean,
     onDismissRequest: () -> Unit,
     onApplySelection: (selectedIds: Set<Long>) -> Unit
 ) {
-    // Ya no se necesita el 'context' aquí para cargar los calendarios o los IDs iniciales si se pasan como parámetros.
-    // Podría seguir siendo necesario si haces otras cosas específicas del contexto dentro del diálogo.
-    // val context = LocalContext.current
-
-    // Estado para los calendarios disponibles dentro del diálogo, inicializado desde el parámetro.
-    // Usamos 'remember' con 'availableCalendars' como clave para que se actualice si la lista externa cambia
-    // mientras el diálogo está potencialmente abierto (aunque usualmente los diálogos son de corta duración).
     var localAvailableCalendars by remember(availableCalendars) { mutableStateOf(availableCalendars) }
-
-    // Estado para los IDs seleccionados actualmente dentro del diálogo.
-    // Se inicializa con 'initialSelectedIds', filtrando aquellos que realmente existen en 'availableCalendars'.
     var currentSelectedIdsInDialog by remember(initialSelectedIds, availableCalendars) {
         mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
     }
 
-    // Si 'availableCalendars' o 'initialSelectedIds' pudieran cambiar desde fuera MIENTRAS el diálogo está visible
-    // y necesitas que el diálogo reaccione a esos cambios, este LaunchedEffect ayuda a sincronizar.
-    // Si 'availableCalendars' e 'initialSelectedIds' son estables una vez que el diálogo se muestra,
-    // la inicialización en 'remember' podría ser suficiente.
     LaunchedEffect(availableCalendars, initialSelectedIds) {
         localAvailableCalendars = availableCalendars
         currentSelectedIdsInDialog = initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet()
@@ -930,14 +954,14 @@ fun SelectCalendarsDialog(
         text = {
             if (localAvailableCalendars.isEmpty()) {
                 Text(
-                    "No se encontraron calendarios disponibles.", // Mensaje más específico
+                    "No se encontraron calendarios disponibles.",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier
-                        .heightIn(max = 400.dp) // Limita la altura del diálogo
+                        .heightIn(max = 400.dp)
                         .fillMaxWidth()
                 ) {
                     items(localAvailableCalendars, key = { it.id }) { calendar ->
@@ -996,7 +1020,7 @@ fun SelectCalendarsDialog(
         confirmButton = {
             Button(
                 onClick = { onApplySelection(currentSelectedIdsInDialog) },
-                enabled = localAvailableCalendars.isNotEmpty() // El botón aplicar solo se habilita si hay calendarios
+                enabled = localAvailableCalendars.isNotEmpty()
             ) {
                 Text("Aplicar", fontSize = 16.sp)
             }
@@ -1025,7 +1049,6 @@ fun MonthlyCalendar(
 
     val colorBordeDiaActual = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder else AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder
 
-    // Cabecera de días de la semana (sin cambios)
     daysOfWeek.forEach { day ->
         cells.add {
             Box(
@@ -1043,7 +1066,6 @@ fun MonthlyCalendar(
         }
     }
 
-    // Celdas vacías al principio del mes (sin cambios)
     repeat(firstDayOfWeek) {
         cells.add {
             Box(Modifier
@@ -1056,7 +1078,6 @@ fun MonthlyCalendar(
         }
     }
 
-    // Días del mes
     (1..daysInMonth).forEach { dayNum ->
         val thisDate = currentMonth.atDay(dayNum)
         val isToday = thisDate == today
@@ -1075,7 +1096,7 @@ fun MonthlyCalendar(
         val currentDayCellBorderColor = if (isToday) colorBordeDiaActual else (if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder)
 
         cells.add {
-            Box( // Contenedor principal de la celda del día
+            Box(
                 Modifier
                     .fillMaxSize()
                     .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
@@ -1093,23 +1114,18 @@ fun MonthlyCalendar(
                             })
                     }
             ) {
-                // --- NÚMERO CENTRADO EN LA CELDA ---
                 Text(
                     text = "$dayNum",
                     fontWeight = fontWeightNum,
                     color = colorNum,
                     fontSize = 22.sp,
-                    modifier = Modifier.align(Alignment.Center) // ESTO CENTRA EL NÚMERO
+                    modifier = Modifier.align(Alignment.Center)
                 )
-
-                // --- PUNTO DEBAJO DEL ÁREA DEL NÚMERO, PERO INDEPENDIENTE DE SU CENTRADO ---
                 if (hasOtherEventsPoint) {
                     Box(
                         Modifier
-                            .align(Alignment.BottomCenter) // Alinea el punto al centro inferior del Box padre
-                            .padding(bottom = 6.dp)      // Sube el punto desde el borde inferior. Ajusta este valor.
-                            // Si quieres un control más fino que padding, puedes usar .offset(y = -X.dp)
-                            // .offset(y = (-6).dp) // Alternativa a padding(bottom)
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 6.dp)
                             .size(6.dp)
                             .background(
                                 color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEventIndicator else AppThemeSetup.LightColors.monthlyCalendarEventIndicator,
@@ -1121,7 +1137,6 @@ fun MonthlyCalendar(
         }
     }
 
-    // Celdas vacías al final del mes (sin cambios)
     repeat((7 - cells.size % 7) % 7) {
         cells.add {
             Box(Modifier
@@ -1134,7 +1149,6 @@ fun MonthlyCalendar(
         }
     }
 
-    // Contenedor de la cuadrícula (sin cambios)
     Box(
         Modifier
             .fillMaxWidth()
@@ -1158,9 +1172,9 @@ fun MonthlyCalendar(
                                 .weight(1f)
                                 .aspectRatio(1f)
                                 .padding(1.dp),
-                            Alignment.Center // Este Center es para el contenido de cellComposable DENTRO de este Box
+                            Alignment.Center
                         ) {
-                            cellComposable() // cellComposable es el Box de la celda del día
+                            cellComposable()
                         }
                     }
                 }
@@ -1347,7 +1361,7 @@ fun DayEventsDialog(
     date: LocalDate,
     events: List<Festivo>,
     availableCalendars: List<CalendarInfo>,
-    isDarkTheme: Boolean, // Parámetro para saber el tema actual
+    isDarkTheme: Boolean,
     onDismissRequest: () -> Unit
 ) {
     val formatter = remember { DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", Locale.getDefault()) }
@@ -1355,13 +1369,13 @@ fun DayEventsDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant, // Color de fondo del diálogo, tomado del tema general
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
         title = {
             Text(
                 formattedDate,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant // Color del título, tomado del tema general
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
         text = {
@@ -1378,10 +1392,10 @@ fun DayEventsDialog(
                 Text(
                     "No hay eventos con detalle.",
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant // Color del texto, tomado del tema
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-                LazyColumn(Modifier.heightIn(max = 300.dp)) { // Altura máxima para el LazyColumn
+                LazyColumn(Modifier.heightIn(max = 300.dp)) {
                     items(
                         items = eventsToDisplay,
                         key = { (festivo, _) -> festivo.calendarId.toString() + festivo.description + festivo.startTime.toString() + festivo.date.toString() }
@@ -1392,7 +1406,6 @@ fun DayEventsDialog(
                                 .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Determinar el color del texto del evento basado en el tema actual
                             val itemColor = when {
                                 festivo.description.contains("cumpleaños", true) || festivo.description.contains("aniversario", true) ->
                                     if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventBirthdayText else AppThemeSetup.LightColors.dialogEventBirthdayText
@@ -1402,7 +1415,6 @@ fun DayEventsDialog(
                                     if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventDefaultText else AppThemeSetup.LightColors.dialogEventDefaultText
                             }
 
-                            // Muestra el color del calendario si está disponible
                             availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
                                 Box(
                                     Modifier
@@ -1418,7 +1430,7 @@ fun DayEventsDialog(
                             }
                             Text(
                                 displayDesc,
-                                color = itemColor, // Usar el color determinado
+                                color = itemColor,
                                 fontSize = 16.sp,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis
@@ -1430,7 +1442,7 @@ fun DayEventsDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cerrar", fontSize = 16.sp) // El color del texto del botón lo toma MaterialTheme
+                Text("Cerrar", fontSize = 16.sp)
             }
         }
     )
