@@ -15,6 +15,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.ZoneId
 import java.util.Locale
 
 // Imports para tus clases/objetos definidos en otros archivos
@@ -179,39 +180,78 @@ class CalendarWidgetFactory(
         return true
     }
 
+
     private fun loadCalendarEvents() {
-        val allEventsByDateMap = loadEventsFromPrefsFromFactory(context) // Cambiado para claridad, misma lógica
+        val allEventsByDateMap = loadEventsFromPrefsFromFactory(context)
         val today = LocalDate.now()
+        val nowTime = LocalTime.now()
         val upcomingEvents = mutableListOf<Festivo>()
 
-        allEventsByDateMap.keys.sorted()
-            .filter { date -> !date.isBefore(today) } // Solo fechas de hoy en adelante
-            .forEach { date ->
-                val eventsOnDate = allEventsByDateMap[date].orEmpty().sortedWith(
-                    compareBy<Festivo> { it.isAllDay }.reversed() // Eventos de todo el día primero
-                        .thenBy(nullsLast()) { it.startTime } // Luego por hora de inicio
-                )
-                for (event in eventsOnDate) {
-                    val isEventToday = date.isEqual(today)
-                    val isTimedEvent = !event.isAllDay && event.startTime != null
+        Log.d("WidgetFactory", "Iniciando loadCalendarEvents. Hoy: $today, Hora Actual: $nowTime")
+        // Log.d("WidgetFactoryDebug", "Mapa de eventos cargado de prefs tiene ${allEventsByDateMap.size} días con eventos.") // Eliminado/Comentado
 
-                    if (isEventToday) {
-                        // Para hoy: eventos de todo el día, o eventos con hora que no hayan pasado (o que empiecen "ahora mismo")
-                        if (event.isAllDay || (isTimedEvent && event.startTime!!.isAfter(LocalTime.now().minusMinutes(1)))) {
+        allEventsByDateMap.keys.sorted()
+            .forEach { date ->
+                val eventsOnDate = allEventsByDateMap[date].orEmpty()
+
+                for (event in eventsOnDate) {
+                    if (date.isBefore(today)) {
+                        continue
+                    }
+
+                    if (date.isEqual(today)) {
+                        if (!event.isAllDay && event.startTime != null) {
+                            if (event.endTime != null) {
+                                // --- LOGS DE DEPURACIÓN DETALLADOS ELIMINADOS DE AQUÍ ---
+                                if (nowTime.isBefore(event.endTime)) {
+                                    upcomingEvents.add(event)
+                                } else {
+                                    // Este log es útil, así que lo conservamos:
+                                    Log.d("WidgetFactory", "Evento de hoy OMITIDO (endTime ${event.endTime} ya pasó a las $nowTime): ${event.description}")
+                                }
+                            } else { // Evento de hoy con startTime pero SIN endTime
+                                // --- LOGS DE DEPURACIÓN DETALLADOS ELIMINADOS DE AQUÍ ---
+                                var addedSinEndTime = false // Para el log de omisión
+                                if (nowTime.isBefore(event.startTime.plusMinutes(1))) {
+                                    upcomingEvents.add(event)
+                                    addedSinEndTime = true
+                                } else if (event.startTime.isBefore(nowTime) && event.startTime.plusHours(1).isAfter(nowTime)) {
+                                    upcomingEvents.add(event)
+                                    addedSinEndTime = true
+                                } else if (!nowTime.isAfter(event.startTime)) {
+                                    upcomingEvents.add(event)
+                                    addedSinEndTime = true
+                                }
+
+                                if (!addedSinEndTime) {
+                                    // Este log también puede ser útil:
+                                    Log.d("WidgetFactory", "Evento de hoy (sin endTime) OMITIDO (startTime ${event.startTime} no cumple criterio actual para mostrarse): ${event.description}")
+                                }
+                            }
+                        } else { // Evento de hoy de todo el día o sin hora de inicio
+                            // --- LOGS DE DEPURACIÓN DETALLADOS ELIMINADOS DE AQUÍ ---
                             upcomingEvents.add(event)
-                        } else if (isTimedEvent && !event.startTime!!.isAfter(LocalTime.now())) {
-                            // Log.d("WidgetFactory", "Evento de hoy omitido (ya pasó): ${event.description} a las ${event.startTime}")
-                        } else if (!isTimedEvent && !event.isAllDay) { // Eventos sin hora asignada, pero no de todo el día (¿casos raros?)
-                            upcomingEvents.add(event) // Se añaden si son de hoy y no tienen hora
                         }
-                    } else { // Eventos de días futuros
+                    } else { // Eventos de días FUTUROS
                         upcomingEvents.add(event)
                     }
                 }
             }
-        eventsList = upcomingEvents // Actualiza la lista de eventos del widget
-        Log.d("WidgetFactory", "Eventos futuros procesados para el widget: ${eventsList.size}. Mostrando hasta: $eventCountToShow")
+
+        eventsList = upcomingEvents.sortedWith(
+            compareBy<Festivo> { it.date }
+                .thenByDescending { it.isAllDay }
+                .thenBy(nullsLast()) { it.startTime }
+        )
+
+        Log.d("WidgetFactory", "Eventos procesados para el widget: ${eventsList.size}. Mostrando hasta: $eventCountToShow")
+        // El log para mostrar la lista final puede ser útil para depuración futura, así que lo comento:
+        // eventsList.take(eventCountToShow).forEachIndexed { index, festivo ->
+        //     Log.d("WidgetFactory", "  Lista Final Widget [$index]: ${festivo.description} - ${festivo.date} ${festivo.startTime ?: ""} (TodoDia: ${festivo.isAllDay})")
+        // }
     }
+
+
 
     // Renombrado para evitar confusión con la función global, pero es la misma lógica.
     // Podrías mover esta lógica a CalendarDataUtils.kt si no está ya allí y es compartida.
@@ -228,7 +268,7 @@ class CalendarWidgetFactory(
             gson.fromJson(json, type)
         } catch (e: Exception) {
             Log.e("WidgetFactory", "loadEventsFromPrefs: Error al deserializar eventos desde SharedPreferences", e)
-            return emptyMap()
+            return emptyMap() // Podrías también limpiar prefs aquí si están corruptas.
         }
 
         return mapFromString.mapNotNull { (dateStr, dtoList) ->
@@ -238,26 +278,20 @@ class CalendarWidgetFactory(
             if (date != null) {
                 date to dtoList.map { dto ->
                     Festivo(
-                        id = -1L, // ID de evento no disponible desde SharedPreferences
-                        title = dto.desc.takeIf { it.isNotBlank() }?.take(40)?.trim() ?: "(Evento widget)", // Placeholder para el título
+                        id = -1L,
+                        title = dto.desc.takeIf { it.isNotBlank() }?.take(40)?.trim() ?: "(Evento widget)",
                         description = dto.desc,
                         date = date,
-                        calendarId = dto.id, // Recordar que dto.id en FestivoDto es el calendarId
-                        isFromHolidaySource = false, // Este valor no se persiste/carga para el widget de forma simple.
-                        // El widget se basa en los datos ya procesados por la app principal.
-                        // O, si el widget tuviera que determinar esto independientemente,
-                        // necesitaría acceso a `availableCalendars` y la lógica de keywords aquí mismo.
-                        // Por simplicidad en el widget, se asume que la app principal actualiza
-                        // las SharedPreferences con datos donde `isFromHolidaySource` ya fue
-                        // determinado por `readFestivosFromCalendarsSuspend`, aunque `FestivoDto`
-                        // no lo guarde.
-                        // ¡Esto es un punto importante! La `isFromHolidaySource` que usa
-                        // el widget actualmente proviene de `FestivoDto` (que no tiene ese campo)
-                        // y se establece a `false`. Si el widget necesita este flag,
-                        // la persistencia debe cambiar.
+                        calendarId = dto.id,
+                        isFromHolidaySource = false, // Considera cómo manejar esto si es importante para el widget
                         startTime = dto.startTimeStr?.let {
                             try { LocalTime.parse(it) } catch (e: Exception) {
-                                Log.e("WidgetFactory", "loadEventsFromPrefsFromFactory: Error parseando LocalTime '$it' para fecha $dateStr", e); null
+                                Log.e("WidgetFactory", "loadEventsFromPrefsFromFactory: Error parseando startTime '$it' para fecha $dateStr", e); null
+                            }
+                        },
+                        endTime = dto.endTimeStr?.let { // <<< --- AÑADIR ESTA LÍNEA
+                            try { LocalTime.parse(it) } catch (e: Exception) {
+                                Log.e("WidgetFactory", "loadEventsFromPrefsFromFactory: Error parseando endTime '$it' para fecha $dateStr", e); null
                             }
                         },
                         isAllDay = dto.isAllDay
@@ -265,7 +299,9 @@ class CalendarWidgetFactory(
                 }
             } else { null }
         }.toMap().also {
-            // Log.d("WidgetFactory", "loadEventsFromPrefs: Eventos cargados, ${it.size} días con eventos.") // Puede ser verboso
+            // Log.d("WidgetFactory", "loadEventsFromPrefs: Eventos cargados, ${it.size} días con eventos.")
         }
     }
+
+
 }
