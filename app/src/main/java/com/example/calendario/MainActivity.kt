@@ -478,10 +478,10 @@ fun CalendarioScreen(
     eventsByDateExternal: Map<LocalDate, List<Festivo>>,
     availableCalendarsExternal: List<CalendarInfo>,
     selectedCalendarIdsExternal: Set<Long>,
-    hasCalendarPermissionExternal: Boolean,
+    hasCalendarPermissionExternal: Boolean, // Este estado se actualiza desde MainActivity
     onRefreshRequest: () -> Unit,
     onCalendarDataUpdated: (Map<LocalDate, List<Festivo>>, List<CalendarInfo>, Set<Long>) -> Unit,
-    onPermissionUpdated: (Boolean) -> Unit
+    onPermissionUpdated: (Boolean) -> Unit // Callback para notificar a MainActivity del cambio de permiso
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -498,21 +498,46 @@ fun CalendarioScreen(
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
 
-    val requestPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        onPermissionUpdated(isGranted)
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        onPermissionUpdated(isGranted) // Notifica a MainActivity para que actualice su estado y, si es necesario, refresque datos.
+        if (isGranted) {
+            // ★★★ NUEVA LÓGICA ★★★
+            // Si el permiso fue concedido, ahora podemos mostrar el diálogo de selección de calendarios.
+            // Es posible que necesitemos asegurar que 'availableCalendarsExternal' esté actualizado
+            // antes de mostrar el diálogo. onRefreshRequest() debería encargarse de esto
+            // si se llama como resultado de onPermissionUpdated(true) en MainActivity.
+            // Para mayor seguridad, podríamos incluso pasar una lambda aquí para mostrar el diálogo
+            // que solo se ejecute después de que los calendarios disponibles hayan sido cargados.
+            // Sin embargo, el flujo actual donde onPermissionUpdated -> refreshData -> actualización de estados
+            // debería ser suficiente.
+            Log.d("CalendarioScreen", "Permiso concedido. Intentando mostrar diálogo de selección de calendarios.")
+            showSelectCalendarsDialog = true
+        } else {
+            Log.d("CalendarioScreen", "Permiso denegado.")
+            // Opcionalmente, mostrar un mensaje al usuario explicando por qué el permiso es necesario.
+            Toast.makeText(context, "Permiso de calendario necesario para seleccionar calendarios.", Toast.LENGTH_LONG).show()
+        }
     }
 
+    // Este LaunchedEffect ya se encarga de llamar a onRefreshRequest cuando el permiso cambia a true.
+    // onRefreshRequest (que es refreshDataFromCalendarProviderAndUpdateStatesInternal en MainActivity)
+    // actualiza availableCalendarsState, que luego se pasa como availableCalendarsExternal.
     LaunchedEffect(hasCalendarPermissionExternal) {
         if (hasCalendarPermissionExternal) {
+            Log.d("CalendarioScreen", "LaunchedEffect: Permiso es true, llamando a onRefreshRequest.")
             onRefreshRequest()
         }
     }
 
     Scaffold(
         topBar = {
-            Column(modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary)
-                .statusBarsPadding()) {
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .statusBarsPadding()
+            ) {
                 TopAppBar(
                     title = { Text("Calendario Visual", fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.fillMaxWidth(), fontWeight = FontWeight.Bold) },
                     actions = {
@@ -535,16 +560,21 @@ fun CalendarioScreen(
                             ) {
                                 val dropdownTextColor = if (isDarkTheme) AppThemeSetup.DarkColors.onScreenTextNormal else AppThemeSetup.LightColors.onScreenTextNormal
                                 DropdownMenuItem(
-                                    text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor ) },
+                                    text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
                                     onClick = {
                                         menuExpanded = false
                                         if (hasCalendarPermissionExternal) {
+                                            // Si ya tiene permiso, los calendarios disponibles (availableCalendarsExternal)
+                                            // deberían estar actualizados por el LaunchedEffect o la lógica de onResume.
+                                            Log.d("CalendarioScreen", "Menú Calendarios: Permiso ya concedido. Mostrando diálogo.")
                                             showSelectCalendarsDialog = true
                                         } else {
+                                            Log.d("CalendarioScreen", "Menú Calendarios: Solicitando permiso.")
                                             requestPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
                                         }
                                     }
                                 )
+                                // ... otros DropdownMenuItems ...
                                 DropdownMenuItem(
                                     text = { Text("Widget", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
                                     onClick = { menuExpanded = false; showWidgetConfigDialog = true }
@@ -577,6 +607,8 @@ fun CalendarioScreen(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // ... El resto del contenido del Scaffold (Row de navegación, MonthlyCalendar/YearlyCalendar, etc.) ...
+            // Esta parte no necesita cambios para la lógica de permisos.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -692,7 +724,7 @@ fun CalendarioScreen(
                             }
                         }
                     }
-                } else {
+                } else { // Vista Anual
                     YearlyCalendar(
                         currentYear = currentYear,
                         today = today,
@@ -706,16 +738,23 @@ fun CalendarioScreen(
                 }
             }
 
+
+            // --- Diálogos ---
+            // El diálogo se mostrará si showSelectCalendarsDialog es true.
+            // Los datos (availableCalendarsExternal, selectedCalendarIdsExternal) se actualizan
+            // a través del flujo de MainActivity cuando cambia el permiso.
             if (showSelectCalendarsDialog) {
                 SelectCalendarsDialog(
                     initialSelectedIds = selectedCalendarIdsExternal,
-                    availableCalendars = availableCalendarsExternal,
+                    availableCalendars = availableCalendarsExternal, // Este debería estar actualizado
                     isDarkTheme = isDarkTheme,
                     onDismissRequest = { showSelectCalendarsDialog = false }
                 ) { newlySelectedIds ->
                     showSelectCalendarsDialog = false
                     scope.launch {
                         try {
+                            // Se necesita el contexto para leer los festivos.
+                            // availableCalendarsExternal ya debería estar actualizado aquí.
                             val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, availableCalendarsExternal)
                             onCalendarDataUpdated(updatedFestivosMap, availableCalendarsExternal, newlySelectedIds)
                         } catch (e: Exception) {
@@ -731,7 +770,7 @@ fun CalendarioScreen(
                     onDismissRequest = { showAboutDialog = false },
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    text = { Column { Text("Calendario Visual V1.35", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                    text = { Column { Text("Calendario Visual V1.34", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                     confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
             }
@@ -762,6 +801,7 @@ fun CalendarioScreen(
         }
     }
 }
+
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
