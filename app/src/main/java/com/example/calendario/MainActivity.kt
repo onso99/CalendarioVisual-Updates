@@ -125,14 +125,15 @@ object AppThemeSetup {
         val dropdownMenuBackground = Color.White
         val navigationButtonBackground = Color(0xFFffbb77)
         val navigationButtonContent = Color.Black
-        val eventListTitleBackground = Color(0xFFEAEAEA)
-        val eventListTitleColor = primary
+        val eventListTitleBackground = Color(0xFFADD1FA)
+        val eventListTitleColor =  Color(0xFF023f82)
         val eventListItemHolidayText = error
         val eventListItemBirthdayText = Color(0xFF0000FF)
         val eventListItemDefaultText = onScreenTextNormal
         val monthlyCalendarGridBackground = Color(0xFFF1F7FE)
         val monthlyCalendarGridBorder = Color(0xFFCCCCCC)
         val monthlyCalendarDayCellBackground = Color.White
+        val monthlyCalendarEmptyCellBackground = Color(0xFFF0F0F0)
         val monthlyCalendarDayCellBorder = Color(0xFFCCCCCC)
         val monthlyCalendarTodayCellBorder = primary
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
@@ -179,6 +180,7 @@ object AppThemeSetup {
         val monthlyCalendarGridBackground = Color(0xFF1E1E1E)
         val monthlyCalendarGridBorder = Color(0xFF424242)
         val monthlyCalendarDayCellBackground = Color(0xFF343434)
+        val monthlyCalendarEmptyCellBackground = Color(0xFF282828)
         val monthlyCalendarDayCellBorder = Color(0xFF424242)
         val monthlyCalendarTodayCellBorder = Color(0xFF2194ef)
         val monthlyCalendarHeaderBackground = Color(0xFF0D47A1)
@@ -1110,7 +1112,7 @@ fun MonthlyCalendar(
         cells.add {
             Box(Modifier
                 .fillMaxSize()
-                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
+                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground)
                 .border(
                     1.dp,
                     if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
@@ -1181,7 +1183,7 @@ fun MonthlyCalendar(
         cells.add {
             Box(Modifier
                 .fillMaxSize()
-                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
+                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground)
                 .border(
                     1.dp,
                     if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
@@ -1222,6 +1224,7 @@ fun MonthlyCalendar(
         }
     }
 }
+
 
 @Composable
 fun YearlyCalendar(
