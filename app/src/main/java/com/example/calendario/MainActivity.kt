@@ -801,7 +801,12 @@ fun CalendarioScreen(
                                 modifier = Modifier.padding(bottom = 4.dp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            // ★★★ LÍNEA MODIFICADA ★★★
+                            Text(
+                                "- El icono 'Sol' alterna entre modo claro y oscuro.",
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 4.dp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                             Text(
                                 "- El widget muestra los eventos pendientes y se puede configurar en los ajustes.",
                                 fontSize = 16.sp,
