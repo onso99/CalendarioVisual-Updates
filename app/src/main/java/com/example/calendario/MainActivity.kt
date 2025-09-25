@@ -171,8 +171,8 @@ object AppThemeSetup {
         val dropdownMenuBackground = Color(0xFF2C2C2C)
         val navigationButtonBackground = Color(0xFFB87333)
         val navigationButtonContent = Color.White
-        val eventListTitleBackground = Color(0xFF012854)
-        val eventListTitleColor = Color(0xFF64B5F6)
+        val eventListTitleBackground = Color(0xFF023f82)
+        val eventListTitleColor = Color(0xFFbcdbfe)
         val eventListItemHolidayText = error
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
@@ -770,7 +770,7 @@ fun CalendarioScreen(
                     onDismissRequest = { showAboutDialog = false },
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    text = { Column { Text("Calendario Visual V1.34", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                    text = { Column { Text("Calendario Visual V1.36", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                     confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
             }
