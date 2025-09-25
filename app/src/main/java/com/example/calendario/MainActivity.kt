@@ -781,10 +781,38 @@ fun CalendarioScreen(
                     onDismissRequest = { showHelpDialog = false },
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     title = { Text("Ayuda", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    text = { Column { Text("Botón mes alterna mensual/anual.", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp), color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Flechas navegan mes/año.", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp), color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Pulsar día con eventos muestra lista.", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                    text = {
+                        Column {
+                            Text(
+                                "- Toca el nombre del mes/año para cambiar entre vista mensual y anual.",
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 4.dp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                "- Usa las flechas para navegar al mes/año anterior o siguiente.",
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 4.dp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                "- Pulsa sobre un día con eventos para ver el detalle de las citas.",
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 4.dp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            // ★★★ LÍNEA MODIFICADA ★★★
+                            Text(
+                                "- El widget muestra los eventos pendientes y se puede configurar en los ajustes.",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
                     confirmButton = { TextButton(onClick = { showHelpDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
                 )
             }
+
             if (showDayEventsDialog && selectedDateForDialog != null) {
                 DayEventsDialog(
                     date = selectedDateForDialog!!,
