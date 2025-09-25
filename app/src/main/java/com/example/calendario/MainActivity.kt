@@ -929,7 +929,7 @@ fun ColorPaletteDialog(
     isDarkTheme: Boolean,
     onColorSelected: (Color) -> Unit, onDismiss: () -> Unit
 ) {
-    val selectedItemBorderColor = if (isDarkTheme) Color.White else Color.Black
+    val selectedItemBorderColor = Color.Red
 
     AlertDialog(
         onDismissRequest = onDismiss,
