@@ -96,9 +96,9 @@ fun CalendarioScreen(
 
     val currentMonth by remember { derivedStateOf { startMonth.plusMonths(monthPagerState.currentPage.toLong()) } }
 
-    val startYear = remember { Year.now().minusYears(100) }
+    val startYear = remember { Year.of(1924) }
     val initialYearPage = remember { Year.now().value - startYear.value }
-    val yearPagerState = rememberPagerState(initialPage = initialYearPage, pageCount = { 200 })
+    val yearPagerState = rememberPagerState(initialPage = initialYearPage, pageCount = { 201 })
 
     val currentYear by remember { derivedStateOf { startYear.plusYears(yearPagerState.currentPage.toLong()) } }
 
@@ -111,6 +111,7 @@ fun CalendarioScreen(
     var selectedDateForDialog by remember { mutableStateOf<LocalDate?>(null) }
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
+    var showGoToYearDialog by remember { mutableStateOf(false) }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -240,9 +241,7 @@ fun CalendarioScreen(
                                 scope.launch { yearPagerState.scrollToPage(targetYearPage) }
                                 viewMode = CalendarViewMode.YEARLY
                             } else {
-                                val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.now()).toInt()
-                                scope.launch { monthPagerState.scrollToPage(targetPage) }
-                                viewMode = CalendarViewMode.MONTHLY
+                                showGoToYearDialog = true
                             } 
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
@@ -448,6 +447,16 @@ fun CalendarioScreen(
             WidgetConfigScreen(
                 isDarkTheme = isDarkTheme,
                 onDismissRequest = { showWidgetConfigDialog = false }
+            )
+        }
+        if (showGoToYearDialog) {
+            GoToYearDialog(
+                initialYear = currentYear.value,
+                onYearSelected = {
+                    val targetYearPage = it - startYear.value
+                    scope.launch { yearPagerState.scrollToPage(targetYearPage) }
+                },
+                onDismissRequest = { showGoToYearDialog = false }
             )
         }
     }
