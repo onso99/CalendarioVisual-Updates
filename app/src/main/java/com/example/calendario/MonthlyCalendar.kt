@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,11 +79,17 @@ fun MonthlyCalendar(
                 Box(
                     Modifier
                         .weight(1f)
-                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground else AppThemeSetup.LightColors.monthlyCalendarHeaderBackground)
-                        .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder),
+                        .padding(1.dp)
+                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground else AppThemeSetup.LightColors.monthlyCalendarHeaderBackground),
                     Alignment.Center
                 ) {
-                    Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText)
+                    Text(
+                        text = day, 
+                        fontSize = 20.sp, 
+                        fontWeight = FontWeight.Bold, 
+                        color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
         }
@@ -114,15 +121,20 @@ fun MonthlyCalendar(
                             }
                         }
                     }
-                    val cellBorderColor = if (isToday) {
-                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder else AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder
-                    } else {
-                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
-                    }
                     val cellBackground = if (isCurrentMonth) {
                         if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground
                     } else {
                         if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground
+                    }
+
+                    val borderModifier = if (isToday) {
+                        Modifier.border(
+                            width = 3.dp,
+                            color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder else AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                    } else {
+                        Modifier
                     }
 
                     Box(
@@ -130,12 +142,8 @@ fun MonthlyCalendar(
                             .weight(1f)
                             .aspectRatio(1f)
                             .padding(1.dp)
-                            .background(cellBackground)
-                            .border(
-                                if (isToday) 3.dp else 1.dp,
-                                cellBorderColor,
-                                RoundedCornerShape(4.dp)
-                            )
+                            .background(cellBackground, RoundedCornerShape(4.dp))
+                            .then(borderModifier)
                             .clickable(enabled = dayEventsConAlgunaInfo) {
                                 if (isCurrentMonth) {
                                     onDayClick(
