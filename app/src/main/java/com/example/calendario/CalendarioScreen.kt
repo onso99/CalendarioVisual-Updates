@@ -3,6 +3,7 @@ package com.example.calendario
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,16 +16,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -45,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,12 +67,13 @@ import java.time.Year
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import android.util.Log
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CalendarioScreen(
     isDarkTheme: Boolean,
@@ -85,14 +88,25 @@ fun CalendarioScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-    var currentYear by remember { mutableStateOf(Year.now()) }
+
+    val today = LocalDate.now()
+    val startMonth = remember { YearMonth.now().minusYears(100) }
+    val initialPage = remember { ChronoUnit.MONTHS.between(startMonth, YearMonth.now()).toInt() }
+    val monthPagerState = rememberPagerState(initialPage = initialPage, pageCount = { Int.MAX_VALUE })
+
+    val currentMonth by remember { derivedStateOf { startMonth.plusMonths(monthPagerState.currentPage.toLong()) } }
+
+    val startYear = remember { Year.now().minusYears(100) }
+    val initialYearPage = remember { Year.now().value - startYear.value }
+    val yearPagerState = rememberPagerState(initialPage = initialYearPage, pageCount = { 200 })
+
+    val currentYear by remember { derivedStateOf { startYear.plusYears(yearPagerState.currentPage.toLong()) } }
+
     var menuExpanded by remember { mutableStateOf(false) }
     var showSelectCalendarsDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showHelpDialog by remember { mutableStateOf(false) }
     var viewMode by remember { mutableStateOf(CalendarViewMode.MONTHLY) }
-    val today = LocalDate.now()
     var showDayEventsDialog by remember { mutableStateOf(false) }
     var selectedDateForDialog by remember { mutableStateOf<LocalDate?>(null) }
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
@@ -205,14 +219,32 @@ fun CalendarioScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     FilledIconButton(
-                        onClick = { if (viewMode == CalendarViewMode.MONTHLY) currentMonth = currentMonth.minusMonths(1) else currentYear = currentYear.minusYears(1) },
+                        onClick = {
+                            viewMode = CalendarViewMode.MONTHLY
+                            scope.launch {
+                                monthPagerState.animateScrollToPage(initialPage)
+                            }
+                        },
                         modifier = Modifier.size(44.dp),
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Anterior")
+                        Icon(imageVector = Icons.Filled.Home, contentDescription = "Hoy")
                     }
                     Button(
-                        onClick = { if (viewMode == CalendarViewMode.MONTHLY) { currentYear = Year.of(currentMonth.year); viewMode = CalendarViewMode.YEARLY } else { currentMonth = YearMonth.now(); viewMode = CalendarViewMode.MONTHLY } },
+                        onClick = { 
+                            if (viewMode == CalendarViewMode.MONTHLY) {
+                                val targetYearPage = currentMonth.year - startYear.value
+                                scope.launch { yearPagerState.scrollToPage(targetYearPage) }
+                                viewMode = CalendarViewMode.YEARLY
+                            } else {
+                                val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.now()).toInt()
+                                scope.launch { monthPagerState.scrollToPage(targetPage) }
+                                viewMode = CalendarViewMode.MONTHLY
+                            } 
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                         shape = RoundedCornerShape(16.dp),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
@@ -223,7 +255,13 @@ fun CalendarioScreen(
                         )
                     }
                     FilledIconButton(
-                        onClick = { if (viewMode == CalendarViewMode.MONTHLY) currentMonth = currentMonth.plusMonths(1) else currentYear = currentYear.plusYears(1) },
+                        onClick = { 
+                            if (viewMode == CalendarViewMode.MONTHLY) {
+                                scope.launch { monthPagerState.animateScrollToPage(monthPagerState.currentPage + 1) }
+                            } else {
+                                scope.launch { yearPagerState.animateScrollToPage(yearPagerState.currentPage + 1) }
+                            }
+                        },
                         modifier = Modifier.size(44.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
                     ) {
@@ -234,17 +272,23 @@ fun CalendarioScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 if (viewMode == CalendarViewMode.MONTHLY) {
-                    MonthlyCalendar(
-                        currentMonth = currentMonth,
-                        today = today,
-                        eventsByDate = eventsByDateExternal,
-                        isDarkTheme = isDarkTheme,
-                        onDayClick = { date, events ->
-                            selectedDateForDialog = date
-                            eventsForDialog = events
-                            showDayEventsDialog = true
-                        }
-                    )
+                    HorizontalPager(
+                        state = monthPagerState,
+                    ) {
+                        val month = startMonth.plusMonths(it.toLong())
+                        MonthlyCalendar(
+                            currentMonth = month,
+                            today = today,
+                            eventsByDate = eventsByDateExternal,
+                            isDarkTheme = isDarkTheme,
+                            onDayClick = { date, events ->
+                                selectedDateForDialog = date
+                                eventsForDialog = events
+                                showDayEventsDialog = true
+                            }
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = listTitleText,
@@ -257,16 +301,22 @@ fun CalendarioScreen(
                             .padding(bottom = 4.dp)
                     )
                 } else { // Vista Anual
-                    YearlyCalendar(
-                        currentYear = currentYear,
-                        today = today,
-                        eventsByDate = eventsByDateExternal,
-                        isDarkTheme = isDarkTheme,
-                        onMonthSelected = { selectedMonth ->
-                            currentMonth = selectedMonth
-                            viewMode = CalendarViewMode.MONTHLY
-                        }
-                    )
+                    HorizontalPager(
+                        state = yearPagerState
+                    ) { page ->
+                        val year = startYear.plusYears(page.toLong())
+                        YearlyCalendar(
+                            currentYear = year,
+                            today = today,
+                            eventsByDate = eventsByDateExternal,
+                            isDarkTheme = isDarkTheme,
+                            onMonthSelected = { selectedMonth ->
+                                val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
+                                scope.launch { monthPagerState.scrollToPage(targetPage) }
+                                viewMode = CalendarViewMode.MONTHLY
+                            }
+                        )
+                    }
                 }
             }
 
