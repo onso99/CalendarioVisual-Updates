@@ -125,11 +125,11 @@ object AppThemeSetup {
         val dropdownMenuBackground = Color.White
         val navigationButtonBackground = Color(0xFFffbb77)
         val navigationButtonContent = Color.Black
-        val eventListTitleColor = primary // MODIFICADO: El texto del título ahora usa el color primario
+        val eventListTitleColor = primary
         val eventListItemHolidayText = error
         val eventListItemBirthdayText = Color(0xFF0000FF)
         val eventListItemDefaultText = onScreenTextNormal
-        val monthlyCalendarGridBackground = Color(0xFFF4F4FF) // MODIFICADO: Este es el fondo correcto para el calendario
+        val monthlyCalendarGridBackground = Color(0xFFF4F4FF)
         val monthlyCalendarGridBorder = Color(0xFFCCCCCC)
         val monthlyCalendarDayCellBackground = Color.White
         val monthlyCalendarEmptyCellBackground = Color(0xFFF0F0F0)
@@ -140,6 +140,7 @@ object AppThemeSetup {
         val monthlyCalendarDayNumberNormal = Color.Black
         val monthlyCalendarDayNumberHoliday = error
         val monthlyCalendarDayNumberSunday = error.copy(alpha = 0.7f)
+        val monthlyCalendarDayNumberGhost = Color.Gray.copy(alpha = 0.5f) // NUEVO
         val monthlyCalendarEventIndicator = primary
         val miniMonthBackground = Color(0xFFF0F0F0)
         val miniMonthBorder = Color(0xFFDCDCDC)
@@ -172,7 +173,7 @@ object AppThemeSetup {
         val navigationButtonBackground = Color(0xFFB87333)
         val navigationButtonContent = Color.White
         val eventListTitleColor = Color(0xFFD28C45)
-        val upperSectionBackground = Color(0xFF041B3C)            // MODIFICADO: Nuevo color de fondo
+        val upperSectionBackground = Color(0xFF252525)            // MODIFICADO: Nuevo color de fondo
         val eventListItemHolidayText = error
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
@@ -187,6 +188,7 @@ object AppThemeSetup {
         val monthlyCalendarDayNumberNormal = onSurface
         val monthlyCalendarDayNumberHoliday = error
         val monthlyCalendarDayNumberSunday = error.copy(alpha = 0.7f)
+        val monthlyCalendarDayNumberGhost = Color.Gray.copy(alpha = 0.4f)
         val monthlyCalendarEventIndicator = Color(0xFF64B5F6)
         val miniMonthBackground = Color(0xFF2A2A2A)
         val miniMonthBorder = Color(0xFF404040)
@@ -1099,114 +1101,39 @@ fun MonthlyCalendar(
     onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit
 ) {
     val daysOfWeek = listOf("L", "M", "X", "J", "V", "S", "D")
+
+    // --- LÓGICA REVISADA PARA CALCULAR LOS DÍAS VISIBLES ---
+    val prevMonth = currentMonth.minusMonths(1)
+    val nextMonth = currentMonth.plusMonths(1)
+
     val firstDayOfMonth = currentMonth.atDay(1)
-    val firstDayOfWeek = (firstDayOfMonth.dayOfWeek.value + 6) % 7
-    val daysInMonth = currentMonth.lengthOfMonth()
-    val cells = mutableListOf<@Composable () -> Unit>()
+    val firstDayOfWeekIndex = (firstDayOfMonth.dayOfWeek.value + 6) % 7 // 0 para Lunes
 
-    val colorBordeDiaActual = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder else AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder
+    val daysInPrevMonth = prevMonth.lengthOfMonth()
+    val daysInCurrentMonth = currentMonth.lengthOfMonth()
 
-    daysOfWeek.forEach { day ->
-        cells.add {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground else AppThemeSetup.LightColors.monthlyCalendarHeaderBackground)
-                    .border(
-                        1.dp,
-                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder
-                    ),
-                Alignment.Center
-            ) {
-                Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText)
-            }
-        }
+    val visibleDays = mutableListOf<Pair<LocalDate, Boolean>>()
+
+    // Añadir días del mes anterior
+    for (i in 0 until firstDayOfWeekIndex) {
+        val day = daysInPrevMonth - firstDayOfWeekIndex + 1 + i
+        visibleDays.add(prevMonth.atDay(day) to false)
     }
 
-    repeat(firstDayOfWeek) {
-        cells.add {
-            Box(Modifier
-                .fillMaxSize()
-                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground)
-                .border(
-                    1.dp,
-                    if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
-                ))
-        }
+    // Añadir días del mes actual
+    for (i in 1..daysInCurrentMonth) {
+        visibleDays.add(currentMonth.atDay(i) to true)
     }
 
-    (1..daysInMonth).forEach { dayNum ->
-        val thisDate = currentMonth.atDay(dayNum)
-        val isToday = thisDate == today
-        val dayEvents = eventsByDate[thisDate].orEmpty()
-        val dayEventsConAlgunaInfo = dayEvents.any { it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }.isNotBlank() }
-        val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
-        val isSundayNonHoliday = thisDate.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
-        val hasOtherEventsPoint = dayEvents.any { !it.isFromHolidaySource && (it.startTime != null && !it.isAllDay || it.description.isNotBlank()) }
-
-        val fontWeightNum = if (isHoliday || isToday) FontWeight.Bold else FontWeight.Normal
-        val colorNum = when {
-            isHoliday -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberHoliday else AppThemeSetup.LightColors.monthlyCalendarDayNumberHoliday
-            isSundayNonHoliday -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberSunday else AppThemeSetup.LightColors.monthlyCalendarDayNumberSunday
-            else -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberNormal else AppThemeSetup.LightColors.monthlyCalendarDayNumberNormal
-        }
-        val currentDayCellBorderColor = if (isToday) colorBordeDiaActual else (if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder)
-
-        cells.add {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground)
-                    .border(
-                        if (isToday) 3.dp else 1.dp, // <<-- CAMBIO AQUÍ: Grosor aumentado a 3.dp
-                        currentDayCellBorderColor,
-                        RoundedCornerShape(4.dp)
-                    )
-                    .clickable(enabled = dayEventsConAlgunaInfo) {
-                        onDayClick(
-                            thisDate,
-                            dayEvents.filter {
-                                it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }
-                                    .isNotBlank()
-                            })
-                    }
-            ) {
-                Text(
-                    text = "$dayNum",
-                    fontWeight = fontWeightNum,
-                    color = colorNum,
-                    fontSize = 22.sp,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                if (hasOtherEventsPoint) {
-                    Box(
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 6.dp)
-                            .size(6.dp)
-                            .background(
-                                color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEventIndicator else AppThemeSetup.LightColors.monthlyCalendarEventIndicator,
-                                shape = CircleShape
-                            )
-                    )
-                }
-            }
-        }
+    // Añadir días del mes siguiente para completar la última semana
+    val cellsSoFar = visibleDays.size
+    val remainingCellsInWeek = if (cellsSoFar % 7 == 0) 0 else 7 - (cellsSoFar % 7)
+    for (i in 1..remainingCellsInWeek) {
+        visibleDays.add(nextMonth.atDay(i) to false)
     }
+    // --- FIN DE LA LÓGICA REVISADA ---
 
-    repeat((7 - cells.size % 7) % 7) {
-        cells.add {
-            Box(Modifier
-                .fillMaxSize()
-                .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground)
-                .border(
-                    1.dp,
-                    if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
-                ))
-        }
-    }
-
-    Box(
+    Column(
         Modifier
             .fillMaxWidth()
             .background(
@@ -1215,18 +1142,99 @@ fun MonthlyCalendar(
             )
             .padding(4.dp)
     ) {
-        Column {
-            cells.chunked(7).forEach { weekCells ->
-                Row(Modifier.fillMaxWidth()) {
-                    weekCells.forEach { cellComposable ->
-                        Box(
-                            Modifier
-                                .weight(1f)
-                                .aspectRatio(1f)
-                                .padding(1.dp),
-                            Alignment.Center
-                        ) {
-                            cellComposable()
+        // Cabecera con los días de la semana
+        Row(Modifier.fillMaxWidth()) {
+            daysOfWeek.forEach { day ->
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground else AppThemeSetup.LightColors.monthlyCalendarHeaderBackground)
+                        .border(1.dp, if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBorder else AppThemeSetup.LightColors.monthlyCalendarGridBorder),
+                    Alignment.Center
+                ) {
+                    Text(day, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText)
+                }
+            }
+        }
+
+        // --- FILTRADO DE SEMANAS AÑADIDO AQUÍ ---
+        val weeksToDisplay = visibleDays.chunked(7).filter { week ->
+            week.any { it.second } // Solo mostrar la semana si contiene algún día del mes actual (pair.second == true)
+        }
+
+        // Cuadrícula de días
+        weeksToDisplay.forEach { week ->
+            Row(Modifier.fillMaxWidth()) {
+                week.forEach { (date, isCurrentMonth) ->
+                    val isToday = date == today && isCurrentMonth
+
+                    val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
+                    val dayEventsConAlgunaInfo = dayEvents.any { it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }.isNotBlank() }
+                    val hasOtherEventsPoint = isCurrentMonth && dayEvents.any { !it.isFromHolidaySource && (it.startTime != null && !it.isAllDay || it.description.isNotBlank()) }
+
+                    val dayColor = when {
+                        !isCurrentMonth -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberGhost else AppThemeSetup.LightColors.monthlyCalendarDayNumberGhost
+                        else -> {
+                            val isHoliday = dayEvents.any { it.isFromHolidaySource && it.description.isNotBlank() }
+                            val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
+                            when {
+                                isHoliday -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberHoliday else AppThemeSetup.LightColors.monthlyCalendarDayNumberHoliday
+                                isSundayNonHoliday -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberSunday else AppThemeSetup.LightColors.monthlyCalendarDayNumberSunday
+                                else -> if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayNumberNormal else AppThemeSetup.LightColors.monthlyCalendarDayNumberNormal
+                            }
+                        }
+                    }
+                    val cellBorderColor = if (isToday) {
+                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder else AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder
+                    } else {
+                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBorder else AppThemeSetup.LightColors.monthlyCalendarDayCellBorder
+                    }
+                    val cellBackground = if (isCurrentMonth) {
+                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground else AppThemeSetup.LightColors.monthlyCalendarDayCellBackground
+                    } else {
+                        if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground
+                    }
+
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .padding(1.dp)
+                            .background(cellBackground)
+                            .border(
+                                if (isToday) 3.dp else 1.dp,
+                                cellBorderColor,
+                                RoundedCornerShape(4.dp)
+                            )
+                            .clickable(enabled = dayEventsConAlgunaInfo) {
+                                if (isCurrentMonth) {
+                                    onDayClick(
+                                        date,
+                                        dayEvents.filter {
+                                            it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }
+                                                .isNotBlank()
+                                        })
+                                }
+                            }
+                    ) {
+                        Text(
+                            text = "${date.dayOfMonth}",
+                            fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
+                            color = dayColor,
+                            fontSize = 22.sp,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                        if (hasOtherEventsPoint) {
+                            Box(
+                                Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(bottom = 6.dp)
+                                    .size(6.dp)
+                                    .background(
+                                        color = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEventIndicator else AppThemeSetup.LightColors.monthlyCalendarEventIndicator,
+                                        shape = CircleShape
+                                    )
+                            )
                         }
                     }
                 }
