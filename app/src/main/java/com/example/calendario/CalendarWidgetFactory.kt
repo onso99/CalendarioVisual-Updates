@@ -107,14 +107,15 @@ class CalendarWidgetFactory(
         val views = RemoteViews(context.packageName, layoutId)
 
         val eventDate: LocalDate = actualEvent.date
-        val dayOfWeekShortOriginal = eventDate.dayOfWeek.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault())
-        val dayOfWeekFormatted: String = if (dayOfWeekShortOriginal.length >= 2) {
-            dayOfWeekShortOriginal.substring(0, 1).uppercase(Locale.getDefault()) +
-                    dayOfWeekShortOriginal.substring(1, 2).lowercase(Locale.getDefault())
-        } else if (dayOfWeekShortOriginal.isNotEmpty()) {
-            dayOfWeekShortOriginal.uppercase(Locale.getDefault())
+        val dayOfWeekFullName = eventDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        val dayOfWeekFormatted = if (dayOfWeekFullName.length >= 3) {
+            dayOfWeekFullName.substring(0, 3).replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
         } else {
-            ""
+            dayOfWeekFullName.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
         }
         views.setTextViewText(R.id.widget_item_day_of_week, dayOfWeekFormatted)
 
