@@ -7,7 +7,8 @@ data class CalendarInfo(
     val id: Long,
     val displayName: String,
     val accountName: String,
-    val color: Int? = null
+    val color: Int? = null,
+    val isPrimary: Boolean
 )
 
 data class Festivo(

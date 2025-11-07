@@ -1,5 +1,7 @@
 package com.example.calendario
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
@@ -61,6 +64,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Year
@@ -112,8 +117,9 @@ fun CalendarioScreen(
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
     var showGoToYearDialog by remember { mutableStateOf(false) }
+    var showCreateEventDialog by remember { mutableStateOf(false) }
 
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
+    val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         onPermissionUpdated(isGranted)
@@ -123,6 +129,17 @@ fun CalendarioScreen(
             Toast.makeText(context, "Permiso de calendario necesario para seleccionar calendarios.", Toast.LENGTH_LONG).show()
         }
     }
+
+    val writePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                showCreateEventDialog = true
+            } else {
+                Toast.makeText(context, "Permiso para escribir en el calendario es necesario para crear eventos.", Toast.LENGTH_LONG).show()
+            }
+        }
+    )
 
     LaunchedEffect(hasCalendarPermissionExternal) {
         if (hasCalendarPermissionExternal) {
@@ -165,7 +182,7 @@ fun CalendarioScreen(
                                         if (hasCalendarPermissionExternal) {
                                             showSelectCalendarsDialog = true
                                         } else {
-                                            requestPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
+                                            readPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
                                         }
                                     }
                                 )
@@ -255,16 +272,22 @@ fun CalendarioScreen(
                     }
                     FilledIconButton(
                         onClick = { 
-                            if (viewMode == CalendarViewMode.MONTHLY) {
-                                scope.launch { monthPagerState.animateScrollToPage(monthPagerState.currentPage + 1) }
-                            } else {
-                                scope.launch { yearPagerState.animateScrollToPage(yearPagerState.currentPage + 1) }
+                            when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
+                                PackageManager.PERMISSION_GRANTED -> {
+                                    showCreateEventDialog = true
+                                }
+                                else -> {
+                                    writePermissionLauncher.launch(Manifest.permission.WRITE_CALENDAR)
+                                }
                             }
                         },
                         modifier = Modifier.size(44.dp),
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Siguiente")
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "Crear evento")
                     }
                 }
 
@@ -412,7 +435,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = { Column { Text("Calendario Visual V1.37", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                text = { Column { Text("Calendario Visual V1.38", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }
@@ -458,6 +481,29 @@ fun CalendarioScreen(
                 },
                 onDismissRequest = { showGoToYearDialog = false }
             )
+        }
+        if (showCreateEventDialog) {
+            val primaryCalendar = remember(availableCalendarsExternal) {
+                availableCalendarsExternal.find { it.isPrimary } ?: availableCalendarsExternal.firstOrNull()
+            }
+            if (primaryCalendar != null) {
+                CreateEventDialog(
+                    onDismissRequest = { showCreateEventDialog = false },
+                    onSaveRequest = { title, isAllDay ->
+                        scope.launch {
+                            saveEvent(context, title, isAllDay, primaryCalendar.id, today)
+                            showCreateEventDialog = false
+                            delay(1500)
+                            onRefreshRequest()
+                        }
+                    },
+                    eventDate = today,
+                    calendarName = primaryCalendar.displayName
+                )
+            } else {
+                Toast.makeText(context, "No se encontró ningún calendario para guardar el evento.", Toast.LENGTH_LONG).show()
+                showCreateEventDialog = false
+            }
         }
     }
 }

@@ -155,7 +155,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
             CalendarContract.Calendars.ACCOUNT_NAME,
             CalendarContract.Calendars.CALENDAR_COLOR,
-            CalendarContract.Calendars.ACCOUNT_TYPE
+            CalendarContract.Calendars.IS_PRIMARY
         )
 
         try {
@@ -173,6 +173,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                 val displayNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
                 val accountNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_NAME)
                 val colorColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_COLOR)
+                val isPrimaryColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.IS_PRIMARY)
 
                 while (it.moveToNext()) {
                     val id = it.getLong(idColumn)
@@ -181,6 +182,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                     val colorInt = try {
                         if (it.isNull(colorColumn)) null else it.getInt(colorColumn)
                     } catch (_: Exception) { null }
+                    val isPrimary = it.getInt(isPrimaryColumn) == 1
 
                     // Aquí se llamará a la función hasVisibleEvents de CalendarDataCheck.kt
                     // (o del mismo paquete si la moviste/renombraste allí)
@@ -190,7 +192,8 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                                 id = id,
                                 displayName = displayName,
                                 accountName = accountName,
-                                color = colorInt
+                                color = colorInt,
+                                isPrimary = isPrimary
                             )
                         )
                         Log.i("LoadCalendars", "Calendario AÑADIDO (tiene eventos visibles): '$displayName' (ID: $id)")
