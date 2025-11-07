@@ -21,9 +21,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-// Asegúrate de que si CalendarDataCheck.kt está en otro paquete, importas hasVisibleEvents de allí.
-// Ejemplo: import com.example.calendario.checkers.hasVisibleEvents
-// Si está en el mismo paquete com.example.calendario, no se necesita import explícito para ella.
 
 fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festivo>>) {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
@@ -149,13 +146,14 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
     }
 
     return withContext(Dispatchers.IO) {
-        val calendarsListWithEvents = mutableListOf<CalendarInfo>()
+        val calendarsList = mutableListOf<CalendarInfo>()
         val projection = arrayOf(
             CalendarContract.Calendars._ID,
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
             CalendarContract.Calendars.ACCOUNT_NAME,
             CalendarContract.Calendars.CALENDAR_COLOR,
-            CalendarContract.Calendars.IS_PRIMARY
+            CalendarContract.Calendars.IS_PRIMARY,
+            CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
         )
 
         try {
@@ -168,12 +166,12 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             )
 
             cursor?.use {
-                Log.d("LoadCalendars", "Cursor de calendarios del sistema obtenido con ${it.count} entradas.")
                 val idColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
                 val displayNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
                 val accountNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_NAME)
                 val colorColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_COLOR)
                 val isPrimaryColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.IS_PRIMARY)
+                val accessLevelColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
 
                 while (it.moveToNext()) {
                     val id = it.getLong(idColumn)
@@ -183,28 +181,23 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                         if (it.isNull(colorColumn)) null else it.getInt(colorColumn)
                     } catch (_: Exception) { null }
                     val isPrimary = it.getInt(isPrimaryColumn) == 1
+                    val accessLevel = it.getInt(accessLevelColumn)
+                    val canModify = accessLevel >= CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
 
-                    // Aquí se llamará a la función hasVisibleEvents de CalendarDataCheck.kt
-                    // (o del mismo paquete si la moviste/renombraste allí)
-                    if (hasVisibleEvents(context, id)) {
-                        calendarsListWithEvents.add(
-                            CalendarInfo(
-                                id = id,
-                                displayName = displayName,
-                                accountName = accountName,
-                                color = colorInt,
-                                isPrimary = isPrimary
-                            )
+                    calendarsList.add(
+                        CalendarInfo(
+                            id = id,
+                            displayName = displayName,
+                            accountName = accountName,
+                            color = colorInt,
+                            isPrimary = isPrimary,
+                            canModify = canModify
                         )
-                        Log.i("LoadCalendars", "Calendario AÑADIDO (tiene eventos visibles): '$displayName' (ID: $id)")
-                    } else {
-                        Log.i("LoadCalendars", "Calendario IGNORADO (sin eventos visibles o error): '$displayName' (ID: $id)")
-                    }
+                    )
                 }
             } ?: Log.w("LoadCalendars", "El cursor de calendarios del ContentResolver fue nulo.")
 
-            Log.i("LoadCalendars", "Total de calendarios con eventos visibles que se devolverán: ${calendarsListWithEvents.size}")
-            calendarsListWithEvents
+            calendarsList
         } catch (e: SecurityException) {
             Log.e("LoadCalendars", "Excepción de seguridad al cargar calendarios: ${e.message}", e)
             emptyList<CalendarInfo>()
@@ -348,7 +341,3 @@ suspend fun readFestivosFromCalendarsSuspend(
         if (continuation.isActive) continuation.resumeWithException(e)
     }
 }
-
-// Ya no hay una definición de hasVisibleEvents aquí.
-// Se asume que se usará la de CalendarDataCheck.kt (o similar).
-

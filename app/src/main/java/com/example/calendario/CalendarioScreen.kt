@@ -117,7 +117,7 @@ fun CalendarioScreen(
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
     var showGoToYearDialog by remember { mutableStateOf(false) }
-    var showCreateEventDialog by remember { mutableStateOf(false) }
+    var showAddEventScreen by remember { mutableStateOf(false) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -134,7 +134,7 @@ fun CalendarioScreen(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
-                showCreateEventDialog = true
+                showAddEventScreen = true
             } else {
                 Toast.makeText(context, "Permiso para escribir en el calendario es necesario para crear eventos.", Toast.LENGTH_LONG).show()
             }
@@ -145,6 +145,15 @@ fun CalendarioScreen(
         if (hasCalendarPermissionExternal) {
             onRefreshRequest()
         }
+    }
+
+    if (showAddEventScreen) {
+        AddEventScreen(
+            onBackPress = { showAddEventScreen = false },
+            editableCalendars = availableCalendarsExternal.filter { it.canModify },
+            isDarkTheme = isDarkTheme
+        )
+        return
     }
 
     Scaffold(
@@ -274,7 +283,7 @@ fun CalendarioScreen(
                         onClick = { 
                             when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
                                 PackageManager.PERMISSION_GRANTED -> {
-                                    showCreateEventDialog = true
+                                    showAddEventScreen = true
                                 }
                                 else -> {
                                     writePermissionLauncher.launch(Manifest.permission.WRITE_CALENDAR)
@@ -481,29 +490,6 @@ fun CalendarioScreen(
                 },
                 onDismissRequest = { showGoToYearDialog = false }
             )
-        }
-        if (showCreateEventDialog) {
-            val primaryCalendar = remember(availableCalendarsExternal) {
-                availableCalendarsExternal.find { it.isPrimary } ?: availableCalendarsExternal.firstOrNull()
-            }
-            if (primaryCalendar != null) {
-                CreateEventDialog(
-                    onDismissRequest = { showCreateEventDialog = false },
-                    onSaveRequest = { title, isAllDay ->
-                        scope.launch {
-                            saveEvent(context, title, isAllDay, primaryCalendar.id, today)
-                            showCreateEventDialog = false
-                            delay(1500)
-                            onRefreshRequest()
-                        }
-                    },
-                    eventDate = today,
-                    calendarName = primaryCalendar.displayName
-                )
-            } else {
-                Toast.makeText(context, "No se encontró ningún calendario para guardar el evento.", Toast.LENGTH_LONG).show()
-                showCreateEventDialog = false
-            }
         }
     }
 }
