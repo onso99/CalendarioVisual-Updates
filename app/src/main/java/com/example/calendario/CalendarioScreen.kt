@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -122,6 +124,7 @@ fun CalendarioScreen(
     var showAddEventScreen by remember { mutableStateOf(false) }
     var dateForNewEvent by remember { mutableStateOf<LocalDate?>(null) }
     var eventToEdit by remember { mutableStateOf<Festivo?>(null) }
+    var showAllEvents by remember { mutableStateOf(false) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -259,8 +262,7 @@ fun CalendarioScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-            val listTitleText = if (isCurrentMonthView) "Eventos pendientes de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}" else "Eventos de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}"
-            val finalEventsToList = processEventsForDisplay(eventsByDateExternal, currentMonth, today)
+            val finalEventsToList = processEventsForDisplay(eventsByDateExternal, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
 
             Column(
                 modifier = Modifier
@@ -348,16 +350,41 @@ fun CalendarioScreen(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = listTitleText,
-                        fontSize = 18.sp,
-                        color = if (isDarkTheme) AppThemeSetup.DarkColors.eventListTitleColor else AppThemeSetup.LightColors.primary,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
+
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp)
-                    )
+                            .padding(bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        val titleColor = if (isDarkTheme) AppThemeSetup.DarkColors.eventListTitleColor else AppThemeSetup.LightColors.primary
+                        Text(
+                            text = "Eventos de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
+                            fontSize = 18.sp,
+                            color = titleColor,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+
+                        if (isCurrentMonthView) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (isDarkTheme) Color(0xFF3A3A3A) else Color(0xFFCDDEF5))
+                                    .clickable { showAllEvents = !showAllEvents }
+                                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = if (showAllEvents) "Todos" else "Pendientes",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    color = titleColor
+                                )
+                            }
+                        }
+                    }
+
                 } else { // Vista Anual
                     HorizontalPager(
                         state = yearPagerState
@@ -391,7 +418,7 @@ fun CalendarioScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                if (isCurrentMonthView) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
+                                if (isCurrentMonthView && !showAllEvents) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
                                 fontSize = 16.sp,
                                 color = if (isDarkTheme) AppThemeSetup.DarkColors.onScreenTextSecondary else AppThemeSetup.LightColors.onScreenTextSecondary
                             )
@@ -412,7 +439,7 @@ fun CalendarioScreen(
                                         festivo.isFromHolidaySource -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemHolidayText else AppThemeSetup.LightColors.eventListItemHolidayText
                                         else -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemDefaultText else AppThemeSetup.LightColors.eventListItemDefaultText
                                     }
-                                    val fontWeightNum = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal
+                                    val fontWeightNum = if (isTodayEvents && !showAllEvents) FontWeight.Bold else FontWeight.Normal
                                     val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.description.ifEmpty { "(Sin título)" }}"
                                     else festivo.description.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
 

@@ -102,7 +102,8 @@ fun loadSelectedCalendarIds(context: Context): Set<Long> {
 fun processEventsForDisplay(
     eventsByDate: Map<LocalDate, List<Festivo>>,
     targetMonth: YearMonth,
-    today: LocalDate
+    today: LocalDate,
+    showAll: Boolean
 ): List<Pair<LocalDate, List<Festivo>>> {
     val isCurrentMonthView = targetMonth.year == today.year && targetMonth.month == today.month
     val now = LocalTime.now()
@@ -123,7 +124,7 @@ fun processEventsForDisplay(
             }
         }
         .let { eventsInMonth ->
-            if (isCurrentMonthView) {
+            if (isCurrentMonthView && !showAll) {
                 eventsInMonth.filterKeys { date -> !date.isBefore(today) }
             } else {
                 eventsInMonth
