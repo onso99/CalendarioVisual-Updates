@@ -119,6 +119,7 @@ fun CalendarioScreen(
     var showWidgetConfigDialog by remember { mutableStateOf(false) }
     var showGoToYearDialog by remember { mutableStateOf(false) }
     var showAddEventScreen by remember { mutableStateOf(false) }
+    var dateForNewEvent by remember { mutableStateOf<LocalDate?>(null) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -159,7 +160,8 @@ fun CalendarioScreen(
                 }
             },
             editableCalendars = availableCalendarsExternal.filter { it.canModify },
-            isDarkTheme = isDarkTheme
+            isDarkTheme = isDarkTheme,
+            initialDate = dateForNewEvent
         )
         return
     }
@@ -289,6 +291,7 @@ fun CalendarioScreen(
                     }
                     FilledIconButton(
                         onClick = { 
+                            dateForNewEvent = null // Use current date by default
                             when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
                                 PackageManager.PERMISSION_GRANTED -> {
                                     showAddEventScreen = true
@@ -324,6 +327,10 @@ fun CalendarioScreen(
                                 selectedDateForDialog = date
                                 eventsForDialog = events
                                 showDayEventsDialog = true
+                            },
+                            onEmptyDayClick = {
+                                dateForNewEvent = it
+                                showAddEventScreen = true
                             }
                         )
                     }
@@ -480,7 +487,16 @@ fun CalendarioScreen(
                 events = eventsForDialog,
                 availableCalendars = availableCalendarsExternal,
                 isDarkTheme = isDarkTheme,
-                onDismissRequest = { showDayEventsDialog = false; selectedDateForDialog = null; eventsForDialog = emptyList() }
+                onDismissRequest = { 
+                    showDayEventsDialog = false
+                    selectedDateForDialog = null
+                    eventsForDialog = emptyList()
+                },
+                onAddEventClick = { date ->
+                    showDayEventsDialog = false
+                    dateForNewEvent = date
+                    showAddEventScreen = true
+                }
             )
         }
         if (showWidgetConfigDialog) {

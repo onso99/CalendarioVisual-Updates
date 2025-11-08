@@ -29,7 +29,8 @@ fun MonthlyCalendar(
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
     isDarkTheme: Boolean,
-    onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit
+    onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit,
+    onEmptyDayClick: (date: LocalDate) -> Unit
 ) {
     val daysOfWeek = listOf("L", "M", "X", "J", "V", "S", "D")
 
@@ -144,14 +145,16 @@ fun MonthlyCalendar(
                             .padding(1.dp)
                             .background(cellBackground, RoundedCornerShape(4.dp))
                             .then(borderModifier)
-                            .clickable(enabled = dayEventsConAlgunaInfo) {
-                                if (isCurrentMonth) {
+                            .clickable(enabled = isCurrentMonth) {
+                                if (dayEventsConAlgunaInfo) {
                                     onDayClick(
                                         date,
                                         dayEvents.filter {
                                             it.description.ifEmpty { if (it.isAllDay) "(Todo el día)" else "" }
                                                 .isNotBlank()
                                         })
+                                } else {
+                                    onEmptyDayClick(date)
                                 }
                             }
                     ) {

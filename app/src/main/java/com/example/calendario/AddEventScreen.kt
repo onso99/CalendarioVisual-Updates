@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
@@ -74,16 +75,23 @@ fun AddEventScreen(
     onBackPress: () -> Unit,
     onSave: () -> Unit,
     editableCalendars: List<CalendarInfo>,
-    isDarkTheme: Boolean
+    isDarkTheme: Boolean,
+    initialDate: LocalDate?
 ) {
     val context = LocalContext.current
     var title by remember { mutableStateOf("") }
     var isAllDay by remember { mutableStateOf(true) }
     var selectedCalendar by remember { mutableStateOf(editableCalendars.find { it.isPrimary } ?: editableCalendars.firstOrNull()) }
     var showCalendarDialog by remember { mutableStateOf(false) }
+
     val now = LocalDateTime.now()
-    var startDate by remember { mutableStateOf(now) }
-    var endDate by remember { mutableStateOf(now.plusHours(1)) }
+    val effectiveInitialDateTime = remember(initialDate) {
+        initialDate?.atTime(now.toLocalTime()) ?: now
+    }
+
+    var startDate by remember { mutableStateOf(effectiveInitialDateTime) }
+    var endDate by remember { mutableStateOf(effectiveInitialDateTime.plusHours(1)) }
+
     var showStartDatePickerDialog by remember { mutableStateOf(false) }
     var showEndDatePickerDialog by remember { mutableStateOf(false) }
     var showStartTimePickerDialog by remember { mutableStateOf(false) }
@@ -301,7 +309,7 @@ fun AddEventScreen(
                 TextButton(onClick = onBackPress) {
                     Text("CANCELAR")
                 }
-                Button(onClick = { 
+                Button(onClick = {
                     saveEvent(
                         context = context,
                         title = title,
