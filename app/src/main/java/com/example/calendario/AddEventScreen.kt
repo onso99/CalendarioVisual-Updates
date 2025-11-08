@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -39,6 +41,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,29 +77,55 @@ enum class RepetitionRule(val displayName: String) {
 fun AddEventScreen(
     onBackPress: () -> Unit,
     onSave: () -> Unit,
+    onDelete: () -> Unit,
     editableCalendars: List<CalendarInfo>,
     isDarkTheme: Boolean,
-    initialDate: LocalDate?
+    initialDate: LocalDate?,
+    eventToEdit: Festivo? = null
 ) {
     val context = LocalContext.current
+    val isEditMode = eventToEdit != null
+
     var title by remember { mutableStateOf("") }
     var isAllDay by remember { mutableStateOf(true) }
-    var selectedCalendar by remember { mutableStateOf(editableCalendars.find { it.isPrimary } ?: editableCalendars.firstOrNull()) }
+    var selectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
     var showCalendarDialog by remember { mutableStateOf(false) }
+    var startDate by remember { mutableStateOf(LocalDateTime.now()) }
+    var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
+    var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
-    val now = LocalDateTime.now()
-    val effectiveInitialDateTime = remember(initialDate) {
-        initialDate?.atTime(now.toLocalTime()) ?: now
+    LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
+        if (isEditMode && eventToEdit != null) {
+            title = eventToEdit.title
+            isAllDay = eventToEdit.isAllDay
+            selectedCalendar = editableCalendars.find { it.id == eventToEdit.calendarId }
+            
+            startDate = if (eventToEdit.isAllDay) {
+                eventToEdit.date.atStartOfDay()
+            } else {
+                LocalDateTime.of(eventToEdit.date, eventToEdit.startTime ?: LocalTime.now())
+            }
+
+            endDate = if (eventToEdit.isAllDay) {
+                eventToEdit.date.atStartOfDay() 
+            } else {
+                eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: startDate.plusHours(1)
+            }
+            // TODO: Populate repetitionRule from eventToEdit when it's available
+        } else {
+            val now = LocalDateTime.now()
+            val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
+            startDate = effectiveInitialDateTime
+            endDate = effectiveInitialDateTime.plusHours(1)
+            selectedCalendar = editableCalendars.find { it.isPrimary } ?: editableCalendars.firstOrNull()
+        }
     }
-
-    var startDate by remember { mutableStateOf(effectiveInitialDateTime) }
-    var endDate by remember { mutableStateOf(effectiveInitialDateTime.plusHours(1)) }
 
     var showStartDatePickerDialog by remember { mutableStateOf(false) }
     var showEndDatePickerDialog by remember { mutableStateOf(false) }
     var showStartTimePickerDialog by remember { mutableStateOf(false) }
     var showEndTimePickerDialog by remember { mutableStateOf(false) }
-    var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var showRepetitionDialog by remember { mutableStateOf(false) }
 
     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM/yyyy") }
@@ -105,7 +134,7 @@ fun AddEventScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nuevo evento", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(if (isEditMode) "Editar evento" else "Nuevo evento", color = MaterialTheme.colorScheme.onPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onBackPress) {
                         Icon(
@@ -113,6 +142,17 @@ fun AddEventScreen(
                             contentDescription = "Volver",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
+                    }
+                },
+                actions = {
+                    if (isEditMode) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Borrar evento",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -188,7 +228,17 @@ fun AddEventScreen(
                         Text("Todo el día", modifier = Modifier.weight(1f))
                         Switch(
                             checked = isAllDay,
-                            onCheckedChange = { isAllDay = it }
+                            onCheckedChange = { checked ->
+                                isAllDay = checked
+                                if (checked) {
+                                    startDate = startDate.toLocalDate().atStartOfDay()
+                                    endDate = endDate.toLocalDate().atStartOfDay()
+                                } else {
+                                    val currentTime = LocalTime.now()
+                                    startDate = startDate.toLocalDate().atTime(currentTime.hour, currentTime.minute)
+                                    endDate = startDate.plusHours(1)
+                                }
+                            }
                         )
                     }
                     HorizontalDivider()
@@ -310,18 +360,38 @@ fun AddEventScreen(
                     Text("CANCELAR")
                 }
                 Button(onClick = {
-                    saveEvent(
-                        context = context,
-                        title = title,
-                        calendarId = selectedCalendar?.id,
-                        startDate = startDate,
-                        endDate = endDate,
-                        isAllDay = isAllDay,
-                        repetitionRule = repetitionRule
-                    )
-                    onSave()
+                    if (isEditMode && eventToEdit != null) {
+                        val originalStartDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else LocalDateTime.of(eventToEdit.date, eventToEdit.startTime)
+                        val originalEndDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else (eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: originalStartDate.plusHours(1))
+
+                        val hasChanges = title != eventToEdit.title ||
+                                isAllDay != eventToEdit.isAllDay ||
+                                selectedCalendar?.id != eventToEdit.calendarId ||
+                                startDate != originalStartDate ||
+                                endDate != originalEndDate ||
+                                repetitionRule != RepetitionRule.NONE // Simplified check for now
+
+                        if (hasChanges) {
+                            updateEvent(
+                                context = context, eventId = eventToEdit.id, title = title,
+                                calendarId = selectedCalendar?.id, startDate = startDate,
+                                endDate = endDate, isAllDay = isAllDay, repetitionRule = repetitionRule
+                            )
+                            onSave()
+                        } else {
+                            Toast.makeText(context, "No hay cambios que guardar", Toast.LENGTH_SHORT).show()
+                            onBackPress()
+                        }
+                    } else {
+                        createEvent(
+                            context = context, title = title, calendarId = selectedCalendar?.id,
+                            startDate = startDate, endDate = endDate, isAllDay = isAllDay,
+                            repetitionRule = repetitionRule
+                        )
+                        onSave()
+                    }
                 }) {
-                    Text("GUARDAR")
+                    Text(if (isEditMode) "ACTUALIZAR" else "GUARDAR")
                 }
             }
         }
@@ -338,6 +408,24 @@ fun AddEventScreen(
                 onDismissRequest = { showCalendarDialog = false }
             )
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Confirmar eliminación") },
+            text = { Text("¿Seguro que quieres eliminar este evento: \"$title\"?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        eventToEdit?.id?.let { deleteEvent(context, it) }
+                        onDelete()
+                    }
+                ) { Text("ELIMINAR") }
+            },
+            dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("CANCELAR") } }
+        )
     }
 
     if (showStartDatePickerDialog) {
@@ -391,7 +479,7 @@ fun AddEventScreen(
             DatePicker(state = datePickerState)
         }
     }
-
+    
     if (showStartTimePickerDialog) {
         val timePickerState = rememberTimePickerState(initialHour = startDate.hour, initialMinute = startDate.minute, is24Hour = true)
         AlertDialog(
@@ -427,6 +515,8 @@ fun AddEventScreen(
                         val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)
                         if (newEndDate.isAfter(startDate)) {
                             endDate = newEndDate
+                        } else {
+                            Toast.makeText(context, "La hora de fin no puede ser anterior a la de inicio", Toast.LENGTH_SHORT).show()
                         }
                         showEndTimePickerDialog = false
                     }
@@ -435,7 +525,7 @@ fun AddEventScreen(
             dismissButton = { TextButton(onClick = { showEndTimePickerDialog = false }) { Text("Cancelar") } }
         )
     }
-
+    
     if (showRepetitionDialog) {
         var tempSelection by remember { mutableStateOf(repetitionRule) }
         AlertDialog(

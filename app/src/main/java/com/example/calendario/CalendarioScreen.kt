@@ -121,6 +121,7 @@ fun CalendarioScreen(
     var showGoToYearDialog by remember { mutableStateOf(false) }
     var showAddEventScreen by remember { mutableStateOf(false) }
     var dateForNewEvent by remember { mutableStateOf<LocalDate?>(null) }
+    var eventToEdit by remember { mutableStateOf<Festivo?>(null) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -144,8 +145,9 @@ fun CalendarioScreen(
         }
     )
 
-    val requestWritePermissionAndShowAddEventScreen: (LocalDate?) -> Unit = { date ->
+    val launchAddEditScreenWithPermissionCheck = { date: LocalDate?, event: Festivo? ->
         dateForNewEvent = date
+        eventToEdit = event
         when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
             PackageManager.PERMISSION_GRANTED -> {
                 showAddEventScreen = true
@@ -172,9 +174,17 @@ fun CalendarioScreen(
                     onRefreshRequest()
                 }
             },
+            onDelete = {
+                showAddEventScreen = false
+                scope.launch {
+                    delay(1500)
+                    onRefreshRequest()
+                }
+            },
             editableCalendars = availableCalendarsExternal.filter { it.canModify },
             isDarkTheme = isDarkTheme,
-            initialDate = dateForNewEvent
+            initialDate = dateForNewEvent,
+            eventToEdit = eventToEdit
         )
         return
     }
@@ -303,7 +313,7 @@ fun CalendarioScreen(
                         )
                     }
                     FilledIconButton(
-                        onClick = { requestWritePermissionAndShowAddEventScreen(null) },
+                        onClick = { launchAddEditScreenWithPermissionCheck(null, null) },
                         modifier = Modifier.size(44.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -332,7 +342,7 @@ fun CalendarioScreen(
                                 showDayEventsDialog = true
                             },
                             onEmptyDayClick = {
-                                requestWritePermissionAndShowAddEventScreen(it)
+                                launchAddEditScreenWithPermissionCheck(it, null)
                             }
                         )
                     }
@@ -411,7 +421,7 @@ fun CalendarioScreen(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .clickable { Toast.makeText(context, "Pulsado: ${festivo.title}", Toast.LENGTH_SHORT).show() }
+                                                .clickable { launchAddEditScreenWithPermissionCheck(festivo.date, festivo) }
                                                 .padding(vertical = 4.dp)
                                         ) {
                                             Text(
@@ -499,10 +509,11 @@ fun CalendarioScreen(
                 },
                 onAddEventClick = { date ->
                     showDayEventsDialog = false
-                    requestWritePermissionAndShowAddEventScreen(date)
+                    launchAddEditScreenWithPermissionCheck(date, null)
                 },
                 onEventClick = { event ->
-                    Toast.makeText(context, "Evento pulsado: ${event.title}", Toast.LENGTH_SHORT).show()
+                    showDayEventsDialog = false
+                    launchAddEditScreenWithPermissionCheck(event.date, event)
                 }
             )
         }
