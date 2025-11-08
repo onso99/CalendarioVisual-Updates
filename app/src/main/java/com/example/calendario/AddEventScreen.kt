@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.Instant
@@ -71,9 +72,11 @@ enum class RepetitionRule(val displayName: String) {
 @Composable
 fun AddEventScreen(
     onBackPress: () -> Unit,
+    onSave: () -> Unit,
     editableCalendars: List<CalendarInfo>,
     isDarkTheme: Boolean
 ) {
+    val context = LocalContext.current
     var title by remember { mutableStateOf("") }
     var isAllDay by remember { mutableStateOf(true) }
     var selectedCalendar by remember { mutableStateOf(editableCalendars.find { it.isPrimary } ?: editableCalendars.firstOrNull()) }
@@ -298,7 +301,18 @@ fun AddEventScreen(
                 TextButton(onClick = onBackPress) {
                     Text("CANCELAR")
                 }
-                Button(onClick = { /* TODO: Save logic */ onBackPress() }) {
+                Button(onClick = { 
+                    saveEvent(
+                        context = context,
+                        title = title,
+                        calendarId = selectedCalendar?.id,
+                        startDate = startDate,
+                        endDate = endDate,
+                        isAllDay = isAllDay,
+                        repetitionRule = repetitionRule
+                    )
+                    onSave()
+                }) {
                     Text("GUARDAR")
                 }
             }

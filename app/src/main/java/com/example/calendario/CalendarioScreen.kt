@@ -1,7 +1,9 @@
 package com.example.calendario
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,8 +26,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
 import androidx.compose.material.icons.filled.Home
@@ -74,7 +76,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import android.util.Log
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
@@ -150,6 +151,13 @@ fun CalendarioScreen(
     if (showAddEventScreen) {
         AddEventScreen(
             onBackPress = { showAddEventScreen = false },
+            onSave = {
+                showAddEventScreen = false
+                scope.launch {
+                    delay(1500)
+                    onRefreshRequest()
+                }
+            },
             editableCalendars = availableCalendarsExternal.filter { it.canModify },
             isDarkTheme = isDarkTheme
         )
