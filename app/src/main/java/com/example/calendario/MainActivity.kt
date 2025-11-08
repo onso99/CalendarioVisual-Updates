@@ -95,7 +95,7 @@ object AppThemeSetup {
         val navigationButtonContent = Color.White
         val eventListTitleColor = Color(0xFFD28C45)
         val upperSectionBackground = Color(0xFF252525)
-        val eventListItemHolidayText = error
+        val eventListItemHolidayText = Color(0xFFE57373)
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
         val monthlyCalendarGridBackground = upperSectionBackground
