@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -142,6 +143,18 @@ fun CalendarioScreen(
             }
         }
     )
+
+    val requestWritePermissionAndShowAddEventScreen: (LocalDate?) -> Unit = { date ->
+        dateForNewEvent = date
+        when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
+            PackageManager.PERMISSION_GRANTED -> {
+                showAddEventScreen = true
+            }
+            else -> {
+                writePermissionLauncher.launch(Manifest.permission.WRITE_CALENDAR)
+            }
+        }
+    }
 
     LaunchedEffect(hasCalendarPermissionExternal) {
         if (hasCalendarPermissionExternal) {
@@ -290,17 +303,7 @@ fun CalendarioScreen(
                         )
                     }
                     FilledIconButton(
-                        onClick = { 
-                            dateForNewEvent = null // Use current date by default
-                            when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
-                                PackageManager.PERMISSION_GRANTED -> {
-                                    showAddEventScreen = true
-                                }
-                                else -> {
-                                    writePermissionLauncher.launch(Manifest.permission.WRITE_CALENDAR)
-                                }
-                            }
-                        },
+                        onClick = { requestWritePermissionAndShowAddEventScreen(null) },
                         modifier = Modifier.size(44.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -329,8 +332,7 @@ fun CalendarioScreen(
                                 showDayEventsDialog = true
                             },
                             onEmptyDayClick = {
-                                dateForNewEvent = it
-                                showAddEventScreen = true
+                                requestWritePermissionAndShowAddEventScreen(it)
                             }
                         )
                     }
@@ -407,7 +409,10 @@ fun CalendarioScreen(
                                     if (displayDesc.isNotBlank()) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.padding(vertical = 2.dp)
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable { Toast.makeText(context, "Pulsado: ${festivo.title}", Toast.LENGTH_SHORT).show() }
+                                                .padding(vertical = 4.dp)
                                         ) {
                                             Text(
                                                 String.format("%02d:", date.dayOfMonth),
@@ -494,8 +499,10 @@ fun CalendarioScreen(
                 },
                 onAddEventClick = { date ->
                     showDayEventsDialog = false
-                    dateForNewEvent = date
-                    showAddEventScreen = true
+                    requestWritePermissionAndShowAddEventScreen(date)
+                },
+                onEventClick = { event ->
+                    Toast.makeText(context, "Evento pulsado: ${event.title}", Toast.LENGTH_SHORT).show()
                 }
             )
         }

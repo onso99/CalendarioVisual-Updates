@@ -338,7 +338,8 @@ fun DayEventsDialog(
     availableCalendars: List<CalendarInfo>,
     isDarkTheme: Boolean,
     onDismissRequest: () -> Unit,
-    onAddEventClick: (LocalDate) -> Unit
+    onAddEventClick: (LocalDate) -> Unit,
+    onEventClick: (Festivo) -> Unit
 ) {
     val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
@@ -398,6 +399,7 @@ fun DayEventsDialog(
                         Row(
                             Modifier
                                 .fillMaxWidth()
+                                .clickable { onEventClick(festivo) }
                                 .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
