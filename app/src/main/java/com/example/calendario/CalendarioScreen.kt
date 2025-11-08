@@ -114,7 +114,7 @@ fun CalendarioScreen(
     var menuExpanded by remember { mutableStateOf(false) }
     var showSelectCalendarsDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
-    var showHelpDialog by remember { mutableStateOf(false) }
+    var showHelpScreen by remember { mutableStateOf(false) }
     var viewMode by remember { mutableStateOf(CalendarViewMode.MONTHLY) }
     var showDayEventsDialog by remember { mutableStateOf(false) }
     var selectedDateForDialog by remember { mutableStateOf<LocalDate?>(null) }
@@ -191,6 +191,11 @@ fun CalendarioScreen(
         )
         return
     }
+    
+    if (showHelpScreen) {
+        HelpScreen(onBackPress = { showHelpScreen = false })
+        return
+    }
 
     Scaffold(
         topBar = {
@@ -237,7 +242,7 @@ fun CalendarioScreen(
                                 )
                                 DropdownMenuItem(
                                     text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
-                                    onClick = { menuExpanded = false; showHelpDialog = true }
+                                    onClick = { menuExpanded = false; showHelpScreen = true }
                                 )
                                 DropdownMenuItem(
                                     text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
@@ -505,24 +510,7 @@ fun CalendarioScreen(
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }
-        if (showHelpDialog) {
-            AlertDialog(
-                onDismissRequest = { showHelpDialog = false },
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                title = { Text("Ayuda", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = {
-                    Column {
-                        Text("- Toca el nombre del mes/año para cambiar entre vista mensual y anual.", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("- Usa las flechas para navegar al mes/año anterior o siguiente.", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("- Pulsa sobre un día con eventos para ver el detalle de las citas.", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("- El icono 'Sol' alterna entre modo claro y oscuro.", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("- El widget muestra los eventos pendientes y se puede configurar en los ajustes.", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                },
-                confirmButton = { TextButton(onClick = { showHelpDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
-            )
-        }
-
+        
         if (showDayEventsDialog && selectedDateForDialog != null) {
             DayEventsDialog(
                 date = selectedDateForDialog!!,
