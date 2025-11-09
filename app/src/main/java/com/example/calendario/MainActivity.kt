@@ -40,13 +40,11 @@ object AppThemeSetup {
         val onSurface = Color.Black
         val error = Color.Red
         val onError = Color.White
-        val screenBackground = background
         val onScreenTextNormal = onBackground
         val onScreenTextSecondary = Color.DarkGray
         val dropdownMenuBackground = Color.White
         val navigationButtonBackground = Color(0xFFffbb77)
         val navigationButtonContent = Color.Black
-        val eventListTitleColor = primary
         val eventListItemHolidayText = error
         val eventListItemBirthdayText = Color(0xFF0000FF)
         val eventListItemDefaultText = onScreenTextNormal
@@ -54,7 +52,6 @@ object AppThemeSetup {
         val monthlyCalendarGridBorder = Color(0xFFCCCCCC)
         val monthlyCalendarDayCellBackground = Color.White
         val monthlyCalendarEmptyCellBackground = Color(0xFFF0F0F0)
-        val monthlyCalendarDayCellBorder = Color(0xFFCCCCCC)
         val monthlyCalendarTodayCellBorder = primary
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
         val monthlyCalendarHeaderText = Color.Black
@@ -63,14 +60,11 @@ object AppThemeSetup {
         val monthlyCalendarDayNumberSunday = error // CORREGIDO
         val monthlyCalendarDayNumberGhost = Color.Gray.copy(alpha = 0.5f)
         val monthlyCalendarEventIndicator = primary
-        val miniMonthBackground = Color(0xFFF0F0F0)
-        val miniMonthBorder = Color(0xFFDCDCDC)
         val miniMonthHeaderBackground = Color(0xFFE0E0E0)
         val miniMonthHeaderText = Color.DarkGray
         val miniMonthDayNumberNormal = Color.Black.copy(alpha = 0.9f)
         val miniMonthDayNumberHoliday = error
         val miniMonthDayNumberSunday = error // CORREGIDO
-        val miniMonthTodayHighlightText = Color.Blue.copy(alpha = 0.9f)
         val miniMonthTodayHighlightBackground = primary.copy(alpha = 0.15f)
         val dialogEventHolidayText = error
         val dialogEventBirthdayText = eventListItemBirthdayText
@@ -87,7 +81,6 @@ object AppThemeSetup {
         val onSurface = Color(0xFFE0E0E0)
         val error = Color(0xFFFF5252)
         val onError = Color.Black
-        val screenBackground = background
         val onScreenTextNormal = onBackground
         val onScreenTextSecondary = Color(0xFFA0A0A0)
         val dropdownMenuBackground = Color(0xFF2C2C2C)
@@ -102,7 +95,6 @@ object AppThemeSetup {
         val monthlyCalendarGridBorder = Color(0xFF424242)
         val monthlyCalendarDayCellBackground = Color(0xFF555555)
         val monthlyCalendarEmptyCellBackground = Color(0xFF353535)
-        val monthlyCalendarDayCellBorder = Color(0xFF424242)
         val monthlyCalendarTodayCellBorder = eventListTitleColor
         val monthlyCalendarHeaderBackground = Color(0xFF004284)
         val monthlyCalendarHeaderText = Color(0xFFAAD7FF)
@@ -111,14 +103,11 @@ object AppThemeSetup {
         val monthlyCalendarDayNumberSunday = error // CORREGIDO
         val monthlyCalendarDayNumberGhost = Color.Gray.copy(alpha = 0.4f)
         val monthlyCalendarEventIndicator = Color(0xFF64B5F6)
-        val miniMonthBackground = Color(0xFF2A2A2A)
-        val miniMonthBorder = Color(0xFF404040)
         val miniMonthHeaderBackground = Color(0xFF333333)
         val miniMonthHeaderText = Color(0xFFB0B0B0)
         val miniMonthDayNumberNormal = onSurface.copy(alpha = 0.9f)
         val miniMonthDayNumberHoliday = Color(0xFFFF8A80)
         val miniMonthDayNumberSunday = Color(0xFFFF8A80)
-        val miniMonthTodayHighlightText = Color.White // MODIFICADO
         val miniMonthTodayHighlightBackground = primary.copy(alpha = 0.20f)
         val dialogEventHolidayText = error
         val dialogEventBirthdayText = eventListItemBirthdayText
@@ -306,9 +295,7 @@ fun notifyCalendarWidgetsConfigurationChangedMainActivity(context: Context) {
     val remoteViewId: Int = R.id.widget_event_list
 
     if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
-        for (widgetId: Int in appWidgetIdsArray) {
-            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId)
-        }
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIdsArray, remoteViewId)
         Log.d("MainActivityNotifier", "Notificación enviada para actualizar widgets por CAMBIO DE CONFIGURACIÓN (IdRes explícito).")
     } else {
         Log.d("MainActivityNotifier", "No hay widgets que notificar para cambio de configuración.")
@@ -323,9 +310,7 @@ fun notifyCalendarWidgetsDataChangedMainActivity(context: Context) {
     val remoteViewId: Int = R.id.widget_event_list
 
     if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
-        for (widgetId: Int in appWidgetIdsArray) {
-            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, remoteViewId)
-        }
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIdsArray, remoteViewId)
         Log.d("MainActivityNotifier", "Notificación enviada para actualizar datos de EVENTOS en widgets (IdRes explícito).")
     } else {
         Log.d("MainActivityNotifier", "No hay widgets que notificar para cambio de datos de eventos.")

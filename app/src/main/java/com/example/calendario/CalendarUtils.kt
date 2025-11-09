@@ -7,7 +7,6 @@ import android.provider.CalendarContract
 import android.widget.Toast
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.util.TimeZone
 
 fun createEvent(
@@ -37,7 +36,7 @@ fun createEvent(
         } else {
             Toast.makeText(context, "Error al guardar el evento", Toast.LENGTH_SHORT).show()
         }
-    } catch (e: SecurityException) {
+    } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
         Toast.makeText(context, "Error inesperado al crear el evento: ${e.message}", Toast.LENGTH_LONG).show()
@@ -73,7 +72,7 @@ fun updateEvent(
         } else {
             Toast.makeText(context, "Error al actualizar el evento", Toast.LENGTH_SHORT).show()
         }
-    } catch (e: SecurityException) {
+    } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
         Toast.makeText(context, "Error inesperado al actualizar el evento: ${e.message}", Toast.LENGTH_LONG).show()
@@ -90,7 +89,7 @@ fun deleteEvent(context: Context, eventId: Long) {
         } else {
             Toast.makeText(context, "Error al eliminar el evento", Toast.LENGTH_SHORT).show()
         }
-    } catch (e: SecurityException) {
+    } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
         Toast.makeText(context, "Error inesperado al eliminar el evento: ${e.message}", Toast.LENGTH_LONG).show()

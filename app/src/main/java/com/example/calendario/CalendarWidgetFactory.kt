@@ -15,19 +15,14 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.time.ZoneId
 import java.util.Locale
 
-// Imports para tus clases/objetos definidos en otros archivos
-import com.example.calendario.WidgetConstants
-import com.example.calendario.Festivo
-import com.example.calendario.FestivoDto
 // import com.example.calendario.R // R se resuelve automáticamente
 
 
 class CalendarWidgetFactory(
     private val context: Context,
-    private val intent: Intent
+    intent: Intent
 ) : RemoteViewsService.RemoteViewsFactory {
 
     private var eventsList: List<Festivo> = emptyList()
@@ -109,7 +104,7 @@ class CalendarWidgetFactory(
         val eventDate: LocalDate = actualEvent.date
         val dayOfWeekFullName = eventDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
         val dayOfWeekFormatted = if (dayOfWeekFullName.length >= 3) {
-            dayOfWeekFullName.substring(0, 3).replaceFirstChar {
+            dayOfWeekFullName.take(3).replaceFirstChar { 
                 if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
             }
         } else {
@@ -122,12 +117,11 @@ class CalendarWidgetFactory(
         val dateOnlyFormatter = DateTimeFormatter.ofPattern("dd/MM", Locale.getDefault())
         views.setTextViewText(R.id.widget_item_date_formatted, actualEvent.date.format(dateOnlyFormatter))
 
-        val displayDescription: String
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        if (!actualEvent.isAllDay && actualEvent.startTime != null) {
-            displayDescription = "${actualEvent.startTime.format(timeFormatter)} ${actualEvent.description.ifEmpty { "(Sin título)" }}"
+        val displayDescription = if (!actualEvent.isAllDay && actualEvent.startTime != null) {
+            "${actualEvent.startTime.format(timeFormatter)} ${actualEvent.description.ifEmpty { "(Sin título)" }}"
         } else {
-            displayDescription = actualEvent.description.ifEmpty { "(Evento)" }
+            actualEvent.description.ifEmpty { "(Evento)" }
         }
         views.setTextViewText(R.id.widget_item_description, displayDescription)
 
@@ -263,10 +257,9 @@ class CalendarWidgetFactory(
             Log.d("WidgetFactory", "loadEventsFromPrefs: No hay eventos guardados en SharedPreferences 'events_prefs'.")
             return emptyMap()
         }
-        val gson = Gson()
         val type = object : TypeToken<Map<String, List<FestivoDto>>>() {}.type
         val mapFromString: Map<String, List<FestivoDto>> = try {
-            gson.fromJson(json, type)
+            Gson().fromJson(json, type)
         } catch (e: Exception) {
             Log.e("WidgetFactory", "loadEventsFromPrefs: Error al deserializar eventos desde SharedPreferences", e)
             return emptyMap() // Podrías también limpiar prefs aquí si están corruptas.
@@ -299,9 +292,7 @@ class CalendarWidgetFactory(
                     )
                 }
             } else { null }
-        }.toMap().also {
-            // Log.d("WidgetFactory", "loadEventsFromPrefs: Eventos cargados, ${it.size} días con eventos.")
-        }
+        }.toMap()
     }
 
 

@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.database.getStringOrNull
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -19,8 +21,6 @@ import java.time.ZoneId
 import java.time.YearMonth
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festivo>>) {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
@@ -63,7 +63,11 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     }
 
     return mapFromString.mapNotNull { (dateStr, dtoList) ->
-        val date = try { LocalDate.parse(dateStr) } catch (e: Exception) { Log.e("CalendarDataUtils", "Error parseando fecha: '$dateStr'", e); null }
+        val date = try {
+            LocalDate.parse(dateStr)
+        } catch (e: Exception) {
+            Log.e("CalendarDataUtils", "Error parseando fecha: '$dateStr'", e); null
+        }
         if (date != null) {
             date to dtoList.map { dto ->
                 Festivo(
@@ -71,14 +75,28 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     title = dto.desc.takeIf { it.isNotBlank() }?.take(40)?.trim() ?: "(Evento guardado)",
                     description = dto.desc,
                     date = date,
-                    startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("CalendarDataUtils", "Error parseando LocalTime en load (startTime): '$it'", e); null } },
-                    endTime = dto.endTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { Log.e("CalendarDataUtils", "Error parseando LocalTime en load (endTime): '$it'", e); null } },
+                    startTime = dto.startTimeStr?.let {
+                        try {
+                            LocalTime.parse(it)
+                        } catch (e: Exception) {
+                            Log.e("CalendarDataUtils", "Error parseando LocalTime en load (startTime): '$it'", e); null
+                        }
+                    },
+                    endTime = dto.endTimeStr?.let {
+                        try {
+                            LocalTime.parse(it)
+                        } catch (e: Exception) {
+                            Log.e("CalendarDataUtils", "Error parseando LocalTime en load (endTime): '$it'", e); null
+                        }
+                    },
                     isAllDay = dto.isAllDay,
                     calendarId = dto.id,
                     isFromHolidaySource = false
                 )
             }
-        } else { null }
+        } else {
+            null
+        }
     }.toMap().also {
         Log.d("CalendarDataUtils", "Eventos cargados: ${it.size} días.")
     }
@@ -95,7 +113,13 @@ fun saveSelectedCalendarIds(context: Context, selectedIds: Set<Long>) {
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
     return prefs.getStringSet("selected_calendar_ids", emptySet())
-        ?.mapNotNull { idStr -> try { idStr.toLong() } catch (e: NumberFormatException) { Log.e("CalendarDataUtils", "Error parseando ID: '$idStr'", e); null } }
+        ?.mapNotNull { idStr ->
+            try {
+                idStr.toLong()
+            } catch (e: NumberFormatException) {
+                Log.e("CalendarDataUtils", "Error parseando ID: '$idStr'", e); null
+            }
+        }
         ?.toSet() ?: emptySet()
 }
 
@@ -166,7 +190,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                 "${CalendarContract.Calendars.CALENDAR_DISPLAY_NAME} ASC"
             )
 
-            cursor?.use {
+            cursor?.use { 
                 val idColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
                 val displayNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
                 val accountNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_NAME)
@@ -180,7 +204,9 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                     val accountName = it.getString(accountNameColumn) ?: "Cuenta desconocida"
                     val colorInt = try {
                         if (it.isNull(colorColumn)) null else it.getInt(colorColumn)
-                    } catch (_: Exception) { null }
+                    } catch (_: Exception) {
+                        null
+                    }
                     val isPrimary = it.getInt(isPrimaryColumn) == 1
                     val accessLevel = it.getInt(accessLevelColumn)
                     val canModify = accessLevel >= CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
@@ -201,10 +227,10 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             calendarsList
         } catch (e: SecurityException) {
             Log.e("LoadCalendars", "Excepción de seguridad al cargar calendarios: ${e.message}", e)
-            emptyList<CalendarInfo>()
+            emptyList()
         } catch (e: Exception) {
             Log.e("LoadCalendars", "Error general en loadAvailableCalendarsSuspend: ${e.message}", e)
-            emptyList<CalendarInfo>()
+            emptyList()
         }
     }
 }
@@ -310,12 +336,10 @@ suspend fun readFestivosFromCalendarsSuspend(
                     actualEndTime = endDateTimeInSystemZone.toLocalTime()
                 }
 
-                val eventDescriptionToUse = finalEventTitle
-
                 val festivoEntry = Festivo(
                     id = eventOriginalId,
                     title = finalEventTitle,
-                    description = eventDescriptionToUse,
+                    description = finalEventTitle,
                     date = eventDate,
                     startTime = actualStartTime,
                     endTime = actualEndTime,

@@ -7,18 +7,6 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
-// Imports de CalendarDataUtils
-import com.example.calendario.loadSelectedCalendarIds
-import com.example.calendario.saveEventsToPrefs
-import com.example.calendario.loadAvailableCalendarsSuspend
-import com.example.calendario.readFestivosFromCalendarsSuspend
-
-// Imports de DataModels (si fueran necesarios directamente aquí, pero parece que no)
-// import com.example.calendario.CalendarInfo
-// import com.example.calendario.Festivo
-// import java.time.LocalDate
-
-
 class UpdateCalendarDataWorker(
     appContext: Context,
     workerParams: WorkerParameters
@@ -50,10 +38,7 @@ class UpdateCalendarDataWorker(
                 Log.w(TAG_WORKER, "No se encontraron calendarios disponibles, pero había IDs seleccionados. No se puede continuar. ID: ${this.id}")
                 return Result.failure()
             }
-            if (availableCalendars.isEmpty() && selectedCalendarIds.isEmpty()) {
-                Log.i(TAG_WORKER, "No hay calendarios disponibles ni seleccionados. Trabajo finalizado. ID: ${this.id}")
-                return Result.success()
-            }
+            
             Log.d(TAG_WORKER, "Calendarios disponibles cargados: ${availableCalendars.size}. ID: ${this.id}")
 
             val validSelectedCalendarIds = selectedCalendarIds.filter { selectedId ->

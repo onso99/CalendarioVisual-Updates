@@ -1,7 +1,6 @@
 package com.example.calendario
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
@@ -13,7 +12,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +26,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
@@ -65,7 +62,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -232,7 +228,7 @@ fun CalendarioScreen(
                                         if (hasCalendarPermissionExternal) {
                                             showSelectCalendarsDialog = true
                                         } else {
-                                            readPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
+                                            readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
                                         }
                                     }
                                 )
@@ -336,8 +332,8 @@ fun CalendarioScreen(
                 if (viewMode == CalendarViewMode.MONTHLY) {
                     HorizontalPager(
                         state = monthPagerState,
-                    ) {
-                        val month = startMonth.plusMonths(it.toLong())
+                    ) { page ->
+                        val month = startMonth.plusMonths(page.toLong())
                         MonthlyCalendar(
                             currentMonth = month,
                             today = today,
@@ -348,8 +344,8 @@ fun CalendarioScreen(
                                 eventsForDialog = events
                                 showDayEventsDialog = true
                             },
-                            onEmptyDayClick = {
-                                launchAddEditScreenWithPermissionCheck(it, null)
+                            onEmptyDayClick = { date ->
+                                launchAddEditScreenWithPermissionCheck(date, null)
                             }
                         )
                     }
@@ -457,7 +453,7 @@ fun CalendarioScreen(
                                                 .padding(vertical = 4.dp)
                                         ) {
                                             Text(
-                                                String.format("%02d:", date.dayOfMonth),
+                                                String.format(Locale.getDefault(), "%02d:", date.dayOfMonth),
                                                 color = itemColor,
                                                 fontWeight = fontWeightNum,
                                                 fontSize = 16.sp
@@ -485,7 +481,6 @@ fun CalendarioScreen(
             SelectCalendarsDialog(
                 initialSelectedIds = selectedCalendarIdsExternal,
                 availableCalendars = availableCalendarsExternal,
-                isDarkTheme = isDarkTheme,
                 onDismissRequest = { showSelectCalendarsDialog = false }
             ) { newlySelectedIds ->
                 showSelectCalendarsDialog = false
@@ -506,7 +501,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = { Column { Text("Calendario Visual V1.38", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                text = { Column { Text("Calendario Visual V1.38n", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }
@@ -534,7 +529,6 @@ fun CalendarioScreen(
         }
         if (showWidgetConfigDialog) {
             WidgetConfigScreen(
-                isDarkTheme = isDarkTheme,
                 onDismissRequest = { showWidgetConfigDialog = false }
             )
         }

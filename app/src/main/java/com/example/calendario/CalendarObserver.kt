@@ -29,13 +29,13 @@ class CalendarObserver(private val context: Context) : ContentObserver(Handler(L
                     this
                 )
                 isRegistered = true
-                Log.i(TAG, "register() - CalendarObserver registrado exitosamente para CalendarContract.Events.CONTENT_URI. isRegistered = $isRegistered")
+                Log.i(TAG, "register() - CalendarObserver registrado exitosamente para CalendarContract.Events.CONTENT_URI. isRegistered = true")
             } catch (e: Exception) {
                 Log.e(TAG, "register() - Error registrando CalendarObserver", e)
                 isRegistered = false // Asegurar que el flag es correcto en caso de error
             }
         } else {
-            Log.w(TAG, "register() - CalendarObserver ya estaba marcado como registrado. isRegistered = $isRegistered. No se re-registra.")
+            Log.w(TAG, "register() - CalendarObserver ya estaba marcado como registrado. isRegistered = true. No se re-registra.")
         }
     }
 
@@ -44,12 +44,12 @@ class CalendarObserver(private val context: Context) : ContentObserver(Handler(L
             try {
                 context.contentResolver.unregisterContentObserver(this)
                 isRegistered = false
-                Log.i(TAG, "unregister() - CalendarObserver desregistrado exitosamente. isRegistered = $isRegistered")
+                Log.i(TAG, "unregister() - CalendarObserver desregistrado exitosamente. isRegistered = false")
             } catch (e: Exception) {
                 Log.e(TAG, "unregister() - Error desregistrando CalendarObserver", e)
             }
         } else {
-            Log.w(TAG, "unregister() - CalendarObserver no estaba marcado como registrado. isRegistered = $isRegistered. No se puede desregistrar.")
+            Log.w(TAG, "unregister() - CalendarObserver no estaba marcado como registrado. isRegistered = false. No se puede desregistrar.")
         }
     }
 
@@ -76,12 +76,4 @@ class CalendarObserver(private val context: Context) : ContentObserver(Handler(L
         )
         Log.d(TAG, "onChange - FIN. Trabajo encolado.")
     }
-
-    // Este método sigue aquí por si lo necesitas para depuración desde otros sitios,
-    // pero CalendarAppWidgetProvider ya no lo usa directamente en onEnabled.
-    fun isObserverRegistered(): Boolean {
-        Log.d(TAG, "isObserverRegistered() - Devuelve: $isRegistered")
-        return isRegistered
-    }
 }
-

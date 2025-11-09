@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -64,7 +63,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WidgetConfigScreen(isDarkTheme: Boolean, onDismissRequest: () -> Unit) {
+fun WidgetConfigScreen(onDismissRequest: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
@@ -150,7 +149,6 @@ fun WidgetConfigScreen(isDarkTheme: Boolean, onDismissRequest: () -> Unit) {
     if (showEventColorPalette) {
         ColorPaletteDialog(
             title = "Color para eventos", colors = baseEventColors, currentlySelectedColor = eventColor,
-            isDarkTheme = isDarkTheme,
             onColorSelected = { selectedColor -> eventColor = selectedColor; showEventColorPalette = false },
             onDismiss = { showEventColorPalette = false }
         )
@@ -158,7 +156,6 @@ fun WidgetConfigScreen(isDarkTheme: Boolean, onDismissRequest: () -> Unit) {
     if (showTodayEventColorPalette) {
         ColorPaletteDialog(
             title = "Color para eventos de hoy", colors = baseTodayEventColors, currentlySelectedColor = todayEventColor,
-            isDarkTheme = isDarkTheme,
             onColorSelected = { selectedColor -> todayEventColor = selectedColor; showTodayEventColorPalette = false },
             onDismiss = { showTodayEventColorPalette = false }
         )
@@ -183,7 +180,6 @@ fun ColorPickerRow(label: String, currentColor: Color, textColor: Color, onColor
 @Composable
 fun ColorPaletteDialog(
     title: String, colors: List<Color>, currentlySelectedColor: Color,
-    isDarkTheme: Boolean,
     onColorSelected: (Color) -> Unit, onDismiss: () -> Unit
 ) {
     val selectedItemBorderColor = Color.Red
@@ -223,7 +219,6 @@ fun ColorPaletteDialog(
 fun SelectCalendarsDialog(
     initialSelectedIds: Set<Long>,
     availableCalendars: List<CalendarInfo>,
-    isDarkTheme: Boolean,
     onDismissRequest: () -> Unit,
     onApplySelection: (selectedIds: Set<Long>) -> Unit
 ) {

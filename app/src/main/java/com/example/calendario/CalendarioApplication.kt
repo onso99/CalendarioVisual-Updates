@@ -22,7 +22,7 @@ class CalendarioApplication : Application(), Configuration.Provider {
         get() {
             Log.i(TAG, "Creando y proporcionando WorkManagerConfiguration con logging DEBUG.")
             return Configuration.Builder()
-                .setMinimumLoggingLevel(android.util.Log.DEBUG) // Habilita logs detallados de WorkManager
+                .setMinimumLoggingLevel(Log.DEBUG) // Habilita logs detallados de WorkManager
                 .build()
         }
 
@@ -61,4 +61,3 @@ class CalendarioApplication : Application(), Configuration.Provider {
     }
     */
 }
-

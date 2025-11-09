@@ -1,15 +1,16 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.widget.RemoteViews
 import android.util.Log
+import android.widget.RemoteViews
+import androidx.core.net.toUri
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -110,6 +111,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         Log.i(TAG, "onDisabled - FIN.")
     }
 
+    @SuppressLint("StaticFieldLeak")
     companion object {
         private const val TAG = "WidgetProvider"
         const val ACTION_REFRESH_WIDGET = "com.example.calendario.ACTION_REFRESH_WIDGET"
@@ -147,7 +149,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
 
             val serviceIntent = Intent(context, CalendarWidgetService::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                data = Uri.parse(this.toUri(Intent.URI_INTENT_SCHEME)).buildUpon()
+                data = this.toUri(Intent.URI_INTENT_SCHEME).toUri().buildUpon()
                     .appendPath(appWidgetId.toString())
                     .build()
             }

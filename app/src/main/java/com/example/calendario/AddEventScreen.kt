@@ -58,7 +58,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -96,7 +95,7 @@ fun AddEventScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
-        if (isEditMode && eventToEdit != null) {
+        if (isEditMode) {
             title = eventToEdit.title
             isAllDay = eventToEdit.isAllDay
             selectedCalendar = editableCalendars.find { it.id == eventToEdit.calendarId }
@@ -360,7 +359,7 @@ fun AddEventScreen(
                     Text("CANCELAR")
                 }
                 Button(onClick = {
-                    if (isEditMode && eventToEdit != null) {
+                    if (isEditMode) {
                         val originalStartDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else LocalDateTime.of(eventToEdit.date, eventToEdit.startTime)
                         val originalEndDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else (eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: originalStartDate.plusHours(1))
 
@@ -533,7 +532,7 @@ fun AddEventScreen(
             title = { Text("Repetir evento") },
             text = {
                 Column {
-                    RepetitionRule.values().forEach { rule ->
+                    RepetitionRule.entries.forEach { rule ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

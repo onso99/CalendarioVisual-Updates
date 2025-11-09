@@ -1,7 +1,6 @@
 package com.example.calendario
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -122,7 +121,7 @@ fun MiniMonthCalendar(
                 .padding(vertical = 2.dp),
             horizontalArrangement = Arrangement.spacedBy(1.dp) // MODIFICADO
         ) {
-            daysOfWeekShort.forEach {
+            daysOfWeekShort.forEach { 
                 Box(
                     Modifier
                         .weight(1f)
