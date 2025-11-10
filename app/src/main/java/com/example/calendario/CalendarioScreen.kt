@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -452,21 +453,36 @@ fun CalendarioScreen(
                                                 .clickable { launchAddEditScreenWithPermissionCheck(festivo.date, festivo) }
                                                 .padding(vertical = 4.dp)
                                         ) {
-                                            Text(
-                                                String.format(Locale.getDefault(), "%02d:", date.dayOfMonth),
-                                                color = itemColor,
-                                                fontWeight = fontWeightNum,
-                                                fontSize = 16.sp
-                                            )
-                                            Text(
-                                                displayDesc,
-                                                color = itemColor,
-                                                fontWeight = fontWeightNum,
-                                                fontSize = 16.sp,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                modifier = Modifier.padding(start = 4.dp)
-                                            )
+                                            Row(
+                                                modifier = Modifier.weight(1f),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    String.format(Locale.getDefault(), "%02d:", date.dayOfMonth),
+                                                    color = itemColor,
+                                                    fontWeight = fontWeightNum,
+                                                    fontSize = 16.sp
+                                                )
+                                                Text(
+                                                    displayDesc,
+                                                    color = itemColor,
+                                                    fontWeight = fontWeightNum,
+                                                    fontSize = 16.sp,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    modifier = Modifier.padding(start = 4.dp)
+                                                )
+                                            }
+                                            if (festivo.rrule != null) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Refresh,
+                                                    contentDescription = "Evento repetido",
+                                                    tint = itemColor.copy(alpha = 0.6f),
+                                                    modifier = Modifier
+                                                        .padding(start = 8.dp)
+                                                        .size(16.dp)
+                                                )
+                                            }
                                         }
                                     }
                                 }
