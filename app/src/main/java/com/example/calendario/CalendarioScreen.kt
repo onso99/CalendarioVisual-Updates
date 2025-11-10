@@ -452,8 +452,7 @@ fun CalendarioScreen(
 
                                     if (displayDesc.isNotBlank()) {
                                         val isHighlighted = isTodayEvents
-                                        val fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
-
+                                        
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
@@ -477,14 +476,13 @@ fun CalendarioScreen(
                                                     Text(
                                                         String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
                                                         color = if (isHighlighted) Color.Black else MaterialTheme.colorScheme.onSurface,
-                                                        fontWeight = fontWeight,
+                                                        fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal,
                                                         fontSize = 16.sp
                                                     )
                                                 }
                                                 Text(
                                                     displayDesc,
                                                     color = itemColor,
-                                                    fontWeight = fontWeight,
                                                     fontSize = 16.sp,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis,
@@ -495,7 +493,7 @@ fun CalendarioScreen(
                                                 Icon(
                                                     imageVector = Icons.Default.Refresh,
                                                     contentDescription = "Evento repetido",
-                                                    tint = itemColor.copy(alpha = 0.6f),
+                                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                                     modifier = Modifier
                                                         .padding(start = 8.dp)
                                                         .size(16.dp)
