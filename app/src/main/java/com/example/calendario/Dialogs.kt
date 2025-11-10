@@ -77,7 +77,7 @@ fun DeleteRecurringEventDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Eliminar evento recurrente") },
+        title = { Text("Eliminar evento recurrente", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Column {
                 val options = listOf(
@@ -98,11 +98,6 @@ fun DeleteRecurringEventDialog(
                         Text(text, modifier = Modifier.padding(start = 8.dp))
                     }
                 }
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    "Para opciones más complejas (p. ej., eliminar este y los futuros), utiliza la aplicación de Google Calendar.",
-                    style = MaterialTheme.typography.bodySmall
-                )
             }
         },
         confirmButton = {

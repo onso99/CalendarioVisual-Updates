@@ -83,7 +83,6 @@ fun AddEventScreen(
     eventToEdit: Festivo? = null
 ) {
     val context = LocalContext.current
-    val isEditMode = eventToEdit != null
 
     var title by remember { mutableStateOf("") }
     var isAllDay by remember { mutableStateOf(true) }
@@ -96,25 +95,23 @@ fun AddEventScreen(
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
-        if (isEditMode) {
-            eventToEdit?.let { 
-                title = it.title
-                isAllDay = it.isAllDay
-                selectedCalendar = editableCalendars.find { cal -> cal.id == it.calendarId }
-                
-                startDate = if (it.isAllDay) {
-                    it.date.atStartOfDay()
-                } else {
-                    LocalDateTime.of(it.date, it.startTime ?: LocalTime.now())
-                }
+        if (eventToEdit != null) {
+            title = eventToEdit.title
+            isAllDay = eventToEdit.isAllDay
+            selectedCalendar = editableCalendars.find { cal -> cal.id == eventToEdit.calendarId }
 
-                endDate = if (it.isAllDay) {
-                    it.date.atStartOfDay() 
-                } else {
-                    it.endTime?.let { endTime -> LocalDateTime.of(it.date, endTime) } ?: startDate.plusHours(1)
-                }
-                repetitionRule = RepetitionRule.entries.find { rule -> rule.rrule != null && it.rrule?.startsWith(rule.rrule) == true } ?: RepetitionRule.NONE
+            startDate = if (eventToEdit.isAllDay) {
+                eventToEdit.date.atStartOfDay()
+            } else {
+                LocalDateTime.of(eventToEdit.date, eventToEdit.startTime ?: LocalTime.now())
             }
+
+            endDate = if (eventToEdit.isAllDay) {
+                eventToEdit.date.atStartOfDay()
+            } else {
+                eventToEdit.endTime?.let { endTime -> LocalDateTime.of(eventToEdit.date, endTime) } ?: startDate.plusHours(1)
+            }
+            repetitionRule = RepetitionRule.entries.find { rule -> rule.rrule != null && eventToEdit.rrule?.startsWith(rule.rrule) == true } ?: RepetitionRule.NONE
         } else {
             val now = LocalDateTime.now()
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
@@ -136,7 +133,7 @@ fun AddEventScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isEditMode) "Editar evento" else "Nuevo evento", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(if (eventToEdit != null) "Editar evento" else "Nuevo evento", color = MaterialTheme.colorScheme.onPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onBackPress) {
                         Icon(
@@ -147,9 +144,9 @@ fun AddEventScreen(
                     }
                 },
                 actions = {
-                    if (isEditMode) {
-                        IconButton(onClick = { 
-                            if (eventToEdit?.rrule != null) {
+                    if (eventToEdit != null) {
+                        IconButton(onClick = {
+                            if (eventToEdit.rrule != null) {
                                 showDeleteRecurringDialog = true
                             } else {
                                 showDeleteDialog = true
@@ -168,7 +165,7 @@ fun AddEventScreen(
                 )
             )
         },
-        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else Color(0xFFE3F2FD)
+        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else Color(0xFFE4EDFA)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -368,7 +365,7 @@ fun AddEventScreen(
                     Text("CANCELAR")
                 }
                 Button(onClick = {
-                    if (isEditMode && eventToEdit != null) {
+                    if (eventToEdit != null) {
                         val originalStartDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else LocalDateTime.of(eventToEdit.date, eventToEdit.startTime)
                         val originalEndDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else (eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: originalStartDate.plusHours(1))
 
@@ -399,7 +396,7 @@ fun AddEventScreen(
                         onSave()
                     }
                 }) {
-                    Text(if (isEditMode) "ACTUALIZAR" else "GUARDAR")
+                    Text(if (eventToEdit != null) "ACTUALIZAR" else "GUARDAR")
                 }
             }
         }
@@ -441,14 +438,14 @@ fun AddEventScreen(
             onDismissRequest = { showDeleteRecurringDialog = false },
             onConfirm = { option ->
                 showDeleteRecurringDialog = false
-                eventToEdit?.let { event ->
+                if (eventToEdit != null) {
                     when (option) {
                         DeleteRecurringOption.SINGLE_EVENT -> {
-                            cancelEventInstance(context, event)
+                            cancelEventInstance(context, eventToEdit)
                             onDelete()
                         }
                         DeleteRecurringOption.ALL_EVENTS -> {
-                            deleteEvent(context, event.id)
+                            deleteEvent(context, eventToEdit.id)
                             onDelete()
                         }
                     }
