@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,12 +64,12 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-enum class RepetitionRule(val displayName: String) {
-    NONE("No se repite"),
-    DAILY("Cada día"),
-    WEEKLY("Cada semana"),
-    MONTHLY("Cada mes"),
-    YEARLY("Cada año")
+enum class RepetitionRule(val rrule: String?, val displayName: String) {
+    NONE(null, "No se repite"),
+    DAILY("FREQ=DAILY", "Cada día"),
+    WEEKLY("FREQ=WEEKLY", "Cada semana"),
+    MONTHLY("FREQ=MONTHLY", "Cada mes"),
+    YEARLY("FREQ=YEARLY", "Cada año")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,25 +94,31 @@ fun AddEventScreen(
     var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteSeriesDialog by remember { mutableStateOf(false)
+
+    }
 
     LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
         if (isEditMode) {
-            title = eventToEdit.title
-            isAllDay = eventToEdit.isAllDay
-            selectedCalendar = editableCalendars.find { it.id == eventToEdit.calendarId }
-            
-            startDate = if (eventToEdit.isAllDay) {
-                eventToEdit.date.atStartOfDay()
-            } else {
-                LocalDateTime.of(eventToEdit.date, eventToEdit.startTime ?: LocalTime.now())
-            }
+            Log.d("AddEventScreen_Debug", "RRULE for event '${eventToEdit?.title}': [${eventToEdit?.rrule}]")
+            eventToEdit?.let { 
+                title = it.title
+                isAllDay = it.isAllDay
+                selectedCalendar = editableCalendars.find { cal -> cal.id == it.calendarId }
+                
+                startDate = if (it.isAllDay) {
+                    it.date.atStartOfDay()
+                } else {
+                    LocalDateTime.of(it.date, it.startTime ?: LocalTime.now())
+                }
 
-            endDate = if (eventToEdit.isAllDay) {
-                eventToEdit.date.atStartOfDay() 
-            } else {
-                eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: startDate.plusHours(1)
+                endDate = if (it.isAllDay) {
+                    it.date.atStartOfDay() 
+                } else {
+                    it.endTime?.let { endTime -> LocalDateTime.of(it.date, endTime) } ?: startDate.plusHours(1)
+                }
+                repetitionRule = RepetitionRule.entries.find { rule -> rule.rrule != null && it.rrule?.startsWith(rule.rrule) == true } ?: RepetitionRule.NONE
             }
-            // TODO: Populate repetitionRule from eventToEdit when it's available
         } else {
             val now = LocalDateTime.now()
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
@@ -145,7 +152,13 @@ fun AddEventScreen(
                 },
                 actions = {
                     if (isEditMode) {
-                        IconButton(onClick = { showDeleteDialog = true }) {
+                        IconButton(onClick = { 
+                            if (eventToEdit?.rrule != null) {
+                                showDeleteSeriesDialog = true
+                            } else {
+                                showDeleteDialog = true
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Borrar evento",
@@ -359,7 +372,7 @@ fun AddEventScreen(
                     Text("CANCELAR")
                 }
                 Button(onClick = {
-                    if (isEditMode) {
+                    if (isEditMode && eventToEdit != null) {
                         val originalStartDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else LocalDateTime.of(eventToEdit.date, eventToEdit.startTime)
                         val originalEndDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else (eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: originalStartDate.plusHours(1))
 
@@ -368,7 +381,7 @@ fun AddEventScreen(
                                 selectedCalendar?.id != eventToEdit.calendarId ||
                                 startDate != originalStartDate ||
                                 endDate != originalEndDate ||
-                                repetitionRule != RepetitionRule.NONE // Simplified check for now
+                                repetitionRule.rrule != eventToEdit.rrule
 
                         if (hasChanges) {
                             updateEvent(
@@ -424,6 +437,30 @@ fun AddEventScreen(
                 ) { Text("ELIMINAR") }
             },
             dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("CANCELAR") } }
+        )
+    }
+    
+    if (showDeleteSeriesDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteSeriesDialog = false },
+            title = { Text("Confirmar eliminación de serie") },
+            text = {
+                Column {
+                    Text("Este es un evento repetido. ¿Seguro que quieres eliminar toda la serie: \"$title\"? Esta acción no se puede deshacer.")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Para opciones avanzadas (borrar solo este evento o los futuros), utiliza la aplicación de Google Calendar.")
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteSeriesDialog = false
+                        eventToEdit?.id?.let { deleteEvent(context, it) }
+                        onDelete()
+                    }
+                ) { Text("ELIMINAR SERIE") }
+            },
+            dismissButton = { TextButton(onClick = { showDeleteSeriesDialog = false }) { Text("CANCELAR") } }
         )
     }
 
