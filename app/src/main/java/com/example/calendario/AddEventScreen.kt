@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -94,13 +93,10 @@ fun AddEventScreen(
     var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var showDeleteSeriesDialog by remember { mutableStateOf(false)
-
-    }
+    var showDeleteRecurringDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
         if (isEditMode) {
-            Log.d("AddEventScreen_Debug", "RRULE for event '${eventToEdit?.title}': [${eventToEdit?.rrule}]")
             eventToEdit?.let { 
                 title = it.title
                 isAllDay = it.isAllDay
@@ -154,7 +150,7 @@ fun AddEventScreen(
                     if (isEditMode) {
                         IconButton(onClick = { 
                             if (eventToEdit?.rrule != null) {
-                                showDeleteSeriesDialog = true
+                                showDeleteRecurringDialog = true
                             } else {
                                 showDeleteDialog = true
                             }
@@ -440,29 +436,27 @@ fun AddEventScreen(
         )
     }
     
-    if (showDeleteSeriesDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteSeriesDialog = false },
-            title = { Text("Confirmar eliminación de serie") },
-            text = {
-                Column {
-                    Text("Este es un evento repetido. ¿Seguro que quieres eliminar toda la serie: \"$title\"? Esta acción no se puede deshacer.")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Para opciones avanzadas (borrar solo este evento o los futuros), utiliza la aplicación de Google Calendar.")
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteSeriesDialog = false
-                        eventToEdit?.id?.let { deleteEvent(context, it) }
-                        onDelete()
+    if (showDeleteRecurringDialog) {
+        DeleteRecurringEventDialog(
+            onDismissRequest = { showDeleteRecurringDialog = false },
+            onConfirm = { option ->
+                showDeleteRecurringDialog = false
+                eventToEdit?.let { event ->
+                    when (option) {
+                        DeleteRecurringOption.SINGLE_EVENT -> {
+                            cancelEventInstance(context, event)
+                            onDelete()
+                        }
+                        DeleteRecurringOption.ALL_EVENTS -> {
+                            deleteEvent(context, event.id)
+                            onDelete()
+                        }
                     }
-                ) { Text("ELIMINAR SERIE") }
-            },
-            dismissButton = { TextButton(onClick = { showDeleteSeriesDialog = false }) { Text("CANCELAR") } }
+                }
+            }
         )
     }
+
 
     if (showStartDatePickerDialog) {
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = startDate.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())

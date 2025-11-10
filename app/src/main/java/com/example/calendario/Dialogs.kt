@@ -33,6 +33,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
@@ -60,6 +61,65 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
+
+enum class DeleteRecurringOption {
+    SINGLE_EVENT,
+    ALL_EVENTS
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteRecurringEventDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: (DeleteRecurringOption) -> Unit
+) {
+    var selectedOption by remember { mutableStateOf<DeleteRecurringOption?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Eliminar evento recurrente") },
+        text = {
+            Column {
+                val options = listOf(
+                    DeleteRecurringOption.SINGLE_EVENT to "Eliminar solo este evento",
+                    DeleteRecurringOption.ALL_EVENTS to "Eliminar todos los eventos de la serie"
+                )
+                options.forEach { (option, text) ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedOption = option },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (selectedOption == option),
+                            onClick = { selectedOption = option }
+                        )
+                        Text(text, modifier = Modifier.padding(start = 8.dp))
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    "Para opciones más complejas (p. ej., eliminar este y los futuros), utiliza la aplicación de Google Calendar.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { selectedOption?.let(onConfirm) },
+                enabled = selectedOption != null
+            ) {
+                Text("ELIMINAR")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("CANCELAR")
+            }
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -96,6 +96,47 @@ fun deleteEvent(context: Context, eventId: Long) {
     }
 }
 
+fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
+    try {
+        val instanceStartDateTime = if (eventToCancel.isAllDay) {
+            eventToCancel.date.atStartOfDay()
+        } else {
+            LocalDateTime.of(eventToCancel.date, eventToCancel.startTime ?: LocalDateTime.now().toLocalTime())
+        }
+
+        val timezone = if (eventToCancel.isAllDay) "UTC" else TimeZone.getDefault().id
+        val startMillis: Long
+
+        if (eventToCancel.isAllDay) {
+            startMillis = instanceStartDateTime.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+        } else {
+            startMillis = instanceStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+
+        val values = ContentValues().apply {
+            put(CalendarContract.Events.CALENDAR_ID, eventToCancel.calendarId)
+            put(CalendarContract.Events.ORIGINAL_ID, eventToCancel.id)
+            put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startMillis)
+            put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED)
+            put(CalendarContract.Events.DTSTART, startMillis)
+            put(CalendarContract.Events.DTEND, startMillis)
+            put(CalendarContract.Events.EVENT_TIMEZONE, timezone)
+        }
+
+        val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
+
+        if (uri != null) {
+            Toast.makeText(context, "Instancia de evento cancelada", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Error al cancelar la instancia del evento", Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: SecurityException) {
+        Toast.makeText(context, "Error: Permiso denegado para modificar el calendario.", Toast.LENGTH_LONG).show()
+    } catch (e: Exception) {
+        Toast.makeText(context, "Error inesperado al cancelar el evento: ${e.message}", Toast.LENGTH_LONG).show()
+    }
+}
+
 private fun createEventValues(
     startDate: LocalDateTime,
     endDate: LocalDateTime,
