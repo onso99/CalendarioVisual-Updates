@@ -67,7 +67,6 @@ fun HelpScreen(
             HelpText("- El botón (+) crea un nuevo evento en la fecha actual.")
             HelpText("- Pulsa en un día específico del calendario y se creará un nuevo evento para ese día. Si el día tiene eventos los mostrará también.")
             HelpText("- Pulsando sobre un evento de la lista de eventos se podrá Editar/Eliminar.")
-            HelpText("- Si se elimina un evento que se repite, se eliminará toda la serie. Para eliminaciones parciales debe hacerse desde Google Calendar.")
             HelpText("- Sólo se permite la gestión de eventos en los calendarios Editables.")
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -361,7 +361,7 @@ fun CalendarioScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        val titleColor = if (isDarkTheme) AppThemeSetup.DarkColors.eventListTitleColor else AppThemeSetup.LightColors.primary
+                        val titleColor = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText
                         Text(
                             text = "Eventos de ${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
                             fontSize = 18.sp,
@@ -451,8 +451,6 @@ fun CalendarioScreen(
                                     else festivo.description.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
 
                                     if (displayDesc.isNotBlank()) {
-                                        val isHighlighted = isTodayEvents
-                                        
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
@@ -466,7 +464,7 @@ fun CalendarioScreen(
                                             ) {
                                                 Box(
                                                     contentAlignment = Alignment.Center,
-                                                    modifier = (if (isHighlighted) Modifier
+                                                    modifier = (if (isTodayEvents) Modifier
                                                         .background(
                                                             if (isDarkTheme) AppThemeSetup.DarkColors.eventListTitleColor else AppThemeSetup.LightColors.navigationButtonBackground,
                                                             RoundedCornerShape(4.dp)
@@ -475,8 +473,8 @@ fun CalendarioScreen(
                                                 ) {
                                                     Text(
                                                         String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
-                                                        color = if (isHighlighted) Color.Black else MaterialTheme.colorScheme.onSurface,
-                                                        fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal,
+                                                        color = if (isTodayEvents) Color.Black else MaterialTheme.colorScheme.onSurface,
+                                                        fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
                                                         fontSize = 16.sp
                                                     )
                                                 }
@@ -533,7 +531,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = { Column { Text("Calendario Visual V1.41", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                text = { Column { Text("Calendario Visual V1.41a", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }
