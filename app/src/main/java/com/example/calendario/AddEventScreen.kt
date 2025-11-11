@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -70,6 +71,9 @@ enum class RepetitionRule(val rrule: String?, val displayName: String) {
     MONTHLY("FREQ=MONTHLY", "Cada mes"),
     YEARLY("FREQ=YEARLY", "Cada año")
 }
+
+private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,9 +131,6 @@ fun AddEventScreen(
     var showEndTimePickerDialog by remember { mutableStateOf(false) }
     var showRepetitionDialog by remember { mutableStateOf(false) }
 
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM/yyyy") }
-    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -165,7 +166,7 @@ fun AddEventScreen(
                 )
             )
         },
-        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else Color(0xFFE4EDFA)
+        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else AppThemeSetup.LightColors.monthlyCalendarGridBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -418,7 +419,10 @@ fun AddEventScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Confirmar eliminación") },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            title = { Text("Confirmar eliminación", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             text = { Text("¿Seguro que quieres eliminar este evento: \"$title\"?") },
             confirmButton = {
                 TextButton(
@@ -432,7 +436,7 @@ fun AddEventScreen(
             dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("CANCELAR") } }
         )
     }
-    
+
     if (showDeleteRecurringDialog) {
         DeleteRecurringEventDialog(
             onDismissRequest = { showDeleteRecurringDialog = false },
@@ -453,7 +457,6 @@ fun AddEventScreen(
             }
         )
     }
-
 
     if (showStartDatePickerDialog) {
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = startDate.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
@@ -506,12 +509,15 @@ fun AddEventScreen(
             DatePicker(state = datePickerState)
         }
     }
-    
+
     if (showStartTimePickerDialog) {
         val timePickerState = rememberTimePickerState(initialHour = startDate.hour, initialMinute = startDate.minute, is24Hour = true)
         AlertDialog(
             onDismissRequest = { showStartTimePickerDialog = false },
-            title = { Text("Seleccionar hora de inicio") },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            title = { Text("Seleccionar hora de inicio", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             text = { TimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
             confirmButton = {
                 TextButton(
@@ -533,7 +539,10 @@ fun AddEventScreen(
         val timePickerState = rememberTimePickerState(initialHour = endDate.hour, initialMinute = endDate.minute, is24Hour = true)
         AlertDialog(
             onDismissRequest = { showEndTimePickerDialog = false },
-            title = { Text("Seleccionar hora de fin") },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            title = { Text("Seleccionar hora de fin", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             text = { TimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
             confirmButton = {
                 TextButton(
@@ -552,12 +561,15 @@ fun AddEventScreen(
             dismissButton = { TextButton(onClick = { showEndTimePickerDialog = false }) { Text("Cancelar") } }
         )
     }
-    
+
     if (showRepetitionDialog) {
         var tempSelection by remember { mutableStateOf(repetitionRule) }
         AlertDialog(
             onDismissRequest = { showRepetitionDialog = false },
-            title = { Text("Repetir evento") },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            title = { Text("Repetir evento", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             text = {
                 Column {
                     RepetitionRule.entries.forEach { rule ->

@@ -41,7 +41,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -77,6 +76,9 @@ fun DeleteRecurringEventDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         title = { Text("Eliminar evento recurrente", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Column {
@@ -244,7 +246,7 @@ fun ColorPaletteDialog(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        title = { Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp) },
+        title = { Text(title, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             LazyRow(modifier = Modifier
                 .fillMaxWidth()
@@ -277,41 +279,32 @@ fun SelectCalendarsDialog(
     onDismissRequest: () -> Unit,
     onApplySelection: (selectedIds: Set<Long>) -> Unit
 ) {
-    var localAvailableCalendars by remember(availableCalendars) { mutableStateOf(availableCalendars) }
     var currentSelectedIdsInDialog by remember(initialSelectedIds, availableCalendars) {
         mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
-    }
-
-    LaunchedEffect(availableCalendars, initialSelectedIds) {
-        localAvailableCalendars = availableCalendars
-        currentSelectedIdsInDialog = initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet()
     }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         title = {
             Text(
                 "Seleccionar Calendarios",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = 20.sp
             )
         },
         text = {
-            if (localAvailableCalendars.isEmpty()) {
-                Text(
-                    "No se encontraron calendarios disponibles.",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            if (availableCalendars.isEmpty()) {
+                Text("No se encontraron calendarios disponibles.", fontSize = 16.sp)
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .heightIn(max = 400.dp)
                         .fillMaxWidth()
                 ) {
-                    items(localAvailableCalendars, key = { it.id }) { calendar ->
+                    items(availableCalendars, key = { it.id }) { calendar ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -349,8 +342,7 @@ fun SelectCalendarsDialog(
                                 Text(
                                     calendar.displayName,
                                     fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    fontSize = 16.sp
                                 )
                                 Text(
                                     calendar.accountName,
@@ -367,7 +359,7 @@ fun SelectCalendarsDialog(
         confirmButton = {
             Button(
                 onClick = { onApplySelection(currentSelectedIdsInDialog) },
-                enabled = localAvailableCalendars.isNotEmpty()
+                enabled = availableCalendars.isNotEmpty()
             ) {
                 Text("Aplicar", fontSize = 16.sp)
             }
@@ -397,6 +389,8 @@ fun DayEventsDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -406,8 +400,7 @@ fun DayEventsDialog(
                 Text(
                     formattedDate,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontSize = 20.sp
                 )
                 FilledIconButton(
                     onClick = { onAddEventClick(date) },
@@ -435,11 +428,7 @@ fun DayEventsDialog(
             }
 
             if (eventsToDisplay.isEmpty()) {
-                Text(
-                    "No hay eventos con detalle.",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Text("No hay eventos con detalle.", fontSize = 16.sp)
             } else {
                 LazyColumn(Modifier.heightIn(max = 300.dp)) {
                     items(
