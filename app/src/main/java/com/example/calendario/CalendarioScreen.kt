@@ -272,7 +272,7 @@ fun CalendarioScreen(
                     .fillMaxWidth()
                     .background(
                         if (viewMode == CalendarViewMode.MONTHLY && !isDarkTheme) AppThemeSetup.LightColors.monthlyCalendarGridBackground
-                        else if (viewMode == CalendarViewMode.MONTHLY && isDarkTheme) AppThemeSetup.DarkColors.upperSectionBackground
+                        else if (viewMode == CalendarViewMode.MONTHLY && isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground
                         else Color.Transparent
                     )
                     .padding(top = 8.dp, start = 12.dp, end = 12.dp),
@@ -374,7 +374,7 @@ fun CalendarioScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (isDarkTheme) Color(0xFF3A3A3A) else Color(0xFFCDDEF5))
+                                    .background(if (isDarkTheme) AppThemeSetup.DarkColors.filterButtonBackground else Color(0xFFCDDEF5))
                                     .clickable {
                                         showAllEvents = !showAllEvents
                                         scope.launch {
@@ -533,7 +533,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = { Column { Text("Calendario Visual V1.40", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                text = { Column { Text("Calendario Visual V1.40a", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }

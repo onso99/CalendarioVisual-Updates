@@ -69,9 +69,9 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .background(
                 if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground else AppThemeSetup.LightColors.monthlyCalendarGridBackground,
-                RoundedCornerShape(8.dp)
+                RoundedCornerShape(if (isDarkTheme) 0.dp else 8.dp)
             )
-            .padding(4.dp)
+            .padding(if (isDarkTheme) 0.dp else 4.dp)
     ) {
         // Cabecera con los días de la semana
         Row(Modifier.fillMaxWidth()) {

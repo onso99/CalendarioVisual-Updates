@@ -87,16 +87,15 @@ object AppThemeSetup {
         val navigationButtonBackground = Color(0xFFB87333)
         val navigationButtonContent = Color.White
         val eventListTitleColor = Color(0xFFD28C45)
-        val upperSectionBackground = Color(0xFF252525)
         val eventListItemHolidayText = Color(0xFFE57373)
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
-        val monthlyCalendarGridBackground = upperSectionBackground
+        val monthlyCalendarGridBackground = Color(0xFF303030)
         val monthlyCalendarGridBorder = Color(0xFF424242)
         val monthlyCalendarDayCellBackground = Color(0xFF555555)
-        val monthlyCalendarEmptyCellBackground = Color(0xFF353535)
+        val monthlyCalendarEmptyCellBackground = Color(0xFF3F3F3F)
         val monthlyCalendarTodayCellBorder = eventListTitleColor
-        val monthlyCalendarHeaderBackground = Color(0xFF004284)
+        val monthlyCalendarHeaderBackground = Color(0xFF0060BF)
         val monthlyCalendarHeaderText = Color(0xFFAAD7FF)
         val monthlyCalendarDayNumberNormal = onSurface
         val monthlyCalendarDayNumberHoliday = error
@@ -113,6 +112,7 @@ object AppThemeSetup {
         val dialogEventBirthdayText = eventListItemBirthdayText
         val dialogEventDefaultText = onScreenTextNormal
         val dialogCalendarColorIndicatorBorder = Color.DarkGray.copy(alpha = 0.5f)
+        val filterButtonBackground = Color(0xFF3F3F3F)
     }
 
 }
