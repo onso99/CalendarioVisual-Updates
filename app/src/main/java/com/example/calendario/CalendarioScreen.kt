@@ -20,11 +20,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Brightness4
@@ -122,7 +123,8 @@ fun CalendarioScreen(
     var dateForNewEvent by remember { mutableStateOf<LocalDate?>(null) }
     var eventToEdit by remember { mutableStateOf<Festivo?>(null) }
     var showAllEvents by remember { mutableStateOf(false) }
-    val eventListScrollState = rememberScrollState()
+    val lazyListState = rememberLazyListState()
+    var homeClickTrigger by remember { mutableStateOf(0) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -162,6 +164,23 @@ fun CalendarioScreen(
     LaunchedEffect(hasCalendarPermissionExternal) {
         if (hasCalendarPermissionExternal) {
             onRefreshRequest()
+        }
+    }
+
+    val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
+    val finalEventsToList = processEventsForDisplay(eventsByDateExternal, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
+
+    LaunchedEffect(finalEventsToList, showAllEvents, viewMode, homeClickTrigger) {
+        if (viewMode == CalendarViewMode.MONTHLY && finalEventsToList.isNotEmpty()) {
+            val targetIndex = if (showAllEvents) {
+                val targetDate = if (isCurrentMonthView) today else currentMonth.atDay(1)
+                finalEventsToList.indexOfFirst { (date, _) -> date >= targetDate }.takeIf { it != -1 } ?: 0
+            } else {
+                0
+            }
+            scope.launch {
+                lazyListState.animateScrollToItem(targetIndex)
+            }
         }
     }
 
@@ -264,8 +283,6 @@ fun CalendarioScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-            val finalEventsToList = processEventsForDisplay(eventsByDateExternal, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
 
             Column(
                 modifier = Modifier
@@ -289,6 +306,7 @@ fun CalendarioScreen(
                             scope.launch {
                                 monthPagerState.animateScrollToPage(initialPage)
                             }
+                            homeClickTrigger++
                         },
                         modifier = Modifier.size(44.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
@@ -375,12 +393,7 @@ fun CalendarioScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(if (isDarkTheme) AppThemeSetup.DarkColors.filterButtonBackground else Color(0xFFCDDEF5))
-                                    .clickable {
-                                        showAllEvents = !showAllEvents
-                                        scope.launch {
-                                            eventListScrollState.animateScrollTo(0)
-                                        }
-                                    }
+                                    .clickable { showAllEvents = !showAllEvents }
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
                                 Text(
@@ -432,13 +445,13 @@ fun CalendarioScreen(
                             )
                         }
                     } else {
-                        Column(
+                        LazyColumn(
+                            state = lazyListState,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .verticalScroll(eventListScrollState)
                                 .padding(top = 8.dp, start = 12.dp, end = 12.dp)
                         ) {
-                            finalEventsToList.forEach { (date, festivos) ->
+                            itemsIndexed(finalEventsToList, key = { _, (date, festivos) -> date.toString() + festivos.firstOrNull()?.id }) { _, (date, festivos) ->
                                 val isTodayEvents = isCurrentMonthView && date == today
                                 festivos.forEach { festivo ->
                                     val esCumpleanos = festivo.description.contains("cumpleaños", true) || festivo.description.contains("aniversario", true)
@@ -455,29 +468,27 @@ fun CalendarioScreen(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .then(
+                                                    if (isTodayEvents) {
+                                                        Modifier.background(if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground)
+                                                    } else {
+                                                        Modifier
+                                                    }
+                                                )
                                                 .clickable { launchAddEditScreenWithPermissionCheck(festivo.date, festivo) }
-                                                .padding(vertical = 4.dp)
+                                                .padding(horizontal = 4.dp, vertical = 4.dp)
                                         ) {
                                             Row(
                                                 modifier = Modifier.weight(1f),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Box(
-                                                    contentAlignment = Alignment.Center,
-                                                    modifier = (if (isTodayEvents) Modifier
-                                                        .background(
-                                                            if (isDarkTheme) AppThemeSetup.DarkColors.eventListTitleColor else AppThemeSetup.LightColors.navigationButtonBackground,
-                                                            RoundedCornerShape(4.dp)
-                                                        )
-                                                        .padding(horizontal = 6.dp, vertical = 2.dp) else Modifier)
-                                                ) {
-                                                    Text(
-                                                        String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
-                                                        color = if (isTodayEvents) Color.Black else MaterialTheme.colorScheme.onSurface,
-                                                        fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
-                                                        fontSize = 16.sp
-                                                    )
-                                                }
+                                                Text(
+                                                    String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
+                                                    color = MaterialTheme.colorScheme.onSurface,
+                                                    fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
+                                                    fontSize = 16.sp
+                                                )
                                                 Text(
                                                     displayDesc,
                                                     color = itemColor,
@@ -531,7 +542,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = { Column { Text("Calendario Visual V1.41a", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                text = { Column { Text("Calendario Visual V1.41b", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }

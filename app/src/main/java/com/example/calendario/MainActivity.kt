@@ -51,7 +51,7 @@ object AppThemeSetup {
         val monthlyCalendarGridBackground = Color(0xFFE4EDFA) // MODIFICADO
         val monthlyCalendarGridBorder = Color(0xFFCCCCCC)
         val monthlyCalendarDayCellBackground = Color.White
-        val monthlyCalendarEmptyCellBackground = Color(0xFFF0F0F0)
+        val monthlyCalendarEmptyCellBackground = Color(0xFFE9E9E9)
         val monthlyCalendarTodayCellBorder = primary
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
         val monthlyCalendarHeaderText = Color.Black
