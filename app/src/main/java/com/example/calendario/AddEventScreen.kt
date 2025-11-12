@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -95,6 +96,7 @@ fun AddEventScreen(
     var startDate by remember { mutableStateOf(LocalDateTime.now()) }
     var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
+    var initialRepetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
 
@@ -116,6 +118,7 @@ fun AddEventScreen(
                 eventToEdit.endTime?.let { endTime -> LocalDateTime.of(eventToEdit.date, endTime) } ?: startDate.plusHours(1)
             }
             repetitionRule = RepetitionRule.entries.find { rule -> rule.rrule != null && eventToEdit.rrule?.startsWith(rule.rrule) == true } ?: RepetitionRule.NONE
+            initialRepetitionRule = repetitionRule
         } else {
             val now = LocalDateTime.now()
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
@@ -375,7 +378,7 @@ fun AddEventScreen(
                                 selectedCalendar?.id != eventToEdit.calendarId ||
                                 startDate != originalStartDate ||
                                 endDate != originalEndDate ||
-                                repetitionRule.rrule != eventToEdit.rrule
+                                repetitionRule != initialRepetitionRule
 
                         if (hasChanges) {
                             updateEvent(
@@ -425,12 +428,16 @@ fun AddEventScreen(
             title = { Text("Confirmar eliminación", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             text = { Text("¿Seguro que quieres eliminar este evento: \"$title\"?") },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         showDeleteDialog = false
                         eventToEdit?.id?.let { deleteEvent(context, it) }
                         onDelete()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
                 ) { Text("ELIMINAR") }
             },
             dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("CANCELAR") } }
@@ -589,7 +596,7 @@ fun AddEventScreen(
                 }
             },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         repetitionRule = tempSelection
                         showRepetitionDialog = false

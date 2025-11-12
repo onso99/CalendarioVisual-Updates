@@ -105,12 +105,10 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         }
 
         val timezone = if (eventToCancel.isAllDay) "UTC" else TimeZone.getDefault().id
-        val startMillis: Long
-
-        if (eventToCancel.isAllDay) {
-            startMillis = instanceStartDateTime.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+        val startMillis = if (eventToCancel.isAllDay) {
+            instanceStartDateTime.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
         } else {
-            startMillis = instanceStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            instanceStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
 
         val values = ContentValues().apply {
@@ -130,7 +128,7 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         } else {
             Toast.makeText(context, "Error al cancelar la instancia del evento", Toast.LENGTH_SHORT).show()
         }
-    } catch (e: SecurityException) {
+    } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para modificar el calendario.", Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
         Toast.makeText(context, "Error inesperado al cancelar el evento: ${e.message}", Toast.LENGTH_LONG).show()
@@ -145,33 +143,40 @@ private fun createEventValues(
     calendarId: Long,
     repetitionRule: RepetitionRule
 ): ContentValues {
-    val startMillis: Long
-    val endMillis: Long
     val timezone = if (isAllDay) TimeZone.getTimeZone("UTC").id else TimeZone.getDefault().id
-
-    if (isAllDay) {
-        startMillis = startDate.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
-        endMillis = endDate.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+    val startMillis = if (isAllDay) {
+        startDate.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
     } else {
-        startMillis = startDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        endMillis = endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        startDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
     
-    val rrule = when (repetitionRule) {
-        RepetitionRule.DAILY -> "FREQ=DAILY"
-        RepetitionRule.WEEKLY -> "FREQ=WEEKLY"
-        RepetitionRule.MONTHLY -> "FREQ=MONTHLY"
-        RepetitionRule.YEARLY -> "FREQ=YEARLY"
-        else -> null
-    }
-
     return ContentValues().apply {
         put(CalendarContract.Events.DTSTART, startMillis)
-        put(CalendarContract.Events.DTEND, endMillis)
         put(CalendarContract.Events.TITLE, title)
         put(CalendarContract.Events.CALENDAR_ID, calendarId)
         put(CalendarContract.Events.ALL_DAY, if (isAllDay) 1 else 0)
         put(CalendarContract.Events.EVENT_TIMEZONE, timezone)
-        rrule?.let { put(CalendarContract.Events.RRULE, it) } ?: remove(CalendarContract.Events.RRULE)
+
+        if (repetitionRule == RepetitionRule.NONE) {
+            val endMillis = if (isAllDay) {
+                endDate.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+            } else {
+                endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            }
+            put(CalendarContract.Events.DTEND, endMillis)
+            putNull(CalendarContract.Events.RRULE)
+            putNull(CalendarContract.Events.DURATION)
+        } else {
+            if (isAllDay) {
+                val durationInDays = java.time.Duration.between(startDate.toLocalDate().atStartOfDay(), endDate.toLocalDate().atStartOfDay()).toDays()
+                val finalDurationDays = if (durationInDays < 1) 1L else durationInDays
+                put(CalendarContract.Events.DURATION, "P${finalDurationDays}D")
+            } else {
+                val durationInSeconds = java.time.Duration.between(startDate, endDate).seconds
+                put(CalendarContract.Events.DURATION, "PT${durationInSeconds}S")
+            }
+            put(CalendarContract.Events.RRULE, repetitionRule.rrule)
+            putNull(CalendarContract.Events.DTEND)
+        }
     }
 }
