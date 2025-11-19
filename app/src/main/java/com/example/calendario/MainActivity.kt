@@ -16,7 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color // ¡¡¡IMPORT AÑADIDO!!!
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
@@ -27,6 +27,7 @@ import java.time.LocalDate
 object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
+    const val KEY_TODAY_HIGHLIGHT_COLOR = "today_highlight_color_app"
 
     private val baseAppPrimaryColor = Color(0xFF2196F3)
     private val baseAppOnPrimaryColor = Color.White
