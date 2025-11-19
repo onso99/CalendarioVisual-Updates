@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
@@ -38,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -216,12 +219,14 @@ fun DayEventsDialog(
     events: List<Festivo>,
     availableCalendars: List<CalendarInfo>,
     isDarkTheme: Boolean,
+    todayHighlightColor: Color,
     onDismissRequest: () -> Unit,
     onAddEventClick: (LocalDate) -> Unit,
     onEventClick: (Festivo) -> Unit
 ) {
     val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
+    val isToday = date == LocalDate.now()
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -256,38 +261,36 @@ fun DayEventsDialog(
         },
         text = {
             val eventsToDisplay = events.mapNotNull { festivo ->
-                val desc = if (!festivo.isAllDay && festivo.startTime != null) {
-                    "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.description.ifEmpty { "(Sin título)" }}"
+                val title = if (!festivo.isAllDay && festivo.startTime != null) {
+                    "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                 } else {
-                    festivo.description.ifEmpty { if (festivo.isAllDay) "(Todo el día)" else "" }
+                    festivo.title.ifEmpty { if (festivo.isAllDay) "(Todo el día)" else "" }
                 }
-                if (desc.isNotBlank()) festivo to desc else null
+                if (title.isNotBlank()) festivo to title else null
             }
 
             if (eventsToDisplay.isEmpty()) {
                 Text("No hay eventos con detalle.", fontSize = 16.sp)
             } else {
                 LazyColumn(Modifier.heightIn(max = 300.dp)) {
-                    items(
-                        items = eventsToDisplay,
-                        key = { (festivo, _) -> festivo.calendarId.toString() + festivo.description + festivo.startTime.toString() + festivo.date.toString() }
-                    ) { (festivo, displayDesc) ->
+                    items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
+                        val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
+                        val defaultItemColor = when {
+                            esCumpleanos -> if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventBirthdayText else AppThemeSetup.LightColors.dialogEventBirthdayText
+                            festivo.isFromHolidaySource -> if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventHolidayText else AppThemeSetup.LightColors.dialogEventHolidayText
+                            else -> if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventDefaultText else AppThemeSetup.LightColors.dialogEventDefaultText
+                        }
+                        val itemColor = if (isToday) Color.Black else defaultItemColor
+
                         Row(
                             Modifier
                                 .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .then(if (isToday) Modifier.background(todayHighlightColor) else Modifier)
                                 .clickable { onEventClick(festivo) }
-                                .padding(vertical = 4.dp),
+                                .padding(vertical = 4.dp, horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val itemColor = when {
-                                festivo.description.contains("cumpleaños", true) || festivo.description.contains("aniversario", true) ->
-                                    if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventBirthdayText else AppThemeSetup.LightColors.dialogEventBirthdayText
-                                festivo.isFromHolidaySource ->
-                                    if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventHolidayText else AppThemeSetup.LightColors.dialogEventHolidayText
-                                else ->
-                                    if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventDefaultText else AppThemeSetup.LightColors.dialogEventDefaultText
-                            }
-
                             availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
                                 Box(
                                     Modifier
@@ -302,13 +305,14 @@ fun DayEventsDialog(
                                 Spacer(Modifier.width(8.dp))
                             }
                             Text(
-                                displayDesc,
+                                displayTitle,
                                 color = itemColor,
                                 fontSize = 16.sp,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }

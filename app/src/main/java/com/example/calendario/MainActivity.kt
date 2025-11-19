@@ -49,10 +49,10 @@ object AppThemeSetup {
         val eventListItemHolidayText = error
         val eventListItemBirthdayText = Color(0xFF0000FF)
         val eventListItemDefaultText = onScreenTextNormal
-        val monthlyCalendarGridBackground = Color(0xFFE4EDFA) // MODIFICADO
+        val monthlyCalendarGridBackground = Color(0xFFDBE7F9)
         val monthlyCalendarGridBorder = Color(0xFFCCCCCC)
         val monthlyCalendarDayCellBackground = Color.White
-        val monthlyCalendarEmptyCellBackground = Color(0xFFE9E9E9)
+        val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
         val monthlyCalendarTodayCellBorder = primary
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
         val monthlyCalendarHeaderText = Color.Black
@@ -91,17 +91,17 @@ object AppThemeSetup {
         val eventListItemHolidayText = Color(0xFFE57373)
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
-        val monthlyCalendarGridBackground = Color(0xFF303030)
+        val monthlyCalendarGridBackground = Color(0xFF3F3F3F)
         val monthlyCalendarGridBorder = Color(0xFF424242)
-        val monthlyCalendarDayCellBackground = Color(0xFF555555)
-        val monthlyCalendarEmptyCellBackground = Color(0xFF3F3F3F)
+        val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
+        val monthlyCalendarEmptyCellBackground = Color(0xFF4F4F4F)
         val monthlyCalendarTodayCellBorder = eventListTitleColor
         val monthlyCalendarHeaderBackground = Color(0xFF0060BF)
         val monthlyCalendarHeaderText = Color(0xFFAAD7FF)
         val monthlyCalendarDayNumberNormal = onSurface
         val monthlyCalendarDayNumberHoliday = error
         val monthlyCalendarDayNumberSunday = error // CORREGIDO
-        val monthlyCalendarDayNumberGhost = Color.Gray.copy(alpha = 0.4f)
+        val monthlyCalendarDayNumberGhost = Color(0xFF7F7F7F)
         val monthlyCalendarEventIndicator = Color(0xFF64B5F6)
         val miniMonthHeaderBackground = Color(0xFF333333)
         val miniMonthHeaderText = Color(0xFFB0B0B0)
@@ -113,7 +113,7 @@ object AppThemeSetup {
         val dialogEventBirthdayText = eventListItemBirthdayText
         val dialogEventDefaultText = onScreenTextNormal
         val dialogCalendarColorIndicatorBorder = Color.DarkGray.copy(alpha = 0.5f)
-        val filterButtonBackground = Color(0xFF3F3F3F)
+        val filterButtonBackground = Color(0xFF555555)
     }
 
 }

@@ -582,7 +582,7 @@ fun CalendarioScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.filterButtonBackground else Color(0xFFCDDEF5))
+                                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.filterButtonBackground else Color(0xFFC1D7F2))
                                         .clickable { showAllEvents = !showAllEvents }
                                         .padding(horizontal = 12.dp, vertical = 4.dp)
                                 ) {
@@ -658,10 +658,8 @@ fun CalendarioScreen(
 
                                         if (displayDesc.isNotBlank()) {
                                             Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 2.dp),
-                                                verticalAlignment = Alignment.CenterVertically
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
                                             ) {
                                                 Row(
                                                     modifier = Modifier
@@ -754,6 +752,7 @@ fun CalendarioScreen(
                 events = eventsForDialog,
                 availableCalendars = availableCalendarsExternal,
                 isDarkTheme = isDarkTheme,
+                todayHighlightColor = todayHighlightColor,
                 onDismissRequest = { 
                     showDayEventsDialog = false
                     selectedDateForDialog = null
