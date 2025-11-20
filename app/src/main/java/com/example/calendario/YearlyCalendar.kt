@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
@@ -41,7 +42,6 @@ fun YearlyCalendar(
     currentYear: Year,
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
-    isDarkTheme: Boolean,
     onMonthSelected: (YearMonth) -> Unit
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
@@ -67,7 +67,6 @@ fun YearlyCalendar(
                             month = month,
                             today = today,
                             eventsByDate = eventsByDate,
-                            isDarkTheme = isDarkTheme,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -88,7 +87,6 @@ fun MiniMonthCalendar(
     month: YearMonth,
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
-    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
     val daysOfWeekShort = listOf("L", "M", "X", "J", "V", "S", "D")
@@ -111,7 +109,7 @@ fun MiniMonthCalendar(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthHeaderText else AppThemeSetup.LightColors.miniMonthHeaderText,
+            color = CalendarioTheme.colors.miniMonthHeaderText,
             style = compactTextStyle.copy(lineHeight = monthNameFontSize * 0.95f),
             modifier = Modifier.padding(bottom = 2.dp)
         )
@@ -125,7 +123,7 @@ fun MiniMonthCalendar(
                 Box(
                     Modifier
                         .weight(1f)
-                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthHeaderBackground else AppThemeSetup.LightColors.miniMonthHeaderBackground),
+                        .background(CalendarioTheme.colors.miniMonthHeaderBackground),
                     Alignment.Center
                 ) {
                     Text(
@@ -133,7 +131,7 @@ fun MiniMonthCalendar(
                         fontSize = dayHeadersFontSize,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
-                        color = if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthHeaderText else AppThemeSetup.LightColors.miniMonthHeaderText,
+                        color = CalendarioTheme.colors.miniMonthHeaderText,
                         style = compactTextStyle.copy(lineHeight = dayHeadersFontSize * 0.95f)
                     )
                 }
@@ -163,13 +161,13 @@ fun MiniMonthCalendar(
                         ) {
                             if (date != null) {
                                 val isToday = date == today
-                                val isHoliday = eventsByDate[date]?.any { it.isFromHolidaySource && it.description.isNotBlank() } == true
+                                val isHoliday = eventsByDate[date]?.any { it.isFromHolidaySource && it.title.isNotBlank() } == true
                                 val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
 
                                 val textColor = when {
-                                    isHoliday -> if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthDayNumberHoliday else AppThemeSetup.LightColors.miniMonthDayNumberHoliday
-                                    isSundayNonHoliday -> if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthDayNumberSunday else AppThemeSetup.LightColors.miniMonthDayNumberSunday
-                                    else -> if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthDayNumberNormal else AppThemeSetup.LightColors.miniMonthDayNumberNormal
+                                    isHoliday -> CalendarioTheme.colors.miniMonthDayNumberHoliday
+                                    isSundayNonHoliday -> CalendarioTheme.colors.miniMonthDayNumberSunday
+                                    else -> CalendarioTheme.colors.miniMonthDayNumberNormal
                                 }
                                 val fontWeightText = if (isToday) FontWeight.Bold else FontWeight.Normal
 
@@ -179,7 +177,7 @@ fun MiniMonthCalendar(
                                             Modifier
                                                 .size((dayNumberFontSize.value * 2.1f).dp)
                                                 .clip(RoundedCornerShape(3.dp))
-                                                .background(if (isDarkTheme) AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground else AppThemeSetup.LightColors.miniMonthTodayHighlightBackground)
+                                                .background(CalendarioTheme.colors.miniMonthTodayHighlightBackground)
                                         )
                                     }
                                     Text(

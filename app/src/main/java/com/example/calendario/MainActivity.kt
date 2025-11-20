@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
+import com.example.calendario.ui.theme.CalendarioTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -29,13 +30,98 @@ object AppThemeSetup {
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
     const val KEY_TODAY_HIGHLIGHT_COLOR = "today_highlight_color_app"
 
+    object ColorKeys {
+        // Light Theme
+        const val LIGHT_PRIMARY = "light_primary"
+        const val LIGHT_ON_PRIMARY = "light_on_primary"
+        const val LIGHT_BACKGROUND = "light_background"
+        const val LIGHT_SURFACE = "light_surface"
+        const val LIGHT_ON_BACKGROUND = "light_on_background"
+        const val LIGHT_ON_SURFACE = "light_on_surface"
+        const val LIGHT_ERROR = "light_error"
+        const val LIGHT_ON_ERROR = "light_on_error"
+        const val LIGHT_ON_SCREEN_TEXT_NORMAL = "light_on_screen_text_normal"
+        const val LIGHT_ON_SCREEN_TEXT_SECONDARY = "light_on_screen_text_secondary"
+        const val LIGHT_DROPDOWN_MENU_BACKGROUND = "light_dropdown_menu_background"
+        const val LIGHT_NAVIGATION_BUTTON_BACKGROUND = "light_navigation_button_background"
+        const val LIGHT_NAVIGATION_BUTTON_CONTENT = "light_navigation_button_content"
+        const val LIGHT_EVENT_LIST_ITEM_HOLIDAY_TEXT = "light_event_list_item_holiday_text"
+        const val LIGHT_EVENT_LIST_ITEM_BIRTHDAY_TEXT = "light_event_list_item_birthday_text"
+        const val LIGHT_EVENT_LIST_ITEM_DEFAULT_TEXT = "light_event_list_item_default_text"
+        const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
+        const val LIGHT_MONTHLY_CALENDAR_GRID_BORDER = "light_monthly_calendar_grid_border"
+        const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
+        const val LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND = "light_monthly_calendar_empty_cell_background"
+        const val LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER = "light_monthly_calendar_today_cell_border"
+        const val LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND = "light_monthly_calendar_header_background"
+        const val LIGHT_MONTHLY_CALENDAR_HEADER_TEXT = "light_monthly_calendar_header_text"
+        const val LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL = "light_monthly_calendar_day_number_normal"
+        const val LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_HOLIDAY = "light_monthly_calendar_day_number_holiday"
+        const val LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_SUNDAY = "light_monthly_calendar_day_number_sunday"
+        const val LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_GHOST = "light_monthly_calendar_day_number_ghost"
+        const val LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR = "light_monthly_calendar_event_indicator"
+        const val LIGHT_MINI_MONTH_HEADER_BACKGROUND = "light_mini_month_header_background"
+        const val LIGHT_MINI_MONTH_HEADER_TEXT = "light_mini_month_header_text"
+        const val LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL = "light_mini_month_day_number_normal"
+        const val LIGHT_MINI_MONTH_DAY_NUMBER_HOLIDAY = "light_mini_month_day_number_holiday"
+        const val LIGHT_MINI_MONTH_DAY_NUMBER_SUNDAY = "light_mini_month_day_number_sunday"
+        const val LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "light_mini_month_today_highlight_background"
+        const val LIGHT_DIALOG_EVENT_HOLIDAY_TEXT = "light_dialog_event_holiday_text"
+        const val LIGHT_DIALOG_EVENT_BIRTHDAY_TEXT = "light_dialog_event_birthday_text"
+        const val LIGHT_DIALOG_EVENT_DEFAULT_TEXT = "light_dialog_event_default_text"
+        const val LIGHT_DIALOG_CALENDAR_COLOR_INDICATOR_BORDER = "light_dialog_calendar_color_indicator_border"
+        const val LIGHT_FILTER_BUTTON_BACKGROUND = "light_filter_button_background"
+
+        // Dark Theme
+        const val DARK_PRIMARY = "dark_primary"
+        const val DARK_ON_PRIMARY = "dark_on_primary"
+        const val DARK_BACKGROUND = "dark_background"
+        const val DARK_SURFACE = "dark_surface"
+        const val DARK_ON_BACKGROUND = "dark_on_background"
+        const val DARK_ON_SURFACE = "dark_on_surface"
+        const val DARK_ERROR = "dark_error"
+        const val DARK_ON_ERROR = "dark_on_error"
+        const val DARK_ON_SCREEN_TEXT_NORMAL = "dark_on_screen_text_normal"
+        const val DARK_ON_SCREEN_TEXT_SECONDARY = "dark_on_screen_text_secondary"
+        const val DARK_DROPDOWN_MENU_BACKGROUND = "dark_dropdown_menu_background"
+        const val DARK_NAVIGATION_BUTTON_BACKGROUND = "dark_navigation_button_background"
+        const val DARK_NAVIGATION_BUTTON_CONTENT = "dark_navigation_button_content"
+        const val DARK_EVENT_LIST_TITLE_COLOR = "dark_event_list_title_color"
+        const val DARK_EVENT_LIST_ITEM_HOLIDAY_TEXT = "dark_event_list_item_holiday_text"
+        const val DARK_EVENT_LIST_ITEM_BIRTHDAY_TEXT = "dark_event_list_item_birthday_text"
+        const val DARK_EVENT_LIST_ITEM_DEFAULT_TEXT = "dark_event_list_item_default_text"
+        const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
+        const val DARK_MONTHLY_CALENDAR_GRID_BORDER = "dark_monthly_calendar_grid_border"
+        const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
+        const val DARK_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND = "dark_monthly_calendar_empty_cell_background"
+        const val DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER = "dark_monthly_calendar_today_cell_border"
+        const val DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND = "dark_monthly_calendar_header_background"
+        const val DARK_MONTHLY_CALENDAR_HEADER_TEXT = "dark_monthly_calendar_header_text"
+        const val DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL = "dark_monthly_calendar_day_number_normal"
+        const val DARK_MONTHLY_CALENDAR_DAY_NUMBER_HOLIDAY = "dark_monthly_calendar_day_number_holiday"
+        const val DARK_MONTHLY_CALENDAR_DAY_NUMBER_SUNDAY = "dark_monthly_calendar_day_number_sunday"
+        const val DARK_MONTHLY_CALENDAR_DAY_NUMBER_GHOST = "dark_monthly_calendar_day_number_ghost"
+        const val DARK_MONTHLY_CALENDAR_EVENT_INDICATOR = "dark_monthly_calendar_event_indicator"
+        const val DARK_MINI_MONTH_HEADER_BACKGROUND = "dark_mini_month_header_background"
+        const val DARK_MINI_MONTH_HEADER_TEXT = "dark_mini_month_header_text"
+        const val DARK_MINI_MONTH_DAY_NUMBER_NORMAL = "dark_mini_month_day_number_normal"
+        const val DARK_MINI_MONTH_DAY_NUMBER_HOLIDAY = "dark_mini_month_day_number_holiday"
+        const val DARK_MINI_MONTH_DAY_NUMBER_SUNDAY = "dark_mini_month_day_number_sunday"
+        const val DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "dark_mini_month_today_highlight_background"
+        const val DARK_DIALOG_EVENT_HOLIDAY_TEXT = "dark_dialog_event_holiday_text"
+        const val DARK_DIALOG_EVENT_BIRTHDAY_TEXT = "dark_dialog_event_birthday_text"
+        const val DARK_DIALOG_EVENT_DEFAULT_TEXT = "dark_dialog_event_default_text"
+        const val DARK_DIALOG_CALENDAR_COLOR_INDICATOR_BORDER = "dark_dialog_calendar_color_indicator_border"
+        const val DARK_FILTER_BUTTON_BACKGROUND = "dark_filter_button_background"
+    }
+
     private val baseAppPrimaryColor = Color(0xFF2196F3)
     private val baseAppOnPrimaryColor = Color.White
 
     object LightColors {
         val primary = baseAppPrimaryColor
         val onPrimary = baseAppOnPrimaryColor
-        val background = Color(0xFFFAFAFA)
+        val background = Color(0xFFEDF3FC)
         val surface = Color.White
         val onBackground = Color.Black
         val onSurface = Color.Black
@@ -71,6 +157,7 @@ object AppThemeSetup {
         val dialogEventBirthdayText = eventListItemBirthdayText
         val dialogEventDefaultText = onScreenTextNormal
         val dialogCalendarColorIndicatorBorder = Color.DarkGray.copy(alpha = 0.5f)
+        val filterButtonBackground = Color(0xFFC1D7F2)
     }
 
     object DarkColors {
@@ -91,7 +178,7 @@ object AppThemeSetup {
         val eventListItemHolidayText = Color(0xFFE57373)
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
-        val monthlyCalendarGridBackground = Color(0xFF3F3F3F)
+        val monthlyCalendarGridBackground = Color(0xFF333333) // MODIFICADO
         val monthlyCalendarGridBorder = Color(0xFF424242)
         val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
         val monthlyCalendarEmptyCellBackground = Color(0xFF4F4F4F)
@@ -165,40 +252,42 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            CalendarioApp(
-                isDarkTheme = isDarkThemeEnabled,
-                onThemeToggle = toggleTheme,
-                initialEventsByDate = eventsByDateState,
-                initialAvailableCalendars = availableCalendarsState,
-                initialSelectedCalendarIds = selectedCalendarIdsState,
-                initialHasPermission = hasCalendarPermissionState,
-                onRefreshRequest = {
-                    refreshDataFromCalendarProviderAndUpdateStatesInternal()
-                },
-                onCalendarDataUpdated = { newEvents, newAvailable, newSelectedIds ->
-                    eventsByDateState = newEvents
-                    availableCalendarsState = newAvailable
-                    selectedCalendarIdsState = newSelectedIds
-                    lifecycleScope.launch {
-                        saveEventsToPrefs(this@MainActivity, newEvents)
-                        saveSelectedCalendarIds(this@MainActivity, newSelectedIds)
-                        notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
-                    }
-                },
-                onPermissionUpdated = { newPermissionState ->
-                    hasCalendarPermissionState = newPermissionState
-                    if (newPermissionState) {
+            CalendarioTheme(darkTheme = isDarkThemeEnabled) {
+                CalendarioApp(
+                    isDarkTheme = isDarkThemeEnabled,
+                    onThemeToggle = toggleTheme,
+                    initialEventsByDate = eventsByDateState,
+                    initialAvailableCalendars = availableCalendarsState,
+                    initialSelectedCalendarIds = selectedCalendarIdsState,
+                    initialHasPermission = hasCalendarPermissionState,
+                    onRefreshRequest = {
                         refreshDataFromCalendarProviderAndUpdateStatesInternal()
-                    } else {
-                        eventsByDateState = emptyMap()
-                        availableCalendarsState = emptyList()
+                    },
+                    onCalendarDataUpdated = { newEvents, newAvailable, newSelectedIds ->
+                        eventsByDateState = newEvents
+                        availableCalendarsState = newAvailable
+                        selectedCalendarIdsState = newSelectedIds
                         lifecycleScope.launch {
-                            saveEventsToPrefs(this@MainActivity, emptyMap())
+                            saveEventsToPrefs(this@MainActivity, newEvents)
+                            saveSelectedCalendarIds(this@MainActivity, newSelectedIds)
                             notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
                         }
+                    },
+                    onPermissionUpdated = { newPermissionState ->
+                        hasCalendarPermissionState = newPermissionState
+                        if (newPermissionState) {
+                            refreshDataFromCalendarProviderAndUpdateStatesInternal()
+                        } else {
+                            eventsByDateState = emptyMap()
+                            availableCalendarsState = emptyList()
+                            lifecycleScope.launch {
+                                saveEventsToPrefs(this@MainActivity, emptyMap())
+                                notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+                            }
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 

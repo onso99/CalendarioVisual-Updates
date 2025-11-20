@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,14 +55,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionsScreen(
     onBackPress: () -> Unit,
-    isDarkTheme: Boolean,
+    isDarkTheme: Boolean, // Se mantiene por ahora para el Switch
     onThemeToggle: (Boolean) -> Unit,
+    onColorThemeClick: () -> Unit
 ) {
     val context = LocalContext.current
     val appPrefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -69,7 +72,7 @@ fun OptionsScreen(
 
     // --- PROGRAMA States ---
     var useDarkTheme by remember { mutableStateOf(isDarkTheme) }
-    val initialHighlightColor = remember { Color(appPrefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground.toArgb())) }
+    val initialHighlightColor = remember { Color(appPrefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, 0xFFE9E9E9.toInt())) }
     var highlightColor by remember { mutableStateOf(initialHighlightColor) }
     var showHighlightColorPalette by remember { mutableStateOf(false) }
     val highlightColors = remember {
@@ -107,7 +110,7 @@ fun OptionsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
-        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else AppThemeSetup.LightColors.monthlyCalendarGridBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -129,11 +132,23 @@ fun OptionsScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Modo oscuro")
+                        Text("Modo oscuro", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Switch(checked = useDarkTheme, onCheckedChange = { useDarkTheme = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                    ColorPickerRow("Resaltado eventos de hoy", highlightColor, MaterialTheme.colorScheme.onSurfaceVariant) { showHighlightColorPalette = true }
+                    ColorPickerRow("Resaltado eventos de hoy", highlightColor) { showHighlightColorPalette = true }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onColorThemeClick() }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Personalizar colores del tema", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
 
                 // --- WIDGET Section ---
@@ -144,20 +159,20 @@ fun OptionsScreen(
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(horizontal = 16.dp)
                 ) {
-                    Text("Número de eventos: ${eventCountSliderValue.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp))
+                    Text("Número de eventos: ${eventCountSliderValue.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Slider(
                         value = eventCountSliderValue, onValueChange = { eventCountSliderValue = it },
                         valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
-                        colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f))
+                        colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.24f))
                     )
                     Row(modifier = Modifier.fillMaxWidth().clickable { useLargeFontSwitchState = !useLargeFontSwitchState }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Letra grande", fontSize = 16.sp)
+                        Text("Letra grande", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Switch(checked = useLargeFontSwitchState, onCheckedChange = { useLargeFontSwitchState = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
                     }
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                    ColorPickerRow("Color eventos", eventColor, MaterialTheme.colorScheme.onSurfaceVariant) { showWidgetEventColorPalette = true }
+                    ColorPickerRow("Color eventos", eventColor) { showWidgetEventColorPalette = true }
                     Spacer(Modifier.height(12.dp))
-                    ColorPickerRow("Color eventos de hoy", todayEventColor, MaterialTheme.colorScheme.onSurfaceVariant) { showWidgetTodayEventColorPalette = true }
+                    ColorPickerRow("Color eventos de hoy", todayEventColor) { showWidgetTodayEventColorPalette = true }
                     Spacer(Modifier.height(16.dp))
                 }
             }
@@ -206,11 +221,11 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun ColorPickerRow(label: String, currentColor: Color, textColor: Color, onColorBoxClick: () -> Unit) {
+private fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 4.dp)) {
-        Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f), color = textColor)
+        .padding(vertical = 12.dp)) {
+        Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Box(modifier = Modifier
             .size(32.dp)
             .background(currentColor, CircleShape)

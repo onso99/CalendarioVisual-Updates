@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -218,7 +219,6 @@ fun DayEventsDialog(
     date: LocalDate,
     events: List<Festivo>,
     availableCalendars: List<CalendarInfo>,
-    isDarkTheme: Boolean,
     todayHighlightColor: Color,
     onDismissRequest: () -> Unit,
     onAddEventClick: (LocalDate) -> Unit,
@@ -276,9 +276,9 @@ fun DayEventsDialog(
                     items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
                         val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
                         val defaultItemColor = when {
-                            esCumpleanos -> if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventBirthdayText else AppThemeSetup.LightColors.dialogEventBirthdayText
-                            festivo.isFromHolidaySource -> if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventHolidayText else AppThemeSetup.LightColors.dialogEventHolidayText
-                            else -> if (isDarkTheme) AppThemeSetup.DarkColors.dialogEventDefaultText else AppThemeSetup.LightColors.dialogEventDefaultText
+                            esCumpleanos -> CalendarioTheme.colors.dialogEventBirthdayText
+                            festivo.isFromHolidaySource -> CalendarioTheme.colors.dialogEventHolidayText
+                            else -> CalendarioTheme.colors.dialogEventDefaultText
                         }
                         val itemColor = if (isToday) Color.Black else defaultItemColor
 
@@ -298,7 +298,7 @@ fun DayEventsDialog(
                                         .background(Color(colorInt), CircleShape)
                                         .border(
                                             0.5.dp,
-                                            if (isDarkTheme) AppThemeSetup.DarkColors.dialogCalendarColorIndicatorBorder else AppThemeSetup.LightColors.dialogCalendarColorIndicatorBorder,
+                                            CalendarioTheme.colors.dialogCalendarColorIndicatorBorder,
                                             CircleShape
                                         )
                                 )

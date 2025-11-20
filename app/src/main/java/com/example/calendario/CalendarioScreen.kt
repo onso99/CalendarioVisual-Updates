@@ -77,6 +77,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.calendario.ui.theme.CalendarioTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.Normalizer
@@ -134,6 +135,7 @@ fun CalendarioScreen(
     var selectedDateForDialog by remember { mutableStateOf<LocalDate?>(null) }
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
     var showOptionsScreen by remember { mutableStateOf(false) }
+    var showColorThemeScreen by remember { mutableStateOf(false) }
     var showGoToYearDialog by remember { mutableStateOf(false) }
     var showAddEventScreen by remember { mutableStateOf(false) }
     var dateForNewEvent by remember { mutableStateOf<LocalDate?>(null) }
@@ -266,7 +268,21 @@ fun CalendarioScreen(
                 settingsUpdateTrigger++
             },
             isDarkTheme = isDarkTheme,
-            onThemeToggle = onThemeToggle
+            onThemeToggle = onThemeToggle,
+            onColorThemeClick = { 
+                showOptionsScreen = false
+                showColorThemeScreen = true 
+            }
+        )
+        return
+    }
+
+    if (showColorThemeScreen) {
+        ColorThemeScreen(
+            onBackPress = { 
+                showColorThemeScreen = false
+                settingsUpdateTrigger++ // Forzar recomposición para aplicar cambios de tema
+            }
         )
         return
     }
@@ -339,13 +355,10 @@ fun CalendarioScreen(
                                     expanded = menuExpanded,
                                     onDismissRequest = { menuExpanded = false },
                                     shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier.background(
-                                        if (isDarkTheme) AppThemeSetup.DarkColors.dropdownMenuBackground else AppThemeSetup.LightColors.dropdownMenuBackground
-                                    )
+                                    modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
                                 ) {
-                                    val dropdownTextColor = if (isDarkTheme) AppThemeSetup.DarkColors.onScreenTextNormal else AppThemeSetup.LightColors.onScreenTextNormal
                                     DropdownMenuItem(
-                                        text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
+                                        text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
                                         onClick = {
                                             menuExpanded = false
                                             if (hasCalendarPermissionExternal) {
@@ -356,15 +369,15 @@ fun CalendarioScreen(
                                         }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Opciones", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
+                                        text = { Text("Opciones", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
                                         onClick = { menuExpanded = false; showOptionsScreen = true }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
+                                        text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
                                         onClick = { menuExpanded = false; showHelpScreen = true }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = dropdownTextColor) },
+                                        text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
                                         onClick = { menuExpanded = false; showAboutDialog = true }
                                     )
                                 }
@@ -398,7 +411,7 @@ fun CalendarioScreen(
                             Button(
                                 onClick = { searchScope = scope },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surfaceVariant else AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground,
+                                    containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surfaceVariant else CalendarioTheme.colors.monthlyCalendarEmptyCellBackground,
                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             ) { Text(text) }
@@ -425,9 +438,9 @@ fun CalendarioScreen(
                                 festivo ->
                                 val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
                                 val itemColor = when {
-                                    esCumpleanos -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemBirthdayText else AppThemeSetup.LightColors.eventListItemBirthdayText
-                                    festivo.isFromHolidaySource -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemHolidayText else AppThemeSetup.LightColors.eventListItemHolidayText
-                                    else -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemDefaultText else AppThemeSetup.LightColors.eventListItemDefaultText
+                                    esCumpleanos -> CalendarioTheme.colors.eventListItemBirthdayText
+                                    festivo.isFromHolidaySource -> CalendarioTheme.colors.eventListItemHolidayText
+                                    else -> CalendarioTheme.colors.eventListItemDefaultText
                                 }
                                 val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                                 else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
@@ -444,7 +457,7 @@ fun CalendarioScreen(
                                             Modifier
                                                 .size(10.dp)
                                                 .background(Color(colorInt), CircleShape)
-                                                .border(0.5.dp, if (isDarkTheme) AppThemeSetup.DarkColors.dialogCalendarColorIndicatorBorder else AppThemeSetup.LightColors.dialogCalendarColorIndicatorBorder, CircleShape)
+                                                .border(0.5.dp, CalendarioTheme.colors.dialogCalendarColorIndicatorBorder, CircleShape)
                                         )
                                         Spacer(Modifier.size(8.dp))
                                     }
@@ -475,11 +488,7 @@ fun CalendarioScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = if (viewMode == CalendarViewMode.MONTHLY) {
-                                if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarGridBackground else AppThemeSetup.LightColors.monthlyCalendarGridBackground
-                            } else {
-                                Color.Transparent
-                            },
+                            color = if (viewMode == CalendarViewMode.MONTHLY) CalendarioTheme.colors.monthlyCalendarGridBackground else Color.Transparent,
                             shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                         )
                         .padding(top = 8.dp, start = 12.dp, end = 12.dp),
@@ -548,7 +557,6 @@ fun CalendarioScreen(
                                 currentMonth = month,
                                 today = today,
                                 eventsByDate = eventsByDateExternal,
-                                isDarkTheme = isDarkTheme,
                                 onDayClick = { date, events ->
                                     selectedDateForDialog = date
                                     eventsForDialog = events
@@ -569,11 +577,10 @@ fun CalendarioScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            val titleColor = if (isDarkTheme) AppThemeSetup.DarkColors.monthlyCalendarHeaderText else AppThemeSetup.LightColors.monthlyCalendarHeaderText
                             Text(
                                 text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
                                 fontSize = 18.sp,
-                                color = titleColor,
+                                color = CalendarioTheme.colors.monthlyCalendarHeaderText,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
@@ -582,7 +589,7 @@ fun CalendarioScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(if (isDarkTheme) AppThemeSetup.DarkColors.filterButtonBackground else Color(0xFFC1D7F2))
+                                        .background(CalendarioTheme.colors.filterButtonBackground)
                                         .clickable { showAllEvents = !showAllEvents }
                                         .padding(horizontal = 12.dp, vertical = 4.dp)
                                 ) {
@@ -590,7 +597,7 @@ fun CalendarioScreen(
                                         text = if (showAllEvents) "Todos" else "Pendientes",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = titleColor
+                                        color = CalendarioTheme.colors.monthlyCalendarHeaderText
                                     )
                                 }
                             }
@@ -605,7 +612,6 @@ fun CalendarioScreen(
                                 currentYear = year,
                                 today = today,
                                 eventsByDate = eventsByDateExternal,
-                                isDarkTheme = isDarkTheme,
                                 onMonthSelected = { selectedMonth ->
                                     val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
                                     scope.launch { monthPagerState.scrollToPage(targetPage) }
@@ -630,7 +636,7 @@ fun CalendarioScreen(
                                 Text(
                                     if (isCurrentMonthView && !showAllEvents) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
                                     fontSize = 16.sp,
-                                    color = if (isDarkTheme) AppThemeSetup.DarkColors.onScreenTextSecondary else AppThemeSetup.LightColors.onScreenTextSecondary
+                                    color = CalendarioTheme.colors.onScreenTextSecondary
                                 )
                             }
                         } else {
@@ -645,9 +651,9 @@ fun CalendarioScreen(
                                     festivos.forEach { festivo ->
                                         val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
                                         val itemColor = when {
-                                            esCumpleanos -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemBirthdayText else AppThemeSetup.LightColors.eventListItemBirthdayText
-                                            festivo.isFromHolidaySource -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemHolidayText else AppThemeSetup.LightColors.eventListItemHolidayText
-                                            else -> if (isDarkTheme) AppThemeSetup.DarkColors.eventListItemDefaultText else AppThemeSetup.LightColors.eventListItemDefaultText
+                                            esCumpleanos -> CalendarioTheme.colors.eventListItemBirthdayText
+                                            festivo.isFromHolidaySource -> CalendarioTheme.colors.eventListItemHolidayText
+                                            else -> CalendarioTheme.colors.eventListItemDefaultText
                                         }
                                         val textColorForToday = if (isTodayEvents) Color.Black else itemColor
                                         val dayNumberColorForToday = if (isTodayEvents) Color.Black else MaterialTheme.colorScheme.onSurface
@@ -741,7 +747,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                text = { Column { Text("Calendario Visual V1.43", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                text = { Column { Text("Calendario Visual V1.5", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant); Text("Onso/agosto 2025", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) } },
                 confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
             )
         }
@@ -751,7 +757,6 @@ fun CalendarioScreen(
                 date = selectedDateForDialog!!,
                 events = eventsForDialog,
                 availableCalendars = availableCalendarsExternal,
-                isDarkTheme = isDarkTheme,
                 todayHighlightColor = todayHighlightColor,
                 onDismissRequest = { 
                     showDayEventsDialog = false
