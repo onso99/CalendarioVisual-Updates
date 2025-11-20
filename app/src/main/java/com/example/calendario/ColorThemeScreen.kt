@@ -339,7 +339,10 @@ private fun AdvancedColorPickerDialog(
         title = { Text("Seleccionar Color", color = MaterialTheme.colorScheme.onSurfaceVariant) },
         text = {
             Column {
-                Box(modifier = Modifier.fillMaxWidth().height(50.dp).background(currentColor).border(1.dp, MaterialTheme.colorScheme.outline)) 
+                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, MaterialTheme.colorScheme.outline)) {
+                    Box(modifier = Modifier.weight(1f).fillMaxSize().background(initialColor))
+                    Box(modifier = Modifier.weight(1f).fillMaxSize().background(currentColor))
+                }
                 Spacer(Modifier.height(16.dp))
                 ColorSlider(label = "A", value = alpha, onValueChange = { alpha = it })
                 ColorSlider(label = "R", value = red, onValueChange = { red = it })
