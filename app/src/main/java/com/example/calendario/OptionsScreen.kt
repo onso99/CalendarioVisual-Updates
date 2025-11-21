@@ -14,11 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,6 +31,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -40,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,10 +55,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,16 +79,6 @@ fun OptionsScreen(
     val initialHighlightColor = remember { Color(appPrefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, 0xFFE9E9E9.toInt())) }
     var highlightColor by remember { mutableStateOf(initialHighlightColor) }
     var showHighlightColorPalette by remember { mutableStateOf(false) }
-    val highlightColors = remember {
-        listOf(
-            Color(0xFFE9E9E9), // Gris (defecto)
-            Color(0xFFFFF59D), // Amarillo claro
-            Color(0xFFFFCC80), // Naranja claro
-            Color(0xFFA5D6A7), // Verde claro
-            Color(0xFF90CAF9), // Azul claro
-            Color(0xFFCE93D8)  // Violeta claro
-        )
-    }
 
     // --- WIDGET States ---
     val initialEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
@@ -95,8 +89,6 @@ fun OptionsScreen(
     var todayEventColor by remember { mutableStateOf(Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB))) }
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
-    val baseEventColors = remember { listOf(Color(0xFFFFFFFF), Color(0xFFF4F4F4), Color(0xFFD4D4D4), Color(0xFFB4B4B4), Color(0xFF949494), Color(0xFF5F5F5F), Color(0xFF000000)) }
-    val baseTodayEventColors = remember { listOf(Color(0xFFFF8000), Color(0xFFFFFF00), Color(0xFF80FF80), Color(0xFF00FFFF), Color(0xFF952BFF), Color(0xFFFFFFFF), Color(0xFF000000)) }
 
     Scaffold(
         topBar = {
@@ -199,13 +191,34 @@ fun OptionsScreen(
     }
 
     if (showHighlightColorPalette) {
-        ColorPaletteDialog(title = "Color para resaltar eventos de hoy", colors = highlightColors, currentlySelectedColor = highlightColor, onColorSelected = { selectedColor -> highlightColor = selectedColor; showHighlightColorPalette = false }, onDismiss = { showHighlightColorPalette = false })
+        AdvancedColorPickerDialog(
+            initialColor = highlightColor,
+            onDismissRequest = { showHighlightColorPalette = false },
+            onColorConfirm = { 
+                highlightColor = it
+                showHighlightColorPalette = false
+            }
+        )
     }
     if (showWidgetEventColorPalette) {
-        ColorPaletteDialog(title = "Color para eventos del widget", colors = baseEventColors, currentlySelectedColor = eventColor, onColorSelected = { selectedColor -> eventColor = selectedColor; showWidgetEventColorPalette = false }, onDismiss = { showWidgetEventColorPalette = false })
+        AdvancedColorPickerDialog(
+            initialColor = eventColor,
+            onDismissRequest = { showWidgetEventColorPalette = false },
+            onColorConfirm = { 
+                eventColor = it
+                showWidgetEventColorPalette = false 
+            }
+        )
     }
     if (showWidgetTodayEventColorPalette) {
-        ColorPaletteDialog(title = "Color para eventos de hoy del widget", colors = baseTodayEventColors, currentlySelectedColor = todayEventColor, onColorSelected = { selectedColor -> todayEventColor = selectedColor; showWidgetTodayEventColorPalette = false }, onDismiss = { showWidgetTodayEventColorPalette = false })
+        AdvancedColorPickerDialog(
+            initialColor = todayEventColor,
+            onDismissRequest = { showWidgetTodayEventColorPalette = false },
+            onColorConfirm = { 
+                todayEventColor = it
+                showWidgetTodayEventColorPalette = false
+            }
+        )
     }
 }
 
@@ -236,38 +249,67 @@ private fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ColorPaletteDialog(
-    title: String, colors: List<Color>, currentlySelectedColor: Color,
-    onColorSelected: (Color) -> Unit, onDismiss: () -> Unit
+private fun AdvancedColorPickerDialog(
+    initialColor: Color,
+    onDismissRequest: () -> Unit,
+    onColorConfirm: (Color) -> Unit
 ) {
-    val selectedItemBorderColor = Color.Red
+    var red by remember { mutableStateOf(initialColor.red * 255) }
+    var green by remember { mutableStateOf(initialColor.green * 255) }
+    var blue by remember { mutableStateOf(initialColor.blue * 255) }
+    var alpha by remember { mutableStateOf(initialColor.alpha * 255) }
+    
+    val currentColor by remember { derivedStateOf { Color(red / 255f, green / 255f, blue / 255f, alpha / 255f) } }
+    var hexCode by remember(currentColor) { mutableStateOf(String.format("#%02X%02X%02X%02X", alpha.roundToInt(), red.roundToInt(), green.roundToInt(), blue.roundToInt())) }
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        title = { Text(title, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text("Seleccionar Color", color = MaterialTheme.colorScheme.onSurfaceVariant) },
         text = {
-            LazyRow(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
-                items(colors) { colorInPalette ->
-                    val isSelected = colorInPalette == currentlySelectedColor
-                    Box(modifier = Modifier
-                        .size(40.dp)
-                        .background(colorInPalette, CircleShape)
-                        .border(
-                            width = if (isSelected) 2.dp else 1.dp,
-                            color = if (isSelected) selectedItemBorderColor else MaterialTheme.colorScheme.outline.copy(
-                                alpha = 0.4f
-                            ),
-                            shape = CircleShape
-                        )
-                        .clickable { onColorSelected(colorInPalette) })
+            Column {
+                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, MaterialTheme.colorScheme.outline)) {
+                    Box(modifier = Modifier.weight(1f).fillMaxSize().background(initialColor))
+                    Box(modifier = Modifier.weight(1f).fillMaxSize().background(currentColor))
                 }
+                Spacer(Modifier.height(16.dp))
+                ColorSlider(label = "A", value = alpha, onValueChange = { alpha = it })
+                ColorSlider(label = "R", value = red, onValueChange = { red = it })
+                ColorSlider(label = "G", value = green, onValueChange = { green = it })
+                ColorSlider(label = "B", value = blue, onValueChange = { blue = it })
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = hexCode,
+                    onValueChange = { 
+                        val newHex = if (it.startsWith("#")) it else "#$it"
+                        hexCode = newHex
+                        if (newHex.length == 9) {
+                            try {
+                                val parsedColor = Color(android.graphics.Color.parseColor(newHex))
+                                alpha = parsedColor.alpha * 255
+                                red = parsedColor.red * 255
+                                green = parsedColor.green * 255
+                                blue = parsedColor.blue * 255
+                            } catch (e: Exception) { /* No-op, color inválido */ }
+                        }
+                    },
+                    label = { Text("Hex (ARGB)") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { onColorConfirm(currentColor) })
+                )
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Cerrar") } }
+        confirmButton = { TextButton(onClick = { onColorConfirm(currentColor) }) { Text("Aceptar") } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
     )
+}
+
+@Composable
+private fun ColorSlider(label: String, value: Float, onValueChange: (Float) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(label, modifier = Modifier.width(20.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Slider(value = value, onValueChange = onValueChange, valueRange = 0f..255f, modifier = Modifier.weight(1f))
+        Text(value.roundToInt().toString(), modifier = Modifier.width(30.dp), textAlign = TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
 }

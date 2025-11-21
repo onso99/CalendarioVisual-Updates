@@ -72,9 +72,10 @@ fun HelpScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SectionTitle("Otras Funcionalidades")
-            HelpText("- El icono Sol/Luna cambia entre el modo claro/oscuro.")
-            HelpText("- El menu Calendarios permite seleccionar los calendarios de Google que se mostrarán.")
-            HelpText("- Widget: permite configurar el widget cambiando colores, el tamaño de la letra y el número de eventos a mostrar.")
+            HelpText("- El menú 'Calendarios' permite seleccionar los calendarios de Google que se mostrarán.")
+            HelpText("- El menú 'Opciones' permite cambiar entre modo claro/oscuro y configurar el widget.")
+            HelpText("- Dentro de 'Opciones', 'Personalizar colores del tema' abre un editor avanzado para cambiar la apariencia de la app, importar/exportar o restaurar temas.")
+
         }
     }
 }
