@@ -46,6 +46,14 @@ object ColorThemeConfig {
             defaultDark = AppThemeSetup.DarkColors.surface,
             category = "Estándar"
         ),
+        ColorThemeItem(
+            label = "Fondo Pantallas Opciones",
+            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND,
+            darkThemeKey = AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND,
+            defaultLight = AppThemeSetup.LightColors.settingsBackground,
+            defaultDark = AppThemeSetup.DarkColors.settingsBackground,
+            category = "Estándar"
+        ),
 
         // --- CATEGORÍA: TEXTOS --- //
         ColorThemeItem(

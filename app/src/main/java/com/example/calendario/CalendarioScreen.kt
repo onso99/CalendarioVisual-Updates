@@ -274,7 +274,8 @@ fun CalendarioScreen(
             onBackPress = { 
                 showColorThemeScreen = false
                 onThemeUpdated()
-            }
+            },
+            onThemeUpdated = onThemeUpdated
         )
         return
     }

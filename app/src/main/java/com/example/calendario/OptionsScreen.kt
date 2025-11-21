@@ -24,12 +24,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -60,13 +63,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionsScreen(
     onBackPress: () -> Unit,
-    isDarkTheme: Boolean, // Se mantiene por ahora para el Switch
+    isDarkTheme: Boolean,
     onThemeToggle: (Boolean) -> Unit,
     onColorThemeClick: () -> Unit
 ) {
@@ -74,176 +78,132 @@ fun OptionsScreen(
     val appPrefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
-    // --- PROGRAMA States ---
-    var useDarkTheme by remember { mutableStateOf(isDarkTheme) }
-    val initialHighlightColor = remember { Color(appPrefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, 0xFFE9E9E9.toInt())) }
-    var highlightColor by remember { mutableStateOf(initialHighlightColor) }
-    var showHighlightColorPalette by remember { mutableStateOf(false) }
+    // --- Estados Originales ---
+    val originalUseDarkTheme = remember { isDarkTheme }
+    val originalHighlightColor = remember { Color(appPrefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, 0xFFE9E9E9.toInt())) }
+    val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
+    val originalUseLargeFont = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) }
+    val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
+    val originalTodayEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) }
 
-    // --- WIDGET States ---
-    val initialEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
-    var eventCountSliderValue by remember { mutableFloatStateOf(initialEventCount.toFloat()) }
-    val initialUseLargeFont = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) }
-    var useLargeFontSwitchState by remember { mutableStateOf(initialUseLargeFont) }
-    var eventColor by remember { mutableStateOf(Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB))) }
-    var todayEventColor by remember { mutableStateOf(Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB))) }
+    // --- Estados de Cambios Pendientes ---
+    var pendingUseDarkTheme by remember { mutableStateOf(originalUseDarkTheme) }
+    var pendingHighlightColor by remember { mutableStateOf(originalHighlightColor) }
+    var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
+    var pendingUseLargeFont by remember { mutableStateOf(originalUseLargeFont) }
+    var pendingEventColor by remember { mutableStateOf(originalEventColor) }
+    var pendingTodayEventColor by remember { mutableStateOf(originalTodayEventColor) }
+
+    // --- Control de visibilidad de diálogos ---
+    var showHighlightColorPalette by remember { mutableStateOf(false) }
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
+
+    val hasPendingChanges by remember {
+        derivedStateOf {
+            pendingUseDarkTheme != originalUseDarkTheme ||
+            pendingHighlightColor != originalHighlightColor ||
+            pendingEventCount.roundToInt() != originalEventCount ||
+            pendingUseLargeFont != originalUseLargeFont ||
+            pendingEventColor != originalEventColor ||
+            pendingTodayEventColor != originalTodayEventColor
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Opciones", color = MaterialTheme.colorScheme.onPrimary) },
-                navigationIcon = {
-                    IconButton(onClick = onBackPress) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = MaterialTheme.colorScheme.onPrimary)
+                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = MaterialTheme.colorScheme.onPrimary) } },
+                actions = {
+                    FilledIconButton(
+                        onClick = {
+                            if (hasPendingChanges) {
+                                appPrefs.edit { putInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, pendingHighlightColor.toArgb()) }
+                                widgetPrefs.edit {
+                                    putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
+                                    putBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, pendingUseLargeFont)
+                                    putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
+                                    putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
+                                }
+                                if (pendingUseDarkTheme != originalUseDarkTheme) {
+                                    onThemeToggle(pendingUseDarkTheme)
+                                }
+                                notifyCalendarWidgetsConfigurationChangedMainActivity(context)
+                            }
+                            onBackPress()
+                        },
+                        modifier = Modifier.size(36.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Icon(Icons.Default.Check, "Aplicar")
                     }
+                    Spacer(modifier = Modifier.width(48.dp)) // Espacio para alinear con la otra pantalla
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            Column(Modifier.padding(16.dp)) {
-                // --- PROGRAMA Section ---
-                SectionTitle("Programa")
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Modo oscuro", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Switch(checked = useDarkTheme, onCheckedChange = { useDarkTheme = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                    ColorPickerRow("Resaltado eventos de hoy", highlightColor) { showHighlightColorPalette = true }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onColorThemeClick() }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Personalizar colores del tema", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
+            SectionTitle("Programa")
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Modo oscuro", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Switch(checked = pendingUseDarkTheme, onCheckedChange = { pendingUseDarkTheme = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
                 }
-
-                // --- WIDGET Section ---
-                SectionTitle("Widget")
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Text("Número de eventos: ${eventCountSliderValue.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Slider(
-                        value = eventCountSliderValue, onValueChange = { eventCountSliderValue = it },
-                        valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
-                        colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.24f))
-                    )
-                    Row(modifier = Modifier.fillMaxWidth().clickable { useLargeFontSwitchState = !useLargeFontSwitchState }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Letra grande", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Switch(checked = useLargeFontSwitchState, onCheckedChange = { useLargeFontSwitchState = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
-                    }
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                    ColorPickerRow("Color eventos", eventColor) { showWidgetEventColorPalette = true }
-                    Spacer(Modifier.height(12.dp))
-                    ColorPickerRow("Color eventos de hoy", todayEventColor) { showWidgetTodayEventColorPalette = true }
-                    Spacer(Modifier.height(16.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ColorPickerRow("Resaltado eventos de hoy", pendingHighlightColor) { showHighlightColorPalette = true }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                Row(modifier = Modifier.fillMaxWidth().clickable { onColorThemeClick() }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Personalizar colores del tema", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            
-            Spacer(modifier = Modifier.weight(1f))
 
-            Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.End) {
-                 Button(onClick = {
-                    appPrefs.edit { putInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, highlightColor.toArgb()) }
-                    widgetPrefs.edit {
-                        putInt(WidgetConstants.KEY_EVENT_COUNT, eventCountSliderValue.roundToInt())
-                        putBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, useLargeFontSwitchState)
-                        putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, eventColor.toArgb())
-                        putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, todayEventColor.toArgb())
-                    }
-                    onThemeToggle(useDarkTheme)
-                    notifyCalendarWidgetsConfigurationChangedMainActivity(context)
-                    onBackPress()
-                }) {
-                    Text("GUARDAR")
+            SectionTitle("Widget")
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
+                Text("Número de eventos: ${pendingEventCount.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.24f)))
+                Row(modifier = Modifier.fillMaxWidth().clickable { pendingUseLargeFont = !pendingUseLargeFont }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Letra grande", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
                 }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ColorPickerRow("Color eventos", pendingEventColor) { showWidgetEventColorPalette = true }
+                Spacer(Modifier.height(12.dp))
+                ColorPickerRow("Color eventos de hoy", pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
+                Spacer(Modifier.height(16.dp))
             }
         }
     }
 
     if (showHighlightColorPalette) {
-        AdvancedColorPickerDialog(
-            initialColor = highlightColor,
-            onDismissRequest = { showHighlightColorPalette = false },
-            onColorConfirm = { 
-                highlightColor = it
-                showHighlightColorPalette = false
-            }
-        )
+        AdvancedColorPickerDialog(initialColor = pendingHighlightColor, onDismissRequest = { showHighlightColorPalette = false }, onColorConfirm = { pendingHighlightColor = it; showHighlightColorPalette = false })
     }
     if (showWidgetEventColorPalette) {
-        AdvancedColorPickerDialog(
-            initialColor = eventColor,
-            onDismissRequest = { showWidgetEventColorPalette = false },
-            onColorConfirm = { 
-                eventColor = it
-                showWidgetEventColorPalette = false 
-            }
-        )
+        AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; showWidgetEventColorPalette = false })
     }
     if (showWidgetTodayEventColorPalette) {
-        AdvancedColorPickerDialog(
-            initialColor = todayEventColor,
-            onDismissRequest = { showWidgetTodayEventColorPalette = false },
-            onColorConfirm = { 
-                todayEventColor = it
-                showWidgetTodayEventColorPalette = false
-            }
-        )
+        AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false })
     }
 }
 
 @Composable
 private fun SectionTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary
-    )
+    Text(text = text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp, top = 16.dp), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
 }
 
 @Composable
 private fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
         Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Box(modifier = Modifier
-            .size(32.dp)
-            .background(currentColor, CircleShape)
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), CircleShape)
-            .clickable(onClick = onColorBoxClick))
+        Box(modifier = Modifier.size(32.dp).background(currentColor, CircleShape).border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), CircleShape).clickable(onClick = onColorBoxClick))
     }
 }
 
@@ -265,7 +225,7 @@ private fun AdvancedColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        title = { Text("Seleccionar Color", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         text = {
             Column {
                 Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, MaterialTheme.colorScheme.outline)) {
@@ -300,7 +260,7 @@ private fun AdvancedColorPickerDialog(
                 )
             }
         },
-        confirmButton = { TextButton(onClick = { onColorConfirm(currentColor) }) { Text("Aceptar") } },
+        confirmButton = { Button(onClick = { onColorConfirm(currentColor) }) { Text("Aceptar") } },
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
     )
 }

@@ -32,11 +32,15 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,7 +50,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -61,6 +64,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
@@ -71,14 +75,15 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorThemeScreen(
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    onThemeUpdated: () -> Unit
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val groupedItems = ColorThemeConfig.colorThemeItems.groupBy { it.category }
+    val categories = remember { ColorThemeConfig.colorThemeItems.map { it.category }.distinct() }
 
     val pendingChanges = remember { mutableStateMapOf<String, Color>() }
-    var forceRecomposition by remember { mutableStateOf(0) }
 
     var showMenu by remember { mutableStateOf(false) }
     var showRestoreDialog by remember { mutableStateOf(false) }
@@ -99,13 +104,11 @@ fun ColorThemeScreen(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    importThemeFromJson(context, uri, pendingChanges) { forceRecomposition++ }
+                    importThemeFromJson(context, uri, pendingChanges, onThemeUpdated)
                 }
             }
         }
     )
-
-    LaunchedEffect(forceRecomposition) {}
 
     Scaffold(
         topBar = {
@@ -113,20 +116,29 @@ fun ColorThemeScreen(
                 title = { Text("Personalizar Colores", color = MaterialTheme.colorScheme.onPrimary) },
                 navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = MaterialTheme.colorScheme.onPrimary) } },
                 actions = {
-                    if (pendingChanges.isNotEmpty()) {
-                        IconButton(onClick = { 
-                            prefs.edit { pendingChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } }
-                            pendingChanges.clear()
-                            forceRecomposition++
-                        }) {
-                            Icon(Icons.Default.Check, "Aplicar", tint = MaterialTheme.colorScheme.onPrimary)
-                        }
+                    FilledIconButton(
+                        onClick = { 
+                            if (pendingChanges.isNotEmpty()) {
+                                prefs.edit { pendingChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } }
+                                pendingChanges.clear()
+                                onThemeUpdated()
+                            }
+                            onBackPress()
+                        },
+                        modifier = Modifier.size(36.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Icon(Icons.Default.Check, "Aplicar")
                     }
                     Box {
                         IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "Menú", tint = MaterialTheme.colorScheme.onPrimary) }
                         DropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false },
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
                         ) {
                             DropdownMenuItem(text = { Text("Importar tema...", color = CalendarioTheme.colors.onScreenTextNormal) }, onClick = { 
@@ -146,7 +158,7 @@ fun ColorThemeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
@@ -194,10 +206,10 @@ fun ColorThemeScreen(
         AlertDialog(
             onDismissRequest = { showRestoreDialog = false },
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            title = { Text("Restaurar Colores", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
             text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             confirmButton = {
-                TextButton(onClick = {
+                Button(onClick = {
                     val editor = prefs.edit()
                     ColorThemeConfig.colorThemeItems.forEach {
                         if (it.lightThemeKey.isNotBlank()) editor.remove(it.lightThemeKey)
@@ -206,7 +218,7 @@ fun ColorThemeScreen(
                     editor.apply()
                     pendingChanges.clear()
                     showRestoreDialog = false
-                    forceRecomposition++
+                    onThemeUpdated()
                 }) { Text("Restaurar") }
             },
             dismissButton = { TextButton(onClick = { showRestoreDialog = false }) { Text("Cancelar") } }
@@ -336,7 +348,7 @@ private fun AdvancedColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        title = { Text("Seleccionar Color", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         text = {
             Column {
                 Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, MaterialTheme.colorScheme.outline)) {
@@ -371,7 +383,11 @@ private fun AdvancedColorPickerDialog(
                 )
             }
         },
-        confirmButton = { TextButton(onClick = { onColorConfirm(currentColor) }) { Text("Aceptar") } },
+        confirmButton = { 
+            Button(onClick = { onColorConfirm(currentColor) }) { 
+                Text("Aceptar") 
+            }
+        },
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
     )
 }
@@ -381,6 +397,6 @@ private fun ColorSlider(label: String, value: Float, onValueChange: (Float) -> U
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(label, modifier = Modifier.width(20.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Slider(value = value, onValueChange = onValueChange, valueRange = 0f..255f, modifier = Modifier.weight(1f))
-        Text(value.roundToInt().toString(), modifier = Modifier.width(30.dp), textAlign = androidx.compose.ui.text.style.TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value.roundToInt().toString(), modifier = Modifier.width(30.dp), textAlign = TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

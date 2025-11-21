@@ -37,6 +37,7 @@ object AppThemeSetup {
         const val LIGHT_PRIMARY = "light_primary"
         const val LIGHT_ON_PRIMARY = "light_on_primary"
         const val LIGHT_BACKGROUND = "light_background"
+        const val LIGHT_SETTINGS_BACKGROUND = "light_settings_background"
         const val LIGHT_SURFACE = "light_surface"
         const val LIGHT_ON_BACKGROUND = "light_on_background"
         const val LIGHT_ON_SURFACE = "light_on_surface"
@@ -78,6 +79,7 @@ object AppThemeSetup {
         const val DARK_PRIMARY = "dark_primary"
         const val DARK_ON_PRIMARY = "dark_on_primary"
         const val DARK_BACKGROUND = "dark_background"
+        const val DARK_SETTINGS_BACKGROUND = "dark_settings_background"
         const val DARK_SURFACE = "dark_surface"
         const val DARK_ON_BACKGROUND = "dark_on_background"
         const val DARK_ON_SURFACE = "dark_on_surface"
@@ -123,7 +125,8 @@ object AppThemeSetup {
     object LightColors {
         val primary = baseAppPrimaryColor
         val onPrimary = baseAppOnPrimaryColor
-        val background = Color(0xFFEDF3FC)
+        val background = Color(0xFFFCFDFE)
+        val settingsBackground = Color(0xFFEDF3FC)
         val surface = Color.White
         val onBackground = Color.Black
         val onSurface = Color.Black
@@ -166,6 +169,7 @@ object AppThemeSetup {
         val primary = Color(0xFF2173ed)
         val onPrimary = Color.White
         val background = Color(0xFF121212)
+        val settingsBackground = Color(0xFF1A1A1A) 
         val surface = Color(0xFF1E1E1E)
         val onBackground = Color(0xFFE0E0E0)
         val onSurface = Color(0xFFE0E0E0)

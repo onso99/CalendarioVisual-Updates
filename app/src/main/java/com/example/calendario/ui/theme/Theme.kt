@@ -19,6 +19,7 @@ import com.example.calendario.AppThemeSetup
 
 // 1. DATA CLASS PARA COLORES PERSONALIZADOS
 data class CustomColors(
+    val settingsBackground: Color,
     val onScreenTextNormal: Color,
     val onScreenTextSecondary: Color,
     val dropdownMenuBackground: Color,
@@ -121,6 +122,7 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
     val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
 
     return CustomColors(
+        settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground),
         todayHighlightColor = todayHighlight,
         onTodayHighlightColor = onTodayHighlight,
         onScreenTextNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ON_SCREEN_TEXT_NORMAL, AppThemeSetup.LightColors.onScreenTextNormal),
@@ -178,6 +180,7 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
     val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
 
     return CustomColors(
+        settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.DarkColors.settingsBackground),
         todayHighlightColor = todayHighlight,
         onTodayHighlightColor = onTodayHighlight,
         onScreenTextNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ON_SCREEN_TEXT_NORMAL, AppThemeSetup.DarkColors.onScreenTextNormal),
