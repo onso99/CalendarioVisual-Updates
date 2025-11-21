@@ -13,6 +13,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
     const val KEY_TODAY_HIGHLIGHT_COLOR = "today_highlight_color_app"
+    const val KEY_ON_TODAY_HIGHLIGHT_COLOR = "on_today_highlight_color_app"
 
     object ColorKeys {
         // Light Theme
@@ -178,7 +180,7 @@ object AppThemeSetup {
         val eventListItemHolidayText = Color(0xFFE57373)
         val eventListItemBirthdayText = Color(0xFFAECBFF)
         val eventListItemDefaultText = onScreenTextNormal
-        val monthlyCalendarGridBackground = Color(0xFF333333) // MODIFICADO
+        val monthlyCalendarGridBackground = Color(0xFF333333)
         val monthlyCalendarGridBorder = Color(0xFF424242)
         val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
         val monthlyCalendarEmptyCellBackground = Color(0xFF4F4F4F)
@@ -238,6 +240,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var isDarkThemeEnabled by remember(initialDarkThemeLoadedState) { mutableStateOf(initialDarkThemeLoadedState) }
+            var themeUpdateTrigger by remember { mutableIntStateOf(0) }
+            val onThemeUpdated = { themeUpdateTrigger += 1 }
 
             LaunchedEffect(initialDarkThemeLoadedState) {
                 isDarkThemeEnabled = initialDarkThemeLoadedState
@@ -252,10 +256,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            CalendarioTheme(darkTheme = isDarkThemeEnabled) {
+            CalendarioTheme(darkTheme = isDarkThemeEnabled, themeUpdateTrigger = themeUpdateTrigger) {
                 CalendarioApp(
                     isDarkTheme = isDarkThemeEnabled,
                     onThemeToggle = toggleTheme,
+                    onThemeUpdated = onThemeUpdated,
                     initialEventsByDate = eventsByDateState,
                     initialAvailableCalendars = availableCalendarsState,
                     initialSelectedCalendarIds = selectedCalendarIdsState,

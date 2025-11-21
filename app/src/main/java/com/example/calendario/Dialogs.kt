@@ -219,7 +219,6 @@ fun DayEventsDialog(
     date: LocalDate,
     events: List<Festivo>,
     availableCalendars: List<CalendarInfo>,
-    todayHighlightColor: Color,
     onDismissRequest: () -> Unit,
     onAddEventClick: (LocalDate) -> Unit,
     onEventClick: (Festivo) -> Unit
@@ -280,13 +279,13 @@ fun DayEventsDialog(
                             festivo.isFromHolidaySource -> CalendarioTheme.colors.dialogEventHolidayText
                             else -> CalendarioTheme.colors.dialogEventDefaultText
                         }
-                        val itemColor = if (isToday) Color.Black else defaultItemColor
+                        val itemColor = if (isToday) CalendarioTheme.colors.onTodayHighlightColor else defaultItemColor
 
                         Row(
                             Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .then(if (isToday) Modifier.background(todayHighlightColor) else Modifier)
+                                .then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier)
                                 .clickable { onEventClick(festivo) }
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically

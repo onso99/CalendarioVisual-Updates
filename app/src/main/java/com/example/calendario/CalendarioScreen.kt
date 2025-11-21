@@ -69,7 +69,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -102,6 +101,7 @@ fun CharSequence.unaccent(): String {
 fun CalendarioScreen(
     isDarkTheme: Boolean,
     onThemeToggle: (Boolean) -> Unit,
+    onThemeUpdated: () -> Unit,
     eventsByDateExternal: Map<LocalDate, List<Festivo>>,
     availableCalendarsExternal: List<CalendarInfo>,
     selectedCalendarIdsExternal: Set<Long>,
@@ -146,14 +146,6 @@ fun CalendarioScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var searchScope by remember { mutableStateOf(SearchScope.ALL) }
-    var settingsUpdateTrigger by remember { mutableIntStateOf(0) }
-
-    val todayHighlightColor = remember(settingsUpdateTrigger, isDarkTheme) {
-        val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val colorInt = prefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, Color(0xFFE9E9E9).toArgb())
-        val baseColor = Color(colorInt)
-        if (isDarkTheme) baseColor.copy(alpha = 0.5f) else baseColor
-    }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -265,7 +257,7 @@ fun CalendarioScreen(
         OptionsScreen(
             onBackPress = { 
                 showOptionsScreen = false 
-                settingsUpdateTrigger++
+                onThemeUpdated()
             },
             isDarkTheme = isDarkTheme,
             onThemeToggle = onThemeToggle,
@@ -281,7 +273,7 @@ fun CalendarioScreen(
         ColorThemeScreen(
             onBackPress = { 
                 showColorThemeScreen = false
-                settingsUpdateTrigger++ // Forzar recomposición para aplicar cambios de tema
+                onThemeUpdated()
             }
         )
         return
@@ -655,9 +647,9 @@ fun CalendarioScreen(
                                             festivo.isFromHolidaySource -> CalendarioTheme.colors.eventListItemHolidayText
                                             else -> CalendarioTheme.colors.eventListItemDefaultText
                                         }
-                                        val textColorForToday = if (isTodayEvents) Color.Black else itemColor
-                                        val dayNumberColorForToday = if (isTodayEvents) Color.Black else MaterialTheme.colorScheme.onSurface
-                                        val refreshIconColor = if (isTodayEvents) Color.Black else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        val textColorForToday = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else itemColor
+                                        val dayNumberColorForToday = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onSurface
+                                        val refreshIconColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
                                         val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                                         else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
@@ -673,7 +665,7 @@ fun CalendarioScreen(
                                                         .clip(RoundedCornerShape(16.dp))
                                                         .then(
                                                             if (isTodayEvents) {
-                                                                Modifier.background(todayHighlightColor)
+                                                                Modifier.background(CalendarioTheme.colors.todayHighlightColor)
                                                             } else {
                                                                 Modifier
                                                             }
@@ -757,7 +749,6 @@ fun CalendarioScreen(
                 date = selectedDateForDialog!!,
                 events = eventsForDialog,
                 availableCalendars = availableCalendarsExternal,
-                todayHighlightColor = todayHighlightColor,
                 onDismissRequest = { 
                     showDayEventsDialog = false
                     selectedDateForDialog = null

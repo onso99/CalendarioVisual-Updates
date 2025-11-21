@@ -9,11 +9,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.AppThemeSetup
 
 // 1. DATA CLASS PARA COLORES PERSONALIZADOS
@@ -49,7 +50,9 @@ data class CustomColors(
     val dialogEventDefaultText: Color,
     val dialogCalendarColorIndicatorBorder: Color,
     val eventListTitleColor: Color, // Específico del modo oscuro
-    val filterButtonBackground: Color, // Específico del modo oscuro
+    val filterButtonBackground: Color,
+    val todayHighlightColor: Color,
+    val onTodayHighlightColor: Color
 )
 
 // 2. COMPOSITION LOCAL
@@ -61,21 +64,16 @@ val LocalCustomColors = staticCompositionLocalOf {
 @Composable
 fun CalendarioTheme(
     darkTheme: Boolean,
+    themeUpdateTrigger: Int,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
 
-    val colorScheme = if (darkTheme) {
-        createDarkColorScheme(prefs)
-    } else {
-        createLightColorScheme(prefs)
-    }
-
-    val customColors = if (darkTheme) {
-        createDarkCustomColors(prefs)
-    } else {
-        createLightCustomColors(prefs)
+    val (colorScheme, customColors) = remember(darkTheme, themeUpdateTrigger) {
+        val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val cs = if (darkTheme) createDarkColorScheme(prefs) else createLightColorScheme(prefs)
+        val cc = if (darkTheme) createDarkCustomColors(prefs) else createLightCustomColors(prefs)
+        cs to cc
     }
 
     CompositionLocalProvider(LocalCustomColors provides customColors) {
@@ -100,6 +98,10 @@ private fun getColor(prefs: SharedPreferences?, key: String, defaultColor: Color
     return Color(colorInt)
 }
 
+private fun isColorDark(color: Color): Boolean {
+    return ColorUtils.calculateLuminance(color.toArgb()) < 0.5
+}
+
 // --- Light Color Scheme --- //
 private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
     return lightColorScheme(
@@ -115,7 +117,12 @@ private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
 }
 
 private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
+    val todayHighlight = getColor(prefs, AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, Color(0xFFE9E9E9))
+    val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
+
     return CustomColors(
+        todayHighlightColor = todayHighlight,
+        onTodayHighlightColor = onTodayHighlight,
         onScreenTextNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ON_SCREEN_TEXT_NORMAL, AppThemeSetup.LightColors.onScreenTextNormal),
         onScreenTextSecondary = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ON_SCREEN_TEXT_SECONDARY, AppThemeSetup.LightColors.onScreenTextSecondary),
         dropdownMenuBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground),
@@ -147,7 +154,7 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
         dialogEventDefaultText = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_DIALOG_EVENT_DEFAULT_TEXT, AppThemeSetup.LightColors.dialogEventDefaultText),
         dialogCalendarColorIndicatorBorder = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_DIALOG_CALENDAR_COLOR_INDICATOR_BORDER, AppThemeSetup.LightColors.dialogCalendarColorIndicatorBorder),
         eventListTitleColor = Color.Transparent, // No se usa en modo claro
-        filterButtonBackground = Color(0xFFC1D7F2), // Usamos el color directamente aquí
+        filterButtonBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FILTER_BUTTON_BACKGROUND, AppThemeSetup.LightColors.filterButtonBackground)
     )
 }
 
@@ -166,7 +173,13 @@ private fun createDarkColorScheme(prefs: SharedPreferences?): ColorScheme {
 }
 
 private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
+    val baseTodayHighlight = getColor(prefs, AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, Color(0xFFE9E9E9))
+    val todayHighlight = baseTodayHighlight.copy(alpha = 0.5f)
+    val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
+
     return CustomColors(
+        todayHighlightColor = todayHighlight,
+        onTodayHighlightColor = onTodayHighlight,
         onScreenTextNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ON_SCREEN_TEXT_NORMAL, AppThemeSetup.DarkColors.onScreenTextNormal),
         onScreenTextSecondary = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ON_SCREEN_TEXT_SECONDARY, AppThemeSetup.DarkColors.onScreenTextSecondary),
         dropdownMenuBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.DarkColors.dropdownMenuBackground),

@@ -10,6 +10,7 @@ import java.time.LocalDate
 fun CalendarioApp(
     isDarkTheme: Boolean,
     onThemeToggle: (Boolean) -> Unit,
+    onThemeUpdated: () -> Unit,
     initialEventsByDate: Map<LocalDate, List<Festivo>>,
     initialAvailableCalendars: List<CalendarInfo>,
     initialSelectedCalendarIds: Set<Long>,
@@ -58,6 +59,7 @@ fun CalendarioApp(
         CalendarioScreen(
             isDarkTheme = isDarkTheme,
             onThemeToggle = onThemeToggle,
+            onThemeUpdated = onThemeUpdated,
             eventsByDateExternal = initialEventsByDate,
             availableCalendarsExternal = initialAvailableCalendars,
             selectedCalendarIdsExternal = initialSelectedCalendarIds,
