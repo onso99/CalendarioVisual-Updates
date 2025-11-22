@@ -11,8 +11,10 @@ object WidgetConstants {
 
     const val KEY_WIDGET_EVENT_COLOR = "widget_event_color_key"
     const val KEY_WIDGET_TODAY_EVENT_COLOR = "widget_today_event_color_key"
+    const val KEY_WIDGET_BACKGROUND_COLOR = "widget_background_color_key"
 
     // --- COLORES POR DEFECTO SELECCIONADOS DE TUS PALETAS ---
     val DEFAULT_WIDGET_EVENT_COLOR_ARGB = Color(0xFFB4B4B4).toArgb() // Gris oscuro de tu paleta
     val DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB = Color(0xFFFFFF00).toArgb() // Naranja de tu paleta
+    val DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB = Color(0x80000000).toArgb() // Negro con 50% de transparencia
 }

@@ -149,7 +149,7 @@ fun SelectCalendarsDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable {
+                                .clickable { 
                                     val newSet = currentSelectedIdsInDialog.toMutableSet()
                                     if (newSet.contains(calendar.id)) {
                                         newSet.remove(calendar.id)
@@ -275,9 +275,9 @@ fun DayEventsDialog(
                     items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
                         val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
                         val defaultItemColor = when {
-                            esCumpleanos -> CalendarioTheme.colors.dialogEventBirthdayText
-                            festivo.isFromHolidaySource -> CalendarioTheme.colors.dialogEventHolidayText
-                            else -> CalendarioTheme.colors.dialogEventDefaultText
+                            esCumpleanos -> CalendarioTheme.colors.textBirthday
+                            festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
+                            else -> CalendarioTheme.colors.textSystem
                         }
                         val itemColor = if (isToday) CalendarioTheme.colors.onTodayHighlightColor else defaultItemColor
 
@@ -297,7 +297,7 @@ fun DayEventsDialog(
                                         .background(Color(colorInt), CircleShape)
                                         .border(
                                             0.5.dp,
-                                            CalendarioTheme.colors.dialogCalendarColorIndicatorBorder,
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                             CircleShape
                                         )
                                 )

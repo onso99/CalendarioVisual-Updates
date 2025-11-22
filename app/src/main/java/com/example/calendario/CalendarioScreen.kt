@@ -34,7 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
@@ -44,10 +43,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -264,7 +261,8 @@ fun CalendarioScreen(
             onColorThemeClick = { 
                 showOptionsScreen = false
                 showColorThemeScreen = true 
-            }
+            },
+            onThemeUpdated = onThemeUpdated
         )
         return
     }
@@ -333,8 +331,44 @@ fun CalendarioScreen(
                     )
                 } else {
                     TopAppBar(
-                        title = { Text("Calendario Visual", fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.fillMaxWidth(), fontWeight = FontWeight.Bold) },
+                        title = { 
+                            Button(
+                                onClick = { 
+                                    if (viewMode == CalendarViewMode.MONTHLY) {
+                                        val targetYearPage = currentMonth.year - startYear.value
+                                        scope.launch { yearPagerState.scrollToPage(targetYearPage) }
+                                        viewMode = CalendarViewMode.YEARLY
+                                    } else {
+                                        showGoToYearDialog = true
+                                    } 
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Text(
+                                    if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }} ${currentMonth.year}" else "${currentYear.value}",
+                                    fontSize = 20.sp
+                                )
+                            }
+                        },
+                        navigationIcon = {
+                            if (viewMode == CalendarViewMode.YEARLY) {
+                                IconButton(onClick = { viewMode = CalendarViewMode.MONTHLY }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Volver a vista mensual",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+                        },
                         actions = {
+                             IconButton(onClick = { launchAddEditScreenWithPermissionCheck(null, null) }) {
+                                Icon(imageVector = Icons.Filled.Add, contentDescription = "Crear evento", tint = MaterialTheme.colorScheme.onPrimary)
+                            }
                             IconButton(onClick = { isSearchActive = true }) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -351,7 +385,7 @@ fun CalendarioScreen(
                                     modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
                                 ) {
                                     DropdownMenuItem(
-                                        text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
+                                        text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
                                         onClick = {
                                             menuExpanded = false
                                             if (hasCalendarPermissionExternal) {
@@ -362,15 +396,15 @@ fun CalendarioScreen(
                                         }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Opciones", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
+                                        text = { Text("Opciones", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
                                         onClick = { menuExpanded = false; showOptionsScreen = true }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
+                                        text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
                                         onClick = { menuExpanded = false; showHelpScreen = true }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.onScreenTextNormal) },
+                                        text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
                                         onClick = { menuExpanded = false; showAboutDialog = true }
                                     )
                                 }
@@ -424,17 +458,12 @@ fun CalendarioScreen(
                                 Text(
                                     text = date.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy")),
                                     modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant).padding(8.dp),
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             items(events) {
                                 festivo ->
-                                val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
-                                val itemColor = when {
-                                    esCumpleanos -> CalendarioTheme.colors.eventListItemBirthdayText
-                                    festivo.isFromHolidaySource -> CalendarioTheme.colors.eventListItemHolidayText
-                                    else -> CalendarioTheme.colors.eventListItemDefaultText
-                                }
                                 val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                                 else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
 
@@ -450,11 +479,11 @@ fun CalendarioScreen(
                                             Modifier
                                                 .size(10.dp)
                                                 .background(Color(colorInt), CircleShape)
-                                                .border(0.5.dp, CalendarioTheme.colors.dialogCalendarColorIndicatorBorder, CircleShape)
+                                                .border(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), CircleShape)
                                         )
                                         Spacer(Modifier.size(8.dp))
                                     }
-                                    Text(displayDesc, color = itemColor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                                    Text(displayDesc, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                                     if (festivo.rrule != null) {
                                         Icon(
                                             imageVector = Icons.Default.Refresh,
@@ -481,64 +510,13 @@ fun CalendarioScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = if (viewMode == CalendarViewMode.MONTHLY) CalendarioTheme.colors.monthlyCalendarGridBackground else Color.Transparent,
+                            color = if (viewMode == CalendarViewMode.MONTHLY) CalendarioTheme.colors.monthlyCalendarGridBackground else CalendarioTheme.colors.settingsBackground,
                             shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                         )
                         .padding(top = 8.dp, start = 12.dp, end = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        FilledIconButton(
-                            onClick = {
-                                viewMode = CalendarViewMode.MONTHLY
-                                scope.launch {
-                                    monthPagerState.animateScrollToPage(initialPage)
-                                }
-                                homeClickTrigger++
-                            },
-                            modifier = Modifier.size(44.dp),
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Icon(imageVector = Icons.Filled.Home, contentDescription = "Hoy")
-                        }
-                        Button(
-                            onClick = { 
-                                if (viewMode == CalendarViewMode.MONTHLY) {
-                                    val targetYearPage = currentMonth.year - startYear.value
-                                    scope.launch { yearPagerState.scrollToPage(targetYearPage) }
-                                    viewMode = CalendarViewMode.YEARLY
-                                } else {
-                                    showGoToYearDialog = true
-                                } 
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                        ) {
-                            Text(
-                                if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }} ${currentMonth.year}" else "${currentYear.value}",
-                                fontSize = 20.sp
-                            )
-                        }
-                        FilledIconButton(
-                            onClick = { launchAddEditScreenWithPermissionCheck(null, null) },
-                            modifier = Modifier.size(44.dp),
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Icon(imageVector = Icons.Filled.Add, contentDescription = "Crear evento")
-                        }
-                    }
-
+                    // ESTA ROW HA SIDO ELIMINADA
                     Spacer(modifier = Modifier.height(12.dp))
 
                     if (viewMode == CalendarViewMode.MONTHLY) {
@@ -582,7 +560,7 @@ fun CalendarioScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(CalendarioTheme.colors.filterButtonBackground)
+                                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
                                         .clickable { showAllEvents = !showAllEvents }
                                         .padding(horizontal = 12.dp, vertical = 4.dp)
                                 ) {
@@ -629,7 +607,7 @@ fun CalendarioScreen(
                                 Text(
                                     if (isCurrentMonthView && !showAllEvents) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
                                     fontSize = 16.sp,
-                                    color = CalendarioTheme.colors.onScreenTextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         } else {
@@ -642,15 +620,8 @@ fun CalendarioScreen(
                                 itemsIndexed(finalEventsToList, key = { _, (date, festivos) -> date.toString() + festivos.firstOrNull()?.id }) { _, (date, festivos) ->
                                     val isTodayEvents = isCurrentMonthView && date == today
                                     festivos.forEach { festivo ->
-                                        val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
-                                        val itemColor = when {
-                                            esCumpleanos -> CalendarioTheme.colors.eventListItemBirthdayText
-                                            festivo.isFromHolidaySource -> CalendarioTheme.colors.eventListItemHolidayText
-                                            else -> CalendarioTheme.colors.eventListItemDefaultText
-                                        }
-                                        val textColorForToday = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else itemColor
-                                        val dayNumberColorForToday = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onSurface
-                                        val refreshIconColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        val textColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onBackground
+                                        val iconColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
 
                                         val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                                         else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
@@ -681,13 +652,13 @@ fun CalendarioScreen(
                                                     ) {
                                                         Text(
                                                             String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
-                                                            color = dayNumberColorForToday,
+                                                            color = textColor,
                                                             fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
                                                             fontSize = 16.sp
                                                         )
                                                         Text(
                                                             displayDesc,
-                                                            color = textColorForToday,
+                                                            color = textColor,
                                                             fontSize = 16.sp,
                                                             maxLines = 1,
                                                             overflow = TextOverflow.Ellipsis,
@@ -698,7 +669,7 @@ fun CalendarioScreen(
                                                         Icon(
                                                             imageVector = Icons.Default.Refresh,
                                                             contentDescription = "Evento repetido",
-                                                            tint = refreshIconColor,
+                                                            tint = iconColor,
                                                             modifier = Modifier
                                                                 .padding(start = 8.dp)
                                                                 .size(16.dp)

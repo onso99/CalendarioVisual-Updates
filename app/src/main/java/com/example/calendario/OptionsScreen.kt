@@ -1,6 +1,12 @@
 package com.example.calendario
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import com.example.calendario.ui.theme.CalendarioTheme
+import org.json.JSONObject
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,41 +79,64 @@ fun OptionsScreen(
     onBackPress: () -> Unit,
     isDarkTheme: Boolean,
     onThemeToggle: (Boolean) -> Unit,
-    onColorThemeClick: () -> Unit
+    onColorThemeClick: () -> Unit,
+    onThemeUpdated: () -> Unit
 ) {
     val context = LocalContext.current
     val appPrefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
-    // --- Estados Originales ---
+    // --- Theme States & Launchers ---
+    var showRestoreDialog by remember { mutableStateOf(false) }
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri -> exportThemeToJson(context, uri) }
+            }
+        }
+    )
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let {
+                    uri -> importThemeFromJson(context, uri) { onThemeUpdated() }
+                    Toast.makeText(context, "Tema importado. Vuelve a entrar en Opciones para ver los cambios.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    )
+
+    // --- Widget States ---
     val originalUseDarkTheme = remember { isDarkTheme }
-    val originalHighlightColor = remember { Color(appPrefs.getInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, 0xFFE9E9E9.toInt())) }
     val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
     val originalUseLargeFont = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) }
     val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
     val originalTodayEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) }
+    val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
 
-    // --- Estados de Cambios Pendientes ---
+    // --- Pending Changes States ---
     var pendingUseDarkTheme by remember { mutableStateOf(originalUseDarkTheme) }
-    var pendingHighlightColor by remember { mutableStateOf(originalHighlightColor) }
     var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
     var pendingUseLargeFont by remember { mutableStateOf(originalUseLargeFont) }
     var pendingEventColor by remember { mutableStateOf(originalEventColor) }
     var pendingTodayEventColor by remember { mutableStateOf(originalTodayEventColor) }
+    var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
 
-    // --- Control de visibilidad de diálogos ---
-    var showHighlightColorPalette by remember { mutableStateOf(false) }
+    // --- Dialog Visibility ---
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
+    var showWidgetBackgroundColorPalette by remember { mutableStateOf(false) }
 
     val hasPendingChanges by remember {
         derivedStateOf {
             pendingUseDarkTheme != originalUseDarkTheme ||
-            pendingHighlightColor != originalHighlightColor ||
             pendingEventCount.roundToInt() != originalEventCount ||
             pendingUseLargeFont != originalUseLargeFont ||
             pendingEventColor != originalEventColor ||
-            pendingTodayEventColor != originalTodayEventColor
+            pendingTodayEventColor != originalTodayEventColor ||
+            pendingWidgetBackgroundColor != originalWidgetBackgroundColor
         }
     }
 
@@ -119,21 +149,21 @@ fun OptionsScreen(
                     FilledIconButton(
                         onClick = {
                             if (hasPendingChanges) {
-                                appPrefs.edit { putInt(AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, pendingHighlightColor.toArgb()) }
                                 widgetPrefs.edit {
                                     putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
                                     putBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, pendingUseLargeFont)
                                     putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
                                     putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
+                                    putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
                                 }
+                                CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                                 if (pendingUseDarkTheme != originalUseDarkTheme) {
                                     onThemeToggle(pendingUseDarkTheme)
                                 }
-                                notifyCalendarWidgetsConfigurationChangedMainActivity(context)
                             }
                             onBackPress()
                         },
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.padding(end = 8.dp).size(36.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
                             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -141,7 +171,6 @@ fun OptionsScreen(
                     ) {
                         Icon(Icons.Default.Check, "Aplicar")
                     }
-                    Spacer(modifier = Modifier.width(48.dp)) // Espacio para alinear con la otra pantalla
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
@@ -157,13 +186,23 @@ fun OptionsScreen(
                     Text("Modo oscuro", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Switch(checked = pendingUseDarkTheme, onCheckedChange = { pendingUseDarkTheme = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
                 }
+            }
+
+            SectionTitle("Personalizar Tema")
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
+                ActionRow(text = "Personalizar colores", onClick = onColorThemeClick)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ColorPickerRow("Resaltado eventos de hoy", pendingHighlightColor) { showHighlightColorPalette = true }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                Row(modifier = Modifier.fillMaxWidth().clickable { onColorThemeClick() }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Personalizar colores del tema", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                ActionRow("Importar tema...") { 
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }
+                    importLauncher.launch(intent)
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow("Exportar tema...") { 
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "calendario_theme.json") }
+                    exportLauncher.launch(intent)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow("Restaurar colores por defecto") { showRestoreDialog = true }
             }
 
             SectionTitle("Widget")
@@ -175,6 +214,8 @@ fun OptionsScreen(
                     Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant, uncheckedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)))
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ColorPickerRow("Color de fondo", pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
+                Spacer(Modifier.height(12.dp))
                 ColorPickerRow("Color eventos", pendingEventColor) { showWidgetEventColorPalette = true }
                 Spacer(Modifier.height(12.dp))
                 ColorPickerRow("Color eventos de hoy", pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
@@ -183,20 +224,54 @@ fun OptionsScreen(
         }
     }
 
-    if (showHighlightColorPalette) {
-        AdvancedColorPickerDialog(initialColor = pendingHighlightColor, onDismissRequest = { showHighlightColorPalette = false }, onColorConfirm = { pendingHighlightColor = it; showHighlightColorPalette = false })
-    }
     if (showWidgetEventColorPalette) {
         AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; showWidgetEventColorPalette = false })
     }
     if (showWidgetTodayEventColorPalette) {
         AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false })
     }
+    if (showWidgetBackgroundColorPalette) {
+        AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false })
+    }
+    if (showRestoreDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestoreDialog = false },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            confirmButton = {
+                Button(onClick = {
+                    val editor = appPrefs.edit()
+                    ColorThemeConfig.colorThemeItems.forEach {
+                        if (it.lightThemeKey.isNotBlank()) editor.remove(it.lightThemeKey)
+                        if (it.darkThemeKey.isNotBlank()) editor.remove(it.darkThemeKey)
+                    }
+                    editor.apply()
+                    onThemeUpdated()
+                    Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
+                    showRestoreDialog = false
+                }) { Text("Restaurar") }
+            },
+            dismissButton = { TextButton(onClick = { showRestoreDialog = false }) { Text("Cancelar") } }
+        )
+    }
 }
 
 @Composable
 private fun SectionTitle(text: String) {
     Text(text = text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp, top = 16.dp), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+}
+
+@Composable
+private fun ActionRow(text: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
 }
 
 @Composable
@@ -272,4 +347,65 @@ private fun ColorSlider(label: String, value: Float, onValueChange: (Float) -> U
         Slider(value = value, onValueChange = onValueChange, valueRange = 0f..255f, modifier = Modifier.weight(1f))
         Text(value.roundToInt().toString(), modifier = Modifier.width(30.dp), textAlign = TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+private fun exportThemeToJson(context: Context, uri: Uri) {
+    val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+    val json = JSONObject()
+    val lightTheme = JSONObject()
+    val darkTheme = JSONObject()
+
+    ColorThemeConfig.colorThemeItems.forEach {
+        if (it.lightThemeKey.isNotBlank()) {
+            val color = Color(prefs.getInt(it.lightThemeKey, it.defaultLight.toArgb()))
+            lightTheme.put(it.lightThemeKey, String.format("#%08X", color.toArgb()))
+        }
+        if (it.darkThemeKey.isNotBlank()) {
+            val color = Color(prefs.getInt(it.darkThemeKey, it.defaultDark.toArgb()))
+            darkTheme.put(it.darkThemeKey, String.format("#%08X", color.toArgb()))
+        }
+    }
+    json.put("lightTheme", lightTheme)
+    json.put("darkTheme", darkTheme)
+
+    try {
+        context.contentResolver.openOutputStream(uri)?.use { 
+            it.write(json.toString(4).toByteArray())
+        }
+        Toast.makeText(context, "Tema exportado correctamente", Toast.LENGTH_SHORT).show()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Toast.makeText(context, "Error al exportar el tema", Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun importThemeFromJson(context: Context, uri: Uri, onFinished: () -> Unit) {
+    try {
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            val jsonString = inputStream.bufferedReader().use { it.readText() }
+            val json = JSONObject(jsonString)
+            val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE).edit()
+            
+            val lightTheme = json.optJSONObject("lightTheme")
+            lightTheme?.keys()?.forEach { key ->
+                try {
+                    val colorInt = android.graphics.Color.parseColor(lightTheme.getString(key))
+                    prefs.putInt(key, colorInt)
+                } catch (e: IllegalArgumentException) {}
+            }
+
+            val darkTheme = json.optJSONObject("darkTheme")
+            darkTheme?.keys()?.forEach { key ->
+                try {
+                    val colorInt = android.graphics.Color.parseColor(darkTheme.getString(key))
+                    prefs.putInt(key, colorInt)
+                } catch (e: IllegalArgumentException) {}
+            }
+            prefs.apply()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Toast.makeText(context, "Error al importar el tema", Toast.LENGTH_SHORT).show()
+    }
+    onFinished()
 }

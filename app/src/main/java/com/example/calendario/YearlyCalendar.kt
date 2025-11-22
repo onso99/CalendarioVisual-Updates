@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,12 +48,13 @@ fun YearlyCalendar(
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
     Column(
         Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(MaterialTheme.colorScheme.background)
+            .padding(vertical = 4.dp)
     ) {
         months.chunked(3).forEachIndexed { rowIndex, monthRow ->
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier.fillMaxWidth().padding(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 monthRow.forEach { month ->
@@ -60,6 +62,7 @@ fun YearlyCalendar(
                         Modifier
                             .weight(1f)
                             .aspectRatio(1f)
+                            .clip(RoundedCornerShape(8.dp))
                             .clickable { onMonthSelected(month) },
                         Alignment.Center
                     ) {
@@ -109,7 +112,7 @@ fun MiniMonthCalendar(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = CalendarioTheme.colors.miniMonthHeaderText,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = compactTextStyle.copy(lineHeight = monthNameFontSize * 0.95f),
             modifier = Modifier.padding(bottom = 2.dp)
         )
@@ -117,7 +120,7 @@ fun MiniMonthCalendar(
             Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(1.dp) // MODIFICADO
+            horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             daysOfWeekShort.forEach { 
                 Box(
@@ -131,7 +134,7 @@ fun MiniMonthCalendar(
                         fontSize = dayHeadersFontSize,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
-                        color = CalendarioTheme.colors.miniMonthHeaderText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         style = compactTextStyle.copy(lineHeight = dayHeadersFontSize * 0.95f)
                     )
                 }
@@ -160,13 +163,16 @@ fun MiniMonthCalendar(
                             Alignment.Center
                         ) {
                             if (date != null) {
+                                val dayEvents = eventsByDate[date].orEmpty()
                                 val isToday = date == today
-                                val isHoliday = eventsByDate[date]?.any { it.isFromHolidaySource && it.title.isNotBlank() } == true
-                                val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
+                                val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
+                                val isBirthday = dayEvents.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) } && !isHoliday
+                                val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday && !isBirthday
 
                                 val textColor = when {
-                                    isHoliday -> CalendarioTheme.colors.miniMonthDayNumberHoliday
-                                    isSundayNonHoliday -> CalendarioTheme.colors.miniMonthDayNumberSunday
+                                    isHoliday -> CalendarioTheme.colors.textSundayHoliday
+                                    isBirthday -> CalendarioTheme.colors.textBirthday
+                                    isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                     else -> CalendarioTheme.colors.miniMonthDayNumberNormal
                                 }
                                 val fontWeightText = if (isToday) FontWeight.Bold else FontWeight.Normal

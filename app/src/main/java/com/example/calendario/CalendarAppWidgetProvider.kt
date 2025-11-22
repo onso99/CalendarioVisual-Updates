@@ -121,6 +121,15 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         private const val TAG_INITIAL_UPDATE_WORK = "tag_initial_calendar_work"
         private const val TAG_PERIODIC_UPDATE_WORK = "tag_periodic_calendar_work"
 
+        fun triggerWidgetUpdate(context: Context) {
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
+            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+            appWidgetIds.forEach { appWidgetId ->
+                updateAppWidget(context, appWidgetManager, appWidgetId)
+            }
+        }
+
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
@@ -128,6 +137,11 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         ) {
             Log.d(TAG, "updateAppWidget - INICIO para widget ID: $appWidgetId")
             val views = RemoteViews(context.packageName, R.layout.calendar_widget_layout)
+
+            // Leer preferencias y aplicar color de fondo
+            val prefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+            val backgroundColor = prefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
+            views.setInt(R.id.widget_root_layout, "setBackgroundColor", backgroundColor)
 
             val launchAppIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

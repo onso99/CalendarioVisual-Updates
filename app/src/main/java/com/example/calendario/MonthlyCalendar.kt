@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -98,13 +99,15 @@ fun MonthlyCalendar(
                     val hasOtherEventsPoint = isCurrentMonth && dayEvents.any { !it.isFromHolidaySource && it.title.isNotBlank() }
 
                     val dayColor = when {
-                        !isCurrentMonth -> CalendarioTheme.colors.monthlyCalendarDayNumberGhost
+                        !isCurrentMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         else -> {
                             val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                            val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
+                            val isBirthday = dayEvents.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) } && !isHoliday
+                            val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday && !isBirthday
                             when {
-                                isHoliday -> CalendarioTheme.colors.monthlyCalendarDayNumberHoliday
-                                isSundayNonHoliday -> CalendarioTheme.colors.monthlyCalendarDayNumberSunday
+                                isHoliday -> CalendarioTheme.colors.textSundayHoliday
+                                isBirthday -> CalendarioTheme.colors.textBirthday
+                                isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 else -> CalendarioTheme.colors.monthlyCalendarDayNumberNormal
                             }
                         }

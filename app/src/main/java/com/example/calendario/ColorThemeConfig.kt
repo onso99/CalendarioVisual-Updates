@@ -14,147 +14,38 @@ data class ColorThemeItem(
 object ColorThemeConfig {
     val colorThemeItems = listOf(
         // --- CATEGORÍA: ESTÁNDAR --- //
-        ColorThemeItem(
-            label = "Primario",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_PRIMARY,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_PRIMARY,
-            defaultLight = AppThemeSetup.LightColors.primary,
-            defaultDark = AppThemeSetup.DarkColors.primary,
-            category = "Estándar"
-        ),
-        ColorThemeItem(
-            label = "Texto en Primario",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_ON_PRIMARY,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_ON_PRIMARY,
-            defaultLight = AppThemeSetup.LightColors.onPrimary,
-            defaultDark = AppThemeSetup.DarkColors.onPrimary,
-            category = "Estándar"
-        ),
-        ColorThemeItem(
-            label = "Fondo Principal",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.background,
-            defaultDark = AppThemeSetup.DarkColors.background,
-            category = "Estándar"
-        ),
-        ColorThemeItem(
-            label = "Fondo Superficie",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_SURFACE,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_SURFACE,
-            defaultLight = AppThemeSetup.LightColors.surface,
-            defaultDark = AppThemeSetup.DarkColors.surface,
-            category = "Estándar"
-        ),
-        ColorThemeItem(
-            label = "Fondo Pantallas Opciones",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.settingsBackground,
-            defaultDark = AppThemeSetup.DarkColors.settingsBackground,
-            category = "Estándar"
-        ),
+        ColorThemeItem("Cabecera", AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.LightColors.cabecera, AppThemeSetup.DarkColors.cabecera, "Estándar"),
+        ColorThemeItem("Fondo Pantallas", AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground, AppThemeSetup.DarkColors.settingsBackground, "Estándar"),
+        ColorThemeItem("Fondo Cuadros/Diálogos", AppThemeSetup.ColorKeys.LIGHT_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.ColorKeys.DARK_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.LightColors.fondoPantallasDialogos, AppThemeSetup.DarkColors.fondoPantallasDialogos, "Estándar"),
+        ColorThemeItem("Error", AppThemeSetup.ColorKeys.LIGHT_ERROR, AppThemeSetup.ColorKeys.DARK_ERROR, AppThemeSetup.LightColors.error, AppThemeSetup.DarkColors.error, "Estándar"),
 
         // --- CATEGORÍA: TEXTOS --- //
-        ColorThemeItem(
-            label = "Texto Normal",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_ON_SCREEN_TEXT_NORMAL,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_ON_SCREEN_TEXT_NORMAL,
-            defaultLight = AppThemeSetup.LightColors.onScreenTextNormal,
-            defaultDark = AppThemeSetup.DarkColors.onScreenTextNormal,
-            category = "Textos"
-        ),
-        ColorThemeItem(
-            label = "Texto Secundario",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_ON_SCREEN_TEXT_SECONDARY,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_ON_SCREEN_TEXT_SECONDARY,
-            defaultLight = AppThemeSetup.LightColors.onScreenTextSecondary,
-            defaultDark = AppThemeSetup.DarkColors.onScreenTextSecondary,
-            category = "Textos"
-        ),
-        ColorThemeItem(
-            label = "Texto Cumpleaños/Aniv.",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_EVENT_LIST_ITEM_BIRTHDAY_TEXT,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_EVENT_LIST_ITEM_BIRTHDAY_TEXT,
-            defaultLight = AppThemeSetup.LightColors.eventListItemBirthdayText,
-            defaultDark = AppThemeSetup.DarkColors.eventListItemBirthdayText,
-            category = "Textos"
-        ),
-        ColorThemeItem(
-            label = "Texto Festivo",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_EVENT_LIST_ITEM_HOLIDAY_TEXT,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_EVENT_LIST_ITEM_HOLIDAY_TEXT,
-            defaultLight = AppThemeSetup.LightColors.eventListItemHolidayText,
-            defaultDark = AppThemeSetup.DarkColors.eventListItemHolidayText,
-            category = "Textos"
-        ),
+        ColorThemeItem("Texto de sistema", AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem, AppThemeSetup.DarkColors.textSystem, "Textos"),
+        ColorThemeItem("Domingos y Festivos", AppThemeSetup.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.LightColors.textSundayHoliday, AppThemeSetup.DarkColors.textSundayHoliday, "Textos"),
+        ColorThemeItem("Cumpleaños", AppThemeSetup.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppThemeSetup.ColorKeys.DARK_TEXT_BIRTHDAY, AppThemeSetup.LightColors.textBirthday, AppThemeSetup.DarkColors.textBirthday, "Textos"),
+
+        // --- CATEGORÍA: LISTA DE EVENTOS --- //
+        ColorThemeItem("Fondo lista de eventos", AppThemeSetup.ColorKeys.LIGHT_BACKGROUND, AppThemeSetup.ColorKeys.DARK_BACKGROUND, AppThemeSetup.LightColors.background, AppThemeSetup.DarkColors.background, "Lista de Eventos"),
+        ColorThemeItem("Resaltado Día Actual (Lista)", AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.background, AppThemeSetup.DarkColors.background, "Lista de Eventos"),
 
         // --- CATEGORÍA: CALENDARIO MENSUAL --- //
-        ColorThemeItem(
-            label = "Fondo Grid Calendario",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.monthlyCalendarGridBackground,
-            defaultDark = AppThemeSetup.DarkColors.monthlyCalendarGridBackground,
-            category = "Calendario Mensual"
-        ),
-        ColorThemeItem(
-            label = "Celda Mes Actual",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.monthlyCalendarDayCellBackground,
-            defaultDark = AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground,
-            category = "Calendario Mensual"
-        ),
-        ColorThemeItem(
-            label = "Celda Otros Meses",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground,
-            defaultDark = AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground,
-            category = "Calendario Mensual"
-        ),
-        ColorThemeItem(
-            label = "Días Otros Meses",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_GHOST,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_GHOST,
-            defaultLight = AppThemeSetup.LightColors.monthlyCalendarDayNumberGhost,
-            defaultDark = AppThemeSetup.DarkColors.monthlyCalendarDayNumberGhost,
-            category = "Calendario Mensual"
-        ),
-        ColorThemeItem(
-            label = "Cabecera Días Semana",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.monthlyCalendarHeaderBackground,
-            defaultDark = AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground,
-            category = "Calendario Mensual"
-        ),
-         ColorThemeItem(
-            label = "Texto Cabecera Días",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_TEXT,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_TEXT,
-            defaultLight = AppThemeSetup.LightColors.monthlyCalendarHeaderText,
-            defaultDark = AppThemeSetup.DarkColors.monthlyCalendarHeaderText,
-            category = "Calendario Mensual"
-        ),
+        ColorThemeItem("Fondo de calendario", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarGridBackground, AppThemeSetup.DarkColors.monthlyCalendarGridBackground, "Calendario Mensual"),
+        ColorThemeItem("Celda Mes Actual", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarDayCellBackground, AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground, "Calendario Mensual"),
+        ColorThemeItem("Celda Otros Meses", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground, AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground, "Calendario Mensual"),
+        ColorThemeItem("Borde Día Actual", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder, AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder, "Calendario Mensual"),
+        ColorThemeItem("Número Día Normal", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.monthlyCalendarDayNumberNormal, AppThemeSetup.DarkColors.monthlyCalendarDayNumberNormal, "Calendario Mensual"),
+        ColorThemeItem("Cabecera Días Semana", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarHeaderBackground, AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground, "Calendario Mensual"),
+        ColorThemeItem("Texto Cabecera Días", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_TEXT, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_TEXT, AppThemeSetup.LightColors.monthlyCalendarHeaderText, AppThemeSetup.DarkColors.monthlyCalendarHeaderText, "Calendario Mensual"),
+        ColorThemeItem("Indicador Evento", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.LightColors.monthlyCalendarEventIndicator, AppThemeSetup.DarkColors.monthlyCalendarEventIndicator, "Calendario Mensual"),
+
+        // --- CATEGORÍA: CALENDARIO ANUAL (MINI) --- //
+        ColorThemeItem("Mini-cabecera", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.LightColors.miniMonthHeaderBackground, AppThemeSetup.DarkColors.miniMonthHeaderBackground, "Calendario Anual"),
+        ColorThemeItem("Mini: Resaltado Día Actual", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground, "Calendario Anual"),
+        ColorThemeItem("Mini: Día Normal", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal, AppThemeSetup.DarkColors.miniMonthDayNumberNormal, "Calendario Anual"),
 
         // --- CATEGORÍA: COMPONENTES --- //
-        ColorThemeItem(
-            label = "Fondo Menú Desplegable",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.dropdownMenuBackground,
-            defaultDark = AppThemeSetup.DarkColors.dropdownMenuBackground,
-            category = "Componentes"
-        ),
-        ColorThemeItem(
-            label = "Fondo Botón 'Pendientes'",
-            lightThemeKey = AppThemeSetup.ColorKeys.LIGHT_FILTER_BUTTON_BACKGROUND,
-            darkThemeKey = AppThemeSetup.ColorKeys.DARK_FILTER_BUTTON_BACKGROUND,
-            defaultLight = AppThemeSetup.LightColors.filterButtonBackground,
-            defaultDark = AppThemeSetup.DarkColors.filterButtonBackground,
-            category = "Componentes"
-        )
+        ColorThemeItem("Fondo Menú Desplegable", AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground, AppThemeSetup.DarkColors.dropdownMenuBackground, "Componentes"),
+        ColorThemeItem("Botón Navegación Fondo", AppThemeSetup.ColorKeys.LIGHT_NAVIGATION_BUTTON_BACKGROUND, AppThemeSetup.ColorKeys.DARK_NAVIGATION_BUTTON_BACKGROUND, AppThemeSetup.LightColors.navigationButtonBackground, AppThemeSetup.DarkColors.navigationButtonBackground, "Componentes"),
+        ColorThemeItem("Botón Navegación Contenido", AppThemeSetup.ColorKeys.LIGHT_NAVIGATION_BUTTON_CONTENT, AppThemeSetup.ColorKeys.DARK_NAVIGATION_BUTTON_CONTENT, AppThemeSetup.LightColors.navigationButtonContent, AppThemeSetup.DarkColors.navigationButtonContent, "Componentes")
     )
 }

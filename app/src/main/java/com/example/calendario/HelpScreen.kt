@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +47,7 @@ fun HelpScreen(
                 )
             )
         },
+        containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
