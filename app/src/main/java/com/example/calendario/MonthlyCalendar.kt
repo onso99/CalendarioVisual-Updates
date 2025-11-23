@@ -17,10 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -65,6 +67,7 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
+        val onHeaderColor = if (isColorDark(CalendarioTheme.colors.monthlyCalendarHeaderBackground)) Color.White else Color.Black
         Row(Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { day ->
                 Box(
@@ -78,7 +81,7 @@ fun MonthlyCalendar(
                         text = day,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = CalendarioTheme.colors.monthlyCalendarHeaderText,
+                        color = onHeaderColor,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }

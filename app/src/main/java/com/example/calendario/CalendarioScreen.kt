@@ -550,10 +550,13 @@ fun CalendarioScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
+                            val monthlyGridBackgroundColor = CalendarioTheme.colors.monthlyCalendarGridBackground
+                            val onGridBackgroundColor = if (isColorDark(monthlyGridBackgroundColor)) Color.White else Color.Black
+                            
                             Text(
                                 text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
                                 fontSize = 18.sp,
-                                color = CalendarioTheme.colors.monthlyCalendarHeaderText,
+                                color = onGridBackgroundColor,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
@@ -562,7 +565,7 @@ fun CalendarioScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
+                                        .background(onGridBackgroundColor.copy(alpha = 0.15f))
                                         .clickable { showAllEvents = !showAllEvents }
                                         .padding(horizontal = 12.dp, vertical = 4.dp)
                                 ) {
@@ -570,7 +573,7 @@ fun CalendarioScreen(
                                         text = if (showAllEvents) "Todos" else "Pendientes",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = CalendarioTheme.colors.monthlyCalendarHeaderText
+                                        color = onGridBackgroundColor
                                     )
                                 }
                             }

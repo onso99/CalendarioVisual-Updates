@@ -18,7 +18,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -28,8 +31,10 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,7 +47,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -323,6 +331,77 @@ fun DayEventsDialog(
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
                 Text("Cerrar", fontSize = 16.sp)
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GoToYearDialog(
+    initialYear: Int,
+    onYearSelected: (Int) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    var year by remember { mutableStateOf(initialYear.toString()) }
+    val minYear = 1924
+    val maxYear = 2124
+    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = onFondoDialogos,
+        textContentColor = onFondoDialogos,
+        title = { Text("Selección de Año", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = { 
+                    val currentYear = year.toIntOrNull() ?: initialYear
+                    val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
+                    year = newYear.toString()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = "Año anterior", modifier = Modifier.size(36.dp))
+                }
+                OutlinedTextField(
+                    value = year,
+                    onValueChange = { 
+                        val newText = it.filter { char -> char.isDigit() }.take(4)
+                        year = newText
+                        if (newText.length == 4) {
+                            val newYear = newText.toInt().coerceIn(minYear, maxYear)
+                            year = newYear.toString()
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.width(100.dp).padding(horizontal = 8.dp),
+                    textStyle = TextStyle(textAlign = TextAlign.Center)
+                )
+                IconButton(onClick = { 
+                    val currentYear = year.toIntOrNull() ?: initialYear
+                    val newYear = (currentYear + 1).coerceIn(minYear, maxYear)
+                    year = newYear.toString()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = "Año siguiente", modifier = Modifier.size(36.dp))
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                val selectedYear = year.toIntOrNull()?.coerceIn(minYear, maxYear) ?: initialYear
+                onYearSelected(selectedYear)
+                onDismissRequest()
+            }) {
+                Text("Aceptar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancelar")
             }
         }
     )
