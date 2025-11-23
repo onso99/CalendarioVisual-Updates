@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
@@ -231,11 +232,12 @@ fun OptionsScreen(
         AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false })
     }
     if (showRestoreDialog) {
+        val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
         AlertDialog(
             onDismissRequest = { showRestoreDialog = false },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-            text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold, color = onFondoDialogos) },
+            text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto?", color = onFondoDialogos) },
             confirmButton = {
                 Button(onClick = {
                     val editor = appPrefs.edit()
@@ -296,7 +298,7 @@ private fun AdvancedColorPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
         title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         text = {
             Column {

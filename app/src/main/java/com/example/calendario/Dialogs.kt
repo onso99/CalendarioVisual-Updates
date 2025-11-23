@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -63,12 +64,13 @@ fun DeleteRecurringEventDialog(
     onConfirm: (DeleteRecurringOption) -> Unit
 ) {
     var selectedOption by remember { mutableStateOf<DeleteRecurringOption?>(null) }
+    val onFondoDialogos = if(isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = onFondoDialogos,
+        textContentColor = onFondoDialogos,
         title = { Text("Eliminar evento recurrente", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Column {
@@ -123,12 +125,13 @@ fun SelectCalendarsDialog(
     var currentSelectedIdsInDialog by remember(initialSelectedIds, availableCalendars) {
         mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
     }
+    val onFondoDialogos = if(isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = onFondoDialogos,
+        textContentColor = onFondoDialogos,
         title = {
             Text(
                 "Seleccionar Calendarios",
@@ -174,7 +177,7 @@ fun SelectCalendarsDialog(
                                 },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = MaterialTheme.colorScheme.primary,
-                                    uncheckedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                    uncheckedColor = onFondoDialogos.copy(alpha = 0.6f),
                                     checkmarkColor = MaterialTheme.colorScheme.onPrimary
                                 )
                             )
@@ -188,7 +191,7 @@ fun SelectCalendarsDialog(
                                 Text(
                                     calendar.accountName,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                    color = onFondoDialogos.copy(alpha = 0.7f),
                                     fontSize = 12.sp
                                 )
                             }
@@ -226,12 +229,13 @@ fun DayEventsDialog(
     val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
     val isToday = date == LocalDate.now()
+    val onFondoDialogos = if(isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = onFondoDialogos,
+        textContentColor = onFondoDialogos,
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -277,7 +281,7 @@ fun DayEventsDialog(
                         val defaultItemColor = when {
                             esCumpleanos -> CalendarioTheme.colors.textBirthday
                             festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
-                            else -> CalendarioTheme.colors.textSystem
+                            else -> onFondoDialogos
                         }
                         val itemColor = if (isToday) CalendarioTheme.colors.onTodayHighlightColor else defaultItemColor
 

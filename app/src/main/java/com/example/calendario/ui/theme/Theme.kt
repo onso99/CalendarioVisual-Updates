@@ -20,6 +20,7 @@ import com.example.calendario.AppThemeSetup
 // 1. DATA CLASS PARA COLORES PERSONALIZADOS
 data class CustomColors(
     val settingsBackground: Color,
+    val fondoDialogos: Color,
     val textSystem: Color,
     val textSundayHoliday: Color,
     val textBirthday: Color,
@@ -91,14 +92,14 @@ fun isColorDark(color: Color): Boolean {
 private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
     val cabeceraColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.LightColors.cabecera)
     val onCabeceraColor = if (isColorDark(cabeceraColor)) Color.White else Color.Black
-    val fondoPantallasDialogosColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.LightColors.fondoPantallasDialogos)
-    val onFondoPantallasDialogosColor = if (isColorDark(fondoPantallasDialogosColor)) Color.White else Color.Black
+    val fondoSeccionesColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_SECCIONES, AppThemeSetup.LightColors.fondoSecciones)
+    val onFondoSeccionesColor = if (isColorDark(fondoSeccionesColor)) Color.White else Color.Black
 
     return lightColorScheme(
         primary = cabeceraColor,
         onPrimary = onCabeceraColor,
-        surfaceVariant = fondoPantallasDialogosColor,
-        onSurfaceVariant = onFondoPantallasDialogosColor,
+        surfaceVariant = fondoSeccionesColor,
+        onSurfaceVariant = onFondoSeccionesColor,
         background = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_BACKGROUND, AppThemeSetup.LightColors.background),
         onBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ON_BACKGROUND, AppThemeSetup.LightColors.onBackground),
         error = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ERROR, AppThemeSetup.LightColors.error),
@@ -112,6 +113,7 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
 
     return CustomColors(
         settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground),
+        fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_DIALOGOS, AppThemeSetup.LightColors.fondoDialogos),
         todayHighlightColor = todayHighlight,
         onTodayHighlightColor = onTodayHighlight,
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem),
@@ -137,14 +139,14 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
 private fun createDarkColorScheme(prefs: SharedPreferences?): ColorScheme {
     val cabeceraColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.DarkColors.cabecera)
     val onCabeceraColor = if (isColorDark(cabeceraColor)) Color.White else Color.Black
-    val fondoPantallasDialogosColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.DarkColors.fondoPantallasDialogos)
-    val onFondoPantallasDialogosColor = if (isColorDark(fondoPantallasDialogosColor)) Color.White else Color.Black
+    val fondoSeccionesColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_SECCIONES, AppThemeSetup.DarkColors.fondoSecciones)
+    val onFondoSeccionesColor = if (isColorDark(fondoSeccionesColor)) Color.White else Color.Black
 
     return darkColorScheme(
         primary = cabeceraColor,
         onPrimary = onCabeceraColor,
-        surfaceVariant = fondoPantallasDialogosColor,
-        onSurfaceVariant = onFondoPantallasDialogosColor,
+        surfaceVariant = fondoSeccionesColor,
+        onSurfaceVariant = onFondoSeccionesColor,
         background = getColor(prefs, AppThemeSetup.ColorKeys.DARK_BACKGROUND, AppThemeSetup.DarkColors.background),
         onBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ON_BACKGROUND, AppThemeSetup.DarkColors.onBackground),
         error = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ERROR, AppThemeSetup.DarkColors.error),
@@ -159,6 +161,7 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
 
     return CustomColors(
         settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.DarkColors.settingsBackground),
+        fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_DIALOGOS, AppThemeSetup.DarkColors.fondoDialogos),
         todayHighlightColor = todayHighlight,
         onTodayHighlightColor = onTodayHighlight,
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.DarkColors.textSystem),

@@ -35,7 +35,8 @@ object AppThemeSetup {
     object ColorKeys {
         // Light Theme
         const val LIGHT_CABECERA = "light_cabecera"
-        const val LIGHT_FONDO_PANTALLAS_DIALOGOS = "light_fondo_pantallas_dialogos"
+        const val LIGHT_FONDO_SECCIONES = "light_fondo_secciones"
+        const val LIGHT_FONDO_DIALOGOS = "light_fondo_dialogos"
         const val LIGHT_BACKGROUND = "light_background"
         const val LIGHT_SETTINGS_BACKGROUND = "light_settings_background"
         const val LIGHT_ON_BACKGROUND = "light_on_background"
@@ -59,7 +60,8 @@ object AppThemeSetup {
 
         // Dark Theme
         const val DARK_CABECERA = "dark_cabecera"
-        const val DARK_FONDO_PANTALLAS_DIALOGOS = "dark_fondo_pantallas_dialogos"
+        const val DARK_FONDO_SECCIONES = "dark_fondo_secciones"
+        const val DARK_FONDO_DIALOGOS = "dark_fondo_dialogos"
         const val DARK_BACKGROUND = "dark_background"
         const val DARK_SETTINGS_BACKGROUND = "dark_settings_background"
         const val DARK_ON_BACKGROUND = "dark_on_background"
@@ -85,7 +87,8 @@ object AppThemeSetup {
 
     object LightColors {
         val cabecera = Color(0xFF2196F3)
-        val fondoPantallasDialogos = Color(0xFFE3F2FD)
+        val fondoSecciones = Color(0xFFE3F2FD)
+        val fondoDialogos = Color(0xFFFFFFFF)
         val background = Color(0xFFFCFDFE)
         val settingsBackground = Color(0xFFEDF3FC)
         val onBackground = Color.Black
@@ -110,7 +113,8 @@ object AppThemeSetup {
 
     object DarkColors {
         val cabecera = Color(0xFF2173ed)
-        val fondoPantallasDialogos = Color(0xFF333A42)
+        val fondoSecciones = Color(0xFF333A42)
+        val fondoDialogos = Color(0xFF2C2C2C)
         val background = Color(0xFF121212)
         val settingsBackground = Color(0xFF1A1A1A)
         val onBackground = Color(0xFFE0E0E0)

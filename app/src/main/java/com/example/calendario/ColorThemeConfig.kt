@@ -16,7 +16,8 @@ object ColorThemeConfig {
         // --- CATEGORÍA: GENERAL --- //
         ColorThemeItem("Cabecera", AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.LightColors.cabecera, AppThemeSetup.DarkColors.cabecera, "General"),
         ColorThemeItem("Fondo Pantallas", AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground, AppThemeSetup.DarkColors.settingsBackground, "General"),
-        ColorThemeItem("Fondo Cuadros/Diálogos", AppThemeSetup.ColorKeys.LIGHT_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.ColorKeys.DARK_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.LightColors.fondoPantallasDialogos, AppThemeSetup.DarkColors.fondoPantallasDialogos, "General"),
+        ColorThemeItem("Fondo Secciones", AppThemeSetup.ColorKeys.LIGHT_FONDO_SECCIONES, AppThemeSetup.ColorKeys.DARK_FONDO_SECCIONES, AppThemeSetup.LightColors.fondoSecciones, AppThemeSetup.DarkColors.fondoSecciones, "General"),
+        ColorThemeItem("Fondo Diálogos", AppThemeSetup.ColorKeys.LIGHT_FONDO_DIALOGOS, AppThemeSetup.ColorKeys.DARK_FONDO_DIALOGOS, AppThemeSetup.LightColors.fondoDialogos, AppThemeSetup.DarkColors.fondoDialogos, "General"),
         ColorThemeItem("Fondo Menú Desplegable", AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground, AppThemeSetup.DarkColors.dropdownMenuBackground, "General"),
         ColorThemeItem("Advertencia", AppThemeSetup.ColorKeys.LIGHT_ERROR, AppThemeSetup.ColorKeys.DARK_ERROR, AppThemeSetup.LightColors.error, AppThemeSetup.DarkColors.error, "General"),
 
