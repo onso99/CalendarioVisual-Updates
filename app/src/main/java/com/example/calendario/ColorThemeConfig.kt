@@ -13,11 +13,12 @@ data class ColorThemeItem(
 
 object ColorThemeConfig {
     val colorThemeItems = listOf(
-        // --- CATEGORÍA: ESTÁNDAR --- //
-        ColorThemeItem("Cabecera", AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.LightColors.cabecera, AppThemeSetup.DarkColors.cabecera, "Estándar"),
-        ColorThemeItem("Fondo Pantallas", AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground, AppThemeSetup.DarkColors.settingsBackground, "Estándar"),
-        ColorThemeItem("Fondo Cuadros/Diálogos", AppThemeSetup.ColorKeys.LIGHT_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.ColorKeys.DARK_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.LightColors.fondoPantallasDialogos, AppThemeSetup.DarkColors.fondoPantallasDialogos, "Estándar"),
-        ColorThemeItem("Error", AppThemeSetup.ColorKeys.LIGHT_ERROR, AppThemeSetup.ColorKeys.DARK_ERROR, AppThemeSetup.LightColors.error, AppThemeSetup.DarkColors.error, "Estándar"),
+        // --- CATEGORÍA: GENERAL --- //
+        ColorThemeItem("Cabecera", AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.LightColors.cabecera, AppThemeSetup.DarkColors.cabecera, "General"),
+        ColorThemeItem("Fondo Pantallas", AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground, AppThemeSetup.DarkColors.settingsBackground, "General"),
+        ColorThemeItem("Fondo Cuadros/Diálogos", AppThemeSetup.ColorKeys.LIGHT_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.ColorKeys.DARK_FONDO_PANTALLAS_DIALOGOS, AppThemeSetup.LightColors.fondoPantallasDialogos, AppThemeSetup.DarkColors.fondoPantallasDialogos, "General"),
+        ColorThemeItem("Fondo Menú Desplegable", AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground, AppThemeSetup.DarkColors.dropdownMenuBackground, "General"),
+        ColorThemeItem("Advertencia", AppThemeSetup.ColorKeys.LIGHT_ERROR, AppThemeSetup.ColorKeys.DARK_ERROR, AppThemeSetup.LightColors.error, AppThemeSetup.DarkColors.error, "General"),
 
         // --- CATEGORÍA: TEXTOS --- //
         ColorThemeItem("Texto de sistema", AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem, AppThemeSetup.DarkColors.textSystem, "Textos"),
@@ -41,11 +42,6 @@ object ColorThemeConfig {
         // --- CATEGORÍA: CALENDARIO ANUAL (MINI) --- //
         ColorThemeItem("Mini-cabecera", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.LightColors.miniMonthHeaderBackground, AppThemeSetup.DarkColors.miniMonthHeaderBackground, "Calendario Anual"),
         ColorThemeItem("Mini: Resaltado Día Actual", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground, "Calendario Anual"),
-        ColorThemeItem("Mini: Día Normal", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal, AppThemeSetup.DarkColors.miniMonthDayNumberNormal, "Calendario Anual"),
-
-        // --- CATEGORÍA: COMPONENTES --- //
-        ColorThemeItem("Fondo Menú Desplegable", AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground, AppThemeSetup.DarkColors.dropdownMenuBackground, "Componentes"),
-        ColorThemeItem("Botón Navegación Fondo", AppThemeSetup.ColorKeys.LIGHT_NAVIGATION_BUTTON_BACKGROUND, AppThemeSetup.ColorKeys.DARK_NAVIGATION_BUTTON_BACKGROUND, AppThemeSetup.LightColors.navigationButtonBackground, AppThemeSetup.DarkColors.navigationButtonBackground, "Componentes"),
-        ColorThemeItem("Botón Navegación Contenido", AppThemeSetup.ColorKeys.LIGHT_NAVIGATION_BUTTON_CONTENT, AppThemeSetup.ColorKeys.DARK_NAVIGATION_BUTTON_CONTENT, AppThemeSetup.LightColors.navigationButtonContent, AppThemeSetup.DarkColors.navigationButtonContent, "Componentes")
+        ColorThemeItem("Mini: Día Normal", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal, AppThemeSetup.DarkColors.miniMonthDayNumberNormal, "Calendario Anual")
     )
 }

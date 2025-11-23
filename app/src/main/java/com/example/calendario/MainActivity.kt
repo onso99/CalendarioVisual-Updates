@@ -45,8 +45,6 @@ object AppThemeSetup {
         const val LIGHT_TEXT_SUNDAY_HOLIDAY = "light_text_sunday_holiday"
         const val LIGHT_TEXT_BIRTHDAY = "light_text_birthday"
         const val LIGHT_DROPDOWN_MENU_BACKGROUND = "light_dropdown_menu_background"
-        const val LIGHT_NAVIGATION_BUTTON_BACKGROUND = "light_navigation_button_background"
-        const val LIGHT_NAVIGATION_BUTTON_CONTENT = "light_navigation_button_content"
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
         const val LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND = "light_monthly_calendar_empty_cell_background"
@@ -71,8 +69,6 @@ object AppThemeSetup {
         const val DARK_TEXT_SUNDAY_HOLIDAY = "dark_text_sunday_holiday"
         const val DARK_TEXT_BIRTHDAY = "dark_text_birthday"
         const val DARK_DROPDOWN_MENU_BACKGROUND = "dark_dropdown_menu_background"
-        const val DARK_NAVIGATION_BUTTON_BACKGROUND = "dark_navigation_button_background"
-        const val DARK_NAVIGATION_BUTTON_CONTENT = "dark_navigation_button_content"
         const val DARK_EVENT_LIST_TITLE_COLOR = "dark_event_list_title_color"
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
@@ -99,8 +95,6 @@ object AppThemeSetup {
         val textSundayHoliday = error
         val textBirthday = Color(0xFF0000FF)
         val dropdownMenuBackground = Color.White
-        val navigationButtonBackground = Color(0xFFffbb77)
-        val navigationButtonContent = Color.Black
         val monthlyCalendarGridBackground = Color(0xFFDBE7F9)
         val monthlyCalendarDayCellBackground = Color.White
         val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
@@ -126,8 +120,6 @@ object AppThemeSetup {
         val textSundayHoliday = Color(0xFFE57373)
         val textBirthday = Color(0xFFAECBFF)
         val dropdownMenuBackground = Color(0xFF2C2C2C)
-        val navigationButtonBackground = Color(0xFFB87333)
-        val navigationButtonContent = Color.White
         val eventListTitleColor = Color(0xFFD28C45)
         val monthlyCalendarGridBackground = Color(0xFF333333)
         val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)

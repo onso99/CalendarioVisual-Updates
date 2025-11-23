@@ -273,7 +273,8 @@ fun CalendarioScreen(
                 showColorThemeScreen = false
                 onThemeUpdated()
             },
-            onThemeUpdated = onThemeUpdated
+            onThemeUpdated = onThemeUpdated,
+            isDarkTheme = isDarkTheme
         )
         return
     }

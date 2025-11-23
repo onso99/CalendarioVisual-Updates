@@ -65,11 +65,13 @@ import kotlin.math.roundToInt
 @Composable
 fun ColorThemeScreen(
     onBackPress: () -> Unit,
-    onThemeUpdated: () -> Unit
+    onThemeUpdated: () -> Unit,
+    isDarkTheme: Boolean
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val groupedItems = ColorThemeConfig.colorThemeItems.groupBy { it.category }
+    val categories = groupedItems.keys.toList()
 
     val pendingChanges = remember { mutableStateMapOf<String, Color>() }
     var showAdvancedColorDialog by remember { mutableStateOf(false) }
@@ -107,36 +109,36 @@ fun ColorThemeScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text("Claro", modifier = Modifier.width(64.dp), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                Text("Oscuro", modifier = Modifier.width(64.dp), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-            }
+            categories.forEachIndexed { index, category ->
+                val items = groupedItems[category]!!
 
-            groupedItems.forEach { (category, items) ->
-                SectionTitle(text = category)
+                SectionTitle(
+                    text = category,
+                    modifier = Modifier.padding(top = if(index > 0) 24.dp else 0.dp, bottom = 8.dp)
+                )
+                
                 Column(
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)
                 ) {
                     items.forEach { item ->
-                        val lightColor = pendingChanges[item.lightThemeKey] ?: Color(prefs.getInt(item.lightThemeKey, item.defaultLight.toArgb()))
-                        val darkColor = pendingChanges[item.darkThemeKey] ?: Color(prefs.getInt(item.darkThemeKey, item.defaultDark.toArgb()))
+                        val (colorKey, defaultColor) = if (isDarkTheme) {
+                            item.darkThemeKey to item.defaultDark
+                        } else {
+                            item.lightThemeKey to item.defaultLight
+                        }
 
-                        ColorThemeRow(
-                            item = item,
-                            lightColor = lightColor,
-                            darkColor = darkColor,
-                            onLightColorClick = {
-                                colorToEdit = Triple(item.lightThemeKey, lightColor, "${item.label} (Claro)")
-                                showAdvancedColorDialog = true
-                            },
-                            onDarkColorClick = {
-                                colorToEdit = Triple(item.darkThemeKey, darkColor, "${item.label} (Oscuro)")
-                                showAdvancedColorDialog = true
-                            }
-                        )
+                        if (colorKey.isNotBlank()) {
+                            val currentColor = pendingChanges[colorKey] ?: Color(prefs.getInt(colorKey, defaultColor.toArgb()))
+
+                            SingleColorThemeRow(
+                                label = item.label,
+                                color = currentColor,
+                                onClick = {
+                                    colorToEdit = Triple(colorKey, currentColor, item.label)
+                                    showAdvancedColorDialog = true
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -157,24 +159,21 @@ fun ColorThemeScreen(
 }
 
 @Composable
-private fun ColorThemeRow(
-    item: ColorThemeItem,
-    lightColor: Color,
-    darkColor: Color,
-    onLightColorClick: () -> Unit,
-    onDarkColorClick: () -> Unit
+private fun SingleColorThemeRow(
+    label: String,
+    color: Color,
+    onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = item.label, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Row(horizontalArrangement = Arrangement.End) {
-            ColorBox(color = lightColor, onClick = onLightColorClick)
-            Spacer(modifier = Modifier.width(32.dp))
-            ColorBox(color = darkColor, onClick = onDarkColorClick)
-        }
+        Text(text = label, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+        ColorBox(color = color, onClick = onClick)
     }
 }
 
@@ -184,13 +183,13 @@ private fun ColorBox(color: Color, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier
     )
 }
 
