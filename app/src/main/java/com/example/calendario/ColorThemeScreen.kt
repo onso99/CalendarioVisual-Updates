@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,7 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
+import java.lang.IllegalArgumentException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +117,7 @@ fun ColorThemeScreen(
                         }
 
                         if (colorKey.isNotBlank()) {
-                            val currentColor = pendingChanges[colorKey] ?: Color(prefs.getInt(colorKey, defaultColor.toArgb()))
+                            val currentColor = pendingChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
                             SingleColorThemeRow(
                                 label = item.label,
@@ -141,6 +144,21 @@ fun ColorThemeScreen(
                 showAdvancedColorDialog = false
             }
         )
+    }
+}
+
+private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: Color): Color {
+    if (!prefs.contains(key)) return defaultColor
+    return when (val value = prefs.all[key]) {
+        is Int -> Color(value)
+        is String -> {
+            try {
+                Color(value.toColorInt())
+            } catch (_: IllegalArgumentException) {
+                defaultColor
+            }
+        }
+        else -> defaultColor
     }
 }
 

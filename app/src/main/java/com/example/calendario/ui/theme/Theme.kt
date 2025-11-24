@@ -15,7 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.toColorInt
 import com.example.calendario.AppThemeSetup
+import java.lang.IllegalArgumentException
 
 // 1. DATA CLASS PARA COLORES PERSONALIZADOS
 data class CustomColors(
@@ -78,9 +80,18 @@ object CalendarioTheme {
 }
 
 private fun getColor(prefs: SharedPreferences?, key: String, defaultColor: Color): Color {
-    if (prefs == null) return defaultColor
-    val colorInt = prefs.getInt(key, defaultColor.toArgb())
-    return Color(colorInt)
+    if (prefs == null || !prefs.contains(key)) return defaultColor
+    return when (val value = prefs.all[key]) {
+        is Int -> Color(value)
+        is String -> {
+            try {
+                Color(value.toColorInt())
+            } catch (_: IllegalArgumentException) {
+                defaultColor
+            }
+        }
+        else -> defaultColor
+    }
 }
 
 fun isColorDark(color: Color): Boolean {
