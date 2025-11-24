@@ -1,7 +1,6 @@
 package com.example.calendario
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
@@ -9,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,27 +18,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,7 +47,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -71,31 +59,20 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.Normalizer
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
-enum class SearchScope { MONTH, YEAR, ALL }
-
-private val REGEX_UNACCENT = "\\p{InCombiningDiacriticalMarks}+".toRegex()
-fun CharSequence.unaccent(): String {
-    val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
-    return REGEX_UNACCENT.replace(temp, "")
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -143,10 +120,8 @@ fun CalendarioScreen(
     var eventToEdit by remember { mutableStateOf<Festivo?>(null) }
     var showAllEvents by remember { mutableStateOf(false) }
     val lazyListState = rememberLazyListState()
-    var homeClickTrigger by remember { mutableIntStateOf(0) }
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var searchScope by remember { mutableStateOf(SearchScope.ALL) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -192,35 +167,20 @@ fun CalendarioScreen(
     val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
     val finalEventsToList = processEventsForDisplay(eventsByDateExternal, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
 
-    val searchResults = remember(searchQuery, searchScope, eventsByDateExternal) {
-        if (searchQuery.isBlank()) {
-            emptyMap()
-        } else {
-            val allEvents = eventsByDateExternal.values.flatten()
-            val scopeFilteredEvents = when (searchScope) {
-                SearchScope.MONTH -> allEvents.filter { it.date.year == currentMonth.year && it.date.month == currentMonth.month }
-                SearchScope.YEAR -> allEvents.filter { it.date.year == currentMonth.year }
-                SearchScope.ALL -> allEvents
-            }
-            val normalizedQuery = searchQuery.unaccent().lowercase(Locale.getDefault())
-            scopeFilteredEvents
-                .filter { it.title.unaccent().lowercase(Locale.getDefault()).contains(normalizedQuery) }
-                .groupBy { it.date }
-                .toSortedMap(compareByDescending { it })
-        }
-    }
+    LaunchedEffect(finalEventsToList, showAllEvents, viewMode, isCurrentMonthView) {
+        if (viewMode != CalendarViewMode.MONTHLY || finalEventsToList.isEmpty()) return@LaunchedEffect
 
-    LaunchedEffect(finalEventsToList, showAllEvents, viewMode, homeClickTrigger) {
-        if (viewMode == CalendarViewMode.MONTHLY && finalEventsToList.isNotEmpty()) {
-            val targetIndex = if (showAllEvents) {
-                val targetDate = if (isCurrentMonthView) today else currentMonth.atDay(1)
-                finalEventsToList.indexOfFirst { (date, _) -> date >= targetDate }.takeIf { it != -1 } ?: 0
-            } else {
-                0
-            }
-            scope.launch {
-                lazyListState.animateScrollToItem(targetIndex)
-            }
+        val targetIndex = when {
+            isCurrentMonthView && showAllEvents ->
+                finalEventsToList.indexOfFirst { (date, _) -> date >= today }.takeIf { it != -1 } ?: 0
+            
+            isCurrentMonthView && !showAllEvents -> 0
+            
+            else -> 0
+        }
+
+        scope.launch {
+            lazyListState.animateScrollToItem(targetIndex)
         }
     }
 
@@ -412,7 +372,7 @@ fun CalendarioScreen(
                                 fontSize = 20.sp,
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.align(Alignment.CenterStart).padding(start = if (showHomeButton) 56.dp else 16.dp) // Adjust padding based on button visibility
+                                modifier = Modifier.align(Alignment.CenterStart).padding(start = if (showHomeButton) 56.dp else 16.dp)
                             )
                         } 
                         
@@ -442,288 +402,117 @@ fun CalendarioScreen(
                     }
                 }
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        if (isSearchActive) {
-            Column(modifier = Modifier.padding(paddingValues)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SearchScope.entries.forEach { scope ->
-                        val text = when (scope) {
-                            SearchScope.MONTH -> "Mes actual"
-                            SearchScope.YEAR -> "Año actual"
-                            SearchScope.ALL -> "Todos"
-                        }
-                        if (searchScope == scope) {
-                            Button(
-                                onClick = { searchScope = scope },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surfaceVariant else CalendarioTheme.colors.monthlyCalendarEmptyCellBackground,
-                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            ) { Text(text) }
-                        } else {
-                            TextButton(onClick = { searchScope = scope }) { Text(text) }
-                        }
-                    }
-                }
-                if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No se han encontrado resultados")
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        searchResults.forEach { (date, events) ->
-                            stickyHeader {
-                                Text(
-                                    text = date.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy")),
-                                    modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant).padding(8.dp),
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            items(events) {
-                                festivo ->
-                                val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
-                                else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { launchAddEditScreenWithPermissionCheck(festivo.date, festivo) }
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    availableCalendarsExternal.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
-                                        Box(
-                                            Modifier
-                                                .size(10.dp)
-                                                .background(Color(colorInt), CircleShape)
-                                                .border(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), CircleShape)
-                                        )
-                                        Spacer(Modifier.size(8.dp))
-                                    }
-                                    Text(displayDesc, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                                    if (festivo.rrule != null) {
-                                        Icon(
-                                            imageVector = Icons.Default.Refresh,
-                                            contentDescription = "Evento repetido",
-                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                            modifier = Modifier.padding(start = 8.dp).size(16.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (viewMode == CalendarViewMode.MONTHLY) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = if (viewMode == CalendarViewMode.MONTHLY) CalendarioTheme.colors.monthlyCalendarGridBackground else CalendarioTheme.colors.settingsBackground,
+                            color = CalendarioTheme.colors.monthlyCalendarGridBackground,
                             shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                         )
                         .padding(top = 8.dp, start = 12.dp, end = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // ESTA ROW HA SIDO ELIMINADA
                     Spacer(modifier = Modifier.height(12.dp))
-
-                    if (viewMode == CalendarViewMode.MONTHLY) {
-                        HorizontalPager(
-                            state = monthPagerState,
-                        ) { page ->
-                            val month = startMonth.plusMonths(page.toLong())
-                            MonthlyCalendar(
-                                currentMonth = month,
-                                today = today,
-                                eventsByDate = eventsByDateExternal,
-                                onDayClick = { date, events ->
-                                    selectedDateForDialog = date
-                                    eventsForDialog = events
-                                    showDayEventsDialog = true
-                                },
-                                onEmptyDayClick = { date ->
-                                    launchAddEditScreenWithPermissionCheck(date, null)
-                                }
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            val monthlyGridBackgroundColor = CalendarioTheme.colors.monthlyCalendarGridBackground
-                            val hsl = FloatArray(3)
-                            ColorUtils.colorToHSL(monthlyGridBackgroundColor.toArgb(), hsl)
-                            val isDark = hsl[2] < 0.5f
-                            hsl[2] = if (isDark) 0.9f else 0.2f
-                            val onGridBackgroundColor = Color(ColorUtils.HSLToColor(hsl))
-                            
-                            Text(
-                                text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
-                                fontSize = 18.sp,
-                                color = onGridBackgroundColor,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-
-                            if (isCurrentMonthView) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(onGridBackgroundColor.copy(alpha = 0.15f))
-                                        .clickable { showAllEvents = !showAllEvents }
-                                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                                ) {
-                                    Text(
-                                        text = if (showAllEvents) "Todos" else "Pendientes",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp,
-                                        color = onGridBackgroundColor
-                                    )
-                                }
+                    HorizontalPager(
+                        state = monthPagerState,
+                    ) { page ->
+                        val month = startMonth.plusMonths(page.toLong())
+                        MonthlyCalendar(
+                            currentMonth = month,
+                            today = today,
+                            eventsByDate = eventsByDateExternal,
+                            onDayClick = { date, events ->
+                                selectedDateForDialog = date
+                                eventsForDialog = events
+                                showDayEventsDialog = true
+                            },
+                            onEmptyDayClick = { date ->
+                                launchAddEditScreenWithPermissionCheck(date, null)
                             }
-                        }
-
-                    } else { // Vista Anual
-                        HorizontalPager(
-                            state = yearPagerState
-                        ) { page ->
-                            val year = startYear.plusYears(page.toLong())
-                            YearlyCalendar(
-                                currentYear = year,
-                                today = today,
-                                eventsByDate = eventsByDateExternal,
-                                onMonthSelected = { selectedMonth ->
-                                    val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
-                                    scope.launch { monthPagerState.scrollToPage(targetPage) }
-                                    viewMode = CalendarViewMode.MONTHLY
-                                }
-                            )
-                        }
+                        )
                     }
-                }
-
-                if (viewMode == CalendarViewMode.MONTHLY) {
-                    Box(
-                        modifier = Modifier.weight(1f)
-                            .background(MaterialTheme.colorScheme.background)
-                            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        if (finalEventsToList.isEmpty()) {
+                        val monthlyGridBackgroundColor = CalendarioTheme.colors.monthlyCalendarGridBackground
+                        val hsl = FloatArray(3)
+                        ColorUtils.colorToHSL(monthlyGridBackgroundColor.toArgb(), hsl)
+                        val isDark = hsl[2] < 0.5f
+                        hsl[2] = if (isDark) 0.9f else 0.2f
+                        val onGridBackgroundColor = Color(ColorUtils.HSLToColor(hsl))
+                        
+                        Text(
+                            text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
+                            fontSize = 18.sp,
+                            color = onGridBackgroundColor,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+
+                        if (isCurrentMonthView) {
                             Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(onGridBackgroundColor.copy(alpha = 0.15f))
+                                    .clickable { showAllEvents = !showAllEvents }
+                                    .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
                                 Text(
-                                    if (isCurrentMonthView && !showAllEvents) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
+                                    text = if (showAllEvents) "Todos" else "Pendientes",
+                                    fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = onGridBackgroundColor
                                 )
-                            }
-                        } else {
-                            LazyColumn(
-                                state = lazyListState,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(top = 8.dp, start = 12.dp, end = 12.dp)
-                            ) {
-                                itemsIndexed(finalEventsToList, key = { _, (date, festivos) -> date.toString() + festivos.firstOrNull()?.id }) { _, (date, festivos) ->
-                                    val isTodayEvents = isCurrentMonthView && date == today
-                                    festivos.forEach { festivo ->
-
-                                        val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
-                                        val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
-
-                                        val textColor = when {
-                                            isTodayEvents -> CalendarioTheme.colors.onTodayHighlightColor
-                                            esFestivo -> CalendarioTheme.colors.textSundayHoliday
-                                            esCumpleanos -> CalendarioTheme.colors.textBirthday
-                                            else -> MaterialTheme.colorScheme.onBackground
-                                        }
-                                        val iconColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-
-                                        val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
-                                        else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
-
-                                        if (displayDesc.isNotBlank()) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
-                                            ) {
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .clip(RoundedCornerShape(16.dp))
-                                                        .then(
-                                                            if (isTodayEvents) {
-                                                                Modifier.background(CalendarioTheme.colors.todayHighlightColor)
-                                                            } else {
-                                                                Modifier
-                                                            }
-                                                        )
-                                                        .clickable { launchAddEditScreenWithPermissionCheck(festivo.date, festivo) }
-                                                        .padding(horizontal = 4.dp, vertical = 4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    Row(
-                                                        modifier = Modifier.weight(1f),
-                                                        verticalAlignment = Alignment.CenterVertically
-                                                    ) {
-                                                        Text(
-                                                            String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
-                                                            color = textColor,
-                                                            fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
-                                                            fontSize = 16.sp
-                                                        )
-                                                        Text(
-                                                            displayDesc,
-                                                            color = textColor,
-                                                            fontSize = 16.sp,
-                                                            maxLines = 1,
-                                                            overflow = TextOverflow.Ellipsis,
-                                                            modifier = Modifier.padding(start = 8.dp)
-                                                        )
-                                                    }
-                                                    if (festivo.rrule != null) {
-                                                        Icon(
-                                                            imageVector = Icons.Default.Refresh,
-                                                            contentDescription = "Evento repetido",
-                                                            tint = iconColor,
-                                                            modifier = Modifier
-                                                                .padding(start = 8.dp)
-                                                                .size(16.dp)
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
                 }
+                MonthlyEventList(
+                    modifier = Modifier.weight(1f),
+                    finalEventsToList = finalEventsToList,
+                    lazyListState = lazyListState,
+                    isCurrentMonthView = isCurrentMonthView,
+                    showAllEvents = showAllEvents,
+                    today = today,
+                    onEventClick = { event -> launchAddEditScreenWithPermissionCheck(event.date, event) }
+                )
+            } else { // Yearly or Search view
+                 if (isSearchActive) {
+                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                         Text("Búsqueda no implementada", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                     }
+                 } else {
+                     HorizontalPager(
+                        state = yearPagerState
+                    ) { page ->
+                        val year = startYear.plusYears(page.toLong())
+                        YearlyCalendar(
+                            currentYear = year,
+                            today = today,
+                            eventsByDate = eventsByDateExternal,
+                            onMonthSelected = { selectedMonth ->
+                                val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
+                                scope.launch { monthPagerState.scrollToPage(targetPage) }
+                                viewMode = CalendarViewMode.MONTHLY
+                            }
+                        )
+                    }
+                 }
             }
         }
         
@@ -747,7 +536,7 @@ fun CalendarioScreen(
         }
 
         if (showAboutDialog) {
-            val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
+            val onFondoDialogos = if(isDarkTheme) Color.White else Color.Black
             AlertDialog(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = CalendarioTheme.colors.fondoDialogos,
