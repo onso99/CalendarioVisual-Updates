@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.math.roundToInt
 
@@ -62,7 +62,7 @@ fun AdvancedColorPickerDialog(
     val lightness = hsl[2]
 
     var hexCode by remember(currentColor) {
-        mutableStateOf(String.format("#%02X%02X%02X%02X", (currentColor.alpha * 255).toInt(), (currentColor.red * 255).toInt(), (currentColor.green * 255).toInt(), (currentColor.blue * 255).toInt()))
+        mutableStateOf(String.format("#%08X", currentColor.toArgb()))
     }
 
     AlertDialog(
@@ -96,11 +96,12 @@ fun AdvancedColorPickerDialog(
                         onValueChange = { 
                             val newHex = if (it.startsWith("#")) it else "#$it"
                             hexCode = newHex
-                            if (newHex.length == 9) {
+                            if (newHex.length == 9 || newHex.length == 7) { // Support ARGB and RGB
                                 try {
-                                    val parsedColor = Color(android.graphics.Color.parseColor(newHex))
+                                    val colorToParse = if (newHex.length == 7) newHex.replace("#", "#FF") else newHex
+                                    val parsedColor = Color(colorToParse.toColorInt())
                                     currentColor = parsedColor
-                                } catch (e: Exception) { /* No-op, invalid color */ }
+                                } catch (_: IllegalArgumentException) { /* No-op, invalid color */ }
                             }
                         },
                         label = { Text("Hex (ARGB)") },

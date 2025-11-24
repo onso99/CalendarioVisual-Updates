@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -35,17 +34,8 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         super.onReceive(context, intent)
 
         if (ACTION_REFRESH_WIDGET == intent.action) {
-            Log.d(TAG, "Acción ACTION_REFRESH_WIDGET recibida")
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-
-            if (appWidgetIds.isNotEmpty()) {
-                Log.d(TAG, "Notificando cambio de datos para R.id.widget_event_list en todos los widgets.")
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
-            } else {
-                Log.d(TAG, "Acción ACTION_REFRESH_WIDGET recibida, pero no hay IDs de widget activos.")
-            }
+            Log.d(TAG, "Acción ACTION_REFRESH_WIDGET recibida. Disparando actualización completa del widget.")
+            triggerWidgetUpdate(context)
         }
     }
 
@@ -59,14 +49,8 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         super.onEnabled(context)
         Log.i(TAG, "onEnabled - INICIO - Primera instancia de CalendarAppWidgetProvider añadida.")
 
-        if (calendarObserverInstance == null) {
-            Log.d(TAG, "onEnabled - calendarObserverInstance es null. Creando NUEVA instancia de CalendarObserver.")
-            calendarObserverInstance = CalendarObserver(context.applicationContext)
-            calendarObserverInstance?.register()
-        } else {
-            Log.w(TAG, "onEnabled - calendarObserverInstance NO era null. Llamando a register() en la instancia existente.")
-            calendarObserverInstance?.register()
-        }
+        CalendarObserverManager.registerObserver(context)
+        Log.d(TAG, "onEnabled - CalendarObserverManager.registerObserver() llamado.")
 
         Log.d(TAG, "onEnabled - Encolando trabajo OneTime para actualización inicial del widget.")
         val initialUpdateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
@@ -97,25 +81,17 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         super.onDisabled(context)
         Log.i(TAG, "onDisabled - INICIO - Última instancia de CalendarAppWidgetProvider eliminada.")
 
-        if (calendarObserverInstance != null) {
-            Log.d(TAG, "onDisabled - Desregistrando calendarObserverInstance.")
-            calendarObserverInstance?.unregister()
-            calendarObserverInstance = null
-            Log.d(TAG, "onDisabled - calendarObserverInstance puesto a null.")
-        } else {
-            Log.w(TAG, "onDisabled - calendarObserverInstance ya era null.")
-        }
+        CalendarObserverManager.unregisterObserver()
+        Log.d(TAG, "onDisabled - CalendarObserverManager.unregisterObserver() llamado.")
 
         WorkManager.getInstance(context.applicationContext).cancelUniqueWork(PERIODIC_WORK_NAME)
         Log.i(TAG, "onDisabled - Trabajo periódico '$PERIODIC_WORK_NAME' cancelado.")
         Log.i(TAG, "onDisabled - FIN.")
     }
 
-    @SuppressLint("StaticFieldLeak")
     companion object {
         private const val TAG = "WidgetProvider"
         const val ACTION_REFRESH_WIDGET = "com.example.calendario.ACTION_REFRESH_WIDGET"
-        private var calendarObserverInstance: CalendarObserver? = null
         private const val UNIQUE_INITIAL_WORK_NAME = "InitialCalendarWidgetUpdate"
         private const val PERIODIC_WORK_NAME = "PeriodicCalendarWidgetUpdate"
         private const val TAG_INITIAL_UPDATE_WORK = "tag_initial_calendar_work"
@@ -125,11 +101,17 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-            appWidgetIds.forEach { appWidgetId ->
-                updateAppWidget(context, appWidgetManager, appWidgetId)
+            if (appWidgetIds.isNotEmpty()) {
+                Log.d(TAG, "triggerWidgetUpdate - Forzando actualización completa para los widgets: ${appWidgetIds.joinToString()}")
+                appWidgetIds.forEach { appWidgetId ->
+                    updateAppWidget(context, appWidgetManager, appWidgetId)
+                }
+            } else {
+                 Log.d(TAG, "triggerWidgetUpdate - No hay IDs de widget activos para actualizar.")
             }
         }
 
+        @Suppress("DEPRECATION")
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
@@ -168,6 +150,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                     .build()
             }
             views.setRemoteAdapter(R.id.widget_event_list, serviceIntent)
+
             Log.d(TAG, "updateAppWidget - RemoteAdapter configurado para R.id.widget_event_list, widget ID: $appWidgetId")
 
             views.setEmptyView(R.id.widget_event_list, R.id.widget_empty_view)
@@ -179,9 +162,6 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             try {
                 appWidgetManager.updateAppWidget(appWidgetId, views)
                 Log.d(TAG, "updateAppWidget - appWidgetManager.updateAppWidget llamado para widget ID: $appWidgetId")
-
-                // appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_event_list)
-                // Log.d(TAG, "updateAppWidget - notifyAppWidgetViewDataChanged COMENTADO para widget ID: $appWidgetId")
 
             } catch (e: Exception) {
                 Log.e(TAG, "updateAppWidget - Error actualizando widget ID $appWidgetId", e)
