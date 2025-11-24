@@ -279,13 +279,26 @@ private fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: 
 private fun exportThemeToJson(context: Context, uri: Uri) {
     try {
         val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val allPrefs = prefs.all
         val themeData = JSONObject()
         val lightTheme = JSONObject()
         val darkTheme = JSONObject()
 
         ColorThemeConfig.colorThemeItems.forEach { item ->
-            prefs.getString(item.lightThemeKey, null)?.let { lightTheme.put(item.lightThemeKey, it) }
-            prefs.getString(item.darkThemeKey, null)?.let { darkTheme.put(item.darkThemeKey, it) }
+            // Light Theme
+            allPrefs[item.lightThemeKey]?.let { value ->
+                when (value) {
+                    is Int -> lightTheme.put(item.lightThemeKey, String.format("#%08X", value))
+                    is String -> lightTheme.put(item.lightThemeKey, value)
+                }
+            }
+            // Dark Theme
+            allPrefs[item.darkThemeKey]?.let { value ->
+                when (value) {
+                    is Int -> darkTheme.put(item.darkThemeKey, String.format("#%08X", value))
+                    is String -> darkTheme.put(item.darkThemeKey, value)
+                }
+            }
         }
 
         themeData.put("lightTheme", lightTheme)
