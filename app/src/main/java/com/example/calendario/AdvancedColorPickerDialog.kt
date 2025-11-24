@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +58,7 @@ fun AdvancedColorPickerDialog(
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
     var currentColor by remember(initialColor) { mutableStateOf(initialColor) }
+    var isHexError by remember { mutableStateOf(false) }
 
     val hsl = FloatArray(3)
     ColorUtils.colorToHSL(currentColor.toArgb(), hsl)
@@ -63,6 +66,20 @@ fun AdvancedColorPickerDialog(
 
     var hexCode by remember(currentColor) {
         mutableStateOf(String.format("#%08X", currentColor.toArgb()))
+    }
+
+    fun updateColorFromHex(newHex: String) {
+        if (newHex.length == 9 || newHex.length == 7) { // Support ARGB and RGB
+            try {
+                val colorToParse = if (newHex.length == 7) newHex.replace("#", "#FF") else newHex
+                currentColor = Color(colorToParse.toColorInt())
+                isHexError = false
+            } catch (_: IllegalArgumentException) { 
+                isHexError = true
+            }
+        } else {
+            isHexError = true
+        }
     }
 
     AlertDialog(
@@ -73,7 +90,7 @@ fun AdvancedColorPickerDialog(
             Column {
                 Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, MaterialTheme.colorScheme.outline)) {
                     Box(modifier = Modifier.weight(1f).fillMaxHeight().background(initialColor))
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(currentColor))
+                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(if(isHexError) initialColor else currentColor))
                 }
                 Spacer(Modifier.height(16.dp))
 
@@ -86,6 +103,7 @@ fun AdvancedColorPickerDialog(
                     hsl[2] = newLightnessValue / 100f
                     val newColorInt = ColorUtils.HSLToColor(hsl)
                     currentColor = Color(newColorInt).copy(alpha = currentColor.alpha)
+                    isHexError = false
                 }, valueRange = 0f..100f)
 
                 Spacer(Modifier.height(8.dp))
@@ -94,33 +112,42 @@ fun AdvancedColorPickerDialog(
                     OutlinedTextField(
                         value = hexCode,
                         onValueChange = { 
-                            val newHex = if (it.startsWith("#")) it else "#$it"
-                            hexCode = newHex
-                            if (newHex.length == 9 || newHex.length == 7) { // Support ARGB and RGB
-                                try {
-                                    val colorToParse = if (newHex.length == 7) newHex.replace("#", "#FF") else newHex
-                                    val parsedColor = Color(colorToParse.toColorInt())
-                                    currentColor = parsedColor
-                                } catch (_: IllegalArgumentException) { /* No-op, invalid color */ }
-                            }
+                            val newHexUncapped = if (it.startsWith("#")) it else "#$it"
+                            hexCode = newHexUncapped.take(9)
+                            updateColorFromHex(hexCode)
                         },
                         label = { Text("Hex (ARGB)") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { onColorConfirm(currentColor) }),
-                        modifier = Modifier.weight(1f)
+                        keyboardActions = KeyboardActions(onDone = { if(!isHexError) onColorConfirm(currentColor) }),
+                        modifier = Modifier.weight(1f),
+                        isError = isHexError
                     )
-                    Spacer(Modifier.width(8.dp))
+
+                    IconButton(onClick = { hexCode = "#"; isHexError = false }) {
+                        Icon(Icons.Default.Close, contentDescription = "Limpiar")
+                    }
+
                     IconButton(onClick = { 
                         clipboardManager.setText(AnnotatedString(hexCode))
                         Toast.makeText(context, "Copiado: $hexCode", Toast.LENGTH_SHORT).show()
                     }) {
                         Icon(Icons.Default.ContentCopy, contentDescription = "Copiar color")
                     }
+
+                    IconButton(onClick = { 
+                        clipboardManager.getText()?.text?.let { 
+                            val pasted = it.take(9)
+                            hexCode = if (pasted.startsWith("#")) pasted else "#$pasted"
+                            updateColorFromHex(hexCode)
+                        } 
+                    }) {
+                        Icon(Icons.Default.ContentPaste, contentDescription = "Pegar color")
+                    }
                 }
             }
         },
-        confirmButton = { Button(onClick = { onColorConfirm(currentColor) }) { Text("Aceptar") } },
+        confirmButton = { Button(onClick = { if(!isHexError) onColorConfirm(currentColor) }) { Text("Aceptar") } },
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
     )
 }
