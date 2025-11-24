@@ -59,7 +59,7 @@ fun MonthlyCalendar(
     val cellsSoFar = visibleDays.size
     val remainingCellsInWeek = if (cellsSoFar % 7 == 0) 0 else 7 - (cellsSoFar % 7)
     for (i in 1..remainingCellsInWeek) {
-        visibleDays.add(nextMonth.atDay(i) to true)
+        visibleDays.add(nextMonth.atDay(i) to false)
     }
 
     Column(
@@ -108,7 +108,7 @@ fun MonthlyCalendar(
                             val isBirthday = dayEvents.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) } && !isHoliday
                             val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday && !isBirthday
                             when {
-                                isHoliday -> CalendarioTheme.colors.textSundayHoliday
+                                isHoliday -> MaterialTheme.colorScheme.error
                                 isBirthday -> CalendarioTheme.colors.textBirthday
                                 isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 else -> CalendarioTheme.colors.monthlyCalendarDayNumberNormal

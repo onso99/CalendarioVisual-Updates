@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -385,23 +386,36 @@ fun CalendarioScreen(
                              colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
                         )
                         // Layered Title Content
+                        val showHomeButton = viewMode == CalendarViewMode.MONTHLY && currentMonth != YearMonth.from(today)
+                        if (viewMode == CalendarViewMode.YEARLY || showHomeButton) {
+                             IconButton(
+                                onClick = { 
+                                    if (viewMode == CalendarViewMode.YEARLY) {
+                                        viewMode = CalendarViewMode.MONTHLY
+                                    } else if (showHomeButton) {
+                                        scope.launch { monthPagerState.animateScrollToPage(initialPage) }
+                                    }
+                                }, 
+                                modifier = Modifier.align(Alignment.CenterStart)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = if (viewMode == CalendarViewMode.YEARLY) "Volver a vista mensual" else "Volver al mes actual",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+
                         if (viewMode == CalendarViewMode.MONTHLY) {
                             Text(
                                 text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
                                 fontSize = 20.sp,
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.align(Alignment.CenterStart).padding(start = 16.dp)
+                                modifier = Modifier.align(Alignment.CenterStart).padding(start = if (showHomeButton) 56.dp else 16.dp) // Adjust padding based on button visibility
                             )
-                        } else {
-                             IconButton(onClick = { viewMode = CalendarViewMode.MONTHLY }, modifier = Modifier.align(Alignment.CenterStart)) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Volver a vista mensual",
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
+                        } 
+                        
                         Box(
                             modifier = Modifier
                                 .align(Alignment.Center)
@@ -637,7 +651,16 @@ fun CalendarioScreen(
                                 itemsIndexed(finalEventsToList, key = { _, (date, festivos) -> date.toString() + festivos.firstOrNull()?.id }) { _, (date, festivos) ->
                                     val isTodayEvents = isCurrentMonthView && date == today
                                     festivos.forEach { festivo ->
-                                        val textColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onBackground
+
+                                        val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
+                                        val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
+
+                                        val textColor = when {
+                                            isTodayEvents -> CalendarioTheme.colors.onTodayHighlightColor
+                                            esFestivo -> CalendarioTheme.colors.textSundayHoliday
+                                            esCumpleanos -> CalendarioTheme.colors.textBirthday
+                                            else -> MaterialTheme.colorScheme.onBackground
+                                        }
                                         val iconColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
 
                                         val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
