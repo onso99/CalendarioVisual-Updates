@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -235,12 +234,12 @@ fun OptionsScreen(
             text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto?", color = onFondoDialogos) },
             confirmButton = {
                 Button(onClick = {
-                    val editor = appPrefs.edit()
-                    ColorThemeConfig.colorThemeItems.forEach {
-                        if (it.lightThemeKey.isNotBlank()) editor.remove(it.lightThemeKey)
-                        if (it.darkThemeKey.isNotBlank()) editor.remove(it.darkThemeKey)
+                    appPrefs.edit {
+                        ColorThemeConfig.colorThemeItems.forEach { item ->
+                            if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
+                            if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
+                        }
                     }
-                    editor.apply()
                     onThemeUpdated()
                     Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
                     showRestoreDialog = false
@@ -276,63 +275,56 @@ private fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: 
     }
 }
 
+
 private fun exportThemeToJson(context: Context, uri: Uri) {
-    val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-    val json = JSONObject()
-    val lightTheme = JSONObject()
-    val darkTheme = JSONObject()
-
-    ColorThemeConfig.colorThemeItems.forEach {
-        if (it.lightThemeKey.isNotBlank()) {
-            val color = Color(prefs.getInt(it.lightThemeKey, it.defaultLight.toArgb()))
-            lightTheme.put(it.lightThemeKey, String.format("#%08X", color.toArgb()))
-        }
-        if (it.darkThemeKey.isNotBlank()) {
-            val color = Color(prefs.getInt(it.darkThemeKey, it.defaultDark.toArgb()))
-            darkTheme.put(it.darkThemeKey, String.format("#%08X", color.toArgb()))
-        }
-    }
-    json.put("lightTheme", lightTheme)
-    json.put("darkTheme", darkTheme)
-
     try {
-        context.contentResolver.openOutputStream(uri)?.use { 
-            it.write(json.toString(4).toByteArray())
+        val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val themeData = JSONObject()
+        val lightTheme = JSONObject()
+        val darkTheme = JSONObject()
+
+        ColorThemeConfig.colorThemeItems.forEach { item ->
+            prefs.getString(item.lightThemeKey, null)?.let { lightTheme.put(item.lightThemeKey, it) }
+            prefs.getString(item.darkThemeKey, null)?.let { darkTheme.put(item.darkThemeKey, it) }
         }
-        Toast.makeText(context, "Tema exportado correctamente", Toast.LENGTH_SHORT).show()
+
+        themeData.put("lightTheme", lightTheme)
+        themeData.put("darkTheme", darkTheme)
+
+        context.contentResolver.openOutputStream(uri)?.use { 
+            it.write(themeData.toString(4).toByteArray())
+        }
+        Toast.makeText(context, "Tema exportado con éxito", Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
+        Toast.makeText(context, "Error al exportar el tema: ${e.message}", Toast.LENGTH_LONG).show()
         e.printStackTrace()
-        Toast.makeText(context, "Error al exportar el tema", Toast.LENGTH_SHORT).show()
     }
 }
 
-private fun importThemeFromJson(context: Context, uri: Uri, onFinished: () -> Unit) {
+private fun importThemeFromJson(context: Context, uri: Uri, onThemeImported: () -> Unit) {
     try {
-        context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            val jsonString = inputStream.bufferedReader().use { it.readText() }
-            val json = JSONObject(jsonString)
-            val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE).edit()
-            
-            val lightTheme = json.optJSONObject("lightTheme")
-            lightTheme?.keys()?.forEach { key ->
-                try {
-                    val colorInt = android.graphics.Color.parseColor(lightTheme.getString(key))
-                    prefs.putInt(key, colorInt)
-                } catch (e: IllegalArgumentException) {}
+        val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
+        if (jsonString != null) {
+            val themeData = JSONObject(jsonString)
+            val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.edit {
+                val lightTheme = themeData.optJSONObject("lightTheme")
+                if (lightTheme != null) {
+                    for (key in lightTheme.keys()) {
+                        putString(key, lightTheme.getString(key))
+                    }
+                }
+                val darkTheme = themeData.optJSONObject("darkTheme")
+                if (darkTheme != null) {
+                    for (key in darkTheme.keys()) {
+                        putString(key, darkTheme.getString(key))
+                    }
+                }
             }
-
-            val darkTheme = json.optJSONObject("darkTheme")
-            darkTheme?.keys()?.forEach { key ->
-                try {
-                    val colorInt = android.graphics.Color.parseColor(darkTheme.getString(key))
-                    prefs.putInt(key, colorInt)
-                } catch (e: IllegalArgumentException) {}
-            }
-            prefs.apply()
+            onThemeImported()
         }
     } catch (e: Exception) {
+        Toast.makeText(context, "Error al importar el tema: ${e.message}", Toast.LENGTH_LONG).show()
         e.printStackTrace()
-        Toast.makeText(context, "Error al importar el tema", Toast.LENGTH_SHORT).show()
     }
-    onFinished()
 }

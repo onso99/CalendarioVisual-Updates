@@ -12,15 +12,11 @@ class UpdateCalendarDataWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    // Usaremos el TAG del companion object de CalendarAppWidgetProvider si queremos que sea consistente,
-    // o un TAG propio para el worker. Usaré uno propio aquí.
     companion object {
-        private const val TAG_WORKER = "UpdateCalendarWorker" // TAG específico para este worker
-        // const val WORK_NAME = "UpdateCalendarDataWorker" // Este nombre ya no se usa para enqueue, sino los definidos en el Provider
+        private const val TAG_WORKER = "UpdateCalendarWorker"
     }
 
     override suspend fun doWork(): Result {
-        // Añadir el ID del trabajo al log para mejor seguimiento
         Log.d(TAG_WORKER, "Worker INICIADO. ID: ${this.id}, Tags: ${this.tags.joinToString()}")
 
         return try {
@@ -62,7 +58,6 @@ class UpdateCalendarDataWorker(
             Log.i(TAG_WORKER, "Eventos guardados en SharedPreferences. ID: ${this.id}")
 
             notifyCalendarWidgetDataChangedWorker(context)
-            // El log de notifyCalendarWidgetDataChangedWorker ya está dentro de esa función.
 
             Log.i(TAG_WORKER, "Worker COMPLETADO EXITOSAMENTE. ID: ${this.id}")
             Result.success()
@@ -73,13 +68,16 @@ class UpdateCalendarDataWorker(
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun notifyCalendarWidgetDataChangedWorker(context: Context) {
         val appWidgetManager = AppWidgetManager.getInstance(context)
         val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
         val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
 
         if (appWidgetIds.isNotEmpty()) {
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+            appWidgetIds.forEach { appWidgetId ->
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_event_list)
+            }
             Log.d(TAG_WORKER, "Notificación de cambio de datos enviada a los widgets (ListView ID: R.id.widget_event_list). Worker ID: ${this.id}")
         } else {
             Log.d(TAG_WORKER, "No hay widgets activos para notificar. Worker ID: ${this.id}")

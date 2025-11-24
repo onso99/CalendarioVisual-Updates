@@ -1,9 +1,6 @@
 package com.example.calendario
 
 import android.annotation.SuppressLint
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -30,7 +27,6 @@ object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
     const val KEY_TODAY_HIGHLIGHT_COLOR = "today_highlight_color_app"
-    const val KEY_ON_TODAY_HIGHLIGHT_COLOR = "on_today_highlight_color_app"
 
     object ColorKeys {
         // Light Theme
@@ -204,7 +200,7 @@ class MainActivity : ComponentActivity() {
                         lifecycleScope.launch {
                             saveEventsToPrefs(this@MainActivity, newEvents)
                             saveSelectedCalendarIds(this@MainActivity, newSelectedIds)
-                            notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+                            CalendarAppWidgetProvider.triggerWidgetUpdate(this@MainActivity)
                         }
                     },
                     onPermissionUpdated = { newPermissionState ->
@@ -216,7 +212,7 @@ class MainActivity : ComponentActivity() {
                             availableCalendarsState = emptyList()
                             lifecycleScope.launch {
                                 saveEventsToPrefs(this@MainActivity, emptyMap())
-                                notifyCalendarWidgetsDataChangedMainActivity(this@MainActivity)
+                                CalendarAppWidgetProvider.triggerWidgetUpdate(this@MainActivity)
                             }
                         }
                     }
@@ -240,7 +236,7 @@ class MainActivity : ComponentActivity() {
                     eventsByDateState = emptyMap()
                     availableCalendarsState = emptyList()
                     saveEventsToPrefs(context, emptyMap())
-                    notifyCalendarWidgetsDataChangedMainActivity(context)
+                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                 }
             }
         }
@@ -255,7 +251,7 @@ class MainActivity : ComponentActivity() {
                     eventsByDateState = emptyMap()
                     availableCalendarsState = emptyList()
                     saveEventsToPrefs(context, emptyMap())
-                    notifyCalendarWidgetsDataChangedMainActivity(context)
+                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                 }
                 return@launch
             }
@@ -295,7 +291,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (dataChanged) {
-                    notifyCalendarWidgetsDataChangedMainActivity(context)
+                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                 }
 
             } catch (e: Exception) {
@@ -305,38 +301,8 @@ class MainActivity : ComponentActivity() {
                 eventsByDateState = emptyMap()
                 availableCalendarsState = emptyList()
                 saveEventsToPrefs(context, emptyMap())
-                notifyCalendarWidgetsDataChangedMainActivity(context)
+                CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             }
         }
-    }
-}
-
-fun notifyCalendarWidgetsConfigurationChangedMainActivity(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
-    val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-    val appWidgetIdsArray: IntArray? = appWidgetManager.getAppWidgetIds(componentName)
-
-    val remoteViewId: Int = R.id.widget_event_list
-
-    if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIdsArray, remoteViewId)
-        Log.d("MainActivityNotifier", "Notificación enviada para actualizar widgets por CAMBIO DE CONFIGURACIÓN (IdRes explícito).")
-    } else {
-        Log.d("MainActivityNotifier", "No hay widgets que notificar para cambio de configuración.")
-    }
-}
-
-fun notifyCalendarWidgetsDataChangedMainActivity(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
-    val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-    val appWidgetIdsArray: IntArray? = appWidgetManager.getAppWidgetIds(componentName)
-
-    val remoteViewId: Int = R.id.widget_event_list
-
-    if (appWidgetIdsArray != null && appWidgetIdsArray.isNotEmpty()) {
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIdsArray, remoteViewId)
-        Log.d("MainActivityNotifier", "Notificación enviada para actualizar datos de EVENTOS en widgets (IdRes explícito).")
-    } else {
-        Log.d("MainActivityNotifier", "No hay widgets que notificar para cambio de datos de eventos.")
     }
 }

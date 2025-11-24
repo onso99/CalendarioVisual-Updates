@@ -1,10 +1,13 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 
 object CalendarObserverManager {
     private const val TAG = "CalendarObserverManager"
+
+    @SuppressLint("StaticFieldLeak")
     private var calendarObserverInstance: CalendarObserver? = null
 
     fun registerObserver(context: Context) {

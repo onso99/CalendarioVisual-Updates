@@ -264,7 +264,7 @@ suspend fun readFestivosFromCalendarsSuspend(
     val startRangeMillis = startRangeDate.atStartOfDay(systemZoneId).toInstant().toEpochMilli()
     val endRangeMillis = endRangeDate.plusDays(1).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
 
-    val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().let {
+    val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().let { 
         ContentUris.appendId(it, startRangeMillis)
         ContentUris.appendId(it, endRangeMillis)
         it.build()
@@ -354,7 +354,12 @@ suspend fun readFestivosFromCalendarsSuspend(
             finalMap.getOrPut(finalFestivo.date) { mutableListOf() }.add(finalFestivo)
         }
 
-        finalMap.values.forEach { it.sortWith(compareBy<Festivo> { it.isAllDay }.reversed().thenBy(nullsLast()) { it.startTime }) }
+        finalMap.values.forEach { festivos -> 
+            festivos.sortWith(
+                compareBy<Festivo> { it.isAllDay }.reversed()
+                .thenBy(nullsLast()) { it.startTime }
+            )
+        }
 
         if (continuation.isActive) {
             Log.d("ReadFestivos", "Paso 3: Lectura completada. Total días: ${finalMap.size}, Total eventos: ${finalMap.values.sumOf { it.size }}")
