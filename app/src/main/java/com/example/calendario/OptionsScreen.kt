@@ -105,7 +105,6 @@ fun OptionsScreen(
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let {
                     uri -> importThemeFromJson(context, uri) { onThemeUpdated() }
-                    Toast.makeText(context, "Tema importado. Vuelve a entrar en Opciones para ver los cambios.", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -295,7 +294,6 @@ fun OptionsScreen(
             onThemeMixed = { 
                 showThemeMixerDialog = false
                 onThemeUpdated()
-                Toast.makeText(context, "Temas mezclados aplicados.", Toast.LENGTH_SHORT).show()
             }
         )
     }
@@ -392,36 +390,39 @@ private fun getFileNameFromUri(context: Context, uri: Uri): String? {
 
 private fun importThemeFromJson(context: Context, uri: Uri, onThemeImported: () -> Unit) {
     try {
-        val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
-        if (jsonString != null) {
-            val themeData = JSONObject(jsonString)
-            val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            
-            val themeName = getFileNameFromUri(context, uri)
-                ?.removeSuffix(".json")
-                ?.replace('_', ' ')
-                ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } 
-                ?: "Tema Importado"
+        val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() } ?: return
 
-            prefs.edit {
-                val lightTheme = themeData.optJSONObject("lightTheme")
-                if (lightTheme != null) {
-                    for (key in lightTheme.keys()) {
-                        putString(key, lightTheme.getString(key))
+        when (val validationResult = ThemeUtils.validateAndParseTheme(jsonString)) {
+            is ValidationResult.Success -> {
+                val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                val themeName = getFileNameFromUri(context, uri)
+                    ?.removeSuffix(".json")
+                    ?.replace('_', ' ')
+                    ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } 
+                    ?: "Tema Importado"
+
+                prefs.edit {
+                    validationResult.lightTheme?.let { theme ->
+                        for (key in theme.keys()) {
+                            putString(key, theme.getString(key))
+                        }
                     }
-                }
-                val darkTheme = themeData.optJSONObject("darkTheme")
-                if (darkTheme != null) {
-                    for (key in darkTheme.keys()) {
-                        putString(key, darkTheme.getString(key))
+                    validationResult.darkTheme?.let { theme ->
+                        for (key in theme.keys()) {
+                            putString(key, theme.getString(key))
+                        }
                     }
+                    putString(AppThemeSetup.KEY_CURRENT_THEME_NAME, themeName)
                 }
-                putString(AppThemeSetup.KEY_CURRENT_THEME_NAME, themeName)
+                onThemeImported()
+                Toast.makeText(context, "Tema '${themeName}' importado con éxito.", Toast.LENGTH_SHORT).show()
             }
-            onThemeImported()
+            is ValidationResult.Failure -> {
+                Toast.makeText(context, validationResult.errorMessage, Toast.LENGTH_LONG).show()
+            }
         }
     } catch (e: Exception) {
-        Toast.makeText(context, "Error al importar el tema: ${e.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Error al leer el fichero del tema.", Toast.LENGTH_LONG).show()
         e.printStackTrace()
     }
 }

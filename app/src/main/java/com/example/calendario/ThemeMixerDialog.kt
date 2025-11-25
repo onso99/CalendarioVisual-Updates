@@ -54,11 +54,23 @@ fun ThemeMixerDialog(
             if (result.resultCode == android.app.Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     try {
-                        val themeJson = JSONObject(context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() } ?: "{}")
-                        pendingLightTheme = themeJson.optJSONObject("lightTheme")
-                        lightThemeName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replaceFirstChar { it.titlecase(Locale.getDefault()) } ?: "Importado"
+                        val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() } ?: ""
+                        when (val validationResult = ThemeUtils.validateAndParseTheme(jsonString)) {
+                            is ValidationResult.Success -> {
+                                if (validationResult.lightTheme != null) {
+                                    pendingLightTheme = validationResult.lightTheme
+                                    lightThemeName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replaceFirstChar { it.titlecase(Locale.getDefault()) } ?: "Importado"
+                                    Toast.makeText(context, "Tema claro '${lightThemeName}' cargado.", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "El fichero no contiene un tema claro válido.", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                            is ValidationResult.Failure -> {
+                                Toast.makeText(context, validationResult.errorMessage, Toast.LENGTH_LONG).show()
+                            }
+                        }
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Error al leer el tema claro", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al leer el fichero del tema.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -71,11 +83,23 @@ fun ThemeMixerDialog(
             if (result.resultCode == android.app.Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     try {
-                        val themeJson = JSONObject(context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() } ?: "{}")
-                        pendingDarkTheme = themeJson.optJSONObject("darkTheme")
-                        darkThemeName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replaceFirstChar { it.titlecase(Locale.getDefault()) } ?: "Importado"
+                        val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() } ?: ""
+                         when (val validationResult = ThemeUtils.validateAndParseTheme(jsonString)) {
+                            is ValidationResult.Success -> {
+                                if (validationResult.darkTheme != null) {
+                                    pendingDarkTheme = validationResult.darkTheme
+                                    darkThemeName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replaceFirstChar { it.titlecase(Locale.getDefault()) } ?: "Importado"
+                                    Toast.makeText(context, "Tema oscuro '${darkThemeName}' cargado.", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "El fichero no contiene un tema oscuro válido.", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                            is ValidationResult.Failure -> {
+                                Toast.makeText(context, validationResult.errorMessage, Toast.LENGTH_LONG).show()
+                            }
+                        }
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Error al leer el tema oscuro", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al leer el fichero del tema.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -119,7 +143,10 @@ fun ThemeMixerDialog(
                                 putString(key, pendingDarkTheme!!.getString(key))
                             }
                         }
-                        remove(AppThemeSetup.KEY_CURRENT_THEME_NAME) // Es una mezcla, no un tema "puro"
+                        if (pendingLightTheme != null || pendingDarkTheme != null) {
+                           remove(AppThemeSetup.KEY_CURRENT_THEME_NAME) // Es una mezcla, no un tema "puro"
+                           Toast.makeText(context, "Temas mezclados aplicados.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     onThemeMixed()
                     onDismissRequest()
