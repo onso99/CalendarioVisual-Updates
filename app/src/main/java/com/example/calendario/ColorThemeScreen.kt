@@ -60,7 +60,10 @@ fun ColorThemeScreen(
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val groupedItems = ColorThemeConfig.colorThemeItems.groupBy { it.category }
-    val categories = groupedItems.keys.toList()
+    val categories = remember {
+        listOf("General", "Textos", "Lista de Eventos", "Calendario Mensual", "Calendario Anual")
+            .filter { groupedItems.containsKey(it) }
+    }
 
     val pendingChanges = remember { mutableStateMapOf<String, Color>() }
     var showAdvancedColorDialog by remember { mutableStateOf(false) }
@@ -75,8 +78,10 @@ fun ColorThemeScreen(
                     FilledIconButton(
                         onClick = { 
                             if (pendingChanges.isNotEmpty()) {
-                                prefs.edit { pendingChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } }
-                                pendingChanges.clear()
+                                prefs.edit { 
+                                    pendingChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } 
+                                    remove(AppThemeSetup.KEY_CURRENT_THEME_NAME) // Si se edita un color, ya no es un tema "puro"
+                                }
                                 onThemeUpdated()
                             }
                             onBackPress()

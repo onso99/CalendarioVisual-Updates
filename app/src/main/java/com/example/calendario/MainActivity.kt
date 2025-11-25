@@ -27,6 +27,7 @@ object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
     const val KEY_TODAY_HIGHLIGHT_COLOR = "today_highlight_color_app"
+    const val KEY_CURRENT_THEME_NAME = "current_theme_name"
 
     object ColorKeys {
         // Light Theme

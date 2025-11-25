@@ -3,7 +3,9 @@ package com.example.calendario
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,12 +62,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import org.json.JSONObject
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,6 +88,7 @@ fun OptionsScreen(
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
     // --- Theme States & Launchers ---
+    val currentThemeName = appPrefs.getString(AppThemeSetup.KEY_CURRENT_THEME_NAME, null)
     var showRestoreDialog by remember { mutableStateOf(false) }
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -175,7 +182,37 @@ fun OptionsScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            SectionTitle("Personalizar Tema")
+             Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Personalizar Tema",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (currentThemeName != null) {
+                    val settingsBackgroundColor = CalendarioTheme.colors.settingsBackground
+                    val hsl = FloatArray(3)
+                    ColorUtils.colorToHSL(settingsBackgroundColor.toArgb(), hsl)
+                    val isDark = hsl[2] < 0.5f
+                    hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceAtMost(1f) else (hsl[2] - 0.2f).coerceAtLeast(0f)
+                    val themeNameColor = Color(ColorUtils.HSLToColor(hsl))
+
+                    Text(
+                        text = currentThemeName,
+                        color = themeNameColor,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f).padding(start = 16.dp)
+                    )
+                }
+            }
+
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Modo oscuro", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
@@ -239,6 +276,7 @@ fun OptionsScreen(
                             if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
                             if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
                         }
+                        remove(AppThemeSetup.KEY_CURRENT_THEME_NAME)
                     }
                     onThemeUpdated()
                     Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
@@ -314,12 +352,44 @@ private fun exportThemeToJson(context: Context, uri: Uri) {
     }
 }
 
+private fun getFileNameFromUri(context: Context, uri: Uri): String? {
+    var result: String? = null
+    if (uri.scheme == "content") {
+        val cursor: Cursor? = context.contentResolver.query(uri, null, null, null, null)
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                val colIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (colIndex > -1) {
+                    result = cursor.getString(colIndex)
+                }
+            }
+        } finally {
+            cursor?.close()
+        }
+    }
+    if (result == null) {
+        result = uri.path
+        val cut = result?.lastIndexOf('/')
+        if (cut != null && cut != -1) {
+            result = result.substring(cut + 1)
+        }
+    }
+    return result
+}
+
 private fun importThemeFromJson(context: Context, uri: Uri, onThemeImported: () -> Unit) {
     try {
         val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
         if (jsonString != null) {
             val themeData = JSONObject(jsonString)
             val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            
+            val themeName = getFileNameFromUri(context, uri)
+                ?.removeSuffix(".json")
+                ?.replace('_', ' ')
+                ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } 
+                ?: "Tema Importado"
+
             prefs.edit {
                 val lightTheme = themeData.optJSONObject("lightTheme")
                 if (lightTheme != null) {
@@ -333,6 +403,7 @@ private fun importThemeFromJson(context: Context, uri: Uri, onThemeImported: () 
                         putString(key, darkTheme.getString(key))
                     }
                 }
+                putString(AppThemeSetup.KEY_CURRENT_THEME_NAME, themeName)
             }
             onThemeImported()
         }
