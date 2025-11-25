@@ -90,6 +90,7 @@ fun OptionsScreen(
     // --- Theme States & Launchers ---
     val currentThemeName = appPrefs.getString(AppThemeSetup.KEY_CURRENT_THEME_NAME, null)
     var showRestoreDialog by remember { mutableStateOf(false) }
+    var showThemeMixerDialog by remember { mutableStateOf(false) }
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -231,6 +232,8 @@ fun OptionsScreen(
                     exportLauncher.launch(intent)
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow("Mezclar temas...") { showThemeMixerDialog = true }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow("Restaurar colores por defecto") { showRestoreDialog = true }
             }
 
@@ -284,6 +287,16 @@ fun OptionsScreen(
                 }) { Text("Restaurar") }
             },
             dismissButton = { TextButton(onClick = { showRestoreDialog = false }) { Text("Cancelar") } }
+        )
+    }
+    if (showThemeMixerDialog) {
+        ThemeMixerDialog(
+            onDismissRequest = { showThemeMixerDialog = false },
+            onThemeMixed = { 
+                showThemeMixerDialog = false
+                onThemeUpdated()
+                Toast.makeText(context, "Temas mezclados aplicados.", Toast.LENGTH_SHORT).show()
+            }
         )
     }
 }
