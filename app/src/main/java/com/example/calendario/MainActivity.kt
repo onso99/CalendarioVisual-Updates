@@ -26,7 +26,6 @@ import java.time.LocalDate
 object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
-    const val KEY_TODAY_HIGHLIGHT_COLOR = "today_highlight_color_app"
     const val KEY_CURRENT_THEME_NAME = "current_theme_name"
 
     object ColorKeys {
@@ -43,6 +42,9 @@ object AppThemeSetup {
         const val LIGHT_TEXT_SUNDAY_HOLIDAY = "light_text_sunday_holiday"
         const val LIGHT_TEXT_BIRTHDAY = "light_text_birthday"
         const val LIGHT_DROPDOWN_MENU_BACKGROUND = "light_dropdown_menu_background"
+        const val LIGHT_TODAY_HIGHLIGHT_COLOR = "light_today_highlight_color"
+        const val LIGHT_EVENT_LIST_TITLE_COLOR = "light_event_list_title_color"
+        const val LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND = "light_toggle_button_selected_background"
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
         const val LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND = "light_monthly_calendar_empty_cell_background"
@@ -68,6 +70,8 @@ object AppThemeSetup {
         const val DARK_TEXT_BIRTHDAY = "dark_text_birthday"
         const val DARK_DROPDOWN_MENU_BACKGROUND = "dark_dropdown_menu_background"
         const val DARK_EVENT_LIST_TITLE_COLOR = "dark_event_list_title_color"
+        const val DARK_TODAY_HIGHLIGHT_COLOR = "dark_today_highlight_color"
+        const val DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND = "dark_toggle_button_selected_background"
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
         const val DARK_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND = "dark_monthly_calendar_empty_cell_background"
@@ -93,6 +97,9 @@ object AppThemeSetup {
         val textSundayHoliday = error
         val textBirthday = Color(0xFF0000FF)
         val dropdownMenuBackground = Color.White
+        val todayHighlightColor = Color(0xFFE9E9E9)
+        val eventListTitleColor = cabecera
+        val toggleButtonselectedBackground = cabecera.copy(alpha = 0.2f)
         val monthlyCalendarGridBackground = Color(0xFFDBE7F9)
         val monthlyCalendarDayCellBackground = Color.White
         val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
@@ -119,6 +126,8 @@ object AppThemeSetup {
         val textBirthday = Color(0xFFAECBFF)
         val dropdownMenuBackground = Color(0xFF2C2C2C)
         val eventListTitleColor = Color(0xFFD28C45)
+        val todayHighlightColor = Color(0xFFE9E9E9).copy(alpha = 0.15f)
+        val toggleButtonselectedBackground = cabecera.copy(alpha = 0.25f)
         val monthlyCalendarGridBackground = Color(0xFF333333)
         val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
         val monthlyCalendarEmptyCellBackground = Color(0xFF4F4F4F)

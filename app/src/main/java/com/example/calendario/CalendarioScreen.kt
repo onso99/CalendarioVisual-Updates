@@ -55,14 +55,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -449,17 +447,10 @@ fun CalendarioScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        val monthlyGridBackgroundColor = CalendarioTheme.colors.monthlyCalendarGridBackground
-                        val hsl = FloatArray(3)
-                        ColorUtils.colorToHSL(monthlyGridBackgroundColor.toArgb(), hsl)
-                        val isDark = hsl[2] < 0.5f
-                        hsl[2] = if (isDark) 0.9f else 0.2f
-                        val onGridBackgroundColor = Color(ColorUtils.HSLToColor(hsl))
-                        
                         Text(
                             text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
                             fontSize = 18.sp,
-                            color = onGridBackgroundColor,
+                            color = CalendarioTheme.colors.eventListTitleColor,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(end = 8.dp)
                         )
@@ -468,7 +459,7 @@ fun CalendarioScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(onGridBackgroundColor.copy(alpha = 0.15f))
+                                    .background(CalendarioTheme.colors.toggleButtonSelectedBackground)
                                     .clickable { showAllEvents = !showAllEvents }
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
@@ -476,7 +467,7 @@ fun CalendarioScreen(
                                     text = if (showAllEvents) "Todos" else "Pendientes",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp,
-                                    color = onGridBackgroundColor
+                                    color = CalendarioTheme.colors.eventListTitleColor
                                 )
                             }
                         }

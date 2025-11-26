@@ -27,6 +27,10 @@ data class CustomColors(
     val textSundayHoliday: Color,
     val textBirthday: Color,
     val dropdownMenuBackground: Color,
+    val todayHighlightColor: Color,
+    val onTodayHighlightColor: Color,
+    val eventListTitleColor: Color,
+    val toggleButtonSelectedBackground: Color,
     val monthlyCalendarGridBackground: Color,
     val monthlyCalendarDayCellBackground: Color,
     val monthlyCalendarEmptyCellBackground: Color,
@@ -36,10 +40,7 @@ data class CustomColors(
     val monthlyCalendarEventIndicator: Color,
     val miniMonthHeaderBackground: Color,
     val miniMonthDayNumberNormal: Color,
-    val miniMonthTodayHighlightBackground: Color,
-    val eventListTitleColor: Color, // Específico del modo oscuro
-    val todayHighlightColor: Color,
-    val onTodayHighlightColor: Color
+    val miniMonthTodayHighlightBackground: Color
 )
 
 // 2. COMPOSITION LOCAL
@@ -118,7 +119,7 @@ private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
 }
 
 private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
-    val todayHighlight = getColor(prefs, AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, Color(0xFFE9E9E9))
+    val todayHighlight = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.todayHighlightColor)
     val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
 
     return CustomColors(
@@ -126,6 +127,8 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
         fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_DIALOGOS, AppThemeSetup.LightColors.fondoDialogos),
         todayHighlightColor = todayHighlight,
         onTodayHighlightColor = onTodayHighlight,
+        eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR, AppThemeSetup.LightColors.eventListTitleColor),
+        toggleButtonSelectedBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.LightColors.toggleButtonselectedBackground),
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem),
         textSundayHoliday = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.LightColors.textSundayHoliday),
         textBirthday = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppThemeSetup.LightColors.textBirthday),
@@ -139,8 +142,7 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
         monthlyCalendarEventIndicator = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.LightColors.monthlyCalendarEventIndicator),
         miniMonthHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.LightColors.miniMonthHeaderBackground),
         miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal),
-        miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground),
-        eventListTitleColor = Color.Transparent // No se usa en modo claro
+        miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground)
     )
 }
 
@@ -164,8 +166,7 @@ private fun createDarkColorScheme(prefs: SharedPreferences?): ColorScheme {
 }
 
 private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
-    val baseTodayHighlight = getColor(prefs, AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, Color(0xFFE9E9E9))
-    val todayHighlight = baseTodayHighlight.copy(alpha = 0.5f)
+    val todayHighlight = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.DarkColors.todayHighlightColor)
     val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
 
     return CustomColors(
@@ -173,6 +174,8 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
         fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_DIALOGOS, AppThemeSetup.DarkColors.fondoDialogos),
         todayHighlightColor = todayHighlight,
         onTodayHighlightColor = onTodayHighlight,
+        eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppThemeSetup.DarkColors.eventListTitleColor),
+        toggleButtonSelectedBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.DarkColors.toggleButtonselectedBackground),
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.DarkColors.textSystem),
         textSundayHoliday = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.DarkColors.textSundayHoliday),
         textBirthday = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_BIRTHDAY, AppThemeSetup.DarkColors.textBirthday),
@@ -186,7 +189,6 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
         monthlyCalendarEventIndicator = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.DarkColors.monthlyCalendarEventIndicator),
         miniMonthHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.DarkColors.miniMonthHeaderBackground),
         miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.miniMonthDayNumberNormal),
-        miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground),
-        eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppThemeSetup.DarkColors.eventListTitleColor)
+        miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground)
     )
 }

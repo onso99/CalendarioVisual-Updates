@@ -27,8 +27,10 @@ object ColorThemeConfig {
         ColorThemeItem("Cumpleaños", AppThemeSetup.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppThemeSetup.ColorKeys.DARK_TEXT_BIRTHDAY, AppThemeSetup.LightColors.textBirthday, AppThemeSetup.DarkColors.textBirthday, "Textos"),
 
         // --- CATEGORÍA: LISTA DE EVENTOS --- //
+        ColorThemeItem("Texto de Título", AppThemeSetup.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR, AppThemeSetup.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppThemeSetup.LightColors.eventListTitleColor, AppThemeSetup.DarkColors.eventListTitleColor, "Lista de Eventos"),
+        ColorThemeItem("Fondo botón Pendientes", AppThemeSetup.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.LightColors.toggleButtonselectedBackground, AppThemeSetup.DarkColors.toggleButtonselectedBackground, "Lista de Eventos"),
         ColorThemeItem("Fondo lista de eventos", AppThemeSetup.ColorKeys.LIGHT_BACKGROUND, AppThemeSetup.ColorKeys.DARK_BACKGROUND, AppThemeSetup.LightColors.background, AppThemeSetup.DarkColors.background, "Lista de Eventos"),
-        ColorThemeItem("Resaltado Día Actual (Lista)", AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.KEY_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.background, AppThemeSetup.DarkColors.background, "Lista de Eventos"),
+        ColorThemeItem("Resaltado Día Actual (Lista)", AppThemeSetup.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.todayHighlightColor, AppThemeSetup.DarkColors.todayHighlightColor, "Lista de Eventos"),
 
         // --- CATEGORÍA: CALENDARIO MENSUAL --- //
         ColorThemeItem("Fondo de calendario", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarGridBackground, AppThemeSetup.DarkColors.monthlyCalendarGridBackground, "Calendario Mensual"),
