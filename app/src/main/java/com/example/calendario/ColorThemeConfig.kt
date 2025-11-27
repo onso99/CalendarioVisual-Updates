@@ -42,7 +42,6 @@ object ColorThemeConfig {
         ColorThemeItem("Indicador Evento", AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.LightColors.monthlyCalendarEventIndicator, AppThemeSetup.DarkColors.monthlyCalendarEventIndicator, "Calendario Mensual"),
 
         // --- CATEGORÍA: CALENDARIO ANUAL (MINI) --- //
-        ColorThemeItem("Mini-cabecera", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.LightColors.miniMonthHeaderBackground, AppThemeSetup.DarkColors.miniMonthHeaderBackground, "Calendario Anual"),
         ColorThemeItem("Mini: Resaltado Día Actual", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground, "Calendario Anual"),
         ColorThemeItem("Mini: Día Normal", AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal, AppThemeSetup.DarkColors.miniMonthDayNumberNormal, "Calendario Anual")
     )

@@ -48,6 +48,7 @@ fun YearlyCalendar(
     Column(
         Modifier
             .fillMaxSize()
+            .background(CalendarioTheme.colors.settingsBackground)
             .verticalScroll(rememberScrollState())
             .padding(vertical = 4.dp)
     ) {
@@ -124,8 +125,7 @@ fun MiniMonthCalendar(
             daysOfWeekShort.forEach { 
                 Box(
                     Modifier
-                        .weight(1f)
-                        .background(CalendarioTheme.colors.miniMonthHeaderBackground),
+                        .weight(1f),
                     Alignment.Center
                 ) {
                     Text(

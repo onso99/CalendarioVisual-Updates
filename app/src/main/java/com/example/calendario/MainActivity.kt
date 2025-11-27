@@ -55,7 +55,6 @@ object AppThemeSetup {
         const val LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND = "light_monthly_calendar_header_background"
         const val LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL = "light_monthly_calendar_day_number_normal"
         const val LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR = "light_monthly_calendar_event_indicator"
-        const val LIGHT_MINI_MONTH_HEADER_BACKGROUND = "light_mini_month_header_background"
         const val LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL = "light_mini_month_day_number_normal"
         const val LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "light_mini_month_today_highlight_background"
 
@@ -82,7 +81,6 @@ object AppThemeSetup {
         const val DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND = "dark_monthly_calendar_header_background"
         const val DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL = "dark_monthly_calendar_day_number_normal"
         const val DARK_MONTHLY_CALENDAR_EVENT_INDICATOR = "dark_monthly_calendar_event_indicator"
-        const val DARK_MINI_MONTH_HEADER_BACKGROUND = "dark_mini_month_header_background"
         const val DARK_MINI_MONTH_DAY_NUMBER_NORMAL = "dark_mini_month_day_number_normal"
         const val DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "dark_mini_month_today_highlight_background"
     }
@@ -110,7 +108,6 @@ object AppThemeSetup {
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
         val monthlyCalendarDayNumberNormal = Color.Black
         val monthlyCalendarEventIndicator = cabecera
-        val miniMonthHeaderBackground = Color(0xFFE0E0E0)
         val miniMonthDayNumberNormal = Color.Black.copy(alpha = 0.9f)
         val miniMonthTodayHighlightBackground = cabecera.copy(alpha = 0.15f)
     }
@@ -138,7 +135,6 @@ object AppThemeSetup {
         val monthlyCalendarHeaderBackground = Color(0xFF0060BF)
         val monthlyCalendarDayNumberNormal = onBackground
         val monthlyCalendarEventIndicator = Color(0xFF64B5F6)
-        val miniMonthHeaderBackground = Color(0xFF333333)
         val miniMonthDayNumberNormal = onBackground.copy(alpha = 0.9f)
         val miniMonthTodayHighlightBackground = cabecera.copy(alpha = 0.20f)
     }

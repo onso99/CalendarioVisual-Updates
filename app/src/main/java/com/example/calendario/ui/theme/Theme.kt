@@ -36,7 +36,6 @@ data class CustomColors(
     val monthlyCalendarHeaderBackground: Color,
     val monthlyCalendarDayNumberNormal: Color,
     val monthlyCalendarEventIndicator: Color,
-    val miniMonthHeaderBackground: Color,
     val miniMonthDayNumberNormal: Color,
     val miniMonthTodayHighlightBackground: Color
 )
@@ -137,7 +136,6 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
         monthlyCalendarHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarHeaderBackground),
         monthlyCalendarDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.monthlyCalendarDayNumberNormal),
         monthlyCalendarEventIndicator = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.LightColors.monthlyCalendarEventIndicator),
-        miniMonthHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.LightColors.miniMonthHeaderBackground),
         miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal),
         miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground)
     )
@@ -179,7 +177,6 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
         monthlyCalendarHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground),
         monthlyCalendarDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.monthlyCalendarDayNumberNormal),
         monthlyCalendarEventIndicator = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.DarkColors.monthlyCalendarEventIndicator),
-        miniMonthHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_HEADER_BACKGROUND, AppThemeSetup.DarkColors.miniMonthHeaderBackground),
         miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.miniMonthDayNumberNormal),
         miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground)
     )
