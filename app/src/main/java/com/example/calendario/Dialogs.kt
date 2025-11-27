@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.blendWithBackground
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -284,15 +285,22 @@ fun DayEventsDialog(
             if (eventsToDisplay.isEmpty()) {
                 Text("No hay eventos con detalle.", fontSize = 16.sp)
             } else {
-                LazyColumn(Modifier.heightIn(max = 300.dp)) {
+                LazyColumn(Modifier.heightIn(max = 300.dp)) { 
                     items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
                         val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
-                        val defaultItemColor = when {
-                            esCumpleanos -> CalendarioTheme.colors.textBirthday
-                            festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
-                            else -> onFondoDialogos
+                        
+                        val itemColor = if (isToday) {
+                            val highlightColor = CalendarioTheme.colors.todayHighlightColor
+                            val backgroundColor = CalendarioTheme.colors.fondoDialogos
+                            val finalBlendedColor = blendWithBackground(highlightColor, backgroundColor)
+                            if (isColorDark(finalBlendedColor)) Color.White else Color.Black
+                        } else {
+                            when {
+                                esCumpleanos -> CalendarioTheme.colors.textBirthday
+                                festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
+                                else -> onFondoDialogos
+                            }
                         }
-                        val itemColor = if (isToday) CalendarioTheme.colors.onTodayHighlightColor else defaultItemColor
 
                         Row(
                             Modifier

@@ -21,11 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.blendWithBackground
+import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -66,13 +69,20 @@ fun MonthlyEventList(
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                         val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
 
-                        val textColor = when {
-                            isTodayEvents -> CalendarioTheme.colors.onTodayHighlightColor
-                            esFestivo -> CalendarioTheme.colors.textSundayHoliday
-                            esCumpleanos -> CalendarioTheme.colors.textBirthday
-                            else -> MaterialTheme.colorScheme.onBackground
+                        val textColor = if (isTodayEvents) {
+                            val highlightColor = CalendarioTheme.colors.todayHighlightColor
+                            val backgroundColor = MaterialTheme.colorScheme.background
+                            val finalBlendedColor = blendWithBackground(highlightColor, backgroundColor)
+                            if (isColorDark(finalBlendedColor)) Color.White else Color.Black
+                        } else {
+                            when {
+                                esFestivo -> CalendarioTheme.colors.textSundayHoliday
+                                esCumpleanos -> CalendarioTheme.colors.textBirthday
+                                else -> MaterialTheme.colorScheme.onBackground
+                            }
                         }
-                        val iconColor = if (isTodayEvents) CalendarioTheme.colors.onTodayHighlightColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        
+                        val iconColor = if (isTodayEvents) textColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
 
                         val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                         else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }

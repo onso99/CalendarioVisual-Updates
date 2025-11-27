@@ -19,7 +19,6 @@ import androidx.core.graphics.toColorInt
 import com.example.calendario.AppThemeSetup
 import java.lang.IllegalArgumentException
 
-// 1. DATA CLASS PARA COLORES PERSONALIZADOS
 data class CustomColors(
     val settingsBackground: Color,
     val fondoDialogos: Color,
@@ -28,7 +27,6 @@ data class CustomColors(
     val textBirthday: Color,
     val dropdownMenuBackground: Color,
     val todayHighlightColor: Color,
-    val onTodayHighlightColor: Color,
     val eventListTitleColor: Color,
     val toggleButtonSelectedBackground: Color,
     val monthlyCalendarGridBackground: Color,
@@ -43,12 +41,10 @@ data class CustomColors(
     val miniMonthTodayHighlightBackground: Color
 )
 
-// 2. COMPOSITION LOCAL
 val LocalCustomColors = staticCompositionLocalOf {
     createLightCustomColors(null)
 }
 
-// 3. ENVOLtorio DEL TEMA
 @Composable
 fun CalendarioTheme(
     darkTheme: Boolean,
@@ -72,7 +68,6 @@ fun CalendarioTheme(
     }
 }
 
-// Objeto para facilitar el acceso a los colores
 object CalendarioTheme {
     val colors: CustomColors
         @Composable
@@ -99,7 +94,13 @@ fun isColorDark(color: Color): Boolean {
     return ColorUtils.calculateLuminance(color.toArgb()) < 0.5
 }
 
-// --- Light Color Scheme --- //
+fun blendWithBackground(foregroundColor: Color, backgroundColor: Color): Color {
+    val foregroundArgb = foregroundColor.toArgb()
+    val backgroundArgb = backgroundColor.toArgb()
+    val blendedArgb = ColorUtils.compositeColors(foregroundArgb, backgroundArgb)
+    return Color(blendedArgb)
+}
+
 private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
     val cabeceraColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.LightColors.cabecera)
     val onCabeceraColor = if (isColorDark(cabeceraColor)) Color.White else Color.Black
@@ -119,14 +120,10 @@ private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
 }
 
 private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
-    val todayHighlight = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.todayHighlightColor)
-    val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
-
     return CustomColors(
         settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground),
         fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_DIALOGOS, AppThemeSetup.LightColors.fondoDialogos),
-        todayHighlightColor = todayHighlight,
-        onTodayHighlightColor = onTodayHighlight,
+        todayHighlightColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.todayHighlightColor),
         eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR, AppThemeSetup.LightColors.eventListTitleColor),
         toggleButtonSelectedBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.LightColors.toggleButtonselectedBackground),
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem),
@@ -146,7 +143,6 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
     )
 }
 
-// --- Dark Color Scheme --- //
 private fun createDarkColorScheme(prefs: SharedPreferences?): ColorScheme {
     val cabeceraColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.DarkColors.cabecera)
     val onCabeceraColor = if (isColorDark(cabeceraColor)) Color.White else Color.Black
@@ -166,14 +162,10 @@ private fun createDarkColorScheme(prefs: SharedPreferences?): ColorScheme {
 }
 
 private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
-    val todayHighlight = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.DarkColors.todayHighlightColor)
-    val onTodayHighlight = if (isColorDark(todayHighlight)) Color.White else Color.Black
-
     return CustomColors(
         settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.DarkColors.settingsBackground),
         fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_DIALOGOS, AppThemeSetup.DarkColors.fondoDialogos),
-        todayHighlightColor = todayHighlight,
-        onTodayHighlightColor = onTodayHighlight,
+        todayHighlightColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.DarkColors.todayHighlightColor),
         eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppThemeSetup.DarkColors.eventListTitleColor),
         toggleButtonSelectedBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.DarkColors.toggleButtonselectedBackground),
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.DarkColors.textSystem),
