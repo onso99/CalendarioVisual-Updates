@@ -27,8 +27,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -318,7 +322,7 @@ fun CalendarioScreen(
                                         modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
                                     ) {
                                         DropdownMenuItem(
-                                            text = { Text("Calendarios", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
+                                            text = { Text("Calendarios", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                             onClick = {
                                                 menuExpanded = false
                                                 if (hasCalendarPermissionExternal) {
@@ -326,19 +330,23 @@ fun CalendarioScreen(
                                                 } else {
                                                     readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
                                                 }
-                                            }
+                                            },
+                                            leadingIcon = { Icon(Icons.Default.Event, contentDescription = "Calendarios", tint = CalendarioTheme.colors.textSystem) }
                                         )
                                         DropdownMenuItem(
-                                            text = { Text("Opciones", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
-                                            onClick = { menuExpanded = false; showOptionsScreen = true }
+                                            text = { Text("Opciones", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = { menuExpanded = false; showOptionsScreen = true },
+                                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Opciones", tint = CalendarioTheme.colors.textSystem) }
                                         )
                                         DropdownMenuItem(
-                                            text = { Text("Ayuda", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
-                                            onClick = { menuExpanded = false; showHelpScreen = true }
+                                            text = { Text("Ayuda", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = { menuExpanded = false; showHelpScreen = true },
+                                            leadingIcon = { Icon(Icons.Default.HelpOutline, contentDescription = "Ayuda", tint = CalendarioTheme.colors.textSystem) }
                                         )
                                         DropdownMenuItem(
-                                            text = { Text("Acerca de", fontSize = 18.sp, modifier = Modifier.padding(8.dp), color = CalendarioTheme.colors.textSystem) },
-                                            onClick = { menuExpanded = false; showAboutDialog = true }
+                                            text = { Text("Acerca de", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = { menuExpanded = false; showAboutDialog = true },
+                                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = "Acerca de", tint = CalendarioTheme.colors.textSystem) }
                                         )
                                     }
                                 }

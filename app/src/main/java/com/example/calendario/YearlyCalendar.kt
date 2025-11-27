@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +32,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.blendWithBackground
+import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
@@ -169,6 +172,12 @@ fun MiniMonthCalendar(
                                 val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday && !isBirthday
 
                                 val textColor = when {
+                                    isToday -> {
+                                        val highlightColor = CalendarioTheme.colors.miniMonthTodayHighlightBackground
+                                        val backgroundColor = CalendarioTheme.colors.settingsBackground
+                                        val finalBlendedColor = blendWithBackground(highlightColor, backgroundColor)
+                                        if (isColorDark(finalBlendedColor)) Color.White else Color.Black
+                                    }
                                     isHoliday -> CalendarioTheme.colors.textSundayHoliday
                                     isBirthday -> CalendarioTheme.colors.textBirthday
                                     isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
