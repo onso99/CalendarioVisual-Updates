@@ -116,7 +116,7 @@ fun DeleteRecurringEventDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("CANCELAR")
+                Text("CANCELAR", color = onFondoDialogos)
             }
         }
     )
@@ -211,14 +211,15 @@ fun SelectCalendarsDialog(
         confirmButton = {
             Button(
                 onClick = { onApplySelection(currentSelectedIdsInDialog) },
-                enabled = availableCalendars.isNotEmpty()
+                enabled = availableCalendars.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text("Aplicar", fontSize = 16.sp)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", fontSize = 16.sp)
+                Text("Cancelar", fontSize = 16.sp, color = onFondoDialogos)
             }
         }
     )
@@ -329,7 +330,10 @@ fun DayEventsDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismissRequest) {
+            Button(
+                onClick = onDismissRequest,
+                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
                 Text("Cerrar", fontSize = 16.sp)
             }
         }
@@ -391,17 +395,20 @@ fun GoToYearDialog(
             }
         },
         confirmButton = {
-            Button(onClick = {
-                val selectedYear = year.toIntOrNull()?.coerceIn(minYear, maxYear) ?: initialYear
-                onYearSelected(selectedYear)
-                onDismissRequest()
-            }) {
+            Button(
+                onClick = {
+                    val selectedYear = year.toIntOrNull()?.coerceIn(minYear, maxYear) ?: initialYear
+                    onYearSelected(selectedYear)
+                    onDismissRequest()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
                 Text("Aceptar")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar")
+                Text("Cancelar", color = onFondoDialogos)
             }
         }
     )

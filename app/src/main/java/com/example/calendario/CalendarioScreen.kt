@@ -30,6 +30,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +40,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -62,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -527,13 +529,20 @@ fun CalendarioScreen(
         }
 
         if (showAboutDialog) {
-            val onFondoDialogos = if(isDarkTheme) Color.White else Color.Black
+            val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
             AlertDialog(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = CalendarioTheme.colors.fondoDialogos,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = onFondoDialogos) },
                 text = { Column { Text("Calendario Visual V1.5", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
-                confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("Cerrar", fontSize = 16.sp) } }
+                confirmButton = { 
+                    Button(
+                        onClick = { showAboutDialog = false },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) { 
+                        Text("Cerrar", fontSize = 16.sp) 
+                    }
+                }
             )
         }
         

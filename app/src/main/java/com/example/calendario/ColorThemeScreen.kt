@@ -80,7 +80,8 @@ fun ColorThemeScreen(
                             if (pendingChanges.isNotEmpty()) {
                                 prefs.edit { 
                                     pendingChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } 
-                                    remove(AppThemeSetup.KEY_CURRENT_THEME_NAME) // Si se edita un color, ya no es un tema "puro"
+                                    remove(AppThemeSetup.KEY_LIGHT_THEME_NAME)
+                                    remove(AppThemeSetup.KEY_DARK_THEME_NAME)
                                 }
                                 onThemeUpdated()
                             }

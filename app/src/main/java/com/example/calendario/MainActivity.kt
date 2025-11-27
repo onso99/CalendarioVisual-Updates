@@ -26,7 +26,10 @@ import java.time.LocalDate
 object AppThemeSetup {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs_internal"
     const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled_internal"
-    const val KEY_CURRENT_THEME_NAME = "current_theme_name"
+    const val KEY_LIGHT_THEME_NAME = "light_theme_name"
+    const val KEY_DARK_THEME_NAME = "dark_theme_name"
+    const val CURRENT_THEME_VERSION = 2
+    const val APP_SIGNATURE = "Calendario"
 
     object ColorKeys {
         // Light Theme
