@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
 object WidgetConstants {
-    const val GLOBAL_WIDGET_PREFS_NAME = "global_calendar_widget_prefs" // O el que estés usando consistentemente
+    const val GLOBAL_WIDGET_PREFS_NAME = "global_calendar_widget_prefs" 
     const val KEY_EVENT_COUNT = "widget_event_count"
     const val DEFAULT_EVENT_COUNT = 4
     const val KEY_FONT_SIZE_LARGE = "font_size_large_preference_key"
@@ -13,8 +13,7 @@ object WidgetConstants {
     const val KEY_WIDGET_TODAY_EVENT_COLOR = "widget_today_event_color_key"
     const val KEY_WIDGET_BACKGROUND_COLOR = "widget_background_color_key"
 
-    // --- COLORES POR DEFECTO SELECCIONADOS DE TUS PALETAS ---
-    val DEFAULT_WIDGET_EVENT_COLOR_ARGB = Color(0xFFB4B4B4).toArgb() // Gris oscuro de tu paleta
-    val DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB = Color(0xFFFFFF00).toArgb() // Naranja de tu paleta
-    val DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB = Color(0x80000000).toArgb() // Negro con 50% de transparencia
+    val DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB = Color(0x230000DB).toArgb()
+    val DEFAULT_WIDGET_EVENT_COLOR_ARGB = Color(0xFFECECEC.toInt()).toArgb()
+    val DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB = Color(0xFFFFEC94.toInt()).toArgb()
 }
