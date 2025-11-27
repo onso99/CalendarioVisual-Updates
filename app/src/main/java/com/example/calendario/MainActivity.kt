@@ -87,56 +87,56 @@ object AppThemeSetup {
 
     object LightColors {
         val cabecera = Color(0xFF2196F3)
-        val fondoSecciones = Color(0xFFE3F2FD)
+        val settingsBackground = Color(0xFFF6F6FF)
+        val fondoSecciones = Color(0xFFD6ECFD)
         val fondoDialogos = Color(0xFFFFFFFF)
-        val background = Color(0xFFFCFDFE)
-        val settingsBackground = Color(0xFFEDF3FC)
-        val onBackground = Color.Black
-        val error = Color.Red
-        val onError = Color.White
-        val textSystem = onBackground
-        val textSundayHoliday = error
+        val dropdownMenuBackground = Color(0xFFFFFFFF)
+        val error = Color(0xFFFF0000)
+        val textSystem = Color(0xFF000000)
+        val textSundayHoliday = Color(0xFFFF0000)
         val textBirthday = Color(0xFF0000FF)
-        val dropdownMenuBackground = Color.White
-        val todayHighlightColor = Color(0xFFE9E9E9)
-        val eventListTitleColor = cabecera
-        val toggleButtonselectedBackground = cabecera.copy(alpha = 0.2f)
-        val monthlyCalendarGridBackground = Color(0xFFDBE7F9)
-        val monthlyCalendarDayCellBackground = Color.White
+        val eventListTitleColor = Color(0xFF0A4C87)
+        val toggleButtonselectedBackground = Color(0x332196F3)
+        val background = Color(0xFFF4F7FD)
+        val todayHighlightColor = Color(0x91FFEA82)
+        val monthlyCalendarGridBackground = Color(0xFFCADCF6)
+        val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
         val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
-        val monthlyCalendarTodayCellBorder = cabecera
+        val monthlyCalendarTodayCellBorder = Color(0xFF2196F3)
+        val monthlyCalendarDayNumberNormal = Color(0xFF000000)
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
-        val monthlyCalendarDayNumberNormal = Color.Black
-        val monthlyCalendarEventIndicator = cabecera
-        val miniMonthDayNumberNormal = Color.Black.copy(alpha = 0.9f)
-        val miniMonthTodayHighlightBackground = cabecera.copy(alpha = 0.15f)
+        val monthlyCalendarEventIndicator = Color(0xFF2196F3)
+        val miniMonthTodayHighlightBackground = Color(0x262196F3)
+        val miniMonthDayNumberNormal = Color(0xE6000000)
+        val onBackground = Color.Black
+        val onError = Color.White
     }
 
     object DarkColors {
-        val cabecera = Color(0xFF2173ed)
-        val fondoSecciones = Color(0xFF333A42)
+        val cabecera = Color(0xFF2173ED)
+        val settingsBackground = Color(0xFF2C2C2C)
+        val fondoSecciones = Color(0xFF274566)
         val fondoDialogos = Color(0xFF2C2C2C)
-        val background = Color(0xFF121212)
-        val settingsBackground = Color(0xFF1A1A1A)
-        val onBackground = Color(0xFFE0E0E0)
+        val dropdownMenuBackground = Color(0xFF2C2C2C)
         val error = Color(0xFFFF5252)
-        val onError = Color.Black
-        val textSystem = onBackground
+        val textSystem = Color(0xFFE0E0E0)
         val textSundayHoliday = Color(0xFFE57373)
         val textBirthday = Color(0xFFAECBFF)
-        val dropdownMenuBackground = Color(0xFF2C2C2C)
-        val eventListTitleColor = Color(0xFFD28C45)
-        val todayHighlightColor = Color(0xFFE9E9E9).copy(alpha = 0.15f)
-        val toggleButtonselectedBackground = cabecera.copy(alpha = 0.25f)
+        val eventListTitleColor = Color(0xFFCF9A21)
+        val toggleButtonselectedBackground = Color(0x84595959)
+        val background = Color(0xFF121212)
+        val todayHighlightColor = Color(0x8EACACAC)
         val monthlyCalendarGridBackground = Color(0xFF333333)
         val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
         val monthlyCalendarEmptyCellBackground = Color(0xFF4F4F4F)
-        val monthlyCalendarTodayCellBorder = eventListTitleColor
+        val monthlyCalendarTodayCellBorder = Color(0xFFD28C45)
+        val monthlyCalendarDayNumberNormal = Color(0xFFE0E0E0)
         val monthlyCalendarHeaderBackground = Color(0xFF0060BF)
-        val monthlyCalendarDayNumberNormal = onBackground
         val monthlyCalendarEventIndicator = Color(0xFF64B5F6)
-        val miniMonthDayNumberNormal = onBackground.copy(alpha = 0.9f)
-        val miniMonthTodayHighlightBackground = cabecera.copy(alpha = 0.20f)
+        val miniMonthTodayHighlightBackground = Color(0x332173ED)
+        val miniMonthDayNumberNormal = Color(0xE6E0E0E0)
+        val onBackground = Color(0xFFE0E0E0)
+        val onError = Color.Black
     }
 
 }
