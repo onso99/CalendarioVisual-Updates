@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -169,7 +170,7 @@ fun AddEventScreen(
                 )
             )
         },
-        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.background else AppThemeSetup.LightColors.monthlyCalendarGridBackground
+        containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
