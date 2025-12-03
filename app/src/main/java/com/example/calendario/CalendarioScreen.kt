@@ -59,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -66,6 +67,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
@@ -496,15 +498,39 @@ fun CalendarioScreen(
                     }
                 }
 
-                MonthlyEventList(
-                    modifier = Modifier.weight(1f),
-                    finalEventsToList = finalEventsToList,
-                    lazyListState = lazyListState,
-                    isCurrentMonthView = isCurrentMonthView,
-                    showAllEvents = showAllEvents,
-                    today = today,
-                    onEventClick = { event -> launchAddEditScreenWithPermissionCheck(event.date, event) }
-                )
+                Box(modifier = Modifier.weight(1f)) {
+                    MonthlyEventList(
+                        modifier = Modifier.fillMaxSize(),
+                        finalEventsToList = finalEventsToList,
+                        lazyListState = lazyListState,
+                        isCurrentMonthView = isCurrentMonthView,
+                        showAllEvents = showAllEvents,
+                        today = today,
+                        onEventClick = { event -> launchAddEditScreenWithPermissionCheck(event.date, event) }
+                    )
+
+                    val showTopShadow by remember {
+                        derivedStateOf { lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0 }
+                    }
+
+                    if (showTopShadow) {
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .align(Alignment.TopCenter)
+                                .zIndex(1f)
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.background,
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
+                        )
+                    }
+                }
             } else { // Yearly or Search view
                  if (isSearchActive) {
                      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -555,7 +581,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = CalendarioTheme.colors.fondoDialogos,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = onFondoDialogos) },
-                text = { Column { Text("Calendario Visual V1.5.31", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
+                text = { Column { Text("Calendario Visual V1.5.33", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
                 confirmButton = { 
                     Button(
                         onClick = { showAboutDialog = false },
