@@ -315,6 +315,7 @@ fun CalendarioScreen(
                                 IconButton(
                                     onClick = {
                                         if (viewMode == CalendarViewMode.YEARLY) {
+                                            scope.launch { monthPagerState.animateScrollToPage(initialPage) }
                                             viewMode = CalendarViewMode.MONTHLY
                                         } else if (showHomeButton) {
                                             scope.launch { monthPagerState.animateScrollToPage(initialPage) }
@@ -439,10 +440,9 @@ fun CalendarioScreen(
                             color = CalendarioTheme.colors.monthlyCalendarGridBackground,
                             shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                         )
-                        .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                        .padding(top = 16.dp, start = 12.dp, end = 12.dp, bottom = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(12.dp))
                     HorizontalPager(
                         state = monthPagerState,
                     ) { page ->
@@ -461,40 +461,41 @@ fun CalendarioScreen(
                             }
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
-                            fontSize = 18.sp,
-                            color = CalendarioTheme.colors.eventListTitleColor,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
+                }
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
+                        fontSize = 18.sp,
+                        color = CalendarioTheme.colors.eventListTitleColor,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
 
-                        if (isCurrentMonthView) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(CalendarioTheme.colors.toggleButtonSelectedBackground)
-                                    .clickable { showAllEvents = !showAllEvents }
-                                    .padding(horizontal = 12.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = if (showAllEvents) "Todos" else "Pendientes",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = CalendarioTheme.colors.eventListTitleColor
-                                )
-                            }
+                    if (isCurrentMonthView) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(CalendarioTheme.colors.toggleButtonSelectedBackground)
+                                .clickable { showAllEvents = !showAllEvents }
+                                .padding(horizontal = 12.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = if (showAllEvents) "Todos" else "Pendientes",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = CalendarioTheme.colors.eventListTitleColor
+                            )
                         }
                     }
                 }
+
                 MonthlyEventList(
                     modifier = Modifier.weight(1f),
                     finalEventsToList = finalEventsToList,
@@ -554,7 +555,7 @@ fun CalendarioScreen(
                 onDismissRequest = { showAboutDialog = false },
                 containerColor = CalendarioTheme.colors.fondoDialogos,
                 title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = onFondoDialogos) },
-                text = { Column { Text("Calendario Visual V1.5.30", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
+                text = { Column { Text("Calendario Visual V1.5.31", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
                 confirmButton = { 
                     Button(
                         onClick = { showAboutDialog = false },
