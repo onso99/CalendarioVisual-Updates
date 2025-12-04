@@ -84,7 +84,6 @@ fun AddEventScreen(
     onSave: () -> Unit,
     onDelete: () -> Unit,
     editableCalendars: List<CalendarInfo>,
-    isDarkTheme: Boolean,
     initialDate: LocalDate?,
     eventToEdit: Festivo? = null
 ) {

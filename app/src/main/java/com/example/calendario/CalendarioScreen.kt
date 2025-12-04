@@ -232,7 +232,6 @@ fun CalendarioScreen(
                 }
             },
             editableCalendars = availableCalendarsExternal.filter { it.canModify },
-            isDarkTheme = isDarkTheme,
             initialDate = dateForNewEvent,
             eventToEdit = eventToEdit
         )
