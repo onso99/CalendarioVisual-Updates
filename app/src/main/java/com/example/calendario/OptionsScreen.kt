@@ -256,7 +256,7 @@ fun OptionsScreen(
                 ActionRow("Restaurar colores por defecto") { showRestoreDialog = true }
             }
 
-            SectionTitle("Widget")
+            WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
                 Text("Número de eventos: ${pendingEventCount.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = colorScheme.onSurfaceVariant)
                 Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = colorScheme.onSurfaceVariant.copy(alpha = 0.24f)))
@@ -368,10 +368,10 @@ private fun CompatibilityAlertDialog(
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+private fun WidgetSectionTitle() {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
-    Text(text = text, style = typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp, top = 16.dp), fontWeight = FontWeight.Bold, color = colorScheme.primary)
+    Text(text = "Widget", style = typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp, top = 16.dp), fontWeight = FontWeight.Bold, color = colorScheme.primary)
 }
 
 @Composable
@@ -413,8 +413,7 @@ private fun exportThemeToJson(context: Context, uri: Uri) {
         ColorThemeConfig.colorThemeItems.forEach { item ->
             // Light Theme
             if (item.lightThemeKey.isNotBlank()) {
-                val value = allPrefs[item.lightThemeKey]
-                val colorString = when (value) {
+                val colorString = when (val value = allPrefs[item.lightThemeKey]) {
                     is Int -> String.format("#%08X", value)
                     is String -> value
                     else -> String.format("#%08X", item.defaultLight.toArgb()) // Fallback to default
@@ -424,8 +423,7 @@ private fun exportThemeToJson(context: Context, uri: Uri) {
             
             // Dark Theme
             if (item.darkThemeKey.isNotBlank()) {
-                 val value = allPrefs[item.darkThemeKey]
-                val colorString = when (value) {
+                 val colorString = when (val value = allPrefs[item.darkThemeKey]) {
                     is Int -> String.format("#%08X", value)
                     is String -> value
                     else -> String.format("#%08X", item.defaultDark.toArgb()) // Fallback to default
@@ -518,7 +516,7 @@ private fun importThemeFromJson(
                         onConfirm = { applyChanges(parsedTheme) }
                     ))
                 }
-                fileVersion > AppThemeSetup.CURRENT_THEME_VERSION -> {
+                else -> {
                      showDialog(CompatibilityDialogInfo(
                         title = "Tema Incompatible Detectado",
                         message = "Este tema es de una versión más nueva. Se importarán solo los colores compatibles con tu versión actual.",

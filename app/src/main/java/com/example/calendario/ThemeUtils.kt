@@ -48,7 +48,7 @@ object ThemeUtils {
 
             return ValidationResult.Success(ParsedTheme(manifest, lightTheme, darkTheme))
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return ValidationResult.Failure("El fichero no es un JSON válido.")
         }
     }
