@@ -5,6 +5,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,6 +35,8 @@ import androidx.core.content.edit
 import org.json.JSONObject
 import java.util.Locale
 
+private enum class ThemeTarget { LIGHT, DARK }
+
 @Composable
 fun ThemeMixerDialog(
     onDismissRequest: () -> Unit,
@@ -49,7 +53,7 @@ fun ThemeMixerDialog(
     var pendingLightTheme by remember { mutableStateOf<JSONObject?>(null) }
     var pendingDarkTheme by remember { mutableStateOf<JSONObject?>(null) }
     var showCompatibilityDialog by remember { mutableStateOf(false) }
-    var isLoadingDark by remember { mutableStateOf(false) }
+    var themeTarget by remember { mutableStateOf(ThemeTarget.LIGHT) }
 
     val themeLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -58,11 +62,11 @@ fun ThemeMixerDialog(
                 result.data?.data?.let { uri ->
                     when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
                         is ImportResult.Success -> {
-                            val themeToLoad = if (isLoadingDark) importResult.parsedTheme.darkTheme else importResult.parsedTheme.lightTheme
+                            val themeToLoad = if (themeTarget == ThemeTarget.DARK) importResult.parsedTheme.darkTheme else importResult.parsedTheme.lightTheme
                             if (themeToLoad != null) {
                                 val fileName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replaceFirstChar { it.titlecase(Locale.getDefault()) } ?: "Importado"
                                 val fileVersion = importResult.parsedTheme.manifest?.optInt("version", 1) ?: 1
-                                if(isLoadingDark) {
+                                if(themeTarget == ThemeTarget.DARK) {
                                     pendingDarkTheme = themeToLoad
                                     darkThemeName = fileName
                                     darkThemeVersion = fileVersion
@@ -71,9 +75,9 @@ fun ThemeMixerDialog(
                                     lightThemeName = fileName
                                     lightThemeVersion = fileVersion
                                 }
-                                Toast.makeText(context, "Tema '${fileName}' cargado para modo ${if(isLoadingDark) "oscuro" else "claro"}.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Tema '${fileName}' cargado para modo ${if(themeTarget == ThemeTarget.DARK) "oscuro" else "claro"}.", Toast.LENGTH_SHORT).show()
                             } else {
-                                Toast.makeText(context, "El fichero no contiene un tema ${if(isLoadingDark) "oscuro" else "claro"} válido.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "El fichero no contiene un tema ${if(themeTarget == ThemeTarget.DARK) "oscuro" else "claro"} válido.", Toast.LENGTH_LONG).show()
                             }
                         }
                         is ImportResult.Failure -> {
@@ -125,28 +129,38 @@ fun ThemeMixerDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("Mezclador de Temas", fontWeight = FontWeight.Bold) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Cargar para modo Oscuro", style = MaterialTheme.typography.bodyLarge)
-                    Switch(checked = isLoadingDark, onCheckedChange = { isLoadingDark = it })
-                }
-                Spacer(Modifier.height(8.dp))
-                ThemeInfoRow("Tema Claro:", lightThemeName ?: "Actual")
-                ThemeInfoRow("Tema Oscuro:", darkThemeName ?: "Actual")
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Selecciona dónde cargar el tema:", style = MaterialTheme.typography.bodyLarge)
+                ThemeInfoRow(
+                    label = "Tema Claro:",
+                    themeName = lightThemeName ?: "Actual",
+                    isSelected = themeTarget == ThemeTarget.LIGHT,
+                    onClick = { themeTarget = ThemeTarget.LIGHT }
+                )
+                ThemeInfoRow(
+                    label = "Tema Oscuro:",
+                    themeName = darkThemeName ?: "Actual",
+                    isSelected = themeTarget == ThemeTarget.DARK,
+                    onClick = { themeTarget = ThemeTarget.DARK }
+                )
                 Spacer(Modifier.height(8.dp))
                 Button(
                     onClick = { 
                         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }
                         themeLauncher.launch(intent) 
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
                     Text("Cargar Fichero...")
                 }
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     val isLegacy = lightThemeVersion < AppThemeSetup.CURRENT_THEME_VERSION || darkThemeVersion < AppThemeSetup.CURRENT_THEME_VERSION
                     if (isLegacy && (pendingLightTheme != null || pendingDarkTheme != null) ) {
@@ -162,10 +176,30 @@ fun ThemeMixerDialog(
 }
 
 @Composable
-private fun ThemeInfoRow(label: String, themeName: String) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+private fun ThemeInfoRow(
+    label: String,
+    themeName: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = isSelected,
+            onClick = onClick
+        )
         Text(label, fontWeight = FontWeight.Medium, modifier = Modifier.weight(0.4f))
-        Text(themeName, textAlign = TextAlign.End, modifier = Modifier.weight(0.6f), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        Text(
+            text = themeName,
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(0.6f),
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+        )
     }
 }
 
