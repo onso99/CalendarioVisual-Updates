@@ -175,7 +175,7 @@ fun CalendarioScreen(
         }
     }
     
-    LaunchedEffect(searchQuery, searchScope) {
+    LaunchedEffect(searchQuery, searchScope, eventsByDateExternal) {
         if (searchQuery.isNotBlank()) {
             delay(300) // Debounce
             val allEvents = eventsByDateExternal.values.flatten()
@@ -296,9 +296,6 @@ fun CalendarioScreen(
                 searchResults = emptyMap()
             },
             onEventClick = { event ->
-                isSearchActive = false
-                searchQuery = ""
-                searchResults = emptyMap()
                 launchAddEditScreenWithPermissionCheck(event.date, event)
             },
             availableCalendars = availableCalendarsExternal
