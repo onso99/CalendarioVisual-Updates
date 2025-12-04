@@ -254,6 +254,15 @@ fun CalendarioScreen(
         return
     }
 
+    if (showColorThemeScreen) {
+        ColorThemeScreen(
+            onBackPress = { showColorThemeScreen = false },
+            onThemeUpdated = onThemeUpdated,
+            isDarkTheme = isDarkTheme
+        )
+        return
+    }
+
     if (showOptionsScreen) {
         OptionsScreen(
             onBackPress = { 
@@ -262,23 +271,8 @@ fun CalendarioScreen(
             },
             isDarkTheme = isDarkTheme,
             onThemeToggle = onThemeToggle,
-            onColorThemeClick = { 
-                showOptionsScreen = false
-                showColorThemeScreen = true 
-            },
+            onColorThemeClick = { showColorThemeScreen = true },
             onThemeUpdated = onThemeUpdated
-        )
-        return
-    }
-
-    if (showColorThemeScreen) {
-        ColorThemeScreen(
-            onBackPress = { 
-                showColorThemeScreen = false
-                onThemeUpdated()
-            },
-            onThemeUpdated = onThemeUpdated,
-            isDarkTheme = isDarkTheme
         )
         return
     }
