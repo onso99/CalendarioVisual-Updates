@@ -65,8 +65,7 @@ fun SearchScreen(
     searchResults: Map<LocalDate, List<Festivo>>,
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
-    availableCalendars: List<CalendarInfo>,
-    isDarkTheme: Boolean
+    availableCalendars: List<CalendarInfo>
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -150,7 +149,7 @@ fun SearchScreen(
             ) {
                 val scopeOptions = listOf("Mes actual", "Año actual", "Todos")
                 scopeOptions.forEachIndexed { index, text ->
-                    val scopeValue = SearchScope.values()[index]
+                    val scopeValue = SearchScope.entries[index]
                     if (searchScope == scopeValue) {
                         Button(
                             onClick = { onSearchScopeChange(scopeValue) },

@@ -291,8 +291,7 @@ fun CalendarioScreen(
                 searchResults = emptyMap()
                 launchAddEditScreenWithPermissionCheck(event.date, event)
             },
-            availableCalendars = availableCalendarsExternal,
-            isDarkTheme = isDarkTheme
+            availableCalendars = availableCalendarsExternal
         )
     } else {
         Scaffold(
