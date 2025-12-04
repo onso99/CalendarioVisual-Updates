@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -52,7 +55,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -172,58 +177,122 @@ fun SearchScreen(
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    searchResults.forEach { (date, events) ->
-                        stickyHeader {
-                            Text(
-                                text = date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(8.dp),
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        items(events) { festivo ->
-                            val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
-                            val itemColor = when {
-                                esCumpleanos -> CalendarioTheme.colors.textBirthday
-                                festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
-                                else -> MaterialTheme.colorScheme.onSurface
-                            }
-                            val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
-                            else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+                    when (searchScope) {
+                        SearchScope.MONTH, SearchScope.YEAR -> {
+                            searchResults.forEach { (date, events) ->
+                                stickyHeader {
+                                    val headerText = if (searchScope == SearchScope.YEAR) {
+                                        date.format(DateTimeFormatter.ofPattern("MMMM yyyy").withLocale(Locale.getDefault()))
+                                    } else {
+                                        date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy").withLocale(Locale.getDefault()))
+                                    }.replaceFirstChar { it.titlecase(Locale.getDefault()) }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onEventClick(festivo) }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
-                                    Box(
-                                        Modifier
-                                            .size(10.dp)
-                                            .background(Color(colorInt), CircleShape)
-                                            .border(0.5.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                                    Text(
+                                        text = headerText,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                                            .padding(8.dp),
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                    Spacer(Modifier.size(8.dp))
                                 }
-                                Text(displayDesc, color = itemColor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                                if (festivo.rrule != null) {
-                                    Icon(
-                                        imageVector = Icons.Default.Refresh,
-                                        contentDescription = "Evento repetido",
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                        modifier = Modifier.padding(start = 8.dp).size(16.dp)
-                                    )
+                                items(events) { festivo ->
+                                    EventRow(festivo, availableCalendars, onEventClick, searchScope)
+                                }
+                            }
+                        }
+                        SearchScope.ALL -> {
+                            searchResults.forEach { (yearDate, eventsInYear) ->
+                                item {
+                                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                        Text(
+                                            text = yearDate.format(DateTimeFormatter.ofPattern("yyyy")),
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+
+                                val eventsByMonth = eventsInYear.groupBy { YearMonth.from(it.date) }.toSortedMap()
+                                item {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(horizontal = 16.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    ) {
+                                        eventsByMonth.forEach { (month, eventsInMonth) ->
+                                            Text(
+                                                text = month.format(DateTimeFormatter.ofPattern("MMMM").withLocale(Locale.getDefault())).replaceFirstChar { it.titlecase(Locale.getDefault()) },
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
+                                            )
+                                            eventsInMonth.forEach { festivo ->
+                                                EventRow(festivo, availableCalendars, onEventClick, searchScope)
+                                            }
+                                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun EventRow(
+    festivo: Festivo,
+    availableCalendars: List<CalendarInfo>,
+    onEventClick: (Festivo) -> Unit,
+    searchScope: SearchScope
+) {
+    val itemColor = when {
+        festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true) -> CalendarioTheme.colors.textBirthday
+        festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+    val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) {
+        "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
+    } else {
+        festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+    }
+
+    val displayDesc = when (searchScope) {
+        SearchScope.YEAR, SearchScope.ALL -> "${festivo.date.dayOfMonth} - $baseDesc"
+        SearchScope.MONTH -> baseDesc
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onEventClick(festivo) }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
+            Box(
+                Modifier
+                    .size(10.dp)
+                    .background(Color(colorInt), CircleShape)
+                    .border(0.5.dp, MaterialTheme.colorScheme.outline, CircleShape)
+            )
+            Spacer(Modifier.size(8.dp))
+        }
+        Text(displayDesc, color = itemColor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        if (festivo.rrule != null) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Evento repetido",
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.padding(start = 8.dp).size(16.dp)
+            )
         }
     }
 }

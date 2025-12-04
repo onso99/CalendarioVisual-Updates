@@ -131,7 +131,7 @@ fun CalendarioScreen(
     val lazyListState = rememberLazyListState()
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var searchScope by remember { mutableStateOf(SearchScope.ALL) }
+    var searchScope by remember { mutableStateOf(SearchScope.YEAR) } // Default to YEAR
     var searchResults by remember { mutableStateOf<Map<LocalDate, List<Festivo>>>(emptyMap()) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
@@ -185,10 +185,21 @@ fun CalendarioScreen(
                 SearchScope.ALL -> allEvents
             }
             val normalizedQuery = searchQuery.unaccent().lowercase(Locale.getDefault())
-            searchResults = scopeFilteredEvents
+            
+            val groupedEvents = scopeFilteredEvents
                 .filter { it.title.unaccent().lowercase(Locale.getDefault()).contains(normalizedQuery) }
-                .groupBy { it.date }
-                .toSortedMap(compareByDescending { it })
+                .groupBy {
+                    when (searchScope) {
+                        SearchScope.MONTH -> it.date
+                        SearchScope.YEAR -> it.date.withDayOfMonth(1) // Group by month
+                        SearchScope.ALL -> it.date.withDayOfYear(1)   // Group by year
+                    }
+                }
+                .mapValues { (_, events) ->
+                    events.sortedWith(compareBy({ it.date }, { it.startTime }))
+                }
+            searchResults = groupedEvents.toSortedMap(compareByDescending { it })
+
         } else {
             searchResults = emptyMap()
         }
