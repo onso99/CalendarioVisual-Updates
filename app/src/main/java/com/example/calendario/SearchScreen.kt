@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -150,16 +149,16 @@ fun SearchScreen(
                 val scopeOptions = listOf("Mes actual", "Año actual", "Todos")
                 scopeOptions.forEachIndexed { index, text ->
                     val scopeValue = SearchScope.entries[index]
-                    if (searchScope == scopeValue) {
-                        Button(
-                            onClick = { onSearchScopeChange(scopeValue) },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        ) { Text(text) }
-                    } else {
-                        TextButton(onClick = { onSearchScopeChange(scopeValue) }) { Text(text) }
+                    val isSelected = searchScope == scopeValue
+
+                    TextButton(
+                        onClick = { onSearchScopeChange(scopeValue) },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) { 
+                        Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
             }
