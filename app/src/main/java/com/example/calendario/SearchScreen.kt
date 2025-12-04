@@ -29,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -61,7 +63,6 @@ fun SearchScreen(
     searchScope: SearchScope,
     onSearchScopeChange: (SearchScope) -> Unit,
     searchResults: Map<LocalDate, List<Festivo>>,
-    onSearch: () -> Unit,
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
     availableCalendars: List<CalendarInfo>,
@@ -74,155 +75,152 @@ fun SearchScreen(
         focusRequester.requestFocus()
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary)
-                .statusBarsPadding()
-        ) {
-            TopAppBar(
-                title = {
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = onSearchQueryChange,
-                        placeholder = { Text("Buscar eventos...", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontSize = 18.sp),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(
-                            onSearch = {
-                                keyboardController?.hide()
-                                onSearch()
-                            }
-                        ),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Cerrar búsqueda",
-                            tint = MaterialTheme.colorScheme.onPrimary
+    Scaffold(
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .statusBarsPadding()
+            ) {
+                TopAppBar(
+                    title = {
+                        TextField(
+                            value = searchQuery,
+                            onValueChange = onSearchQueryChange,
+                            placeholder = { Text("Buscar eventos...", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
+                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontSize = 18.sp),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    keyboardController?.hide()
+                                }
+                            ),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                errorIndicatorColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester)
                         )
-                    }
-                },
-                actions = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { onSearchQueryChange("") }) {
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onClose) {
                             Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Limpiar búsqueda",
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Cerrar búsqueda",
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    },
+                    actions = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onSearchQueryChange("") }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Limpiar búsqueda",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
                 )
-            )
+            }
         }
-
-        Row(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val scopeOptions = listOf("Mes actual", "Año actual", "Todos")
-            scopeOptions.forEachIndexed { index, text ->
-                val scopeValue = SearchScope.values()[index]
-                if (searchScope == scopeValue) {
-                    Button(
-                        onClick = { onSearchScopeChange(scopeValue) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    ) { Text(text) }
-                } else {
-                    TextButton(onClick = { onSearchScopeChange(scopeValue) }) { Text(text) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                val scopeOptions = listOf("Mes actual", "Año actual", "Todos")
+                scopeOptions.forEachIndexed { index, text ->
+                    val scopeValue = SearchScope.values()[index]
+                    if (searchScope == scopeValue) {
+                        Button(
+                            onClick = { onSearchScopeChange(scopeValue) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        ) { Text(text) }
+                    } else {
+                        TextButton(onClick = { onSearchScopeChange(scopeValue) }) { Text(text) }
+                    }
                 }
             }
-        }
-
-        if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No se han encontrado resultados")
-            }
-        } else if (searchQuery.isBlank()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Escribe para buscar y pulsa Intro...")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                searchResults.forEach { (date, events) ->
-                    stickyHeader {
-                        Text(
-                            text = date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(8.dp),
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    items(events) { festivo ->
-                        val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
-                        val itemColor = when {
-                            esCumpleanos -> if (isDarkTheme) Color(0xFFF48FB1) else Color(0xFFD81B60) // Example colors
-                            festivo.isFromHolidaySource -> if (isDarkTheme) Color(0xFF90CAF9) else Color(0xFF1976D2)
-                            else -> MaterialTheme.colorScheme.onSurface
-                        }
-                        val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
-                        else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onEventClick(festivo) }
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
-                                Box(
-                                    Modifier
-                                        .size(10.dp)
-                                        .background(Color(colorInt), CircleShape)
-                                        .border(0.5.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                                )
-                                Spacer(Modifier.size(8.dp))
-                            }
+            if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No se han encontrado resultados")
+                }
+            } else if (searchQuery.isBlank()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Escribe para buscar...")
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    searchResults.forEach { (date, events) ->
+                        stickyHeader {
                             Text(
-                                displayDesc, 
-                                color = itemColor, 
-                                maxLines = 1, 
-                                overflow = TextOverflow.Ellipsis, 
-                                modifier = Modifier.weight(1f)
+                                text = date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(8.dp),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            if (festivo.rrule != null) {
-                                Icon(
-                                    imageVector = Icons.Default.Refresh,
-                                    contentDescription = "Evento repetido",
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                    modifier = Modifier
-                                        .padding(start = 8.dp)
-                                        .size(16.dp)
-                                )
+                        }
+                        items(events) { festivo ->
+                            val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
+                            val itemColor = when {
+                                esCumpleanos -> CalendarioTheme.colors.textBirthday
+                                festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+                            val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
+                            else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onEventClick(festivo) }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
+                                    Box(
+                                        Modifier
+                                            .size(10.dp)
+                                            .background(Color(colorInt), CircleShape)
+                                            .border(0.5.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                                    )
+                                    Spacer(Modifier.size(8.dp))
+                                }
+                                Text(displayDesc, color = itemColor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                                if (festivo.rrule != null) {
+                                    Icon(
+                                        imageVector = Icons.Default.Refresh,
+                                        contentDescription = "Evento repetido",
+                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                        modifier = Modifier.padding(start = 8.dp).size(16.dp)
+                                    )
+                                }
                             }
                         }
                     }
