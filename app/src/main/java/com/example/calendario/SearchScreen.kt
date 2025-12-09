@@ -264,9 +264,11 @@ private fun EventRow(
         festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
     }
 
+    val descWithAge = if (festivo.age != null) "$baseDesc (${festivo.age})" else baseDesc
+
     val displayDesc = when (searchScope) {
-        SearchScope.YEAR, SearchScope.ALL -> "${festivo.date.dayOfMonth} - $baseDesc"
-        SearchScope.MONTH -> baseDesc
+        SearchScope.YEAR, SearchScope.ALL -> "${festivo.date.dayOfMonth} - $descWithAge"
+        SearchScope.MONTH -> descWithAge
     }
 
     Row(

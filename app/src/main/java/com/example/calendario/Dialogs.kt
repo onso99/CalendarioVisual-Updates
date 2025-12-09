@@ -274,11 +274,12 @@ fun DayEventsDialog(
         },
         text = {
             val eventsToDisplay = events.mapNotNull { festivo ->
-                val title = if (!festivo.isAllDay && festivo.startTime != null) {
+                val baseTitle = if (!festivo.isAllDay && festivo.startTime != null) {
                     "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                 } else {
                     festivo.title.ifEmpty { if (festivo.isAllDay) "(Todo el día)" else "" }
                 }
+                val title = if (festivo.age != null) "$baseTitle (${festivo.age})" else baseTitle
                 if (title.isNotBlank()) festivo to title else null
             }
 

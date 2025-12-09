@@ -84,8 +84,10 @@ fun MonthlyEventList(
                         
                         val iconColor = if (isTodayEvents) textColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
 
-                        val displayDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
+                        val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
                         else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+
+                        val displayDesc = if (festivo.age != null) "$baseDesc (${festivo.age})" else baseDesc
 
                         if (displayDesc.isNotBlank()) {
                             Row(

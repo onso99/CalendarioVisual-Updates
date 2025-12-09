@@ -29,12 +29,14 @@ fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festiv
         .mapValues { entry ->
             entry.value.map { festivo ->
                 FestivoDto(
-                    desc = festivo.description,
+                    title = festivo.title,
+                    description = festivo.description,
                     id = festivo.calendarId,
                     startTimeStr = festivo.startTime?.toString(),
                     endTimeStr = festivo.endTime?.toString(),
                     isAllDay = festivo.isAllDay,
-                    rrule = festivo.rrule
+                    rrule = festivo.rrule,
+                    age = festivo.age
                 )
             }
         }
@@ -73,8 +75,8 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
             date to dtoList.map { dto ->
                 Festivo(
                     id = -1L,
-                    title = dto.desc.takeIf { it.isNotBlank() }?.take(40)?.trim() ?: "(Evento guardado)",
-                    description = dto.desc,
+                    title = dto.title.takeIf { !it.isNullOrBlank() } ?: dto.description.takeIf { !it.isNullOrBlank() } ?: "(Evento guardado)",
+                    description = dto.description,
                     date = date,
                     startTime = dto.startTimeStr?.let {
                         try {
@@ -93,7 +95,8 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     isAllDay = dto.isAllDay,
                     calendarId = dto.id,
                     isFromHolidaySource = false,
-                    rrule = dto.rrule
+                    rrule = dto.rrule,
+                    age = dto.age
                 )
             }
         } else {
@@ -285,7 +288,6 @@ suspend fun readFestivosFromCalendarsSuspend(
         val eventIds = mutableSetOf<Long>()
 
         resolver.query(instancesUri, instancesProjection, instancesSelection, null, null)?.use { c ->
-            Log.d("ReadFestivos", "Paso 1: Procesando ${c.count} instancias de eventos.")
             val eventIdCol = c.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
             val calIdCol = c.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
             val beginCol = c.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
@@ -318,14 +320,15 @@ suspend fun readFestivosFromCalendarsSuspend(
                 eventInstances.add(Festivo(
                     id = eventId,
                     title = title,
-                    description = title,
+                    description = null,
                     date = eventDate,
                     startTime = startTime,
                     endTime = endTime,
                     isAllDay = isAllDay,
                     calendarId = calId,
                     isFromHolidaySource = isHolidaySource,
-                    rrule = null // Se llenará en el paso 2
+                    rrule = null, 
+                    age = null 
                 ))
             }
         } ?: Log.w("ReadFestivos", "El cursor de instancias de eventos fue nulo.")
@@ -335,22 +338,42 @@ suspend fun readFestivosFromCalendarsSuspend(
             return@suspendCancellableCoroutine
         }
 
-        val rruleMap = mutableMapOf<Long, String?>()
-        val eventsProjection = arrayOf(CalendarContract.Events._ID, CalendarContract.Events.RRULE)
+        data class EventExtraData(val rrule: String?, val description: String?, val dtStart: Long?)
+        val eventDataMap = mutableMapOf<Long, EventExtraData>()
+        val eventsProjection = arrayOf(CalendarContract.Events._ID, CalendarContract.Events.RRULE, CalendarContract.Events.DESCRIPTION, CalendarContract.Events.DTSTART)
         val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
         
         resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { c ->
-            Log.d("ReadFestivos", "Paso 2: Obteniendo RRULEs para ${c.count} eventos.")
             val idCol = c.getColumnIndexOrThrow(CalendarContract.Events._ID)
             val rruleCol = c.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
+            val descCol = c.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION)
+            val dtStartCol = c.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
+
             while (c.moveToNext()) {
                 val eventId = c.getLong(idCol)
-                rruleMap[eventId] = c.getStringOrNull(rruleCol)
+                val rrule = c.getStringOrNull(rruleCol)
+                val description = c.getStringOrNull(descCol)
+                val dtStart = if (c.isNull(dtStartCol)) null else c.getLong(dtStartCol)
+                eventDataMap[eventId] = EventExtraData(rrule, description, dtStart)
             }
-        } ?: Log.w("ReadFestivos", "El cursor de eventos para RRULEs fue nulo.")
+        } ?: Log.w("ReadFestivos", "El cursor de eventos para datos adicionales fue nulo.")
         
         eventInstances.forEach { instance ->
-            val finalFestivo = instance.copy(rrule = rruleMap[instance.id])
+            val eventData = eventDataMap[instance.id]
+
+            var age: Int? = null
+            if (instance.title.contains("cumpleaños", ignoreCase = true) || instance.title.contains("aniversario", ignoreCase = true)) {
+                eventData?.dtStart?.let { dtStartMillis ->
+                    val birthDate = Instant.ofEpochMilli(dtStartMillis).atZone(systemZoneId).toLocalDate()
+                    age = instance.date.year - birthDate.year
+                }
+            }
+
+            val finalFestivo = instance.copy(
+                description = eventData?.description,
+                rrule = eventData?.rrule,
+                age = age
+            )
             finalMap.getOrPut(finalFestivo.date) { mutableListOf() }.add(finalFestivo)
         }
 
@@ -362,7 +385,6 @@ suspend fun readFestivosFromCalendarsSuspend(
         }
 
         if (continuation.isActive) {
-            Log.d("ReadFestivos", "Paso 3: Lectura completada. Total días: ${finalMap.size}, Total eventos: ${finalMap.values.sumOf { it.size }}")
             continuation.resume(finalMap)
         }
 
