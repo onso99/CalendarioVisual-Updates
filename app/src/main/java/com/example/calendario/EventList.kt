@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,10 +19,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,6 +46,11 @@ fun MonthlyEventList(
     today: LocalDate,
     onEventClick: (Festivo) -> Unit
 ) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
+
     Box(modifier = modifier) {
         if (finalEventsToList.isEmpty()) {
             Box(
@@ -68,6 +76,9 @@ fun MonthlyEventList(
 
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                         val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
+                        val normalizedTitle = festivo.title.unaccent().lowercase()
+                        val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
+                        val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
 
                         val textColor = if (isTodayEvents) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
@@ -76,6 +87,8 @@ fun MonthlyEventList(
                             if (isColorDark(finalBlendedColor)) Color.White else Color.Black
                         } else {
                             when {
+                                esEvento1 -> CalendarioTheme.colors.textEvent1
+                                esEvento2 -> CalendarioTheme.colors.textEvent2
                                 esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                 esCumpleanos -> CalendarioTheme.colors.textBirthday
                                 else -> CalendarioTheme.colors.textEventDefault

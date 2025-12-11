@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +73,7 @@ fun SearchScreen(
     onEventClick: (Festivo) -> Unit,
     availableCalendars: List<CalendarInfo>
 ) {
+    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -253,11 +256,25 @@ private fun EventRow(
     onEventClick: (Festivo) -> Unit,
     searchScope: SearchScope
 ) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
+
+    val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
+    val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
+    val normalizedTitle = festivo.title.unaccent().lowercase()
+    val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
+    val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
+
     val itemColor = when {
-        festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true) -> CalendarioTheme.colors.textBirthday
-        festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
+        esEvento1 -> CalendarioTheme.colors.textEvent1
+        esEvento2 -> CalendarioTheme.colors.textEvent2
+        esFestivo -> CalendarioTheme.colors.textSundayHoliday
+        esCumpleanos -> CalendarioTheme.colors.textBirthday
         else -> CalendarioTheme.colors.textEventDefault
     }
+
     val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) {
         "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
     } else {

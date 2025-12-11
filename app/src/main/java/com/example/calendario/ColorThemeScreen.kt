@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
@@ -66,9 +67,14 @@ fun ColorThemeScreen(
             .filter { groupedItems.containsKey(it) }
     }
 
-    val pendingChanges = remember { mutableStateMapOf<String, Color>() }
+    val pendingColorChanges = remember { mutableStateMapOf<String, Color>() }
+    val pendingKeywordChanges = remember { mutableStateMapOf<String, String>() }
+
     var showAdvancedColorDialog by remember { mutableStateOf(false) }
-    var colorToEdit by remember { mutableStateOf<Triple<String, Color, String>?>(null) } // key, color, label
+    var colorToEdit by remember { mutableStateOf<Triple<String, Color, String>?>(null) }
+
+    var showKeywordColorDialog by remember { mutableStateOf(false) }
+    var keywordColorToEdit by remember { mutableStateOf<KeywordColorEditInfo?>(null) }
 
     Scaffold(
         topBar = {
@@ -78,9 +84,10 @@ fun ColorThemeScreen(
                 actions = {
                     FilledIconButton(
                         onClick = { 
-                            if (pendingChanges.isNotEmpty()) {
+                            if (pendingColorChanges.isNotEmpty() || pendingKeywordChanges.isNotEmpty()) {
                                 prefs.edit { 
-                                    pendingChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } 
+                                    pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } 
+                                    pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
                                     remove(AppThemeSetup.KEY_LIGHT_THEME_NAME)
                                     remove(AppThemeSetup.KEY_DARK_THEME_NAME)
                                 }
@@ -127,16 +134,30 @@ fun ColorThemeScreen(
                             }
 
                             if (colorKey.isNotBlank()) {
-                                val currentColor = pendingChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
+                                val currentColor = pendingColorChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
-                                SingleColorThemeRow(
-                                    label = item.label,
-                                    color = currentColor,
-                                    onClick = {
-                                        colorToEdit = Triple(colorKey, currentColor, item.label)
-                                        showAdvancedColorDialog = true
-                                    }
-                                )
+                                if (item.label == "Evento-1" || item.label == "Evento-2") {
+                                    val keywordKey = if (item.label == "Evento-1") AppThemeSetup.KEY_EVENT_1_KEYWORD else AppThemeSetup.KEY_EVENT_2_KEYWORD
+                                    val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
+
+                                    SingleColorThemeRow(
+                                        label = currentKeyword.ifBlank { item.label },
+                                        color = currentColor,
+                                        onClick = {
+                                            keywordColorToEdit = KeywordColorEditInfo(colorKey, currentColor, item.label, keywordKey, currentKeyword)
+                                            showKeywordColorDialog = true
+                                        }
+                                    )
+                                } else {
+                                    SingleColorThemeRow(
+                                        label = item.label,
+                                        color = currentColor,
+                                        onClick = {
+                                            colorToEdit = Triple(colorKey, currentColor, item.label)
+                                            showAdvancedColorDialog = true
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -151,12 +172,28 @@ fun ColorThemeScreen(
             onDismissRequest = { showAdvancedColorDialog = false },
             onColorConfirm = { newColor ->
                 val key = colorToEdit!!.first
-                pendingChanges[key] = newColor
+                pendingColorChanges[key] = newColor
                 showAdvancedColorDialog = false
             }
         )
     }
+
+    if (showKeywordColorDialog && keywordColorToEdit != null) {
+        KeywordColorPickerDialog(
+            label = keywordColorToEdit!!.label,
+            initialColor = keywordColorToEdit!!.color,
+            initialKeyword = keywordColorToEdit!!.keyword,
+            onDismissRequest = { showKeywordColorDialog = false },
+            onConfirm = { newColor, newKeyword ->
+                pendingColorChanges[keywordColorToEdit!!.colorKey] = newColor
+                pendingKeywordChanges[keywordColorToEdit!!.keywordKey] = newKeyword
+                showKeywordColorDialog = false
+            }
+        )
+    }
 }
+
+data class KeywordColorEditInfo(val colorKey: String, val color: Color, val label: String, val keywordKey: String, val keyword: String)
 
 private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: Color): Color {
     if (!prefs.contains(key)) return defaultColor
@@ -177,7 +214,8 @@ private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: C
 private fun SingleColorThemeRow(
     label: String,
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    subtitle: String? = null // This parameter is no longer used, but kept for compatibility
 ) {
     Row(
         modifier = Modifier
@@ -187,7 +225,14 @@ private fun SingleColorThemeRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, 
+            fontSize = 16.sp, 
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
         ColorBox(color = color, onClick = onClick)
     }
 }

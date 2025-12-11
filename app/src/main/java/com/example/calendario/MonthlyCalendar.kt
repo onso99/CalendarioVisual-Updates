@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,9 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,6 +39,11 @@ fun MonthlyCalendar(
     onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit,
     onEmptyDayClick: (date: LocalDate) -> Unit
 ) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
+
     val daysOfWeek = listOf("L", "M", "X", "J", "V", "S", "D")
 
     val prevMonth = currentMonth.minusMonths(1)
@@ -130,10 +139,10 @@ fun MonthlyCalendar(
                     }
 
                     Box(
-                        Modifier
+                        modifier = Modifier
                             .weight(1f)
                             .aspectRatio(1f)
-                            .padding(1.dp)
+                            .padding(1.dp) 
                             .background(cellBackground, RoundedCornerShape(4.dp))
                             .then(borderModifier)
                             .clickable(enabled = isCurrentMonth) {
@@ -144,56 +153,58 @@ fun MonthlyCalendar(
                                 }
                             }
                     ) {
-                        Text(
-                            text = "${date.dayOfMonth}",
-                            fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
-                            color = dayColor,
-                            fontSize = 22.sp,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = "${date.dayOfMonth}",
+                                fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
+                                color = dayColor,
+                                fontSize = 22.sp,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
 
-                        // --- Nuevo sistema de indicadores (máximo 3) ---
-                        val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
-                        if (isCurrentMonth && eventsForIndicators.isNotEmpty()) {
-                            val event1Keyword = "" // Placeholder
-                            val event2Keyword = "" // Placeholder
+                            val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
+                            if (isCurrentMonth && eventsForIndicators.isNotEmpty()) {
+                                val normalizedEvent1Keyword = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
+                                val normalizedEvent2Keyword = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
 
-                            val indicatorColors = mutableListOf<Color>()
+                                val indicatorColors = mutableListOf<Color>()
 
-                            val hasNormalEvent = eventsForIndicators.any { event ->
-                                !event.title.contains("cumpleaños", true) &&
-                                !event.title.contains("aniversario", true) &&
-                                !(event1Keyword.isNotBlank() && event.title.contains(event1Keyword, true)) &&
-                                !(event2Keyword.isNotBlank() && event.title.contains(event2Keyword, true))
-                            }
-                            val hasBirthday = eventsForIndicators.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) }
-                            val hasEvent1 = event1Keyword.isNotBlank() && eventsForIndicators.any { it.title.contains(event1Keyword, true) }
-                            val hasEvent2 = event2Keyword.isNotBlank() && eventsForIndicators.any { it.title.contains(event2Keyword, true) }
+                                val hasNormalEvent = eventsForIndicators.any { event ->
+                                    val normalizedTitle = event.title.unaccent().lowercase()
+                                    !normalizedTitle.contains("cumpleaños") &&
+                                    !normalizedTitle.contains("aniversario") &&
+                                    !(normalizedEvent1Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent1Keyword)) &&
+                                    !(normalizedEvent2Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent2Keyword))
+                                }
+                                val hasBirthday = eventsForIndicators.any { it.title.unaccent().lowercase().contains("cumpleaños") || it.title.unaccent().lowercase().contains("aniversario") }
+                                val hasEvent1 = normalizedEvent1Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent1Keyword) }
+                                val hasEvent2 = normalizedEvent2Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent2Keyword) }
 
-                            if (hasNormalEvent) indicatorColors.add(CalendarioTheme.colors.textEventDefault)
-                            if (hasBirthday) indicatorColors.add(CalendarioTheme.colors.textBirthday)
-                            if (hasEvent1) indicatorColors.add(CalendarioTheme.colors.textEvent1)
-                            if (hasEvent2) indicatorColors.add(CalendarioTheme.colors.textEvent2)
+                                if (hasNormalEvent) indicatorColors.add(CalendarioTheme.colors.textEventDefault)
+                                if (hasBirthday) indicatorColors.add(CalendarioTheme.colors.textBirthday)
+                                if (hasEvent1) indicatorColors.add(CalendarioTheme.colors.textEvent1)
+                                if (hasEvent2) indicatorColors.add(CalendarioTheme.colors.textEvent2)
 
-                            val finalIndicators = if (indicatorColors.size > 3 && hasNormalEvent) {
-                                indicatorColors.filter { it != CalendarioTheme.colors.textEventDefault }
-                            } else {
-                                indicatorColors
-                            }.take(3)
+                                val finalIndicators = if (indicatorColors.size > 3 && hasNormalEvent) {
+                                    indicatorColors.filter { it != CalendarioTheme.colors.textEventDefault }
+                                } else {
+                                    indicatorColors
+                                }.take(3)
 
-                            if (finalIndicators.isNotEmpty()) {
-                                Row(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .padding(bottom = 6.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                                ) {
-                                    finalIndicators.forEach { color ->
-                                        Box(
-                                            modifier = Modifier
-                                                .size(6.dp)
-                                                .background(color.copy(alpha = 0.5f), CircleShape)
-                                        )
+                                if (finalIndicators.isNotEmpty()) {
+                                    Row(
+                                        modifier = Modifier
+                                            .align(Alignment.BottomCenter)
+                                            .padding(bottom = 4.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        finalIndicators.forEach { color ->
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(5.dp)
+                                                    .background(color.copy(alpha = 0.6f), CircleShape)
+                                            )
+                                        }
                                     }
                                 }
                             }
