@@ -30,7 +30,7 @@ object AppThemeSetup {
     const val KEY_DARK_THEME_NAME = "dark_theme_name"
     const val KEY_EVENT_1_KEYWORD = "key_event_1_keyword"
     const val KEY_EVENT_2_KEYWORD = "key_event_2_keyword"
-    const val CURRENT_THEME_VERSION = 2
+    const val CURRENT_THEME_VERSION = 3
     const val APP_SIGNATURE = "Calendario"
 
     object ColorKeys {
