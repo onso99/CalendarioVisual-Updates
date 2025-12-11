@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -236,6 +238,11 @@ fun DayEventsDialog(
     onAddEventClick: (LocalDate) -> Unit,
     onEventClick: (Festivo) -> Unit
 ) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
+
     val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
     val isToday = date == LocalDate.now()
@@ -288,8 +295,12 @@ fun DayEventsDialog(
             } else {
                 LazyColumn(Modifier.heightIn(max = 300.dp)) { 
                     items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
-                        val esCumpleanos = festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)
-                        
+                        val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
+                        val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
+                        val normalizedTitle = festivo.title.unaccent().lowercase()
+                        val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
+                        val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
+
                         val itemColor = if (isToday) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
                             val backgroundColor = CalendarioTheme.colors.fondoDialogos
@@ -297,8 +308,10 @@ fun DayEventsDialog(
                             if (isColorDark(finalBlendedColor)) Color.White else Color.Black
                         } else {
                             when {
+                                esEvento1 -> CalendarioTheme.colors.textEvent1
+                                esEvento2 -> CalendarioTheme.colors.textEvent2
+                                esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                 esCumpleanos -> CalendarioTheme.colors.textBirthday
-                                festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
                                 else -> onFondoDialogos
                             }
                         }
