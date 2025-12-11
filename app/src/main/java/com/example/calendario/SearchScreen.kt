@@ -261,9 +261,9 @@ private fun EventRow(
     val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
     val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
-    val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
-    val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
     val normalizedTitle = festivo.title.unaccent().lowercase()
+    val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
+    val esCumpleanos = (normalizedTitle.contains("cumpleanos") || normalizedTitle.contains("aniversario")) && !esFestivo
     val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
     val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
 
