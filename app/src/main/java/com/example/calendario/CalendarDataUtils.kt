@@ -139,22 +139,23 @@ fun processEventsForDisplay(
 
     return eventsByDate
         .filterKeys { date -> date.month == targetMonth.month && date.year == targetMonth.year }
-        .mapValues { (date, festivosOnDate) ->
-            festivosOnDate.filter { festivo ->
-                if (date.isEqual(today)) {
-                    if (!festivo.isAllDay && festivo.startTime != null && festivo.endTime != null) {
-                        now.isBefore(festivo.endTime)
-                    } else {
-                        true
-                    }
-                } else {
-                    true
-                }
-            }
-        }
         .let { eventsInMonth ->
             if (isCurrentMonthView && !showAll) {
-                eventsInMonth.filterKeys { date -> !date.isBefore(today) }
+                eventsInMonth
+                    .mapValues { (date, festivosOnDate) ->
+                        festivosOnDate.filter { festivo ->
+                            if (date.isEqual(today)) {
+                                if (!festivo.isAllDay && festivo.startTime != null && festivo.endTime != null) {
+                                    now.isBefore(festivo.endTime)
+                                } else {
+                                    true
+                                }
+                            } else {
+                                true
+                            }
+                        }
+                    }
+                    .filterKeys { date -> !date.isBefore(today) }
             } else {
                 eventsInMonth
             }
