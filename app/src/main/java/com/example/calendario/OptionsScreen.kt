@@ -215,24 +215,25 @@ fun OptionsScreen(
                     Text(
                         text = lightThemeName,
                         color = themeNameColor,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = 16.dp).weight(1f)
+                        modifier = Modifier.padding(start = 16.dp).weight(1f),
+                        fontSize = 13.sp
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp).weight(1f)) {
                         lightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Claro: ", color = themeNameColor, fontSize = 14.sp)
-                                Text(it, color = themeNameColor, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 14.sp)
+                                Text("Claro: ", color = themeNameColor, fontSize = 13.sp)
+                                Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
                         darkThemeName?.let {
                              Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Oscuro: ", color = themeNameColor, fontSize = 14.sp)
-                                Text(it, color = themeNameColor, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 14.sp)
+                                Text("Oscuro: ", color = themeNameColor, fontSize = 13.sp)
+                                Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
                     }
