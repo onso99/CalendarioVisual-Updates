@@ -291,7 +291,7 @@ fun OptionsScreen(
             onDismissRequest = { showRestoreDialog = false },
             containerColor = CalendarioTheme.colors.fondoDialogos,
             title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold, color = onFondoDialogos) },
-            text = { Text("¿Estás seguro de que quieres restaurar todos los colores y palabras clave a sus valores por defecto?", color = onFondoDialogos) },
+            text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto? Las palabras clave no se verán afectadas.", color = onFondoDialogos) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -300,13 +300,11 @@ fun OptionsScreen(
                                 if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
                                 if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
                             }
-                            remove(AppThemeSetup.KEY_EVENT_1_KEYWORD)
-                            remove(AppThemeSetup.KEY_EVENT_2_KEYWORD)
                             remove(AppThemeSetup.KEY_LIGHT_THEME_NAME)
                             remove(AppThemeSetup.KEY_DARK_THEME_NAME)
                         }
                         onThemeUpdated()
-                        Toast.makeText(context, "Los colores y palabras clave han sido restaurados.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
                         showRestoreDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary)
