@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -61,7 +62,7 @@ fun ColorThemeScreen(
     val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val groupedItems = ColorThemeConfig.colorThemeItems.groupBy { it.category }
     val categories = remember {
-        listOf("General", "Textos", "Lista de Eventos", "Calendario Mensual", "Calendario Anual")
+        listOf("General", "Lista de Eventos", "Calendario Mensual", "Calendario Anual")
             .filter { groupedItems.containsKey(it) }
     }
 
@@ -116,23 +117,27 @@ fun ColorThemeScreen(
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)
                 ) {
                     items.forEach { item ->
-                        val (colorKey, defaultColor) = if (isDarkTheme) {
-                            item.darkThemeKey to item.defaultDark
+                        if (item.isSeparator) {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                         } else {
-                            item.lightThemeKey to item.defaultLight
-                        }
+                            val (colorKey, defaultColor) = if (isDarkTheme) {
+                                item.darkThemeKey to item.defaultDark
+                            } else {
+                                item.lightThemeKey to item.defaultLight
+                            }
 
-                        if (colorKey.isNotBlank()) {
-                            val currentColor = pendingChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
+                            if (colorKey.isNotBlank()) {
+                                val currentColor = pendingChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
-                            SingleColorThemeRow(
-                                label = item.label,
-                                color = currentColor,
-                                onClick = {
-                                    colorToEdit = Triple(colorKey, currentColor, item.label)
-                                    showAdvancedColorDialog = true
-                                }
-                            )
+                                SingleColorThemeRow(
+                                    label = item.label,
+                                    color = currentColor,
+                                    onClick = {
+                                        colorToEdit = Triple(colorKey, currentColor, item.label)
+                                        showAdvancedColorDialog = true
+                                    }
+                                )
+                            }
                         }
                     }
                 }

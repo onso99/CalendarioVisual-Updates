@@ -78,7 +78,7 @@ fun MonthlyEventList(
                             when {
                                 esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                 esCumpleanos -> CalendarioTheme.colors.textBirthday
-                                else -> MaterialTheme.colorScheme.onBackground
+                                else -> CalendarioTheme.colors.textEventDefault
                             }
                         }
                         

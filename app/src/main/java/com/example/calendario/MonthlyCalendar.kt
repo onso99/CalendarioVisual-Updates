@@ -3,6 +3,7 @@ package com.example.calendario
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -99,17 +100,14 @@ fun MonthlyCalendar(
 
                     val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
                     val dayHasEventsWithTitle = dayEvents.any { it.title.isNotBlank() }
-                    val hasOtherEventsPoint = isCurrentMonth && dayEvents.any { !it.isFromHolidaySource && it.title.isNotBlank() }
 
                     val dayColor = when {
                         !isCurrentMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         else -> {
                             val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                            val isBirthday = dayEvents.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) } && !isHoliday
-                            val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday && !isBirthday
+                            val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
                             when {
-                                isHoliday -> MaterialTheme.colorScheme.error
-                                isBirthday -> CalendarioTheme.colors.textBirthday
+                                isHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 else -> CalendarioTheme.colors.monthlyCalendarDayNumberNormal
                             }
@@ -153,17 +151,52 @@ fun MonthlyCalendar(
                             fontSize = 22.sp,
                             modifier = Modifier.align(Alignment.Center)
                         )
-                        if (hasOtherEventsPoint) {
-                            Box(
-                                Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(bottom = 6.dp)
-                                    .size(6.dp)
-                                    .background(
-                                        color = CalendarioTheme.colors.monthlyCalendarEventIndicator,
-                                        shape = CircleShape
-                                    )
-                            )
+
+                        // --- Nuevo sistema de indicadores (máximo 3) ---
+                        val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
+                        if (isCurrentMonth && eventsForIndicators.isNotEmpty()) {
+                            val event1Keyword = "" // Placeholder
+                            val event2Keyword = "" // Placeholder
+
+                            val indicatorColors = mutableListOf<Color>()
+
+                            val hasNormalEvent = eventsForIndicators.any { event ->
+                                !event.title.contains("cumpleaños", true) &&
+                                !event.title.contains("aniversario", true) &&
+                                !(event1Keyword.isNotBlank() && event.title.contains(event1Keyword, true)) &&
+                                !(event2Keyword.isNotBlank() && event.title.contains(event2Keyword, true))
+                            }
+                            val hasBirthday = eventsForIndicators.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) }
+                            val hasEvent1 = event1Keyword.isNotBlank() && eventsForIndicators.any { it.title.contains(event1Keyword, true) }
+                            val hasEvent2 = event2Keyword.isNotBlank() && eventsForIndicators.any { it.title.contains(event2Keyword, true) }
+
+                            if (hasNormalEvent) indicatorColors.add(CalendarioTheme.colors.textEventDefault)
+                            if (hasBirthday) indicatorColors.add(CalendarioTheme.colors.textBirthday)
+                            if (hasEvent1) indicatorColors.add(CalendarioTheme.colors.textEvent1)
+                            if (hasEvent2) indicatorColors.add(CalendarioTheme.colors.textEvent2)
+
+                            val finalIndicators = if (indicatorColors.size > 3 && hasNormalEvent) {
+                                indicatorColors.filter { it != CalendarioTheme.colors.textEventDefault }
+                            } else {
+                                indicatorColors
+                            }.take(3)
+
+                            if (finalIndicators.isNotEmpty()) {
+                                Row(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .padding(bottom = 6.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                ) {
+                                    finalIndicators.forEach { color ->
+                                        Box(
+                                            modifier = Modifier
+                                                .size(6.dp)
+                                                .background(color.copy(alpha = 0.5f), CircleShape)
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

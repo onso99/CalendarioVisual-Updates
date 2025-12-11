@@ -256,7 +256,7 @@ private fun EventRow(
     val itemColor = when {
         festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true) -> CalendarioTheme.colors.textBirthday
         festivo.isFromHolidaySource -> CalendarioTheme.colors.textSundayHoliday
-        else -> MaterialTheme.colorScheme.onSurface
+        else -> CalendarioTheme.colors.textEventDefault
     }
     val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) {
         "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"

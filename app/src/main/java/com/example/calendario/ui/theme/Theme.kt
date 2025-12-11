@@ -25,6 +25,9 @@ data class CustomColors(
     val textSystem: Color,
     val textSundayHoliday: Color,
     val textBirthday: Color,
+    val textEventDefault: Color,
+    val textEvent1: Color,
+    val textEvent2: Color,
     val dropdownMenuBackground: Color,
     val todayHighlightColor: Color,
     val eventListTitleColor: Color,
@@ -35,7 +38,6 @@ data class CustomColors(
     val monthlyCalendarTodayCellBorder: Color,
     val monthlyCalendarHeaderBackground: Color,
     val monthlyCalendarDayNumberNormal: Color,
-    val monthlyCalendarEventIndicator: Color,
     val miniMonthDayNumberNormal: Color,
     val miniMonthTodayHighlightBackground: Color
 )
@@ -128,6 +130,9 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem),
         textSundayHoliday = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.LightColors.textSundayHoliday),
         textBirthday = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppThemeSetup.LightColors.textBirthday),
+        textEventDefault = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_EVENT_DEFAULT, AppThemeSetup.LightColors.textEventDefault),
+        textEvent1 = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_EVENT_1, AppThemeSetup.LightColors.textEvent1),
+        textEvent2 = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_EVENT_2, AppThemeSetup.LightColors.textEvent2),
         dropdownMenuBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground),
         monthlyCalendarGridBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarGridBackground),
         monthlyCalendarDayCellBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarDayCellBackground),
@@ -135,7 +140,6 @@ private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
         monthlyCalendarTodayCellBorder = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder),
         monthlyCalendarHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarHeaderBackground),
         monthlyCalendarDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.monthlyCalendarDayNumberNormal),
-        monthlyCalendarEventIndicator = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.LightColors.monthlyCalendarEventIndicator),
         miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal),
         miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground)
     )
@@ -169,6 +173,9 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
         textSystem = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.DarkColors.textSystem),
         textSundayHoliday = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.DarkColors.textSundayHoliday),
         textBirthday = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_BIRTHDAY, AppThemeSetup.DarkColors.textBirthday),
+        textEventDefault = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_EVENT_DEFAULT, AppThemeSetup.DarkColors.textEventDefault),
+        textEvent1 = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_EVENT_1, AppThemeSetup.DarkColors.textEvent1),
+        textEvent2 = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_EVENT_2, AppThemeSetup.DarkColors.textEvent2),
         dropdownMenuBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.DarkColors.dropdownMenuBackground),
         monthlyCalendarGridBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarGridBackground),
         monthlyCalendarDayCellBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground),
@@ -176,7 +183,6 @@ private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
         monthlyCalendarTodayCellBorder = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder),
         monthlyCalendarHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground),
         monthlyCalendarDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.monthlyCalendarDayNumberNormal),
-        monthlyCalendarEventIndicator = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EVENT_INDICATOR, AppThemeSetup.DarkColors.monthlyCalendarEventIndicator),
         miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.miniMonthDayNumberNormal),
         miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground)
     )

@@ -168,8 +168,7 @@ fun MiniMonthCalendar(
                                 val dayEvents = eventsByDate[date].orEmpty()
                                 val isToday = date == today
                                 val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                                val isBirthday = dayEvents.any { it.title.contains("cumpleaños", true) || it.title.contains("aniversario", true) } && !isHoliday
-                                val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday && !isBirthday
+                                val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
 
                                 val textColor = when {
                                     isToday -> {
@@ -179,7 +178,6 @@ fun MiniMonthCalendar(
                                         if (isColorDark(finalBlendedColor)) Color.White else Color.Black
                                     }
                                     isHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                    isBirthday -> CalendarioTheme.colors.textBirthday
                                     isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                     else -> CalendarioTheme.colors.miniMonthDayNumberNormal
                                 }
