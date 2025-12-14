@@ -15,7 +15,9 @@ data class Festivo(
     val calendarId: Long,
     val isFromHolidaySource: Boolean,
     val rrule: String?,
-    val age: Int? = null
+    val age: Int? = null,
+    val isBirthday: Boolean = false,
+    val originalBirthDate: LocalDate? = null
 )
 
 data class FestivoDto(
@@ -26,7 +28,8 @@ data class FestivoDto(
     val endTimeStr: String?,
     val isAllDay: Boolean,
     val rrule: String?,
-    val age: Int?
+    val age: Int?,
+    val isBirthday: Boolean? = false
 )
 
 

@@ -36,7 +36,8 @@ fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festiv
                     endTimeStr = festivo.endTime?.toString(),
                     isAllDay = festivo.isAllDay,
                     rrule = festivo.rrule,
-                    age = festivo.age
+                    age = festivo.age,
+                    isBirthday = festivo.isBirthday
                 )
             }
         }
@@ -96,7 +97,8 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     calendarId = dto.id,
                     isFromHolidaySource = false,
                     rrule = dto.rrule,
-                    age = dto.age
+                    age = dto.age,
+                    isBirthday = dto.isBirthday ?: false
                 )
             }
         } else {
@@ -339,6 +341,30 @@ suspend fun readFestivosFromCalendarsSuspend(
             return@suspendCancellableCoroutine
         }
 
+        val extendedPropertiesMap = mutableMapOf<Long, MutableMap<String, String>>()
+        if (eventIds.isNotEmpty()) {
+            val propertiesProjection = arrayOf(
+                CalendarContract.ExtendedProperties.EVENT_ID,
+                CalendarContract.ExtendedProperties.NAME,
+                CalendarContract.ExtendedProperties.VALUE
+            )
+            val propertiesSelection = "${CalendarContract.ExtendedProperties.EVENT_ID} IN (${eventIds.joinToString(",")}) AND ${CalendarContract.ExtendedProperties.NAME} = ?"
+            val propertiesSelectionArgs = arrayOf("shared:calendarProviderEventType")
+
+            resolver.query(CalendarContract.ExtendedProperties.CONTENT_URI, propertiesProjection, propertiesSelection, propertiesSelectionArgs, null)?.use { c ->
+                val eventIdCol = c.getColumnIndexOrThrow(CalendarContract.ExtendedProperties.EVENT_ID)
+                val valueCol = c.getColumnIndexOrThrow(CalendarContract.ExtendedProperties.VALUE)
+
+                while (c.moveToNext()) {
+                    val eventId = c.getLong(eventIdCol)
+                    val value = c.getStringOrNull(valueCol)
+                    if (value == "BIRTHDAY") {
+                         extendedPropertiesMap.getOrPut(eventId) { mutableMapOf() }["isBirthday"] = "true"
+                    }
+                }
+            } ?: Log.w("ReadFestivos", "El cursor de propiedades extendidas fue nulo.")
+        }
+
         data class EventExtraData(val rrule: String?, val description: String?, val dtStart: Long?)
         val eventDataMap = mutableMapOf<Long, EventExtraData>()
         val eventsProjection = arrayOf(CalendarContract.Events._ID, CalendarContract.Events.RRULE, CalendarContract.Events.DESCRIPTION, CalendarContract.Events.DTSTART)
@@ -361,19 +387,24 @@ suspend fun readFestivosFromCalendarsSuspend(
         
         eventInstances.forEach { instance ->
             val eventData = eventDataMap[instance.id]
+            val isBirthday = extendedPropertiesMap[instance.id]?.get("isBirthday") == "true"
 
             var age: Int? = null
-            if (instance.title.contains("cumpleaños", ignoreCase = true) || instance.title.contains("aniversario", ignoreCase = true)) {
+            var originalBirthDate: LocalDate? = null
+            if (isBirthday) {
                 eventData?.dtStart?.let { dtStartMillis ->
                     val birthDate = Instant.ofEpochMilli(dtStartMillis).atZone(systemZoneId).toLocalDate()
                     age = instance.date.year - birthDate.year
+                    originalBirthDate = birthDate
                 }
             }
 
             val finalFestivo = instance.copy(
                 description = eventData?.description,
                 rrule = eventData?.rrule,
-                age = age
+                age = age,
+                isBirthday = isBirthday,
+                originalBirthDate = originalBirthDate
             )
             finalMap.getOrPut(finalFestivo.date) { mutableListOf() }.add(finalFestivo)
         }

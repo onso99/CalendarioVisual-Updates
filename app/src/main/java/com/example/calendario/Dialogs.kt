@@ -296,7 +296,7 @@ fun DayEventsDialog(
                 LazyColumn(Modifier.heightIn(max = 300.dp)) { 
                     items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
-                        val esCumpleanos = (festivo.title.contains("cumpleaños", true) || festivo.title.contains("aniversario", true)) && !esFestivo
+                        val esCumpleanos = festivo.isBirthday && !esFestivo
                         val normalizedTitle = festivo.title.unaccent().lowercase()
                         val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
                         val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())

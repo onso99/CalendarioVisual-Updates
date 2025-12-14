@@ -171,12 +171,11 @@ fun MonthlyCalendar(
 
                                 val hasNormalEvent = eventsForIndicators.any { event ->
                                     val normalizedTitle = event.title.unaccent().lowercase()
-                                    !normalizedTitle.contains("cumpleanos") &&
-                                    !normalizedTitle.contains("aniversario") &&
+                                    !event.isBirthday &&
                                     !(normalizedEvent1Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent1Keyword)) &&
                                     !(normalizedEvent2Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent2Keyword))
                                 }
-                                val hasBirthday = eventsForIndicators.any { it.title.unaccent().lowercase().contains("cumpleanos") || it.title.unaccent().lowercase().contains("aniversario") }
+                                val hasBirthday = eventsForIndicators.any { it.isBirthday }
                                 val hasEvent1 = normalizedEvent1Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent1Keyword) }
                                 val hasEvent2 = normalizedEvent2Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent2Keyword) }
 

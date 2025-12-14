@@ -263,7 +263,7 @@ private fun EventRow(
 
     val normalizedTitle = festivo.title.unaccent().lowercase()
     val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
-    val esCumpleanos = (normalizedTitle.contains("cumpleanos") || normalizedTitle.contains("aniversario")) && !esFestivo
+    val esCumpleanos = festivo.isBirthday && !esFestivo
     val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
     val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
 
