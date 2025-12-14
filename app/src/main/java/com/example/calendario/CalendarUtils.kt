@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -28,10 +29,23 @@ fun createEvent(
     }
 
     try {
+        val operations = ArrayList<ContentProviderOperation>()
         val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule)
-        val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
+        
+        val eventInsertOperation = ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI).withValues(values)
+        operations.add(eventInsertOperation.build())
 
-        if (uri != null) {
+        if (isAllDay) {
+            operations.add(ContentProviderOperation.newInsert(CalendarContract.Reminders.CONTENT_URI)
+                .withValueBackReference(CalendarContract.Reminders.EVENT_ID, 0)
+                .withValue(CalendarContract.Reminders.MINUTES, 15 * 60) // 9 AM the day before (15 hours)
+                .withValue(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_DEFAULT)
+                .build())
+        }
+
+        val results = context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
+
+        if (results.isNotEmpty() && results[0].uri != null) {
             Toast.makeText(context, "Evento guardado", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "Error al guardar el evento", Toast.LENGTH_SHORT).show()
@@ -63,15 +77,28 @@ fun updateEvent(
     }
 
     try {
+        val operations = ArrayList<ContentProviderOperation>()
         val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
-        val rows = context.contentResolver.update(updateUri, values, null, null)
+        operations.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build())
 
-        if (rows > 0) {
-            Toast.makeText(context, "Evento actualizado", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Error al actualizar el evento", Toast.LENGTH_SHORT).show()
+        // First, delete any existing reminders for the event
+        val reminderSelection = "${CalendarContract.Reminders.EVENT_ID} = ?"
+        val reminderArgs = arrayOf(eventId.toString())
+        operations.add(ContentProviderOperation.newDelete(CalendarContract.Reminders.CONTENT_URI).withSelection(reminderSelection, reminderArgs).build())
+
+        // If the event is now an all-day event, add our smart reminder
+        if (isAllDay) {
+            operations.add(ContentProviderOperation.newInsert(CalendarContract.Reminders.CONTENT_URI)
+                .withValue(CalendarContract.Reminders.EVENT_ID, eventId)
+                .withValue(CalendarContract.Reminders.MINUTES, 15 * 60) // 9 AM the day before (15 hours)
+                .withValue(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_DEFAULT)
+                .build())
         }
+        
+        context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
+        Toast.makeText(context, "Evento actualizado", Toast.LENGTH_SHORT).show()
+
     } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
