@@ -214,8 +214,7 @@ private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: C
 private fun SingleColorThemeRow(
     label: String,
     color: Color,
-    onClick: () -> Unit,
-    subtitle: String? = null // This parameter is no longer used, but kept for compatibility
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier

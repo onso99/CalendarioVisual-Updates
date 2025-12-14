@@ -214,7 +214,7 @@ class CalendarWidgetFactory(
         return mapFromString.mapNotNull { (dateStr, dtoList) ->
             val date = try {
                 LocalDate.parse(dateStr)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
             if (date != null) {
@@ -224,8 +224,8 @@ class CalendarWidgetFactory(
                         title = dto.title.takeIf { !it.isNullOrBlank() } ?: dto.description.takeIf { !it.isNullOrBlank() } ?: "(Evento guardado)",
                         description = dto.description,
                         date = date,
-                        startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { null } },
-                        endTime = dto.endTimeStr?.let { try { LocalTime.parse(it) } catch (e: Exception) { null } },
+                        startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (_: Exception) { null } },
+                        endTime = dto.endTimeStr?.let { try { LocalTime.parse(it) } catch (_: Exception) { null } },
                         isAllDay = dto.isAllDay,
                         calendarId = dto.id,
                         isFromHolidaySource = false,

@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -41,10 +40,3 @@ data class CalendarInfo(
     val isPrimary: Boolean,
     val canModify: Boolean
 )
-
-data class CustomColor(
-    val color: Color,
-    val name: String,
-    val source: String
-)
-

@@ -73,7 +73,6 @@ fun SearchScreen(
     onEventClick: (Festivo) -> Unit,
     availableCalendars: List<CalendarInfo>
 ) {
-    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
