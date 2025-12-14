@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.androidx.material3) // Material 3 para Compose
 
     // ★★★ DEPENDENCIAS AÑADIDAS PARA LA ACTIVIDAD DE CONFIGURACIÓN DEL WIDGET ★★★
-    implementation("androidx.appcompat:appcompat:1.6.1") // Para AppCompatActivity
+    implementation("androidx.appcompat:appcompat:1.7.1") // Para AppCompatActivity
     implementation("androidx.preference:preference-ktx:1.2.1") // Para PreferenceFragmentCompat y extensiones ktx
     // ★★★ FIN DE DEPENDENCIAS AÑADIDAS ★★★
 
@@ -65,17 +65,11 @@ dependencies {
 
     // Estas son dependencias específicas de Compose, mantenlas si las usas.
     // Algunas pueden estar ya cubiertas por el BOM de Compose o libs.
-    implementation("androidx.compose.ui:ui:1.6.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.0")
-    implementation("androidx.compose.foundation:foundation:1.6.0")
-    implementation("androidx.compose.material3:material3:1.2.0") // Ya tienes libs.androidx.material3, verifica si son la misma o diferentes versiones/artefactos
-    implementation("androidx.activity:activity-compose:1.9.0") // Ya tienes libs.androidx.activity.compose
-    implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.activity:activity-ktx:1.12.1")
 
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.work:work-runtime-ktx:2.9.0") // O verifica la última versión estable en developer.android.com
-    implementation(platform("androidx.compose:compose-bom:2024.06.00")) // O la versión de BOM que estés usando
-    implementation("androidx.compose.material3:material3")
+    implementation("com.google.code.gson:gson:2.13.2")
+    implementation("androidx.work:work-runtime-ktx:2.11.0") 
     implementation("androidx.compose.material:material-icons-core") // Para iconos básicos
     implementation("androidx.compose.material:material-icons-extended") // ¡PARA Brightness4 y Brightness7!
 
