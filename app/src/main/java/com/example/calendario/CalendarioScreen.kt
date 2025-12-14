@@ -487,11 +487,12 @@ fun CalendarioScreen(
                                     .clickable { showAllEvents = !showAllEvents }
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
+                                val textColor = if (isColorDark(CalendarioTheme.colors.toggleButtonSelectedBackground)) Color.White else Color.Black
                                 Text(
                                     text = if (showAllEvents) "Todos" else "Pendientes",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp,
-                                    color = CalendarioTheme.colors.eventListTitleColor
+                                    color = textColor
                                 )
                             }
                         }
@@ -574,7 +575,7 @@ fun CalendarioScreen(
                     onDismissRequest = { showAboutDialog = false },
                     containerColor = CalendarioTheme.colors.fondoDialogos,
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = onFondoDialogos) },
-                    text = { Column { Text("Calendario Visual V1.6.2", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/Diciembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
+                    text = { Column { Text("Calendario Visual V1.6.4", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
                     confirmButton = { 
                         Button(
                             onClick = { showAboutDialog = false },
