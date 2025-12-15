@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,16 +57,22 @@ import java.lang.IllegalArgumentException
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorThemeScreen(
-    onBackPress: () -> Unit,
-    onThemeUpdated: () -> Unit,
-    isDarkTheme: Boolean
+    onBackPress: () -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val groupedItems = ColorThemeConfig.colorThemeItems.groupBy { it.category }
     val categories = remember {
         listOf("General", "Lista de Eventos", "Calendario Mensual", "Calendario Anual")
             .filter { groupedItems.containsKey(it) }
+    }
+
+    val themeManager = rememberThemeManager()
+    val themeSetting by themeManager.themeSetting.collectAsState()
+    val isDarkTheme = when (themeSetting) {
+        ThemeSetting.LIGHT -> false
+        ThemeSetting.DARK -> true
+        ThemeSetting.SYSTEM -> isSystemInDarkTheme()
     }
 
     val pendingColorChanges = remember { mutableStateMapOf<String, Color>() }
@@ -88,10 +96,9 @@ fun ColorThemeScreen(
                                 prefs.edit { 
                                     pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } 
                                     pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
-                                    remove(AppThemeSetup.KEY_LIGHT_THEME_NAME)
-                                    remove(AppThemeSetup.KEY_DARK_THEME_NAME)
+                                    remove(AppConstants.KEY_LIGHT_THEME_NAME)
+                                    remove(AppConstants.KEY_DARK_THEME_NAME)
                                 }
-                                onThemeUpdated()
                             }
                             onBackPress()
                         },
@@ -137,7 +144,7 @@ fun ColorThemeScreen(
                                 val currentColor = pendingColorChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
                                 if (item.label == "Evento-1" || item.label == "Evento-2") {
-                                    val keywordKey = if (item.label == "Evento-1") AppThemeSetup.KEY_EVENT_1_KEYWORD else AppThemeSetup.KEY_EVENT_2_KEYWORD
+                                    val keywordKey = if (item.label == "Evento-1") AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
                                     val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
 
                                     SingleColorThemeRow(

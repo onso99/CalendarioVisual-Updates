@@ -169,7 +169,7 @@ fun AddEventScreen(
                 )
             )
         },
-        containerColor = CalendarioTheme.colors.settingsBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier

@@ -5,8 +5,7 @@ import java.time.LocalDate
 
 @Composable
 fun CalendarioApp(
-    isDarkTheme: Boolean,
-    onThemeToggle: (Boolean) -> Unit,
+    themeManager: ThemeManager,
     onThemeUpdated: () -> Unit,
     initialEventsByDate: Map<LocalDate, List<Festivo>>,
     initialAvailableCalendars: List<CalendarInfo>,
@@ -17,8 +16,7 @@ fun CalendarioApp(
     onPermissionUpdated: (Boolean) -> Unit
 ) {
     CalendarioScreen(
-        isDarkTheme = isDarkTheme,
-        onThemeToggle = onThemeToggle,
+        themeManager = themeManager,
         onThemeUpdated = onThemeUpdated,
         eventsByDateExternal = initialEventsByDate,
         availableCalendarsExternal = initialAvailableCalendars,

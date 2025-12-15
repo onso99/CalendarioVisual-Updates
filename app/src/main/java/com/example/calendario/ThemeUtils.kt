@@ -2,13 +2,8 @@ package com.example.calendario
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColorInt
+import com.example.calendario.ParsedTheme
 import org.json.JSONObject
-
-data class ParsedTheme(
-    val manifest: JSONObject?,
-    val lightTheme: JSONObject?,
-    val darkTheme: JSONObject?
-)
 
 sealed class ValidationResult {
     data class Success(val parsedTheme: ParsedTheme) : ValidationResult()
@@ -25,7 +20,7 @@ object ThemeUtils {
             val manifest = themeData.optJSONObject("themeManifest")
 
             if (manifest != null) {
-                if (manifest.optString("appName") != AppThemeSetup.APP_SIGNATURE) {
+                if (manifest.optString("appName") != AppConstants.APP_SIGNATURE) {
                     return ValidationResult.Failure("Fichero de tema no compatible.")
                 }
             }

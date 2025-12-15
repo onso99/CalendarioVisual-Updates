@@ -47,9 +47,9 @@ fun MonthlyEventList(
     onEventClick: (Festivo) -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
-    val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
+    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
     Box(modifier = modifier) {
         if (finalEventsToList.isEmpty()) {

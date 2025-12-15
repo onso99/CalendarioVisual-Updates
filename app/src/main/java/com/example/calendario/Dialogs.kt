@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -239,9 +240,9 @@ fun DayEventsDialog(
     onEventClick: (Festivo) -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val event1Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_1_KEYWORD, "") ?: "" }
-    val event2Keyword = remember { prefs.getString(AppThemeSetup.KEY_EVENT_2_KEYWORD, "") ?: "" }
+    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
     val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
@@ -431,6 +432,49 @@ fun GoToYearDialog(
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text("Cancelar", color = onFondoDialogos)
+            }
+        }
+    )
+}
+
+@Composable
+fun ThemeSelectionDialog(
+    currentTheme: ThemeSetting, 
+    onThemeSelected: (ThemeSetting) -> Unit, 
+    onDismiss: () -> Unit,
+    containerColor: Color,
+    onContainerColor: Color
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = containerColor,
+        title = { Text("Seleccionar Modo", fontWeight = FontWeight.Bold, color = onContainerColor) },
+        text = {
+            Column {
+                ThemeSetting.values().forEach { theme ->
+                    Row(
+                        Modifier.fillMaxWidth().clickable { onThemeSelected(theme); onDismiss() }.padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = theme.name.lowercase().replaceFirstChar { it.titlecase() }, 
+                            modifier = Modifier.weight(1f),
+                            color = onContainerColor,
+                            fontSize = 16.sp
+                        )
+                        if (theme == currentTheme) {
+                            Icon(Icons.Default.Check, contentDescription = "Seleccionado", tint = onContainerColor)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { 
+            Button(
+                onClick = onDismiss,
+                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) { 
+                Text("Cancelar")
             }
         }
     )

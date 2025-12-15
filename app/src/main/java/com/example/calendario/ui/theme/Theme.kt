@@ -1,69 +1,99 @@
 package com.example.calendario.ui.theme
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.compose.material3.ColorScheme
+import android.app.Activity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.toColorInt
-import com.example.calendario.AppThemeSetup
-import java.lang.IllegalArgumentException
-
-data class CustomColors(
-    val settingsBackground: Color,
-    val fondoDialogos: Color,
-    val textSystem: Color,
-    val textSundayHoliday: Color,
-    val textBirthday: Color,
-    val textEventDefault: Color,
-    val textEvent1: Color,
-    val textEvent2: Color,
-    val dropdownMenuBackground: Color,
-    val todayHighlightColor: Color,
-    val eventListTitleColor: Color,
-    val toggleButtonSelectedBackground: Color,
-    val monthlyCalendarGridBackground: Color,
-    val monthlyCalendarDayCellBackground: Color,
-    val monthlyCalendarEmptyCellBackground: Color,
-    val monthlyCalendarTodayCellBorder: Color,
-    val monthlyCalendarHeaderBackground: Color,
-    val monthlyCalendarDayNumberNormal: Color,
-    val miniMonthDayNumberNormal: Color,
-    val miniMonthTodayHighlightBackground: Color
-)
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import com.example.calendario.AppConstants
 
 val LocalCustomColors = staticCompositionLocalOf {
-    createLightCustomColors(null)
+    CustomColors(
+        cabecera = AppConstants.LightColors.cabecera,
+        fondoSecciones = AppConstants.LightColors.fondoSecciones,
+        fondoDialogos = AppConstants.LightColors.fondoDialogos,
+        settingsBackground = AppConstants.LightColors.settingsBackground,
+        background = AppConstants.LightColors.background,
+        onBackground = AppConstants.LightColors.onBackground,
+        error = AppConstants.LightColors.error,
+        onError = AppConstants.LightColors.onError,
+        textSystem = AppConstants.LightColors.textSystem,
+        textSundayHoliday = AppConstants.LightColors.textSundayHoliday,
+        textBirthday = AppConstants.LightColors.textBirthday,
+        textEventDefault = AppConstants.LightColors.textEventDefault,
+        textEvent1 = AppConstants.LightColors.textEvent1,
+        textEvent2 = AppConstants.LightColors.textEvent2,
+        dropdownMenuBackground = AppConstants.LightColors.dropdownMenuBackground,
+        todayHighlightColor = AppConstants.LightColors.todayHighlightColor,
+        eventListTitleColor = AppConstants.LightColors.eventListTitleColor,
+        toggleButtonSelectedBackground = AppConstants.LightColors.toggleButtonselectedBackground,
+        monthlyCalendarGridBackground = AppConstants.LightColors.monthlyCalendarGridBackground,
+        monthlyCalendarDayCellBackground = AppConstants.LightColors.monthlyCalendarDayCellBackground,
+        monthlyCalendarEmptyCellBackground = AppConstants.LightColors.monthlyCalendarEmptyCellBackground,
+        monthlyCalendarTodayCellBorder = AppConstants.LightColors.monthlyCalendarTodayCellBorder,
+        monthlyCalendarHeaderBackground = AppConstants.LightColors.monthlyCalendarHeaderBackground,
+        monthlyCalendarDayNumberNormal = AppConstants.LightColors.monthlyCalendarDayNumberNormal,
+        miniMonthTodayHighlightBackground = AppConstants.LightColors.miniMonthTodayHighlightBackground,
+        miniMonthDayNumberNormal = AppConstants.LightColors.miniMonthDayNumberNormal
+    )
 }
 
 @Composable
 fun CalendarioTheme(
     darkTheme: Boolean,
-    themeUpdateTrigger: Int,
+    themeUpdateTrigger: Int, // Agrega este parámetro
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+    val customColors = remember(darkTheme, themeUpdateTrigger) {
+        getThemeColors(context, darkTheme)
+    }
 
-    val (colorScheme, customColors) = remember(darkTheme, themeUpdateTrigger) {
-        val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val cs = if (darkTheme) createDarkColorScheme(prefs) else createLightColorScheme(prefs)
-        val cc = if (darkTheme) createDarkCustomColors(prefs) else createLightCustomColors(prefs)
-        cs to cc
+    val colorScheme = if (darkTheme) {
+        darkColorScheme(
+            primary = customColors.cabecera,
+            onPrimary = customColors.onBackground,
+            background = customColors.background,
+            onBackground = customColors.onBackground,
+            surface = customColors.fondoSecciones,
+            onSurface = customColors.onBackground,
+            error = customColors.error,
+            onError = customColors.onError
+        )
+    } else {
+        lightColorScheme(
+            primary = customColors.cabecera,
+            onPrimary = customColors.onBackground,
+            background = customColors.background,
+            onBackground = customColors.onBackground,
+            surface = customColors.fondoSecciones,
+            onSurface = customColors.onBackground,
+            error = customColors.error,
+            onError = customColors.onError
+        )
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     CompositionLocalProvider(LocalCustomColors provides customColors) {
         MaterialTheme(
             colorScheme = colorScheme,
+            typography = Typography,
             content = content
         )
     }
@@ -72,118 +102,5 @@ fun CalendarioTheme(
 object CalendarioTheme {
     val colors: CustomColors
         @Composable
-        @ReadOnlyComposable
         get() = LocalCustomColors.current
-}
-
-private fun getColor(prefs: SharedPreferences?, key: String, defaultColor: Color): Color {
-    if (prefs == null || !prefs.contains(key)) return defaultColor
-    return when (val value = prefs.all[key]) {
-        is Int -> Color(value)
-        is String -> {
-            try {
-                Color(value.toColorInt())
-            } catch (_: IllegalArgumentException) {
-                defaultColor
-            }
-        }
-        else -> defaultColor
-    }
-}
-
-fun isColorDark(color: Color): Boolean {
-    return ColorUtils.calculateLuminance(color.toArgb()) < 0.5
-}
-
-fun blendWithBackground(foregroundColor: Color, backgroundColor: Color): Color {
-    val foregroundArgb = foregroundColor.toArgb()
-    val backgroundArgb = backgroundColor.toArgb()
-    val blendedArgb = ColorUtils.compositeColors(foregroundArgb, backgroundArgb)
-    return Color(blendedArgb)
-}
-
-private fun createLightColorScheme(prefs: SharedPreferences?): ColorScheme {
-    val cabeceraColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_CABECERA, AppThemeSetup.LightColors.cabecera)
-    val onCabeceraColor = if (isColorDark(cabeceraColor)) Color.White else Color.Black
-    val fondoSeccionesColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_SECCIONES, AppThemeSetup.LightColors.fondoSecciones)
-    val onFondoSeccionesColor = if (isColorDark(fondoSeccionesColor)) Color.White else Color.Black
-
-    return lightColorScheme(
-        primary = cabeceraColor,
-        onPrimary = onCabeceraColor,
-        surfaceVariant = fondoSeccionesColor,
-        onSurfaceVariant = onFondoSeccionesColor,
-        background = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_BACKGROUND, AppThemeSetup.LightColors.background),
-        onBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ON_BACKGROUND, AppThemeSetup.LightColors.onBackground),
-        error = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ERROR, AppThemeSetup.LightColors.error),
-        onError = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_ON_ERROR, AppThemeSetup.LightColors.onError)
-    )
-}
-
-private fun createLightCustomColors(prefs: SharedPreferences?): CustomColors {
-    return CustomColors(
-        settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppThemeSetup.LightColors.settingsBackground),
-        fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_FONDO_DIALOGOS, AppThemeSetup.LightColors.fondoDialogos),
-        todayHighlightColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.LightColors.todayHighlightColor),
-        eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR, AppThemeSetup.LightColors.eventListTitleColor),
-        toggleButtonSelectedBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.LightColors.toggleButtonselectedBackground),
-        textSystem = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SYSTEM, AppThemeSetup.LightColors.textSystem),
-        textSundayHoliday = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.LightColors.textSundayHoliday),
-        textBirthday = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppThemeSetup.LightColors.textBirthday),
-        textEventDefault = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_EVENT_DEFAULT, AppThemeSetup.LightColors.textEventDefault),
-        textEvent1 = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_EVENT_1, AppThemeSetup.LightColors.textEvent1),
-        textEvent2 = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_TEXT_EVENT_2, AppThemeSetup.LightColors.textEvent2),
-        dropdownMenuBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.LightColors.dropdownMenuBackground),
-        monthlyCalendarGridBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarGridBackground),
-        monthlyCalendarDayCellBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarDayCellBackground),
-        monthlyCalendarEmptyCellBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarEmptyCellBackground),
-        monthlyCalendarTodayCellBorder = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppThemeSetup.LightColors.monthlyCalendarTodayCellBorder),
-        monthlyCalendarHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.LightColors.monthlyCalendarHeaderBackground),
-        monthlyCalendarDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.monthlyCalendarDayNumberNormal),
-        miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.LightColors.miniMonthDayNumberNormal),
-        miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.LightColors.miniMonthTodayHighlightBackground)
-    )
-}
-
-private fun createDarkColorScheme(prefs: SharedPreferences?): ColorScheme {
-    val cabeceraColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_CABECERA, AppThemeSetup.DarkColors.cabecera)
-    val onCabeceraColor = if (isColorDark(cabeceraColor)) Color.White else Color.Black
-    val fondoSeccionesColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_SECCIONES, AppThemeSetup.DarkColors.fondoSecciones)
-    val onFondoSeccionesColor = if (isColorDark(fondoSeccionesColor)) Color.White else Color.Black
-
-    return darkColorScheme(
-        primary = cabeceraColor,
-        onPrimary = onCabeceraColor,
-        surfaceVariant = fondoSeccionesColor,
-        onSurfaceVariant = onFondoSeccionesColor,
-        background = getColor(prefs, AppThemeSetup.ColorKeys.DARK_BACKGROUND, AppThemeSetup.DarkColors.background),
-        onBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ON_BACKGROUND, AppThemeSetup.DarkColors.onBackground),
-        error = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ERROR, AppThemeSetup.DarkColors.error),
-        onError = getColor(prefs, AppThemeSetup.ColorKeys.DARK_ON_ERROR, AppThemeSetup.DarkColors.onError)
-    )
-}
-
-private fun createDarkCustomColors(prefs: SharedPreferences?): CustomColors {
-    return CustomColors(
-        settingsBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_SETTINGS_BACKGROUND, AppThemeSetup.DarkColors.settingsBackground),
-        fondoDialogos = getColor(prefs, AppThemeSetup.ColorKeys.DARK_FONDO_DIALOGOS, AppThemeSetup.DarkColors.fondoDialogos),
-        todayHighlightColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppThemeSetup.DarkColors.todayHighlightColor),
-        eventListTitleColor = getColor(prefs, AppThemeSetup.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppThemeSetup.DarkColors.eventListTitleColor),
-        toggleButtonSelectedBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppThemeSetup.DarkColors.toggleButtonselectedBackground),
-        textSystem = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SYSTEM, AppThemeSetup.DarkColors.textSystem),
-        textSundayHoliday = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppThemeSetup.DarkColors.textSundayHoliday),
-        textBirthday = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_BIRTHDAY, AppThemeSetup.DarkColors.textBirthday),
-        textEventDefault = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_EVENT_DEFAULT, AppThemeSetup.DarkColors.textEventDefault),
-        textEvent1 = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_EVENT_1, AppThemeSetup.DarkColors.textEvent1),
-        textEvent2 = getColor(prefs, AppThemeSetup.ColorKeys.DARK_TEXT_EVENT_2, AppThemeSetup.DarkColors.textEvent2),
-        dropdownMenuBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppThemeSetup.DarkColors.dropdownMenuBackground),
-        monthlyCalendarGridBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarGridBackground),
-        monthlyCalendarDayCellBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarDayCellBackground),
-        monthlyCalendarEmptyCellBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarEmptyCellBackground),
-        monthlyCalendarTodayCellBorder = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppThemeSetup.DarkColors.monthlyCalendarTodayCellBorder),
-        monthlyCalendarHeaderBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppThemeSetup.DarkColors.monthlyCalendarHeaderBackground),
-        monthlyCalendarDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.monthlyCalendarDayNumberNormal),
-        miniMonthDayNumberNormal = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppThemeSetup.DarkColors.miniMonthDayNumberNormal),
-        miniMonthTodayHighlightBackground = getColor(prefs, AppThemeSetup.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppThemeSetup.DarkColors.miniMonthTodayHighlightBackground)
-    )
 }

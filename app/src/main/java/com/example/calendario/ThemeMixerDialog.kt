@@ -1,41 +1,44 @@
 package com.example.calendario
 
 import android.content.Context
-import android.content.Intent
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import org.json.JSONObject
-import java.util.Locale
-
-private enum class ThemeTarget { LIGHT, DARK }
+import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 
 @Composable
 fun ThemeMixerDialog(
@@ -43,171 +46,84 @@ fun ThemeMixerDialog(
     onThemeMixed: () -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    var availableThemes by remember { mutableStateOf<List<ParsedTheme>>(emptyList()) }
+    var selectedLightTheme by remember { mutableStateOf<ParsedTheme?>(null) }
+    var selectedDarkTheme by remember { mutableStateOf<ParsedTheme?>(null) }
 
-    var lightThemeName by remember { mutableStateOf<String?>(null) }
-    var darkThemeName by remember { mutableStateOf<String?>(null) }
-    var lightThemeVersion by remember { mutableIntStateOf(AppThemeSetup.CURRENT_THEME_VERSION) }
-    var darkThemeVersion by remember { mutableIntStateOf(AppThemeSetup.CURRENT_THEME_VERSION) }
+    var lightThemeMenuExpanded by remember { mutableStateOf(false) }
+    var darkThemeMenuExpanded by remember { mutableStateOf(false) }
 
-    var pendingLightTheme by remember { mutableStateOf<JSONObject?>(null) }
-    var pendingDarkTheme by remember { mutableStateOf<JSONObject?>(null) }
-    var showCompatibilityDialog by remember { mutableStateOf(false) }
-    var themeTarget by remember { mutableStateOf(ThemeTarget.LIGHT) }
+    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
+    val colorScheme = MaterialTheme.colorScheme
 
-    val themeLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == android.app.Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
-                        is ImportResult.Success -> {
-                            val themeToLoad = if (themeTarget == ThemeTarget.DARK) importResult.parsedTheme.darkTheme else importResult.parsedTheme.lightTheme
-                            if (themeToLoad != null) {
-                                val fileName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replaceFirstChar { it.titlecase(Locale.getDefault()) } ?: "Importado"
-                                val fileVersion = importResult.parsedTheme.manifest?.optInt("version", 1) ?: 1
-                                if(themeTarget == ThemeTarget.DARK) {
-                                    pendingDarkTheme = themeToLoad
-                                    darkThemeName = fileName
-                                    darkThemeVersion = fileVersion
-                                } else {
-                                    pendingLightTheme = themeToLoad
-                                    lightThemeName = fileName
-                                    lightThemeVersion = fileVersion
-                                }
-                                Toast.makeText(context, "Tema '${fileName}' cargado para modo ${if(themeTarget == ThemeTarget.DARK) "oscuro" else "claro"}.", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(context, "El fichero no contiene un tema ${if(themeTarget == ThemeTarget.DARK) "oscuro" else "claro"} válido.", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                        is ImportResult.Failure -> {
-                            Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            }
-        }
-    )
-
-    val applyChanges = {
-        var applied = false
-        prefs.edit {
-            pendingLightTheme?.let {
-                applyThemeKeys(this, it)
-                putString(AppThemeSetup.KEY_LIGHT_THEME_NAME, lightThemeName ?: "Mezclado")
-                applied = true
-            }
-            pendingDarkTheme?.let {
-                applyThemeKeys(this, it)
-                putString(AppThemeSetup.KEY_DARK_THEME_NAME, darkThemeName ?: "Mezclado")
-                applied = true
-            }
-            if (pendingLightTheme != null && pendingDarkTheme == null) {
-                putString(AppThemeSetup.KEY_DARK_THEME_NAME, lightThemeName ?: "Mezclado")
-            } else if (pendingLightTheme == null && pendingDarkTheme != null) {
-                putString(AppThemeSetup.KEY_LIGHT_THEME_NAME, darkThemeName ?: "Mezclado")
-            }
-        }
-        if(applied) {
-            Toast.makeText(context, "Temas mezclados aplicados.", Toast.LENGTH_SHORT).show()
-            onThemeMixed()
-        }
-        onDismissRequest()
-    }
-
-    if (showCompatibilityDialog) {
-        AlertDialog(
-            onDismissRequest = { showCompatibilityDialog = false },
-            title = { Text("Temas Antiguos Detectados", fontWeight = FontWeight.Bold) },
-            text = { Text("Al menos uno de los temas que estás mezclando es de una versión anterior. Los colores que falten se rellenarán con los valores por defecto.") },
-            confirmButton = { TextButton(onClick = { showCompatibilityDialog = false; applyChanges() }) { Text("Continuar") } },
-            dismissButton = { TextButton(onClick = { showCompatibilityDialog = false }) { Text("Cancelar") } }
-        )
+    LaunchedEffect(Unit) {
+        availableThemes = ThemeImportManager.discoverThemes(context)
     }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Mezclador de Temas", fontWeight = FontWeight.Bold) },
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        title = { Text("Mezclador de Temas", fontWeight = FontWeight.Bold, color = onFondoDialogos, fontSize = 20.sp) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Selecciona dónde cargar el tema:", style = MaterialTheme.typography.bodyLarge)
-                ThemeInfoRow(
-                    label = "Tema Claro:",
-                    themeName = lightThemeName ?: "Actual",
-                    isSelected = themeTarget == ThemeTarget.LIGHT,
-                    onClick = { themeTarget = ThemeTarget.LIGHT }
-                )
-                ThemeInfoRow(
-                    label = "Tema Oscuro:",
-                    themeName = darkThemeName ?: "Actual",
-                    isSelected = themeTarget == ThemeTarget.DARK,
-                    onClick = { themeTarget = ThemeTarget.DARK }
-                )
-                Spacer(Modifier.height(8.dp))
-                Button(
-                    onClick = { 
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }
-                        themeLauncher.launch(intent) 
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                        contentColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text("Cargar Fichero...")
-                }
+            Column(modifier = Modifier.padding(top = 16.dp)) {
+                ThemeSelector(label = "Tema Claro:", selectedTheme = selectedLightTheme, themes = availableThemes, expanded = lightThemeMenuExpanded, onExpandedChange = { lightThemeMenuExpanded = it }, onThemeSelected = { selectedLightTheme = it })
+                ThemeSelector(label = "Tema Oscuro:", selectedTheme = selectedDarkTheme, themes = availableThemes, expanded = darkThemeMenuExpanded, onExpandedChange = { darkThemeMenuExpanded = it }, onThemeSelected = { selectedDarkTheme = it })
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val isLegacy = lightThemeVersion < AppThemeSetup.CURRENT_THEME_VERSION || darkThemeVersion < AppThemeSetup.CURRENT_THEME_VERSION
-                    if (isLegacy && (pendingLightTheme != null || pendingDarkTheme != null) ) {
-                        showCompatibilityDialog = true
-                    } else {
-                        applyChanges()
+                    prefs.edit {
+                        selectedLightTheme?.lightTheme?.let { theme ->
+                            theme.keys().forEach { key ->
+                                putString(key, theme.getString(key))
+                            }
+                        }
+                        selectedDarkTheme?.darkTheme?.let { theme ->
+                            theme.keys().forEach { key ->
+                                putString(key, theme.getString(key))
+                            }
+                        }
+                        putString(AppConstants.KEY_LIGHT_THEME_NAME, selectedLightTheme?.manifest?.optString("name") ?: "Mixto")
+                        putString(AppConstants.KEY_DARK_THEME_NAME, selectedDarkTheme?.manifest?.optString("name") ?: "Mixto")
                     }
-                }
-            ) { Text("Aplicar") }
+                    onThemeMixed()
+                },
+                enabled = selectedLightTheme != null && selectedDarkTheme != null,
+                colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary)
+            ) { Text("Mezclar") }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = onFondoDialogos) } }
     )
 }
 
 @Composable
-private fun ThemeInfoRow(
-    label: String,
-    themeName: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = isSelected,
-            onClick = onClick
-        )
-        Text(label, fontWeight = FontWeight.Medium, modifier = Modifier.weight(0.4f))
-        Text(
-            text = themeName,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(0.6f),
-            maxLines = 1,
-            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-        )
-    }
-}
+private fun ThemeSelector(label: String, selectedTheme: ParsedTheme?, themes: List<ParsedTheme>, expanded: Boolean, onExpandedChange: (Boolean) -> Unit, onThemeSelected: (ParsedTheme) -> Unit) {
+    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
-private fun applyThemeKeys(editor: android.content.SharedPreferences.Editor, theme: JSONObject) {
-    val allKnownKeys = ColorThemeConfig.colorThemeItems.flatMap { listOf(it.lightThemeKey, it.darkThemeKey) }.toSet()
-    for (key in theme.keys()) {
-        if (allKnownKeys.contains(key)) {
-            editor.putString(key, theme.getString(key))
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
+        Text(label, fontWeight = FontWeight.Medium, color = onFondoDialogos, fontSize = 16.sp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(onFondoDialogos.copy(alpha = 0.1f))
+                .clickable { onExpandedChange(true) }
+                .padding(12.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(selectedTheme?.manifest?.optString("name") ?: "Seleccionar un tema", modifier = Modifier.weight(1f), color = onFondoDialogos)
+                Icon(Icons.Default.ArrowDropDown, contentDescription = "Desplegar", tint = onFondoDialogos)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { onExpandedChange(false) }, modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)) {
+                LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
+                    items(themes) { theme ->
+                        DropdownMenuItem(text = { Text(theme.manifest?.optString("name") ?: "Tema sin nombre") }, onClick = { onThemeSelected(theme); onExpandedChange(false) })
+                    }
+                }
+            }
         }
     }
 }
