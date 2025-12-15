@@ -122,7 +122,7 @@ fun CalendarioScreen(
     var showDayEventsDialog by remember { mutableStateOf(false) }
     var selectedDateForDialog by remember { mutableStateOf<LocalDate?>(null) }
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
-    var showOptionsScreen by remember { mutableStateOf(false) }
+    var showSettingsScreen by remember { mutableStateOf(false) }
     var showColorThemeScreen by remember { mutableStateOf(false) }
     var showGoToYearDialog by remember { mutableStateOf(false) }
     var showAddEventScreen by remember { mutableStateOf(false) }
@@ -264,10 +264,10 @@ fun CalendarioScreen(
         return
     }
 
-    if (showOptionsScreen) {
-        OptionsScreen(
+    if (showSettingsScreen) {
+        SettingsScreen(
             onBackPress = { 
-                showOptionsScreen = false 
+                showSettingsScreen = false 
                 onThemeUpdated()
             },
             isDarkTheme = isDarkTheme,
@@ -406,9 +406,9 @@ fun CalendarioScreen(
                                         leadingIcon = { Icon(Icons.Default.Event, contentDescription = "Calendarios", tint = CalendarioTheme.colors.textSystem) }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Opciones", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                        onClick = { menuExpanded = false; showOptionsScreen = true },
-                                        leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Opciones", tint = CalendarioTheme.colors.textSystem) }
+                                        text = { Text("Ajustes", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                        onClick = { menuExpanded = false; showSettingsScreen = true },
+                                        leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes", tint = CalendarioTheme.colors.textSystem) }
                                     )
                                     DropdownMenuItem(
                                         text = { Text("Ayuda", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
@@ -534,7 +534,7 @@ fun CalendarioScreen(
                     }
                 } else { // Yearly view
                     val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                    val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, true)
+                    val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
 
                      HorizontalPager(
                         state = yearPagerState

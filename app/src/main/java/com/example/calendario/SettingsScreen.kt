@@ -77,7 +77,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionsScreen(
+fun SettingsScreen(
     onBackPress: () -> Unit,
     isDarkTheme: Boolean,
     onThemeToggle: (Boolean) -> Unit,
@@ -153,7 +153,7 @@ fun OptionsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Opciones", color = colorScheme.onPrimary) },
+                title = { Text("Ajustes", color = colorScheme.onPrimary) },
                 navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = colorScheme.onPrimary) } },
                 actions = {
                     FilledIconButton(
@@ -568,7 +568,7 @@ private fun importThemeFromJson(
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+fun SectionTitle(text: String) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     Text(
