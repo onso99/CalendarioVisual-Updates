@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,15 +47,19 @@ fun YearlyCalendar(
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
     Column(
-        Modifier
-            .fillMaxSize()
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.8f) // Ocupar el 80% de la altura
             .background(CalendarioTheme.colors.settingsBackground)
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 4.dp)
+            .padding(horizontal = 4.dp, vertical = 8.dp) // Ajuste para más espacio superior
+            .padding(top = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp) // Espacio uniforme entre filas
     ) {
-        months.chunked(3).forEachIndexed { rowIndex, monthRow ->
+        months.chunked(3).forEach { monthRow ->
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f), // Cada fila ocupa el mismo espacio vertical
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 monthRow.forEach { month ->
@@ -77,12 +79,10 @@ fun YearlyCalendar(
                         )
                     }
                 }
-                repeat(3 - monthRow.size) { Spacer(Modifier
-                    .weight(1f)
-                    .aspectRatio(1f)) }
-            }
-            if (rowIndex < months.chunked(3).size - 1) {
-                Spacer(Modifier.height(4.dp))
+                // Relleno para filas incompletas (no debería ocurrir en un año normal)
+                repeat(3 - monthRow.size) { 
+                    Spacer(Modifier.weight(1f).aspectRatio(1f)) 
+                }
             }
         }
     }
@@ -101,7 +101,7 @@ fun MiniMonthCalendar(
     val daysInMonth = month.lengthOfMonth()
 
     val compactTextStyle = LocalTextStyle.current.copy(platformStyle = PlatformTextStyle(includeFontPadding = false))
-    val monthNameFontSize = 12.sp
+    val monthNameFontSize = 13.sp // Aumentado el tamaño
     val dayHeadersFontSize = 8.sp
     val dayNumberFontSize = 9.sp
 
@@ -112,7 +112,7 @@ fun MiniMonthCalendar(
         Text(
             month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar(Char::titlecase),
             fontSize = monthNameFontSize,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Normal, // Cambiado de Bold a Normal
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -127,8 +127,7 @@ fun MiniMonthCalendar(
         ) {
             daysOfWeekShort.forEach { 
                 Box(
-                    Modifier
-                        .weight(1f),
+                    Modifier.weight(1f),
                     Alignment.Center
                 ) {
                     Text(
