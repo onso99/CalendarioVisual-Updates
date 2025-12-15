@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,7 @@ import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
 import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import java.util.Locale
 
 @Composable
@@ -43,23 +45,24 @@ fun YearlyCalendar(
     currentYear: Year,
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
-    onMonthSelected: (YearMonth) -> Unit
+    onMonthSelected: (YearMonth) -> Unit,
+    showWeekNumber: Boolean // Nuevo parámetro
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.8f) // Ocupar el 80% de la altura
+            .fillMaxHeight(0.8f)
             .background(CalendarioTheme.colors.settingsBackground)
-            .padding(horizontal = 4.dp, vertical = 8.dp) // Ajuste para más espacio superior
+            .padding(horizontal = 4.dp, vertical = 8.dp)
             .padding(top = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp) // Espacio uniforme entre filas
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         months.chunked(3).forEach { monthRow ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f), // Cada fila ocupa el mismo espacio vertical
+                    .weight(1f),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 monthRow.forEach { month ->
@@ -75,11 +78,11 @@ fun YearlyCalendar(
                             month = month,
                             today = today,
                             eventsByDate = eventsByDate,
+                            showWeekNumber = showWeekNumber, // Pasar el valor
                             modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
-                // Relleno para filas incompletas (no debería ocurrir en un año normal)
                 repeat(3 - monthRow.size) { 
                     Spacer(Modifier.weight(1f).aspectRatio(1f)) 
                 }
@@ -93,6 +96,7 @@ fun MiniMonthCalendar(
     month: YearMonth,
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
+    showWeekNumber: Boolean, // Nuevo parámetro
     modifier: Modifier = Modifier
 ) {
     val daysOfWeekShort = listOf("L", "M", "X", "J", "V", "S", "D")
@@ -101,9 +105,11 @@ fun MiniMonthCalendar(
     val daysInMonth = month.lengthOfMonth()
 
     val compactTextStyle = LocalTextStyle.current.copy(platformStyle = PlatformTextStyle(includeFontPadding = false))
-    val monthNameFontSize = 13.sp // Aumentado el tamaño
+    val monthNameFontSize = 13.sp
     val dayHeadersFontSize = 8.sp
     val dayNumberFontSize = 9.sp
+    val weekNumberFontSize = 8.sp
+    val weekNumberColumnWidth = if (showWeekNumber) 14.dp else 0.dp // Ancho condicional
 
     Column(
         modifier.padding(2.dp),
@@ -112,7 +118,7 @@ fun MiniMonthCalendar(
         Text(
             month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar(Char::titlecase),
             fontSize = monthNameFontSize,
-            fontWeight = FontWeight.Normal, // Cambiado de Bold a Normal
+            fontWeight = FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -123,8 +129,12 @@ fun MiniMonthCalendar(
             Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(1.dp)
+            horizontalArrangement = Arrangement.spacedBy(1.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            if (showWeekNumber) {
+                Spacer(modifier = Modifier.width(weekNumberColumnWidth))
+            }
             daysOfWeekShort.forEach { 
                 Box(
                     Modifier.weight(1f),
@@ -148,6 +158,7 @@ fun MiniMonthCalendar(
                     if (day in 1..daysInMonth) month.atDay(day) else null
                 }
             }
+            val weekFields = remember { WeekFields.of(Locale.getDefault()) }
             dayCellsData.chunked(7).forEach { weekDates ->
                 Row(
                     Modifier
@@ -156,6 +167,20 @@ fun MiniMonthCalendar(
                     Arrangement.SpaceAround,
                     Alignment.CenterVertically
                 ) {
+                    if (showWeekNumber) {
+                        val weekNumber = weekDates.firstOrNull { it != null }?.get(weekFields.weekOfWeekBasedYear()) ?: ""
+                        Box(
+                            modifier = Modifier.width(weekNumberColumnWidth),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = weekNumber.toString(),
+                                fontSize = weekNumberFontSize,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                style = compactTextStyle.copy(lineHeight = weekNumberFontSize * 0.95f)
+                            )
+                        }
+                    }
                     weekDates.forEach { date ->
                         Box(
                             Modifier

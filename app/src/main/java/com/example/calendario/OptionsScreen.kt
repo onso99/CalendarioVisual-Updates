@@ -87,7 +87,7 @@ fun OptionsScreen(
     val context = LocalContext.current
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
-    val appPrefs = remember { context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
     // --- Dialog States ---
@@ -117,11 +117,9 @@ fun OptionsScreen(
         }
     )
 
-    // --- Theme & Widget States ---
-    val lightThemeName = appPrefs.getString(AppThemeSetup.KEY_LIGHT_THEME_NAME, null)
-    val darkThemeName = appPrefs.getString(AppThemeSetup.KEY_DARK_THEME_NAME, null)
-
+    // --- States ---
     val originalUseDarkTheme = remember { isDarkTheme }
+    val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) } // Default to false
     val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
     val originalUseLargeFont = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) }
     val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
@@ -129,6 +127,7 @@ fun OptionsScreen(
     val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
 
     var pendingUseDarkTheme by remember { mutableStateOf(originalUseDarkTheme) }
+    var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
     var pendingUseLargeFont by remember { mutableStateOf(originalUseLargeFont) }
     var pendingEventColor by remember { mutableStateOf(originalEventColor) }
@@ -142,6 +141,7 @@ fun OptionsScreen(
     val hasPendingChanges by remember {
         derivedStateOf {
             pendingUseDarkTheme != originalUseDarkTheme ||
+            pendingShowWeekNumber != originalShowWeekNumber ||
             pendingEventCount.roundToInt() != originalEventCount ||
             pendingUseLargeFont != originalUseLargeFont ||
             pendingEventColor != originalEventColor ||
@@ -159,6 +159,11 @@ fun OptionsScreen(
                     FilledIconButton(
                         onClick = {
                             if (hasPendingChanges) {
+                                appPrefs.edit {
+                                    if (pendingShowWeekNumber != originalShowWeekNumber) {
+                                        putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, pendingShowWeekNumber)
+                                    }
+                                }
                                 widgetPrefs.edit {
                                     putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
                                     putBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, pendingUseLargeFont)
@@ -190,7 +195,34 @@ fun OptionsScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-             Row(
+            // --- General Section ---
+            SectionTitle(text = "General")
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { pendingShowWeekNumber = !pendingShowWeekNumber }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Semana en vista anual", color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                    Switch(
+                        checked = pendingShowWeekNumber,
+                        onCheckedChange = { pendingShowWeekNumber = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = colorScheme.primary,
+                            checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f),
+                            uncheckedThumbColor = colorScheme.outline,
+                            uncheckedTrackColor = colorScheme.surfaceVariant,
+                            uncheckedBorderColor = colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            }
+
+            // --- Theme Section ---
+            Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -210,6 +242,9 @@ fun OptionsScreen(
                     hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceAtMost(1f) else (hsl[2] - 0.2f).coerceAtLeast(0f)
                     Color(ColorUtils.HSLToColor(hsl))
                 }
+
+                val lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
+                val darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
 
                 if (lightThemeName != null && lightThemeName == darkThemeName) {
                     Text(
@@ -301,8 +336,8 @@ fun OptionsScreen(
                                 if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
                                 if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
                             }
-                            remove(AppThemeSetup.KEY_LIGHT_THEME_NAME)
-                            remove(AppThemeSetup.KEY_DARK_THEME_NAME)
+                            remove(AppConstants.KEY_LIGHT_THEME_NAME)
+                            remove(AppConstants.KEY_DARK_THEME_NAME)
                         }
                         onThemeUpdated()
                         Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
@@ -399,7 +434,7 @@ private fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: 
 
 private fun exportThemeToJson(context: Context, uri: Uri) {
     try {
-        val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         val allPrefs = prefs.all
 
         val themeData = JSONObject()
@@ -484,7 +519,7 @@ private fun importThemeFromJson(
             val fileVersion = manifest?.optInt("version", 1) ?: 1
 
             val applyChanges = { themeToApply: ParsedTheme ->
-                val prefs = context.getSharedPreferences(AppThemeSetup.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
                 val themeName = getFileNameFromUri(context, uri)?.removeSuffix(".json")?.replace('_', ' ')?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } ?: "Tema importado"
 
                 prefs.edit {
@@ -501,8 +536,8 @@ private fun importThemeFromJson(
                         }
                     }
                     
-                    putString(AppThemeSetup.KEY_LIGHT_THEME_NAME, themeName)
-                    putString(AppThemeSetup.KEY_DARK_THEME_NAME, themeName)
+                    putString(AppConstants.KEY_LIGHT_THEME_NAME, themeName)
+                    putString(AppConstants.KEY_DARK_THEME_NAME, themeName)
                 }
                 onThemeImported()
                 Toast.makeText(context, "Tema '${themeName}' importado con éxito.", Toast.LENGTH_SHORT).show()
@@ -530,4 +565,17 @@ private fun importThemeFromJson(
             Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
         }
     }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+    Text(
+        text = text,
+        style = typography.titleMedium,
+        modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+        fontWeight = FontWeight.Bold,
+        color = colorScheme.primary
+    )
 }

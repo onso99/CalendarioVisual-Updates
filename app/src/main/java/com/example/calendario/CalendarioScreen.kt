@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
@@ -532,6 +533,9 @@ fun CalendarioScreen(
                         }
                     }
                 } else { // Yearly view
+                    val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                    val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, true)
+
                      HorizontalPager(
                         state = yearPagerState
                     ) { page ->
@@ -540,6 +544,7 @@ fun CalendarioScreen(
                             currentYear = year,
                             today = today,
                             eventsByDate = eventsByDateExternal,
+                            showWeekNumber = showWeekNumber,
                             onMonthSelected = { selectedMonth ->
                                 val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
                                 scope.launch { monthPagerState.scrollToPage(targetPage) }
@@ -575,7 +580,7 @@ fun CalendarioScreen(
                     onDismissRequest = { showAboutDialog = false },
                     containerColor = CalendarioTheme.colors.fondoDialogos,
                     title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = onFondoDialogos) },
-                    text = { Column { Text("Calendario Visual V1.6.5", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
+                    text = { Column { Text("Calendario Visual V1.6.6", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
                     confirmButton = { 
                         Button(
                             onClick = { showAboutDialog = false },
