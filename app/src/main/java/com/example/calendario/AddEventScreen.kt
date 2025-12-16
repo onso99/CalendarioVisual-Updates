@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -360,7 +361,7 @@ fun AddEventScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onBackPress) {
-                    Text("CANCELAR")
+                    Text("Cancelar")
                 }
                 Button(onClick = {
                     if (eventToEdit != null) {
@@ -394,7 +395,7 @@ fun AddEventScreen(
                         onSave()
                     }
                 }) {
-                    Text(if (eventToEdit != null) "ACTUALIZAR" else "GUARDAR")
+                    Text(if (eventToEdit != null) "Actualizar" else "Guardar")
                 }
             }
         }
@@ -451,7 +452,7 @@ fun AddEventScreen(
         DatePickerDialog(
             onDismissRequest = { showStartDatePickerDialog = false },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             val newLocalDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
@@ -461,8 +462,9 @@ fun AddEventScreen(
                             }
                         }
                         showStartDatePickerDialog = false
-                    }
-                ) { Text("OK") }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) { Text("Aceptar") }
             },
             dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar") } }
         ) {
@@ -482,15 +484,16 @@ fun AddEventScreen(
         DatePickerDialog(
             onDismissRequest = { showEndDatePickerDialog = false },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             val newLocalDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
                             endDate = LocalDateTime.of(newLocalDate, endDate.toLocalTime())
                         }
                         showEndDatePickerDialog = false
-                    }
-                ) { Text("OK") }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) { Text("Aceptar") }
             },
             dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar") } }
         ) {

@@ -119,12 +119,12 @@ fun DeleteRecurringEventDialog(
                     contentColor = MaterialTheme.colorScheme.onError
                 )
             ) {
-                Text("ELIMINAR")
+                Text("Eliminar")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("CANCELAR", color = onFondoDialogos)
+                Text("Cancelar", color = onFondoDialogos)
             }
         }
     )
@@ -476,7 +476,7 @@ fun ThemeSelectionDialog(
         },
         confirmButton = { 
             TextButton(
-                onClick = onDismiss,
+                onClick = onDismiss
             ) { 
                 Text("Cancelar", color = onFondoDialogos)
             }
@@ -564,9 +564,9 @@ fun ConfirmDeleteDialog(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 )
-            ) { Text("ELIMINAR") }
+            ) { Text("Eliminar") }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("CANCELAR", color = onFondoDialogos) } }
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = onFondoDialogos) } }
     )
 }
 
@@ -681,11 +681,11 @@ fun SelectCalendarDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            Button(onClick = {
                 onCalendarSelected(tempSelection)
                 onDismissRequest()
-            }) {
-                Text("Aceptar", color = onFondoDialogos)
+            }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
+                Text("Aceptar")
             }
         },
         dismissButton = {
@@ -713,7 +713,7 @@ fun TimePickerDialog(
         textContentColor = onFondoDialogos,
         title = { Text("Seleccionar hora", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = { TimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
-        confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }) { Text("OK") } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
+        confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) { Text("Aceptar") } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = onFondoDialogos) } }
     )
 }
