@@ -8,8 +8,10 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-enum class ThemeSetting {
-    LIGHT, DARK, SYSTEM
+enum class ThemeSetting(val displayName: String) {
+    LIGHT("Claro"),
+    DARK("Oscuro"),
+    SYSTEM("Del sistema")
 }
 
 class ThemeManager(context: Context) {

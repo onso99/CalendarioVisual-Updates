@@ -274,7 +274,7 @@ fun SettingsScreen(
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showThemeDialog = true }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Modo", color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
-                    Text(themeSetting.name.lowercase().replaceFirstChar { it.titlecase() }, color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                    Text(themeSetting.displayName, color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
                 }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(text = "Personalizar colores", onClick = onColorThemeClick)

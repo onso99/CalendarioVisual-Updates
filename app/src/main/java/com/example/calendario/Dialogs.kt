@@ -457,7 +457,7 @@ fun ThemeSelectionDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = theme.name.lowercase().replaceFirstChar { it.titlecase() }, 
+                            text = theme.displayName, 
                             modifier = Modifier.weight(1f),
                             color = onContainerColor,
                             fontSize = 16.sp

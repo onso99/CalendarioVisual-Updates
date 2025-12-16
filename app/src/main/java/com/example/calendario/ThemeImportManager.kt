@@ -94,7 +94,7 @@ object ThemeImportManager {
     }
 }
 
-private sealed class ValidationResult {
+internal sealed class ValidationResult {
     data class Success(val parsedTheme: ParsedTheme) : ValidationResult()
     data class Failure(val errorMessage: String) : ValidationResult()
 }
