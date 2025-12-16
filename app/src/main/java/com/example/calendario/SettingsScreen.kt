@@ -3,6 +3,7 @@ package com.example.calendario
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -81,21 +82,29 @@ fun SettingsScreen(
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
+    var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)) }
+    var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)) }
+
     // --- Dialog States ---
     var showRestoreDialog by remember { mutableStateOf(false) }
-    var showThemeMixerDialog by remember { mutableStateOf(false) }
     var showCompatibilityDialog by remember { mutableStateOf<CompatibilityDialogInfo?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
+    val onThemeImported = {
+        lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
+        darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
+        onThemeUpdated()
+    }
+    
+    val showDialog = { dialogInfo: CompatibilityDialogInfo -> showCompatibilityDialog = dialogInfo }
+
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    importThemeFromJson(context, uri, onThemeUpdated) { dialogInfo ->
-                        showCompatibilityDialog = dialogInfo
-                    }
+                    importThemeFromJson(context, uri, onThemeImported, showDialog)
                 }
             }
         }
@@ -230,12 +239,12 @@ fun SettingsScreen(
                     Color(ColorUtils.HSLToColor(hsl))
                 }
 
-                val lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
-                val darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
+                val currentLightThemeName = lightThemeName
+                val currentDarkThemeName = darkThemeName
 
-                if (lightThemeName != null && lightThemeName == darkThemeName) {
+                if (currentLightThemeName != null && currentLightThemeName == currentDarkThemeName) {
                     Text(
-                        text = lightThemeName,
+                        text = currentLightThemeName,
                         color = themeNameColor,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
@@ -246,13 +255,13 @@ fun SettingsScreen(
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp).weight(1f)) {
-                        lightThemeName?.let {
+                        currentLightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text("Claro: ", color = themeNameColor, fontSize = 13.sp)
                                 Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
-                        darkThemeName?.let {
+                        currentDarkThemeName?.let {
                              Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text("Oscuro: ", color = themeNameColor, fontSize = 13.sp)
                                 Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
@@ -273,8 +282,6 @@ fun SettingsScreen(
                 ActionRow("Importar tema...") { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow("Exportar tema...") { exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "calendario_theme.json") }) }
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow("Mezclar temas...") { showThemeMixerDialog = true }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow("Restaurar colores por defecto") { showRestoreDialog = true }
             }
@@ -330,7 +337,7 @@ fun SettingsScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        appPrefs.edit {
+                        appPrefs.edit(commit = true) {
                             ColorThemeConfig.colorThemeItems.forEach { item ->
                                 if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
                                 if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
@@ -338,6 +345,9 @@ fun SettingsScreen(
                             remove(AppConstants.KEY_LIGHT_THEME_NAME)
                             remove(AppConstants.KEY_DARK_THEME_NAME)
                         }
+                        // Actualiza los nombres de los temas después de restaurar
+                        lightThemeName = null
+                        darkThemeName = null
                         onThemeUpdated()
                         Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
                         showRestoreDialog = false
@@ -346,16 +356,6 @@ fun SettingsScreen(
                 ) { Text("Restaurar") }
             },
             dismissButton = { TextButton(onClick = { showRestoreDialog = false }) { Text("Cancelar", color = onFondoDialogos) } }
-        )
-    }
-
-    if (showThemeMixerDialog) {
-        ThemeMixerDialog(
-            onDismissRequest = { showThemeMixerDialog = false },
-            onThemeMixed = { 
-                showThemeMixerDialog = false
-                onThemeUpdated()
-            }
         )
     }
 
@@ -401,4 +401,3 @@ private fun CompatibilityAlertDialog(
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = onContainerColor) } }
     )
 }
-
