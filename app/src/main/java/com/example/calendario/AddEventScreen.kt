@@ -36,7 +36,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -500,26 +499,26 @@ fun AddEventScreen(
     }
 
     if (showStartTimePickerDialog) {
-        val timePickerState = rememberTimePickerState(initialHour = startDate.hour, initialMinute = startDate.minute, is24Hour = true)
         TimePickerDialog(
             onDismissRequest = { showStartTimePickerDialog = false },
-            onConfirm = {
-                val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+            onConfirm = { hour, minute ->
+                val newTime = LocalTime.of(hour, minute)
                 startDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
                 if (startDate.isAfter(endDate)) {
                     endDate = startDate.plusHours(1)
                 }
                 showStartTimePickerDialog = false
-            }
+            },
+            initialHour = startDate.hour,
+            initialMinute = startDate.minute
         )
     }
 
     if (showEndTimePickerDialog) {
-        val timePickerState = rememberTimePickerState(initialHour = endDate.hour, initialMinute = endDate.minute, is24Hour = true)
         TimePickerDialog(
             onDismissRequest = { showEndTimePickerDialog = false },
-            onConfirm = {
-                val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+            onConfirm = { hour, minute ->
+                val newTime = LocalTime.of(hour, minute)
                 val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)
                 if (newEndDate.isAfter(startDate)) {
                     endDate = newEndDate
@@ -527,7 +526,9 @@ fun AddEventScreen(
                     Toast.makeText(context, "La hora de fin no puede ser anterior a la de inicio", Toast.LENGTH_SHORT).show()
                 }
                 showEndTimePickerDialog = false
-            }
+            },
+            initialHour = endDate.hour,
+            initialMinute = endDate.minute
         )
     }
 
