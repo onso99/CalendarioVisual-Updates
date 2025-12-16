@@ -33,9 +33,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -574,21 +571,7 @@ fun CalendarioScreen(
             }
 
             if (showAboutDialog) {
-                val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-                AlertDialog(
-                    onDismissRequest = { showAboutDialog = false },
-                    containerColor = CalendarioTheme.colors.fondoDialogos,
-                    title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = onFondoDialogos) },
-                    text = { Column { Text("Calendario Visual V1.7.2", fontSize = 16.sp, color = onFondoDialogos); Text("Asistente IA / Android Studio", fontSize = 16.sp, color = onFondoDialogos); Text("Onso/noviembre 2025", fontSize = 16.sp, color = onFondoDialogos) } },
-                    confirmButton = { 
-                        Button(
-                            onClick = { showAboutDialog = false },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) { 
-                            Text("Cerrar", fontSize = 16.sp) 
-                        }
-                    }
-                )
+                AboutDialog(onDismissRequest = { showAboutDialog = false })
             }
             
             if (showDayEventsDialog && selectedDateForDialog != null) {

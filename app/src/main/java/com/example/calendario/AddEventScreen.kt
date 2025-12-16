@@ -18,9 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +26,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Switch
@@ -36,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
@@ -56,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -420,27 +415,14 @@ fun AddEventScreen(
     }
 
     if (showDeleteDialog) {
-        AlertDialog(
+        ConfirmDeleteDialog(
             onDismissRequest = { showDeleteDialog = false },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            title = { Text("Confirmar eliminación", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-            text = { Text("¿Seguro que quieres eliminar este evento: \"$title\"?") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDeleteDialog = false
-                        eventToEdit?.id?.let { deleteEvent(context, it) }
-                        onDelete()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
-                ) { Text("ELIMINAR") }
+            onConfirm = {
+                showDeleteDialog = false
+                eventToEdit?.id?.let { deleteEvent(context, it) }
+                onDelete()
             },
-            dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("CANCELAR") } }
+            title = title
         )
     }
 
@@ -519,91 +501,44 @@ fun AddEventScreen(
 
     if (showStartTimePickerDialog) {
         val timePickerState = rememberTimePickerState(initialHour = startDate.hour, initialMinute = startDate.minute, is24Hour = true)
-        AlertDialog(
+        TimePickerDialog(
             onDismissRequest = { showStartTimePickerDialog = false },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            title = { Text("Seleccionar hora de inicio", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-            text = { TimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-                        startDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
-                        if (startDate.isAfter(endDate)) {
-                            endDate = startDate.plusHours(1)
-                        }
-                        showStartTimePickerDialog = false
-                    }
-                ) { Text("OK") }
-            },
-            dismissButton = { TextButton(onClick = { showStartTimePickerDialog = false }) { Text("Cancelar") } }
+            onConfirm = {
+                val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                startDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
+                if (startDate.isAfter(endDate)) {
+                    endDate = startDate.plusHours(1)
+                }
+                showStartTimePickerDialog = false
+            }
         )
     }
 
     if (showEndTimePickerDialog) {
         val timePickerState = rememberTimePickerState(initialHour = endDate.hour, initialMinute = endDate.minute, is24Hour = true)
-        AlertDialog(
+        TimePickerDialog(
             onDismissRequest = { showEndTimePickerDialog = false },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            title = { Text("Seleccionar hora de fin", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-            text = { TimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-                        val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)
-                        if (newEndDate.isAfter(startDate)) {
-                            endDate = newEndDate
-                        } else {
-                            Toast.makeText(context, "La hora de fin no puede ser anterior a la de inicio", Toast.LENGTH_SHORT).show()
-                        }
-                        showEndTimePickerDialog = false
-                    }
-                ) { Text("OK") }
-            },
-            dismissButton = { TextButton(onClick = { showEndTimePickerDialog = false }) { Text("Cancelar") } }
+            onConfirm = {
+                val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)
+                if (newEndDate.isAfter(startDate)) {
+                    endDate = newEndDate
+                } else {
+                    Toast.makeText(context, "La hora de fin no puede ser anterior a la de inicio", Toast.LENGTH_SHORT).show()
+                }
+                showEndTimePickerDialog = false
+            }
         )
     }
 
     if (showRepetitionDialog) {
-        var tempSelection by remember { mutableStateOf(repetitionRule) }
-        AlertDialog(
-            onDismissRequest = { showRepetitionDialog = false },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            title = { Text("Repetir evento", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-            text = {
-                Column {
-                    RepetitionRule.entries.forEach { rule ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { tempSelection = rule },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = (rule == tempSelection),
-                                onClick = { tempSelection = rule }
-                            )
-                            Text(rule.displayName, modifier = Modifier.padding(start = 8.dp))
-                        }
-                    }
-                }
+        RepetitionSelectionDialog(
+            currentRule = repetitionRule,
+            onConfirm = { newRule ->
+                repetitionRule = newRule
+                showRepetitionDialog = false
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        repetitionRule = tempSelection
-                        showRepetitionDialog = false
-                    }
-                ) { Text("Aceptar") }
-            },
-            dismissButton = { TextButton(onClick = { showRepetitionDialog = false }) { Text("Cancelar") } }
+            onDismissRequest = { showRepetitionDialog = false }
         )
     }
 }

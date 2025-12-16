@@ -24,9 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -40,7 +37,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -65,7 +61,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -306,14 +301,10 @@ fun SettingsScreen(
     }
 
     if (showThemeDialog) {
-        val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-
         ThemeSelectionDialog(
             currentTheme = themeSetting,
             onThemeSelected = { themeManager.setTheme(it) },
-            onDismiss = { showThemeDialog = false },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            onContainerColor = onFondoDialogos
+            onDismiss = { showThemeDialog = false }
         )
     }
 
@@ -328,76 +319,36 @@ fun SettingsScreen(
     }
 
     if (showRestoreDialog) {
-        val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-        AlertDialog(
-            onDismissRequest = { showRestoreDialog = false },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold, color = onFondoDialogos) },
-            text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto? Las palabras clave no se verán afectadas.", color = onFondoDialogos) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        appPrefs.edit(commit = true) {
-                            ColorThemeConfig.colorThemeItems.forEach { item ->
-                                if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
-                                if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
-                            }
-                            remove(AppConstants.KEY_LIGHT_THEME_NAME)
-                            remove(AppConstants.KEY_DARK_THEME_NAME)
-                        }
-                        // Actualiza los nombres de los temas después de restaurar
-                        lightThemeName = null
-                        darkThemeName = null
-                        onThemeUpdated()
-                        Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
-                        showRestoreDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary)
-                ) { Text("Restaurar") }
-            },
-            dismissButton = { TextButton(onClick = { showRestoreDialog = false }) { Text("Cancelar", color = onFondoDialogos) } }
+        RestoreDefaultColorsDialog(
+            onDismiss = { showRestoreDialog = false },
+            onConfirm = {
+                appPrefs.edit(commit = true) {
+                    ColorThemeConfig.colorThemeItems.forEach { item ->
+                        if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
+                        if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
+                    }
+                    remove(AppConstants.KEY_LIGHT_THEME_NAME)
+                    remove(AppConstants.KEY_DARK_THEME_NAME)
+                }
+                // Actualiza los nombres de los temas después de restaurar
+                lightThemeName = null
+                darkThemeName = null
+                onThemeUpdated()
+                Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
+                showRestoreDialog = false
+            }
         )
     }
 
     showCompatibilityDialog?.let { dialogInfo ->
-        val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
         CompatibilityAlertDialog(
             info = dialogInfo, 
-            onDismiss = { showCompatibilityDialog = null },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            onContainerColor = onFondoDialogos
+            onDismiss = { showCompatibilityDialog = null }
         )
     }
 }
 
-data class CompatibilityDialogInfo(
-    val title: String,
-    val message: String,
-    val onConfirm: () -> Unit
-)
 
-@Composable
-private fun CompatibilityAlertDialog(
-    info: CompatibilityDialogInfo,
-    onDismiss: () -> Unit,
-    containerColor: Color,
-    onContainerColor: Color
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = containerColor,
-        title = { Text(info.title, fontWeight = FontWeight.Bold, color = onContainerColor) },
-        text = { Text(info.message, color = onContainerColor) },
-        confirmButton = {
-            Button(
-                onClick = { 
-                    info.onConfirm()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary)
-            ) { Text("Continuar") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = onContainerColor) } }
-    )
-}
+
+
+
