@@ -30,7 +30,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -70,8 +72,8 @@ fun KeywordColorPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = CalendarioTheme.colors.textSystem) },
         text = {
             Column {
                 Row(
@@ -81,12 +83,12 @@ fun KeywordColorPickerDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Color del evento:")
+                    Text("Color del evento:", color = CalendarioTheme.colors.textSystem)
                     Box(
                         modifier = Modifier
                             .size(32.dp)
                             .background(selectedColor, CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                            .border(1.dp, CalendarioTheme.colors.onBackground, CircleShape)
                             .clickable { showColorPicker = true }
                     )
                 }
@@ -95,18 +97,22 @@ fun KeywordColorPickerDialog(
                     onValueChange = { keyword = it },
                     label = { Text("Palabra clave") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = CalendarioTheme.colors.cabecera,
+                        unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                    )
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(selectedColor, keyword) }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
+            Button(onClick = { onConfirm(selectedColor, keyword) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) {
                 Text("Guardar")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar")
+                Text("Cancelar", color = CalendarioTheme.colors.cabecera)
             }
         }
     )
@@ -160,10 +166,10 @@ fun AdvancedColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
         text = {
             Column {
-                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, MaterialTheme.colorScheme.outline)) {
+                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, CalendarioTheme.colors.onBackground)) {
                     Box(modifier = Modifier.weight(1f).fillMaxHeight().background(initialColor))
                     Box(modifier = Modifier.weight(1f).fillMaxHeight().background(if(isHexError) initialColor else currentColor))
                 }
@@ -196,18 +202,22 @@ fun AdvancedColorPickerDialog(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { if(!isHexError) onColorConfirm(currentColor) }),
                         modifier = Modifier.weight(1f),
-                        isError = isHexError
+                        isError = isHexError,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = CalendarioTheme.colors.cabecera,
+                            unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                        )
                     )
 
                     IconButton(onClick = { hexCode = "#"; isHexError = false }) {
-                        Icon(Icons.Default.Close, contentDescription = "Limpiar")
+                        Icon(Icons.Default.Close, contentDescription = "Limpiar", tint = CalendarioTheme.colors.textSystem)
                     }
 
                     IconButton(onClick = { 
                         clipboardManager.setText(AnnotatedString(hexCode))
                         Toast.makeText(context, "Copiado: $hexCode", Toast.LENGTH_SHORT).show()
                     }) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copiar color")
+                        Icon(Icons.Default.ContentCopy, contentDescription = "Copiar color", tint = CalendarioTheme.colors.textSystem)
                     }
 
                     IconButton(onClick = { 
@@ -217,21 +227,31 @@ fun AdvancedColorPickerDialog(
                             updateColorFromHex(hexCode)
                         } 
                     }) {
-                        Icon(Icons.Default.ContentPaste, contentDescription = "Pegar color")
+                        Icon(Icons.Default.ContentPaste, contentDescription = "Pegar color", tint = CalendarioTheme.colors.textSystem)
                     }
                 }
             }
         },
-        confirmButton = { Button(onClick = { if(!isHexError) onColorConfirm(currentColor) }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) { Text("Aceptar") } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
+        confirmButton = { Button(onClick = { if(!isHexError) onColorConfirm(currentColor) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text("Aceptar") } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } }
     )
 }
 
 @Composable
 fun ColorSlider(label: String, value: Float, onValueChange: (Float) -> Unit, valueRange: ClosedFloatingPointRange<Float> = 0f..255f) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.width(20.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Slider(value = value, onValueChange = onValueChange, valueRange = valueRange, modifier = Modifier.weight(1f))
-        Text(value.roundToInt().toString(), modifier = Modifier.width(30.dp), textAlign = TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(label, modifier = Modifier.width(20.dp), color = CalendarioTheme.colors.textSystem)
+        Slider(
+            value = value, 
+            onValueChange = onValueChange, 
+            valueRange = valueRange, 
+            modifier = Modifier.weight(1f),
+            colors = SliderDefaults.colors(
+                thumbColor = CalendarioTheme.colors.cabecera,
+                activeTrackColor = CalendarioTheme.colors.cabecera,
+                inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+            )
+        )
+        Text(value.roundToInt().toString(), modifier = Modifier.width(30.dp), textAlign = TextAlign.End, color = CalendarioTheme.colors.textSystem)
     }
 }
