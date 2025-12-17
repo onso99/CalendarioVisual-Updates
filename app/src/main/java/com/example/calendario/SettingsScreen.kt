@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -63,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
@@ -85,7 +89,7 @@ fun SettingsScreen(
 
     // --- Dialog States ---
     var showRestoreDialog by remember { mutableStateOf(false) }
-    var showLegacyThemeDialog by remember { mutableStateOf<ParsedTheme?>(null) }
+    var showLegacyThemeDialog by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
@@ -100,14 +104,15 @@ fun SettingsScreen(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
+                    val fileName = getFileName(context, uri)
                     when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
                         is ImportResult.Success -> {
-                            ThemePersistence.applyTheme(context, importResult.parsedTheme)
+                            ThemePersistence.applyTheme(context, importResult.parsedTheme, fileName)
                             onThemeImported()
                             Toast.makeText(context, "Tema importado con éxito.", Toast.LENGTH_SHORT).show()
                         }
                         is ImportResult.LegacyThemeDetected -> {
-                            showLegacyThemeDialog = importResult.parsedTheme
+                            showLegacyThemeDialog = importResult.parsedTheme to fileName
                         }
                         is ImportResult.Failure -> {
                             Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
@@ -243,7 +248,7 @@ fun SettingsScreen(
                     val hsl = FloatArray(3)
                     ColorUtils.colorToHSL(settingsBackgroundColor.toArgb(), hsl)
                     val isDark = hsl[2] < 0.5f
-                    hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceAtMost(1f) else (hsl[2] - 0.2f).coerceAtLeast(0f)
+                    hsl[2] = if (isDark) (hsl[2] + 0.4f).coerceAtMost(1f) else (hsl[2] - 0.4f).coerceAtLeast(0f)
                     Color(ColorUtils.HSLToColor(hsl))
                 }
 
@@ -320,7 +325,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.8", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.9", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
@@ -367,26 +372,50 @@ fun SettingsScreen(
         )
     }
 
-    showLegacyThemeDialog?.let { parsedTheme ->
+    showLegacyThemeDialog?.let { (parsedTheme, fileName) ->
         AlertDialog(
             onDismissRequest = { showLegacyThemeDialog = null },
-            title = { Text("Tema Antiguo Detectado") },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text("Tema Antiguo Detectado", fontWeight = FontWeight.Bold) },
             text = { Text("El tema que estás importando es de una versión anterior. Algunos colores pueden no aplicarse correctamente. ¿Deseas continuar?") },
             confirmButton = {
-                TextButton(onClick = {
-                    ThemePersistence.applyTheme(context, parsedTheme)
-                    onThemeImported()
-                    Toast.makeText(context, "Tema antiguo importado.", Toast.LENGTH_SHORT).show()
-                    showLegacyThemeDialog = null
-                }) {
+                Button(
+                    onClick = {
+                        ThemePersistence.applyTheme(context, parsedTheme, fileName)
+                        onThemeImported()
+                        Toast.makeText(context, "Tema antiguo importado.", Toast.LENGTH_SHORT).show()
+                        showLegacyThemeDialog = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                ) {
                     Text("Aplicar Igualmente")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showLegacyThemeDialog = null }) {
-                    Text("Cancelar")
+                    Text("Cancelar", color = CalendarioTheme.colors.textSystem)
                 }
             }
         )
     }
 }
+
+private fun getFileName(context: Context, uri: Uri): String {
+    var fileName = "nombre_desconocido"
+    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        if (cursor.moveToFirst()) {
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1) {
+                fileName = cursor.getString(nameIndex)
+            }
+        }
+    }
+    return fileName.substringBeforeLast('.')
+}
+
+
+
+
+

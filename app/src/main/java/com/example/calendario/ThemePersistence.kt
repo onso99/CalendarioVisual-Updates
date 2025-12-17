@@ -9,17 +9,23 @@ import org.json.JSONObject
 
 object ThemePersistence {
 
-    fun applyTheme(context: Context, parsedTheme: ParsedTheme) {
+    fun applyTheme(context: Context, parsedTheme: ParsedTheme, fileName: String) {
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit {
             // Limpiar nombres de temas anteriores para evitar inconsistencias
             remove(AppConstants.KEY_LIGHT_THEME_NAME)
             remove(AppConstants.KEY_DARK_THEME_NAME)
 
-            parsedTheme.manifest?.optString("name")?.let {
-                putString(AppConstants.KEY_LIGHT_THEME_NAME, it)
-                putString(AppConstants.KEY_DARK_THEME_NAME, it)
+            val themeVersion = parsedTheme.manifest?.optInt("version", 1) ?: 1
+            val themeName = parsedTheme.manifest?.optString("name")?.takeIf { it.isNotBlank() } ?: fileName
+
+            val finalName = if (themeVersion < AppConstants.CURRENT_THEME_VERSION) {
+                "$themeName (v$themeVersion)"
+            } else {
+                themeName
             }
+            putString(AppConstants.KEY_LIGHT_THEME_NAME, finalName)
+            putString(AppConstants.KEY_DARK_THEME_NAME, finalName)
 
             // Aplicar los temas claro y oscuro si existen
             parsedTheme.lightTheme?.let { applyThemeColors(it, "light") }

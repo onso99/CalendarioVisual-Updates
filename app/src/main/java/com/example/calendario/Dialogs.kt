@@ -682,6 +682,7 @@ fun TimePickerDialog(
                     clockDialColor = CalendarioTheme.colors.fondoSecciones,
                     timeSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera,
                     timeSelectorUnselectedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    timeSelectorSelectedContentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black,
                     periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
                 )
             ) 
