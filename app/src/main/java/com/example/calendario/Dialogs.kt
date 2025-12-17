@@ -40,9 +40,11 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -80,13 +82,12 @@ fun DeleteRecurringEventDialog(
     onConfirm: (DeleteRecurringOption) -> Unit
 ) {
     var selectedOption by remember { mutableStateOf<DeleteRecurringOption?>(null) }
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Eliminar evento recurrente", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Column {
@@ -103,7 +104,8 @@ fun DeleteRecurringEventDialog(
                     ) {
                         RadioButton(
                             selected = (selectedOption == option),
-                            onClick = { selectedOption = option }
+                            onClick = { selectedOption = option },
+                            colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem)
                         )
                         Text(text, modifier = Modifier.padding(start = 8.dp))
                     }
@@ -124,7 +126,7 @@ fun DeleteRecurringEventDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", color = onFondoDialogos)
+                Text("Cancelar", color = CalendarioTheme.colors.textSystem)
             }
         }
     )
@@ -141,13 +143,12 @@ fun SelectCalendarsDialog(
     var currentSelectedIdsInDialog by remember(initialSelectedIds, availableCalendars) {
         mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
     }
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = {
             Text(
                 "Seleccionar Calendarios",
@@ -192,9 +193,9 @@ fun SelectCalendarsDialog(
                                     currentSelectedIdsInDialog = newSet
                                 },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = MaterialTheme.colorScheme.primary,
-                                    uncheckedColor = onFondoDialogos.copy(alpha = 0.6f),
-                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                    checkedColor = CalendarioTheme.colors.cabecera,
+                                    uncheckedColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                                    checkmarkColor = if(isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black
                                 )
                             )
                             Spacer(Modifier.width(10.dp))
@@ -207,7 +208,7 @@ fun SelectCalendarsDialog(
                                 Text(
                                     calendar.accountName,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = onFondoDialogos.copy(alpha = 0.7f),
+                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                                     fontSize = 12.sp
                                 )
                             }
@@ -220,14 +221,14 @@ fun SelectCalendarsDialog(
             Button(
                 onClick = { onApplySelection(currentSelectedIdsInDialog) },
                 enabled = availableCalendars.isNotEmpty(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) {
                 Text("Aplicar", fontSize = 16.sp)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", fontSize = 16.sp, color = onFondoDialogos)
+                Text("Cancelar", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
         }
     )
@@ -251,13 +252,12 @@ fun DayEventsDialog(
     val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
     val isToday = date == LocalDate.now()
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -273,8 +273,8 @@ fun DayEventsDialog(
                     onClick = { onAddEventClick(date) },
                     modifier = Modifier.size(36.dp),
                     colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = CalendarioTheme.colors.cabecera,
+                        contentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black
                     )
                 ) {
                     Icon(
@@ -317,7 +317,7 @@ fun DayEventsDialog(
                                 esEvento2 -> CalendarioTheme.colors.textEvent2
                                 esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                 esCumpleanos -> CalendarioTheme.colors.textBirthday
-                                else -> onFondoDialogos
+                                else -> CalendarioTheme.colors.textSystem
                             }
                         }
 
@@ -337,7 +337,7 @@ fun DayEventsDialog(
                                         .background(Color(colorInt), CircleShape)
                                         .border(
                                             0.5.dp,
-                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                            CalendarioTheme.colors.onBackground.copy(alpha = 0.5f),
                                             CircleShape
                                         )
                                 )
@@ -359,7 +359,7 @@ fun DayEventsDialog(
         confirmButton = {
             Button(
                 onClick = onDismissRequest,
-                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) {
                 Text("Cerrar", fontSize = 16.sp)
             }
@@ -377,13 +377,12 @@ fun GoToYearDialog(
     var year by remember { mutableStateOf(initialYear.toString()) }
     val minYear = 1924
     val maxYear = 2124
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Selección de Año", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Row(
@@ -396,7 +395,7 @@ fun GoToYearDialog(
                     val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
                     year = newYear.toString()
                 }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = "Año anterior", modifier = Modifier.size(36.dp), tint = onFondoDialogos)
+                    Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = "Año anterior", modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
                 }
                 OutlinedTextField(
                     value = year,
@@ -410,14 +409,14 @@ fun GoToYearDialog(
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.width(100.dp).padding(horizontal = 8.dp),
-                    textStyle = TextStyle(textAlign = TextAlign.Center)
+                    textStyle = TextStyle(textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem)
                 )
                 IconButton(onClick = { 
                     val currentYear = year.toIntOrNull() ?: initialYear
                     val newYear = (currentYear + 1).coerceIn(minYear, maxYear)
                     year = newYear.toString()
                 }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = "Año siguiente", modifier = Modifier.size(36.dp), tint = onFondoDialogos)
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = "Año siguiente", modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
                 }
             }
         },
@@ -428,14 +427,14 @@ fun GoToYearDialog(
                     onYearSelected(selectedYear)
                     onDismissRequest()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) {
                 Text("Aceptar")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", color = onFondoDialogos)
+                Text("Cancelar", color = CalendarioTheme.colors.textSystem)
             }
         }
     )
@@ -447,13 +446,11 @@ fun ThemeSelectionDialog(
     onThemeSelected: (ThemeSetting) -> Unit, 
     onDismiss: () -> Unit
 ) {
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Seleccionar Modo", fontWeight = FontWeight.Bold) },
         text = {
             Column {
@@ -468,7 +465,7 @@ fun ThemeSelectionDialog(
                             fontSize = 16.sp
                         )
                         if (theme == currentTheme) {
-                            Icon(Icons.Default.Check, contentDescription = "Seleccionado")
+                            Icon(Icons.Default.Check, contentDescription = "Seleccionado", tint = CalendarioTheme.colors.cabecera)
                         }
                     }
                 }
@@ -478,7 +475,7 @@ fun ThemeSelectionDialog(
             TextButton(
                 onClick = onDismiss
             ) { 
-                Text("Cancelar", color = onFondoDialogos)
+                Text("Cancelar", color = CalendarioTheme.colors.textSystem)
             }
         }
     )
@@ -495,22 +492,20 @@ fun RestoreDefaultColorsDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Restaurar Colores", fontWeight = FontWeight.Bold) },
         text = { Text("¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto? Las palabras clave no se verán afectadas.") },
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text("Restaurar") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = onFondoDialogos) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
     )
 }
 
@@ -519,13 +514,11 @@ fun CompatibilityAlertDialog(
     info: CompatibilityDialogInfo,
     onDismiss: () -> Unit
 ) {
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text(info.title, fontWeight = FontWeight.Bold) },
         text = { Text(info.message) },
         confirmButton = {
@@ -534,10 +527,10 @@ fun CompatibilityAlertDialog(
                     info.onConfirm()
                     onDismiss()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text("Continuar") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = onFondoDialogos) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
     )
 }
 
@@ -548,13 +541,11 @@ fun ConfirmDeleteDialog(
     onConfirm: () -> Unit,
     title: String
 ) {
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Confirmar eliminación", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = { Text("¿Seguro que quieres eliminar este evento: \"$title\"?") },
         confirmButton = {
@@ -566,7 +557,7 @@ fun ConfirmDeleteDialog(
                 )
             ) { Text("Eliminar") }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = onFondoDialogos) } }
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
     )
 }
 
@@ -578,13 +569,12 @@ fun RepetitionSelectionDialog(
     onDismissRequest: () -> Unit
 ) {
     var tempSelection by remember { mutableStateOf(currentRule) }
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Repetir evento", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Column {
@@ -597,7 +587,8 @@ fun RepetitionSelectionDialog(
                     ) {
                         RadioButton(
                             selected = (rule == tempSelection),
-                            onClick = { tempSelection = rule }
+                            onClick = { tempSelection = rule },
+                            colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem)
                         )
                         Text(rule.displayName, modifier = Modifier.padding(start = 8.dp))
                     }
@@ -607,26 +598,24 @@ fun RepetitionSelectionDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(tempSelection) },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text("Aceptar") }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = onFondoDialogos) } }
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
     )
 }
 
 @Composable
 fun AboutDialog(onDismissRequest: () -> Unit) {
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
-
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = { 
             Column {
-                Text("Calendario Visual V1.7.6", fontSize = 16.sp)
+                Text("Calendario Visual V1.7.7", fontSize = 16.sp)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp)
                 Text("Onso/noviembre 2025", fontSize = 16.sp)
             } 
@@ -634,7 +623,7 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
         confirmButton = { 
             Button(
                 onClick = onDismissRequest,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { 
                 Text("Cerrar", fontSize = 16.sp) 
             }
@@ -653,13 +642,12 @@ fun SelectCalendarDialog(
     val sortedCalendars = remember(calendars) {
         calendars.sortedByDescending { it.isPrimary }
     }
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Seleccionar Calendario") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -673,7 +661,8 @@ fun SelectCalendarDialog(
                     ) {
                         RadioButton(
                             selected = (calendar.id == tempSelection.id),
-                            onClick = { tempSelection = calendar }
+                            onClick = { tempSelection = calendar },
+                            colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem)
                         )
                         Text(text = calendar.displayName, modifier = Modifier.padding(start = 8.dp))
                     }
@@ -684,13 +673,13 @@ fun SelectCalendarDialog(
             Button(onClick = {
                 onCalendarSelected(tempSelection)
                 onDismissRequest()
-            }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
+            }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) {
                 Text("Aceptar")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", color = onFondoDialogos)
+                Text("Cancelar", color = CalendarioTheme.colors.textSystem)
             }
         }
     )
@@ -704,16 +693,26 @@ fun TimePickerDialog(
     initialHour: Int,
     initialMinute: Int
 ) {
-    val onFondoDialogos = if (isColorDark(CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
     val timePickerState = rememberTimePickerState(initialHour = initialHour, initialMinute = initialMinute, is24Hour = true)
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = onFondoDialogos,
-        textContentColor = onFondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Seleccionar hora", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-        text = { TimePicker(state = timePickerState, modifier = Modifier.fillMaxWidth()) },
-        confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) { Text("Aceptar") } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = onFondoDialogos) } }
+        text = { 
+            TimePicker(
+                state = timePickerState, 
+                modifier = Modifier.fillMaxWidth(),
+                colors = TimePickerDefaults.colors(
+                    clockDialColor = CalendarioTheme.colors.fondoSecciones,
+                    timeSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera,
+                    timeSelectorUnselectedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
+                )
+            ) 
+        },
+        confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text("Aceptar") } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
     )
 }

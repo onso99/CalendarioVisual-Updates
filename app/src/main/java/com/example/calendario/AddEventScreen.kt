@@ -21,15 +21,18 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -38,6 +41,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +56,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -132,13 +138,12 @@ fun AddEventScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (eventToEdit != null) "Editar evento" else "Nuevo evento", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(if (eventToEdit != null) "Editar evento" else "Nuevo evento") },
                 navigationIcon = {
                     IconButton(onClick = onBackPress) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            contentDescription = "Volver"
                         )
                     }
                 },
@@ -153,18 +158,20 @@ fun AddEventScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Borrar evento",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                contentDescription = "Borrar evento"
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -177,12 +184,12 @@ fun AddEventScreen(
                 Column(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(CalendarioTheme.colors.fondoSecciones)
                 ) {
                     TextField(
                         value = title,
                         onValueChange = { title = it },
-                        placeholder = { Text("Título") },
+                        placeholder = { Text("Título", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
@@ -191,11 +198,13 @@ fun AddEventScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent
+                            errorIndicatorColor = Color.Transparent,
+                            focusedTextColor = CalendarioTheme.colors.textSystem,
+                            unfocusedTextColor = CalendarioTheme.colors.textSystem
                         ),
                         singleLine = true
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -205,12 +214,13 @@ fun AddEventScreen(
                     ) {
                         Text(
                             text = selectedCalendar?.displayName ?: "No hay calendarios editables",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = CalendarioTheme.colors.textSystem
                         )
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Seleccionar calendario",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = CalendarioTheme.colors.textSystem
                         )
                     }
                 }
@@ -221,7 +231,7 @@ fun AddEventScreen(
                 Column(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(CalendarioTheme.colors.fondoSecciones)
                 ) {
                     Row(
                         modifier = Modifier
@@ -229,7 +239,7 @@ fun AddEventScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Todo el día", modifier = Modifier.weight(1f))
+                        Text("Todo el día", modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
                         Switch(
                             checked = isAllDay,
                             onCheckedChange = { checked ->
@@ -242,10 +252,17 @@ fun AddEventScreen(
                                     startDate = startDate.toLocalDate().atTime(currentTime.hour, currentTime.minute)
                                     endDate = startDate.plusHours(1)
                                 }
-                            }
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = CalendarioTheme.colors.cabecera,
+                                checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
+                                uncheckedThumbColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.5f),
+                                uncheckedTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f),
+                                uncheckedBorderColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.3f)
+                            )
                         )
                     }
-                    HorizontalDivider()
+                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -253,20 +270,21 @@ fun AddEventScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Inicio")
+                        Text("Inicio", color = CalendarioTheme.colors.textSystem)
                         Row {
-                            Text(startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp))
-                            Text(startDate.format(dateFormatter), modifier = Modifier.clickable { showStartDatePickerDialog = true })
+                            Text(startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp), color = CalendarioTheme.colors.textSystem)
+                            Text(startDate.format(dateFormatter), modifier = Modifier.clickable { showStartDatePickerDialog = true }, color = CalendarioTheme.colors.textSystem)
                             Spacer(modifier = Modifier.padding(horizontal = 12.dp))
                             Text(
                                 startDate.format(timeFormatter),
                                 modifier = Modifier
                                     .alpha(if (isAllDay) 0.5f else 1f)
-                                    .clickable(!isAllDay) { showStartTimePickerDialog = true }
+                                    .clickable(!isAllDay) { showStartTimePickerDialog = true },
+                                color = CalendarioTheme.colors.textSystem
                             )
                         }
                     }
-                    HorizontalDivider()
+                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -274,20 +292,21 @@ fun AddEventScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Fin")
+                        Text("Fin", color = CalendarioTheme.colors.textSystem)
                         Row {
-                            Text(endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp))
-                            Text(endDate.format(dateFormatter), modifier = Modifier.clickable { showEndDatePickerDialog = true })
+                            Text(endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp), color = CalendarioTheme.colors.textSystem)
+                            Text(endDate.format(dateFormatter), modifier = Modifier.clickable { showEndDatePickerDialog = true }, color = CalendarioTheme.colors.textSystem)
                             Spacer(modifier = Modifier.padding(horizontal = 12.dp))
                             Text(
                                 endDate.format(timeFormatter),
                                 modifier = Modifier
                                     .alpha(if (isAllDay) 0.5f else 1f)
-                                    .clickable(!isAllDay) { showEndTimePickerDialog = true }
+                                    .clickable(!isAllDay) { showEndTimePickerDialog = true },
+                                color = CalendarioTheme.colors.textSystem
                             )
                         }
                     }
-                    HorizontalDivider()
+                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -295,10 +314,11 @@ fun AddEventScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(repetitionRule.displayName, modifier = Modifier.weight(1f))
+                        Text(repetitionRule.displayName, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Seleccionar repetición"
+                            contentDescription = "Seleccionar repetición",
+                            tint = CalendarioTheme.colors.textSystem
                         )
                     }
                 }
@@ -309,44 +329,46 @@ fun AddEventScreen(
                 Column(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(CalendarioTheme.colors.fondoSecciones)
                         .padding(16.dp)
                         .fillMaxWidth()
                 ) {
-                    Text("Resumen:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Título: ${title.ifBlank { "(Sin título)" }}")
-                    Text("Calendario: ${selectedCalendar?.displayName ?: "N/A"}")
-                    if (isAllDay) {
-                        Row {
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text("Del:")
-                                if (startDate.toLocalDate() != endDate.toLocalDate()) {
-                                    Text("Al:")
+                    CompositionLocalProvider(LocalContentColor provides CalendarioTheme.colors.textSystem) {
+                        Text("Resumen:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Título: ${title.ifBlank { "(Sin título)" }}")
+                        Text("Calendario: ${selectedCalendar?.displayName ?: "N/A"}")
+                        if (isAllDay) {
+                            Row {
+                                Column(modifier = Modifier.padding(end = 8.dp)) {
+                                    Text("Del:")
+                                    if (startDate.toLocalDate() != endDate.toLocalDate()) {
+                                        Text("Al:")
+                                    }
+                                }
+                                Column {
+                                    Text(startDate.format(dateFormatter))
+                                    if (startDate.toLocalDate() != endDate.toLocalDate()) {
+                                        Text(endDate.format(dateFormatter))
+                                    }
                                 }
                             }
-                            Column {
-                                Text(startDate.format(dateFormatter))
-                                if (startDate.toLocalDate() != endDate.toLocalDate()) {
-                                    Text(endDate.format(dateFormatter))
+                            Text("Todo el día")
+                        } else {
+                            Row {
+                                Column(modifier = Modifier.padding(end = 8.dp)) {
+                                    Text("Inicio:")
+                                    Text("Fin:")
+                                }
+                                Column {
+                                    Text("${startDate.format(dateFormatter)} a las ${startDate.format(timeFormatter)}")
+                                    Text("${endDate.format(dateFormatter)} a las ${endDate.format(timeFormatter)}")
                                 }
                             }
                         }
-                        Text("Todo el día")
-                    } else {
-                        Row {
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text("Inicio:")
-                                Text("Fin:")
-                            }
-                            Column {
-                                Text("${startDate.format(dateFormatter)} a las ${startDate.format(timeFormatter)}")
-                                Text("${endDate.format(dateFormatter)} a las ${endDate.format(timeFormatter)}")
-                            }
+                        if (repetitionRule != RepetitionRule.NONE) {
+                            Text(repetitionRule.displayName)
                         }
-                    }
-                    if (repetitionRule != RepetitionRule.NONE) {
-                        Text(repetitionRule.displayName)
                     }
                 }
             }
@@ -361,9 +383,10 @@ fun AddEventScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onBackPress) {
-                    Text("Cancelar")
+                    Text("Cancelar", color = CalendarioTheme.colors.cabecera)
                 }
-                Button(onClick = {
+                Button(
+                    onClick = {
                     if (eventToEdit != null) {
                         val originalStartDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else LocalDateTime.of(eventToEdit.date, eventToEdit.startTime)
                         val originalEndDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else (eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: originalStartDate.plusHours(1))
@@ -394,7 +417,9 @@ fun AddEventScreen(
                         )
                         onSave()
                     }
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                ) {
                     Text(if (eventToEdit != null) "Actualizar" else "Guardar")
                 }
             }
@@ -463,12 +488,26 @@ fun AddEventScreen(
                         }
                         showStartDatePickerDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text("Aceptar") }
             },
-            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar") } }
+            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
+            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = CalendarioTheme.colors.fondoDialogos,
+                    titleContentColor = CalendarioTheme.colors.textSystem,
+                    headlineContentColor = CalendarioTheme.colors.textSystem,
+                    weekdayContentColor = CalendarioTheme.colors.textSystem,
+                    dayContentColor = CalendarioTheme.colors.textSystem,
+                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black,
+                    selectedDayContainerColor = CalendarioTheme.colors.cabecera,
+                    todayContentColor = CalendarioTheme.colors.cabecera,
+                    todayDateBorderColor = CalendarioTheme.colors.cabecera
+                )
+            )
         }
     }
 
@@ -492,12 +531,26 @@ fun AddEventScreen(
                         }
                         showEndDatePickerDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text("Aceptar") }
             },
-            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar") } }
+            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
+            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = CalendarioTheme.colors.fondoDialogos,
+                    titleContentColor = CalendarioTheme.colors.textSystem,
+                    headlineContentColor = CalendarioTheme.colors.textSystem,
+                    weekdayContentColor = CalendarioTheme.colors.textSystem,
+                    dayContentColor = CalendarioTheme.colors.textSystem,
+                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black,
+                    selectedDayContainerColor = CalendarioTheme.colors.cabecera,
+                    todayContentColor = CalendarioTheme.colors.cabecera,
+                    todayDateBorderColor = CalendarioTheme.colors.cabecera
+                )
+            )
         }
     }
 
