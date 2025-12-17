@@ -357,10 +357,13 @@ fun CalendarioScreen(
                                     }
                                     .padding(horizontal = 10.dp, vertical = 4.dp)
                             ) {
+                                val yearButtonBackgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+                                val yearButtonTextColor = if (isColorDark(yearButtonBackgroundColor, MaterialTheme.colorScheme.primary)) Color.White else Color.Black
                                 Text(
                                     text = if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.year}" else "${currentYear.value}",
                                     fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = yearButtonTextColor
                                 )
                             }
 
