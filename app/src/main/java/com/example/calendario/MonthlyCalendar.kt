@@ -77,7 +77,7 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        val onHeaderColor = if (isColorDark(CalendarioTheme.colors.monthlyCalendarHeaderBackground)) Color.White else Color.Black
+        val onHeaderColor = if (isColorDark(CalendarioTheme.colors.monthlyCalendarHeaderBackground, CalendarioTheme.colors.monthlyCalendarGridBackground)) Color.White else Color.Black
         Row(Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { day ->
                 Box(

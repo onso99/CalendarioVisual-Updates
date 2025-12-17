@@ -84,11 +84,12 @@ private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: C
     }
 }
 
-fun blendWithBackground(colorToBlend: Color, backgroundColor: Color, ratio: Float = 0.5f): Color {
-    val blended = ColorUtils.compositeColors(colorToBlend.toArgb(), backgroundColor.toArgb())
-    return Color(blended)
-}
-
-fun isColorDark(color: Color): Boolean {
-    return ColorUtils.calculateLuminance(color.toArgb()) < 0.5
+fun isColorDark(color: Color, backgroundColor: Color): Boolean {
+    val blended = ColorUtils.compositeColors(color.toArgb(), backgroundColor.toArgb())
+    val finalColor = Color(blended)
+    val red = finalColor.red * 255
+    val green = finalColor.green * 255
+    val blue = finalColor.blue * 255
+    val luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255
+    return luminance < 0.5
 }

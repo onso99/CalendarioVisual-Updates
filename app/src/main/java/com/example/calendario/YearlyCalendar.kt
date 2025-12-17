@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.blendWithBackground
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.Year
@@ -196,10 +195,7 @@ fun MiniMonthCalendar(
 
                                 val textColor = when {
                                     isToday -> {
-                                        val highlightColor = CalendarioTheme.colors.miniMonthTodayHighlightBackground
-                                        val backgroundColor = CalendarioTheme.colors.settingsBackground
-                                        val finalBlendedColor = blendWithBackground(highlightColor, backgroundColor)
-                                        if (isColorDark(finalBlendedColor)) Color.White else Color.Black
+                                        if (isColorDark(CalendarioTheme.colors.miniMonthTodayHighlightBackground, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black
                                     }
                                     isHoliday -> CalendarioTheme.colors.textSundayHoliday
                                     isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday

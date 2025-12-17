@@ -57,8 +57,8 @@ fun CalendarioTheme(
         getThemeColors(context, darkTheme)
     }
 
-    val onPrimaryColor = if (isColorDark(customColors.cabecera)) Color.White else Color.Black
-    val onErrorColor = if (isColorDark(customColors.error)) Color.White else Color.Black
+    val onPrimaryColor = if (isColorDark(customColors.cabecera, customColors.background)) Color.White else Color.Black
+    val onErrorColor = if (isColorDark(customColors.error, customColors.background)) Color.White else Color.Black
 
     val colorScheme = if (darkTheme) {
         darkColorScheme(
@@ -89,7 +89,7 @@ fun CalendarioTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isColorDark(colorScheme.primary)
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isColorDark(colorScheme.primary, customColors.background)
         }
     }
 

@@ -478,7 +478,7 @@ fun CalendarioScreen(
                                     .clickable { showAllEvents = !showAllEvents }
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
-                                val textColor = if (isColorDark(CalendarioTheme.colors.toggleButtonSelectedBackground)) Color.White else Color.Black
+                                val textColor = if (isColorDark(CalendarioTheme.colors.toggleButtonSelectedBackground, CalendarioTheme.colors.background)) Color.White else Color.Black
                                 Text(
                                     text = if (showAllEvents) "Todos" else "Pendientes",
                                     fontWeight = FontWeight.Bold,

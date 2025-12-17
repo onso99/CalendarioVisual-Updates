@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.blendWithBackground
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -83,8 +82,7 @@ fun MonthlyEventList(
                         val textColor = if (isTodayEvents) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
                             val backgroundColor = MaterialTheme.colorScheme.background
-                            val finalBlendedColor = blendWithBackground(highlightColor, backgroundColor)
-                            if (isColorDark(finalBlendedColor)) Color.White else Color.Black
+                            if (isColorDark(highlightColor, backgroundColor)) Color.White else Color.Black
                         } else {
                             when {
                                 esEvento1 -> CalendarioTheme.colors.textEvent1

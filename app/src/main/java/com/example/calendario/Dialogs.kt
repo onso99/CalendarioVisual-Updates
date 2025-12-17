@@ -64,7 +64,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.blendWithBackground
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -195,7 +194,7 @@ fun SelectCalendarsDialog(
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = CalendarioTheme.colors.cabecera,
                                     uncheckedColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                                    checkmarkColor = if(isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black
+                                    checkmarkColor = if(isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
                                 )
                             )
                             Spacer(Modifier.width(10.dp))
@@ -274,7 +273,7 @@ fun DayEventsDialog(
                     modifier = Modifier.size(36.dp),
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = CalendarioTheme.colors.cabecera,
-                        contentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black
+                        contentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
                     )
                 ) {
                     Icon(
@@ -307,10 +306,7 @@ fun DayEventsDialog(
                         val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
 
                         val itemColor = if (isToday) {
-                            val highlightColor = CalendarioTheme.colors.todayHighlightColor
-                            val backgroundColor = CalendarioTheme.colors.fondoDialogos
-                            val finalBlendedColor = blendWithBackground(highlightColor, backgroundColor)
-                            if (isColorDark(finalBlendedColor)) Color.White else Color.Black
+                            if (isColorDark(CalendarioTheme.colors.todayHighlightColor, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
                         } else {
                             when {
                                 esEvento1 -> CalendarioTheme.colors.textEvent1
@@ -682,7 +678,7 @@ fun TimePickerDialog(
                     clockDialColor = CalendarioTheme.colors.fondoSecciones,
                     timeSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera,
                     timeSelectorUnselectedContainerColor = CalendarioTheme.colors.fondoSecciones,
-                    timeSelectorSelectedContentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black,
+                    timeSelectorSelectedContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoSecciones)) Color.White else Color.Black,
                     periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
                 )
             ) 

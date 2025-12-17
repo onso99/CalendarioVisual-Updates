@@ -491,8 +491,7 @@ fun AddEventScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text("Aceptar") }
             },
-            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
-            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
+            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } }
         ) {
             DatePicker(
                 state = datePickerState,
@@ -502,7 +501,7 @@ fun AddEventScreen(
                     headlineContentColor = CalendarioTheme.colors.textSystem,
                     weekdayContentColor = CalendarioTheme.colors.textSystem,
                     dayContentColor = CalendarioTheme.colors.textSystem,
-                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black,
+                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black,
                     selectedDayContainerColor = CalendarioTheme.colors.cabecera,
                     todayContentColor = CalendarioTheme.colors.cabecera,
                     todayDateBorderColor = CalendarioTheme.colors.cabecera
@@ -534,8 +533,7 @@ fun AddEventScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text("Aceptar") }
             },
-            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
-            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
+            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } }
         ) {
             DatePicker(
                 state = datePickerState,
@@ -545,7 +543,7 @@ fun AddEventScreen(
                     headlineContentColor = CalendarioTheme.colors.textSystem,
                     weekdayContentColor = CalendarioTheme.colors.textSystem,
                     dayContentColor = CalendarioTheme.colors.textSystem,
-                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera)) Color.White else Color.Black,
+                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black,
                     selectedDayContainerColor = CalendarioTheme.colors.cabecera,
                     todayContentColor = CalendarioTheme.colors.cabecera,
                     todayDateBorderColor = CalendarioTheme.colors.cabecera
