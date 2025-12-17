@@ -114,7 +114,6 @@ fun CalendarioScreen(
 
     var menuExpanded by remember { mutableStateOf(false) }
     var showSelectCalendarsDialog by remember { mutableStateOf(false) }
-    var showAboutDialog by remember { mutableStateOf(false) }
     var showHelpScreen by remember { mutableStateOf(false) }
     var viewMode by remember { mutableStateOf(CalendarViewMode.MONTHLY) }
     var showDayEventsDialog by remember { mutableStateOf(false) }
@@ -410,11 +409,6 @@ fun CalendarioScreen(
                                             onClick = { menuExpanded = false; showHelpScreen = true },
                                             leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "Ayuda", tint = CalendarioTheme.colors.textSystem) }
                                         )
-                                        DropdownMenuItem(
-                                            text = { Text("Acerca de", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                            onClick = { menuExpanded = false; showAboutDialog = true },
-                                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = "Acerca de", tint = CalendarioTheme.colors.textSystem) }
-                                        )
                                     }
                                 }
                             }
@@ -563,17 +557,13 @@ fun CalendarioScreen(
                             val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, availableCalendarsExternal)
                             onCalendarDataUpdated(updatedFestivosMap, availableCalendarsExternal, newlySelectedIds)
                         } catch (e: Exception) {
-                            Log.e("CalendarioScreen", "Error aplicando selección de calendarios: ${'$'}{e.localizedMessage}", e)
+                            Log.e("CalendarioScreen", "Error aplicando selección de calendarios: ${e.localizedMessage}", e)
                             Toast.makeText(context, "Error al aplicar selección.", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
 
-            if (showAboutDialog) {
-                AboutDialog(onDismissRequest = { showAboutDialog = false })
-            }
-            
             if (showDayEventsDialog && selectedDateForDialog != null) {
                 DayEventsDialog(
                     date = selectedDateForDialog!!,

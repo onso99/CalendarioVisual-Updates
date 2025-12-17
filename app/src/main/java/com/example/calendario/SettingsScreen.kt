@@ -310,6 +310,20 @@ fun SettingsScreen(
                 ColorPickerRow("Color eventos de hoy", pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
                 Spacer(Modifier.height(16.dp))
             }
+            
+            // --- About Section ---
+            SectionTitle(text = "Acerca de")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(CalendarioTheme.colors.fondoSecciones)
+                    .padding(16.dp)
+            ) {
+                Text("Calendario Visual V1.7.8", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+            }
         }
     }
 

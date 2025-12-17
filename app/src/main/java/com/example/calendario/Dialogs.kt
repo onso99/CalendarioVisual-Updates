@@ -606,32 +606,6 @@ fun RepetitionSelectionDialog(
 }
 
 @Composable
-fun AboutDialog(onDismissRequest: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-        text = { 
-            Column {
-                Text("Calendario Visual V1.7.7", fontSize = 16.sp)
-                Text("Asistente IA / Android Studio", fontSize = 16.sp)
-                Text("Onso/noviembre 2025", fontSize = 16.sp)
-            } 
-        },
-        confirmButton = { 
-            Button(
-                onClick = onDismissRequest,
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-            ) { 
-                Text("Cerrar", fontSize = 16.sp) 
-            }
-        }
-    )
-}
-
-@Composable
 fun SelectCalendarDialog(
     calendars: List<CalendarInfo>,
     currentSelection: CalendarInfo,
