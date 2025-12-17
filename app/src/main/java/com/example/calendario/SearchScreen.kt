@@ -84,7 +84,7 @@ fun SearchScreen(
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(CalendarioTheme.colors.cabecera)
                     .statusBarsPadding()
             ) {
                 TopAppBar(
@@ -136,7 +136,7 @@ fun SearchScreen(
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
                 )
             }
         }
@@ -161,8 +161,8 @@ fun SearchScreen(
                     TextButton(
                         onClick = { onSearchScopeChange(scopeValue) },
                         colors = ButtonDefaults.textButtonColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
-                            contentColor = MaterialTheme.colorScheme.primary
+                            containerColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.2f) else Color.Transparent,
+                            contentColor = CalendarioTheme.colors.cabecera
                         )
                     ) { 
                         Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
@@ -171,11 +171,11 @@ fun SearchScreen(
             }
             if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No se han encontrado resultados")
+                    Text("No se han encontrado resultados", color = CalendarioTheme.colors.textSystem)
                 }
             } else if (searchQuery.isBlank()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Escribe para buscar...")
+                    Text("Escribe para buscar...", color = CalendarioTheme.colors.textSystem)
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -193,10 +193,10 @@ fun SearchScreen(
                                         text = headerText,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                                            .background(CalendarioTheme.colors.fondoSecciones)
                                             .padding(8.dp),
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = CalendarioTheme.colors.textSystem
                                     )
                                 }
                                 items(events) { festivo ->
@@ -212,7 +212,7 @@ fun SearchScreen(
                                             text = yearDate.format(DateTimeFormatter.ofPattern("yyyy")),
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = CalendarioTheme.colors.cabecera
                                         )
                                     }
                                 }
@@ -223,19 +223,19 @@ fun SearchScreen(
                                         modifier = Modifier
                                             .padding(horizontal = 16.dp)
                                             .clip(RoundedCornerShape(16.dp))
-                                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                                            .background(CalendarioTheme.colors.fondoSecciones)
                                     ) {
                                         eventsByMonth.forEach { (month, eventsInMonth) ->
                                             Text(
                                                 text = month.format(DateTimeFormatter.ofPattern("MMMM").withLocale(Locale.getDefault())).replaceFirstChar { it.titlecase(Locale.getDefault()) },
                                                 fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                color = CalendarioTheme.colors.textSystem,
                                                 modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
                                             )
                                             eventsInMonth.forEach { festivo ->
                                                 EventRow(festivo, availableCalendars, onEventClick, searchScope)
                                             }
-                                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                                            HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
                                         }
                                     }
                                 }
@@ -299,7 +299,7 @@ private fun EventRow(
                 Modifier
                     .size(10.dp)
                     .background(Color(colorInt), CircleShape)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .border(0.5.dp, CalendarioTheme.colors.onBackground, CircleShape)
             )
             Spacer(Modifier.size(8.dp))
         }
@@ -308,7 +308,7 @@ private fun EventRow(
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Evento repetido",
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                tint = CalendarioTheme.colors.onBackground.copy(alpha = 0.6f),
                 modifier = Modifier.padding(start = 8.dp).size(16.dp)
             )
         }

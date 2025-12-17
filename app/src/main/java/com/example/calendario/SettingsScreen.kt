@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +38,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -61,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import org.json.JSONObject
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,7 +85,7 @@ fun SettingsScreen(
 
     // --- Dialog States ---
     var showRestoreDialog by remember { mutableStateOf(false) }
-    var showCompatibilityDialog by remember { mutableStateOf<CompatibilityDialogInfo?>(null) }
+    var showLegacyThemeDialog by remember { mutableStateOf<ParsedTheme?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
@@ -91,15 +94,25 @@ fun SettingsScreen(
         darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
         onThemeUpdated()
     }
-    
-    val showDialog = { dialogInfo: CompatibilityDialogInfo -> showCompatibilityDialog = dialogInfo }
 
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    importThemeFromJson(context, uri, onThemeImported, showDialog)
+                    when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
+                        is ImportResult.Success -> {
+                            ThemePersistence.applyTheme(context, importResult.parsedTheme)
+                            onThemeImported()
+                            Toast.makeText(context, "Tema importado con éxito.", Toast.LENGTH_SHORT).show()
+                        }
+                        is ImportResult.LegacyThemeDetected -> {
+                            showLegacyThemeDialog = importResult.parsedTheme
+                        }
+                        is ImportResult.Failure -> {
+                            Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
             }
         }
@@ -108,7 +121,7 @@ fun SettingsScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri -> exportThemeToJson(context, uri) }
+                result.data?.data?.let { uri -> ThemePersistence.exportThemeToJson(context, uri) }
             }
         }
     )
@@ -188,7 +201,7 @@ fun SettingsScreen(
         ) {
             // --- General Section ---
             SectionTitle(text = "General")
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -197,16 +210,16 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Semana en vista anual", color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                    Text("Semana en vista anual", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Switch(
                         checked = pendingShowWeekNumber,
                         onCheckedChange = { pendingShowWeekNumber = it },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = colorScheme.primary,
                             checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f),
-                            uncheckedThumbColor = colorScheme.outline,
-                            uncheckedTrackColor = colorScheme.surfaceVariant,
-                            uncheckedBorderColor = colorScheme.outline.copy(alpha = 0.5f)
+                            uncheckedThumbColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.5f),
+                            uncheckedTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f),
+                            uncheckedBorderColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.3f)
                         )
                     )
                 }
@@ -266,10 +279,10 @@ fun SettingsScreen(
                 }
             }
 
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showThemeDialog = true }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Modo", color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
-                    Text(themeSetting.displayName, color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                    Text("Modo", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(themeSetting.displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(text = "Personalizar colores", onClick = onColorThemeClick)
@@ -282,12 +295,12 @@ fun SettingsScreen(
             }
 
             WidgetSectionTitle()
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(colorScheme.surfaceVariant).padding(horizontal = 16.dp)) {
-                Text("Número de eventos: ${pendingEventCount.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = colorScheme.onSurfaceVariant)
-                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = colorScheme.onSurfaceVariant.copy(alpha = 0.24f)))
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
+                Text("Número de eventos: ${pendingEventCount.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
+                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.24f)))
                 Row(modifier = Modifier.fillMaxWidth().clickable { pendingUseLargeFont = !pendingUseLargeFont }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Letra grande", fontSize = 16.sp, color = colorScheme.onSurfaceVariant)
-                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = colorScheme.primary, checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = colorScheme.outline, uncheckedTrackColor = colorScheme.surfaceVariant, uncheckedBorderColor = colorScheme.outline.copy(alpha = 0.5f)))
+                    Text("Letra grande", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = colorScheme.primary, checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.3f)))
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colorScheme.outline.copy(alpha = 0.3f))
                 ColorPickerRow("Color de fondo", pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
@@ -340,15 +353,26 @@ fun SettingsScreen(
         )
     }
 
-    showCompatibilityDialog?.let { dialogInfo ->
-        CompatibilityAlertDialog(
-            info = dialogInfo, 
-            onDismiss = { showCompatibilityDialog = null }
+    showLegacyThemeDialog?.let { parsedTheme ->
+        AlertDialog(
+            onDismissRequest = { showLegacyThemeDialog = null },
+            title = { Text("Tema Antiguo Detectado") },
+            text = { Text("El tema que estás importando es de una versión anterior. Algunos colores pueden no aplicarse correctamente. ¿Deseas continuar?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    ThemePersistence.applyTheme(context, parsedTheme)
+                    onThemeImported()
+                    Toast.makeText(context, "Tema antiguo importado.", Toast.LENGTH_SHORT).show()
+                    showLegacyThemeDialog = null
+                }) {
+                    Text("Aplicar Igualmente")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLegacyThemeDialog = null }) {
+                    Text("Cancelar")
+                }
+            }
         )
     }
 }
-
-
-
-
-

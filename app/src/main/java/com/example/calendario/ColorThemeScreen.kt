@@ -128,7 +128,7 @@ fun ColorThemeScreen(
                 )
                 
                 Column(
-                    modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 16.dp)
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)
                 ) {
                     items.forEach { item ->
                         if (item.isSeparator) {
@@ -233,7 +233,7 @@ private fun SingleColorThemeRow(
     ) {
         Text(
             text = label,
-            color = MaterialTheme.colorScheme.onSurfaceVariant, 
+            color = CalendarioTheme.colors.textSystem, 
             fontSize = 16.sp, 
             modifier = Modifier.weight(1f),
             maxLines = 1,
