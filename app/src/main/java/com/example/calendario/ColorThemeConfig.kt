@@ -22,7 +22,6 @@ object ColorThemeConfig {
         ColorThemeItem("Fondo Menú Desplegable", AppConstants.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppConstants.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppConstants.LightColors.dropdownMenuBackground, AppConstants.DarkColors.dropdownMenuBackground, "General"),
         ColorThemeItem("Advertencia", AppConstants.ColorKeys.LIGHT_ERROR, AppConstants.ColorKeys.DARK_ERROR, AppConstants.LightColors.error, AppConstants.DarkColors.error, "General"),
         ColorThemeItem("Texto de sistema", AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM, AppConstants.ColorKeys.DARK_TEXT_SYSTEM, AppConstants.LightColors.textSystem, AppConstants.DarkColors.textSystem, "General"),
-        ColorThemeItem("En Fondo", AppConstants.ColorKeys.LIGHT_ON_BACKGROUND, AppConstants.ColorKeys.DARK_ON_BACKGROUND, AppConstants.LightColors.onBackground, AppConstants.DarkColors.onBackground, "General"),
         ColorThemeItem("Domingos y Festivos", AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday, AppConstants.DarkColors.textSundayHoliday, "General"),
         
         // --- CATEGORÍA: LISTA DE EVENTOS ---

@@ -88,7 +88,7 @@ fun KeywordColorPickerDialog(
                         modifier = Modifier
                             .size(32.dp)
                             .background(selectedColor, CircleShape)
-                            .border(1.dp, CalendarioTheme.colors.onBackground, CircleShape)
+                            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), CircleShape)
                             .clickable { showColorPicker = true }
                     )
                 }
@@ -169,7 +169,7 @@ fun AdvancedColorPickerDialog(
         title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
         text = {
             Column {
-                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, CalendarioTheme.colors.onBackground)) {
+                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))) {
                     Box(modifier = Modifier.weight(1f).fillMaxHeight().background(initialColor))
                     Box(modifier = Modifier.weight(1f).fillMaxHeight().background(if(isHexError) initialColor else currentColor))
                 }

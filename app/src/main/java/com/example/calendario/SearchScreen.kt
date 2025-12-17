@@ -255,7 +255,7 @@ fun SearchScreen(
                                             eventsInMonth.forEach { festivo ->
                                                 EventRow(festivo, availableCalendars, onEventClick, searchScope)
                                             }
-                                            HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
+                                            HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                                         }
                                     }
                                 }
@@ -319,7 +319,7 @@ private fun EventRow(
                 Modifier
                     .size(10.dp)
                     .background(Color(colorInt), CircleShape)
-                    .border(0.5.dp, CalendarioTheme.colors.onBackground, CircleShape)
+                    .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), CircleShape)
             )
             Spacer(Modifier.size(8.dp))
         }
@@ -328,7 +328,7 @@ private fun EventRow(
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Evento repetido",
-                tint = CalendarioTheme.colors.onBackground.copy(alpha = 0.6f),
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                 modifier = Modifier.padding(start = 8.dp).size(16.dp)
             )
         }

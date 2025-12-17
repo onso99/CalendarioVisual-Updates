@@ -23,7 +23,6 @@ object AppConstants {
         const val LIGHT_FONDO_DIALOGOS = "light_fondo_dialogos"
         const val LIGHT_BACKGROUND = "light_background"
         const val LIGHT_SETTINGS_BACKGROUND = "light_settings_background"
-        const val LIGHT_ON_BACKGROUND = "light_on_background"
         const val LIGHT_ERROR = "light_error"
         const val LIGHT_TEXT_SYSTEM = "light_text_system"
         const val LIGHT_TEXT_SUNDAY_HOLIDAY = "light_text_sunday_holiday"
@@ -50,7 +49,6 @@ object AppConstants {
         const val DARK_FONDO_DIALOGOS = "dark_fondo_dialogos"
         const val DARK_BACKGROUND = "dark_background"
         const val DARK_SETTINGS_BACKGROUND = "dark_settings_background"
-        const val DARK_ON_BACKGROUND = "dark_on_background"
         const val DARK_ERROR = "dark_error"
         const val DARK_TEXT_SYSTEM = "dark_text_system"
         const val DARK_TEXT_SUNDAY_HOLIDAY = "dark_text_sunday_holiday"
@@ -97,7 +95,6 @@ object AppConstants {
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
         val miniMonthTodayHighlightBackground = Color(0x262196F3)
         val miniMonthDayNumberNormal = Color(0xE6000000)
-        val onBackground = Color.Black
     }
 
     object DarkColors {
@@ -125,6 +122,5 @@ object AppConstants {
         val monthlyCalendarHeaderBackground = Color(0xFF0060BF)
         val miniMonthTodayHighlightBackground = Color(0x332173ED)
         val miniMonthDayNumberNormal = Color(0xE6E0E0E0)
-        val onBackground = Color(0xFFE0E0E0)
     }
 }

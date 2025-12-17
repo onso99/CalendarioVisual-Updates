@@ -204,7 +204,7 @@ fun AddEventScreen(
                         ),
                         singleLine = true
                     )
-                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -256,13 +256,13 @@ fun AddEventScreen(
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = CalendarioTheme.colors.cabecera,
                                 checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
-                                uncheckedThumbColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.5f),
-                                uncheckedTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f),
-                                uncheckedBorderColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.3f)
+                                uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                                uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                                uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
                             )
                         )
                     }
-                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -284,7 +284,7 @@ fun AddEventScreen(
                             )
                         }
                     }
-                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -306,7 +306,7 @@ fun AddEventScreen(
                             )
                         }
                     }
-                    HorizontalDivider(color = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f))
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -491,7 +491,8 @@ fun AddEventScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text("Aceptar") }
             },
-            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } }
+            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
+            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(
                 state = datePickerState,
@@ -533,7 +534,8 @@ fun AddEventScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text("Aceptar") }
             },
-            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } }
+            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
+            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(
                 state = datePickerState,

@@ -227,9 +227,9 @@ fun SettingsScreen(
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = colorScheme.primary,
                             checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f),
-                            uncheckedThumbColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.5f),
-                            uncheckedTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f),
-                            uncheckedBorderColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.3f)
+                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
                         )
                     )
                 }
@@ -307,10 +307,10 @@ fun SettingsScreen(
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 Text("Número de eventos: ${pendingEventCount.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
-                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.24f)))
+                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                 Row(modifier = Modifier.fillMaxWidth().clickable { pendingUseLargeFont = !pendingUseLargeFont }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Letra grande", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = colorScheme.primary, checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.onBackground.copy(alpha = 0.3f)))
+                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = colorScheme.primary, checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colorScheme.outline.copy(alpha = 0.3f))
                 ColorPickerRow("Color de fondo", pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }

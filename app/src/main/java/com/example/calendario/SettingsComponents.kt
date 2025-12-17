@@ -76,7 +76,7 @@ internal fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick:
             modifier = Modifier
                 .size(32.dp)
                 .background(currentColor, CircleShape)
-                .border(1.dp, CalendarioTheme.colors.onBackground.copy(alpha = 0.5f), CircleShape)
+                .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), CircleShape)
                 .clickable(onClick = onColorBoxClick)
         )
     }

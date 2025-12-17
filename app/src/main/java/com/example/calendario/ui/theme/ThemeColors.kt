@@ -15,7 +15,6 @@ data class CustomColors(
     val fondoDialogos: Color,
     val settingsBackground: Color,
     val background: Color,
-    val onBackground: Color,
     val error: Color,
     val textSystem: Color,
     val textSundayHoliday: Color,
@@ -46,7 +45,6 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
         fondoDialogos = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_FONDO_DIALOGOS else AppConstants.ColorKeys.LIGHT_FONDO_DIALOGOS, if (darkTheme) AppConstants.DarkColors.fondoDialogos else AppConstants.LightColors.fondoDialogos),
         settingsBackground = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND else AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND, if (darkTheme) AppConstants.DarkColors.settingsBackground else AppConstants.LightColors.settingsBackground),
         background = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_BACKGROUND else AppConstants.ColorKeys.LIGHT_BACKGROUND, if (darkTheme) AppConstants.DarkColors.background else AppConstants.LightColors.background),
-        onBackground = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_ON_BACKGROUND else AppConstants.ColorKeys.LIGHT_ON_BACKGROUND, if (darkTheme) AppConstants.DarkColors.onBackground else AppConstants.LightColors.onBackground),
         error = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_ERROR else AppConstants.ColorKeys.LIGHT_ERROR, if (darkTheme) AppConstants.DarkColors.error else AppConstants.LightColors.error),
         textSystem = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_TEXT_SYSTEM else AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM, if (darkTheme) AppConstants.DarkColors.textSystem else AppConstants.LightColors.textSystem),
         textSundayHoliday = getThemeColor(prefs, if (darkTheme) AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY else AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, if (darkTheme) AppConstants.DarkColors.textSundayHoliday else AppConstants.LightColors.textSundayHoliday),
@@ -84,9 +82,12 @@ private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: C
     }
 }
 
-fun isColorDark(color: Color, backgroundColor: Color): Boolean {
-    val blended = ColorUtils.compositeColors(color.toArgb(), backgroundColor.toArgb())
-    val finalColor = Color(blended)
+fun isColorDark(color: Color, backgroundColor: Color? = null): Boolean {
+    val finalColor = if (backgroundColor != null) {
+        Color(ColorUtils.compositeColors(color.toArgb(), backgroundColor.toArgb()))
+    } else {
+        color
+    }
     val red = finalColor.red * 255
     val green = finalColor.green * 255
     val blue = finalColor.blue * 255

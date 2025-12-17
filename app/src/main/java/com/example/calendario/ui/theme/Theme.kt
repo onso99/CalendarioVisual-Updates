@@ -23,7 +23,6 @@ val LocalCustomColors = staticCompositionLocalOf {
         fondoDialogos = AppConstants.LightColors.fondoDialogos,
         settingsBackground = AppConstants.LightColors.settingsBackground,
         background = AppConstants.LightColors.background,
-        onBackground = AppConstants.LightColors.onBackground,
         error = AppConstants.LightColors.error,
         textSystem = AppConstants.LightColors.textSystem,
         textSundayHoliday = AppConstants.LightColors.textSundayHoliday,
@@ -65,9 +64,9 @@ fun CalendarioTheme(
             primary = customColors.cabecera,
             onPrimary = onPrimaryColor,
             background = customColors.background,
-            onBackground = customColors.onBackground,
+            onBackground = customColors.textSystem,
             surface = customColors.fondoSecciones,
-            onSurface = customColors.onBackground,
+            onSurface = customColors.textSystem,
             error = customColors.error,
             onError = onErrorColor
         )
@@ -76,9 +75,9 @@ fun CalendarioTheme(
             primary = customColors.cabecera,
             onPrimary = onPrimaryColor,
             background = customColors.background,
-            onBackground = customColors.onBackground,
+            onBackground = customColors.textSystem,
             surface = customColors.fondoSecciones,
-            onSurface = customColors.onBackground,
+            onSurface = customColors.textSystem,
             error = customColors.error,
             onError = onErrorColor
         )

@@ -168,7 +168,7 @@ fun SelectCalendarsDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { 
+                                .clickable {
                                     val newSet = currentSelectedIdsInDialog.toMutableSet()
                                     if (newSet.contains(calendar.id)) {
                                         newSet.remove(calendar.id)
@@ -297,7 +297,7 @@ fun DayEventsDialog(
             if (eventsToDisplay.isEmpty()) {
                 Text("No hay eventos con detalle.", fontSize = 16.sp)
             } else {
-                LazyColumn(Modifier.heightIn(max = 300.dp)) { 
+                LazyColumn(Modifier.heightIn(max = 300.dp)) {
                     items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                         val esCumpleanos = festivo.isBirthday && !esFestivo
@@ -333,7 +333,7 @@ fun DayEventsDialog(
                                         .background(Color(colorInt), CircleShape)
                                         .border(
                                             0.5.dp,
-                                            CalendarioTheme.colors.onBackground.copy(alpha = 0.5f),
+                                            CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                                             CircleShape
                                         )
                                 )
@@ -355,7 +355,7 @@ fun DayEventsDialog(
         confirmButton = {
             Button(
                 onClick = onDismissRequest,
-                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) {
                 Text("Cerrar", fontSize = 16.sp)
             }
@@ -386,7 +386,7 @@ fun GoToYearDialog(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = { 
+                IconButton(onClick = {
                     val currentYear = year.toIntOrNull() ?: initialYear
                     val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
                     year = newYear.toString()
@@ -395,7 +395,7 @@ fun GoToYearDialog(
                 }
                 OutlinedTextField(
                     value = year,
-                    onValueChange = { 
+                    onValueChange = {
                         val newText = it.filter { char -> char.isDigit() }.take(4)
                         year = newText
                         if (newText.length == 4) {
@@ -407,7 +407,7 @@ fun GoToYearDialog(
                     modifier = Modifier.width(100.dp).padding(horizontal = 8.dp),
                     textStyle = TextStyle(textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem)
                 )
-                IconButton(onClick = { 
+                IconButton(onClick = {
                     val currentYear = year.toIntOrNull() ?: initialYear
                     val newYear = (currentYear + 1).coerceIn(minYear, maxYear)
                     year = newYear.toString()
@@ -436,10 +436,11 @@ fun GoToYearDialog(
     )
 }
 
+
 @Composable
 fun ThemeSelectionDialog(
-    currentTheme: ThemeSetting, 
-    onThemeSelected: (ThemeSetting) -> Unit, 
+    currentTheme: ThemeSetting,
+    onThemeSelected: (ThemeSetting) -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -456,7 +457,7 @@ fun ThemeSelectionDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = theme.displayName, 
+                            text = theme.displayName,
                             modifier = Modifier.weight(1f),
                             fontSize = 16.sp
                         )
@@ -467,10 +468,10 @@ fun ThemeSelectionDialog(
                 }
             }
         },
-        confirmButton = { 
+        confirmButton = {
             TextButton(
                 onClick = onDismiss
-            ) { 
+            ) {
                 Text("Cancelar", color = CalendarioTheme.colors.textSystem)
             }
         }
@@ -658,7 +659,7 @@ fun SelectCalendarDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerDialog(
-    onDismissRequest: () -> Unit, 
+    onDismissRequest: () -> Unit,
     onConfirm: (Int, Int) -> Unit,
     initialHour: Int,
     initialMinute: Int
@@ -670,9 +671,9 @@ fun TimePickerDialog(
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text("Seleccionar hora", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-        text = { 
+        text = {
             TimePicker(
-                state = timePickerState, 
+                state = timePickerState,
                 modifier = Modifier.fillMaxWidth(),
                 colors = TimePickerDefaults.colors(
                     clockDialColor = CalendarioTheme.colors.fondoSecciones,
@@ -681,7 +682,7 @@ fun TimePickerDialog(
                     timeSelectorSelectedContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoSecciones)) Color.White else Color.Black,
                     periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
                 )
-            ) 
+            )
         },
         confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text("Aceptar") } },
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
