@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -120,7 +119,7 @@ fun MiniMonthCalendar(
             fontWeight = FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = CalendarioTheme.colors.textSystem,
             style = compactTextStyle.copy(lineHeight = monthNameFontSize * 0.95f),
             modifier = Modifier.padding(bottom = 2.dp)
         )
@@ -144,7 +143,7 @@ fun MiniMonthCalendar(
                         fontSize = dayHeadersFontSize,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                         style = compactTextStyle.copy(lineHeight = dayHeadersFontSize * 0.95f)
                     )
                 }
@@ -175,7 +174,7 @@ fun MiniMonthCalendar(
                             Text(
                                 text = weekNumber.toString(),
                                 fontSize = weekNumberFontSize,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
                                 style = compactTextStyle.copy(lineHeight = weekNumberFontSize * 0.95f)
                             )
                         }

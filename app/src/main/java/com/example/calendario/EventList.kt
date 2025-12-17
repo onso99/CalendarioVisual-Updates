@@ -59,7 +59,7 @@ fun MonthlyEventList(
                 Text(
                     if (isCurrentMonthView && !showAllEvents) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
                 )
             }
         } else {
