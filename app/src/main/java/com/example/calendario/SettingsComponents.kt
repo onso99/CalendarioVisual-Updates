@@ -22,36 +22,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
 
 @Composable
 internal fun SectionTitle(text: String) {
-    val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     Text(
         text = text,
         style = typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = colorScheme.primary
+        color = CalendarioTheme.colors.cabecera
     )
 }
 
 @Composable
 internal fun WidgetSectionTitle() {
-    val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     Text(
         text = "Widget",
         style = typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = colorScheme.primary
+        color = CalendarioTheme.colors.cabecera
     )
 }
 
 @Composable
 internal fun ActionRow(text: String, onClick: () -> Unit) {
-    val colorScheme = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -60,26 +58,25 @@ internal fun ActionRow(text: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text, color = colorScheme.onSurfaceVariant, fontSize = 16.sp)
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = colorScheme.onSurfaceVariant)
+        Text(text, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = CalendarioTheme.colors.textSystem)
     }
 }
 
 @Composable
 internal fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: () -> Unit) {
-    val colorScheme = MaterialTheme.colorScheme
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp)
     ) {
-        Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f), color = colorScheme.onSurfaceVariant)
+        Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
         Box(
             modifier = Modifier
                 .size(32.dp)
                 .background(currentColor, CircleShape)
-                .border(1.dp, colorScheme.outline.copy(alpha = 0.5f), CircleShape)
+                .border(1.dp, CalendarioTheme.colors.onBackground.copy(alpha = 0.5f), CircleShape)
                 .clickable(onClick = onColorBoxClick)
         )
     }
