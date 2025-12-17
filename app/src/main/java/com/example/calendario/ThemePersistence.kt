@@ -54,7 +54,7 @@ object ThemePersistence {
         }
     }
 
-    fun exportThemeToJson(context: Context, uri: Uri) {
+    fun exportThemeToJson(context: Context, uri: Uri, newName: String) {
         try {
             val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
             val themeJson = JSONObject()
@@ -63,7 +63,7 @@ object ThemePersistence {
             val manifest = JSONObject()
             manifest.put("version", AppConstants.CURRENT_THEME_VERSION)
             manifest.put("appName", AppConstants.APP_SIGNATURE)
-            prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)?.let { manifest.put("name", it) }
+            manifest.put("name", newName)
             themeJson.put("themeManifest", manifest)
 
             // Light & Dark Themes

@@ -35,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -91,6 +92,7 @@ fun SettingsScreen(
     var showRestoreDialog by remember { mutableStateOf(false) }
     var showLegacyThemeDialog by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showExportDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -126,7 +128,10 @@ fun SettingsScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri -> ThemePersistence.exportThemeToJson(context, uri) }
+                result.data?.data?.let { uri ->
+                    val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
+                    ThemePersistence.exportThemeToJson(context, uri, newName)
+                }
             }
         }
     )
@@ -294,7 +299,7 @@ fun SettingsScreen(
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow("Importar tema...") { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow("Exportar tema...") { exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "calendario_theme.json") }) }
+                ActionRow("Exportar tema...") { showExportDialog = true }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow("Restaurar colores por defecto") { showRestoreDialog = true }
             }
@@ -325,7 +330,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.12", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.13", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
@@ -400,6 +405,58 @@ fun SettingsScreen(
             }
         )
     }
+    
+    if (showExportDialog) {
+        ExportThemeDialog(
+            onDismissRequest = { showExportDialog = false },
+            onConfirm = { newName ->
+                showExportDialog = false
+                appPrefs.edit { putString("temp_export_name", newName) }
+                exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_TITLE, "${newName}.json")
+                })
+            }
+        )
+    }
+}
+
+@Composable
+private fun ExportThemeDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text("Exportar Tema", fontWeight = FontWeight.Bold) },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Nombre del tema") },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) },
+                enabled = text.isNotBlank()
+            ) {
+                Text("Exportar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 private fun getFileName(context: Context, uri: Uri): String {
