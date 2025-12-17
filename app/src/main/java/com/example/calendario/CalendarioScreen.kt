@@ -38,10 +38,12 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -299,123 +301,121 @@ fun CalendarioScreen(
                         .background(MaterialTheme.colorScheme.primary)
                         .statusBarsPadding()
                 ) {
-                    val showHomeButton = viewMode == CalendarViewMode.MONTHLY && currentMonth != YearMonth.from(today)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Left Group
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
+                        val showHomeButton = viewMode == CalendarViewMode.MONTHLY && currentMonth != YearMonth.from(today)
                         Row(
-                            modifier = Modifier.weight(1f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            if (viewMode == CalendarViewMode.YEARLY || showHomeButton) {
-                                IconButton(
-                                    onClick = {
-                                        if (viewMode == CalendarViewMode.YEARLY) {
-                                            scope.launch { monthPagerState.animateScrollToPage(initialPage) }
-                                            viewMode = CalendarViewMode.MONTHLY
-                                        } else if (showHomeButton) {
-                                            scope.launch { monthPagerState.animateScrollToPage(initialPage) }
-                                        }
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = if (viewMode == CalendarViewMode.YEARLY) "Volver a vista mensual" else "Volver al mes actual",
-                                        tint = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                }
-                            }
-                            if (viewMode == CalendarViewMode.MONTHLY) {
-                                Text(
-                                    text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
-                                    fontSize = 20.sp,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(start = if (showHomeButton) 0.dp else 12.dp)
-                                )
-                            }
-                        }
-
-                        // Center Group
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
-                                .clickable {
-                                    if (viewMode == CalendarViewMode.MONTHLY) {
-                                        val targetYearPage = currentMonth.year - startYear.value
-                                        scope.launch { yearPagerState.scrollToPage(targetYearPage) }
-                                        viewMode = CalendarViewMode.YEARLY
-                                    } else {
-                                        showGoToYearDialog = true
-                                    }
-                                }
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.year}" else "${currentYear.value}",
-                                fontSize = 20.sp,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        // Right Group
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = { launchAddEditScreenWithPermissionCheck(null, null) }) {
-                                Icon(imageVector = Icons.Filled.Add, contentDescription = "Crear evento", tint = MaterialTheme.colorScheme.onPrimary)
+                            // Left Group
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                if (viewMode == CalendarViewMode.YEARLY || showHomeButton) {
+                                    IconButton(
+                                        onClick = {
+                                            if (viewMode == CalendarViewMode.YEARLY) {
+                                                scope.launch { monthPagerState.animateScrollToPage(initialPage) }
+                                                viewMode = CalendarViewMode.MONTHLY
+                                            } else if (showHomeButton) {
+                                                scope.launch { monthPagerState.animateScrollToPage(initialPage) }
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = if (viewMode == CalendarViewMode.YEARLY) "Volver a vista mensual" else "Volver al mes actual"
+                                        )
+                                    }
+                                }
+                                if (viewMode == CalendarViewMode.MONTHLY) {
+                                    Text(
+                                        text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.padding(start = if (showHomeButton) 0.dp else 12.dp)
+                                    )
+                                }
                             }
-                            IconButton(onClick = { isSearchActive = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Buscar",
-                                    tint = MaterialTheme.colorScheme.onPrimary
+
+                            // Center Group
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
+                                    .clickable {
+                                        if (viewMode == CalendarViewMode.MONTHLY) {
+                                            val targetYearPage = currentMonth.year - startYear.value
+                                            scope.launch { yearPagerState.scrollToPage(targetYearPage) }
+                                            viewMode = CalendarViewMode.YEARLY
+                                        } else {
+                                            showGoToYearDialog = true
+                                        }
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.year}" else "${currentYear.value}",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
-                            Box {
-                                IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, "Menú", tint = MaterialTheme.colorScheme.onPrimary) }
-                                DropdownMenu(
-                                    expanded = menuExpanded,
-                                    onDismissRequest = { menuExpanded = false },
-                                    shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
-                                ) {
-                                    DropdownMenuItem(
-                                        text = { Text("Calendarios", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                        onClick = {
-                                            menuExpanded = false
-                                            if (hasCalendarPermissionExternal) {
-                                                showSelectCalendarsDialog = true
-                                            } else {
-                                                readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
-                                            }
-                                        },
-                                        leadingIcon = { Icon(Icons.Default.Event, contentDescription = "Calendarios", tint = CalendarioTheme.colors.textSystem) }
+
+                            // Right Group
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(onClick = { launchAddEditScreenWithPermissionCheck(null, null) }) {
+                                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Crear evento")
+                                }
+                                IconButton(onClick = { isSearchActive = true }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = "Buscar"
                                     )
-                                    DropdownMenuItem(
-                                        text = { Text("Ajustes", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                        onClick = { menuExpanded = false; showSettingsScreen = true },
-                                        leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes", tint = CalendarioTheme.colors.textSystem) }
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text("Ayuda", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                        onClick = { menuExpanded = false; showHelpScreen = true },
-                                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "Ayuda", tint = CalendarioTheme.colors.textSystem) }
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text("Acerca de", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                        onClick = { menuExpanded = false; showAboutDialog = true },
-                                        leadingIcon = { Icon(Icons.Default.Info, contentDescription = "Acerca de", tint = CalendarioTheme.colors.textSystem) }
-                                    )
+                                }
+                                Box {
+                                    IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, "Menú") }
+                                    DropdownMenu(
+                                        expanded = menuExpanded,
+                                        onDismissRequest = { menuExpanded = false },
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = { Text("Calendarios", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = {
+                                                menuExpanded = false
+                                                if (hasCalendarPermissionExternal) {
+                                                    showSelectCalendarsDialog = true
+                                                } else {
+                                                    readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+                                                }
+                                            },
+                                            leadingIcon = { Icon(Icons.Default.Event, contentDescription = "Calendarios", tint = CalendarioTheme.colors.textSystem) }
+                                        )
+                                        DropdownMenuItem(
+                                            text = { Text("Ajustes", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = { menuExpanded = false; showSettingsScreen = true },
+                                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes", tint = CalendarioTheme.colors.textSystem) }
+                                        )
+                                        DropdownMenuItem(
+                                            text = { Text("Ayuda", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = { menuExpanded = false; showHelpScreen = true },
+                                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "Ayuda", tint = CalendarioTheme.colors.textSystem) }
+                                        )
+                                        DropdownMenuItem(
+                                            text = { Text("Acerca de", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            onClick = { menuExpanded = false; showAboutDialog = true },
+                                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = "Acerca de", tint = CalendarioTheme.colors.textSystem) }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -563,7 +563,7 @@ fun CalendarioScreen(
                             val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, availableCalendarsExternal)
                             onCalendarDataUpdated(updatedFestivosMap, availableCalendarsExternal, newlySelectedIds)
                         } catch (e: Exception) {
-                            Log.e("CalendarioScreen", "Error aplicando selección de calendarios: ${e.localizedMessage}", e)
+                            Log.e("CalendarioScreen", "Error aplicando selección de calendarios: ${'$'}{e.localizedMessage}", e)
                             Toast.makeText(context, "Error al aplicar selección.", Toast.LENGTH_SHORT).show()
                         }
                     }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -24,7 +25,6 @@ val LocalCustomColors = staticCompositionLocalOf {
         background = AppConstants.LightColors.background,
         onBackground = AppConstants.LightColors.onBackground,
         error = AppConstants.LightColors.error,
-        onError = AppConstants.LightColors.onError,
         textSystem = AppConstants.LightColors.textSystem,
         textSundayHoliday = AppConstants.LightColors.textSundayHoliday,
         textBirthday = AppConstants.LightColors.textBirthday,
@@ -57,27 +57,30 @@ fun CalendarioTheme(
         getThemeColors(context, darkTheme)
     }
 
+    val onPrimaryColor = if (isColorDark(customColors.cabecera)) Color.White else Color.Black
+    val onErrorColor = if (isColorDark(customColors.error)) Color.White else Color.Black
+
     val colorScheme = if (darkTheme) {
         darkColorScheme(
             primary = customColors.cabecera,
-            onPrimary = customColors.onBackground,
+            onPrimary = onPrimaryColor,
             background = customColors.background,
             onBackground = customColors.onBackground,
             surface = customColors.fondoSecciones,
             onSurface = customColors.onBackground,
             error = customColors.error,
-            onError = customColors.onError
+            onError = onErrorColor
         )
     } else {
         lightColorScheme(
             primary = customColors.cabecera,
-            onPrimary = customColors.onBackground,
+            onPrimary = onPrimaryColor,
             background = customColors.background,
             onBackground = customColors.onBackground,
             surface = customColors.fondoSecciones,
             onSurface = customColors.onBackground,
             error = customColors.error,
-            onError = customColors.onError
+            onError = onErrorColor
         )
     }
 
@@ -86,7 +89,7 @@ fun CalendarioTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isColorDark(colorScheme.primary)
         }
     }
 

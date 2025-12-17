@@ -626,7 +626,7 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
         title = { Text("Acerca de", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = { 
             Column {
-                Text("Calendario Visual V1.7.4", fontSize = 16.sp)
+                Text("Calendario Visual V1.7.5", fontSize = 16.sp)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp)
                 Text("Onso/noviembre 2025", fontSize = 16.sp)
             } 
