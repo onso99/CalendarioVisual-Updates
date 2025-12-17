@@ -325,7 +325,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.10", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.12", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }

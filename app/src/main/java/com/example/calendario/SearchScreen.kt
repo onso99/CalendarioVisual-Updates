@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,6 +42,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -75,9 +78,26 @@ fun SearchScreen(
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val lazyListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+    }
+
+    LaunchedEffect(searchResults) {
+        if (searchScope == SearchScope.ALL && searchResults.isNotEmpty()) {
+            val today = LocalDate.now()
+            val currentYear = today.year
+            val yearIndex = searchResults.keys.indexOfFirst { it.year == currentYear }
+            if (yearIndex != -1) {
+                val totalYears = searchResults.keys.size
+                val offset = (lazyListState.layoutInfo.viewportSize.height / 2)
+                scope.launch {
+                    lazyListState.animateScrollToItem(yearIndex * 2, scrollOffset = -offset)
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -178,7 +198,7 @@ fun SearchScreen(
                     Text("Escribe para buscar...", color = CalendarioTheme.colors.textSystem)
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
                     when (searchScope) {
                         SearchScope.MONTH, SearchScope.YEAR -> {
                             searchResults.forEach { (date, events) ->
