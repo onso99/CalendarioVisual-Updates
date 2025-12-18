@@ -3,23 +3,13 @@ package com.example.calendario
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -27,29 +17,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -101,16 +71,12 @@ private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {
 fun CalendarioScreen(
     themeManager: ThemeManager,
     onThemeUpdated: () -> Unit,
-    eventsByDateExternal: Map<LocalDate, List<Festivo>>,
-    availableCalendarsExternal: List<CalendarInfo>,
-    selectedCalendarIdsExternal: Set<Long>,
-    hasCalendarPermissionExternal: Boolean,
-    onRefreshRequest: () -> Unit,
-    onCalendarDataUpdated: (Map<LocalDate, List<Festivo>>, List<CalendarInfo>, Set<Long>) -> Unit,
-    onPermissionUpdated: (Boolean) -> Unit
+    viewModel: CalendarioViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    val uiState by viewModel.uiState.collectAsState()
 
     val today = LocalDate.now()
     val startMonth = remember { YearMonth.now().minusYears(100) }
@@ -148,7 +114,7 @@ fun CalendarioScreen(
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        onPermissionUpdated(isGranted)
+        viewModel.onPermissionResult(isGranted)
         if (isGranted) {
             showSelectCalendarsDialog = true
         } else {
@@ -179,16 +145,16 @@ fun CalendarioScreen(
         }
     }
 
-    LaunchedEffect(hasCalendarPermissionExternal) {
-        if (hasCalendarPermissionExternal) {
-            onRefreshRequest()
+    LaunchedEffect(uiState.hasCalendarPermission) {
+        if (uiState.hasCalendarPermission) {
+            viewModel.refreshData()
         }
     }
     
-    LaunchedEffect(searchQuery, searchScope, eventsByDateExternal) {
+    LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate) {
         if (searchQuery.isNotBlank()) {
             delay(300) // Debounce
-            val allEvents = eventsByDateExternal.values.flatten()
+            val allEvents = uiState.eventsByDate.values.flatten()
             val scopeFilteredEvents = when (searchScope) {
                 SearchScope.MONTH -> allEvents.filter { it.date.year == currentMonth.year && it.date.month == currentMonth.month }
                 SearchScope.YEAR -> allEvents.filter { it.date.year == currentMonth.year }
@@ -216,7 +182,7 @@ fun CalendarioScreen(
     }
 
     val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-    val finalEventsToList = processEventsForDisplay(eventsByDateExternal, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
+    val finalEventsToList = processEventsForDisplay(uiState.eventsByDate, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
 
     LaunchedEffect(finalEventsToList, showAllEvents, viewMode, isCurrentMonthView) {
         if (viewMode != CalendarViewMode.MONTHLY || finalEventsToList.isEmpty()) return@LaunchedEffect
@@ -242,17 +208,17 @@ fun CalendarioScreen(
                 showAddEventScreen = false
                 scope.launch {
                     delay(1500)
-                    onRefreshRequest()
+                    viewModel.refreshData()
                 }
             },
             onDelete = {
                 showAddEventScreen = false
                 scope.launch {
                     delay(1500)
-                    onRefreshRequest()
+                    viewModel.refreshData()
                 }
             },
-            editableCalendars = availableCalendarsExternal.filter { it.canModify },
+            editableCalendars = uiState.availableCalendars.filter { it.canModify },
             initialDate = dateForNewEvent,
             eventToEdit = eventToEdit
         )
@@ -302,7 +268,7 @@ fun CalendarioScreen(
             onEventClick = { event ->
                 launchAddEditScreenWithPermissionCheck(event.date, event)
             },
-            availableCalendars = availableCalendarsExternal
+            availableCalendars = uiState.availableCalendars
         )
     } else {
         Scaffold(
@@ -406,7 +372,7 @@ fun CalendarioScreen(
                                             text = { Text("Calendarios", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                             onClick = {
                                                 menuExpanded = false
-                                                if (hasCalendarPermissionExternal) {
+                                                if (uiState.hasCalendarPermission) {
                                                     showSelectCalendarsDialog = true
                                                 } else {
                                                     readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
@@ -458,7 +424,7 @@ fun CalendarioScreen(
                             MonthlyCalendar(
                                 currentMonth = month,
                                 today = today,
-                                eventsByDate = eventsByDateExternal,
+                                eventsByDate = uiState.eventsByDate,
                                 onDayClick = { date, events ->
                                     selectedDateForDialog = date
                                     eventsForDialog = events
@@ -551,7 +517,7 @@ fun CalendarioScreen(
                         YearlyCalendar(
                             currentYear = year,
                             today = today,
-                            eventsByDate = eventsByDateExternal,
+                            eventsByDate = uiState.eventsByDate,
                             showWeekNumber = showWeekNumber,
                             startOfWeek = startOfWeek,
                             onMonthSelected = { selectedMonth ->
@@ -566,19 +532,14 @@ fun CalendarioScreen(
             
             if (showSelectCalendarsDialog) {
                 SelectCalendarsDialog(
-                    initialSelectedIds = selectedCalendarIdsExternal,
-                    availableCalendars = availableCalendarsExternal,
+                    initialSelectedIds = uiState.selectedCalendarIds,
+                    availableCalendars = uiState.availableCalendars,
                     onDismissRequest = { showSelectCalendarsDialog = false }
                 ) { newlySelectedIds ->
                     showSelectCalendarsDialog = false
                     scope.launch {
-                        try {
-                            val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, availableCalendarsExternal)
-                            onCalendarDataUpdated(updatedFestivosMap, availableCalendarsExternal, newlySelectedIds)
-                        } catch (e: Exception) {
-                            Log.e("CalendarioScreen", "Error aplicando selección de calendarios: ${e.localizedMessage}", e)
-                            Toast.makeText(context, "Error al aplicar selección.", Toast.LENGTH_SHORT).show()
-                        }
+                        val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, uiState.availableCalendars)
+                        viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
                     }
                 }
             }
@@ -587,7 +548,7 @@ fun CalendarioScreen(
                 DayEventsDialog(
                     date = selectedDateForDialog!!,
                     events = eventsForDialog,
-                    availableCalendars = availableCalendarsExternal,
+                    availableCalendars = uiState.availableCalendars,
                     onDismissRequest = { 
                         showDayEventsDialog = false
                         selectedDateForDialog = null

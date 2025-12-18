@@ -64,8 +64,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import java.time.DayOfWeek
-import java.util.Locale
 import kotlin.math.roundToInt
 
 enum class StartOfWeekOption(val key: String, val displayName: String) {
@@ -133,7 +131,7 @@ fun SettingsScreen(
                                 Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         Toast.makeText(context, "Error al leer el archivo del tema.", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -148,7 +146,7 @@ fun SettingsScreen(
                     try {
                         val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
                         ThemePersistence.exportThemeToJson(context, uri, newName)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         Toast.makeText(context, "Error al guardar el archivo del tema.", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -366,7 +364,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.20", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.22", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }

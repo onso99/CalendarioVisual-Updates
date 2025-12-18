@@ -85,17 +85,30 @@ fun SearchScreen(
         focusRequester.requestFocus()
     }
 
-    LaunchedEffect(searchResults) {
-        if (searchScope == SearchScope.ALL && searchResults.isNotEmpty()) {
-            val today = LocalDate.now()
-            val currentYear = today.year
-            val yearIndex = searchResults.keys.indexOfFirst { it.year == currentYear }
-            if (yearIndex != -1) {
-                val offset = (lazyListState.layoutInfo.viewportSize.height / 2)
-                scope.launch {
-                    lazyListState.animateScrollToItem(yearIndex * 2, scrollOffset = -offset)
+    LaunchedEffect(searchResults, searchScope) {
+        if (searchResults.isEmpty()) return@LaunchedEffect
+
+        when (searchScope) {
+            SearchScope.YEAR -> {
+                val currentMonth = YearMonth.now()
+                val monthIndex = searchResults.keys.indexOfFirst { YearMonth.from(it) == currentMonth }
+                if (monthIndex != -1) {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(monthIndex * 2) // Each month has a header and items
+                    }
                 }
             }
+            SearchScope.ALL -> {
+                val currentYear = LocalDate.now().year
+                val yearIndex = searchResults.keys.indexOfFirst { it.year == currentYear }
+                if (yearIndex != -1) {
+                    val offset = (lazyListState.layoutInfo.viewportSize.height / 2)
+                    scope.launch {
+                        lazyListState.animateScrollToItem(yearIndex * 2, scrollOffset = -offset)
+                    }
+                }
+            }
+            else -> Unit // No specific scroll for MONTH
         }
     }
 

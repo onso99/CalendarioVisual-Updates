@@ -50,6 +50,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3) // Material 3 para Compose
 
+    // ViewModel dependencies
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
+
     // ★★★ DEPENDENCIAS AÑADIDAS PARA LA ACTIVIDAD DE CONFIGURACIÓN DEL WIDGET ★★★
     implementation(libs.androidx.appcompat) // Para AppCompatActivity
     implementation(libs.androidx.preference.ktx) // Para PreferenceFragmentCompat y extensiones ktx
