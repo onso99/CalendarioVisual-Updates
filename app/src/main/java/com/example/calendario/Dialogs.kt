@@ -210,6 +210,14 @@ fun SelectCalendarsDialog(
                                     color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                                     fontSize = 12.sp
                                 )
+                                if (!calendar.canModify) {
+                                    Text(
+                                        "(Solo lectura)",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                        fontSize = 12.sp
+                                    )
+                                }
                             }
                         }
                     }
