@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.edit
+import androidx.core.graphics.toColorInt
 import org.json.JSONObject
 
 object ThemePersistence {
@@ -49,7 +50,7 @@ object ThemePersistence {
             if (key.isNotBlank() && theme.has(key)) {
                 val colorString = theme.getString(key)
                 // La validación del color ya se hizo en ThemeImportManager
-                putInt(key, android.graphics.Color.parseColor(colorString))
+                putInt(key, colorString.toColorInt())
             }
         }
     }

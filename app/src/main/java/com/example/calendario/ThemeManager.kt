@@ -2,9 +2,9 @@ package com.example.calendario
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -26,7 +26,9 @@ class ThemeManager(context: Context) {
 
     fun setTheme(theme: ThemeSetting) {
         _themeSetting.value = theme
-        prefs.edit().putString(AppConstants.KEY_THEME_SETTING, theme.name).apply()
+        prefs.edit {
+            putString(AppConstants.KEY_THEME_SETTING, theme.name)
+        }
     }
 }
 

@@ -91,7 +91,6 @@ fun SearchScreen(
             val currentYear = today.year
             val yearIndex = searchResults.keys.indexOfFirst { it.year == currentYear }
             if (yearIndex != -1) {
-                val totalYears = searchResults.keys.size
                 val offset = (lazyListState.layoutInfo.viewportSize.height / 2)
                 scope.launch {
                     lazyListState.animateScrollToItem(yearIndex * 2, scrollOffset = -offset)
