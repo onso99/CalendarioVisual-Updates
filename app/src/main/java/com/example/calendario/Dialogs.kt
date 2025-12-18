@@ -436,7 +436,6 @@ fun GoToYearDialog(
     )
 }
 
-
 @Composable
 fun ThemeSelectionDialog(
     currentTheme: ThemeSetting,
@@ -451,7 +450,7 @@ fun ThemeSelectionDialog(
         title = { Text("Seleccionar Modo", fontWeight = FontWeight.Bold) },
         text = {
             Column {
-                ThemeSetting.values().forEach { theme ->
+                ThemeSetting.entries.forEach { theme ->
                     Row(
                         Modifier.fillMaxWidth().clickable { onThemeSelected(theme); onDismiss() }.padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -478,12 +477,6 @@ fun ThemeSelectionDialog(
     )
 }
 
-data class CompatibilityDialogInfo(
-    val title: String,
-    val message: String,
-    val onConfirm: () -> Unit
-)
-
 @Composable
 fun RestoreDefaultColorsDialog(
     onDismiss: () -> Unit,
@@ -501,31 +494,6 @@ fun RestoreDefaultColorsDialog(
                 onClick = onConfirm,
                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text("Restaurar") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
-    )
-}
-
-@Composable
-fun CompatibilityAlertDialog(
-    info: CompatibilityDialogInfo,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(info.title, fontWeight = FontWeight.Bold) },
-        text = { Text(info.message) },
-        confirmButton = {
-            Button(
-                onClick = {
-                    info.onConfirm()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-            ) { Text("Continuar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = CalendarioTheme.colors.textSystem) } }
     )
