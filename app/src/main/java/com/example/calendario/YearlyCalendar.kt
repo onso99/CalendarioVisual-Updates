@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
@@ -44,7 +47,8 @@ fun YearlyCalendar(
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
     onMonthSelected: (YearMonth) -> Unit,
-    showWeekNumber: Boolean // Nuevo parámetro
+    showWeekNumber: Boolean,
+    startOfWeek: DayOfWeek
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
     Column(
@@ -76,7 +80,8 @@ fun YearlyCalendar(
                             month = month,
                             today = today,
                             eventsByDate = eventsByDate,
-                            showWeekNumber = showWeekNumber, // Pasar el valor
+                            showWeekNumber = showWeekNumber,
+                            startOfWeek = startOfWeek,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -94,12 +99,18 @@ fun MiniMonthCalendar(
     month: YearMonth,
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
-    showWeekNumber: Boolean, // Nuevo parámetro
+    showWeekNumber: Boolean,
+    startOfWeek: DayOfWeek,
     modifier: Modifier = Modifier
 ) {
-    val daysOfWeekShort = listOf("L", "M", "X", "J", "V", "S", "D")
+    val daysOfWeek = remember(startOfWeek) {
+        val days = DayOfWeek.entries
+        val startDayIndex = days.indexOf(startOfWeek)
+        days.subList(startDayIndex, days.size) + days.subList(0, startDayIndex)
+    }
+    
     val firstDayOfMonth = month.atDay(1)
-    val firstDayOfWeekIndex = (firstDayOfMonth.dayOfWeek.value - 1 + 7) % 7
+    val firstDayOfWeekIndex = daysOfWeek.indexOf(firstDayOfMonth.dayOfWeek)
     val daysInMonth = month.lengthOfMonth()
 
     val compactTextStyle = LocalTextStyle.current.copy(platformStyle = PlatformTextStyle(includeFontPadding = false))
@@ -133,13 +144,13 @@ fun MiniMonthCalendar(
             if (showWeekNumber) {
                 Spacer(modifier = Modifier.width(weekNumberColumnWidth))
             }
-            daysOfWeekShort.forEach { 
+            daysOfWeek.forEach { day ->
                 Box(
                     Modifier.weight(1f),
                     Alignment.Center
                 ) {
                     Text(
-                        it,
+                        day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
                         fontSize = dayHeadersFontSize,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
@@ -150,7 +161,7 @@ fun MiniMonthCalendar(
             }
         }
         Column(Modifier.weight(1f)) {
-            val dayCellsData = remember(month) {
+            val dayCellsData = remember(month, startOfWeek) {
                 List(6 * 7) {
                     val day = it - firstDayOfWeekIndex + 1
                     if (day in 1..daysInMonth) month.atDay(day) else null
@@ -190,7 +201,7 @@ fun MiniMonthCalendar(
                                 val dayEvents = eventsByDate[date].orEmpty()
                                 val isToday = date == today
                                 val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                                val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
+                                val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
 
                                 val textColor = when {
                                     isToday -> {

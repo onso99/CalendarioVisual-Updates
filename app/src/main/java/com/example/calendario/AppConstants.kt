@@ -7,6 +7,7 @@ object AppConstants {
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs"
 
     // Preference Keys
+    const val KEY_START_OF_WEEK = "start_of_week"
     const val KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW = "show_week_number_in_year_view"
     const val KEY_THEME_SETTING = "theme_setting_key"
     const val KEY_LIGHT_THEME_NAME = "light_theme_name_key"

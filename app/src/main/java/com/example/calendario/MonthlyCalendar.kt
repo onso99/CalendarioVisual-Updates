@@ -28,8 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun MonthlyCalendar(
@@ -37,20 +40,25 @@ fun MonthlyCalendar(
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
     onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit,
-    onEmptyDayClick: (date: LocalDate) -> Unit
+    onEmptyDayClick: (date: LocalDate) -> Unit,
+    startOfWeek: DayOfWeek
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: "" }
     val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
-    val daysOfWeek = listOf("L", "M", "X", "J", "V", "S", "D")
+    val daysOfWeek = remember(startOfWeek) {
+        val days = DayOfWeek.entries
+        val startDayIndex = days.indexOf(startOfWeek)
+        days.subList(startDayIndex, days.size) + days.subList(0, startDayIndex)
+    }
 
     val prevMonth = currentMonth.minusMonths(1)
     val nextMonth = currentMonth.plusMonths(1)
 
     val firstDayOfMonth = currentMonth.atDay(1)
-    val firstDayOfWeekIndex = (firstDayOfMonth.dayOfWeek.value + 6) % 7 // 0 para Lunes
+    val firstDayOfWeekIndex = daysOfWeek.indexOf(firstDayOfMonth.dayOfWeek)
 
     val daysInPrevMonth = prevMonth.lengthOfMonth()
     val daysInCurrentMonth = currentMonth.lengthOfMonth()
@@ -88,7 +96,7 @@ fun MonthlyCalendar(
                     Alignment.Center
                 ) {
                     Text(
-                        text = day,
+                        text = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = onHeaderColor,
@@ -114,7 +122,7 @@ fun MonthlyCalendar(
                         !isCurrentMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         else -> {
                             val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                            val isSundayNonHoliday = date.dayOfWeek == java.time.DayOfWeek.SUNDAY && !isHoliday
+                            val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
                             when {
                                 isHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday

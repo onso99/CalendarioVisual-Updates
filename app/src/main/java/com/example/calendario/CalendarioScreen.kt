@@ -67,10 +67,12 @@ import com.example.calendario.ui.theme.isColorDark
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.Normalizer
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
+import java.time.temporal.WeekFields
 import java.util.Locale
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
@@ -80,6 +82,18 @@ private val REGEX_UNACCENT = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 fun CharSequence.unaccent(): String {
     val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
     return REGEX_UNACCENT.replace(temp, "")
+}
+
+@Composable
+private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {
+    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+    val startOfWeekKey = prefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
+    return when (StartOfWeekOption.fromKey(startOfWeekKey)) {
+        StartOfWeekOption.SYSTEM -> WeekFields.of(Locale.getDefault()).firstDayOfWeek
+        StartOfWeekOption.MONDAY -> DayOfWeek.MONDAY
+        StartOfWeekOption.SUNDAY -> DayOfWeek.SUNDAY
+        StartOfWeekOption.SATURDAY -> DayOfWeek.SATURDAY
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -440,6 +454,7 @@ fun CalendarioScreen(
                             state = monthPagerState,
                         ) { page ->
                             val month = startMonth.plusMonths(page.toLong())
+                            val startOfWeek = getActualFirstDayOfWeek(context)
                             MonthlyCalendar(
                                 currentMonth = month,
                                 today = today,
@@ -451,7 +466,8 @@ fun CalendarioScreen(
                                 },
                                 onEmptyDayClick = { date ->
                                     launchAddEditScreenWithPermissionCheck(date, null)
-                                }
+                                },
+                                startOfWeek = startOfWeek
                             )
                         }
                     }
@@ -524,6 +540,7 @@ fun CalendarioScreen(
                         }
                     }
                 } else { // Yearly view
+                    val startOfWeek = getActualFirstDayOfWeek(context)
                     val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
                     val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
 
@@ -536,6 +553,7 @@ fun CalendarioScreen(
                             today = today,
                             eventsByDate = eventsByDateExternal,
                             showWeekNumber = showWeekNumber,
+                            startOfWeek = startOfWeek,
                             onMonthSelected = { selectedMonth ->
                                 val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
                                 scope.launch { monthPagerState.scrollToPage(targetPage) }

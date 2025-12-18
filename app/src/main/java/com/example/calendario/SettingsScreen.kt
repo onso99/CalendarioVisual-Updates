@@ -64,7 +64,22 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import java.time.DayOfWeek
+import java.util.Locale
 import kotlin.math.roundToInt
+
+enum class StartOfWeekOption(val key: String, val displayName: String) {
+    SYSTEM("SYSTEM", "Del sistema"),
+    MONDAY("MONDAY", "Lunes"),
+    SUNDAY("SUNDAY", "Domingo"),
+    SATURDAY("SATURDAY", "Sábado");
+
+    companion object {
+        fun fromKey(key: String): StartOfWeekOption {
+            return entries.find { it.key == key } ?: SYSTEM
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +104,7 @@ fun SettingsScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
+    var showStartDayOfWeekDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -143,6 +159,7 @@ fun SettingsScreen(
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
     val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
+    val originalStartOfWeekKey = remember { appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key }
     val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
     val originalUseLargeFont = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) }
     val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
@@ -150,6 +167,7 @@ fun SettingsScreen(
     val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
+    var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
     var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
     var pendingUseLargeFont by remember { mutableStateOf(originalUseLargeFont) }
     var pendingEventColor by remember { mutableStateOf(originalEventColor) }
@@ -163,6 +181,7 @@ fun SettingsScreen(
     val hasPendingChanges by remember {
         derivedStateOf {
             pendingShowWeekNumber != originalShowWeekNumber ||
+            pendingStartOfWeekKey != originalStartOfWeekKey ||
             pendingEventCount.roundToInt() != originalEventCount ||
             pendingUseLargeFont != originalUseLargeFont ||
             pendingEventColor != originalEventColor ||
@@ -189,6 +208,7 @@ fun SettingsScreen(
                         IconButton(onClick = {
                             appPrefs.edit {
                                 putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, pendingShowWeekNumber)
+                                putString(AppConstants.KEY_START_OF_WEEK, pendingStartOfWeekKey)
                             }
                             widgetPrefs.edit {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
@@ -222,6 +242,15 @@ fun SettingsScreen(
                 ) {
                     Text("Modo", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Text(themeSetting.displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                }
+                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showStartDayOfWeekDialog = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Comienzo de la semana", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 Row(
@@ -337,7 +366,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.19", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.20", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
@@ -349,6 +378,17 @@ fun SettingsScreen(
             currentTheme = themeSetting,
             onThemeSelected = { themeManager.setTheme(it) },
             onDismiss = { showThemeDialog = false }
+        )
+    }
+    
+    if (showStartDayOfWeekDialog) {
+        StartDayOfWeekDialog(
+            currentSelectionKey = pendingStartOfWeekKey,
+            onOptionSelected = { 
+                pendingStartOfWeekKey = it
+                showStartDayOfWeekDialog = false
+            },
+            onDismiss = { showStartDayOfWeekDialog = false }
         )
     }
 
@@ -460,7 +500,7 @@ private fun ExportThemeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") } // Use remember, not rememberSaveable
+    var text by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -487,6 +527,45 @@ private fun ExportThemeDialog(
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text("Cancelar")
+            }
+        }
+    )
+}
+
+@Composable
+private fun StartDayOfWeekDialog(
+    currentSelectionKey: String,
+    onOptionSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text("Comienzo de la semana", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                StartOfWeekOption.entries.forEach { option ->
+                    Row(
+                        Modifier.fillMaxWidth().clickable { onOptionSelected(option.key) }.padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = option.displayName,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp
+                        )
+                        if (option.key == currentSelectionKey) {
+                            Icon(Icons.Default.Check, contentDescription = "Seleccionado", tint = CalendarioTheme.colors.cabecera)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = CalendarioTheme.colors.textSystem)
             }
         }
     )
