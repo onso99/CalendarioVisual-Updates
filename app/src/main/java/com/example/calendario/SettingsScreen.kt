@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,11 +28,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -91,6 +88,7 @@ fun SettingsScreen(
     var showLegacyThemeDialog by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
+    var showDiscardChangesDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -104,19 +102,23 @@ fun SettingsScreen(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    val fileName = getFileName(context, uri)
-                    when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
-                        is ImportResult.Success -> {
-                            ThemePersistence.applyTheme(context, importResult.parsedTheme, fileName)
-                            onThemeImported()
-                            Toast.makeText(context, "Tema importado con éxito.", Toast.LENGTH_SHORT).show()
+                    try {
+                        val fileName = getFileName(context, uri)
+                        when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
+                            is ImportResult.Success -> {
+                                ThemePersistence.applyTheme(context, importResult.parsedTheme, fileName)
+                                onThemeImported()
+                                Toast.makeText(context, "Tema importado con éxito.", Toast.LENGTH_SHORT).show()
+                            }
+                            is ImportResult.LegacyThemeDetected -> {
+                                showLegacyThemeDialog = importResult.parsedTheme to fileName
+                            }
+                            is ImportResult.Failure -> {
+                                Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
+                            }
                         }
-                        is ImportResult.LegacyThemeDetected -> {
-                            showLegacyThemeDialog = importResult.parsedTheme to fileName
-                        }
-                        is ImportResult.Failure -> {
-                            Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
-                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Error al leer el archivo del tema.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -127,8 +129,12 @@ fun SettingsScreen(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
-                    ThemePersistence.exportThemeToJson(context, uri, newName)
+                    try {
+                        val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
+                        ThemePersistence.exportThemeToJson(context, uri, newName)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Error al guardar el archivo del tema.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -136,7 +142,7 @@ fun SettingsScreen(
 
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
-    val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) } // Default to false
+    val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
     val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
     val originalUseLargeFont = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false) }
     val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
@@ -164,39 +170,38 @@ fun SettingsScreen(
             pendingWidgetBackgroundColor != originalWidgetBackgroundColor
         }
     }
+    
+    val backAction = {
+        if (hasPendingChanges) {
+            showDiscardChangesDialog = true
+        } else {
+            onBackPress()
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Ajustes", color = colorScheme.onPrimary) },
-                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = colorScheme.onPrimary) } },
+                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = colorScheme.onPrimary) } },
                 actions = {
-                    FilledIconButton(
-                        onClick = {
-                            if (hasPendingChanges) {
-                                appPrefs.edit {
-                                    if (pendingShowWeekNumber != originalShowWeekNumber) {
-                                        putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, pendingShowWeekNumber)
-                                    }
-                                }
-                                widgetPrefs.edit {
-                                    putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
-                                    putBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, pendingUseLargeFont)
-                                    putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
-                                    putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
-                                    putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
-                                }
-                                CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+                    if (hasPendingChanges) {
+                        IconButton(onClick = {
+                            appPrefs.edit {
+                                putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, pendingShowWeekNumber)
                             }
+                            widgetPrefs.edit {
+                                putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
+                                putBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, pendingUseLargeFont)
+                                putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
+                                putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
+                                putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
+                            }
+                            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                             onBackPress()
-                        },
-                        modifier = Modifier.padding(end = 8.dp).size(36.dp),
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = colorScheme.onPrimary.copy(alpha = 0.2f),
-                            contentColor = colorScheme.onPrimary
-                        )
-                    ) {
-                        Icon(Icons.Default.Check, "Aplicar")
+                        }) {
+                            Icon(Icons.Default.Check, "Aplicar cambios", tint = colorScheme.onPrimary)
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = colorScheme.primary)
@@ -332,7 +337,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.17", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.18", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
@@ -369,12 +374,38 @@ fun SettingsScreen(
                     remove(AppConstants.KEY_LIGHT_THEME_NAME)
                     remove(AppConstants.KEY_DARK_THEME_NAME)
                 }
-                // Actualiza los nombres de los temas después de restaurar
                 lightThemeName = null
                 darkThemeName = null
                 onThemeUpdated()
                 Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
                 showRestoreDialog = false
+            }
+        )
+    }
+
+    if (showDiscardChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showDiscardChangesDialog = false },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text("Descartar cambios", fontWeight = FontWeight.Bold) },
+            text = { Text("Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDiscardChangesDialog = false
+                        onBackPress()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Descartar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDiscardChangesDialog = false }) {
+                    Text("Cancelar", color = CalendarioTheme.colors.textSystem)
+                }
             }
         )
     }
@@ -429,7 +460,7 @@ private fun ExportThemeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("") } // Use remember, not rememberSaveable
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -473,8 +504,3 @@ private fun getFileName(context: Context, uri: Uri): String {
     }
     return fileName.substringBeforeLast('.')
 }
-
-
-
-
-

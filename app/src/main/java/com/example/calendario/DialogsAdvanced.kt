@@ -28,7 +28,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
@@ -39,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,6 +138,7 @@ fun AdvancedColorPickerDialog(
     onColorConfirm: (Color) -> Unit
 ) {
     val clipboardManager = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var currentColor by remember(initialColor) { mutableStateOf(initialColor) }
     var isHexError by remember { mutableStateOf(false) }
@@ -155,7 +157,7 @@ fun AdvancedColorPickerDialog(
                 val colorToParse = if (newHex.length == 7) newHex.replace("#", "#FF") else newHex
                 currentColor = Color(colorToParse.toColorInt())
                 isHexError = false
-            } catch (_: IllegalArgumentException) { 
+            } catch (_: IllegalArgumentException) {
                 isHexError = true
             }
         } else {
@@ -169,9 +171,18 @@ fun AdvancedColorPickerDialog(
         title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
         text = {
             Column {
-                Row(modifier = Modifier.fillMaxWidth().height(60.dp).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))) {
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(initialColor))
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(if(isHexError) initialColor else currentColor))
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))) {
+                    Box(modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(initialColor))
+                    Box(modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(if (isHexError) initialColor else currentColor))
                 }
                 Spacer(Modifier.height(16.dp))
 
@@ -192,7 +203,7 @@ fun AdvancedColorPickerDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         value = hexCode,
-                        onValueChange = { 
+                        onValueChange = {
                             val newHexUncapped = if (it.startsWith("#")) it else "#$it"
                             hexCode = newHexUncapped.take(9)
                             updateColorFromHex(hexCode)
@@ -213,19 +224,23 @@ fun AdvancedColorPickerDialog(
                         Icon(Icons.Default.Close, contentDescription = "Limpiar", tint = CalendarioTheme.colors.textSystem)
                     }
 
-                    IconButton(onClick = { 
-                        clipboardManager.setText(AnnotatedString(hexCode))
-                        Toast.makeText(context, "Copiado: $hexCode", Toast.LENGTH_SHORT).show()
+                    IconButton(onClick = {
+                        scope.launch {
+                            clipboardManager.setText(AnnotatedString(hexCode))
+                            Toast.makeText(context, "Copiado: $hexCode", Toast.LENGTH_SHORT).show()
+                        }
                     }) {
                         Icon(Icons.Default.ContentCopy, contentDescription = "Copiar color", tint = CalendarioTheme.colors.textSystem)
                     }
 
-                    IconButton(onClick = { 
-                        clipboardManager.getText()?.text?.let { 
-                            val pasted = it.take(9)
-                            hexCode = if (pasted.startsWith("#")) pasted else "#$pasted"
-                            updateColorFromHex(hexCode)
-                        } 
+                    IconButton(onClick = {
+                        scope.launch {
+                            clipboardManager.getText()?.text?.let {
+                                val pasted = it.take(9)
+                                hexCode = if (pasted.startsWith("#")) pasted else "#$pasted"
+                                updateColorFromHex(hexCode)
+                            }
+                        }
                     }) {
                         Icon(Icons.Default.ContentPaste, contentDescription = "Pegar color", tint = CalendarioTheme.colors.textSystem)
                     }
@@ -242,9 +257,9 @@ fun ColorSlider(label: String, value: Float, onValueChange: (Float) -> Unit, val
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(label, modifier = Modifier.width(20.dp), color = CalendarioTheme.colors.textSystem)
         Slider(
-            value = value, 
-            onValueChange = onValueChange, 
-            valueRange = valueRange, 
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
             modifier = Modifier.weight(1f),
             colors = SliderDefaults.colors(
                 thumbColor = CalendarioTheme.colors.cabecera,

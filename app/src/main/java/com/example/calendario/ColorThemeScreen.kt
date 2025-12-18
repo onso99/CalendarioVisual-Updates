@@ -21,19 +21,22 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -84,31 +87,38 @@ fun ColorThemeScreen(
     var showKeywordColorDialog by remember { mutableStateOf(false) }
     var keywordColorToEdit by remember { mutableStateOf<KeywordColorEditInfo?>(null) }
 
+    var showDiscardChangesDialog by remember { mutableStateOf(false) }
+
+    val hasPendingChanges by remember {
+        derivedStateOf { pendingColorChanges.isNotEmpty() || pendingKeywordChanges.isNotEmpty() }
+    }
+
+    val backAction = {
+        if (hasPendingChanges) {
+            showDiscardChangesDialog = true
+        } else {
+            onBackPress()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Personalizar Colores", color = MaterialTheme.colorScheme.onPrimary) },
-                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = MaterialTheme.colorScheme.onPrimary) } },
+                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = MaterialTheme.colorScheme.onPrimary) } },
                 actions = {
-                    FilledIconButton(
-                        onClick = { 
-                            if (pendingColorChanges.isNotEmpty() || pendingKeywordChanges.isNotEmpty()) {
-                                prefs.edit { 
-                                    pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) } 
-                                    pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
-                                    remove(AppConstants.KEY_LIGHT_THEME_NAME)
-                                    remove(AppConstants.KEY_DARK_THEME_NAME)
-                                }
+                    if (hasPendingChanges) {
+                        IconButton(onClick = { 
+                            prefs.edit {
+                                pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) }
+                                pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
+                                remove(AppConstants.KEY_LIGHT_THEME_NAME)
+                                remove(AppConstants.KEY_DARK_THEME_NAME)
                             }
                             onBackPress()
-                        },
-                        modifier = Modifier.padding(end = 8.dp).size(36.dp),
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Icon(Icons.Default.Check, "Aplicar")
+                        }) {
+                            Icon(Icons.Default.Check, "Aplicar cambios", tint = MaterialTheme.colorScheme.onPrimary)
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -195,6 +205,33 @@ fun ColorThemeScreen(
                 pendingColorChanges[keywordColorToEdit!!.colorKey] = newColor
                 pendingKeywordChanges[keywordColorToEdit!!.keywordKey] = newKeyword
                 showKeywordColorDialog = false
+            }
+        )
+    }
+
+    if (showDiscardChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showDiscardChangesDialog = false },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text("Descartar cambios", fontWeight = FontWeight.Bold) },
+            text = { Text("Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDiscardChangesDialog = false
+                        onBackPress()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Descartar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDiscardChangesDialog = false }) {
+                    Text("Cancelar", color = CalendarioTheme.colors.textSystem)
+                }
             }
         )
     }
