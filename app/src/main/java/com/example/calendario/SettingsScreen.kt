@@ -213,6 +213,15 @@ fun SettingsScreen(
             SectionTitle(text = "General")
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showThemeDialog = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Modo", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(themeSetting.displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                }
+                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { pendingShowWeekNumber = !pendingShowWeekNumber }
@@ -290,11 +299,6 @@ fun SettingsScreen(
             }
 
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showThemeDialog = true }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Modo", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Text(themeSetting.displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                }
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(text = "Personalizar colores", onClick = onColorThemeClick)
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow("Importar tema...") { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
@@ -330,7 +334,7 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.15", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V1.7.16", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
