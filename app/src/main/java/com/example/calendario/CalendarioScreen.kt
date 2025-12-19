@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -118,7 +119,7 @@ fun CalendarioScreen(
         if (isGranted) {
             showSelectCalendarsDialog = true
         } else {
-            Toast.makeText(context, "Permiso de calendario necesario para seleccionar calendarios.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.permission_calendar_select, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -128,7 +129,7 @@ fun CalendarioScreen(
         if (isGranted) {
             showAddEventScreen = true
         } else {
-            Toast.makeText(context, "Permiso para escribir en el calendario es necesario para crear eventos.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.permission_calendar_write, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -303,7 +304,7 @@ fun CalendarioScreen(
                                     ) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = if (viewMode == CalendarViewMode.YEARLY) "Volver a vista mensual" else "Volver al mes actual"
+                                            contentDescription = if (viewMode == CalendarViewMode.YEARLY) stringResource(id = R.string.back_to_monthly_view) else stringResource(id = R.string.back_to_current_month)
                                         )
                                     }
                                 }
@@ -352,16 +353,16 @@ fun CalendarioScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(onClick = { launchAddEditScreenWithPermissionCheck(null, null) }) {
-                                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Crear evento")
+                                    Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
                                 }
                                 IconButton(onClick = { isSearchActive = true }) {
                                     Icon(
                                         imageVector = Icons.Default.Search,
-                                        contentDescription = "Buscar"
+                                        contentDescription = stringResource(id = R.string.search)
                                     )
                                 }
                                 Box {
-                                    IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, "Menú") }
+                                    IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, stringResource(id = R.string.menu)) }
                                     DropdownMenu(
                                         expanded = menuExpanded,
                                         onDismissRequest = { menuExpanded = false },
@@ -369,7 +370,7 @@ fun CalendarioScreen(
                                         modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
                                     ) {
                                         DropdownMenuItem(
-                                            text = { Text("Calendarios", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            text = { Text(stringResource(id = R.string.calendars), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                             onClick = {
                                                 menuExpanded = false
                                                 if (uiState.hasCalendarPermission) {
@@ -378,17 +379,17 @@ fun CalendarioScreen(
                                                     readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
                                                 }
                                             },
-                                            leadingIcon = { Icon(Icons.Default.Event, contentDescription = "Calendarios", tint = CalendarioTheme.colors.textSystem) }
+                                            leadingIcon = { Icon(Icons.Default.Event, contentDescription = stringResource(id = R.string.calendars), tint = CalendarioTheme.colors.textSystem) }
                                         )
                                         DropdownMenuItem(
-                                            text = { Text("Ajustes", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            text = { Text(stringResource(id = R.string.settings), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                             onClick = { menuExpanded = false; showSettingsScreen = true },
-                                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes", tint = CalendarioTheme.colors.textSystem) }
+                                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings), tint = CalendarioTheme.colors.textSystem) }
                                         )
                                         DropdownMenuItem(
-                                            text = { Text("Ayuda", fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                            text = { Text(stringResource(id = R.string.help), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                             onClick = { menuExpanded = false; showHelpScreen = true },
-                                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = "Ayuda", tint = CalendarioTheme.colors.textSystem) }
+                                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = stringResource(id = R.string.help), tint = CalendarioTheme.colors.textSystem) }
                                         )
                                     }
                                 }
@@ -446,7 +447,7 @@ fun CalendarioScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Eventos de ${currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }}",
+                            text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }),
                             fontSize = 18.sp,
                             color = CalendarioTheme.colors.eventListTitleColor,
                             fontWeight = FontWeight.Bold,
@@ -463,7 +464,7 @@ fun CalendarioScreen(
                             ) {
                                 val textColor = if (isColorDark(CalendarioTheme.colors.toggleButtonSelectedBackground, CalendarioTheme.colors.background)) Color.White else Color.Black
                                 Text(
-                                    text = if (showAllEvents) "Todos" else "Pendientes",
+                                    text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp,
                                     color = textColor

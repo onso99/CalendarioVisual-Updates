@@ -76,7 +76,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
             date to dtoList.map { dto ->
                 Festivo(
                     id = -1L,
-                    title = dto.title.takeIf { !it.isNullOrBlank() } ?: dto.description.takeIf { !it.isNullOrBlank() } ?: "(Evento guardado)",
+                    title = dto.title.takeIf { !it.isNullOrBlank() } ?: dto.description.takeIf { !it.isNullOrBlank() } ?: context.getString(R.string.saved_event),
                     description = dto.description,
                     date = date,
                     startTime = dto.startTimeStr?.let {
@@ -208,8 +208,8 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 
                 while (it.moveToNext()) {
                     val id = it.getLong(idColumn)
-                    val displayName = it.getString(displayNameColumn) ?: "Calendario sin nombre"
-                    val accountName = it.getString(accountNameColumn) ?: "Cuenta desconocida"
+                    val displayName = it.getString(displayNameColumn) ?: context.getString(R.string.unnamed_calendar)
+                    val accountName = it.getString(accountNameColumn) ?: context.getString(R.string.unknown_account)
                     val colorInt = try {
                         if (it.isNull(colorColumn)) null else it.getInt(colorColumn)
                     } catch (_: Exception) {
@@ -305,7 +305,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                 val beginMillis = c.getLong(beginCol)
                 val endMillis = c.getLong(endCol)
                 val calId = c.getLong(calIdCol)
-                val title = c.getStringOrNull(titleCol)?.trim() ?: "(Sin título)"
+                val title = c.getStringOrNull(titleCol)?.trim() ?: context.getString(R.string.no_title)
                 val isAllDay = c.getInt(allDayCol) == 1
 
                 val beginInstant = Instant.ofEpochMilli(beginMillis)

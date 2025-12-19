@@ -2,6 +2,7 @@ package com.example.calendario
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -66,8 +68,13 @@ fun ColorThemeScreen(
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val groupedItems = ColorThemeConfig.colorThemeItems.groupBy { it.category }
     val categories = remember {
-        listOf("General", "Lista de Eventos", "Calendario Mensual", "Calendario Anual")
-            .filter { groupedItems.containsKey(it) }
+        listOf(
+            "General" to R.string.general,
+            "Lista de Eventos" to R.string.event_list,
+            "Calendario Mensual" to R.string.monthly_calendar,
+            "Calendario Anual" to R.string.yearly_calendar
+        )
+            .filter { groupedItems.containsKey(it.first) }
     }
 
     val themeManager = rememberThemeManager()
@@ -82,7 +89,7 @@ fun ColorThemeScreen(
     val pendingKeywordChanges = remember { mutableStateMapOf<String, String>() }
 
     var showAdvancedColorDialog by remember { mutableStateOf(false) }
-    var colorToEdit by remember { mutableStateOf<Triple<String, Color, String>?>(null) }
+    var colorToEdit by remember { mutableStateOf<Triple<String, Color, Int>?>(null) }
 
     var showKeywordColorDialog by remember { mutableStateOf(false) }
     var keywordColorToEdit by remember { mutableStateOf<KeywordColorEditInfo?>(null) }
@@ -104,8 +111,8 @@ fun ColorThemeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Personalizar Colores", color = MaterialTheme.colorScheme.onPrimary) },
-                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = MaterialTheme.colorScheme.onPrimary) } },
+                title = { Text(stringResource(id = R.string.customize_colors), color = MaterialTheme.colorScheme.onPrimary) },
+                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) } },
                 actions = {
                     if (hasPendingChanges) {
                         IconButton(onClick = { 
@@ -117,7 +124,7 @@ fun ColorThemeScreen(
                             }
                             onBackPress()
                         }) {
-                            Icon(Icons.Default.Check, "Aplicar cambios", tint = MaterialTheme.colorScheme.onPrimary)
+                            Icon(Icons.Default.Check, stringResource(id = R.string.apply_changes), tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 },
@@ -129,11 +136,11 @@ fun ColorThemeScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            categories.forEachIndexed { index, category ->
+            categories.forEachIndexed { index, (category, categoryRes) ->
                 val items = groupedItems[category]!!
 
                 SectionTitle(
-                    text = category,
+                    text = stringResource(id = categoryRes),
                     modifier = Modifier.padding(top = if(index > 0) 24.dp else 0.dp, bottom = 8.dp)
                 )
                 
@@ -153,24 +160,24 @@ fun ColorThemeScreen(
                             if (colorKey.isNotBlank()) {
                                 val currentColor = pendingColorChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
-                                if (item.label == "Evento-1" || item.label == "Evento-2") {
-                                    val keywordKey = if (item.label == "Evento-1") AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
+                                if (item.labelRes == R.string.event_1 || item.labelRes == R.string.event_2) {
+                                    val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
                                     val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
 
                                     SingleColorThemeRow(
-                                        label = currentKeyword.ifBlank { item.label },
+                                        label = currentKeyword.ifBlank { stringResource(id = item.labelRes) },
                                         color = currentColor,
                                         onClick = {
-                                            keywordColorToEdit = KeywordColorEditInfo(colorKey, currentColor, item.label, keywordKey, currentKeyword)
+                                            keywordColorToEdit = KeywordColorEditInfo(colorKey, currentColor, item.labelRes, keywordKey, currentKeyword)
                                             showKeywordColorDialog = true
                                         }
                                     )
                                 } else {
                                     SingleColorThemeRow(
-                                        label = item.label,
+                                        label = stringResource(id = item.labelRes),
                                         color = currentColor,
                                         onClick = {
-                                            colorToEdit = Triple(colorKey, currentColor, item.label)
+                                            colorToEdit = Triple(colorKey, currentColor, item.labelRes)
                                             showAdvancedColorDialog = true
                                         }
                                     )
@@ -197,7 +204,7 @@ fun ColorThemeScreen(
 
     if (showKeywordColorDialog && keywordColorToEdit != null) {
         KeywordColorPickerDialog(
-            label = keywordColorToEdit!!.label,
+            label = stringResource(id = keywordColorToEdit!!.labelRes),
             initialColor = keywordColorToEdit!!.color,
             initialKeyword = keywordColorToEdit!!.keyword,
             onDismissRequest = { showKeywordColorDialog = false },
@@ -215,8 +222,8 @@ fun ColorThemeScreen(
             containerColor = CalendarioTheme.colors.fondoDialogos,
             titleContentColor = CalendarioTheme.colors.textSystem,
             textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text("Descartar cambios", fontWeight = FontWeight.Bold) },
-            text = { Text("Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?") },
+            title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.discard_changes_confirmation)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -225,19 +232,19 @@ fun ColorThemeScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Descartar")
+                    Text(stringResource(id = R.string.discard))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDiscardChangesDialog = false }) {
-                    Text("Cancelar", color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
                 }
             }
         )
     }
 }
 
-data class KeywordColorEditInfo(val colorKey: String, val color: Color, val label: String, val keywordKey: String, val keyword: String)
+data class KeywordColorEditInfo(val colorKey: String, val color: Color, @StringRes val labelRes: Int, val keywordKey: String, val keyword: String)
 
 private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: Color): Color {
     if (!prefs.contains(key)) return defaultColor

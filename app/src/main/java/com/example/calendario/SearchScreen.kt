@@ -51,6 +51,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -124,7 +125,7 @@ fun SearchScreen(
                         TextField(
                             value = searchQuery,
                             onValueChange = onSearchQueryChange,
-                            placeholder = { Text("Buscar eventos...", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
+                            placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
                             textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontSize = 18.sp),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
@@ -152,7 +153,7 @@ fun SearchScreen(
                         IconButton(onClick = onClose) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Cerrar búsqueda",
+                                contentDescription = stringResource(id = R.string.close_search),
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
@@ -162,7 +163,7 @@ fun SearchScreen(
                             IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Limpiar búsqueda",
+                                    contentDescription = stringResource(id = R.string.clear_search),
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
@@ -185,7 +186,7 @@ fun SearchScreen(
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                val scopeOptions = listOf("Mes actual", "Año actual", "Todos")
+                val scopeOptions = listOf(stringResource(id = R.string.current_month), stringResource(id = R.string.current_year), stringResource(id = R.string.all))
                 scopeOptions.forEachIndexed { index, text ->
                     val scopeValue = SearchScope.entries[index]
                     val isSelected = searchScope == scopeValue
@@ -203,11 +204,11 @@ fun SearchScreen(
             }
             if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No se han encontrado resultados", color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.no_results_found), color = CalendarioTheme.colors.textSystem)
                 }
             } else if (searchQuery.isBlank()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Escribe para buscar...", color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.type_to_search), color = CalendarioTheme.colors.textSystem)
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
@@ -306,10 +307,12 @@ private fun EventRow(
         else -> CalendarioTheme.colors.textEventDefault
     }
 
+    val noTitle = stringResource(id = R.string.no_title)
+    val allDayEvent = stringResource(id = R.string.all_day_event)
     val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) {
-        "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
+        "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { noTitle }}"
     } else {
-        festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+        festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else "" }
     }
 
     val descWithAge = if (festivo.age != null) "$baseDesc (${festivo.age})" else baseDesc
@@ -339,7 +342,7 @@ private fun EventRow(
         if (festivo.rrule != null) {
             Icon(
                 imageVector = Icons.Default.Refresh,
-                contentDescription = "Evento repetido",
+                contentDescription = stringResource(id = R.string.repeated_event),
                 tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                 modifier = Modifier.padding(start = 8.dp).size(16.dp)
             )

@@ -90,9 +90,9 @@ object ThemePersistence {
             context.contentResolver.openOutputStream(uri)?.use {
                 it.write(themeJson.toString(4).toByteArray())
             }
-            Toast.makeText(context, "Tema exportado con éxito", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(context, "Error al exportar el tema: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.error_exporting_theme, e.message), Toast.LENGTH_LONG).show()
         }
     }
 }

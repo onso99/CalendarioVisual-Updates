@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,8 +31,8 @@ fun HelpScreen(onBackPress: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ayuda") },
-                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver") } },
+                title = { Text(stringResource(id = R.string.help)) },
+                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = CalendarioTheme.colors.cabecera,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -49,26 +50,26 @@ fun HelpScreen(onBackPress: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp) 
         ) {
-            HelpSection(title = "Vistas de Calendario") {
-                Text("La aplicación tiene dos vistas principales: mensual y anual. Puedes cambiar entre ellas pulsando en el año en la cabecera de la vista mensual.")
+            HelpSection(title = stringResource(id = R.string.help_section_calendar_views)) {
+                Text(stringResource(id = R.string.help_calendar_views_1))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("En la vista mensual, desliza a izquierda o derecha para cambiar de mes. Si te alejas del mes actual, aparecerá una flecha en la esquina superior izquierda para volver rápidamente.")
+                Text(stringResource(id = R.string.help_calendar_views_2))
             }
-            HelpSection(title = "Gestión de Eventos") {
-                Text("Pulsa en un día del calendario mensual para ver sus eventos en un diálogo. Desde ahí, puedes añadir un nuevo evento para ese día o pulsar en un evento existente para editarlo.")
+            HelpSection(title = stringResource(id = R.string.help_section_event_management)) {
+                Text(stringResource(id = R.string.help_event_management_1))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("También puedes crear un evento pulsando en el icono '+' en la barra superior o en un día vacío del calendario.")
+                Text(stringResource(id = R.string.help_event_management_2))
             }
-            HelpSection(title = "Lista de Eventos") {
-                Text("Debajo del calendario mensual se muestra una lista de los eventos del mes. Para el mes actual, puedes elegir entre ver todos los eventos o solo los pendientes (eventos futuros). Pulsa en el botón 'Todos'/'Pendientes' para cambiar.")
+            HelpSection(title = stringResource(id = R.string.help_section_event_list)) {
+                Text(stringResource(id = R.string.help_event_list_1))
             }
-            HelpSection(title = "Personalización") {
-                Text("Puedes personalizar completamente la apariencia de la aplicación desde el menú 'Ajustes'. Esto incluye cambiar entre tema claro y oscuro, y modificar cada color de la interfaz.")
+            HelpSection(title = stringResource(id = R.string.help_section_customization)) {
+                Text(stringResource(id = R.string.help_customization_1))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Los temas de color se pueden exportar e importar como ficheros .json, lo que te permite guardar tus creaciones o compartirlas.")
+                Text(stringResource(id = R.string.help_customization_2))
             }
-            HelpSection(title = "Widget") {
-                Text("La aplicación incluye un widget para tu pantalla de inicio que muestra los próximos eventos. Puedes personalizar su apariencia (número de eventos, tamaño de letra y colores) desde la pantalla de 'Ajustes'.")
+            HelpSection(title = stringResource(id = R.string.help_section_widget)) {
+                Text(stringResource(id = R.string.help_widget_1))
             }
         }
     }

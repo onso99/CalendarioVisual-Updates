@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,7 +58,7 @@ fun MonthlyEventList(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    if (isCurrentMonthView && !showAllEvents) "No hay eventos pendientes para este mes." else "No hay eventos para este mes.",
+                    if (isCurrentMonthView && !showAllEvents) stringResource(id = R.string.no_pending_events_this_month) else stringResource(id = R.string.no_events_this_month),
                     fontSize = 16.sp,
                     color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
                 )
@@ -95,8 +96,10 @@ fun MonthlyEventList(
                         
                         val iconColor = if (isTodayEvents) textColor else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
 
-                        val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { "(Sin título)" }}"
-                        else festivo.title.ifEmpty { if (festivo.isAllDay) "(Evento todo el día)" else "" }
+                        val noTitle = stringResource(id = R.string.no_title)
+                        val allDayEvent = stringResource(id = R.string.all_day_event)
+                        val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { noTitle }}"
+                        else festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else "" }
 
                         val displayDesc = if (festivo.age != null) "$baseDesc (${festivo.age})" else baseDesc
 
@@ -142,7 +145,7 @@ fun MonthlyEventList(
                                     if (festivo.rrule != null) {
                                         Icon(
                                             imageVector = Icons.Default.Refresh,
-                                            contentDescription = "Evento repetido",
+                                            contentDescription = stringResource(id = R.string.repeated_event),
                                             tint = iconColor,
                                             modifier = Modifier
                                                 .padding(start = 8.dp)

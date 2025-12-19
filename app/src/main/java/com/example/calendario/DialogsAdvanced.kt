@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -131,7 +132,7 @@ class AdvancedColorPickerState(
     fun copyHexToClipboard() {
         scope.launch {
             clipboardManager.setText(AnnotatedString(hexCode))
-            Toast.makeText(context, "Copiado: $hexCode", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.copied_to_clipboard, hexCode), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -185,7 +186,7 @@ fun KeywordColorPickerDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Color del evento:", color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.event_color_label), color = CalendarioTheme.colors.textSystem)
                     Box(
                         modifier = Modifier
                             .size(32.dp)
@@ -197,7 +198,7 @@ fun KeywordColorPickerDialog(
                 OutlinedTextField(
                     value = keyword,
                     onValueChange = { keyword = it },
-                    label = { Text("Palabra clave") },
+                    label = { Text(stringResource(id = R.string.keyword)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -209,12 +210,12 @@ fun KeywordColorPickerDialog(
         },
         confirmButton = {
             Button(onClick = { onConfirm(selectedColor, keyword) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) {
-                Text("Guardar")
+                Text(stringResource(id = R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", color = CalendarioTheme.colors.cabecera)
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera)
             }
         }
     )
@@ -243,7 +244,7 @@ fun AdvancedColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text("Seleccionar Color", fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
+        title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
         text = {
             Column {
                 Row(
@@ -284,7 +285,7 @@ fun AdvancedColorPickerDialog(
                     OutlinedTextField(
                         value = state.hexCode,
                         onValueChange = { state.updateColorFromHex(it) },
-                        label = { Text("Hex (ARGB)") },
+                        label = { Text(stringResource(id = R.string.hex_argb)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { if (!state.isHexError) onColorConfirm(state.currentColor) }),
@@ -297,15 +298,15 @@ fun AdvancedColorPickerDialog(
                     )
 
                     IconButton(onClick = { state.clearHex() }) {
-                        Icon(Icons.Default.Close, contentDescription = "Limpiar", tint = CalendarioTheme.colors.textSystem)
+                        Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
                     }
 
                     IconButton(onClick = { state.copyHexToClipboard() }) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copiar color", tint = CalendarioTheme.colors.textSystem)
+                        Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
                     }
 
                     IconButton(onClick = { state.pasteHexFromClipboard() }) {
-                        Icon(Icons.Default.ContentPaste, contentDescription = "Pegar color", tint = CalendarioTheme.colors.textSystem)
+                        Icon(Icons.Default.ContentPaste, contentDescription = stringResource(id = R.string.paste_color), tint = CalendarioTheme.colors.textSystem)
                     }
                 }
             }
@@ -315,12 +316,12 @@ fun AdvancedColorPickerDialog(
                 onClick = { if (!state.isHexError) onColorConfirm(state.currentColor) },
                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) {
-                Text("Aceptar")
+                Text(stringResource(id = R.string.accept))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar", color = CalendarioTheme.colors.cabecera)
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera)
             }
         }
     )

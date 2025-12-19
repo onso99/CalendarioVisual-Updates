@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,11 +67,11 @@ import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.math.roundToInt
 
-enum class StartOfWeekOption(val key: String, val displayName: String) {
-    SYSTEM("SYSTEM", "Del sistema"),
-    MONDAY("MONDAY", "Lunes"),
-    SUNDAY("SUNDAY", "Domingo"),
-    SATURDAY("SATURDAY", "Sábado");
+enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
+    SYSTEM("SYSTEM", R.string.system_default),
+    MONDAY("MONDAY", R.string.monday),
+    SUNDAY("SUNDAY", R.string.sunday),
+    SATURDAY("SATURDAY", R.string.saturday);
 
     companion object {
         fun fromKey(key: String): StartOfWeekOption {
@@ -122,7 +123,7 @@ fun SettingsScreen(
                             is ImportResult.Success -> {
                                 ThemePersistence.applyTheme(context, importResult.parsedTheme, fileName)
                                 onThemeImported()
-                                Toast.makeText(context, "Tema importado con éxito.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
                             }
                             is ImportResult.LegacyThemeDetected -> {
                                 showLegacyThemeDialog = importResult.parsedTheme to fileName
@@ -132,7 +133,7 @@ fun SettingsScreen(
                             }
                         }
                     } catch (_: Exception) {
-                        Toast.makeText(context, "Error al leer el archivo del tema.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, R.string.error_reading_theme_file, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -147,7 +148,7 @@ fun SettingsScreen(
                         val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
                         ThemePersistence.exportThemeToJson(context, uri, newName)
                     } catch (_: Exception) {
-                        Toast.makeText(context, "Error al guardar el archivo del tema.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, R.string.error_saving_theme_file, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -199,8 +200,8 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ajustes", color = colorScheme.onPrimary) },
-                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = colorScheme.onPrimary) } },
+                title = { Text(stringResource(id = R.string.settings), color = colorScheme.onPrimary) },
+                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = colorScheme.onPrimary) } },
                 actions = {
                     if (hasPendingChanges) {
                         IconButton(onClick = {
@@ -218,7 +219,7 @@ fun SettingsScreen(
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                             onBackPress()
                         }) {
-                            Icon(Icons.Default.Check, "Aplicar cambios", tint = colorScheme.onPrimary)
+                            Icon(Icons.Default.Check, stringResource(id = R.string.apply_changes), tint = colorScheme.onPrimary)
                         }
                     }
                 },
@@ -231,15 +232,15 @@ fun SettingsScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
             // --- General Section ---
-            SectionTitle(text = "General")
+            SectionTitle(text = stringResource(id = R.string.general))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showThemeDialog = true },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Modo", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Text(themeSetting.displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(stringResource(id = themeSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 Row(
@@ -247,8 +248,8 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Comienzo de la semana", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Text(StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayName, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(stringResource(id = R.string.start_of_week), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
                 Row(
@@ -259,7 +260,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Semana en vista anual", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Switch(
                         checked = pendingShowWeekNumber,
                         onCheckedChange = { pendingShowWeekNumber = it },
@@ -280,7 +281,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Personalizar Tema",
+                    text = stringResource(id = R.string.customize_theme),
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = colorScheme.primary,
@@ -314,13 +315,13 @@ fun SettingsScreen(
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp).weight(1f)) {
                         currentLightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Claro: ", color = themeNameColor, fontSize = 13.sp)
+                                Text(stringResource(id = R.string.light_theme_prefix), color = themeNameColor, fontSize = 13.sp)
                                 Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
                         currentDarkThemeName?.let {
                              Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Oscuro: ", color = themeNameColor, fontSize = 13.sp)
+                                Text(stringResource(id = R.string.dark_theme_prefix), color = themeNameColor, fontSize = 13.sp)
                                 Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
@@ -329,34 +330,34 @@ fun SettingsScreen(
             }
 
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
-                ActionRow(text = "Personalizar colores", onClick = onColorThemeClick)
+                ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow("Importar tema...") { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
+                ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow("Exportar tema...") { showExportDialog = true }
+                ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
                 HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow("Restaurar colores por defecto") { showRestoreDialog = true }
+                ActionRow(stringResource(id = R.string.restore_default_colors)) { showRestoreDialog = true }
             }
 
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
-                Text("Número de eventos: ${pendingEventCount.roundToInt()}", fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
+                Text(stringResource(id = R.string.widget_event_count, pendingEventCount.roundToInt()), fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
                 Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                 Row(modifier = Modifier.fillMaxWidth().clickable { pendingUseLargeFont = !pendingUseLargeFont }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Letra grande", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.large_font), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                     Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = colorScheme.primary, checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colorScheme.outline.copy(alpha = 0.3f))
-                ColorPickerRow("Color de fondo", pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
+                ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
                 Spacer(Modifier.height(12.dp))
-                ColorPickerRow("Color eventos", pendingEventColor) { showWidgetEventColorPalette = true }
+                ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true }
                 Spacer(Modifier.height(12.dp))
-                ColorPickerRow("Color eventos de hoy", pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
+                ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
                 Spacer(Modifier.height(16.dp))
             }
             
             // --- About Section ---
-            SectionTitle(text = "Acerca de")
+            SectionTitle(text = stringResource(id = R.string.about))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -364,9 +365,9 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V1.7.22", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text("Asistente IA / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text("Onso/noviembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text(stringResource(id = R.string.app_version), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text(stringResource(id = R.string.ai_assistant_credit), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text(stringResource(id = R.string.author_date), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
         }
     }
@@ -415,7 +416,7 @@ fun SettingsScreen(
                 lightThemeName = null
                 darkThemeName = null
                 onThemeUpdated()
-                Toast.makeText(context, "Los colores han sido restaurados.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.colors_restored, Toast.LENGTH_SHORT).show()
                 showRestoreDialog = false
             }
         )
@@ -427,8 +428,8 @@ fun SettingsScreen(
             containerColor = CalendarioTheme.colors.fondoDialogos,
             titleContentColor = CalendarioTheme.colors.textSystem,
             textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text("Descartar cambios", fontWeight = FontWeight.Bold) },
-            text = { Text("Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?") },
+            title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.discard_changes_confirmation)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -437,12 +438,12 @@ fun SettingsScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Descartar")
+                    Text(stringResource(id = R.string.discard))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDiscardChangesDialog = false }) {
-                    Text("Cancelar", color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
                 }
             }
         )
@@ -454,24 +455,24 @@ fun SettingsScreen(
             containerColor = CalendarioTheme.colors.fondoDialogos,
             titleContentColor = CalendarioTheme.colors.textSystem,
             textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text("Tema Antiguo Detectado", fontWeight = FontWeight.Bold) },
-            text = { Text("El tema que estás importando es de una versión anterior. Algunos colores pueden no aplicarse correctamente. ¿Deseas continuar?") },
+            title = { Text(stringResource(id = R.string.legacy_theme_detected_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.legacy_theme_detected_message)) },
             confirmButton = {
                 Button(
                     onClick = {
                         ThemePersistence.applyTheme(context, parsedTheme, fileName)
                         onThemeImported()
-                        Toast.makeText(context, "Tema antiguo importado.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
                         showLegacyThemeDialog = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) {
-                    Text("Aplicar Igualmente")
+                    Text(stringResource(id = R.string.apply_anyway))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showLegacyThemeDialog = null }) {
-                    Text("Cancelar", color = CalendarioTheme.colors.textSystem)
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
                 }
             }
         )
@@ -505,12 +506,12 @@ private fun ExportThemeDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text("Exportar Tema", fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold) },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Nombre del tema") },
+                label = { Text(stringResource(id = R.string.theme_name)) },
                 singleLine = true
             )
         },
@@ -519,12 +520,12 @@ private fun ExportThemeDialog(
                 onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) },
                 enabled = text.isNotBlank()
             ) {
-                Text("Exportar")
+                Text(stringResource(id = R.string.export))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancelar")
+                Text(stringResource(id = R.string.cancel))
             }
         }
     )
@@ -541,7 +542,7 @@ private fun StartDayOfWeekDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text("Comienzo de la semana", fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.start_of_week), fontWeight = FontWeight.Bold) },
         text = {
             Column {
                 StartOfWeekOption.entries.forEach { option ->
@@ -550,12 +551,12 @@ private fun StartDayOfWeekDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = option.displayName,
+                            text = stringResource(id = option.displayNameRes),
                             modifier = Modifier.weight(1f),
                             fontSize = 16.sp
                         )
                         if (option.key == currentSelectionKey) {
-                            Icon(Icons.Default.Check, contentDescription = "Seleccionado", tint = CalendarioTheme.colors.cabecera)
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.selected), tint = CalendarioTheme.colors.cabecera)
                         }
                     }
                 }
@@ -563,7 +564,7 @@ private fun StartDayOfWeekDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = CalendarioTheme.colors.textSystem)
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
             }
         }
     )

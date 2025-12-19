@@ -53,6 +53,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -66,12 +67,12 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-enum class RepetitionRule(val rrule: String?, val displayName: String) {
-    NONE(null, "No se repite"),
-    DAILY("FREQ=DAILY", "Cada día"),
-    WEEKLY("FREQ=WEEKLY", "Cada semana"),
-    MONTHLY("FREQ=MONTHLY", "Cada mes"),
-    YEARLY("FREQ=YEARLY", "Cada año")
+enum class RepetitionRule(val rrule: String?, val displayNameRes: Int) {
+    NONE(null, R.string.does_not_repeat),
+    DAILY("FREQ=DAILY", R.string.every_day),
+    WEEKLY("FREQ=WEEKLY", R.string.every_week),
+    MONTHLY("FREQ=MONTHLY", R.string.every_month),
+    YEARLY("FREQ=YEARLY", R.string.every_year)
 }
 
 private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -137,12 +138,12 @@ fun AddEventScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (eventToEdit != null) "Editar evento" else "Nuevo evento") },
+                title = { Text(if (eventToEdit != null) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPress) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 },
@@ -157,7 +158,7 @@ fun AddEventScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Borrar evento"
+                                contentDescription = stringResource(id = R.string.delete_event)
                             )
                         }
                     }
@@ -188,7 +189,7 @@ fun AddEventScreen(
                     TextField(
                         value = title,
                         onValueChange = { title = it },
-                        placeholder = { Text("Título", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
+                        placeholder = { Text(stringResource(id = R.string.title), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
@@ -212,13 +213,13 @@ fun AddEventScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = selectedCalendar?.displayName ?: "No hay calendarios editables",
+                            text = selectedCalendar?.displayName ?: stringResource(id = R.string.no_editable_calendars),
                             modifier = Modifier.weight(1f),
                             color = CalendarioTheme.colors.textSystem
                         )
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Seleccionar calendario",
+                            contentDescription = stringResource(id = R.string.select_calendar),
                             tint = CalendarioTheme.colors.textSystem
                         )
                     }
@@ -238,7 +239,7 @@ fun AddEventScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Todo el día", modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
+                        Text(stringResource(id = R.string.all_day_switch), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
                         Switch(
                             checked = isAllDay,
                             onCheckedChange = { checked ->
@@ -269,7 +270,7 @@ fun AddEventScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Inicio", color = CalendarioTheme.colors.textSystem)
+                        Text(stringResource(id = R.string.start), color = CalendarioTheme.colors.textSystem)
                         Row {
                             Text(startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp), color = CalendarioTheme.colors.textSystem)
                             Text(startDate.format(dateFormatter), modifier = Modifier.clickable { showStartDatePickerDialog = true }, color = CalendarioTheme.colors.textSystem)
@@ -291,7 +292,7 @@ fun AddEventScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Fin", color = CalendarioTheme.colors.textSystem)
+                        Text(stringResource(id = R.string.end), color = CalendarioTheme.colors.textSystem)
                         Row {
                             Text(endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp), color = CalendarioTheme.colors.textSystem)
                             Text(endDate.format(dateFormatter), modifier = Modifier.clickable { showEndDatePickerDialog = true }, color = CalendarioTheme.colors.textSystem)
@@ -313,10 +314,10 @@ fun AddEventScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(repetitionRule.displayName, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
+                        Text(stringResource(id = repetitionRule.displayNameRes), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Seleccionar repetición",
+                            contentDescription = stringResource(id = R.string.select_repetition),
                             tint = CalendarioTheme.colors.textSystem
                         )
                     }
@@ -333,16 +334,16 @@ fun AddEventScreen(
                         .fillMaxWidth()
                 ) {
                     CompositionLocalProvider(LocalContentColor provides CalendarioTheme.colors.textSystem) {
-                        Text("Resumen:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(id = R.string.summary), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Título: ${title.ifBlank { "(Sin título)" }}")
-                        Text("Calendario: ${selectedCalendar?.displayName ?: "N/A"}")
+                        Text(stringResource(id = R.string.summary_title, title.ifBlank { stringResource(id = R.string.no_title) }))
+                        Text(stringResource(id = R.string.summary_calendar, selectedCalendar?.displayName ?: "N/A"))
                         if (isAllDay) {
                             Row {
                                 Column(modifier = Modifier.padding(end = 8.dp)) {
-                                    Text("Del:")
+                                    Text(stringResource(id = R.string.from))
                                     if (startDate.toLocalDate() != endDate.toLocalDate()) {
-                                        Text("Al:")
+                                        Text(stringResource(id = R.string.to))
                                     }
                                 }
                                 Column {
@@ -352,21 +353,21 @@ fun AddEventScreen(
                                     }
                                 }
                             }
-                            Text("Todo el día")
+                            Text(stringResource(id = R.string.all_day_switch))
                         } else {
                             Row {
                                 Column(modifier = Modifier.padding(end = 8.dp)) {
-                                    Text("Inicio:")
-                                    Text("Fin:")
+                                    Text(stringResource(id = R.string.start))
+                                    Text(stringResource(id = R.string.end))
                                 }
                                 Column {
-                                    Text("${startDate.format(dateFormatter)} a las ${startDate.format(timeFormatter)}")
-                                    Text("${endDate.format(dateFormatter)} a las ${endDate.format(timeFormatter)}")
+                                    Text(stringResource(id = R.string.at, startDate.format(dateFormatter), startDate.format(timeFormatter)))
+                                    Text(stringResource(id = R.string.at, endDate.format(dateFormatter), endDate.format(timeFormatter)))
                                 }
                             }
                         }
                         if (repetitionRule != RepetitionRule.NONE) {
-                            Text(repetitionRule.displayName)
+                            Text(stringResource(id = repetitionRule.displayNameRes))
                         }
                     }
                 }
@@ -382,7 +383,7 @@ fun AddEventScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onBackPress) {
-                    Text("Cancelar", color = CalendarioTheme.colors.cabecera)
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera)
                 }
                 Button(
                     onClick = {
@@ -405,7 +406,7 @@ fun AddEventScreen(
                             )
                             onSave()
                         } else {
-                            Toast.makeText(context, "No hay cambios que guardar", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, R.string.no_changes_to_save, Toast.LENGTH_SHORT).show()
                             onBackPress()
                         }
                     } else {
@@ -419,7 +420,7 @@ fun AddEventScreen(
                 },
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) {
-                    Text(if (eventToEdit != null) "Actualizar" else "Guardar")
+                    Text(if (eventToEdit != null) stringResource(id = R.string.update) else stringResource(id = R.string.save))
                 }
             }
         }
@@ -488,9 +489,9 @@ fun AddEventScreen(
                         showStartDatePickerDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-                ) { Text("Aceptar") }
+                ) { Text(stringResource(id = R.string.accept)) }
             },
-            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
+            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera) } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(
@@ -531,9 +532,9 @@ fun AddEventScreen(
                         showEndDatePickerDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-                ) { Text("Aceptar") }
+                ) { Text(stringResource(id = R.string.accept)) }
             },
-            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text("Cancelar", color = CalendarioTheme.colors.cabecera) } },
+            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera) } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(
@@ -578,7 +579,7 @@ fun AddEventScreen(
                 if (newEndDate.isAfter(startDate)) {
                     endDate = newEndDate
                 } else {
-                    Toast.makeText(context, "La hora de fin no puede ser anterior a la de inicio", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.end_time_before_start_time_error, Toast.LENGTH_SHORT).show()
                 }
                 showEndTimePickerDialog = false
             },

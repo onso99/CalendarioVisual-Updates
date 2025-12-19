@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +41,7 @@ internal fun SectionTitle(text: String) {
 internal fun WidgetSectionTitle() {
     val typography = MaterialTheme.typography
     Text(
-        text = "Widget",
+        text = stringResource(id = R.string.widget),
         style = typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,

@@ -26,10 +26,10 @@ object ThemeImportManager {
         return try {
             val jsonString = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
             if (jsonString == null) {
-                return ImportResult.Failure("No se pudo leer el archivo.")
+                return ImportResult.Failure(context.getString(R.string.could_not_read_file))
             }
             
-            when(val validationResult = validateAndParseTheme(jsonString)) {
+            when(val validationResult = validateAndParseTheme(context, jsonString)) {
                 is ValidationResult.Success -> {
                     val manifest = validationResult.parsedTheme.manifest
                     val themeVersion = manifest?.optInt("version", 1) ?: 1
@@ -43,18 +43,18 @@ object ThemeImportManager {
             }
 
         } catch (e: Exception) {
-            ImportResult.Failure("Error al procesar el tema: ${e.message}")
+            ImportResult.Failure(context.getString(R.string.error_processing_theme, e.message))
         }
     }
 
-    private fun validateAndParseTheme(jsonString: String): ValidationResult {
+    private fun validateAndParseTheme(context: Context, jsonString: String): ValidationResult {
         try {
             val themeData = JSONObject(jsonString)
             val manifest = themeData.optJSONObject("themeManifest")
 
             if (manifest != null) {
                 if (manifest.optString("appName") != AppConstants.APP_SIGNATURE) {
-                    return ValidationResult.Failure("Fichero de tema no compatible.")
+                    return ValidationResult.Failure(context.getString(R.string.incompatible_theme_file))
                 }
             }
 
@@ -62,31 +62,31 @@ object ThemeImportManager {
             val darkTheme = themeData.optJSONObject("darkTheme")
 
             if (lightTheme == null && darkTheme == null) {
-                return ValidationResult.Failure("El fichero no contiene ni tema claro ni oscuro.")
+                return ValidationResult.Failure(context.getString(R.string.file_contains_no_theme))
             }
 
             lightTheme?.let { 
-                val validation = validateThemeContent(it, "light") 
+                val validation = validateThemeContent(context, it, "light") 
                 if(validation is ValidationResult.Failure) return validation
             }
             darkTheme?.let { 
-                val validation = validateThemeContent(it, "dark")
+                val validation = validateThemeContent(context, it, "dark")
                 if(validation is ValidationResult.Failure) return validation
              }
 
             return ValidationResult.Success(ParsedTheme(manifest, lightTheme, darkTheme))
 
         } catch (_: Exception) {
-            return ValidationResult.Failure("El fichero no es un JSON válido.")
+            return ValidationResult.Failure(context.getString(R.string.invalid_json_file))
         }
     }
 
-    private fun validateThemeContent(theme: JSONObject, themeType: String): ValidationResult {
+    private fun validateThemeContent(context: Context, theme: JSONObject, themeType: String): ValidationResult {
         val keysToCheck = if (themeType == "light") allKnownKeys.filter { it.startsWith("light_") } else allKnownKeys.filter { it.startsWith("dark_") }
         for (key in keysToCheck) {
             if (theme.has(key)) {
                  if (!isValidColor(theme.getString(key))) {
-                     return ValidationResult.Failure("El tema contiene un color no válido en \"$key\".")
+                     return ValidationResult.Failure(context.getString(R.string.invalid_color_in_theme, key))
                  }
             }
         }
