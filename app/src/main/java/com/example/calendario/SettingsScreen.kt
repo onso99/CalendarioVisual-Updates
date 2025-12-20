@@ -375,7 +375,7 @@ fun SettingsScreen(
             ) {
                 Text("Calendario Visual V${versionName}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text("Gemini / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text("Onso/Diciembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Onso / Diciembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
         }
     }

@@ -149,8 +149,17 @@ fun MiniMonthCalendar(
                     Modifier.weight(1f),
                     Alignment.Center
                 ) {
+                    val dayText = remember(day, Locale.getDefault()) {
+                        val narrowText = day.getDisplayName(TextStyle.NARROW, Locale.getDefault())
+                        if (narrowText.isNotEmpty()) {
+                            narrowText.first().uppercase()
+                        } else {
+                            ""
+                        }
+                    }
+
                     Text(
-                        day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                        text = dayText,
                         fontSize = dayHeadersFontSize,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,

@@ -13,7 +13,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 2
-        versionName = "1.7.23"
+        versionName = "1.7.24"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,8 +51,8 @@ dependencies {
     implementation(libs.androidx.material3) // Material 3 para Compose
 
     // ViewModel dependencies
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // ★★★ DEPENDENCIAS AÑADIDAS PARA LA ACTIVIDAD DE CONFIGURACIÓN DEL WIDGET ★★★
     implementation(libs.androidx.appcompat) // Para AppCompatActivity

@@ -18,7 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -95,11 +98,22 @@ fun MonthlyCalendar(
                         .background(CalendarioTheme.colors.monthlyCalendarHeaderBackground),
                     Alignment.Center
                 ) {
+                    val dayText = remember(day, Locale.getDefault()) {
+                        val shortText = day.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                        if (shortText.length >= 2) {
+                            shortText.substring(0, 2).replaceFirstChar { it.titlecase(Locale.getDefault()) }
+                        } else {
+                            shortText.uppercase(Locale.getDefault())
+                        }
+                    }
+
                     Text(
-                        text = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                        text = dayText,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = onHeaderColor,
+                        maxLines = 1,
+                        softWrap = false,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
