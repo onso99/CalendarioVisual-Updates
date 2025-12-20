@@ -3,6 +3,7 @@ package com.example.calendario
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.widget.Toast
@@ -196,6 +197,13 @@ fun SettingsScreen(
             onBackPress()
         }
     }
+    
+    val versionName = try {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        packageInfo.versionName
+    } catch (e: PackageManager.NameNotFoundException) {
+        "N/A"
+    }
 
     Scaffold(
         topBar = {
@@ -365,9 +373,9 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text(stringResource(id = R.string.app_version), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text(stringResource(id = R.string.ai_assistant_credit), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text(stringResource(id = R.string.author_date), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Calendario Visual V${versionName}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Gemini / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("Onso/Diciembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
         }
     }

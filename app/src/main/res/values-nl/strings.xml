@@ -93,9 +93,6 @@
     <string name="event_color">Kleur van gebeurtenissen</string>
     <string name="today_event_color">Kleur van gebeurtenissen van vandaag</string>
     <string name="about">Over</string>
-    <string name="app_version">Visuele Kalender V1.7.22</string>
-    <string name="ai_assistant_credit">AI-assistent / Android Studio</string>
-    <string name="author_date">Onso/november 2025</string>
     <string name="colors_restored">Kleuren zijn hersteld.</string>
     <string name="discard_changes_title">Wijzigingen negeren</string>
     <string name="discard_changes_confirmation">U hebt niet-opgeslagen wijzigingen. Weet u zeker dat u ze wilt negeren?</string>

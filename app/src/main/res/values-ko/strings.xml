@@ -93,9 +93,6 @@
     <string name="event_color">이벤트 색상</string>
     <string name="today_event_color">오늘 이벤트 색상</string>
     <string name="about">정보</string>
-    <string name="app_version">비주얼 캘린더 V1.7.22</string>
-    <string name="ai_assistant_credit">AI 어시스턴트 / Android Studio</string>
-    <string name="author_date">Onso/2025년 11월</string>
     <string name="colors_restored">색상이 복원되었습니다.</string>
     <string name="discard_changes_title">변경 사항 취소</string>
     <string name="discard_changes_confirmation">저장되지 않은 변경 사항이 있습니다. 취소하시겠습니까?</string>

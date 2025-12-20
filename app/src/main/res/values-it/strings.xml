@@ -93,9 +93,6 @@
     <string name="event_color">Colore degli eventi</string>
     <string name="today_event_color">Colore degli eventi di oggi</string>
     <string name="about">Informazioni</string>
-    <string name="app_version">Calendario visivo V1.7.22</string>
-    <string name="ai_assistant_credit">Assistente IA / Android Studio</string>
-    <string name="author_date">Onso/Novembre 2025</string>
     <string name="colors_restored">I colori sono stati ripristinati.</string>
     <string name="discard_changes_title">Annulla modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle annullare?</string>
@@ -142,7 +139,7 @@
     <string name="monthly_calendar">Calendario mensile</string>
     <string name="yearly_calendar">Calendario annuale</string>
     <string name="theme_exported_successfully">Tema esportato con successo</string>
-    <string name="error_exporting_theme">Errore durante l\'esportazione del tema: %1$s</string>
+    <string name="error_exporting_theme">Errore during l\'esportazione del tema: %1$s</string>
     <string name="saved_event">(Evento salvato)</string>
     <string name="unnamed_calendar">Calendario senza nome</string>
     <string name="unknown_account">Account sconosciuto</string>

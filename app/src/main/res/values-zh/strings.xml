@@ -93,9 +93,6 @@
     <string name="event_color">活动颜色</string>
     <string name="today_event_color">今天活动颜色</string>
     <string name="about">关于</string>
-    <string name="app_version">视觉日历 V1.7.22</string>
-    <string name="ai_assistant_credit">AI 助手 / Android Studio</string>
-    <string name="author_date">Onso/2025年11月</string>
     <string name="colors_restored">颜色已恢复。</string>
     <string name="discard_changes_title">放弃更改</string>
     <string name="discard_changes_confirmation">您有未保存的更改。您确定要放弃它们吗？</string>

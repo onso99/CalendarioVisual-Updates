@@ -93,9 +93,6 @@
     <string name="event_color">لون الأحداث</string>
     <string name="today_event_color">لون أحداث اليوم</string>
     <string name="about">حول</string>
-    <string name="app_version">التقويم المرئي V1.7.22</string>
-    <string name="ai_assistant_credit">مساعد الذكاء الاصطناعي / Android Studio</string>
-    <string name="author_date">Onso/نوفمبر 2025</string>
     <string name="colors_restored">تمت استعادة الألوان.</string>
     <string name="discard_changes_title">تجاهل التغييرات</string>
     <string name="discard_changes_confirmation">لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد تجاهلها؟</string>

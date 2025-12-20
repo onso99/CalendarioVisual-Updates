@@ -93,9 +93,6 @@
     <string name="event_color">Cor dos eventos</string>
     <string name="today_event_color">Cor dos eventos de hoje</string>
     <string name="about">Acerca de</string>
-    <string name="app_version">Calendário Visual V1.7.22</string>
-    <string name="ai_assistant_credit">Assistente de IA / Android Studio</string>
-    <string name="author_date">Onso/Novembro 2025</string>
     <string name="colors_restored">As cores foram restauradas.</string>
     <string name="discard_changes_title">Descartar alterações</string>
     <string name="discard_changes_confirmation">Tem alterações não guardadas. Tem a certeza de que pretende descartá-las?</string>

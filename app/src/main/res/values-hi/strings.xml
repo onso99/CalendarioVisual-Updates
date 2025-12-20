@@ -93,9 +93,6 @@
     <string name="event_color">ईवेंट का रंग</string>
     <string name="today_event_color">आज के ईवेंट का रंग</string>
     <string name="about">के बारे में</string>
-    <string name="app_version">विज़ुअल कैलेंडर V1.7.22</string>
-    <string name="ai_assistant_credit">AI सहायक / Android Studio</string>
-    <string name="author_date">ओन्सो/नवंबर 2025</string>
     <string name="colors_restored">रंग पुनर्स्थापित कर दिए गए हैं।</string>
     <string name="discard_changes_title">परिवर्तन त्यागें</string>
     <string name="discard_changes_confirmation">आपके पास सहेजे न गए परिवर्तन हैं। क्या आप वाकई उन्हें त्यागना चाहते हैं?</string>

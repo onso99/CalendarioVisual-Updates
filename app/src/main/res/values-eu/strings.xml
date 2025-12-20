@@ -93,9 +93,6 @@
     <string name="event_color">Gertaeren kolorea</string>
     <string name="today_event_color">Gaurko gertaeren kolorea</string>
     <string name="about">Honi buruz</string>
-    <string name="app_version">Egutegi Bisuala V1.7.22</string>
-    <string name="ai_assistant_credit">IA laguntzailea / Android Studio</string>
-    <string name="author_date">Onso/2025eko azaroa</string>
     <string name="colors_restored">Koloreak leheneratu dira.</string>
     <string name="discard_changes_title">Baztertu aldaketak</string>
     <string name="discard_changes_confirmation">Gorde gabeko aldaketak dituzu. Ziur zaude baztertu nahi dituzula?</string>

@@ -93,9 +93,6 @@
     <string name="event_color">ইভেন্টের রঙ</string>
     <string name="today_event_color">আজকের ইভেন্টের রঙ</string>
     <string name="about">সম্পর্কে</string>
-    <string name="app_version">ভিজ্যুয়াল ক্যালেন্ডার V1.7.22</string>
-    <string name="ai_assistant_credit">এআই সহকারী / অ্যান্ড্রয়েড স্টুডিও</string>
-    <string name="author_date">ওন্সো/নভেম্বর 2025</string>
     <string name="colors_restored">রং পুনরুদ্ধার করা হয়েছে।</string>
     <string name="discard_changes_title">পরিবর্তনগুলি বাতিল করুন</string>
     <string name="discard_changes_confirmation">আপনার অসংরক্ষিত পরিবর্তন আছে। আপনি কি নিশ্চিত যে আপনি সেগুলি বাতিল করতে চান?</string>

@@ -93,9 +93,6 @@
     <string name="event_color">Ereignisfarbe</string>
     <string name="today_event_color">Farbe für heutige Ereignisse</string>
     <string name="about">Über</string>
-    <string name="app_version">Visueller Kalender V1.7.22</string>
-    <string name="ai_assistant_credit">KI-Assistent / Android Studio</string>
-    <string name="author_date">Onso/November 2025</string>
     <string name="colors_restored">Farben wurden wiederhergestellt.</string>
     <string name="discard_changes_title">Änderungen verwerfen</string>
     <string name="discard_changes_confirmation">Sie haben nicht gespeicherte Änderungen. Möchten Sie sie wirklich verwerfen?</string>

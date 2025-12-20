@@ -93,9 +93,6 @@
     <string name="event_color">Event color</string>
     <string name="today_event_color">Today event color</string>
     <string name="about">About</string>
-    <string name="app_version">Visual Calendar V1.7.22</string>
-    <string name="ai_assistant_credit">AI Assistant / Android Studio</string>
-    <string name="author_date">Onso/November 2025</string>
     <string name="colors_restored">Colors have been restored.</string>
     <string name="discard_changes_title">Discard changes</string>
     <string name="discard_changes_confirmation">You have unsaved changes. Are you sure you want to discard them?</string>

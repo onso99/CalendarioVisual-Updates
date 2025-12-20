@@ -93,9 +93,6 @@
     <string name="event_color">Color d\'esdeveniments</string>
     <string name="today_event_color">Color d\'esdeveniments d\'avui</string>
     <string name="about">Sobre</string>
-    <string name="app_version">Calendari Visual V1.7.22</string>
-    <string name="ai_assistant_credit">Assistent IA / Android Studio</string>
-    <string name="author_date">Onso/novembre 2025</string>
     <string name="colors_restored">Els colors han estat restaurats.</string>
     <string name="discard_changes_title">Descartar canvis</string>
     <string name="discard_changes_confirmation">Tens canvis sense desar. Estàs segur que vols descartar-los?</string>

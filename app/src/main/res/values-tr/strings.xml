@@ -93,9 +93,6 @@
     <string name="event_color">Etkinlik rengi</string>
     <string name="today_event_color">Bugünün etkinlik rengi</string>
     <string name="about">Hakkında</string>
-    <string name="app_version">Görsel Takvim V1.7.22</string>
-    <string name="ai_assistant_credit">AI Asistanı / Android Studio</string>
-    <string name="author_date">Onso/Kasım 2025</string>
     <string name="colors_restored">Renkler geri yüklendi.</string>
     <string name="discard_changes_title">Değişiklikleri sil</string>
     <string name="discard_changes_confirmation">Kaydedilmemiş değişiklikleriniz var. Silmek istediğinizden emin misiniz?</string>

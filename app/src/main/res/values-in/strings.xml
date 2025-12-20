@@ -93,9 +93,6 @@
     <string name="event_color">Warna acara</string>
     <string name="today_event_color">Warna acara hari ini</string>
     <string name="about">Tentang</string>
-    <string name="app_version">Kalender Visual V1.7.22</string>
-    <string name="ai_assistant_credit">Asisten AI / Android Studio</string>
-    <string name="author_date">Onso/November 2025</string>
     <string name="colors_restored">Warna telah dipulihkan.</string>
     <string name="discard_changes_title">Buang perubahan</string>
     <string name="discard_changes_confirmation">Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin membuangnya?</string>

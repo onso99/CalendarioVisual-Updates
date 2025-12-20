@@ -93,9 +93,6 @@
     <string name="event_color">イベントの色</string>
     <string name="today_event_color">今日のイベントの色</string>
     <string name="about">約</string>
-    <string name="app_version">ビジュアルカレンダーV1.7.22</string>
-    <string name="ai_assistant_credit">AIアシスタント/ Android Studio</string>
-    <string name="author_date">Onso / 2025年11月</string>
     <string name="colors_restored">色が復元されました。</string>
     <string name="discard_changes_title">変更を破棄</string>
     <string name="discard_changes_confirmation">保存されていない変更があります。破棄してもよろしいですか？</string>

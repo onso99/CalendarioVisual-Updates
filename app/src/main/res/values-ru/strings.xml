@@ -93,9 +93,6 @@
     <string name="event_color">Цвет событий</string>
     <string name="today_event_color">Цвет сегодняшних событий</string>
     <string name="about">О программе</string>
-    <string name="app_version">Визуальный календарь V1.7.22</string>
-    <string name="ai_assistant_credit">ИИ-помощник / Android Studio</string>
-    <string name="author_date">Onso/Ноябрь 2025</string>
     <string name="colors_restored">Цвета восстановлены.</string>
     <string name="discard_changes_title">Отменить изменения</string>
     <string name="discard_changes_confirmation">У вас есть несохраненные изменения. Вы уверены, что хотите их отменить?</string>
