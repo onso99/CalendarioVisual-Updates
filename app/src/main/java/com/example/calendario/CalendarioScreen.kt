@@ -398,7 +398,7 @@ fun CalendarioScreen(
                     }
                 }
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = if (viewMode == CalendarViewMode.YEARLY) CalendarioTheme.colors.settingsBackground else MaterialTheme.colorScheme.background
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -511,7 +511,7 @@ fun CalendarioScreen(
                     val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
                     val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
 
-                     HorizontalPager(
+                    HorizontalPager(
                         state = yearPagerState
                     ) { page ->
                         val year = startYear.plusYears(page.toLong())
