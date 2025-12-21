@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -133,7 +134,8 @@ fun SettingsScreen(
                                 Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
                             }
                         }
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        Log.e("SettingsScreen", "Error processing theme import", e)
                         Toast.makeText(context, R.string.error_reading_theme_file, Toast.LENGTH_LONG).show()
                     }
                 }
@@ -148,7 +150,8 @@ fun SettingsScreen(
                     try {
                         val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
                         ThemePersistence.exportThemeToJson(context, uri, newName)
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        Log.e("SettingsScreen", "Error exporting theme", e)
                         Toast.makeText(context, R.string.error_saving_theme_file, Toast.LENGTH_LONG).show()
                     }
                 }
@@ -202,6 +205,7 @@ fun SettingsScreen(
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
         packageInfo.versionName
     } catch (e: PackageManager.NameNotFoundException) {
+        Log.e("SettingsScreen", "Could not get package version name", e)
         "N/A"
     }
 

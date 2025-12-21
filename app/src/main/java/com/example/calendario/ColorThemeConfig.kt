@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 
 data class ColorThemeItem(
-    @StringRes val labelRes: Int,
+    @field:StringRes val labelRes: Int,
     val lightThemeKey: String,
     val darkThemeKey: String,
     val defaultLight: Color,

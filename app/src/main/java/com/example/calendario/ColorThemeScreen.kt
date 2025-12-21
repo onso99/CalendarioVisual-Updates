@@ -244,7 +244,7 @@ fun ColorThemeScreen(
     }
 }
 
-data class KeywordColorEditInfo(val colorKey: String, val color: Color, @StringRes val labelRes: Int, val keywordKey: String, val keyword: String)
+data class KeywordColorEditInfo(val colorKey: String, val color: Color, @field:StringRes val labelRes: Int, val keywordKey: String, val keyword: String)
 
 private fun getThemeColor(prefs: SharedPreferences, key: String, defaultColor: Color): Color {
     if (!prefs.contains(key)) return defaultColor
