@@ -121,12 +121,12 @@
     <string name="keyword">Schlüsselwort</string>
     <string name="select_color_title">Farbe auswählen</string>
     <string name="hex_argb">Hex (ARGB)</string>
-    <string name="clear">Löschen</string>
+    <string name="clear">Leeren</string>
     <string name="copy_color">Farbe kopieren</string>
     <string name="paste_color">Farbe einfügen</string>
     <string name="search_events_placeholder">Ereignisse suchen...</string>
     <string name="close_search">Suche schließen</string>
-    <string name="clear_search">Suche löschen</string>
+    <string name="clear_search">Suche leeren</string>
     <string name="current_month">Aktueller Monat</string>
     <string name="current_year">Aktuelles Jahr</string>
     <string name="no_results_found">Keine Ergebnisse gefunden</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">Wochentagskopfzeile</string>
     <string name="mini_today_highlight">Mini: Heutige Hervorhebung</string>
     <string name="mini_normal_day">Mini: Normaler Tag</string>
+    <string name="read_only_event_info">Schreibgeschütztes Ereignis. Kann nicht geändert werden.</string>
+    <string name="calendar_source">Kalender: %1$s</string>
 </resources>

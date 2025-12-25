@@ -38,7 +38,7 @@
     <string name="restore_colors_confirmation">Ziur zaude kolore guztiak beren balio lehenetsietara berrezarri nahi dituzula? Gako-hitzek ez dute eraginik izango.</string>
     <string name="restore">Berrezarri</string>
     <string name="confirm_deletion_title">Berretsi ezabatzea</string>
-    <string name="confirm_deletion_message">Ziur zaude gertaera hau ezabatu nahi duzula: \"%1$s\"?</string>
+    <string name="confirm_deletion_message">Ziur zaude "%1$s" gertaera ezabatu nahi duzula?</string>
     <string name="repeat_event_title">Errepikatu gertaera</string>
     <string name="select_calendar_title">Hautatu Egutegia</string>
     <string name="select_time_title">Hautatu Ordua</string>
@@ -108,14 +108,14 @@
     <string name="help_calendar_views_2">Hileko ikuspegian, irristatu ezkerrera edo eskuinera hilabetez aldatzeko. Uneko hilabetetik urruntzen bazara, gezi bat agertuko da goiko ezkerreko izkinan, azkar itzultzeko.</string>
     <string name="help_section_event_management">Gertaeren Kudeaketa</string>
     <string name="help_event_management_1">Sakatu hileko egutegiko egun batean, elkarrizketa-koadro batean bere gertaerak ikusteko. Hortik, egun horretarako gertaera berri bat gehi dezakezu edo lehendik dagoen gertaera bat sakatu hura editatzeko.</string>
-    <string name="help_event_management_2">Gertaera bat sor dezakezu goiko barrako \'+\' ikonoa sakatuta edo egutegiko egun huts batean.</string>
-    <string name="help_section_event_list">Gertaeren Zerrenda</string>
-    <string name="help_event_list_1">Hileko egutegiaren azpian, hileko gertaeren zerrenda bat erakusten da. Uneko hilabeterako, gertaera guztiak edo zain daudenak bakarrik (etorkizuneko gertaerak) ikustea hauta dezakezu. Aldatzeko, sakatu \'Guztiak\'/\'Zain\' botoia.</string>
+    <string name="help_event_management_2">Gertaera bat sor dezakezu goiko barrako \'+\' ikonoa edo egutegiko egun huts bat sakatuta.</string>
+    <string name="help_section_event_list">Gertaera zerrenda</string>
+    <string name="help_event_list_1">Hilabeteko egutegiaren azpian, hilabeteko gertaeren zerrenda agertzen da. Uneko hilabetean, gertaera guztiak edo datozenak soilik (etorkizuneko gertaerak) ikustea aukera dezakezu. Aldatzeko, sakatu \'Guztiak\'/\'Zain\' botoia.</string>
     <string name="help_section_customization">Pertsonalizazioa</string>
-    <string name="help_customization_1">Aplikazioaren itxura erabat pertsonaliza dezakezu \'Ezarpenak\' menutik. Horrek gai argiaren eta ilunaren artean aldatzea eta interfazearen kolore bakoitza aldatzea barne hartzen du.</string>
-    <string name="help_customization_2">Kolore-gaiak .json fitxategi gisa esportatu eta inporta daitezke, zure sorkuntzak gordetzeko edo partekatzeko aukera emanez.</string>
+    <string name="help_customization_1">Aplikazioaren itxura guztiz pertsonaliza dezakezu \'Ezarpenak\' menuan. Horrek gai argia eta iluna aldatzea eta interfazearen kolore guztiak aldatzea barne hartzen du.</string>
+    <string name="help_customization_2">Kolore-gaiak .json fitxategi gisa esportatu eta inportatu daitezke, zure diseinuak gordetzeko edo partekatzeko aukera emanez.</string>
     <string name="help_section_widget">Widgeta</string>
-    <string name="help_widget_1">Aplikazioak zure hasierako pantailarako widget bat dakar, datozen gertaerak erakusten dituena. Haren itxura (gertaera kopurua, letra-tamaina eta koloreak) \'Ezarpenak\' pantailatik pertsonaliza dezakezu.</string>
+    <string name="help_widget_1">Aplikazioak zure hasierako pantailarako widget bat dakar, datozen gertaerak erakusten dituena. Haren itxura (gertaera kopurua, letra-tamaina eta koloreak) \'Ezarpenak\' pantailan pertsonaliza ditzakezu.</string>
     <string name="copied_to_clipboard">Kopiatuta: %1$s</string>
     <string name="event_color_label">Gertaeraren kolorea:</string>
     <string name="keyword">Gako-hitza</string>
@@ -149,7 +149,7 @@
     <string name="incompatible_theme_file">Gai-fitxategi bateraezina.</string>
     <string name="file_contains_no_theme">Fitxategiak ez du gai argirik edo ilunik.</string>
     <string name="invalid_json_file">Fitxategia ez da JSON baliozkoa.</string>
-    <string name="invalid_color_in_theme">Gaiak kolore baliogabea du \"%1$s\"-n.</string>
+    <string name="invalid_color_in_theme">Gaiak kolore baliogabea du "%1$s"-an.</string>
     <string name="light_theme">Argia</string>
     <string name="dark_theme">Iluna</string>
     <string name="header_background">Goiburuaren atzeko planoa</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">Asteko egunen goiburua</string>
     <string name="mini_today_highlight">Mini: Gaurko nabarmentzea</string>
     <string name="mini_normal_day">Mini: Egun arrunta</string>
+    <string name="read_only_event_info">Irakurtzeko soilik den gertaera. Ezin da aldatu.</string>
+    <string name="calendar_source">Egutegia: %1$s</string>
 </resources>

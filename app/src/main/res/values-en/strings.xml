@@ -176,4 +176,6 @@
     <string name="week_day_header">Week Day Header</string>
     <string name="mini_today_highlight">Mini: Today Highlight</string>
     <string name="mini_normal_day">Mini: Normal Day</string>
+    <string name="read_only_event_info">Read-only event. Cannot be modified.</string>
+    <string name="calendar_source">Calendar: %1$s</string>
 </resources>

@@ -176,4 +176,6 @@
     <string name="week_day_header">Заголовок дней недели</string>
     <string name="mini_today_highlight">Мини: Выделение сегодняшнего дня</string>
     <string name="mini_normal_day">Мини: Обычный день</string>
+    <string name="read_only_event_info">Событие только для чтения. Его нельзя изменить.</string>
+    <string name="calendar_source">Календарь: %1$s</string>
 </resources>

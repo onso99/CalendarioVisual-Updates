@@ -21,11 +21,11 @@
     <string name="cancel">বাতিল করুন</string>
     <string name="select_calendars_title">ক্যালেন্ডার নির্বাচন করুন</string>
     <string name="no_calendars_found">কোনো উপলব্ধ ক্যালেন্ডার পাওয়া যায়নি।</string>
-    <string name="read_only"> (শুধুমাত্র পঠনযোগ্য)</string>
+    <string name="read_only">(শুধুমাত্র পঠনযোগ্য)</string>
     <string name="apply">প্রয়োগ করুন</string>
     <string name="add_event">ইভেন্ট যোগ করুন</string>
-    <string name="no_title"> (কোনো শিরোনাম নেই)</string>
-    <string name="all_day"> (সারাদিন)</string>
+    <string name="no_title">(কোনো শিরোনাম নেই)</string>
+    <string name="all_day">(সারাদিন)</string>
     <string name="no_detailed_events">বিস্তারিত সহ কোনো ইভেন্ট নেই।</string>
     <string name="close">বন্ধ করুন</string>
     <string name="year_selection_title">বছর নির্বাচন</string>
@@ -115,7 +115,7 @@
     <string name="help_customization_1">আপনি \'সেটিংস\' মেনু থেকে অ্যাপ্লিকেশনটির চেহারা সম্পূর্ণরূপে কাস্টমাইজ করতে পারেন। এর মধ্যে রয়েছে হালকা এবং অন্ধকার থিমের মধ্যে স্যুইচ করা এবং ইন্টারফেসের প্রতিটি রঙ পরিবর্তন করা।</string>
     <string name="help_customization_2">রঙিন থিমগুলি .json ফাইল হিসাবে রপ্তানি এবং আমদানি করা যেতে পারে, যা আপনাকে আপনার সৃষ্টিগুলি সংরক্ষণ করতে বা ভাগ করতে দেয়।</string>
     <string name="help_section_widget">উইজেট</string>
-    <string name="help_widget_1">অ্যাপ্লিকেশনটিতে আপনার হোম স্ক্রিনের জন্য একটি উইজেট রয়েছে যা আসন্ন ইভেন্টগুলি প্রদর্শন করে। আপনি \'সেটিংস\' স্ক্রিন থেকে এর চেহারা (ইভেন্টের সংখ্যা, ফন্টের আকার এবং রঙ) কাস্টমাইজ করতে পারেন।</string>
+    <string name="help_widget_1">অ্যাপ্লিকেশনটিতে আপনার হোম স্ক্রিনের জন্য একটি উইজেט রয়েছে যা আসন্ন ইভেন্টগুলি প্রদর্শন করে। আপনি \'সেটিংস\' স্ক্রিন থেকে এর চেহারা (ইভেন্টের সংখ্যা, ফন্টের আকার এবং রঙ) কাস্টমাইজ করতে পারেন।</string>
     <string name="copied_to_clipboard">অনুলিপি করা হয়েছে: %1$s</string>
     <string name="event_color_label">ইভেন্টের রঙ:</string>
     <string name="keyword">কীওয়ার্ড</string>
@@ -126,15 +126,15 @@
     <string name="paste_color">রঙ পেস্ট করুন</string>
     <string name="search_events_placeholder">ইভেন্ট অনুসন্ধান করুন...</string>
     <string name="close_search">অনুসন্ধান বন্ধ করুন</string>
-    <string name="clear_search">অনুসন্ধান পরিষ্কার করুন</string>
+    <string name="clear_search">অনুসন্ধان পরিষ্কার করুন</string>
     <string name="current_month">বর্তমান মাস</string>
     <string name="current_year">বর্তমান বছর</string>
     <string name="no_results_found">কোনো ফলাফল পাওয়া যায়নি</string>
-    <string name="type_to_search">অনুসন্ধান করতে টাইপ করুন...</string>
+    <string name="type_to_search">অনুসন্ধان করতে টাইপ করুন...</string>
     <string name="all_day_event">(সারাদিনের ইভেন্ট)</string>
     <string name="repeated_event">পুনরাবৃত্তিমূলক ইভেন্ট</string>
     <string name="no_pending_events_this_month">এই মাসের জন্য কোনো বিচারাধীন ইভেন্ট নেই।</string>
-    <string name="no_events_this_month">এই মাসের জন্য কোনো ইভেন্ট নেই।</string>
+    <string name="no_events_this_month">এই মাসের জন্য কোনো 이ভেন্ট নেই।</string>
     <string name="event_list">ইভেন্ট তালিকা</string>
     <string name="monthly_calendar">মাসিক ক্যালেন্ডার</string>
     <string name="yearly_calendar">বার্ষিক ক্যালেন্ডার</string>
@@ -146,7 +146,7 @@
     <string name="widget">উইজেট</string>
     <string name="could_not_read_file">ফাইলটি পড়া যায়নি।</string>
     <string name="error_processing_theme">থিম প্রক্রিয়া করতে ত্রুটি: %1$s</string>
-    <string name="incompatible_theme_file">বেমানান থিম ফাইল।</string>
+    <string name="incompatible_theme_file">বেমানان থিম ফাইল।</string>
     <string name="file_contains_no_theme">ফাইলটিতে হালকা বা অন্ধকার কোনো থিম নেই।</string>
     <string name="invalid_json_file">ফাইলটি একটি বৈধ JSON নয়।</string>
     <string name="invalid_color_in_theme">থিমটিতে \"%1$s\" এ একটি অবৈধ রঙ রয়েছে।</string>
@@ -164,7 +164,7 @@
     <string name="pending_button_background">\'বিচারাধীন\' বোতামের পটভূমি</string>
     <string name="event_list_background">ইভেন্ট তালিকা পটভূমি</string>
     <string name="today_highlight_list">আজকের হাইলাইট (তালিকা)</string>
-    <string name="events">ইভেন্টস</string>
+    <string name="events">ইভেন্টসমূহ</string>
     <string name="birthdays">জন্মদিন</string>
     <string name="event_1">ইভেন্ট-১</string>
     <string name="event_2">ইভেন্ট-২</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">সপ্তাহের দিনের হেডার</string>
     <string name="mini_today_highlight">ছোট: আজকের হাইলাইট</string>
     <string name="mini_normal_day">ছোট: সাধারণ দিন</string>
+    <string name="read_only_event_info">শুধু-পঠনযোগ্য ইভেন্ট। পরিবর্তন করা যাবে না।</string>
+    <string name="calendar_source">ক্যালেন্ডার: %1$s</string>
 </resources>

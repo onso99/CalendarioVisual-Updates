@@ -176,4 +176,6 @@
     <string name="week_day_header">Capçalera dels dies de la setmana</string>
     <string name="mini_today_highlight">Mini: Ressaltat dia actual</string>
     <string name="mini_normal_day">Mini: Dia normal</string>
+    <string name="read_only_event_info">Esdeveniment de només lectura. No es pot modificar.</string>
+    <string name="calendar_source">Calendari: %1$s</string>
 </resources>

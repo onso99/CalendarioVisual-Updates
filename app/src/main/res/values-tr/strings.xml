@@ -176,4 +176,6 @@
     <string name="week_day_header">Haftanın Günü Başlığı</string>
     <string name="mini_today_highlight">Mini: Bugünün Vurgusu</string>
     <string name="mini_normal_day">Mini: Normal Gün</string>
+    <string name="read_only_event_info">Salt okunur etkinlik. Değiştirilemez.</string>
+    <string name="calendar_source">Takvim: %1$s</string>
 </resources>

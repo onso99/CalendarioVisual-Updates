@@ -173,7 +173,9 @@
     <string name="other_month_cell">Sel Bulan Lain</string>
     <string name="today_border">Batas Hari Ini</string>
     <string name="normal_day_number">Nomor Hari Normal</string>
-    <string name="week_day_header">Header Hari Minggu</string>
+    <string name="week_day_header">Header Hari dalam Seminggu</string>
     <string name="mini_today_highlight">Mini: Sorotan Hari Ini</string>
     <string name="mini_normal_day">Mini: Hari Normal</string>
+    <string name="read_only_event_info">Acara hanya-baca. Tidak dapat diubah.</string>
+    <string name="calendar_source">Kalender: %1$s</string>
 </resources>

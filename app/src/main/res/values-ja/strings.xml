@@ -38,7 +38,7 @@
     <string name="restore_colors_confirmation">すべての色をデフォルト値に復元してもよろしいですか？キーワードは影響を受けません。</string>
     <string name="restore">復元</string>
     <string name="confirm_deletion_title">削除の確認</string>
-    <string name="confirm_deletion_message">このイベントを削除してもよろしいですか：\"%1$s\"？</string>
+    <string name="confirm_deletion_message">イベント「%1$s」を削除してもよろしいですか？</string>
     <string name="repeat_event_title">イベントを繰り返す</string>
     <string name="select_calendar_title">カレンダーを選択</string>
     <string name="select_time_title">時間を選択</string>
@@ -63,7 +63,7 @@
     <string name="summary_calendar">カレンダー：%1$s</string>
     <string name="from">から：</string>
     <string name="to">まで：</string>
-    <string name="at"> at </string>
+    <string name="at">に</string>
     <string name="no_changes_to_save">保存する変更はありません</string>
     <string name="update">更新</string>
     <string name="save">保存</string>
@@ -92,7 +92,7 @@
     <string name="background_color">背景色</string>
     <string name="event_color">イベントの色</string>
     <string name="today_event_color">今日のイベントの色</string>
-    <string name="about">約</string>
+    <string name="about">情報</string>
     <string name="colors_restored">色が復元されました。</string>
     <string name="discard_changes_title">変更を破棄</string>
     <string name="discard_changes_confirmation">保存されていない変更があります。破棄してもよろしいですか？</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">曜日のヘッダー</string>
     <string name="mini_today_highlight">ミニ：今日のハイライト</string>
     <string name="mini_normal_day">ミニ：通常の日</string>
+    <string name="read_only_event_info">読み取り専用イベント。変更できません。</string>
+    <string name="calendar_source">カレンダー：%1$s</string>
 </resources>

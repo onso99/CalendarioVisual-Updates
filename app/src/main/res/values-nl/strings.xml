@@ -176,4 +176,6 @@
     <string name="week_day_header">Koptekst weekdag</string>
     <string name="mini_today_highlight">Mini: Markering van vandaag</string>
     <string name="mini_normal_day">Mini: Normale dag</string>
+    <string name="read_only_event_info">Alleen-lezen gebeurtenis. Kan niet worden gewijzigd.</string>
+    <string name="calendar_source">Kalender: %1$s</string>
 </resources>

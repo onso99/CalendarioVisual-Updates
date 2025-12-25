@@ -21,11 +21,11 @@
     <string name="cancel">रद्द करें</string>
     <string name="select_calendars_title">कैलेंडर चुनें</string>
     <string name="no_calendars_found">कोई उपलब्ध कैलेंडर नहीं मिला।</string>
-    <string name="read_only"> (केवल पढ़ने के लिए)</string>
+    <string name="read_only">(केवल पढ़ने के लिए)</string>
     <string name="apply">लागू करें</string>
     <string name="add_event">ईवेंट जोड़ें</string>
-    <string name="no_title"> (कोई शीर्षक नहीं)</string>
-    <string name="all_day"> (पूरा दिन)</string>
+    <string name="no_title">(कोई शीर्षक नहीं)</string>
+    <string name="all_day">(पूरा दिन)</string>
     <string name="no_detailed_events">विवरण के साथ कोई ईवेंट नहीं।</string>
     <string name="close">बंद करें</string>
     <string name="year_selection_title">वर्ष चयन</string>
@@ -38,7 +38,7 @@
     <string name="restore_colors_confirmation">क्या आप वाकई सभी रंगों को उनके डिफ़ॉल्ट मानों पर पुनर्स्थापित करना चाहते हैं? कीवर्ड प्रभावित नहीं होंगे।</string>
     <string name="restore">पुनर्स्थापित करें</string>
     <string name="confirm_deletion_title">हटाने की पुष्टि करें</string>
-    <string name="confirm_deletion_message">क्या आप वाकई इस ईवेंट को हटाना चाहते हैं: \"%1$s\"?</string>
+    <string name="confirm_deletion_message">क्या आप वाकई \"%1$s\" ईवेंट को हटाना चाहते हैं?</string>
     <string name="repeat_event_title">ईवेंट दोहराएं</string>
     <string name="select_calendar_title">कैलेंडर चुनें</string>
     <string name="select_time_title">समय चुनें</string>
@@ -131,7 +131,7 @@
     <string name="current_year">वर्तमान वर्ष</string>
     <string name="no_results_found">कोई परिणाम नहीं मिला</string>
     <string name="type_to_search">खोजने के लिए टाइप करें...</string>
-    <string name="all_day_event"> (पूरे दिन का ईवेंट)</string>
+    <string name="all_day_event">(पूरे दिन का ईवेंट)</string>
     <string name="repeated_event">दोहराया गया ईवेंट</string>
     <string name="no_pending_events_this_month">इस महीने के लिए कोई लंबित ईवेंट नहीं है।</string>
     <string name="no_events_this_month">इस महीने के लिए कोई ईवेंट नहीं है।</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">सप्ताह के दिन का हेडर</string>
     <string name="mini_today_highlight">मिनी: आज का हाइलाइट</string>
     <string name="mini_normal_day">मिनी: सामान्य दिन</string>
+    <string name="read_only_event_info">केवल-पढ़ने के लिए ईवेंट। संशोधित नहीं किया जा सकता।</string>
+    <string name="calendar_source">कैलेंडर: %1$s</string>
 </resources>

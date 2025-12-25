@@ -13,7 +13,7 @@
     <string name="help">المساعدة</string>
     <string name="events_of_month">أحداث %1$s</string>
     <string name="all">الكل</string>
-    <string name="pending">قيد الانتظar</string>
+    <string name="pending">قيد الانتظار</string>
     <string name="delete_recurring_event_title">حذف الحدث المتكرر</string>
     <string name="delete_single_event_option">حذف هذا الحدث فقط</string>
     <string name="delete_all_events_option">حذف جميع الأحداث في السلسلة</string>
@@ -110,12 +110,12 @@
     <string name="help_event_management_1">انقر فوق يوم في التقويم الشهري لرؤية أحداثه في مربع حوار. من هناك، يمكنك إضافة حدث جديد لذلك اليوم أو النقر فوق حدث موجود لتعديله.</string>
     <string name="help_event_management_2">يمكنك أيضًا إنشاء حدث من خلال النقر على أيقونة \'+\' في الشريط العلوي أو في يوم فارغ في التقويم.</string>
     <string name="help_section_event_list">قائمة الأحداث</string>
-    <string name="help_event_list_1">أسفل التقويم الشهري، يتم عرض قائمة بأحداث الشهر. بالنسبة للشهر الحالي، يمكنك اختيار رؤية جميع الأحداث أو الأحداث المعلقة فقط (الأحداث المستقبلية). انقر فوق الزر \'الكل\'/\'قيد الانتظar\' للتبديل.</string>
+    <string name="help_event_list_1">أسفل التقويم الشهري، يتم عرض قائمة بأحداث الشهر. بالنسبة للشهر الحالي، يمكنك اختيار رؤية جميع الأحداث أو الأحداث المعلقة فقط (الأحداث المستقبلية). انقر فوق الزر \'الكل\'/\'قيد الانتظار\' للتبديل.</string>
     <string name="help_section_customization">التخصيص</string>
     <string name="help_customization_1">يمكنك تخصيص مظهر التطبيق بالكامل من قائمة \'الإعدادات\'. يتضمن ذلك التبديل بين السمات الفاتحة والداكنة، وتعديل كل لون في الواجهة.</string>
     <string name="help_customization_2">يمكن تصدير سمات الألوان واستيرادها كملفات .json، مما يتيح لك حفظ إبداعاتك أو مشاركتها.</string>
-    <string name="help_section_widget">الวิดเจ็ต</string>
-    <string name="help_widget_1">يشتمل التطبيق علىวิดเจ็ต لشاشتك الرئيسية يعرض الأحداث القادمة. يمكنك تخصيص مظهره (عدد الأحداث وحجم الخط والألوان) من شاشة \'الإعدادات\'.</string>
+    <string name="help_section_widget">الأداة المصغرة</string>
+    <string name="help_widget_1">يشتمل التطبيق على أداة مصغرة لشاشتك الرئيسية يعرض الأحداث القادمة. يمكنك تخصيص مظهره (عدد الأحداث وحجم الخط والألوان) من شاشة \'الإعدادات\'.</string>
     <string name="copied_to_clipboard">تم النسخ: %1$s</string>
     <string name="event_color_label">لون الحدث:</string>
     <string name="keyword">الكلمة الرئيسية</string>
@@ -143,7 +143,7 @@
     <string name="saved_event">(حدث محفوظ)</string>
     <string name="unnamed_calendar">تقويم بدون اسم</string>
     <string name="unknown_account">حساب غير معروف</string>
-    <string name="widget">الวิดเจ็ต</string>
+    <string name="widget">الأداة المصغرة</string>
     <string name="could_not_read_file">تعذر قراءة الملف.</string>
     <string name="error_processing_theme">خطأ في معالجة السمة: %1$s</string>
     <string name="incompatible_theme_file">ملف سمة غير متوافق.</string>
@@ -161,7 +161,7 @@
     <string name="system_text">نص النظام</string>
     <string name="sundays_and_holidays">أيام الأحد والأعياد</string>
     <string name="title_text">نص العنوان</string>
-    <string name="pending_button_background">خلفية زر \'قيد الانتظar\'</string>
+    <string name="pending_button_background">خلفية زر \'قيد الانتظار\'</string>
     <string name="event_list_background">خلفية قائمة الأحداث</string>
     <string name="today_highlight_list">تمييز اليوم (قائمة)</string>
     <string name="events">الأحداث</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">رأس أيام الأسبوع</string>
     <string name="mini_today_highlight">مصغر: تمييز اليوم</string>
     <string name="mini_normal_day">مصغر: يوم عادي</string>
+    <string name="read_only_event_info">حدث للقراءة فقط. لا يمكن تعديله.</string>
+    <string name="calendar_source">التقويم: %1$s</string>
 </resources>

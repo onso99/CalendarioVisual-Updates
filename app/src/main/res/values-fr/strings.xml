@@ -176,4 +176,6 @@
     <string name="week_day_header">En-tête des jours de la semaine</string>
     <string name="mini_today_highlight">Mini : Surlignage d\'aujourd\'hui</string>
     <string name="mini_normal_day">Mini : Jour normal</string>
+    <string name="read_only_event_info">Événement en lecture seule. Ne peut pas être modifié.</string>
+    <string name="calendar_source">Calendrier : %1$s</string>
 </resources>

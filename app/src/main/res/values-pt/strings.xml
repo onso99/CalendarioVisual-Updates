@@ -16,7 +16,7 @@
     <string name="pending">Pendentes</string>
     <string name="delete_recurring_event_title">Eliminar evento recorrente</string>
     <string name="delete_single_event_option">Eliminar apenas este evento</string>
-    <string name="delete_all_events_option">Eliminar todos los eventos de la serie</string>
+    <string name="delete_all_events_option">Eliminar todos os eventos da série</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
     <string name="select_calendars_title">Selecionar Calendários</string>
@@ -136,7 +136,7 @@
     <string name="no_pending_events_this_month">Nenhum evento pendente para este mês.</string>
     <string name="no_events_this_month">Nenhum evento para este mês.</string>
     <string name="event_list">Lista de Eventos</string>
-    <string name="monthly_calendar">Calendário Mensal</string>
+    <string name="monthly_calendar">Calendário Mensual</string>
     <string name="yearly_calendar">Calendário Anual</string>
     <string name="theme_exported_successfully">Tema exportado com sucesso</string>
     <string name="error_exporting_theme">Erro ao exportar o tema: %1$s</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">Cabeçalho do dia da semana</string>
     <string name="mini_today_highlight">Mini: Destaque de hoje</string>
     <string name="mini_normal_day">Mini: Dia normal</string>
+    <string name="read_only_event_info">Evento somente leitura. Não pode ser modificado.</string>
+    <string name="calendar_source">Calendário: %1$s</string>
 </resources>

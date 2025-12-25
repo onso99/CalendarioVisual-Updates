@@ -139,7 +139,7 @@
     <string name="monthly_calendar">Calendario mensile</string>
     <string name="yearly_calendar">Calendario annuale</string>
     <string name="theme_exported_successfully">Tema esportato con successo</string>
-    <string name="error_exporting_theme">Errore during l\'esportazione del tema: %1$s</string>
+    <string name="error_exporting_theme">Errore durante l\'esportazione del tema: %1$s</string>
     <string name="saved_event">(Evento salvato)</string>
     <string name="unnamed_calendar">Calendario senza nome</string>
     <string name="unknown_account">Account sconosciuto</string>
@@ -176,4 +176,6 @@
     <string name="week_day_header">Intestazione dei giorni della settimana</string>
     <string name="mini_today_highlight">Mini: Evidenziazione di oggi</string>
     <string name="mini_normal_day">Mini: Giorno normale</string>
+    <string name="read_only_event_info">Evento di sola lettura. Non può essere modificato.</string>
+    <string name="calendar_source">Calendario: %1$s</string>
 </resources>
