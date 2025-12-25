@@ -568,7 +568,7 @@ private fun StartDayOfWeekDialog(
                             fontSize = 16.sp
                         )
                         if (option.key == currentSelectionKey) {
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.selected), tint = CalendarioTheme.colors.cabecera)
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = CalendarioTheme.colors.cabecera)
                         }
                     }
                 }

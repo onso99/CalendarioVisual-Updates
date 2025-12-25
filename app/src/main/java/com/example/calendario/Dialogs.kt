@@ -542,7 +542,7 @@ fun ThemeSelectionDialog(
                             fontSize = 16.sp
                         )
                         if (theme == currentTheme) {
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.selected), tint = CalendarioTheme.colors.cabecera)
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = CalendarioTheme.colors.cabecera)
                         }
                     }
                 }
