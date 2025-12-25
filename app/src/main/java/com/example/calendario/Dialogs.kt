@@ -21,12 +21,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -58,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +76,73 @@ import java.util.Locale
 enum class DeleteRecurringOption {
     SINGLE_EVENT,
     ALL_EVENTS
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReadOnlyEventDialog(
+    onDismissRequest: () -> Unit,
+    festivo: Festivo,
+    calendar: CalendarInfo?
+) {
+    val allDay = stringResource(id = R.string.all_day)
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("E, dd MMM yyyy") }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        title = {
+            Text(
+                festivo.title.ifBlank { stringResource(id = R.string.no_title) },
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+                color = CalendarioTheme.colors.textSystem
+            )
+        },
+        text = {
+            SelectionContainer {
+                Column {
+                    Text(festivo.date.format(dateFormatter).replaceFirstChar(Char::titlecase), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
+                    Spacer(Modifier.height(4.dp))
+                    if (!festivo.isAllDay) {
+                        val startTime = festivo.startTime?.format(timeFormatter) ?: "--:--"
+                        val endTime = festivo.endTime?.format(timeFormatter) ?: "--:--"
+                        Text("$startTime - $endTime", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
+                    } else {
+                        Text(allDay, fontSize = 16.sp, fontStyle = FontStyle.Italic, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
+                    }
+                    
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"),
+                        fontSize = 16.sp, 
+                        color = CalendarioTheme.colors.textSystem
+                    )
+                    Spacer(Modifier.height(16.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().background(CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), RoundedCornerShape(8.dp)).padding(8.dp)) {
+                        Icon(Icons.Default.Info, contentDescription = null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            stringResource(id = R.string.read_only_event_info),
+                            fontSize = 14.sp,
+                            fontStyle = FontStyle.Italic,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismissRequest,
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+            ) {
+                Text(stringResource(id = R.string.accept))
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

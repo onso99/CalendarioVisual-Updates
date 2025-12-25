@@ -111,6 +111,8 @@ fun CalendarioScreen(
     var searchQuery by remember { mutableStateOf("") }
     var searchScope by remember { mutableStateOf(SearchScope.YEAR) } // Default to YEAR
     var searchResults by remember { mutableStateOf<Map<LocalDate, List<Festivo>>>(emptyMap()) }
+    var showReadOnlyDialog by remember { mutableStateOf(false) }
+    var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -133,7 +135,7 @@ fun CalendarioScreen(
         }
     }
 
-    val launchAddEditScreenWithPermissionCheck = { date: LocalDate?, event: Festivo? ->
+    val launchAddEditScreen = { date: LocalDate?, event: Festivo? ->
         dateForNewEvent = date
         eventToEdit = event
         when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
@@ -146,12 +148,22 @@ fun CalendarioScreen(
         }
     }
 
+    val onEventClickHandler = { event: Festivo ->
+        val calendar = uiState.availableCalendars.find { it.id == event.calendarId }
+        if (calendar?.canModify == true) {
+            launchAddEditScreen(event.date, event)
+        } else {
+            eventForReadOnlyDialog = event
+            showReadOnlyDialog = true
+        }
+    }
+
     LaunchedEffect(uiState.hasCalendarPermission) {
         if (uiState.hasCalendarPermission) {
             viewModel.refreshData()
         }
     }
-    
+
     LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate) {
         if (searchQuery.isNotBlank()) {
             delay(300) // Debounce
@@ -162,7 +174,7 @@ fun CalendarioScreen(
                 SearchScope.ALL -> allEvents
             }
             val normalizedQuery = searchQuery.unaccent().lowercase(Locale.getDefault())
-            
+
             val groupedEvents = scopeFilteredEvents
                 .filter { it.title.unaccent().lowercase(Locale.getDefault()).contains(normalizedQuery) }
                 .groupBy {
@@ -191,9 +203,9 @@ fun CalendarioScreen(
         val targetIndex = when {
             isCurrentMonthView && showAllEvents ->
                 finalEventsToList.indexOfFirst { (date, _) -> date >= today }.takeIf { it != -1 } ?: 0
-            
+
             isCurrentMonthView && !showAllEvents -> 0
-            
+
             else -> 0
         }
 
@@ -225,7 +237,7 @@ fun CalendarioScreen(
         )
         return
     }
-    
+
     if (showHelpScreen) {
         HelpScreen(onBackPress = { showHelpScreen = false })
         return
@@ -266,9 +278,7 @@ fun CalendarioScreen(
                 searchQuery = ""
                 searchResults = emptyMap()
             },
-            onEventClick = { event ->
-                launchAddEditScreenWithPermissionCheck(event.date, event)
-            },
+            onEventClick = onEventClickHandler,
             availableCalendars = uiState.availableCalendars
         )
     } else {
@@ -352,7 +362,7 @@ fun CalendarioScreen(
                                 horizontalArrangement = Arrangement.End,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                IconButton(onClick = { launchAddEditScreenWithPermissionCheck(null, null) }) {
+                                IconButton(onClick = { launchAddEditScreen(null, null) }) {
                                     Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
                                 }
                                 IconButton(onClick = { isSearchActive = true }) {
@@ -406,7 +416,7 @@ fun CalendarioScreen(
                     .padding(paddingValues),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                 if (viewMode == CalendarViewMode.MONTHLY) {
+                if (viewMode == CalendarViewMode.MONTHLY) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -432,13 +442,13 @@ fun CalendarioScreen(
                                     showDayEventsDialog = true
                                 },
                                 onEmptyDayClick = { date ->
-                                    launchAddEditScreenWithPermissionCheck(date, null)
+                                    launchAddEditScreen(date, null)
                                 },
                                 startOfWeek = startOfWeek
                             )
                         }
                     }
-                    
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -481,7 +491,7 @@ fun CalendarioScreen(
                             isCurrentMonthView = isCurrentMonthView,
                             showAllEvents = showAllEvents,
                             today = today,
-                            onEventClick = { event -> launchAddEditScreenWithPermissionCheck(event.date, event) }
+                            onEventClick = onEventClickHandler
                         )
 
                         val showTopShadow by remember {
@@ -530,7 +540,7 @@ fun CalendarioScreen(
                     }
                 }
             }
-            
+
             if (showSelectCalendarsDialog) {
                 SelectCalendarsDialog(
                     initialSelectedIds = uiState.selectedCalendarIds,
@@ -557,15 +567,23 @@ fun CalendarioScreen(
                     },
                     onAddEventClick = { date ->
                         showDayEventsDialog = false
-                        launchAddEditScreenWithPermissionCheck(date, null)
+                        launchAddEditScreen(date, null)
                     },
                     onEventClick = { event ->
                         showDayEventsDialog = false
-                        launchAddEditScreenWithPermissionCheck(event.date, event)
+                        onEventClickHandler(event)
                     }
                 )
             }
-            
+
+            if (showReadOnlyDialog && eventForReadOnlyDialog != null) {
+                ReadOnlyEventDialog(
+                    onDismissRequest = { showReadOnlyDialog = false },
+                    festivo = eventForReadOnlyDialog!!,
+                    calendar = uiState.availableCalendars.find { it.id == eventForReadOnlyDialog!!.calendarId }
+                )
+            }
+
             if (showGoToYearDialog) {
                 GoToYearDialog(
                     initialYear = currentYear.value,

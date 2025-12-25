@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,13 +39,11 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -59,16 +56,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Stable
 class AdvancedColorPickerState(
-    initialColor: Color,
-    private val scope: CoroutineScope,
-    private val clipboardManager: ClipboardManager,
-    private val context: Context
+    initialColor: Color
 ) {
     var currentColor by mutableStateOf(initialColor)
     var isHexError by mutableStateOf(false)
@@ -128,34 +120,14 @@ class AdvancedColorPickerState(
         hexCode = "#"
         isHexError = true
     }
-
-    fun copyHexToClipboard() {
-        scope.launch {
-            clipboardManager.setText(AnnotatedString(hexCode))
-            Toast.makeText(context, context.getString(R.string.copied_to_clipboard, hexCode), Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    fun pasteHexFromClipboard() {
-        scope.launch {
-            val clipboardText = clipboardManager.getText()?.text
-            if (clipboardText != null) {
-                val pasted = clipboardText.take(9)
-                updateColorFromHex(if (pasted.startsWith("#")) pasted else "#$pasted")
-            }
-        }
-    }
 }
 
 @Composable
 fun rememberAdvancedColorPickerState(
     initialColor: Color
 ): AdvancedColorPickerState {
-    val scope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
-    val context = LocalContext.current
-    return remember(initialColor, scope, clipboardManager, context) {
-        AdvancedColorPickerState(initialColor, scope, clipboardManager, context)
+    return remember(initialColor) {
+        AdvancedColorPickerState(initialColor)
     }
 }
 
@@ -240,6 +212,7 @@ fun AdvancedColorPickerDialog(
     onColorConfirm: (Color) -> Unit
 ) {
     val state = rememberAdvancedColorPickerState(initialColor = initialColor)
+    val onConfirmAction = { if (!state.isHexError) onColorConfirm(state.currentColor) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -247,73 +220,20 @@ fun AdvancedColorPickerDialog(
         title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
         text = {
             Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .background(initialColor)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .background(if (state.isHexError) initialColor else state.currentColor)
-                    )
-                }
-                Spacer(Modifier.height(16.dp))
-
-                ColorSlider(label = "A", value = state.currentColor.alpha * 255, onValueChange = { state.onColorPartChanged(alpha = it / 255f) })
-                ColorSlider(label = "R", value = state.currentColor.red * 255, onValueChange = { state.onColorPartChanged(red = it / 255f) })
-                ColorSlider(label = "G", value = state.currentColor.green * 255, onValueChange = { state.onColorPartChanged(green = it / 255f) })
-                ColorSlider(label = "B", value = state.currentColor.blue * 255, onValueChange = { state.onColorPartChanged(blue = it / 255f) })
-                ColorSlider(
-                    label = "L",
-                    value = state.lightness * 100,
-                    onValueChange = { state.onLightnessChanged(it) },
-                    valueRange = 0f..100f
+                ColorPreview(
+                    initialColor = initialColor,
+                    newColor = state.currentColor,
+                    isHexError = state.isHexError
                 )
-
+                Spacer(Modifier.height(16.dp))
+                ColorSliders(state = state)
                 Spacer(Modifier.height(8.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        value = state.hexCode,
-                        onValueChange = { state.updateColorFromHex(it) },
-                        label = { Text(stringResource(id = R.string.hex_argb)) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { if (!state.isHexError) onColorConfirm(state.currentColor) }),
-                        modifier = Modifier.weight(1f),
-                        isError = state.isHexError,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = CalendarioTheme.colors.cabecera,
-                            unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
-                        )
-                    )
-
-                    IconButton(onClick = { state.clearHex() }) {
-                        Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
-                    }
-
-                    IconButton(onClick = { state.copyHexToClipboard() }) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
-                    }
-
-                    IconButton(onClick = { state.pasteHexFromClipboard() }) {
-                        Icon(Icons.Default.ContentPaste, contentDescription = stringResource(id = R.string.paste_color), tint = CalendarioTheme.colors.textSystem)
-                    }
-                }
+                HexInput(state = state, onConfirm = onConfirmAction)
             }
         },
         confirmButton = {
             Button(
-                onClick = { if (!state.isHexError) onColorConfirm(state.currentColor) },
+                onClick = onConfirmAction,
                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) {
                 Text(stringResource(id = R.string.accept))
@@ -325,6 +245,87 @@ fun AdvancedColorPickerDialog(
             }
         }
     )
+}
+
+@Composable
+private fun ColorPreview(initialColor: Color, newColor: Color, isHexError: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .background(initialColor)
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .background(if (isHexError) initialColor else newColor)
+        )
+    }
+}
+
+@Composable
+private fun ColorSliders(state: AdvancedColorPickerState) {
+    Column {
+        ColorSlider(label = "A", value = state.currentColor.alpha * 255, onValueChange = { state.onColorPartChanged(alpha = it / 255f) })
+        ColorSlider(label = "R", value = state.currentColor.red * 255, onValueChange = { state.onColorPartChanged(red = it / 255f) })
+        ColorSlider(label = "G", value = state.currentColor.green * 255, onValueChange = { state.onColorPartChanged(green = it / 255f) })
+        ColorSlider(label = "B", value = state.currentColor.blue * 255, onValueChange = { state.onColorPartChanged(blue = it / 255f) })
+        ColorSlider(
+            label = "L",
+            value = state.lightness * 100,
+            onValueChange = { state.onLightnessChanged(it) },
+            valueRange = 0f..100f
+        )
+    }
+}
+
+@Composable
+private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            value = state.hexCode,
+            onValueChange = { state.updateColorFromHex(it) },
+            label = { Text(stringResource(id = R.string.hex_argb)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { onConfirm() }),
+            modifier = Modifier.weight(1f),
+            isError = state.isHexError,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = CalendarioTheme.colors.cabecera,
+                unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+            )
+        )
+
+        IconButton(onClick = { state.clearHex() }) {
+            Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
+        }
+
+        IconButton(onClick = {
+            clipboardManager.setText(AnnotatedString(state.hexCode))
+            Toast.makeText(context, context.getString(R.string.copied_to_clipboard, state.hexCode), Toast.LENGTH_SHORT).show()
+        }) {
+            Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
+        }
+
+        IconButton(onClick = {
+            clipboardManager.getText()?.text?.let { pastedText ->
+                state.updateColorFromHex(pastedText)
+            }
+        }) {
+            Icon(Icons.Default.ContentPaste, contentDescription = stringResource(id = R.string.paste_color), tint = CalendarioTheme.colors.textSystem)
+        }
+    }
 }
 
 @Composable
