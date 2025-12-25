@@ -33,7 +33,7 @@
     <string name="next_year">পরের বছর</string>
     <string name="accept">গ্রহণ করুন</string>
     <string name="select_mode_title">মোড নির্বাচন করুন</string>
-    <string name="selected">নির্বাচিত</string>
+    <string name="custom_selected">নির্বাচিত</string>
     <string name="restore_colors_title">রং পুনরুদ্ধার করুন</string>
     <string name="restore_colors_confirmation">আপনি কি নিশ্চিত যে আপনি সমস্ত রঙ তাদের ডিফল্ট মানগুলিতে পুনরুদ্ধার করতে চান? কীওয়ার্ডগুলি প্রভাবিত হবে না।</string>
     <string name="restore">পুনরুদ্ধার করুন</string>

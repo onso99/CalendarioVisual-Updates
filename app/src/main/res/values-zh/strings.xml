@@ -33,7 +33,7 @@
     <string name="next_year">下一年</string>
     <string name="accept">接受</string>
     <string name="select_mode_title">选择模式</string>
-    <string name="selected">已选择</string>
+    <string name="custom_selected">已选择</string>
     <string name="restore_colors_title">恢复颜色</string>
     <string name="restore_colors_confirmation">您确定要将所有颜色恢复为默认值吗？关键字不会受到影响。</string>
     <string name="restore">恢复</string>

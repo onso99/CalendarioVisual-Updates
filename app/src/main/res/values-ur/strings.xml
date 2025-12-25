@@ -33,7 +33,7 @@
     <string name="next_year">اگلا سال</string>
     <string name="accept">قبول کریں</string>
     <string name="select_mode_title">موڈ منتخب کریں</string>
-    <string name="selected">منتخب</string>
+    <string name="custom_selected">منتخب</string>
     <string name="restore_colors_title">رنگ بحال کریں</string>
     <string name="restore_colors_confirmation">کیا آپ واقعی تمام رنگوں کو ان کی ڈیفالٹ اقدار پر بحال کرنا چاہتے ہیں؟ کلیدی الفاظ متاثر نہیں ہوں گے۔</string>
     <string name="restore">بحال کریں</string>

@@ -33,7 +33,7 @@
     <string name="next_year">Sonraki yıl</string>
     <string name="accept">Kabul et</string>
     <string name="select_mode_title">Mod Seç</string>
-    <string name="selected">Seçili</string>
+    <string name="custom_selected">Seçili</string>
     <string name="restore_colors_title">Renkleri Geri Yükle</string>
     <string name="restore_colors_confirmation">Tüm renkleri varsayılan değerlerine geri yüklemek istediğinizden emin misiniz? Anahtar kelimeler etkilenmeyecektir.</string>
     <string name="restore">Geri Yükle</string>

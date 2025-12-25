@@ -33,7 +33,7 @@
     <string name="next_year">Следующий год</string>
     <string name="accept">Принять</string>
     <string name="select_mode_title">Выбрать режим</string>
-    <string name="selected">Выбрано</string>
+    <string name="custom_selected">Выбрано</string>
     <string name="restore_colors_title">Восстановить цвета</string>
     <string name="restore_colors_confirmation">Вы уверены, что хотите восстановить все цвета до значений по умолчанию? Ключевые слова не будут затронуты.</string>
     <string name="restore">Восстановить</string>

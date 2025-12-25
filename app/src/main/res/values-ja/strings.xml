@@ -33,7 +33,7 @@
     <string name="next_year">翌年</string>
     <string name="accept">承認</string>
     <string name="select_mode_title">モードを選択</string>
-    <string name="selected">選択済み</string>
+    <string name="custom_selected">選択済み</string>
     <string name="restore_colors_title">色を復元</string>
     <string name="restore_colors_confirmation">すべての色をデフォルト値に復元してもよろしいですか？キーワードは影響を受けません。</string>
     <string name="restore">復元</string>

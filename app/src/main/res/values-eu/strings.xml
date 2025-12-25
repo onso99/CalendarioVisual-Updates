@@ -33,7 +33,7 @@
     <string name="next_year">Hurrengo urtea</string>
     <string name="accept">Onartu</string>
     <string name="select_mode_title">Hautatu Modua</string>
-    <string name="selected">Hautatua</string>
+    <string name="custom_selected">Hautatua</string>
     <string name="restore_colors_title">Berrezarri Koloreak</string>
     <string name="restore_colors_confirmation">Ziur zaude kolore guztiak beren balio lehenetsietara berrezarri nahi dituzula? Gako-hitzek ez dute eraginik izango.</string>
     <string name="restore">Berrezarri</string>

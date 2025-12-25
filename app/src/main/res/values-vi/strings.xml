@@ -33,7 +33,7 @@
     <string name="next_year">Năm sau</string>
     <string name="accept">Chấp nhận</string>
     <string name="select_mode_title">Chọn chế độ</string>
-    <string name="selected">Đã chọn</string>
+    <string name="custom_selected">Đã chọn</string>
     <string name="restore_colors_title">Khôi phục màu</string>
     <string name="restore_colors_confirmation">Bạn có chắc chắn muốn khôi phục tất cả các màu về giá trị mặc định không? Các từ khóa sẽ không bị ảnh hưởng.</string>
     <string name="restore">Khôi phục</string>

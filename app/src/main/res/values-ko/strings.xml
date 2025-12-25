@@ -33,7 +33,7 @@
     <string name="next_year">다음 연도</string>
     <string name="accept">수락</string>
     <string name="select_mode_title">모드 선택</string>
-    <string name="selected">선택됨</string>
+    <string name="custom_selected">선택됨</string>
     <string name="restore_colors_title">색상 복원</string>
     <string name="restore_colors_confirmation">모든 색상을 기본값으로 복원하시겠습니까? 키워드는 영향을 받지 않습니다.</string>
     <string name="restore">복원</string>

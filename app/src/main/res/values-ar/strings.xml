@@ -33,7 +33,7 @@
     <string name="next_year">السنة التالية</string>
     <string name="accept">قبول</string>
     <string name="select_mode_title">تحديد الوضع</string>
-    <string name="selected">محدد</string>
+    <string name="custom_selected">محدد</string>
     <string name="restore_colors_title">استعادة الألوان</string>
     <string name="restore_colors_confirmation">هل أنت متأكد من أنك تريد استعادة جميع الألوان إلى قيمها الافتراضية؟ لن تتأثر الكلمات الرئيسية.</string>
     <string name="restore">استعادة</string>

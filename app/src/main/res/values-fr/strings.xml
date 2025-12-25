@@ -33,7 +33,7 @@
     <string name="next_year">Année suivante</string>
     <string name="accept">Accepter</string>
     <string name="select_mode_title">Sélectionner le mode</string>
-    <string name="selected">Sélectionné</string>
+    <string name="custom_selected">Sélectionné</string>
     <string name="restore_colors_title">Restaurer les couleurs</string>
     <string name="restore_colors_confirmation">Êtes-vous sûr de vouloir restaurer toutes les couleurs à leurs valeurs par défaut ? Les mots-clés ne seront pas affectés.</string>
     <string name="restore">Restaurer</string>

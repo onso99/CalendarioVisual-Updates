@@ -33,7 +33,7 @@
     <string name="next_year">Tahun berikutnya</string>
     <string name="accept">Terima</string>
     <string name="select_mode_title">Pilih Mod</string>
-    <string name="selected">Dipilih</string>
+    <string name="custom_selected">Dipilih</string>
     <string name="restore_colors_title">Pulihkan Warna</string>
     <string name="restore_colors_confirmation">Adakah anda pasti mahu memulihkan semua warna kepada nilai lalai? Kata kunci tidak akan terjejas.</string>
     <string name="restore">Pulihkan</string>

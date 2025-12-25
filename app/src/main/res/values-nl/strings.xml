@@ -33,7 +33,7 @@
     <string name="next_year">Volgend jaar</string>
     <string name="accept">Accepteren</string>
     <string name="select_mode_title">Modus selecteren</string>
-    <string name="selected">Geselecteerd</string>
+    <string name="custom_selected">Geselecteerd</string>
     <string name="restore_colors_title">Kleuren herstellen</string>
     <string name="restore_colors_confirmation">Weet u zeker dat u alle kleuren wilt herstellen naar hun standaardwaarden? Sleutelwoorden worden niet beïnvloed.</string>
     <string name="restore">Herstellen</string>
