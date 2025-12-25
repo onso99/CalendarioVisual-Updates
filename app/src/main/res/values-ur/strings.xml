@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">ہلکا: </string>
     <string name="dark_theme_prefix">گہرا: </string>
     <string name="customize_colors">رنگوں کو اپنی مرضی کے مطابق بنائیں</string>
-    <string name="import_theme">تھیم درآمد کریں...</string>
-    <string name="export_theme">تھیم برآمد کریں...</string>
+    <string name="import_theme">تھیم درآمد کریں…</string>
+    <string name="export_theme">تھیم برآمد کریں…</string>
     <string name="restore_default_colors">پہلے سے طے شدہ رنگ بحال کریں</string>
     <string name="widget_event_count">واقعات کی تعداد: %1$d</string>
     <string name="large_font">بڑا فونٹ</string>
@@ -124,13 +124,13 @@
     <string name="clear">صاف کریں</string>
     <string name="copy_color">رنگ کاپی کریں</string>
     <string name="paste_color">رنگ پیسٹ کریں</string>
-    <string name="search_events_placeholder">واقعات تلاش کریں...</string>
+    <string name="search_events_placeholder">واقعات تلاش کریں…</string>
     <string name="close_search">تلاش بند کریں</string>
     <string name="clear_search">تلاش صاف کریں</string>
     <string name="current_month">موجودہ مہینہ</string>
     <string name="current_year">موجودہ سال</string>
     <string name="no_results_found">کوئی نتیجہ نہیں ملا</string>
-    <string name="type_to_search">تلاش کرنے کے لیے ٹائپ کریں...</string>
+    <string name="type_to_search">تلاش کرنے کے لیے ٹائپ کریں…</string>
     <string name="all_day_event">(تمام دن کا واقعہ)</string>
     <string name="repeated_event">بار بار ہونے والا واقعہ</string>
     <string name="no_pending_events_this_month">اس مہینے کوئی زیر التواء واقعات نہیں۔</string>

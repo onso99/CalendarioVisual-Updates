@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">হালকা: </string>
     <string name="dark_theme_prefix">অন্ধকার: </string>
     <string name="customize_colors">রং কাস্টমাইজ করুন</string>
-    <string name="import_theme">থিম আমদানি করুন...</string>
-    <string name="export_theme">থিম রপ্তানি করুন...</string>
+    <string name="import_theme">থিম আমদানি করুন…</string>
+    <string name="export_theme">থিম রপ্তানি করুন…</string>
     <string name="restore_default_colors">ডিফল্ট রং পুনরুদ্ধার করুন</string>
     <string name="widget_event_count">ইভেন্টের সংখ্যা: %1$d</string>
     <string name="large_font">বড় ফন্ট</string>
@@ -124,13 +124,13 @@
     <string name="clear">পরিষ্কার করুন</string>
     <string name="copy_color">রঙ অনুলিপি করুন</string>
     <string name="paste_color">রঙ পেস্ট করুন</string>
-    <string name="search_events_placeholder">ইভেন্ট অনুসন্ধান করুন...</string>
+    <string name="search_events_placeholder">ইভেন্ট অনুসন্ধান করুন…</string>
     <string name="close_search">অনুসন্ধান বন্ধ করুন</string>
     <string name="clear_search">অনুসন্ধان পরিষ্কার করুন</string>
     <string name="current_month">বর্তমান মাস</string>
     <string name="current_year">বর্তমান বছর</string>
     <string name="no_results_found">কোনো ফলাফল পাওয়া যায়নি</string>
-    <string name="type_to_search">অনুসন্ধان করতে টাইপ করুন...</string>
+    <string name="type_to_search">অনুসন্ধان করতে টাইপ করুন…</string>
     <string name="all_day_event">(সারাদিনের ইভেন্ট)</string>
     <string name="repeated_event">পুনরাবৃত্তিমূলক ইভেন্ট</string>
     <string name="no_pending_events_this_month">এই মাসের জন্য কোনো বিচারাধীন ইভেন্ট নেই।</string>

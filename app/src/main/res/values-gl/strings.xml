@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Claro: </string>
     <string name="dark_theme_prefix">Escuro: </string>
     <string name="customize_colors">Personalizar cores</string>
-    <string name="import_theme">Importar tema...</string>
-    <string name="export_theme">Exportar tema...</string>
+    <string name="import_theme">Importar tema…</string>
+    <string name="export_theme">Exportar tema…</string>
     <string name="restore_default_colors">Restaurar cores por defecto</string>
     <string name="widget_event_count">Número de eventos: %1$d</string>
     <string name="large_font">Letra grande</string>
@@ -124,13 +124,13 @@
     <string name="clear">Limpar</string>
     <string name="copy_color">Copiar cor</string>
     <string name="paste_color">Pegar cor</string>
-    <string name="search_events_placeholder">Buscar eventos...</string>
+    <string name="search_events_placeholder">Buscar eventos…</string>
     <string name="close_search">Pechar busca</string>
     <string name="clear_search">Limpar busca</string>
     <string name="current_month">Mes actual</string>
     <string name="current_year">Ano actual</string>
     <string name="no_results_found">Non se atoparon resultados</string>
-    <string name="type_to_search">Escribe para buscar...</string>
+    <string name="type_to_search">Escribe para buscar…</string>
     <string name="all_day_event">(Evento de todo o día)</string>
     <string name="repeated_event">Evento repetido</string>
     <string name="no_pending_events_this_month">Non hai eventos pendentes para este mes.</string>

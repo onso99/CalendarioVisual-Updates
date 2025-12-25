@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Açık: </string>
     <string name="dark_theme_prefix">Koyu: </string>
     <string name="customize_colors">Renkleri özelleştir</string>
-    <string name="import_theme">Temayı içe aktar...</string>
-    <string name="export_theme">Temayı dışa aktar...</string>
+    <string name="import_theme">Temayı içe aktar…</string>
+    <string name="export_theme">Temayı dışa aktar…</string>
     <string name="restore_default_colors">Varsayılan renkleri geri yükle</string>
     <string name="widget_event_count">Etkinlik sayısı: %1$d</string>
     <string name="large_font">Büyük yazı tipi</string>
@@ -124,13 +124,13 @@
     <string name="clear">Temizle</string>
     <string name="copy_color">Rengi kopyala</string>
     <string name="paste_color">Rengi yapıştır</string>
-    <string name="search_events_placeholder">Etkinlikleri ara...</string>
+    <string name="search_events_placeholder">Etkinlikleri ara…</string>
     <string name="close_search">Aramayı kapat</string>
     <string name="clear_search">Aramayı temizle</string>
     <string name="current_month">Bu ay</string>
     <string name="current_year">Bu yıl</string>
     <string name="no_results_found">Sonuç bulunamadı</string>
-    <string name="type_to_search">Aramak için yazın...</string>
+    <string name="type_to_search">Aramak için yazın…</string>
     <string name="all_day_event">(Tüm günlük etkinlik)</string>
     <string name="repeated_event">Tekrarlanan etkinlik</string>
     <string name="no_pending_events_this_month">Bu ay için bekleyen etkinlik yok.</string>

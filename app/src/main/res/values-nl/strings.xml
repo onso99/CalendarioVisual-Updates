@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Licht: </string>
     <string name="dark_theme_prefix">Donker: </string>
     <string name="customize_colors">Kleuren aanpassen</string>
-    <string name="import_theme">Thema importeren...</string>
-    <string name="export_theme">Thema exporteren...</string>
+    <string name="import_theme">Thema importeren…</string>
+    <string name="export_theme">Thema exporteren…</string>
     <string name="restore_default_colors">Standaardkleuren herstellen</string>
     <string name="widget_event_count">Aantal gebeurtenissen: %1$d</string>
     <string name="large_font">Groot lettertype</string>
@@ -124,13 +124,13 @@
     <string name="clear">Wissen</string>
     <string name="copy_color">Kleur kopiëren</string>
     <string name="paste_color">Kleur plakken</string>
-    <string name="search_events_placeholder">Gebeurtenissen zoeken...</string>
+    <string name="search_events_placeholder">Gebeurtenissen zoeken…</string>
     <string name="close_search">Zoekopdracht sluiten</string>
     <string name="clear_search">Zoekopdracht wissen</string>
     <string name="current_month">Huidige maand</string>
     <string name="current_year">Huidig jaar</string>
     <string name="no_results_found">Geen resultaten gevonden</string>
-    <string name="type_to_search">Typ om te zoeken...</string>
+    <string name="type_to_search">Typ om te zoeken…</string>
     <string name="all_day_event">(Hele dag gebeurtenis)</string>
     <string name="repeated_event">Herhaalde gebeurtenis</string>
     <string name="no_pending_events_this_month">Geen lopende gebeurtenissen voor deze maand.</string>

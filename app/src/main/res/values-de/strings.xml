@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Hell: </string>
     <string name="dark_theme_prefix">Dunkel: </string>
     <string name="customize_colors">Farben anpassen</string>
-    <string name="import_theme">Thema importieren...</string>
-    <string name="export_theme">Thema exportieren...</string>
+    <string name="import_theme">Thema importieren…</string>
+    <string name="export_theme">Thema exportieren…</string>
     <string name="restore_default_colors">Standardfarben wiederherstellen</string>
     <string name="widget_event_count">Anzahl der Ereignisse: %1$d</string>
     <string name="large_font">Große Schriftart</string>
@@ -124,13 +124,13 @@
     <string name="clear">Leeren</string>
     <string name="copy_color">Farbe kopieren</string>
     <string name="paste_color">Farbe einfügen</string>
-    <string name="search_events_placeholder">Ereignisse suchen...</string>
+    <string name="search_events_placeholder">Ereignisse suchen…</string>
     <string name="close_search">Suche schließen</string>
     <string name="clear_search">Suche leeren</string>
     <string name="current_month">Aktueller Monat</string>
     <string name="current_year">Aktuelles Jahr</string>
     <string name="no_results_found">Keine Ergebnisse gefunden</string>
-    <string name="type_to_search">Tippen Sie zum Suchen...</string>
+    <string name="type_to_search">Tippen Sie zum Suchen…</string>
     <string name="all_day_event">(Ganztägiges Ereignis)</string>
     <string name="repeated_event">Wiederholtes Ereignis</string>
     <string name="no_pending_events_this_month">Keine anstehenden Ereignisse für diesen Monat.</string>

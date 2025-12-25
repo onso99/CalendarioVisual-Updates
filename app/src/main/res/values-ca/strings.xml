@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Clar: </string>
     <string name="dark_theme_prefix">Fosc: </string>
     <string name="customize_colors">Personalitzar colors</string>
-    <string name="import_theme">Importar tema...</string>
-    <string name="export_theme">Exportar tema...</string>
+    <string name="import_theme">Importar tema…</string>
+    <string name="export_theme">Exportar tema…</string>
     <string name="restore_default_colors">Restaurar colors per defecte</string>
     <string name="widget_event_count">Nombre d\'esdeveniments: %1$d</string>
     <string name="large_font">Lletra gran</string>
@@ -124,13 +124,13 @@
     <string name="clear">Netejar</string>
     <string name="copy_color">Copiar color</string>
     <string name="paste_color">Enganxar color</string>
-    <string name="search_events_placeholder">Cercar esdeveniments...</string>
+    <string name="search_events_placeholder">Cercar esdeveniments…</string>
     <string name="close_search">Tancar cerca</string>
     <string name="clear_search">Netejar cerca</string>
     <string name="current_month">Mes actual</string>
     <string name="current_year">Any actual</string>
     <string name="no_results_found">No s\'han trobat resultats</string>
-    <string name="type_to_search">Escriu per cercar...</string>
+    <string name="type_to_search">Escriu per cercar…</string>
     <string name="all_day_event">(Esdeveniment de tot el dia)</string>
     <string name="repeated_event">Esdeveniment repetit</string>
     <string name="no_pending_events_this_month">No hi ha esdeveniments pendents per a aquest mes.</string>

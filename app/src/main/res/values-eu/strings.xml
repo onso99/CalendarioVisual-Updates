@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Argia: </string>
     <string name="dark_theme_prefix">Iluna: </string>
     <string name="customize_colors">Pertsonalizatu koloreak</string>
-    <string name="import_theme">Inportatu gaia...</string>
-    <string name="export_theme">Esportatu gaia...</string>
+    <string name="import_theme">Inportatu gaia…</string>
+    <string name="export_theme">Esportatu gaia…</string>
     <string name="restore_default_colors">Leheneratu kolore lehenetsiak</string>
     <string name="widget_event_count">Gertaera kopurua: %1$d</string>
     <string name="large_font">Letra handia</string>
@@ -124,13 +124,13 @@
     <string name="clear">Garbitu</string>
     <string name="copy_color">Kopiatu kolorea</string>
     <string name="paste_color">Itsatsi kolorea</string>
-    <string name="search_events_placeholder">Bilatu gertaerak...</string>
+    <string name="search_events_placeholder">Bilatu gertaerak…</string>
     <string name="close_search">Itxi bilaketa</string>
     <string name="clear_search">Garbitu bilaketa</string>
     <string name="current_month">Uneko hilabetea</string>
     <string name="current_year">Uneko urtea</string>
     <string name="no_results_found">Ez da emaitzarik aurkitu</string>
-    <string name="type_to_search">Idatzi bilatzeko...</string>
+    <string name="type_to_search">Idatzi bilatzeko…</string>
     <string name="all_day_event">(Egun osoko gertaera)</string>
     <string name="repeated_event">Errepikatutako gertaera</string>
     <string name="no_pending_events_this_month">Ez dago zain dauden gertaerarik hilabete honetarako.</string>

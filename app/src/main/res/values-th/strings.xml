@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">สว่าง: </string>
     <string name="dark_theme_prefix">มืด: </string>
     <string name="customize_colors">ปรับแต่งสี</string>
-    <string name="import_theme">นำเข้าธีม...</string>
-    <string name="export_theme">ส่งออกธีม...</string>
+    <string name="import_theme">นำเข้าธีม…</string>
+    <string name="export_theme">ส่งออกธีม…</string>
     <string name="restore_default_colors">คืนค่าสีเริ่มต้น</string>
     <string name="widget_event_count">จำนวนกิจกรรม: %1$d</string>
     <string name="large_font">แบบอักษรขนาดใหญ่</string>
@@ -124,13 +124,13 @@
     <string name="clear">ล้าง</string>
     <string name="copy_color">คัดลอกสี</string>
     <string name="paste_color">วางสี</string>
-    <string name="search_events_placeholder">ค้นหากิจกรรม...</string>
+    <string name="search_events_placeholder">ค้นหากิจกรรม…</string>
     <string name="close_search">ปิดการค้นหา</string>
     <string name="clear_search">ล้างการค้นหา</string>
     <string name="current_month">เดือนปัจจุบัน</string>
     <string name="current_year">ปีปัจจุบัน</string>
     <string name="no_results_found">ไม่พบผลลัพธ์</string>
-    <string name="type_to_search">พิมพ์เพื่อค้นหา...</string>
+    <string name="type_to_search">พิมพ์เพื่อค้นหา…</string>
     <string name="all_day_event">(กิจกรรมตลอดวัน)</string>
     <string name="repeated_event">กิจกรรมที่เกิดซ้ำ</string>
     <string name="no_pending_events_this_month">ไม่มีกิจกรรมที่รอดำเนินการสำหรับเดือนนี้</string>

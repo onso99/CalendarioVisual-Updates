@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Светлая: </string>
     <string name="dark_theme_prefix">Темная: </string>
     <string name="customize_colors">Настроить цвета</string>
-    <string name="import_theme">Импортировать тему...</string>
-    <string name="export_theme">Экспортировать тему...</string>
+    <string name="import_theme">Импортировать тему…</string>
+    <string name="export_theme">Экспортировать тему…</string>
     <string name="restore_default_colors">Восстановить цвета по умолчанию</string>
     <string name="widget_event_count">Количество событий: %1$d</string>
     <string name="large_font">Крупный шрифт</string>
@@ -124,13 +124,13 @@
     <string name="clear">Очистить</string>
     <string name="copy_color">Копировать цвет</string>
     <string name="paste_color">Вставить цвет</string>
-    <string name="search_events_placeholder">Искать события...</string>
+    <string name="search_events_placeholder">Искать события…</string>
     <string name="close_search">Закрыть поиск</string>
     <string name="clear_search">Очистить поиск</string>
     <string name="current_month">Текущий месяц</string>
     <string name="current_year">Текущий год</string>
     <string name="no_results_found">Результатов не найдено</string>
-    <string name="type_to_search">Введите для поиска...</string>
+    <string name="type_to_search">Введите для поиска…</string>
     <string name="all_day_event">(Событие на весь день)</string>
     <string name="repeated_event">Повторяющееся событие</string>
     <string name="no_pending_events_this_month">Нет ожидающих событий на этот месяц.</string>

@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">밝게: </string>
     <string name="dark_theme_prefix">어둡게: </string>
     <string name="customize_colors">색상 사용자 지정</string>
-    <string name="import_theme">테마 가져오기...</string>
-    <string name="export_theme">테마 내보내기...</string>
+    <string name="import_theme">테마 가져오기…</string>
+    <string name="export_theme">테마 내보내기…</string>
     <string name="restore_default_colors">기본 색상 복원</string>
     <string name="widget_event_count">이벤트 수: %1$d</string>
     <string name="large_font">큰 글꼴</string>
@@ -124,13 +124,13 @@
     <string name="clear">지우기</string>
     <string name="copy_color">색상 복사</string>
     <string name="paste_color">색상 붙여넣기</string>
-    <string name="search_events_placeholder">이벤트 검색...</string>
+    <string name="search_events_placeholder">이벤트 검색…</string>
     <string name="close_search">검색 닫기</string>
     <string name="clear_search">검색 지우기</string>
     <string name="current_month">현재 월</string>
     <string name="current_year">현재 연도</string>
     <string name="no_results_found">결과 없음</string>
-    <string name="type_to_search">검색하려면 입력...</string>
+    <string name="type_to_search">검색하려면 입력…</string>
     <string name="all_day_event">(하루 종일 이벤트)</string>
     <string name="repeated_event">반복 이벤트</string>
     <string name="no_pending_events_this_month">이번 달에 보류 중인 이벤트가 없습니다.</string>

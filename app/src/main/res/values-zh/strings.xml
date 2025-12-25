@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">浅色：</string>
     <string name="dark_theme_prefix">深色：</string>
     <string name="customize_colors">自定义颜色</string>
-    <string name="import_theme">导入主题...</string>
-    <string name="export_theme">导出主题...</string>
+    <string name="import_theme">导入主题…</string>
+    <string name="export_theme">导出主题…</string>
     <string name="restore_default_colors">恢复默认颜色</string>
     <string name="widget_event_count">活动数量：%1$d</string>
     <string name="large_font">大字体</string>
@@ -124,13 +124,13 @@
     <string name="clear">清除</string>
     <string name="copy_color">复制颜色</string>
     <string name="paste_color">粘贴颜色</string>
-    <string name="search_events_placeholder">搜索活动...</string>
+    <string name="search_events_placeholder">搜索活动…</string>
     <string name="close_search">关闭搜索</string>
     <string name="clear_search">清除搜索</string>
     <string name="current_month">当前月份</string>
     <string name="current_year">当前年份</string>
     <string name="no_results_found">未找到结果</string>
-    <string name="type_to_search">键入以搜索...</string>
+    <string name="type_to_search">键入以搜索…</string>
     <string name="all_day_event">（全天活动）</string>
     <string name="repeated_event">重复活动</string>
     <string name="no_pending_events_this_month">本月没有待处理的活动。</string>

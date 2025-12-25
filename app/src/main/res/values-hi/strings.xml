@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">लाइट: </string>
     <string name="dark_theme_prefix">डार्क: </string>
     <string name="customize_colors">रंग अनुकूलित करें</string>
-    <string name="import_theme">थीम आयात करें...</string>
-    <string name="export_theme">थीम निर्यात करें...</string>
+    <string name="import_theme">थीम आयात करें…</string>
+    <string name="export_theme">थीम निर्यात करें…</string>
     <string name="restore_default_colors">डिफ़ॉल्ट रंग पुनर्स्थापित करें</string>
     <string name="widget_event_count">ईवेंट की संख्या: %1$d</string>
     <string name="large_font">बड़ा फ़ॉन्ट</string>
@@ -124,13 +124,13 @@
     <string name="clear">साफ़ करें</string>
     <string name="copy_color">रंग कॉपी करें</string>
     <string name="paste_color">रंग पेस्ट करें</string>
-    <string name="search_events_placeholder">ईवेंट खोजें...</string>
+    <string name="search_events_placeholder">ईवेंट खोजें…</string>
     <string name="close_search">खोज बंद करें</string>
     <string name="clear_search">खोज साफ़ करें</string>
     <string name="current_month">वर्तमान महीना</string>
     <string name="current_year">वर्तमान वर्ष</string>
     <string name="no_results_found">कोई परिणाम नहीं मिला</string>
-    <string name="type_to_search">खोजने के लिए टाइप करें...</string>
+    <string name="type_to_search">खोजने के लिए टाइप करें…</string>
     <string name="all_day_event">(पूरे दिन का ईवेंट)</string>
     <string name="repeated_event">दोहराया गया ईवेंट</string>
     <string name="no_pending_events_this_month">इस महीने के लिए कोई लंबित ईवेंट नहीं है।</string>

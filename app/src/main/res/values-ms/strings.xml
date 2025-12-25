@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Cerah: </string>
     <string name="dark_theme_prefix">Gelap: </string>
     <string name="customize_colors">Sesuaikan warna</string>
-    <string name="import_theme">Import tema...</string>
-    <string name="export_theme">Eksport tema...</string>
+    <string name="import_theme">Import tema…</string>
+    <string name="export_theme">Eksport tema…</string>
     <string name="restore_default_colors">Pulihkan warna lalai</string>
     <string name="widget_event_count">Bilangan acara: %1$d</string>
     <string name="large_font">Fon besar</string>
@@ -124,13 +124,13 @@
     <string name="clear">Kosongkan</string>
     <string name="copy_color">Salin warna</string>
     <string name="paste_color">Tampal warna</string>
-    <string name="search_events_placeholder">Cari acara...</string>
+    <string name="search_events_placeholder">Cari acara…</string>
     <string name="close_search">Tutup carian</string>
     <string name="clear_search">Kosongkan carian</string>
     <string name="current_month">Bulan semasa</string>
     <string name="current_year">Tahun semasa</string>
     <string name="no_results_found">Tiada hasil ditemui</string>
-    <string name="type_to_search">Taip untuk mencari...</string>
+    <string name="type_to_search">Taip untuk mencari…</string>
     <string name="all_day_event">(Acara sepanjang hari)</string>
     <string name="repeated_event">Acara berulang</string>
     <string name="no_pending_events_this_month">Tiada acara tertunda untuk bulan ini.</string>

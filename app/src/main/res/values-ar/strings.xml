@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">فاتح: </string>
     <string name="dark_theme_prefix">داكن: </string>
     <string name="customize_colors">تخصيص الألوان</string>
-    <string name="import_theme">استيراد سمة...</string>
-    <string name="export_theme">تصدير سمة...</string>
+    <string name="import_theme">استيراد سمة…</string>
+    <string name="export_theme">تصدير سمة…</string>
     <string name="restore_default_colors">استعادة الألوان الافتراضية</string>
     <string name="widget_event_count">عدد الأحداث: %1$d</string>
     <string name="large_font">خط كبير</string>
@@ -124,13 +124,13 @@
     <string name="clear">مسح</string>
     <string name="copy_color">نسخ اللون</string>
     <string name="paste_color">لصق اللون</string>
-    <string name="search_events_placeholder">بحث عن الأحداث...</string>
+    <string name="search_events_placeholder">بحث عن الأحداث…</string>
     <string name="close_search">إغلاق البحث</string>
     <string name="clear_search">مسح البحث</string>
     <string name="current_month">الشهر الحالي</string>
     <string name="current_year">السنة الحالية</string>
     <string name="no_results_found">لم يتم العثور على نتائج</string>
-    <string name="type_to_search">اكتب للبحث...</string>
+    <string name="type_to_search">اكتب للبحث…</string>
     <string name="all_day_event">(حدث طوال اليوم)</string>
     <string name="repeated_event">حدث متكرر</string>
     <string name="no_pending_events_this_month">لا توجد أحداث معلقة لهذا الشهر.</string>

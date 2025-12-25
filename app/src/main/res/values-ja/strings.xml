@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">ライト：</string>
     <string name="dark_theme_prefix">ダーク：</string>
     <string name="customize_colors">色をカスタマイズ</string>
-    <string name="import_theme">テーマをインポート...</string>
-    <string name="export_theme">テーマをエクスポート...</string>
+    <string name="import_theme">テーマをインポート…</string>
+    <string name="export_theme">テーマをエクスポート…</string>
     <string name="restore_default_colors">デフォルトの色を復元</string>
     <string name="widget_event_count">イベント数：%1$d</string>
     <string name="large_font">大きなフォント</string>
@@ -124,13 +124,13 @@
     <string name="clear">クリア</string>
     <string name="copy_color">色をコピー</string>
     <string name="paste_color">色を貼り付け</string>
-    <string name="search_events_placeholder">イベントを検索...</string>
+    <string name="search_events_placeholder">イベントを検索…</string>
     <string name="close_search">検索を閉じる</string>
     <string name="clear_search">検索をクリア</string>
     <string name="current_month">今月</string>
     <string name="current_year">今年</string>
     <string name="no_results_found">結果が見つかりません</string>
-    <string name="type_to_search">入力して検索...</string>
+    <string name="type_to_search">入力して検索…</string>
     <string name="all_day_event">（終日イベント）</string>
     <string name="repeated_event">繰り返されるイベント</string>
     <string name="no_pending_events_this_month">今月は保留中のイベントはありません。</string>

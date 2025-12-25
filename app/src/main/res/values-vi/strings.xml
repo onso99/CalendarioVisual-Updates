@@ -84,8 +84,8 @@
     <string name="light_theme_prefix">Sáng: </string>
     <string name="dark_theme_prefix">Tối: </string>
     <string name="customize_colors">Tùy chỉnh màu sắc</string>
-    <string name="import_theme">Nhập chủ đề...</string>
-    <string name="export_theme">Xuất chủ đề...</string>
+    <string name="import_theme">Nhập chủ đề…</string>
+    <string name="export_theme">Xuất chủ đề…</string>
     <string name="restore_default_colors">Khôi phục màu mặc định</string>
     <string name="widget_event_count">Số sự kiện: %1$d</string>
     <string name="large_font">Phông chữ lớn</string>
@@ -124,13 +124,13 @@
     <string name="clear">Xóa</string>
     <string name="copy_color">Sao chép màu</string>
     <string name="paste_color">Dán màu</string>
-    <string name="search_events_placeholder">Tìm kiếm sự kiện...</string>
+    <string name="search_events_placeholder">Tìm kiếm sự kiện…</string>
     <string name="close_search">Đóng tìm kiếm</string>
     <string name="clear_search">Xóa tìm kiếm</string>
     <string name="current_month">Tháng hiện tại</string>
     <string name="current_year">Năm hiện tại</string>
     <string name="no_results_found">Không tìm thấy kết quả nào</string>
-    <string name="type_to_search">Nhập để tìm kiếm...</string>
+    <string name="type_to_search">Nhập để tìm kiếm…</string>
     <string name="all_day_event">(Sự kiện cả ngày)</string>
     <string name="repeated_event">Sự kiện lặp lại</string>
     <string name="no_pending_events_this_month">Không có sự kiện nào đang chờ xử lý trong tháng này.</string>
