@@ -421,7 +421,7 @@ fun CalendarioScreen(
                     val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")
                     val monthlyCalendarGridBrush = when (effectType) {
                         "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
-                        "grunge" -> Brush.radialGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
+                        "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, CalendarioTheme.colors.monthlyCalendarGridBackground))
                         else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridBackground))
                     }
                     Column(

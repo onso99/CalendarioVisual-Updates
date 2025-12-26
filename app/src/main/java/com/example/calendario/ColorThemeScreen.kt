@@ -22,8 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DensityMedium
 import androidx.compose.material.icons.filled.Gradient
-import androidx.compose.material.icons.filled.Interests
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -328,8 +328,8 @@ private fun EffectColorThemeRow(
         IconButton(onClick = { onEffectChange(if (effectType == "gradient") "none" else "gradient") }) {
             Icon(imageVector = Icons.Default.Gradient, contentDescription = "Gradient", tint = if (effectType == "gradient") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
         }
-        IconButton(onClick = { onEffectChange(if (effectType == "grunge") "none" else "grunge") }) {
-            Icon(imageVector = Icons.Default.Interests, contentDescription = "Interests", tint = if (effectType == "grunge") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+        IconButton(onClick = { onEffectChange(if (effectType == "sweep") "none" else "sweep") }) {
+            Icon(imageVector = Icons.Default.DensityMedium, contentDescription = "Sweep", tint = if (effectType == "sweep") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.padding(start = 8.dp, end = 8.dp))
         }
         ColorBox(color = color, onClick = onColorClick)
     }
