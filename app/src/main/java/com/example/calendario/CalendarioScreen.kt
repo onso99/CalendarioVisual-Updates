@@ -417,11 +417,18 @@ fun CalendarioScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (viewMode == CalendarViewMode.MONTHLY) {
+                    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                    val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")
+                    val monthlyCalendarGridBrush = when (effectType) {
+                        "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
+                        "grunge" -> Brush.radialGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
+                        else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridBackground))
+                    }
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                color = CalendarioTheme.colors.monthlyCalendarGridBackground,
+                                brush = monthlyCalendarGridBrush,
                                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                             )
                             .padding(top = 16.dp, start = 12.dp, end = 12.dp, bottom = 16.dp),

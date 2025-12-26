@@ -22,6 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Gradient
+import androidx.compose.material.icons.filled.Interests
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,6 +59,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.getThemeColors
+import com.example.calendario.ui.theme.isColorDark
 import java.lang.IllegalArgumentException
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,6 +91,7 @@ fun ColorThemeScreen(
 
     val pendingColorChanges = remember { mutableStateMapOf<String, Color>() }
     val pendingKeywordChanges = remember { mutableStateMapOf<String, String>() }
+    var monthlyCalendarEffect by remember { mutableStateOf(prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")) }
 
     var showAdvancedColorDialog by remember { mutableStateOf(false) }
     var colorToEdit by remember { mutableStateOf<Triple<String, Color, Int>?>(null) }
@@ -97,7 +102,7 @@ fun ColorThemeScreen(
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
 
     val hasPendingChanges by remember {
-        derivedStateOf { pendingColorChanges.isNotEmpty() || pendingKeywordChanges.isNotEmpty() }
+        derivedStateOf { pendingColorChanges.isNotEmpty() || pendingKeywordChanges.isNotEmpty() || monthlyCalendarEffect != prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none") }
     }
 
     val backAction = {
@@ -119,6 +124,7 @@ fun ColorThemeScreen(
                             prefs.edit {
                                 pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) }
                                 pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
+                                putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, monthlyCalendarEffect)
                                 remove(AppConstants.KEY_LIGHT_THEME_NAME)
                                 remove(AppConstants.KEY_DARK_THEME_NAME)
                             }
@@ -160,7 +166,18 @@ fun ColorThemeScreen(
                             if (colorKey.isNotBlank()) {
                                 val currentColor = pendingColorChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
-                                if (item.labelRes == R.string.event_1 || item.labelRes == R.string.event_2) {
+                                if (item.labelRes == R.string.effect) {
+                                    EffectColorThemeRow(
+                                        label = stringResource(id = item.labelRes),
+                                        color = currentColor,
+                                        effectType = monthlyCalendarEffect ?: "none",
+                                        onEffectChange = { monthlyCalendarEffect = it },
+                                        onColorClick = {
+                                            colorToEdit = Triple(colorKey, currentColor, item.labelRes)
+                                            showAdvancedColorDialog = true
+                                        }
+                                    )
+                                } else if (item.labelRes == R.string.event_1 || item.labelRes == R.string.event_2) {
                                     val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
                                     val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
 
@@ -284,6 +301,37 @@ private fun SingleColorThemeRow(
             overflow = TextOverflow.Ellipsis
         )
         ColorBox(color = color, onClick = onClick)
+    }
+}
+
+@Composable
+private fun EffectColorThemeRow(
+    label: String,
+    color: Color,
+    effectType: String,
+    onEffectChange: (String) -> Unit,
+    onColorClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            color = CalendarioTheme.colors.textSystem, 
+            fontSize = 16.sp, 
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        IconButton(onClick = { onEffectChange(if (effectType == "gradient") "none" else "gradient") }) {
+            Icon(imageVector = Icons.Default.Gradient, contentDescription = "Gradient", tint = if (effectType == "gradient") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+        }
+        IconButton(onClick = { onEffectChange(if (effectType == "grunge") "none" else "grunge") }) {
+            Icon(imageVector = Icons.Default.Interests, contentDescription = "Interests", tint = if (effectType == "grunge") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+        }
+        ColorBox(color = color, onClick = onColorClick)
     }
 }
 
