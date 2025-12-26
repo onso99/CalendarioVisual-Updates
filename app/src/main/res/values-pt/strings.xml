@@ -169,6 +169,7 @@
     <string name="event_1">Evento-1</string>
     <string name="event_2">Evento-2</string>
     <string name="calendar_background">Fundo do calendário</string>
+    <string name="effect">Efeito</string>
     <string name="current_month_cell">Célula do mês atual</string>
     <string name="other_month_cell">Célula de outro mês</string>
     <string name="today_border">Borda de hoje</string>

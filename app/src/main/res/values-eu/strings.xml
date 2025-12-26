@@ -169,6 +169,7 @@
     <string name="event_1">Gertaera-1</string>
     <string name="event_2">Gertaera-2</string>
     <string name="calendar_background">Egutegiaren atzeko planoa</string>
+    <string name="effect">Efektua</string>
     <string name="current_month_cell">Uneko hilabeteko gelaxka</string>
     <string name="other_month_cell">Beste hilabete bateko gelaxka</string>
     <string name="today_border">Gaurko ertza</string>

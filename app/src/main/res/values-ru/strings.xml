@@ -169,6 +169,7 @@
     <string name="event_1">Событие-1</string>
     <string name="event_2">Событие-2</string>
     <string name="calendar_background">Фон календаря</string>
+    <string name="effect">Эффект</string>
     <string name="current_month_cell">Ячейка текущего месяца</string>
     <string name="other_month_cell">Ячейка другого месяца</string>
     <string name="today_border">Граница сегодняшнего дня</string>

@@ -169,6 +169,7 @@
     <string name="event_1">Event-1</string>
     <string name="event_2">Event-2</string>
     <string name="calendar_background">Calendar Background</string>
+    <string name="effect">Effect</string>
     <string name="current_month_cell">Current Month Cell</string>
     <string name="other_month_cell">Other Month Cell</string>
     <string name="today_border">Today Border</string>

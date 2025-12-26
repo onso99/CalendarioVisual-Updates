@@ -169,6 +169,7 @@
     <string name="event_1">活动-1</string>
     <string name="event_2">活动-2</string>
     <string name="calendar_background">日历背景</string>
+    <string name="effect">效果</string>
     <string name="current_month_cell">当前月份单元格</string>
     <string name="other_month_cell">其他月份单元格</string>
     <string name="today_border">今日边框</string>
