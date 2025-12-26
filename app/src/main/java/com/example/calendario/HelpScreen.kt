@@ -65,8 +65,6 @@ fun HelpScreen(onBackPress: () -> Unit) {
             }
             HelpSection(title = stringResource(id = R.string.help_section_customization)) {
                 Text(stringResource(id = R.string.help_customization_1))
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(id = R.string.help_customization_2))
             }
             HelpSection(title = stringResource(id = R.string.help_section_widget)) {
                 Text(stringResource(id = R.string.help_widget_1))
