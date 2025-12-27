@@ -91,8 +91,8 @@ object AppConstants {
         val toggleButtonselectedBackground = Color(0x332196F3)
         val background = Color(0xFFF4F7FD)
         val todayHighlightColor = Color(0x91FFEA82)
-        val monthlyCalendarGridBackground = Color(0xFFCADCF6)
-        val monthlyCalendarGridEffect = Color(0x80FFFFFF) // Blanco con 50% de opacidad
+        val monthlyCalendarGridBackground = Color(0xFF98B9EE)
+        val monthlyCalendarGridEffect = Color(0x80B9D9E0)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
         val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
         val monthlyCalendarTodayCellBorder = Color(0xFF2196F3)
@@ -103,7 +103,7 @@ object AppConstants {
     }
 
     object DarkColors {
-        val cabecera = Color(0xFF2173ED)
+        val cabecera = Color(0xFF1051B4)
         val settingsBackground = Color(0xFF2C2C2C)
         val fondoSecciones = Color(0xFF274566)
         val fondoDialogos = Color(0xFF2C2C2C)
@@ -119,8 +119,8 @@ object AppConstants {
         val toggleButtonselectedBackground = Color(0x84595959)
         val background = Color(0xFF121212)
         val todayHighlightColor = Color(0x8EACACAC)
-        val monthlyCalendarGridBackground = Color(0xFF333333)
-        val monthlyCalendarGridEffect = Color(0x80000000) // Negro con 50% de opacidad
+        val monthlyCalendarGridBackground = Color(0x800000AA)
+        val monthlyCalendarGridEffect = Color(0x8000304D)
         val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
         val monthlyCalendarEmptyCellBackground = Color(0xFF4F4F4F)
         val monthlyCalendarTodayCellBorder = Color(0xFFD28C45)
