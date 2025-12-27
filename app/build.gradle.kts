@@ -13,7 +13,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 2
-        versionName = "1.7.33"
+        versionName = "1.7.38"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +36,10 @@ android {
     }
     buildFeatures {
         compose = true // Mantener si usas Compose en otras partes o planeas hacerlo.
+    }
+    @Suppress("UnstableApiUsage")
+    androidResources {
+        localeFilters.addAll(listOf("es", "gl", "eu", "ca", "en", "fr", "de", "it", "pt", "zh", "ru", "ja"))
     }
 }
 
