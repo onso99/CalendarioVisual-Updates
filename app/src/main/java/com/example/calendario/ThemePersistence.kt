@@ -31,6 +31,10 @@ object ThemePersistence {
             // Aplicar los temas claro y oscuro si existen
             parsedTheme.lightTheme?.let { applyThemeColors(it, "light") }
             parsedTheme.darkTheme?.let { applyThemeColors(it, "dark") }
+
+            if (themeVersion < 5) {
+                putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
+            }
         }
     }
 
