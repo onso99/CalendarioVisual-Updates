@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
@@ -59,11 +60,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.getThemeColors
-import com.example.calendario.ui.theme.isColorDark
 import java.lang.IllegalArgumentException
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ColorThemeScreen(
     onBackPress: () -> Unit
@@ -166,38 +166,42 @@ fun ColorThemeScreen(
                             if (colorKey.isNotBlank()) {
                                 val currentColor = pendingColorChanges[colorKey] ?: getThemeColor(prefs, colorKey, defaultColor)
 
-                                if (item.labelRes == R.string.effect) {
-                                    EffectColorThemeRow(
-                                        label = stringResource(id = item.labelRes),
-                                        color = currentColor,
-                                        effectType = monthlyCalendarEffect ?: "none",
-                                        onEffectChange = { monthlyCalendarEffect = it },
-                                        onColorClick = {
-                                            colorToEdit = Triple(colorKey, currentColor, item.labelRes)
-                                            showAdvancedColorDialog = true
-                                        }
-                                    )
-                                } else if (item.labelRes == R.string.event_1 || item.labelRes == R.string.event_2) {
-                                    val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
-                                    val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
+                                when (item.labelRes) {
+                                    R.string.effect -> {
+                                        EffectColorThemeRow(
+                                            label = stringResource(id = item.labelRes),
+                                            color = currentColor,
+                                            effectType = monthlyCalendarEffect ?: "none",
+                                            onEffectChange = { monthlyCalendarEffect = it },
+                                            onColorClick = {
+                                                colorToEdit = Triple(colorKey, currentColor, item.labelRes)
+                                                showAdvancedColorDialog = true
+                                            }
+                                        )
+                                    }
+                                    R.string.event_1, R.string.event_2 -> {
+                                        val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
+                                        val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
 
-                                    SingleColorThemeRow(
-                                        label = currentKeyword.ifBlank { stringResource(id = item.labelRes) },
-                                        color = currentColor,
-                                        onClick = {
-                                            keywordColorToEdit = KeywordColorEditInfo(colorKey, currentColor, item.labelRes, keywordKey, currentKeyword)
-                                            showKeywordColorDialog = true
-                                        }
-                                    )
-                                } else {
-                                    SingleColorThemeRow(
-                                        label = stringResource(id = item.labelRes),
-                                        color = currentColor,
-                                        onClick = {
-                                            colorToEdit = Triple(colorKey, currentColor, item.labelRes)
-                                            showAdvancedColorDialog = true
-                                        }
-                                    )
+                                        SingleColorThemeRow(
+                                            label = currentKeyword.ifBlank { stringResource(id = item.labelRes) },
+                                            color = currentColor,
+                                            onClick = {
+                                                keywordColorToEdit = KeywordColorEditInfo(colorKey, currentColor, item.labelRes, keywordKey, currentKeyword)
+                                                showKeywordColorDialog = true
+                                            }
+                                        )
+                                    }
+                                    else -> {
+                                        SingleColorThemeRow(
+                                            label = stringResource(id = item.labelRes),
+                                            color = currentColor,
+                                            onClick = {
+                                                colorToEdit = Triple(colorKey, currentColor, item.labelRes)
+                                                showAdvancedColorDialog = true
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
