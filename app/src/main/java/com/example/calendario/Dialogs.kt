@@ -544,7 +544,12 @@ fun ThemeSelectionDialog(
                             fontSize = 16.sp
                         )
                         if (theme == currentTheme) {
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = CalendarioTheme.colors.cabecera)
+                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
+                                CalendarioTheme.colors.textSystem
+                            } else {
+                                CalendarioTheme.colors.cabecera
+                            }
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
                         }
                     }
                 }

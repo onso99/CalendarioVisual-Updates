@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import kotlin.math.roundToInt
 
 enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
@@ -568,7 +569,12 @@ private fun StartDayOfWeekDialog(
                             fontSize = 16.sp
                         )
                         if (option.key == currentSelectionKey) {
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = CalendarioTheme.colors.cabecera)
+                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
+                                CalendarioTheme.colors.textSystem
+                            } else {
+                                CalendarioTheme.colors.cabecera
+                            }
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
                         }
                     }
                 }

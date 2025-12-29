@@ -187,7 +187,7 @@ fun KeywordColorPickerDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera)
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
             }
         }
     )
@@ -241,7 +241,7 @@ fun AdvancedColorPickerDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera)
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
             }
         }
     )
