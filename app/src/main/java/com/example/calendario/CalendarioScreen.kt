@@ -476,7 +476,7 @@ fun CalendarioScreen(
                         if (isCurrentMonthView) {
                             val headerColor = CalendarioTheme.colors.cabecera
                             val backgroundColor = CalendarioTheme.colors.background
-                            val buttonContainerColor = if (showAllEvents) {
+                            val buttonContainerColor = run {
                                 val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
                                 if (isBgDark) {
                                     val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
@@ -491,15 +491,10 @@ fun CalendarioScreen(
                                 } else {
                                     headerColor.copy(alpha = 0.2f)
                                 }
-                            } else {
-                                Color.Transparent
                             }
 
-                            val textColor = if (showAllEvents) {
-                                if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
-                            } else {
-                                CalendarioTheme.colors.textSystem
-                            }
+                            val textColor = if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
+                            
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
