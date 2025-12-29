@@ -297,7 +297,7 @@ fun SettingsScreen(
                     text = stringResource(id = R.string.customize_theme),
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.primary,
+                    color = CalendarioTheme.colors.textSystem,
                     modifier = Modifier.weight(1f)
                 )
                 

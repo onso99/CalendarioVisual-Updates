@@ -195,7 +195,7 @@ fun SearchScreen(
                         onClick = { onSearchScopeChange(scopeValue) },
                         colors = ButtonDefaults.textButtonColors(
                             containerColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.2f) else Color.Transparent,
-                            contentColor = CalendarioTheme.colors.cabecera
+                            contentColor = CalendarioTheme.colors.textSystem
                         )
                     ) { 
                         Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)

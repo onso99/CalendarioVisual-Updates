@@ -33,7 +33,7 @@ internal fun SectionTitle(text: String) {
         style = typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = CalendarioTheme.colors.cabecera
+        color = CalendarioTheme.colors.textSystem
     )
 }
 
@@ -45,7 +45,7 @@ internal fun WidgetSectionTitle() {
         style = typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = CalendarioTheme.colors.cabecera
+        color = CalendarioTheme.colors.textSystem
     )
 }
 
