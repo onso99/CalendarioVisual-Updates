@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -58,7 +59,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
@@ -187,15 +190,43 @@ fun SearchScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 val scopeOptions = listOf(stringResource(id = R.string.current_month), stringResource(id = R.string.current_year), stringResource(id = R.string.all))
+                val headerColor = CalendarioTheme.colors.cabecera
+                val backgroundColor = MaterialTheme.colorScheme.background
+
                 scopeOptions.forEachIndexed { index, text ->
                     val scopeValue = SearchScope.entries[index]
                     val isSelected = searchScope == scopeValue
 
+                    val buttonContainerColor = if (isSelected) {
+                        val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
+                        if (isBgDark) {
+                            val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
+                            if (isHeaderDark) {
+                                val hsl = FloatArray(3)
+                                ColorUtils.colorToHSL(headerColor.toArgb(), hsl)
+                                hsl[2] = (hsl[2] + 0.1f).coerceIn(0f, 1f)
+                                Color(ColorUtils.HSLToColor(hsl))
+                            } else {
+                                headerColor.copy(alpha = 0.2f)
+                            }
+                        } else {
+                            headerColor.copy(alpha = 0.2f)
+                        }
+                    } else {
+                        Color.Transparent
+                    }
+
+                    val textColor = if (isSelected) {
+                        if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
+                    } else {
+                        CalendarioTheme.colors.textSystem
+                    }
+
                     TextButton(
                         onClick = { onSearchScopeChange(scopeValue) },
                         colors = ButtonDefaults.textButtonColors(
-                            containerColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.2f) else Color.Transparent,
-                            contentColor = CalendarioTheme.colors.textSystem
+                            containerColor = buttonContainerColor,
+                            contentColor = textColor
                         )
                     ) { 
                         Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)

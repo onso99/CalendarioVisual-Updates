@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import kotlinx.coroutines.delay
@@ -472,14 +474,39 @@ fun CalendarioScreen(
                         )
 
                         if (isCurrentMonthView) {
+                            val headerColor = CalendarioTheme.colors.cabecera
+                            val backgroundColor = CalendarioTheme.colors.background
+                            val buttonContainerColor = if (showAllEvents) {
+                                val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
+                                if (isBgDark) {
+                                    val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
+                                    if (isHeaderDark) {
+                                        val hsl = FloatArray(3)
+                                        ColorUtils.colorToHSL(headerColor.toArgb(), hsl)
+                                        hsl[2] = (hsl[2] + 0.1f).coerceIn(0f, 1f)
+                                        Color(ColorUtils.HSLToColor(hsl))
+                                    } else {
+                                        headerColor.copy(alpha = 0.2f)
+                                    }
+                                } else {
+                                    headerColor.copy(alpha = 0.2f)
+                                }
+                            } else {
+                                Color.Transparent
+                            }
+
+                            val textColor = if (showAllEvents) {
+                                if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
+                            } else {
+                                CalendarioTheme.colors.textSystem
+                            }
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(CalendarioTheme.colors.toggleButtonSelectedBackground)
+                                    .background(buttonContainerColor)
                                     .clickable { showAllEvents = !showAllEvents }
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
-                                val textColor = if (isColorDark(CalendarioTheme.colors.toggleButtonSelectedBackground, CalendarioTheme.colors.background)) Color.White else Color.Black
                                 Text(
                                     text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
                                     fontWeight = FontWeight.Bold,
