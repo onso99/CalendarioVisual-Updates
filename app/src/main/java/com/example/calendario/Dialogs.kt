@@ -78,6 +78,16 @@ enum class DeleteRecurringOption {
     ALL_EVENTS
 }
 
+@Composable
+private fun DialogDismissButton(onDismiss: () -> Unit) {
+    TextButton(
+        onClick = onDismiss,
+        colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
+    ) {
+        Text(stringResource(id = R.string.cancel))
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadOnlyEventDialog(
@@ -194,11 +204,7 @@ fun DeleteRecurringEventDialog(
                 Text(stringResource(id = R.string.delete))
             }
         },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -305,8 +311,8 @@ fun SelectCalendarsDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+            TextButton(onClick = onDismissRequest, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)) {
+                Text(stringResource(id = R.string.cancel), fontSize = 16.sp)
             }
         }
     )
@@ -509,11 +515,7 @@ fun GoToYearDialog(
                 Text(stringResource(id = R.string.accept))
             }
         },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -576,7 +578,7 @@ fun RestoreDefaultColorsDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text(stringResource(id = R.string.restore)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
 
@@ -603,7 +605,7 @@ fun ConfirmDeleteDialog(
                 )
             ) { Text(stringResource(id = R.string.delete)) }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -647,7 +649,7 @@ fun RepetitionSelectionDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text(stringResource(id = R.string.accept)) }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -697,11 +699,7 @@ fun SelectCalendarDialog(
                 Text(stringResource(id = R.string.accept))
             }
         },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -734,6 +732,6 @@ fun TimePickerDialog(
             )
         },
         confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }

@@ -491,7 +491,7 @@ fun AddEventScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text(stringResource(id = R.string.accept)) }
             },
-            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera) } },
+            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(
@@ -534,7 +534,7 @@ fun AddEventScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
                 ) { Text(stringResource(id = R.string.accept)) }
             },
-            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera) } },
+            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(
