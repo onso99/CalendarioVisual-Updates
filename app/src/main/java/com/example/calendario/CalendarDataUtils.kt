@@ -186,14 +186,15 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             CalendarContract.Calendars.ACCOUNT_NAME,
             CalendarContract.Calendars.CALENDAR_COLOR,
             CalendarContract.Calendars.IS_PRIMARY,
-            CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
+            CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
+            CalendarContract.Calendars.DELETED
         )
 
         try {
             val cursor: Cursor? = context.contentResolver.query(
                 CalendarContract.Calendars.CONTENT_URI,
                 projection,
-                null,
+                "${CalendarContract.Calendars.DELETED} != 1", // Restore original selection
                 null,
                 "${CalendarContract.Calendars.CALENDAR_DISPLAY_NAME} ASC"
             )
@@ -219,16 +220,20 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                     val accessLevel = it.getInt(accessLevelColumn)
                     val canModify = accessLevel >= CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
 
-                    calendarsList.add(
-                        CalendarInfo(
-                            id = id,
-                            displayName = displayName,
-                            accountName = accountName,
-                            color = colorInt,
-                            isPrimary = isPrimary,
-                            canModify = canModify
+                    if (accessLevel > CalendarContract.Calendars.CAL_ACCESS_NONE) {
+                        calendarsList.add(
+                            CalendarInfo(
+                                id = id,
+                                displayName = displayName,
+                                accountName = accountName,
+                                color = colorInt,
+                                isPrimary = isPrimary,
+                                canModify = canModify,
+                                accessLevel = accessLevel,
+                                isDeleted = false // We are filtering out deleted calendars
+                            )
                         )
-                    )
+                    }
                 }
             } ?: Log.w("LoadCalendars", "El cursor de calendarios del ContentResolver fue nulo.")
 
@@ -412,7 +417,7 @@ suspend fun readFestivosFromCalendarsSuspend(
         finalMap.values.forEach { festivos -> 
             festivos.sortWith(
                 compareBy<Festivo> { it.isAllDay }.reversed()
-                .thenBy(nullsLast()) { it.startTime }
+                    .thenBy(nullsLast()) { it.startTime }
             )
         }
 

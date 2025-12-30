@@ -7,11 +7,13 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 data class CalendarioUiState(
@@ -117,6 +119,23 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 saveEventsToPrefs(context, emptyMap())
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             }
+        }
+    }
+
+    suspend fun refreshAvailableCalendars() {
+        val context = getApplication<Application>()
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        try {
+            withContext(Dispatchers.IO) { // Ensure suspend function is called from a coroutine
+                val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
+                if (_uiState.value.availableCalendars != freshAvailableCalendars) {
+                    _uiState.update { it.copy(availableCalendars = freshAvailableCalendars) }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("CalendarioViewModel", "Error refreshing available calendars", e)
         }
     }
     

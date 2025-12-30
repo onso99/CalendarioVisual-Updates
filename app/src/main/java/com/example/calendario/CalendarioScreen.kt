@@ -121,7 +121,10 @@ fun CalendarioScreen(
     ) { isGranted ->
         viewModel.onPermissionResult(isGranted)
         if (isGranted) {
-            showSelectCalendarsDialog = true
+            scope.launch {
+                viewModel.refreshAvailableCalendars()
+                showSelectCalendarsDialog = true
+            }
         } else {
             Toast.makeText(context, R.string.permission_calendar_select, Toast.LENGTH_LONG).show()
         }
@@ -385,10 +388,13 @@ fun CalendarioScreen(
                                             text = { Text(stringResource(id = R.string.calendars), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                             onClick = {
                                                 menuExpanded = false
-                                                if (uiState.hasCalendarPermission) {
-                                                    showSelectCalendarsDialog = true
-                                                } else {
-                                                    readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+                                                scope.launch {
+                                                    if (uiState.hasCalendarPermission) {
+                                                        viewModel.refreshAvailableCalendars()
+                                                        showSelectCalendarsDialog = true
+                                                    } else {
+                                                        readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+                                                    }
                                                 }
                                             },
                                             leadingIcon = { Icon(Icons.Default.Event, contentDescription = stringResource(id = R.string.calendars), tint = CalendarioTheme.colors.textSystem) }

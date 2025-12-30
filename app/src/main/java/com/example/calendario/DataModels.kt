@@ -38,5 +38,7 @@ data class CalendarInfo(
     val accountName: String,
     val color: Int?,
     val isPrimary: Boolean,
-    val canModify: Boolean
+    val canModify: Boolean,
+    val accessLevel: Int,
+    val isDeleted: Boolean
 )
