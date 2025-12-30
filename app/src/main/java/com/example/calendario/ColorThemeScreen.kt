@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -346,11 +347,16 @@ private fun ColorBox(color: Color, onClick: () -> Unit) {
 
 @Composable
 private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
+    val titleColor = lerp(
+        start = CalendarioTheme.colors.cabecera,
+        stop = CalendarioTheme.colors.textSystem,
+        fraction = 0.4f
+    )
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary,
+        color = titleColor,
         modifier = modifier
     )
 }

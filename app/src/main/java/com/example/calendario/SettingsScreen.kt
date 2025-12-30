@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -65,7 +66,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import kotlin.math.roundToInt
@@ -92,7 +92,6 @@ fun SettingsScreen(
     onThemeUpdated: () -> Unit
 ) {
     val context = LocalContext.current
-    val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -213,8 +212,8 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.settings), color = colorScheme.onPrimary) },
-                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = colorScheme.onPrimary) } },
+                title = { Text(stringResource(id = R.string.settings), color = MaterialTheme.colorScheme.onPrimary) },
+                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) } },
                 actions = {
                     if (hasPendingChanges) {
                         IconButton(onClick = {
@@ -232,11 +231,11 @@ fun SettingsScreen(
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                             onBackPress()
                         }) {
-                            Icon(Icons.Default.Check, stringResource(id = R.string.apply_changes), tint = colorScheme.onPrimary)
+                            Icon(Icons.Default.Check, stringResource(id = R.string.apply_changes), tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
         containerColor = CalendarioTheme.colors.settingsBackground
@@ -255,7 +254,7 @@ fun SettingsScreen(
                     Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Text(stringResource(id = themeSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 }
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showStartDayOfWeekDialog = true },
                     verticalAlignment = Alignment.CenterVertically,
@@ -264,7 +263,7 @@ fun SettingsScreen(
                     Text(stringResource(id = R.string.start_of_week), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Text(stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 }
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -278,8 +277,8 @@ fun SettingsScreen(
                         checked = pendingShowWeekNumber,
                         onCheckedChange = { pendingShowWeekNumber = it },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = colorScheme.primary,
-                            checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f),
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f),
                             uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
                             uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
                             uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
@@ -293,22 +292,18 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val titleColor = lerp(
+                    start = CalendarioTheme.colors.cabecera,
+                    stop = CalendarioTheme.colors.textSystem,
+                    fraction = 0.4f
+                )
                 Text(
                     text = stringResource(id = R.string.customize_theme),
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = CalendarioTheme.colors.textSystem,
+                    color = titleColor,
                     modifier = Modifier.weight(1f)
                 )
-                
-                val themeNameColor = run {
-                    val settingsBackgroundColor = CalendarioTheme.colors.settingsBackground
-                    val hsl = FloatArray(3)
-                    ColorUtils.colorToHSL(settingsBackgroundColor.toArgb(), hsl)
-                    val isDark = hsl[2] < 0.5f
-                    hsl[2] = if (isDark) (hsl[2] + 0.4f).coerceAtMost(1f) else (hsl[2] - 0.4f).coerceAtLeast(0f)
-                    Color(ColorUtils.HSLToColor(hsl))
-                }
 
                 val currentLightThemeName = lightThemeName
                 val currentDarkThemeName = darkThemeName
@@ -316,7 +311,7 @@ fun SettingsScreen(
                 if (currentLightThemeName != null && currentLightThemeName == currentDarkThemeName) {
                     Text(
                         text = currentLightThemeName,
-                        color = themeNameColor,
+                        color = titleColor,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
                         maxLines = 1,
@@ -328,39 +323,40 @@ fun SettingsScreen(
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp).weight(1f)) {
                         currentLightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(stringResource(id = R.string.light_theme_prefix), color = themeNameColor, fontSize = 13.sp)
-                                Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
+                                Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
+                                Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
                         currentDarkThemeName?.let {
-                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(stringResource(id = R.string.dark_theme_prefix), color = themeNameColor, fontSize = 13.sp)
-                                Text(it, color = themeNameColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
+                                Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
                     }
                 }
             }
 
+
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
-                HorizontalDivider(color = colorScheme.outline.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.restore_default_colors)) { showRestoreDialog = true }
             }
 
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
                 Text(stringResource(id = R.string.widget_event_count, pendingEventCount.roundToInt()), fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
-                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = colorScheme.primary, activeTrackColor = colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                 Row(modifier = Modifier.fillMaxWidth().clickable { pendingUseLargeFont = !pendingUseLargeFont }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.large_font), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = colorScheme.primary, checkedTrackColor = colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
+                    Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colorScheme.outline.copy(alpha = 0.3f))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
                 Spacer(Modifier.height(12.dp))
                 ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true }

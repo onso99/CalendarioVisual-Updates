@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,25 +28,33 @@ import com.example.calendario.ui.theme.CalendarioTheme
 
 @Composable
 internal fun SectionTitle(text: String) {
-    val typography = MaterialTheme.typography
+    val titleColor = lerp(
+        start = CalendarioTheme.colors.cabecera,
+        stop = CalendarioTheme.colors.textSystem,
+        fraction = 0.4f
+    )
     Text(
         text = text,
-        style = typography.titleMedium,
+        style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = CalendarioTheme.colors.textSystem
+        color = titleColor
     )
 }
 
 @Composable
 internal fun WidgetSectionTitle() {
-    val typography = MaterialTheme.typography
+    val titleColor = lerp(
+        start = CalendarioTheme.colors.cabecera,
+        stop = CalendarioTheme.colors.textSystem,
+        fraction = 0.4f
+    )
     Text(
         text = stringResource(id = R.string.widget),
-        style = typography.titleMedium,
+        style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
-        color = CalendarioTheme.colors.textSystem
+        color = titleColor
     )
 }
 
