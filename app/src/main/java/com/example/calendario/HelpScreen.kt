@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -75,12 +78,18 @@ fun HelpScreen(onBackPress: () -> Unit) {
 
 @Composable
 private fun HelpSection(title: String, content: @Composable () -> Unit) {
+    val titleColor = lerp(
+        start = CalendarioTheme.colors.cabecera,
+        stop = CalendarioTheme.colors.textSystem,
+        fraction = 0.4f
+    )
+
     Column(modifier = Modifier.padding(bottom = 24.dp)) {
         Text(
             text = title,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = CalendarioTheme.colors.textSystem,
+            color = titleColor,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         content()
