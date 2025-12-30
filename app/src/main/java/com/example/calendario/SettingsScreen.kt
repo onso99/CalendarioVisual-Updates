@@ -184,15 +184,15 @@ fun SettingsScreen(
     val hasPendingChanges by remember {
         derivedStateOf {
             pendingShowWeekNumber != originalShowWeekNumber ||
-            pendingStartOfWeekKey != originalStartOfWeekKey ||
-            pendingEventCount.roundToInt() != originalEventCount ||
-            pendingUseLargeFont != originalUseLargeFont ||
-            pendingEventColor != originalEventColor ||
-            pendingTodayEventColor != originalTodayEventColor ||
-            pendingWidgetBackgroundColor != originalWidgetBackgroundColor
+                    pendingStartOfWeekKey != originalStartOfWeekKey ||
+                    pendingEventCount.roundToInt() != originalEventCount ||
+                    pendingUseLargeFont != originalUseLargeFont ||
+                    pendingEventColor != originalEventColor ||
+                    pendingTodayEventColor != originalTodayEventColor ||
+                    pendingWidgetBackgroundColor != originalWidgetBackgroundColor
         }
     }
-    
+
     val backAction = {
         if (hasPendingChanges) {
             showDiscardChangesDialog = true
@@ -200,7 +200,7 @@ fun SettingsScreen(
             onBackPress()
         }
     }
-    
+
     val versionName = try {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
         packageInfo.versionName
@@ -241,13 +241,23 @@ fun SettingsScreen(
         containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
             // --- General Section ---
             SectionTitle(text = stringResource(id = R.string.general))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showThemeDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .clickable { showThemeDialog = true },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -256,7 +266,10 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { showStartDayOfWeekDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .clickable { showStartDayOfWeekDialog = true },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -289,7 +302,9 @@ fun SettingsScreen(
 
             // --- Theme Section ---
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val titleColor = lerp(
@@ -316,7 +331,9 @@ fun SettingsScreen(
                         textAlign = TextAlign.End,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = 16.dp).weight(1f),
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .weight(1f),
                         fontSize = 13.sp
                     )
                 } else {
@@ -338,7 +355,10 @@ fun SettingsScreen(
             }
 
 
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
@@ -349,10 +369,16 @@ fun SettingsScreen(
             }
 
             WidgetSectionTitle()
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)) {
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
                 Text(stringResource(id = R.string.widget_event_count, pendingEventCount.roundToInt()), fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
                 Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
-                Row(modifier = Modifier.fillMaxWidth().clickable { pendingUseLargeFont = !pendingUseLargeFont }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { pendingUseLargeFont = !pendingUseLargeFont }
+                    .padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.large_font), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                     Switch(checked = pendingUseLargeFont, onCheckedChange = { pendingUseLargeFont = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
@@ -364,7 +390,7 @@ fun SettingsScreen(
                 ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
                 Spacer(Modifier.height(16.dp))
             }
-            
+
             // --- About Section ---
             SectionTitle(text = stringResource(id = R.string.about))
             Column(
@@ -388,11 +414,11 @@ fun SettingsScreen(
             onDismiss = { showThemeDialog = false }
         )
     }
-    
+
     if (showStartDayOfWeekDialog) {
         StartDayOfWeekDialog(
             currentSelectionKey = pendingStartOfWeekKey,
-            onOptionSelected = { 
+            onOptionSelected = {
                 pendingStartOfWeekKey = it
                 showStartDayOfWeekDialog = false
             },
@@ -486,14 +512,14 @@ fun SettingsScreen(
             }
         )
     }
-    
+
     if (showExportDialog) {
         ExportThemeDialog(
             onDismissRequest = { showExportDialog = false },
             onConfirm = { newName ->
                 showExportDialog = false
                 appPrefs.edit { putString("temp_export_name", newName) }
-                exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
                     putExtra(Intent.EXTRA_TITLE, "${newName}.json")
@@ -556,7 +582,10 @@ private fun StartDayOfWeekDialog(
             Column {
                 StartOfWeekOption.entries.forEach { option ->
                     Row(
-                        Modifier.fillMaxWidth().clickable { onOptionSelected(option.key) }.padding(vertical = 12.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOptionSelected(option.key) }
+                            .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(

@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -217,7 +218,7 @@ fun SearchScreen(
                     }
 
                     val textColor = if (isSelected) {
-                        if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
+                        if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else CalendarioTheme.colors.textSystem
                     } else {
                         CalendarioTheme.colors.textSystem
                     }
@@ -272,11 +273,16 @@ fun SearchScreen(
                             searchResults.forEach { (yearDate, eventsInYear) ->
                                 item {
                                     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                        val titleColor = lerp(
+                                            start = CalendarioTheme.colors.cabecera,
+                                            stop = CalendarioTheme.colors.textSystem,
+                                            fraction = 0.4f
+                                        )
                                         Text(
                                             text = yearDate.format(DateTimeFormatter.ofPattern("yyyy")),
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold,
-                                            color = CalendarioTheme.colors.cabecera
+                                            color = titleColor
                                         )
                                     }
                                 }
@@ -365,7 +371,11 @@ private fun EventRow(
                 Modifier
                     .size(10.dp)
                     .background(Color(colorInt), CircleShape)
-                    .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), CircleShape)
+                    .border(
+                        0.5.dp,
+                        CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                        CircleShape
+                    )
             )
             Spacer(Modifier.size(8.dp))
         }
@@ -375,7 +385,9 @@ private fun EventRow(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = stringResource(id = R.string.repeated_event),
                 tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                modifier = Modifier.padding(start = 8.dp).size(16.dp)
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(16.dp)
             )
         }
     }
