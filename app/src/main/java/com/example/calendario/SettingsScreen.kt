@@ -445,6 +445,10 @@ fun SettingsScreen(
                         if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
                         if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
                     }
+                    // Explicitly remove legacy error keys
+                    remove(AppConstants.ColorKeys.LIGHT_ERROR)
+                    remove(AppConstants.ColorKeys.DARK_ERROR)
+
                     remove(AppConstants.KEY_LIGHT_THEME_NAME)
                     remove(AppConstants.KEY_DARK_THEME_NAME)
                 }
@@ -471,7 +475,7 @@ fun SettingsScreen(
                         showDiscardChangesDialog = false
                         onBackPress()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
                     Text(stringResource(id = R.string.discard))
                 }

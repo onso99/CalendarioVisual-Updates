@@ -21,7 +21,6 @@ object ColorThemeConfig {
         ColorThemeItem(R.string.section_background, AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES, AppConstants.ColorKeys.DARK_FONDO_SECCIONES, AppConstants.LightColors.fondoSecciones, AppConstants.DarkColors.fondoSecciones, "General"),
         ColorThemeItem(R.string.dialog_background, AppConstants.ColorKeys.LIGHT_FONDO_DIALOGOS, AppConstants.ColorKeys.DARK_FONDO_DIALOGOS, AppConstants.LightColors.fondoDialogos, AppConstants.DarkColors.fondoDialogos, "General"),
         ColorThemeItem(R.string.dropdown_menu_background, AppConstants.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND, AppConstants.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND, AppConstants.LightColors.dropdownMenuBackground, AppConstants.DarkColors.dropdownMenuBackground, "General"),
-        ColorThemeItem(R.string.warning, AppConstants.ColorKeys.LIGHT_ERROR, AppConstants.ColorKeys.DARK_ERROR, AppConstants.LightColors.error, AppConstants.DarkColors.error, "General"),
         ColorThemeItem(R.string.system_text, AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM, AppConstants.ColorKeys.DARK_TEXT_SYSTEM, AppConstants.LightColors.textSystem, AppConstants.DarkColors.textSystem, "General"),
         ColorThemeItem(R.string.sundays_and_holidays, AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday, AppConstants.DarkColors.textSundayHoliday, "General"),
         

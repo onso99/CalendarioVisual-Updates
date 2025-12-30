@@ -197,8 +197,8 @@ fun DeleteRecurringEventDialog(
                 onClick = { selectedOption?.let(onConfirm) },
                 enabled = selectedOption != null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
+                    containerColor = Color.Red,
+                    contentColor = Color.White
                 )
             ) {
                 Text(stringResource(id = R.string.delete))
@@ -580,7 +580,10 @@ fun RestoreDefaultColorsDialog(
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                )
             ) { Text(stringResource(id = R.string.restore)) }
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
@@ -605,8 +608,8 @@ fun ConfirmDeleteDialog(
             Button(
                 onClick = onConfirm,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
+                    containerColor = Color.Red,
+                    contentColor = Color.White
                 )
             ) { Text(stringResource(id = R.string.delete)) }
         },
