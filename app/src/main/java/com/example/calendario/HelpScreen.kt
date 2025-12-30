@@ -80,7 +80,7 @@ private fun HelpSection(title: String, content: @Composable () -> Unit) {
             text = title,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = CalendarioTheme.colors.cabecera,
+            color = CalendarioTheme.colors.textSystem,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         content()
