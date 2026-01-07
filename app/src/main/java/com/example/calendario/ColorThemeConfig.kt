@@ -26,7 +26,6 @@ object ColorThemeConfig {
         
         // --- CATEGORÍA: LISTA DE EVENTOS ---
         ColorThemeItem(R.string.title_text, AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR, AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppConstants.LightColors.eventListTitleColor, AppConstants.DarkColors.eventListTitleColor, "Lista de Eventos"),
-        ColorThemeItem(R.string.pending_button_background, AppConstants.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppConstants.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND, AppConstants.LightColors.toggleButtonselectedBackground, AppConstants.DarkColors.toggleButtonselectedBackground, "Lista de Eventos"),
         ColorThemeItem(R.string.event_list_background, AppConstants.ColorKeys.LIGHT_BACKGROUND, AppConstants.ColorKeys.DARK_BACKGROUND, AppConstants.LightColors.background, AppConstants.DarkColors.background, "Lista de Eventos"),
         ColorThemeItem(R.string.today_highlight_list, AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor, AppConstants.DarkColors.todayHighlightColor, "Lista de Eventos"),
         ColorThemeItem(0, "", "", Color.Transparent, Color.Transparent, "Lista de Eventos", isSeparator = true),
