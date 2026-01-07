@@ -17,7 +17,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -43,6 +45,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,6 +103,14 @@ fun AddEventScreen(
     var initialRepetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
+    var showDiscardChangesDialog by remember { mutableStateOf(false) }
+
+    // Store initial state to compare for changes
+    var initialTitle by remember { mutableStateOf("") }
+    var initialIsAllDay by remember { mutableStateOf(true) }
+    var initialSelectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
+    var initialStartDate by remember { mutableStateOf(LocalDateTime.now()) }
+    var initialEndDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
 
     LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
         if (eventToEdit != null) {
@@ -120,12 +131,66 @@ fun AddEventScreen(
             }
             repetitionRule = RepetitionRule.entries.find { rule -> rule.rrule != null && eventToEdit.rrule?.startsWith(rule.rrule) == true } ?: RepetitionRule.NONE
             initialRepetitionRule = repetitionRule
+
+            // Store initial state
+            initialTitle = title
+            initialIsAllDay = isAllDay
+            initialSelectedCalendar = selectedCalendar
+            initialStartDate = startDate
+            initialEndDate = endDate
+            initialRepetitionRule = repetitionRule
+
         } else {
             val now = LocalDateTime.now()
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             startDate = effectiveInitialDateTime
             endDate = effectiveInitialDateTime.plusHours(1)
             selectedCalendar = editableCalendars.find { it.isPrimary } ?: editableCalendars.firstOrNull()
+
+            // Store initial state for new event
+            initialTitle = ""
+            initialIsAllDay = true
+            initialSelectedCalendar = selectedCalendar
+            initialStartDate = startDate
+            initialEndDate = endDate
+            initialRepetitionRule = RepetitionRule.NONE
+        }
+    }
+
+    val hasChanges by remember {
+        derivedStateOf {
+            title != initialTitle ||
+            isAllDay != initialIsAllDay ||
+            selectedCalendar?.id != initialSelectedCalendar?.id ||
+            startDate != initialStartDate ||
+            endDate != initialEndDate ||
+            repetitionRule != initialRepetitionRule
+        }
+    }
+
+    val backAction = {
+        if (hasChanges) {
+            showDiscardChangesDialog = true
+        } else {
+            onBackPress()
+        }
+    }
+
+    val saveAction = {
+        if (eventToEdit != null) {
+            updateEvent(
+                context = context, eventId = eventToEdit.id, title = title,
+                calendarId = selectedCalendar?.id, startDate = startDate,
+                endDate = endDate, isAllDay = isAllDay, repetitionRule = repetitionRule
+            )
+            onSave()
+        } else {
+            createEvent(
+                context = context, title = title, calendarId = selectedCalendar?.id,
+                startDate = startDate, endDate = endDate, isAllDay = isAllDay,
+                repetitionRule = repetitionRule
+            )
+            onSave()
         }
     }
 
@@ -140,7 +205,7 @@ fun AddEventScreen(
             TopAppBar(
                 title = { Text(if (eventToEdit != null) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event)) },
                 navigationIcon = {
-                    IconButton(onClick = onBackPress) {
+                    IconButton(onClick = backAction) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.back)
@@ -148,6 +213,11 @@ fun AddEventScreen(
                     }
                 },
                 actions = {
+                    if (hasChanges) {
+                        IconButton(onClick = saveAction) {
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.save))
+                        }
+                    }
                     if (eventToEdit != null) {
                         IconButton(onClick = {
                             if (eventToEdit.rrule != null) {
@@ -372,57 +442,6 @@ fun AddEventScreen(
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // --- Buttons ---
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = onBackPress) {
-                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.cabecera)
-                }
-                Button(
-                    onClick = {
-                    if (eventToEdit != null) {
-                        val originalStartDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else LocalDateTime.of(eventToEdit.date, eventToEdit.startTime)
-                        val originalEndDate = if (eventToEdit.isAllDay) eventToEdit.date.atStartOfDay() else (eventToEdit.endTime?.let { LocalDateTime.of(eventToEdit.date, it) } ?: originalStartDate.plusHours(1))
-
-                        val hasChanges = title != eventToEdit.title ||
-                                isAllDay != eventToEdit.isAllDay ||
-                                selectedCalendar?.id != eventToEdit.calendarId ||
-                                startDate != originalStartDate ||
-                                endDate != originalEndDate ||
-                                repetitionRule != initialRepetitionRule
-
-                        if (hasChanges) {
-                            updateEvent(
-                                context = context, eventId = eventToEdit.id, title = title,
-                                calendarId = selectedCalendar?.id, startDate = startDate,
-                                endDate = endDate, isAllDay = isAllDay, repetitionRule = repetitionRule
-                            )
-                            onSave()
-                        } else {
-                            Toast.makeText(context, R.string.no_changes_to_save, Toast.LENGTH_SHORT).show()
-                            onBackPress()
-                        }
-                    } else {
-                        createEvent(
-                            context = context, title = title, calendarId = selectedCalendar?.id,
-                            startDate = startDate, endDate = endDate, isAllDay = isAllDay,
-                            repetitionRule = repetitionRule
-                        )
-                        onSave()
-                    }
-                },
-                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-                ) {
-                    Text(if (eventToEdit != null) stringResource(id = R.string.update) else stringResource(id = R.string.save))
-                }
-            }
         }
     }
 
@@ -467,6 +486,33 @@ fun AddEventScreen(
                             onDelete()
                         }
                     }
+                }
+            }
+        )
+    }
+
+    if (showDiscardChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showDiscardChangesDialog = false },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.discard_changes_confirmation)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDiscardChangesDialog = false
+                        onBackPress()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(stringResource(id = R.string.discard))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDiscardChangesDialog = false }) {
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
                 }
             }
         )
