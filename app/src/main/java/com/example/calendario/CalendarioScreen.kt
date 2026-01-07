@@ -382,7 +382,7 @@ fun CalendarioScreen(
                                         expanded = menuExpanded,
                                         onDismissRequest = { menuExpanded = false },
                                         shape = RoundedCornerShape(12.dp),
-                                        modifier = Modifier.background(CalendarioTheme.colors.dropdownMenuBackground)
+                                        modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
                                     ) {
                                         DropdownMenuItem(
                                             text = { Text(stringResource(id = R.string.calendars), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
