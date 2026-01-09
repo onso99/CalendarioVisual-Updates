@@ -20,8 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -481,26 +479,24 @@ fun CalendarioScreen(
                             )
 
                             if (isCurrentMonthView) {
-                                val headerColor = CalendarioTheme.colors.cabecera
-                                val backgroundColor = CalendarioTheme.colors.settingsBackground
-                                val buttonContainerColor = run {
-                                    val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
-                                    if (isBgDark) {
-                                        val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
-                                        if (isHeaderDark) {
-                                            val hsl = FloatArray(3)
-                                            ColorUtils.colorToHSL(headerColor.toArgb(), hsl)
-                                            hsl[2] = (hsl[2] + 0.1f).coerceIn(0f, 1f)
-                                            Color(ColorUtils.HSLToColor(hsl))
-                                        } else {
-                                            headerColor.copy(alpha = 0.2f)
-                                        }
-                                    } else {
-                                        headerColor.copy(alpha = 0.2f)
-                                    }
+                                val baseColor = when (effectType) {
+                                    "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
+                                    else -> CalendarioTheme.colors.monthlyCalendarGridBackground
                                 }
 
-                                val textColor = if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
+                                val buttonContainerColor = run {
+                                    val hsl = FloatArray(3)
+                                    ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
+                                    val isDark = hsl[2] < 0.5f
+                                    hsl[2] = if (isDark) {
+                                        (hsl[2] + 0.1f).coerceIn(0f, 1f)
+                                    } else {
+                                        (hsl[2] - 0.1f).coerceIn(0f, 1f)
+                                    }
+                                    Color(ColorUtils.HSLToColor(hsl))
+                                }
+
+                                val textColor = if (isColorDark(buttonContainerColor, baseColor)) Color.White else Color.Black
 
                                 Box(
                                     modifier = Modifier
