@@ -445,9 +445,13 @@ fun SettingsScreen(
                         if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
                         if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
                     }
-                    // Explicitly remove legacy error keys
+                    // Explicitly remove legacy keys
                     remove(AppConstants.ColorKeys.LIGHT_ERROR)
                     remove(AppConstants.ColorKeys.DARK_ERROR)
+                    remove(AppConstants.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND)
+                    remove(AppConstants.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND)
+                    remove(AppConstants.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND)
+                    remove(AppConstants.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND)
 
                     remove(AppConstants.KEY_LIGHT_THEME_NAME)
                     remove(AppConstants.KEY_DARK_THEME_NAME)
