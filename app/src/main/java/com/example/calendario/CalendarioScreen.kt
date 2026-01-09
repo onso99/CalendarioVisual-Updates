@@ -20,6 +20,8 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -250,8 +252,8 @@ fun CalendarioScreen(
 
     if (showColorThemeScreen) {
         ColorThemeScreen(
-            onBackPress = { 
-                showColorThemeScreen = false 
+            onBackPress = {
+                showColorThemeScreen = false
                 onThemeUpdated()
             }
         )
@@ -260,8 +262,8 @@ fun CalendarioScreen(
 
     if (showSettingsScreen) {
         SettingsScreen(
-            onBackPress = { 
-                showSettingsScreen = false 
+            onBackPress = {
+                showSettingsScreen = false
                 onThemeUpdated()
             },
             themeManager = themeManager,
@@ -278,7 +280,7 @@ fun CalendarioScreen(
             searchScope = searchScope,
             onSearchScopeChange = { searchScope = it },
             searchResults = searchResults,
-            onClose = { 
+            onClose = {
                 isSearchActive = false
                 searchQuery = ""
                 searchResults = emptyMap()
@@ -439,7 +441,7 @@ fun CalendarioScreen(
                                 brush = monthlyCalendarGridBrush,
                                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                             )
-                            .padding(top = 16.dp, start = 12.dp, end = 12.dp, bottom = 16.dp),
+                            .padding(top = 16.dp, start = 12.dp, end = 12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         HorizontalPager(
@@ -462,58 +464,58 @@ fun CalendarioScreen(
                                 startOfWeek = startOfWeek
                             )
                         }
-                    }
+                        Spacer(Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }),
+                                fontSize = 18.sp,
+                                color = CalendarioTheme.colors.eventListTitleColor,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, bottom = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }),
-                            fontSize = 18.sp,
-                            color = CalendarioTheme.colors.eventListTitleColor,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-
-                        if (isCurrentMonthView) {
-                            val headerColor = CalendarioTheme.colors.cabecera
-                            val backgroundColor = CalendarioTheme.colors.settingsBackground
-                            val buttonContainerColor = run {
-                                val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
-                                if (isBgDark) {
-                                    val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
-                                    if (isHeaderDark) {
-                                        val hsl = FloatArray(3)
-                                        ColorUtils.colorToHSL(headerColor.toArgb(), hsl)
-                                        hsl[2] = (hsl[2] + 0.1f).coerceIn(0f, 1f)
-                                        Color(ColorUtils.HSLToColor(hsl))
+                            if (isCurrentMonthView) {
+                                val headerColor = CalendarioTheme.colors.cabecera
+                                val backgroundColor = CalendarioTheme.colors.settingsBackground
+                                val buttonContainerColor = run {
+                                    val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
+                                    if (isBgDark) {
+                                        val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
+                                        if (isHeaderDark) {
+                                            val hsl = FloatArray(3)
+                                            ColorUtils.colorToHSL(headerColor.toArgb(), hsl)
+                                            hsl[2] = (hsl[2] + 0.1f).coerceIn(0f, 1f)
+                                            Color(ColorUtils.HSLToColor(hsl))
+                                        } else {
+                                            headerColor.copy(alpha = 0.2f)
+                                        }
                                     } else {
                                         headerColor.copy(alpha = 0.2f)
                                     }
-                                } else {
-                                    headerColor.copy(alpha = 0.2f)
                                 }
-                            }
 
-                            val textColor = if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
-                            
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(buttonContainerColor)
-                                    .clickable { showAllEvents = !showAllEvents }
-                                    .padding(horizontal = 12.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = textColor
-                                )
+                                val textColor = if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else Color.Black
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(buttonContainerColor)
+                                        .clickable { showAllEvents = !showAllEvents }
+                                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        color = textColor
+                                    )
+                                }
                             }
                         }
                     }
@@ -595,7 +597,7 @@ fun CalendarioScreen(
                     date = selectedDateForDialog!!,
                     events = eventsForDialog,
                     availableCalendars = uiState.availableCalendars,
-                    onDismissRequest = { 
+                    onDismissRequest = {
                         showDayEventsDialog = false
                         selectedDateForDialog = null
                         eventsForDialog = emptyList()
