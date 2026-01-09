@@ -416,7 +416,7 @@ fun CalendarioScreen(
                     }
                 }
             },
-            containerColor = if (viewMode == CalendarViewMode.YEARLY) CalendarioTheme.colors.settingsBackground else MaterialTheme.colorScheme.background
+            containerColor = CalendarioTheme.colors.settingsBackground
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -481,7 +481,7 @@ fun CalendarioScreen(
 
                         if (isCurrentMonthView) {
                             val headerColor = CalendarioTheme.colors.cabecera
-                            val backgroundColor = CalendarioTheme.colors.background
+                            val backgroundColor = CalendarioTheme.colors.settingsBackground
                             val buttonContainerColor = run {
                                 val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
                                 if (isBgDark) {
@@ -543,7 +543,7 @@ fun CalendarioScreen(
                                     .background(
                                         brush = Brush.verticalGradient(
                                             colors = listOf(
-                                                MaterialTheme.colorScheme.background,
+                                                CalendarioTheme.colors.settingsBackground,
                                                 Color.Transparent
                                             )
                                         )
