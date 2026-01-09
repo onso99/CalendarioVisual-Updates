@@ -23,8 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DensityMedium
-import androidx.compose.material.icons.filled.Gradient
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -59,8 +57,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.lang.IllegalArgumentException
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -330,15 +330,47 @@ private fun EffectColorThemeRow(
             fontSize = 16.sp, 
             modifier = Modifier.padding(end = 8.dp)
         )
-        IconButton(onClick = { onEffectChange(if (effectType == "gradient") "none" else "gradient") }) {
-            Icon(imageVector = Icons.Default.Gradient, contentDescription = "Gradient", tint = if (effectType == "gradient") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+
+        val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
+        val baseColor = CalendarioTheme.colors.fondoSecciones
+        val activeColor = CalendarioTheme.colors.cabecera
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(baseColor.copy(alpha = 0.5f))
+                .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+        ) {
+            options.forEach { (type, text) ->
+                val isSelected = effectType == type
+
+                val containerColor = if (isSelected) activeColor else Color.Transparent
+                val textColor = if (isSelected) {
+                    if (isColorDark(activeColor, baseColor)) Color.White else Color.Black
+                } else {
+                    val hsl = FloatArray(3)
+                    ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
+                    val isDark = hsl[2] < 0.5f
+                    hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceIn(0f, 1f) else (hsl[2] - 0.2f).coerceIn(0f, 1f)
+                    Color(ColorUtils.HSLToColor(hsl))
+                }
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(containerColor)
+                        .clickable { onEffectChange(type) }
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(text, color = textColor, fontWeight = FontWeight.Bold)
+                }
+            }
         }
-        IconButton(onClick = { onEffectChange(if (effectType == "sweep") "none" else "sweep") }) {
-            Icon(imageVector = Icons.Default.DensityMedium, contentDescription = "Sweep", tint = if (effectType == "sweep") MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.padding(start = 8.dp, end = 8.dp))
-        }
+
         ColorBox(color = color, onClick = onColorClick)
     }
 }
+
 
 @Composable
 private fun ColorBox(color: Color, onClick: () -> Unit) {
