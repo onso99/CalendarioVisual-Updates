@@ -3,7 +3,6 @@ package com.example.calendario
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
@@ -201,14 +200,6 @@ fun SettingsScreen(
         }
     }
 
-    val versionName = try {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        packageInfo.versionName
-    } catch (e: PackageManager.NameNotFoundException) {
-        Log.e("SettingsScreen", "Could not get package version name", e)
-        "N/A"
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -400,9 +391,9 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("Calendario Visual V${versionName}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text("Gemini / Android Studio", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text("Onso / Diciembre 2025", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text("${AboutInfo.LINE_1} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text(AboutInfo.LINE_2, fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text(AboutInfo.LINE_3, fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
         }
     }
