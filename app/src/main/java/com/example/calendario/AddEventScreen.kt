@@ -406,14 +406,15 @@ fun AddEventScreen(
                             }
                             Text(stringResource(id = R.string.all_day_switch))
                         } else {
+                            val atString = stringResource(id = R.string.at)
                             Row {
                                 Column(modifier = Modifier.padding(end = 8.dp)) {
                                     Text(stringResource(id = R.string.start))
                                     Text(stringResource(id = R.string.end))
                                 }
                                 Column {
-                                    Text(stringResource(id = R.string.at, startDate.format(dateFormatter), startDate.format(timeFormatter)))
-                                    Text(stringResource(id = R.string.at, endDate.format(dateFormatter), endDate.format(timeFormatter)))
+                                    Text("${startDate.format(dateFormatter)} $atString ${startDate.format(timeFormatter)}")
+                                    Text("${endDate.format(dateFormatter)} $atString ${endDate.format(timeFormatter)}")
                                 }
                             }
                         }
