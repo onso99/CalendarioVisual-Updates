@@ -446,6 +446,7 @@ fun SettingsScreen(
 
                     remove(AppConstants.KEY_LIGHT_THEME_NAME)
                     remove(AppConstants.KEY_DARK_THEME_NAME)
+                    putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
                 }
                 lightThemeName = null
                 darkThemeName = null
