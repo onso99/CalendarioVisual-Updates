@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -384,11 +385,15 @@ fun AddEventScreen(
                         .padding(16.dp)
                         .fillMaxWidth()
                 ) {
+                    val fontScale = LocalConfiguration.current.fontScale
+                    val useVerticalLayout = fontScale > 1.1f
+
                     CompositionLocalProvider(LocalContentColor provides CalendarioTheme.colors.textSystem) {
                         Text(stringResource(id = R.string.summary), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(stringResource(id = R.string.summary_title, title.ifBlank { stringResource(id = R.string.no_title) }))
                         Text(stringResource(id = R.string.summary_calendar, selectedCalendar?.displayName ?: "N/A"))
+
                         if (isAllDay) {
                             Row {
                                 Column(modifier = Modifier.padding(end = 8.dp)) {
@@ -407,14 +412,33 @@ fun AddEventScreen(
                             Text(stringResource(id = R.string.all_day_switch))
                         } else {
                             val atString = stringResource(id = R.string.at)
-                            Row {
-                                Column(modifier = Modifier.padding(end = 8.dp)) {
-                                    Text(stringResource(id = R.string.start))
-                                    Text(stringResource(id = R.string.end))
+                            if (useVerticalLayout) {
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Column {
+                                        Text(stringResource(id = R.string.start))
+                                        Text(
+                                            text = "${startDate.format(dateFormatter)} $atString ${startDate.format(timeFormatter)}",
+                                            color = LocalContentColor.current.copy(alpha = 0.8f)
+                                        )
+                                    }
+                                    Column {
+                                        Text(stringResource(id = R.string.end))
+                                        Text(
+                                            text = "${endDate.format(dateFormatter)} $atString ${endDate.format(timeFormatter)}",
+                                            color = LocalContentColor.current.copy(alpha = 0.8f)
+                                        )
+                                    }
                                 }
-                                Column {
-                                    Text("${startDate.format(dateFormatter)} $atString ${startDate.format(timeFormatter)}")
-                                    Text("${endDate.format(dateFormatter)} $atString ${endDate.format(timeFormatter)}")
+                            } else {
+                                Row {
+                                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                                        Text(stringResource(id = R.string.start))
+                                        Text(stringResource(id = R.string.end))
+                                    }
+                                    Column {
+                                        Text("${startDate.format(dateFormatter)} $atString ${startDate.format(timeFormatter)}")
+                                        Text("${endDate.format(dateFormatter)} $atString ${endDate.format(timeFormatter)}")
+                                    }
                                 }
                             }
                         }
