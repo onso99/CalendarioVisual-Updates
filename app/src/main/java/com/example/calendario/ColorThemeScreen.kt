@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -294,8 +295,7 @@ private fun SingleColorThemeRow(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
@@ -305,6 +305,7 @@ private fun SingleColorThemeRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
         ColorBox(color = color, onClick = onClick)
     }
 }
@@ -321,15 +322,17 @@ private fun EffectColorThemeRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
             color = CalendarioTheme.colors.textSystem, 
             fontSize = 16.sp, 
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
+        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
         val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2", "radial" to "3")
         val baseColor = CalendarioTheme.colors.fondoSecciones
@@ -367,6 +370,7 @@ private fun EffectColorThemeRow(
             }
         }
 
+        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
         ColorBox(color = color, onClick = onColorClick)
     }
 }

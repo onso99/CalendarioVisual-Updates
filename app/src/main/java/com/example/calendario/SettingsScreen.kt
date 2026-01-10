@@ -247,25 +247,39 @@ fun SettingsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 12.dp)
                         .clickable { showThemeDialog = true },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Text(stringResource(id = themeSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = stringResource(id = themeSetting.displayNameRes),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.End
+                    )
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 12.dp)
                         .clickable { showStartDayOfWeekDialog = true },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(id = R.string.start_of_week), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Text(stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.End
+                    )
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
@@ -308,8 +322,10 @@ fun SettingsScreen(
                     style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = titleColor,
-                    modifier = Modifier.weight(1f)
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.weight(1f))
 
                 val currentLightThemeName = lightThemeName
                 val currentDarkThemeName = darkThemeName
@@ -322,13 +338,11 @@ fun SettingsScreen(
                         textAlign = TextAlign.End,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .weight(1f),
+                        modifier = Modifier.padding(start = 16.dp),
                         fontSize = 13.sp
                     )
                 } else {
-                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp).weight(1f)) {
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
                         currentLightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
