@@ -11,7 +11,7 @@
     <string name="calendars">Calendarios</string>
     <string name="settings">Ajustes</string>
     <string name="help">Ayuda</string>
-    <string name="events_of_month">Eventos de %1$s</string>
+    <string name="events_of_month">Eventos %1$s</string>
     <string name="all">Todos</string>
     <string name="pending">Pendientes</string>
     <string name="delete_recurring_event_title">Eliminar evento recurrente</string>

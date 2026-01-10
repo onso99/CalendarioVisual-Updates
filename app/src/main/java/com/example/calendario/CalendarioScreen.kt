@@ -510,7 +510,9 @@ fun CalendarioScreen(
                                         text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = textColor
+                                        color = textColor,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
