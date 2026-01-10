@@ -430,6 +430,7 @@ fun CalendarioScreen(
                     val monthlyCalendarGridBrush = when (effectType) {
                         "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
                         "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, CalendarioTheme.colors.monthlyCalendarGridBackground))
+                        "radial" -> Brush.radialGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
                         else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridBackground))
                     }
                     Column(
@@ -480,7 +481,7 @@ fun CalendarioScreen(
 
                             if (isCurrentMonthView) {
                                 val baseColor = when (effectType) {
-                                    "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
+                                    "gradient", "radial" -> CalendarioTheme.colors.monthlyCalendarGridEffect
                                     else -> CalendarioTheme.colors.monthlyCalendarGridBackground
                                 }
 

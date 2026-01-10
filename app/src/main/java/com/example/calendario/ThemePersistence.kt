@@ -32,7 +32,13 @@ object ThemePersistence {
             parsedTheme.lightTheme?.let { applyThemeColors(it, "light") }
             parsedTheme.darkTheme?.let { applyThemeColors(it, "dark") }
 
-            if (themeVersion < 5) {
+            // Handle monthly calendar effect type
+            if (parsedTheme.manifest?.has(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE) == true) {
+                // For v5+ themes, read the effect type from the manifest
+                val effectType = parsedTheme.manifest.optString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
+                putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, effectType)
+            } else {
+                // For older themes that don't have this key, force gradient for compatibility
                 putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
             }
         }
@@ -69,6 +75,9 @@ object ThemePersistence {
             manifest.put("version", AppConstants.CURRENT_THEME_VERSION)
             manifest.put("appName", AppConstants.APP_SIGNATURE)
             manifest.put("name", newName)
+            prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")?.let {
+                manifest.put(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, it)
+            }
             themeJson.put("themeManifest", manifest)
 
             // Light & Dark Themes
