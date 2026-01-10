@@ -326,51 +326,53 @@ private fun EffectColorThemeRow(
     ) {
         Text(
             text = label,
-            color = CalendarioTheme.colors.textSystem, 
-            fontSize = 16.sp, 
-            modifier = Modifier.weight(1f),
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 16.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-
-        val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2", "radial" to "3")
-        val baseColor = CalendarioTheme.colors.fondoSecciones
-        val activeColor = CalendarioTheme.colors.cabecera
 
         Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(baseColor.copy(alpha = 0.5f))
-                .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.Center
         ) {
-            options.forEach { (type, text) ->
-                val isSelected = effectType == type
+            val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2", "radial" to "3")
+            val baseColor = CalendarioTheme.colors.fondoSecciones
+            val activeColor = CalendarioTheme.colors.cabecera
 
-                val containerColor = if (isSelected) activeColor else Color.Transparent
-                val textColor = if (isSelected) {
-                    if (isColorDark(activeColor, baseColor)) Color.White else Color.Black
-                } else {
-                    val hsl = FloatArray(3)
-                    ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
-                    val isDark = hsl[2] < 0.5f
-                    hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceIn(0f, 1f) else (hsl[2] - 0.2f).coerceIn(0f, 1f)
-                    Color(ColorUtils.HSLToColor(hsl))
-                }
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(baseColor.copy(alpha = 0.5f))
+                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            ) {
+                options.forEach { (type, text) ->
+                    val isSelected = effectType == type
 
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(containerColor)
-                        .clickable { onEffectChange(type) }
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Text(text, color = textColor, fontWeight = FontWeight.Bold)
+                    val containerColor = if (isSelected) activeColor else Color.Transparent
+                    val textColor = if (isSelected) {
+                        if (isColorDark(activeColor, baseColor)) Color.White else Color.Black
+                    } else {
+                        val hsl = FloatArray(3)
+                        ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
+                        val isDark = hsl[2] < 0.5f
+                        hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceIn(0f, 1f) else (hsl[2] - 0.2f).coerceIn(0f, 1f)
+                        Color(ColorUtils.HSLToColor(hsl))
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(containerColor)
+                            .clickable { onEffectChange(type) }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text(text, color = textColor, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
         ColorBox(color = color, onClick = onColorClick)
     }
 }
