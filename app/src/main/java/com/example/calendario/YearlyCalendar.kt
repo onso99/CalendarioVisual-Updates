@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -114,7 +115,10 @@ fun MiniMonthCalendar(
     val compactTextStyle = LocalTextStyle.current.copy(platformStyle = PlatformTextStyle(includeFontPadding = false))
     val monthNameFontSize = 13.sp
     val dayHeadersFontSize = 8.sp
-    val dayNumberFontSize = 9.sp
+
+    val fontScale = LocalContext.current.resources.configuration.fontScale
+    val dayNumberFontSize = (9f / fontScale).sp
+
     val weekNumberFontSize = 8.sp
     val weekNumberColumnWidth = if (showWeekNumber) 14.dp else 0.dp // Ancho condicional
 
