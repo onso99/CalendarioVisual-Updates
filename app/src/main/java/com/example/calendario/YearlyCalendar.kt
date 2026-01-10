@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +50,8 @@ fun YearlyCalendar(
     startOfWeek: DayOfWeek
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
+    val fontScale = LocalConfiguration.current.fontScale
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +83,8 @@ fun YearlyCalendar(
                             eventsByDate = eventsByDate,
                             showWeekNumber = showWeekNumber,
                             startOfWeek = startOfWeek,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            fontScale = fontScale
                         )
                     }
                 }
@@ -100,7 +103,8 @@ fun MiniMonthCalendar(
     eventsByDate: Map<LocalDate, List<Festivo>>,
     showWeekNumber: Boolean,
     startOfWeek: DayOfWeek,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    fontScale: Float
 ) {
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
@@ -115,10 +119,7 @@ fun MiniMonthCalendar(
     val compactTextStyle = LocalTextStyle.current.copy(platformStyle = PlatformTextStyle(includeFontPadding = false))
     val monthNameFontSize = 13.sp
     val dayHeadersFontSize = 8.sp
-
-    val fontScale = LocalContext.current.resources.configuration.fontScale
     val dayNumberFontSize = (9f / fontScale).sp
-
     val weekNumberFontSize = 8.sp
     val weekNumberColumnWidth = if (showWeekNumber) 14.dp else 0.dp // Ancho condicional
 
