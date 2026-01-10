@@ -432,18 +432,10 @@ fun SettingsScreen(
             onDismiss = { showRestoreDialog = false },
             onConfirm = {
                 appPrefs.edit(commit = true) {
-                    ColorThemeConfig.colorThemeItems.forEach { item ->
-                        if (item.lightThemeKey.isNotBlank()) remove(item.lightThemeKey)
-                        if (item.darkThemeKey.isNotBlank()) remove(item.darkThemeKey)
+                    val keysToRemove = appPrefs.all.keys.filter { it.startsWith("light_") || it.startsWith("dark_") }
+                    for (key in keysToRemove) {
+                        remove(key)
                     }
-                    // Explicitly remove legacy keys
-                    remove(AppConstants.ColorKeys.LIGHT_ERROR)
-                    remove(AppConstants.ColorKeys.DARK_ERROR)
-                    remove(AppConstants.ColorKeys.LIGHT_DROPDOWN_MENU_BACKGROUND)
-                    remove(AppConstants.ColorKeys.DARK_DROPDOWN_MENU_BACKGROUND)
-                    remove(AppConstants.ColorKeys.LIGHT_TOGGLE_BUTTON_SELECTED_BACKGROUND)
-                    remove(AppConstants.ColorKeys.DARK_TOGGLE_BUTTON_SELECTED_BACKGROUND)
-
                     remove(AppConstants.KEY_LIGHT_THEME_NAME)
                     remove(AppConstants.KEY_DARK_THEME_NAME)
                     putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
