@@ -45,12 +45,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
@@ -148,7 +150,7 @@ fun KeywordColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = CalendarioTheme.colors.textSystem) },
+        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         text = {
             Column {
                 Row(
@@ -217,7 +219,7 @@ fun AdvancedColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem) },
+        title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         text = {
             Column {
                 ColorPreview(
@@ -290,40 +292,79 @@ private fun ColorSliders(state: AdvancedColorPickerState) {
 private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val fontScale = LocalConfiguration.current.fontScale
+    val useVerticalLayout = fontScale > 1.2f
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        OutlinedTextField(
-            value = state.hexCode,
-            onValueChange = { state.updateColorFromHex(it) },
-            label = { Text(stringResource(id = R.string.hex_argb)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { onConfirm() }),
-            modifier = Modifier.weight(1f),
-            isError = state.isHexError,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CalendarioTheme.colors.cabecera,
-                unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+    if (useVerticalLayout) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            OutlinedTextField(
+                value = state.hexCode,
+                onValueChange = { state.updateColorFromHex(it) },
+                label = { Text(stringResource(id = R.string.hex_argb)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onConfirm() }),
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.isHexError,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = CalendarioTheme.colors.cabecera,
+                    unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                )
             )
-        )
-
-        IconButton(onClick = { state.clearHex() }) {
-            Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
-        }
-
-        IconButton(onClick = {
-            clipboardManager.setText(AnnotatedString(state.hexCode))
-            Toast.makeText(context, context.getString(R.string.copied_to_clipboard, state.hexCode), Toast.LENGTH_SHORT).show()
-        }) {
-            Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
-        }
-
-        IconButton(onClick = {
-            clipboardManager.getText()?.text?.let { pastedText ->
-                state.updateColorFromHex(pastedText)
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                IconButton(onClick = { state.clearHex() }) {
+                    Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
+                }
+                IconButton(onClick = {
+                    clipboardManager.setText(AnnotatedString(state.hexCode))
+                    Toast.makeText(context, context.getString(R.string.copied_to_clipboard, state.hexCode), Toast.LENGTH_SHORT).show()
+                }) {
+                    Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
+                }
+                IconButton(onClick = {
+                    clipboardManager.getText()?.text?.let { pastedText ->
+                        state.updateColorFromHex(pastedText)
+                    }
+                }) {
+                    Icon(Icons.Default.ContentPaste, contentDescription = stringResource(id = R.string.paste_color), tint = CalendarioTheme.colors.textSystem)
+                }
             }
-        }) {
-            Icon(Icons.Default.ContentPaste, contentDescription = stringResource(id = R.string.paste_color), tint = CalendarioTheme.colors.textSystem)
+        }
+    } else {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = state.hexCode,
+                onValueChange = { state.updateColorFromHex(it) },
+                label = { Text(stringResource(id = R.string.hex_argb)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onConfirm() }),
+                modifier = Modifier.weight(1f),
+                isError = state.isHexError,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = CalendarioTheme.colors.cabecera,
+                    unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                )
+            )
+
+            IconButton(onClick = { state.clearHex() }) {
+                Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
+            }
+
+            IconButton(onClick = {
+                clipboardManager.setText(AnnotatedString(state.hexCode))
+                Toast.makeText(context, context.getString(R.string.copied_to_clipboard, state.hexCode), Toast.LENGTH_SHORT).show()
+            }) {
+                Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
+            }
+
+            IconButton(onClick = {
+                clipboardManager.getText()?.text?.let { pastedText ->
+                    state.updateColorFromHex(pastedText)
+                }
+            }) {
+                Icon(Icons.Default.ContentPaste, contentDescription = stringResource(id = R.string.paste_color), tint = CalendarioTheme.colors.textSystem)
+            }
         }
     }
 }
@@ -335,8 +376,12 @@ fun ColorSlider(
     onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float> = 0f..255f
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.width(20.dp), color = CalendarioTheme.colors.textSystem)
+    val fontScale = LocalConfiguration.current.fontScale
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, modifier = Modifier.width(24.dp), color = CalendarioTheme.colors.textSystem)
         Slider(
             value = value,
             onValueChange = onValueChange,
@@ -350,7 +395,7 @@ fun ColorSlider(
         )
         Text(
             text = value.roundToInt().toString(),
-            modifier = Modifier.width(35.dp),
+            modifier = Modifier.width((40 * fontScale).dp.coerceAtLeast(40.dp)),
             textAlign = TextAlign.End,
             fontSize = 14.sp,
             color = CalendarioTheme.colors.textSystem
