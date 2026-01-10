@@ -55,9 +55,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
@@ -333,49 +335,28 @@ fun AddEventScreen(
                         )
                     }
                     HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(stringResource(id = R.string.start), color = CalendarioTheme.colors.textSystem)
-                        Row {
-                            Text(startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp), color = CalendarioTheme.colors.textSystem)
-                            Text(startDate.format(dateFormatter), modifier = Modifier.clickable { showStartDatePickerDialog = true }, color = CalendarioTheme.colors.textSystem)
-                            Spacer(modifier = Modifier.padding(horizontal = 12.dp))
-                            Text(
-                                startDate.format(timeFormatter),
-                                modifier = Modifier
-                                    .alpha(if (isAllDay) 0.5f else 1f)
-                                    .clickable(!isAllDay) { showStartTimePickerDialog = true },
-                                color = CalendarioTheme.colors.textSystem
-                            )
-                        }
-                    }
+
+                    val fontScale = LocalConfiguration.current.fontScale
+                    AdaptiveDateTimeRow(
+                        label = stringResource(id = R.string.start),
+                        date = startDate,
+                        isAllDay = isAllDay,
+                        onDateClick = { showStartDatePickerDialog = true },
+                        onTimeClick = { showStartTimePickerDialog = true },
+                        fontScale = fontScale
+                    )
+
                     HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(stringResource(id = R.string.end), color = CalendarioTheme.colors.textSystem)
-                        Row {
-                            Text(endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase), modifier = Modifier.padding(end = 8.dp), color = CalendarioTheme.colors.textSystem)
-                            Text(endDate.format(dateFormatter), modifier = Modifier.clickable { showEndDatePickerDialog = true }, color = CalendarioTheme.colors.textSystem)
-                            Spacer(modifier = Modifier.padding(horizontal = 12.dp))
-                            Text(
-                                endDate.format(timeFormatter),
-                                modifier = Modifier
-                                    .alpha(if (isAllDay) 0.5f else 1f)
-                                    .clickable(!isAllDay) { showEndTimePickerDialog = true },
-                                color = CalendarioTheme.colors.textSystem
-                            )
-                        }
-                    }
+
+                    AdaptiveDateTimeRow(
+                        label = stringResource(id = R.string.end),
+                        date = endDate,
+                        isAllDay = isAllDay,
+                        onDateClick = { showEndDatePickerDialog = true },
+                        onTimeClick = { showEndTimePickerDialog = true },
+                        fontScale = fontScale
+                    )
+
                     HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                     Row(
                         modifier = Modifier
@@ -643,5 +624,80 @@ fun AddEventScreen(
             },
             onDismissRequest = { showRepetitionDialog = false }
         )
+    }
+}
+
+@Composable
+private fun AdaptiveDateTimeRow(
+    label: String,
+    date: LocalDateTime,
+    isAllDay: Boolean,
+    onDateClick: () -> Unit,
+    onTimeClick: () -> Unit,
+    fontScale: Float
+) {
+    val showTwoLines = fontScale > 1.1f
+
+    val dateText = "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase)} ${date.format(dateFormatter)}"
+
+    if (showTwoLines) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(label, color = CalendarioTheme.colors.textSystem)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = dateText,
+                    modifier = Modifier.clickable(onClick = onDateClick),
+                    color = CalendarioTheme.colors.textSystem,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = date.format(timeFormatter),
+                    modifier = Modifier
+                        .alpha(if (isAllDay) 0.5f else 1f)
+                        .clickable(!isAllDay, onClick = onTimeClick),
+                    color = CalendarioTheme.colors.textSystem,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(0.25f))
+            Row(modifier = Modifier.weight(0.75f), horizontalArrangement = Arrangement.End) {
+                Text(
+                    text = dateText,
+                    modifier = Modifier.clickable(onClick = onDateClick),
+                    color = CalendarioTheme.colors.textSystem,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+                Text(
+                    text = date.format(timeFormatter),
+                    modifier = Modifier
+                        .alpha(if (isAllDay) 0.5f else 1f)
+                        .clickable(!isAllDay, onClick = onTimeClick),
+                    color = CalendarioTheme.colors.textSystem,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
     }
 }
