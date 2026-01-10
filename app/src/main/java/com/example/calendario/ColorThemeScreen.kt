@@ -118,7 +118,14 @@ fun ColorThemeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.customize_colors), color = MaterialTheme.colorScheme.onPrimary) },
+                title = { 
+                    Text(
+                        stringResource(id = R.string.customize_colors), 
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) } },
                 actions = {
                     if (hasPendingChanges) {
