@@ -395,19 +395,19 @@ fun AddEventScreen(
                         Text(stringResource(id = R.string.summary_calendar, selectedCalendar?.displayName ?: "N/A"))
 
                         if (isAllDay) {
-                            Row {
-                                Column(modifier = Modifier.padding(end = 8.dp)) {
-                                    Text(stringResource(id = R.string.from))
-                                    if (startDate.toLocalDate() != endDate.toLocalDate()) {
+                            if (startDate.toLocalDate() != endDate.toLocalDate()) {
+                                Row {
+                                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                                        Text(stringResource(id = R.string.from))
                                         Text(stringResource(id = R.string.to))
                                     }
-                                }
-                                Column {
-                                    Text(startDate.format(dateFormatter))
-                                    if (startDate.toLocalDate() != endDate.toLocalDate()) {
+                                    Column {
+                                        Text(startDate.format(dateFormatter))
                                         Text(endDate.format(dateFormatter))
                                     }
                                 }
+                            } else {
+                                Text(startDate.format(dateFormatter))
                             }
                             Text(stringResource(id = R.string.all_day_switch))
                         } else {
