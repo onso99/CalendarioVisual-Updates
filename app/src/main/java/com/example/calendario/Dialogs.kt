@@ -491,8 +491,9 @@ fun GoToYearDialog(
                         }
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.width(100.dp).padding(horizontal = 8.dp),
-                    textStyle = TextStyle(textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem)
+                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                    textStyle = TextStyle(textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem),
+                    singleLine = true
                 )
                 IconButton(onClick = {
                     val currentYear = year.toIntOrNull() ?: initialYear
