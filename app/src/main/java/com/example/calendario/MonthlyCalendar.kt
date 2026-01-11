@@ -49,9 +49,9 @@ fun MonthlyCalendar(
     val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
     val daysOfWeek = remember(startOfWeek) {
-        val days = DayOfWeek.entries
+        val days = DayOfWeek.values()
         val startDayIndex = days.indexOf(startOfWeek)
-        days.subList(startDayIndex, days.size) + days.subList(0, startDayIndex)
+        days.slice(startDayIndex until days.size) + days.slice(0 until startDayIndex)
     }
 
     val prevMonth = currentMonth.minusMonths(1)
@@ -147,38 +147,33 @@ fun MonthlyCalendar(
                         CalendarioTheme.colors.monthlyCalendarEmptyCellBackground
                     }
 
-                    val borderModifier = if (isToday) {
-                        Modifier.border(
-                            width = 3.dp,
-                            color = CalendarioTheme.colors.monthlyCalendarTodayCellBorder,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                    } else {
-                        Modifier
-                    }
-
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(1f)
-                            .padding(1.dp) 
-                            .background(cellBackground, RoundedCornerShape(4.dp))
-                            .then(borderModifier)
-                            .clickable(enabled = isCurrentMonth) {
-                                if (dayHasEventsWithTitle) {
-                                    onDayClick(date, dayEvents.filter { it.title.isNotBlank() })
-                                } else {
-                                    onEmptyDayClick(date)
-                                }
-                            }
+                            .aspectRatio(1f),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
+                        // Day Cell Content
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(1.dp) // Apply padding here to create spacing
+                                .background(cellBackground, RoundedCornerShape(4.dp))
+                                .clickable(enabled = isCurrentMonth) {
+                                    if (dayHasEventsWithTitle) {
+                                        onDayClick(date, dayEvents.filter { it.title.isNotBlank() })
+                                    } else {
+                                        onEmptyDayClick(date)
+                                    }
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
                             Text(
                                 text = "${date.dayOfMonth}",
                                 fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
                                 color = dayColor,
-                                fontSize = 22.sp,
-                                modifier = Modifier.align(Alignment.Center)
+                                fontSize = 22.sp
                             )
 
                             val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
@@ -211,9 +206,7 @@ fun MonthlyCalendar(
 
                                 if (finalIndicators.isNotEmpty()) {
                                     Row(
-                                        modifier = Modifier
-                                            .align(Alignment.BottomCenter)
-                                            .padding(bottom = 4.dp),
+                                        modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
                                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
                                         finalIndicators.forEach { color ->
@@ -226,6 +219,19 @@ fun MonthlyCalendar(
                                     }
                                 }
                             }
+                        }
+
+                        // Superimposed Halo for Today
+                        if (isToday) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .border(
+                                        width = 3.dp,
+                                        color = CalendarioTheme.colors.monthlyCalendarTodayCellBorder,
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
+                            )
                         }
                     }
                 }
