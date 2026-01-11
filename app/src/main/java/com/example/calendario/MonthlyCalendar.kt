@@ -154,7 +154,7 @@ fun MonthlyCalendar(
                         contentAlignment = Alignment.Center
                     ) {
                         // Day Cell Content
-                        Column(
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.dp) // Apply padding here to create spacing
@@ -165,15 +165,14 @@ fun MonthlyCalendar(
                                     } else {
                                         onEmptyDayClick(date)
                                     }
-                                },
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                }
                         ) {
                             Text(
                                 text = "${date.dayOfMonth}",
                                 fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
                                 color = dayColor,
-                                fontSize = 22.sp
+                                fontSize = 22.sp,
+                                modifier = Modifier.align(Alignment.Center)
                             )
 
                             val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
@@ -206,7 +205,9 @@ fun MonthlyCalendar(
 
                                 if (finalIndicators.isNotEmpty()) {
                                     Row(
-                                        modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
+                                        modifier = Modifier
+                                            .align(Alignment.BottomCenter)
+                                            .padding(bottom = 4.dp),
                                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
                                         finalIndicators.forEach { color ->
