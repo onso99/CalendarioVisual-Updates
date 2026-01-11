@@ -175,4 +175,5 @@
     <string name="mini_normal_day">Jour normal</string>
     <string name="read_only_event_info">Événement en lecture seule. Ne peut pas être modifié.</string>
     <string name="calendar_source">Calendrier : %1$s</string>
+    <string name="widget_no_events">Aucun événement</string>
 </resources>

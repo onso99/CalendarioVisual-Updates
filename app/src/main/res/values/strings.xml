@@ -135,6 +135,7 @@
     <string name="repeated_event">Evento repetido</string>
     <string name="no_pending_events_this_month">No hay eventos pendientes para este mes.</string>
     <string name="no_events_this_month">No hay eventos para este mes.</string>
+    <string name="widget_no_events">No hay eventos</string>
     <string name="event_list">Lista de Eventos</string>
     <string name="monthly_calendar">Calendario Mensual</string>
     <string name="yearly_calendar">Calendario Anual</string>

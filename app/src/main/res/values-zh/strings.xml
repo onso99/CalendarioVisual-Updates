@@ -175,4 +175,5 @@
     <string name="mini_normal_day">正常日</string>
     <string name="read_only_event_info">只读事件。无法修改。</string>
     <string name="calendar_source">日历：%1$s</string>
+    <string name="widget_no_events">没有活动</string>
 </resources>

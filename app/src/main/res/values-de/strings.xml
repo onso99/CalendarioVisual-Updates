@@ -175,4 +175,5 @@
     <string name="mini_normal_day">Mini: Normaler Tag</string>
     <string name="read_only_event_info">Schreibgeschütztes Ereignis. Kann nicht geändert werden.</string>
     <string name="calendar_source">Kalender: %1$s</string>
+    <string name="widget_no_events">Keine Ereignisse</string>
 </resources>

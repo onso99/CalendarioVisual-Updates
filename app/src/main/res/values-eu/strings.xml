@@ -175,4 +175,5 @@
     <string name="mini_normal_day">Egun normala</string>
     <string name="read_only_event_info">Irakurtzeko soilik den gertaera. Ezin da aldatu.</string>
     <string name="calendar_source">Egutegia: %1$s</string>
+    <string name="widget_no_events">Ez dago gertaerarik</string>
 </resources>
