@@ -49,7 +49,7 @@ fun MonthlyCalendar(
     val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
     val daysOfWeek = remember(startOfWeek) {
-        val days = DayOfWeek.values()
+        val days = DayOfWeek.entries
         val startDayIndex = days.indexOf(startOfWeek)
         days.slice(startDayIndex until days.size) + days.slice(0 until startDayIndex)
     }
@@ -227,7 +227,7 @@ fun MonthlyCalendar(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .border(
-                                        width = 3.dp,
+                                        width = 3.5.dp,
                                         color = CalendarioTheme.colors.monthlyCalendarTodayCellBorder,
                                         shape = RoundedCornerShape(4.dp)
                                     )
