@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/widget_list_item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -17,7 +18,7 @@
         android:ellipsize="end"
         android:textColor="#A9A9A9"
         android:gravity="start"
-        android:text="Mié"
+        tools:text="Mié"
         android:textSize="14sp" />
 
     <TextView
@@ -31,7 +32,7 @@
         android:gravity="start"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:text="26/11"
+        tools:text="26/11"
         android:textSize="14sp" />
 
     <TextView
@@ -44,7 +45,7 @@
         android:ellipsize="end"
         android:gravity="start"
         android:textColor="#A9A9A9"
-        android:text="Descripción del evento muy larga para probar el wrap y el espacio"
+        tools:text="Descripción del evento muy larga para probar el wrap y el espacio"
         android:textSize="14sp" />
 
 </LinearLayout>
