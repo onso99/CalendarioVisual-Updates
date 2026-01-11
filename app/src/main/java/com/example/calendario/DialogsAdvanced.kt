@@ -293,7 +293,7 @@ private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val fontScale = LocalConfiguration.current.fontScale
-    val useVerticalLayout = fontScale > 1.2f
+    val useVerticalLayout = fontScale > 1.4f
 
     if (useVerticalLayout) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
