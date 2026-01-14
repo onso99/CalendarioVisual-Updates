@@ -87,20 +87,16 @@ class CalendarWidgetFactory(
         val stressFactor = fontScale * (densityDpi / 160f)
 
         val layoutId: Int
-        val layoutChar: Char
 
         when {
             stressFactor <= 3.45f -> {
                 layoutId = R.layout.widget_list_item_s // 'S'
-                layoutChar = 'S'
             }
             stressFactor <= 4.01f -> {
                 layoutId = R.layout.widget_list_item_m // 'M'
-                layoutChar = 'M'
             }
             else -> {
                 layoutId = R.layout.widget_list_item_l // 'L'
-                layoutChar = 'L'
             }
         }
 
@@ -122,10 +118,7 @@ class CalendarWidgetFactory(
         }
         val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
         
-        // --- DEBUG MONITOR ---
-        val debugText = String.format(Locale.US, "[%c %.2f] %s", layoutChar, stressFactor, displayDescription)
-        views.setTextViewText(R.id.widget_item_description, debugText)
-        // --- END DEBUG ---
+        views.setTextViewText(R.id.widget_item_description, displayDescription)
 
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
