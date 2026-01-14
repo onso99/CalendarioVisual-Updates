@@ -88,7 +88,6 @@
     <string name="export_theme">Export theme…</string>
     <string name="restore_default_colors">Restore colors</string>
     <string name="widget_event_count">Number of events: %1$d</string>
-    <string name="large_font">Large font</string>
     <string name="background_color">Background color</string>
     <string name="event_color">Event color</string>
     <string name="today_event_color">Today events</string>

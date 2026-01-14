@@ -88,7 +88,6 @@
     <string name="export_theme">Esportatu gaia…</string>
     <string name="restore_default_colors">Leheneratu koloreak</string>
     <string name="widget_event_count">Gertaera kopurua: %1$d</string>
-    <string name="large_font">Letra handia</string>
     <string name="background_color">Atzeko planoa</string>
     <string name="event_color">Gertaeren kolorea</string>
     <string name="today_event_color">Gaurko gertaerak</string>

@@ -88,7 +88,6 @@
     <string name="export_theme">Экспортировать тему…</string>
     <string name="restore_default_colors">Восстановить цвета</string>
     <string name="widget_event_count">Количество событий: %1$d</string>
-    <string name="large_font">Крупный шрифт</string>
     <string name="background_color">Цвет фона</string>
     <string name="event_color">Цвет событий</string>
     <string name="today_event_color">Сегодняшние события</string>

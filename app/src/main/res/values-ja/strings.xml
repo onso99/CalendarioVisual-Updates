@@ -88,7 +88,6 @@
     <string name="export_theme">テーマをエクスポート…</string>
     <string name="restore_default_colors">色を復元</string>
     <string name="widget_event_count">イベント数：%1$d</string>
-    <string name="large_font">大きなフォント</string>
     <string name="background_color">背景色</string>
     <string name="event_color">イベントの色</string>
     <string name="today_event_color">今日のイベント</string>
