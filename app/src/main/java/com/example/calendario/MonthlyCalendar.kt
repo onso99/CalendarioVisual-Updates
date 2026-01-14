@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -171,7 +173,14 @@ fun MonthlyCalendar(
                                 text = "${date.dayOfMonth}",
                                 fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
                                 color = dayColor,
-                                fontSize = 22.sp,
+                                softWrap = false,
+                                maxLines = 1,
+                                style = ComposeTextStyle(
+                                    fontSize = 22.sp,
+                                    platformStyle = PlatformTextStyle(
+                                        includeFontPadding = false
+                                    )
+                                ),
                                 modifier = Modifier.align(Alignment.Center)
                             )
 

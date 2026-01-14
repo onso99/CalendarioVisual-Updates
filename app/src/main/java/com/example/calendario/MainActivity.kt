@@ -1,7 +1,9 @@
 package com.example.calendario
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -50,5 +52,14 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         calendarioViewModel.refreshData()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val newConfig = Configuration(newBase.resources.configuration)
+        if (newConfig.fontScale > 1.3f) {
+            newConfig.fontScale = 1.3f
+        }
+        val context = newBase.createConfigurationContext(newConfig)
+        super.attachBaseContext(context)
     }
 }
