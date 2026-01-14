@@ -23,7 +23,6 @@ class CalendarWidgetFactory(
 
     private var eventsList: List<Festivo> = emptyList()
     private var eventCountToShow: Int = WidgetConstants.DEFAULT_EVENT_COUNT
-    private var useLargeFontForFactory: Boolean = false
 
     private var widgetEventColor: Int = WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
     private var widgetTodayEventColor: Int = WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
@@ -52,7 +51,6 @@ class CalendarWidgetFactory(
             Context.MODE_PRIVATE
         )
         eventCountToShow = prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        useLargeFontForFactory = prefs.getBoolean(WidgetConstants.KEY_FONT_SIZE_LARGE, false)
 
         widgetEventColor = prefs.getInt(
             WidgetConstants.KEY_WIDGET_EVENT_COLOR,
@@ -63,7 +61,7 @@ class CalendarWidgetFactory(
             WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         )
 
-        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, LetraGrande=$useLargeFontForFactory, ColorEvento=0x${Integer.toHexString(widgetEventColor)}, ColorHoy=0x${Integer.toHexString(widgetTodayEventColor)}")
+        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, ColorEvento=0x${Integer.toHexString(widgetEventColor)}, ColorHoy=0x${Integer.toHexString(widgetTodayEventColor)}")
     }
 
     override fun onDestroy() {
@@ -83,11 +81,29 @@ class CalendarWidgetFactory(
 
         val actualEvent = eventsList.take(eventCountToShow)[position]
 
-        val layoutId = if (useLargeFontForFactory) {
-            R.layout.widget_list_item_large
-        } else {
-            R.layout.widget_list_item_normal
+        // --- Lógica de Selección de Layout con 3 Niveles ---
+        val fontScale = context.resources.configuration.fontScale
+        val densityDpi = context.resources.displayMetrics.densityDpi
+        val stressFactor = fontScale * (densityDpi / 160f)
+
+        val layoutId: Int
+        val layoutChar: Char
+
+        when {
+            stressFactor <= 3.5f -> {
+                layoutId = R.layout.widget_list_item_s // 'S'
+                layoutChar = 'S'
+            }
+            stressFactor <= 4.5f -> {
+                layoutId = R.layout.widget_list_item_m // 'M'
+                layoutChar = 'M'
+            }
+            else -> {
+                layoutId = R.layout.widget_list_item_l // 'L'
+                layoutChar = 'L'
+            }
         }
+
         val views = RemoteViews(context.packageName, layoutId)
 
         val eventDate: LocalDate = actualEvent.date
@@ -106,7 +122,10 @@ class CalendarWidgetFactory(
         }
         val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
         
-        views.setTextViewText(R.id.widget_item_description, displayDescription)
+        // --- DEBUG MONITOR ---
+        val debugText = String.format(Locale.US, "[%c %.2f] %s", layoutChar, stressFactor, displayDescription)
+        views.setTextViewText(R.id.widget_item_description, debugText)
+        // --- END DEBUG ---
 
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
@@ -125,7 +144,7 @@ class CalendarWidgetFactory(
 
     override fun getLoadingView(): RemoteViews? = null
 
-    override fun getViewTypeCount(): Int = 2
+    override fun getViewTypeCount(): Int = 3
 
     override fun getItemId(position: Int): Long {
         return if (position < eventsList.take(eventCountToShow).size && position >= 0) {

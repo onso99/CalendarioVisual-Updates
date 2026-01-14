@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:divider="@null"
         android:dividerHeight="0dp"
-        tools:listitem="@layout/widget_list_item_normal"/>
+        tools:listitem="@layout/widget_list_item_s"/>
 
     <TextView
         android:id="@+id/widget_empty_view"
