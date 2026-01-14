@@ -90,7 +90,7 @@ class CalendarWidgetFactory(
         val layoutChar: Char
 
         when {
-            stressFactor <= 3.5f -> {
+            stressFactor <= 3.0f -> {
                 layoutId = R.layout.widget_list_item_s // 'S'
                 layoutChar = 'S'
             }
