@@ -427,18 +427,24 @@ fun CalendarioScreen(
                 if (viewMode == CalendarViewMode.MONTHLY) {
                     val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
                     val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
-                    val monthlyCalendarGridBrush = when (effectType) {
-                        "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
-                        "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, CalendarioTheme.colors.monthlyCalendarGridBackground))
-                        "radial" -> Brush.radialGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect))
-                        else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridBackground))
+                    
+                    val endColor = when (effectType) {
+                        "gradient", "radial" -> CalendarioTheme.colors.monthlyCalendarGridEffect
+                        else -> CalendarioTheme.colors.monthlyCalendarGridBackground
                     }
+
+                    val monthlyCalendarGridBrush = when (effectType) {
+                        "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
+                        "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, endColor))
+                        "radial" -> Brush.radialGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
+                        else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
+                    }
+                    
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                brush = monthlyCalendarGridBrush,
-                                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                                brush = monthlyCalendarGridBrush
                             )
                             .padding(top = 16.dp, start = 12.dp, end = 12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -519,37 +525,48 @@ fun CalendarioScreen(
                         }
                     }
 
-                    Box(modifier = Modifier.weight(1f)) {
-                        MonthlyEventList(
-                            modifier = Modifier.fillMaxSize(),
-                            finalEventsToList = finalEventsToList,
-                            lazyListState = lazyListState,
-                            isCurrentMonthView = isCurrentMonthView,
-                            showAllEvents = showAllEvents,
-                            today = today,
-                            onEventClick = onEventClickHandler
-                        )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(endColor) // Background for the clipping to reveal
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                .background(CalendarioTheme.colors.settingsBackground)
+                        ) {
+                            MonthlyEventList(
+                                modifier = Modifier.fillMaxSize(),
+                                finalEventsToList = finalEventsToList,
+                                lazyListState = lazyListState,
+                                isCurrentMonthView = isCurrentMonthView,
+                                showAllEvents = showAllEvents,
+                                today = today,
+                                onEventClick = onEventClickHandler
+                            )
 
-                        val showTopShadow by remember {
-                            derivedStateOf { lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0 }
-                        }
+                            val showTopShadow by remember {
+                                derivedStateOf { lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0 }
+                            }
 
-                        if (showTopShadow) {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(80.dp)
-                                    .align(Alignment.TopCenter)
-                                    .zIndex(1f)
-                                    .background(
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(
-                                                CalendarioTheme.colors.settingsBackground,
-                                                Color.Transparent
+                            if (showTopShadow) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(80.dp)
+                                        .align(Alignment.TopCenter)
+                                        .zIndex(1f)
+                                        .background(
+                                            brush = Brush.verticalGradient(
+                                                colors = listOf(
+                                                    CalendarioTheme.colors.settingsBackground,
+                                                    Color.Transparent
+                                                )
                                             )
                                         )
-                                    )
-                            )
+                                )
+                            }
                         }
                     }
                 } else { // Yearly view

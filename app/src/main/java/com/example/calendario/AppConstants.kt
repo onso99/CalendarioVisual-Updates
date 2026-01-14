@@ -79,8 +79,8 @@ object AppConstants {
         val textEvent2 = Color(0xFFFF00FF) // Magenta
         val eventListTitleColor = Color(0xFF0A4C87)
         val todayHighlightColor = Color(0x91FFEA82)
-        val monthlyCalendarGridBackground = Color(0xFF98B9EE)
-        val monthlyCalendarGridEffect = Color(0x80B9D9E0)
+        val monthlyCalendarGridBackground = Color(0xFF1F93F2)
+        val monthlyCalendarGridEffect = Color(0x808FC7BA)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
         val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
         val monthlyCalendarTodayCellBorder = Color(0xFF2196F3)
