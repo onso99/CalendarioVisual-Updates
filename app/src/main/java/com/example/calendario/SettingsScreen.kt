@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -67,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
+import org.json.JSONObject
 import kotlin.math.roundToInt
 
 enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
@@ -105,6 +108,7 @@ fun SettingsScreen(
     var showExportDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
     var showStartDayOfWeekDialog by remember { mutableStateOf(false) }
+    var showBundledThemesDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -364,6 +368,8 @@ fun SettingsScreen(
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
                 .padding(horizontal = 16.dp)) {
+                ActionRow(text = stringResource(id = R.string.predefined_themes)) { showBundledThemesDialog = true }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
@@ -433,6 +439,24 @@ fun SettingsScreen(
         )
     }
 
+    if (showBundledThemesDialog) {
+        BundledThemesDialog(
+            onDismiss = { showBundledThemesDialog = false },
+            onThemeSelected = { theme ->
+                showBundledThemesDialog = false
+                val manifest = JSONObject(theme["themeManifest"] as Map<*, *>)
+                val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
+                val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
+                val parsedTheme = ParsedTheme(manifest, lightTheme, darkTheme)
+                val themeName = manifest.optString("name", "")
+
+                ThemePersistence.applyTheme(context, parsedTheme, themeName)
+                onThemeUpdated()
+                Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
     if (showWidgetEventColorPalette) {
         AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; showWidgetEventColorPalette = false })
     }
@@ -456,6 +480,16 @@ fun SettingsScreen(
                     remove(AppConstants.KEY_DARK_THEME_NAME)
                     putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
                 }
+                widgetPrefs.edit(commit = true) {
+                    remove(WidgetConstants.KEY_WIDGET_EVENT_COLOR)
+                    remove(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR)
+                    remove(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR)
+                }
+                // Update local state to reflect default colors immediately
+                pendingEventColor = Color(WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
+                pendingTodayEventColor = Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
+                pendingWidgetBackgroundColor = Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
+                
                 lightThemeName = null
                 darkThemeName = null
                 onThemeUpdated()
@@ -609,6 +643,47 @@ private fun StartDayOfWeekDialog(
                             }
                             Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
                         }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+            }
+        }
+    )
+}
+
+@Suppress("UNCHECKED_CAST")
+@Composable
+private fun BundledThemesDialog(
+    onDismiss: () -> Unit,
+    onThemeSelected: (Map<String, Any>) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold) },
+        text = {
+            LazyColumn {
+                items(BundledThemes.themes) { theme ->
+                    val themeManifest = theme["themeManifest"] as Map<String, Any>
+                    val themeName = themeManifest["name"] as String
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onThemeSelected(theme) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = themeName,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 18.sp
+                        )
                     }
                 }
             }

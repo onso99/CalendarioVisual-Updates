@@ -176,4 +176,6 @@
     <string name="mini_normal_day">Día normal</string>
     <string name="read_only_event_info">Evento de solo lectura. No se puede modificar.</string>
     <string name="calendar_source">Calendario: %1$s</string>
+    <string name="predefined_themes">Temas predefinidos</string>
+    <string name="themes_v6">Temas v6</string>
 </resources>
