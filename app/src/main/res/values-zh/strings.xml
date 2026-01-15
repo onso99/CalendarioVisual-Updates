@@ -88,6 +88,7 @@
     <string name="export_theme">导出主题…</string>
     <string name="restore_default_colors">恢复颜色</string>
     <string name="widget_event_count">活动数量：%1$d</string>
+    <string name="widget_text_adjustment">文本调整</string>
     <string name="background_color">背景颜色</string>
     <string name="event_color">活动颜色</string>
     <string name="today_event_color">今日活动</string>
