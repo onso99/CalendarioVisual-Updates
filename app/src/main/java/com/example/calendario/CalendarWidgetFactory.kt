@@ -111,12 +111,12 @@ class CalendarWidgetFactory(
 
         // --- Lógica de Multiplicador Inteligente ---
         val baseMultiplier = when {
-            fontScale <= 1.35f -> 1.20f // Umbral base reducido
+            fontScale <= 1.35f -> 1.20f // Calibrado
             fontScale <= 1.5f -> 1.1f
             else -> 1.0f
         }
         val boostAmount = when {
-            fontScale <= 1.35f -> textBoost * 0.08f // Ajuste más sutil
+            fontScale <= 1.35f -> textBoost * 0.10f // Calibrado
             else -> textBoost * 0.05f
         }
         val finalMultiplier = baseMultiplier + boostAmount
@@ -142,10 +142,7 @@ class CalendarWidgetFactory(
         }
         val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
         
-        // --- DEBUG MONITOR ---
-        val debugText = String.format(Locale.US, "[fs:%.2f m:%.2f] %s", fontScale, finalMultiplier, displayDescription)
-        views.setTextViewText(R.id.widget_item_description, debugText)
-        // --- END DEBUG ---
+        views.setTextViewText(R.id.widget_item_description, displayDescription)
 
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
