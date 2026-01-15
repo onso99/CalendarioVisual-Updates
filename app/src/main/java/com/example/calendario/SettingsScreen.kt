@@ -163,6 +163,7 @@ fun SettingsScreen(
     val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
     val originalStartOfWeekKey = remember { appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key }
     val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
+    val originalTextBoost = remember { widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) }
     val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
     val originalTodayEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) }
     val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
@@ -170,6 +171,7 @@ fun SettingsScreen(
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
     var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
+    var pendingTextBoost by remember { mutableFloatStateOf(originalTextBoost) }
     var pendingEventColor by remember { mutableStateOf(originalEventColor) }
     var pendingTodayEventColor by remember { mutableStateOf(originalTodayEventColor) }
     var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
@@ -183,6 +185,7 @@ fun SettingsScreen(
             pendingShowWeekNumber != originalShowWeekNumber ||
                     pendingStartOfWeekKey != originalStartOfWeekKey ||
                     pendingEventCount.roundToInt() != originalEventCount ||
+                    pendingTextBoost != originalTextBoost ||
                     pendingEventColor != originalEventColor ||
                     pendingTodayEventColor != originalTodayEventColor ||
                     pendingWidgetBackgroundColor != originalWidgetBackgroundColor
@@ -211,6 +214,7 @@ fun SettingsScreen(
                             }
                             widgetPrefs.edit {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
+                                putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, pendingTextBoost)
                                 putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
                                 putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
                                 putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
@@ -376,6 +380,8 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp)) {
                 Text(stringResource(id = R.string.widget_event_count, pendingEventCount.roundToInt()), fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
                 Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, modifier = Modifier.padding(top = 8.dp), color = CalendarioTheme.colors.textSystem)
+                Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -2f..2f, steps = 3, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
                 Spacer(Modifier.height(12.dp))

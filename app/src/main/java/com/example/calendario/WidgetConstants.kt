@@ -7,7 +7,7 @@ object WidgetConstants {
     const val GLOBAL_WIDGET_PREFS_NAME = "global_calendar_widget_prefs" 
     const val KEY_EVENT_COUNT = "widget_event_count"
     const val DEFAULT_EVENT_COUNT = 4
-    const val KEY_FONT_SIZE_LARGE = "font_size_large_preference_key"
+    const val KEY_WIDGET_TEXT_BOOST = "widget_text_boost_key"
 
     const val KEY_WIDGET_EVENT_COLOR = "widget_event_color_key"
     const val KEY_WIDGET_TODAY_EVENT_COLOR = "widget_today_event_color_key"

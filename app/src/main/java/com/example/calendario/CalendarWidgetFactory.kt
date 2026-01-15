@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
+import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.google.gson.Gson
@@ -23,6 +24,7 @@ class CalendarWidgetFactory(
 
     private var eventsList: List<Festivo> = emptyList()
     private var eventCountToShow: Int = WidgetConstants.DEFAULT_EVENT_COUNT
+    private var textBoost: Float = 0f
 
     private var widgetEventColor: Int = WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
     private var widgetTodayEventColor: Int = WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
@@ -51,6 +53,7 @@ class CalendarWidgetFactory(
             Context.MODE_PRIVATE
         )
         eventCountToShow = prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        textBoost = prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
 
         widgetEventColor = prefs.getInt(
             WidgetConstants.KEY_WIDGET_EVENT_COLOR,
@@ -61,7 +64,7 @@ class CalendarWidgetFactory(
             WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         )
 
-        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, ColorEvento=0x${Integer.toHexString(widgetEventColor)}, ColorHoy=0x${Integer.toHexString(widgetTodayEventColor)}")
+        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, AjusteTexto=$textBoost, ColorEvento=0x${Integer.toHexString(widgetEventColor)}, ColorHoy=0x${Integer.toHexString(widgetTodayEventColor)}")
     }
 
     override fun onDestroy() {
@@ -87,20 +90,45 @@ class CalendarWidgetFactory(
         val stressFactor = fontScale * (densityDpi / 160f)
 
         val layoutId: Int
+        val baseTextSize: Float
+        val layoutChar: Char
 
         when {
             stressFactor <= 3.45f -> {
-                layoutId = R.layout.widget_list_item_s // 'S'
+                layoutId = R.layout.widget_list_item_s
+                baseTextSize = 12f
+                layoutChar = 'S'
             }
             stressFactor <= 4.01f -> {
-                layoutId = R.layout.widget_list_item_m // 'M'
+                layoutId = R.layout.widget_list_item_m
+                baseTextSize = 14f
+                layoutChar = 'M'
             }
             else -> {
-                layoutId = R.layout.widget_list_item_l // 'L'
+                layoutId = R.layout.widget_list_item_l
+                baseTextSize = 17f
+                layoutChar = 'L'
             }
         }
 
         val views = RemoteViews(context.packageName, layoutId)
+
+        // --- Lógica de Multiplicador Inteligente ---
+        val baseMultiplier = when {
+            fontScale <= 1.2f -> 1.3f
+            fontScale <= 1.5f -> 1.1f
+            else -> 1.0f
+        }
+        val boostAmount = when {
+            fontScale <= 1.2f -> textBoost * 0.1f
+            else -> textBoost * 0.05f
+        }
+        val finalMultiplier = baseMultiplier + boostAmount
+        val finalSize = baseTextSize * finalMultiplier
+
+        views.setTextViewTextSize(R.id.widget_item_day_of_week, TypedValue.COMPLEX_UNIT_SP, finalSize)
+        views.setTextViewTextSize(R.id.widget_item_date_formatted, TypedValue.COMPLEX_UNIT_SP, finalSize)
+        views.setTextViewTextSize(R.id.widget_item_description, TypedValue.COMPLEX_UNIT_SP, finalSize)
 
         val eventDate: LocalDate = actualEvent.date
         val dayOfWeekFullName = eventDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
@@ -118,7 +146,10 @@ class CalendarWidgetFactory(
         }
         val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
         
-        views.setTextViewText(R.id.widget_item_description, displayDescription)
+        // --- DEBUG MONITOR ---
+        val debugText = String.format(Locale.US, "[%c %.2f] %s", layoutChar, stressFactor, displayDescription)
+        views.setTextViewText(R.id.widget_item_description, debugText)
+        // --- END DEBUG ---
 
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
