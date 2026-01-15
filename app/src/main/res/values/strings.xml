@@ -115,7 +115,7 @@
     <string name="help_customization_1">Desde el menú Ajustes se puede elegir el modo Claro y Oscuro. También se pueden personalizar los colores de la interfaz e Importar y Exportar los temas de color para compartirlos.</string>
     <string name="help_customization_2"></string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">La aplicación incluye un Widget para la pantalla de Inicio que muestra los próximos eventos. Se puede personalizar su apariencia eligiendo el número de eventos a mostrar, cambiando el tamaño de la letra y modificando sus colores.</string>
+    <string name="help_widget_1">La aplicación incluye un Widget para la pantalla de Inicio que muestra los próximos eventos. Se puede personalizar su apariencia eligiendo el número de eventos a mostrar, cambiando el tamaño de la letra y modificado sus colores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
     <string name="event_color_label">Color del evento:</string>
     <string name="keyword">Palabra clave</string>

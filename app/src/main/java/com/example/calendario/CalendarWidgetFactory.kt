@@ -91,23 +91,19 @@ class CalendarWidgetFactory(
 
         val layoutId: Int
         val baseTextSize: Float
-        val layoutChar: Char
 
         when {
             stressFactor <= 3.45f -> {
                 layoutId = R.layout.widget_list_item_s
                 baseTextSize = 12f
-                layoutChar = 'S'
             }
             stressFactor <= 4.01f -> {
                 layoutId = R.layout.widget_list_item_m
                 baseTextSize = 14f
-                layoutChar = 'M'
             }
             else -> {
                 layoutId = R.layout.widget_list_item_l
                 baseTextSize = 17f
-                layoutChar = 'L'
             }
         }
 
@@ -115,12 +111,12 @@ class CalendarWidgetFactory(
 
         // --- Lógica de Multiplicador Inteligente ---
         val baseMultiplier = when {
-            fontScale <= 1.2f -> 1.3f
+            fontScale <= 1.35f -> 1.20f // Umbral base reducido
             fontScale <= 1.5f -> 1.1f
             else -> 1.0f
         }
         val boostAmount = when {
-            fontScale <= 1.2f -> textBoost * 0.1f
+            fontScale <= 1.35f -> textBoost * 0.08f // Ajuste más sutil
             else -> textBoost * 0.05f
         }
         val finalMultiplier = baseMultiplier + boostAmount
@@ -147,7 +143,7 @@ class CalendarWidgetFactory(
         val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
         
         // --- DEBUG MONITOR ---
-        val debugText = String.format(Locale.US, "[%c %.2f] %s", layoutChar, stressFactor, displayDescription)
+        val debugText = String.format(Locale.US, "[fs:%.2f m:%.2f] %s", fontScale, finalMultiplier, displayDescription)
         views.setTextViewText(R.id.widget_item_description, debugText)
         // --- END DEBUG ---
 

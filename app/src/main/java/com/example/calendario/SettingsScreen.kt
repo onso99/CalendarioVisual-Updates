@@ -380,7 +380,14 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp)) {
                 Text(stringResource(id = R.string.widget_event_count, pendingEventCount.roundToInt()), fontSize = 16.sp, modifier = Modifier.padding(top=16.dp), color = CalendarioTheme.colors.textSystem)
                 Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
-                Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, modifier = Modifier.padding(top = 8.dp), color = CalendarioTheme.colors.textSystem)
+                
+                val textBoostValue = pendingTextBoost.roundToInt()
+                val textBoostLabel = when {
+                    textBoostValue > 0 -> "+${textBoostValue}"
+                    else -> textBoostValue.toString()
+                }
+                Text("${stringResource(id = R.string.widget_text_adjustment)}: $textBoostLabel", fontSize = 16.sp, modifier = Modifier.padding(top=8.dp), color = CalendarioTheme.colors.textSystem)
+                
                 Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -2f..2f, steps = 3, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
