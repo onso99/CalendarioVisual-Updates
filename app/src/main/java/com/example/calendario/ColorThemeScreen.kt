@@ -134,6 +134,7 @@ fun ColorThemeScreen(
                                 pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) }
                                 pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
                                 putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, monthlyCalendarEffect)
+                                // Al guardar un cambio, se anula el nombre del tema predefinido
                                 remove(AppConstants.KEY_LIGHT_THEME_NAME)
                                 remove(AppConstants.KEY_DARK_THEME_NAME)
                             }

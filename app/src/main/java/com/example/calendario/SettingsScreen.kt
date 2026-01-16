@@ -441,6 +441,7 @@ fun SettingsScreen(
 
     if (showBundledThemesDialog) {
         BundledThemesDialog(
+            currentThemeName = lightThemeName, // Assuming light and dark themes have the same name
             onDismiss = { showBundledThemesDialog = false },
             onThemeSelected = { theme ->
                 showBundledThemesDialog = false
@@ -451,6 +452,8 @@ fun SettingsScreen(
                 val themeName = manifest.optString("name", "")
 
                 ThemePersistence.applyTheme(context, parsedTheme, themeName)
+                lightThemeName = themeName
+                darkThemeName = themeName
                 onThemeUpdated()
                 Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
             }
@@ -471,6 +474,7 @@ fun SettingsScreen(
         RestoreDefaultColorsDialog(
             onDismiss = { showRestoreDialog = false },
             onConfirm = {
+                // --- Restore App Theme ---
                 appPrefs.edit(commit = true) {
                     val keysToRemove = appPrefs.all.keys.filter { it.startsWith("light_") || it.startsWith("dark_") }
                     for (key in keysToRemove) {
@@ -480,19 +484,15 @@ fun SettingsScreen(
                     remove(AppConstants.KEY_DARK_THEME_NAME)
                     putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
                 }
-                widgetPrefs.edit(commit = true) {
-                    remove(WidgetConstants.KEY_WIDGET_EVENT_COLOR)
-                    remove(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR)
-                    remove(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR)
-                }
-                // Update local state to reflect default colors immediately
+                lightThemeName = null
+                darkThemeName = null
+                onThemeUpdated() // This recomposes the whole app with default colors
+
+                // --- Restore Widget Theme (UI Only) ---
                 pendingEventColor = Color(WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
                 pendingTodayEventColor = Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
                 pendingWidgetBackgroundColor = Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
-                
-                lightThemeName = null
-                darkThemeName = null
-                onThemeUpdated()
+
                 Toast.makeText(context, R.string.colors_restored, Toast.LENGTH_SHORT).show()
                 showRestoreDialog = false
             }
@@ -658,6 +658,7 @@ private fun StartDayOfWeekDialog(
 @Suppress("UNCHECKED_CAST")
 @Composable
 private fun BundledThemesDialog(
+    currentThemeName: String?,
     onDismiss: () -> Unit,
     onThemeSelected: (Map<String, Any>) -> Unit
 ) {
@@ -684,6 +685,9 @@ private fun BundledThemesDialog(
                             modifier = Modifier.weight(1f),
                             fontSize = 18.sp
                         )
+                        if (themeName == currentThemeName) {
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = CalendarioTheme.colors.textSystem)
+                        }
                     }
                 }
             }
