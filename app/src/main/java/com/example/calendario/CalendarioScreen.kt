@@ -200,18 +200,14 @@ fun CalendarioScreen(
     }
 
     val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-    val finalEventsToList = processEventsForDisplay(uiState.eventsByDate, currentMonth, today, showAll = if (isCurrentMonthView) showAllEvents else true)
+    val finalEventsToList = processEventsForDisplay(uiState.eventsByDate, currentMonth.atDay(1), today, showAll = if (isCurrentMonthView) showAllEvents else true)
 
     LaunchedEffect(finalEventsToList, showAllEvents, viewMode, isCurrentMonthView) {
         if (viewMode != CalendarViewMode.MONTHLY || finalEventsToList.isEmpty()) return@LaunchedEffect
 
         val targetIndex = when {
-            isCurrentMonthView && showAllEvents ->
-                finalEventsToList.indexOfFirst { (date, _) -> date >= today }.takeIf { it != -1 } ?: 0
-
             isCurrentMonthView && !showAllEvents -> 0
-
-            else -> 0
+            else -> finalEventsToList.indexOfFirst { (date, _) -> date >= today }.takeIf { it != -1 } ?: 0
         }
 
         scope.launch {

@@ -177,56 +177,15 @@ class CalendarWidgetFactory(
     private fun loadCalendarEvents() {
         val allEventsByDateMap = loadEventsFromPrefsFromFactory(context)
         val today = LocalDate.now()
-        val nowTime = LocalTime.now()
-        val upcomingEvents = mutableListOf<Festivo>()
 
-        Log.d("WidgetFactory", "Iniciando loadCalendarEvents. Hoy: $today, Hora Actual: $nowTime")
-
-        allEventsByDateMap.keys.sorted().forEach { date ->
-            val eventsOnDate = allEventsByDateMap[date].orEmpty()
-
-            for (event in eventsOnDate) {
-                if (date.isBefore(today)) continue
-
-                if (date.isEqual(today)) {
-                    if (!event.isAllDay && event.startTime != null) {
-                        if (event.endTime != null) {
-                            if (nowTime.isBefore(event.endTime)) {
-                                upcomingEvents.add(event)
-                            } else {
-                                Log.d("WidgetFactory", "Evento de hoy OMITIDO (endTime ${event.endTime} ya pasó a las $nowTime): ${event.title}")
-                            }
-                        } else {
-                            var addedSinEndTime = false
-                            if (nowTime.isBefore(event.startTime.plusMinutes(1))) {
-                                upcomingEvents.add(event)
-                                addedSinEndTime = true
-                            } else if (event.startTime.isBefore(nowTime) && event.startTime.plusHours(1).isAfter(nowTime)) {
-                                upcomingEvents.add(event)
-                                addedSinEndTime = true
-                            } else if (!nowTime.isAfter(event.startTime)) {
-                                upcomingEvents.add(event)
-                                addedSinEndTime = true
-                            }
-
-                            if (!addedSinEndTime) {
-                                Log.d("WidgetFactory", "Evento de hoy (sin endTime) OMITIDO (startTime ${event.startTime} no cumple criterio): ${event.title}")
-                            }
-                        }
-                    } else {
-                        upcomingEvents.add(event)
-                    }
-                } else {
-                    upcomingEvents.add(event)
-                }
-            }
-        }
-
-        eventsList = upcomingEvents.sortedWith(
-            compareBy<Festivo> { it.date }
-                .thenByDescending { it.isAllDay }
-                .thenBy(nullsLast()) { it.startTime }
+        val processedEvents = processEventsForDisplay(
+            allEvents = allEventsByDateMap,
+            currentMonth = today, // For widget, currentMonth is always today
+            today = today,
+            showAll = true // Widget always shows all upcoming events
         )
+
+        eventsList = processedEvents.flatMap { it.second }
 
         Log.d("WidgetFactory", "Eventos procesados para el widget: ${eventsList.size}. Mostrando hasta: $eventCountToShow")
     }

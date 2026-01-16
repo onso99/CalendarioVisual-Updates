@@ -15,6 +15,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.calendario.ui.theme.CalendarioTheme
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
 
@@ -62,4 +65,47 @@ class MainActivity : ComponentActivity() {
         val context = newBase.createConfigurationContext(newConfig)
         super.attachBaseContext(context)
     }
+}
+
+fun processEventsForDisplay(
+    allEvents: Map<LocalDate, List<Festivo>>,
+    currentMonth: LocalDate,
+    today: LocalDate,
+    showAll: Boolean // Solo aplica al mes actual
+): List<Pair<LocalDate, List<Festivo>>> {
+    val now = LocalDateTime.now()
+
+    // 1. Primero, obtener TODOS los eventos futuros, sin importar el mes. Esta es la corrección clave.
+    val allUpcomingEvents = allEvents.values.flatten().filter { event ->
+        val eventEndDateTime = if (event.isAllDay) {
+            event.date.plusDays(1).atStartOfDay() // Eventos de día completo terminan al inicio del día siguiente
+        } else {
+            val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
+            LocalDateTime.of(event.date, endTime)
+        }
+        eventEndDateTime.isAfter(now) // La regla universal: si no ha terminado, se muestra.
+    }
+
+    // 2. Filtrar los eventos futuros para el mes que estamos viendo.
+    var monthEvents = allUpcomingEvents.filter {
+        it.date.year == currentMonth.year && it.date.month == currentMonth.month
+    }
+
+    // 3. Si estamos en el mes actual y showAll es false, filtramos solo los de hoy en adelante.
+    val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
+    if (isCurrentMonthView && !showAll) {
+        monthEvents = monthEvents.filter { it.date.isAfter(today.minusDays(1)) }
+    }
+
+    // 4. Agrupar por fecha y ordenar para la lista.
+    return monthEvents
+        .groupBy { it.date }
+        .mapValues { (_, events) ->
+            // Reordenar por si el filtrado alteró el orden original.
+            events.sortedWith(
+                compareBy<Festivo> { it.startTime }
+            )
+        }
+        .toList()
+        .sortedBy { it.first }
 }
