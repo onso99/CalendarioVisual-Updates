@@ -71,33 +71,30 @@ fun processEventsForDisplay(
     allEvents: Map<LocalDate, List<Festivo>>,
     currentMonth: LocalDate,
     today: LocalDate,
-    showAll: Boolean // Solo aplica al mes actual
+    showAll: Boolean
 ): List<Pair<LocalDate, List<Festivo>>> {
     val now = LocalDateTime.now()
 
-    // 1. Primero, obtener TODOS los eventos futuros, sin importar el mes. Esta es la corrección clave.
-    val allUpcomingEvents = allEvents.values.flatten().filter { event ->
-        val eventEndDateTime = if (event.isAllDay) {
-            event.date.plusDays(1).atStartOfDay() // Eventos de día completo terminan al inicio del día siguiente
-        } else {
-            val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
-            LocalDateTime.of(event.date, endTime)
-        }
-        eventEndDateTime.isAfter(now) // La regla universal: si no ha terminado, se muestra.
-    }
-
-    // 2. Filtrar los eventos futuros para el mes que estamos viendo.
-    var monthEvents = allUpcomingEvents.filter {
+    // 1. Obtener todos los eventos del mes que estamos viendo.
+    var monthEvents = allEvents.values.flatten().filter {
         it.date.year == currentMonth.year && it.date.month == currentMonth.month
     }
 
-    // 3. Si estamos en el mes actual y showAll es false, filtramos solo los de hoy en adelante.
-    val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-    if (isCurrentMonthView && !showAll) {
-        monthEvents = monthEvents.filter { it.date.isAfter(today.minusDays(1)) }
+    // 2. Si 'showAll' es false, filtramos para mostrar solo los eventos futuros.
+    //    Esto se usará para la vista "Pendientes" y para el widget.
+    if (!showAll) {
+        monthEvents = monthEvents.filter { event ->
+            val eventEndDateTime = if (event.isAllDay) {
+                event.date.plusDays(1).atStartOfDay()
+            } else {
+                val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
+                LocalDateTime.of(event.date, endTime)
+            }
+            eventEndDateTime.isAfter(now)
+        }
     }
 
-    // 4. Agrupar por fecha y ordenar para la lista.
+    // 3. Agrupar por fecha y ordenar para la lista.
     return monthEvents
         .groupBy { it.date }
         .mapValues { (_, events) ->

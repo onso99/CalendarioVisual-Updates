@@ -182,7 +182,7 @@ class CalendarWidgetFactory(
             allEvents = allEventsByDateMap,
             currentMonth = today, // For widget, currentMonth is always today
             today = today,
-            showAll = true // Widget always shows all upcoming events
+            showAll = false
         )
 
         eventsList = processedEvents.flatMap { it.second }
