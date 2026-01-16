@@ -176,4 +176,6 @@
     <string name="read_only_event_info">Irakurtzeko soilik den gertaera. Ezin da aldatu.</string>
     <string name="calendar_source">Egutegia: %1$s</string>
     <string name="widget_no_events">Ez dago gertaerarik</string>
+    <string name="predefined_themes">Aurrez definitutako gaiak</string>
+    <string name="themes_v6">Gaiak v6</string>
 </resources>

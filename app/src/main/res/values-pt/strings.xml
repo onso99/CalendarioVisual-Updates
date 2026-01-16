@@ -176,4 +176,6 @@
     <string name="read_only_event_info">Evento somente leitura. Não pode ser modificado.</string>
     <string name="calendar_source">Calendário: %1$s</string>
     <string name="widget_no_events">Não há eventos</string>
+    <string name="predefined_themes">Temas predefinidos</string>
+    <string name="themes_v6">Temas v6</string>
 </resources>

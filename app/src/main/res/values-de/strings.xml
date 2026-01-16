@@ -176,4 +176,6 @@
     <string name="read_only_event_info">Schreibgeschütztes Ereignis. Kann nicht geändert werden.</string>
     <string name="calendar_source">Kalender: %1$s</string>
     <string name="widget_no_events">Keine Ereignisse</string>
+    <string name="predefined_themes">Vordefinierte Themen</string>
+    <string name="themes_v6">Themen v6</string>
 </resources>

@@ -176,4 +176,6 @@
     <string name="read_only_event_info">Esdeveniment de només lectura. No es pot modificar.</string>
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="widget_no_events">No hi ha esdeveniments</string>
+    <string name="predefined_themes">Temes predefinits</string>
+    <string name="themes_v6">Temes v6</string>
 </resources>

@@ -176,4 +176,6 @@
     <string name="read_only_event_info">只读事件。无法修改。</string>
     <string name="calendar_source">日历：%1$s</string>
     <string name="widget_no_events">没有活动</string>
+    <string name="predefined_themes">预定义主题</string>
+    <string name="themes_v6">主题 v6</string>
 </resources>

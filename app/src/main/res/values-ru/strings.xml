@@ -176,4 +176,6 @@
     <string name="read_only_event_info">Событие только для чтения. Его нельзя изменить.</string>
     <string name="calendar_source">Календарь: %1$s</string>
     <string name="widget_no_events">Нет событий</string>
+    <string name="predefined_themes">Предопределенные темы</string>
+    <string name="themes_v6">Темы v6</string>
 </resources>

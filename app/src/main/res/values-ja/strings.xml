@@ -176,4 +176,6 @@
     <string name="read_only_event_info">読み取り専用イベント。変更できません。</string>
     <string name="calendar_source">カレンダー：%1$s</string>
     <string name="widget_no_events">イベントはありません</string>
+    <string name="predefined_themes">定義済みテーマ</string>
+    <string name="themes_v6">テーマ v6</string>
 </resources>
