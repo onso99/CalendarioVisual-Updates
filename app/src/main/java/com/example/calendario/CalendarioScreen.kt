@@ -220,17 +220,9 @@ fun CalendarioScreen(
             onBackPress = { showAddEventScreen = false },
             onSave = {
                 showAddEventScreen = false
-                scope.launch {
-                    delay(1500)
-                    viewModel.refreshData()
-                }
             },
             onDelete = {
                 showAddEventScreen = false
-                scope.launch {
-                    delay(1500)
-                    viewModel.refreshData()
-                }
             },
             editableCalendars = uiState.availableCalendars.filter { it.canModify },
             initialDate = dateForNewEvent,

@@ -4,7 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.database.ContentObserver
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.CalendarContract
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -22,12 +27,22 @@ import java.time.LocalTime
 class MainActivity : ComponentActivity() {
 
     private val calendarioViewModel: CalendarioViewModel by viewModels()
+    private var calendarObserver: ContentObserver? = null
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (resources.configuration.smallestScreenWidthDp < 600) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+
+        // Initialize the observer
+        calendarObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
+                super.onChange(selfChange, uri)
+                // Refresh data whenever the calendar content changes
+                calendarioViewModel.refreshData()
+            }
         }
 
         setContent {
@@ -54,7 +69,22 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        calendarioViewModel.refreshData()
+        // Register the observer to listen for changes
+        calendarObserver?.let {
+            contentResolver.registerContentObserver(
+                CalendarContract.Events.CONTENT_URI,
+                true,
+                it
+            )
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Unregister the observer to avoid memory leaks
+        calendarObserver?.let {
+            contentResolver.unregisterContentObserver(it)
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {
