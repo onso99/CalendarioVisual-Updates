@@ -1,5 +1,11 @@
 package com.example.calendario
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -61,6 +67,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
@@ -80,8 +87,37 @@ enum class RepetitionRule(val rrule: String?, val displayNameRes: Int) {
     YEARLY("FREQ=YEARLY", R.string.every_year)
 }
 
+enum class SaveEventError {
+    NO_PERMISSION,
+    NO_CALENDAR_SELECTED,
+    TITLE_EMPTY,
+    END_BEFORE_START
+}
+
 private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+private fun validateEventData(
+    context: Context,
+    title: String,
+    selectedCalendar: CalendarInfo?,
+    startDate: LocalDateTime,
+    endDate: LocalDateTime
+): SaveEventError? {
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        return SaveEventError.NO_PERMISSION
+    }
+    if (title.isBlank()) {
+        return SaveEventError.TITLE_EMPTY
+    }
+    if (selectedCalendar == null) {
+        return SaveEventError.NO_CALENDAR_SELECTED
+    }
+    if (endDate.isBefore(startDate)) {
+        return SaveEventError.END_BEFORE_START
+    }
+    return null
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,6 +142,7 @@ fun AddEventScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
+    var saveError by remember { mutableStateOf<SaveEventError?>(null) }
 
     // Store initial state to compare for changes
     var initialTitle by remember { mutableStateOf("") }
@@ -179,20 +216,25 @@ fun AddEventScreen(
     }
 
     val saveAction = {
-        if (eventToEdit != null) {
-            updateEvent(
-                context = context, eventId = eventToEdit.id, title = title,
-                calendarId = selectedCalendar?.id, startDate = startDate,
-                endDate = endDate, isAllDay = isAllDay, repetitionRule = repetitionRule
-            )
-            onSave()
+        val error = validateEventData(context, title, selectedCalendar, startDate, endDate)
+        if (error != null) {
+            saveError = error
         } else {
-            createEvent(
-                context = context, title = title, calendarId = selectedCalendar?.id,
-                startDate = startDate, endDate = endDate, isAllDay = isAllDay,
-                repetitionRule = repetitionRule
-            )
-            onSave()
+            if (eventToEdit != null) {
+                updateEvent(
+                    context = context, eventId = eventToEdit.id, title = title,
+                    calendarId = selectedCalendar?.id, startDate = startDate,
+                    endDate = endDate, isAllDay = isAllDay, repetitionRule = repetitionRule
+                )
+                onSave()
+            } else {
+                createEvent(
+                    context = context, title = title, calendarId = selectedCalendar?.id,
+                    startDate = startDate, endDate = endDate, isAllDay = isAllDay,
+                    repetitionRule = repetitionRule
+                )
+                onSave()
+            }
         }
     }
 
@@ -462,6 +504,65 @@ fun AddEventScreen(
             )
         }
     }
+    
+    if (saveError != null) {
+        val errorContent = when (saveError) {
+            SaveEventError.NO_PERMISSION -> Triple(
+                stringResource(id = R.string.permission_denied_title),
+                stringResource(id = R.string.permission_denied_text),
+                true
+            )
+            SaveEventError.NO_CALENDAR_SELECTED -> Triple(
+                stringResource(id = R.string.error),
+                stringResource(id = R.string.no_calendar_selected_error),
+                false
+            )
+            SaveEventError.TITLE_EMPTY -> Triple(
+                stringResource(id = R.string.error),
+                stringResource(id = R.string.title_empty_error),
+                false
+            )
+            SaveEventError.END_BEFORE_START -> Triple(
+                stringResource(id = R.string.error),
+                stringResource(id = R.string.end_time_before_start_time_error),
+                false
+            )
+            null -> null
+        }
+
+        if (errorContent != null) {
+            val (errorTitle, errorText, showSettingsButton) = errorContent
+            AlertDialog(
+                onDismissRequest = { saveError = null },
+                containerColor = CalendarioTheme.colors.fondoDialogos,
+                titleContentColor = CalendarioTheme.colors.textSystem,
+                textContentColor = CalendarioTheme.colors.textSystem,
+                title = { Text(errorTitle, fontWeight = FontWeight.Bold) },
+                text = { Text(errorText) },
+                confirmButton = {
+                    Button(
+                        onClick = { saveError = null },
+                        colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                    ) {
+                        Text(stringResource(id = R.string.accept))
+                    }
+                },
+                dismissButton = {
+                    if (showSettingsButton) {
+                        TextButton(onClick = {
+                            saveError = null
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.fromParts("package", context.packageName, null)
+                            context.startActivity(intent)
+                        }) {
+                            Text(stringResource(id = R.string.go_to_settings), color = CalendarioTheme.colors.textSystem)
+                        }
+                    }
+                }
+            )
+        }
+    }
+
 
     if (showDeleteDialog) {
         ConfirmDeleteDialog(

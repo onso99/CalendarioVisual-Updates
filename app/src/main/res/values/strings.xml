@@ -178,4 +178,12 @@
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temas predefinidos</string>
     <string name="themes_v6">Temas v6</string>
+
+    <string name="permission_denied_title">Permiso Denegado</string>
+    <string name="permission_denied_text">No se puede guardar el evento porque la aplicación no tiene permiso para escribir en el calendario. Por favor, concede el permiso desde los ajustes de la aplicación.</string>
+    <string name="go_to_settings">Ir a Ajustes</string>
+    <string name="error">Error</string>
+    <string name="no_calendar_selected_error">No se ha seleccionado ningún calendario. Por favor, elige un calendario para guardar el evento.</string>
+    <string name="title_empty_error">El título no puede estar vacío. Por favor, introduce un título para el evento.</string>
+
 </resources>
