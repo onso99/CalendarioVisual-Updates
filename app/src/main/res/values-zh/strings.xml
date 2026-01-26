@@ -26,7 +26,7 @@
     <string name="add_event">添加活动</string>
     <string name="no_title">（无标题）</string>
     <string name="all_day">（全天）</string>
-    <string name="no_detailed_events">没有带详细信息的活动。</string>
+    <string name="no_detailed_events">沒有帶詳細資訊的活動。</string>
     <string name="close">关闭</string>
     <string name="year_selection_title">年份选择</string>
     <string name="previous_year">上一年</string>
@@ -64,7 +64,7 @@
     <string name="from">从：</string>
     <string name="to">到：</string>
     <string name="at">在</string>
-    <string name="no_changes_to_save">没有要保存的更改</string>
+    <string name="no_changes_to_save">沒有要儲存的變更</string>
     <string name="update">更新</string>
     <string name="save">保存</string>
     <string name="end_time_before_start_time_error">结束时间不能早于开始时间</string>
@@ -178,4 +178,12 @@
     <string name="widget_no_events">没有活动</string>
     <string name="predefined_themes">预定义主题</string>
     <string name="themes_v6">主题 v6</string>
+
+    <string name="permission_denied_title">权限被拒绝</string>
+    <string name="permission_denied_text">无法保存活动，因为应用程序没有写入日历的权限。请在应用程序设置中授予权限。</string>
+    <string name="go_to_settings">前往设置</string>
+    <string name="error">错误</string>
+    <string name="no_calendar_selected_error">未选择任何日历。请选择一个日历以保存活动。</string>
+    <string name="title_empty_error">标题不能为空。请输入活动标题。</string>
+
 </resources>

@@ -178,4 +178,12 @@
     <string name="widget_no_events">Keine Ereignisse</string>
     <string name="predefined_themes">Vordefinierte Themen</string>
     <string name="themes_v6">Themen v6</string>
+
+    <string name="permission_denied_title">Berechtigung verweigert</string>
+    <string name="permission_denied_text">Ereignis kann nicht gespeichert werden, da die Anwendung keine Berechtigung zum Schreiben in den Kalender hat. Bitte erteilen Sie die Berechtigung in den Anwendungseinstellungen.</string>
+    <string name="go_to_settings">Zu den Einstellungen</string>
+    <string name="error">Fehler</string>
+    <string name="no_calendar_selected_error">Es wurde kein Kalender ausgewählt. Bitte wählen Sie einen Kalender, um das Ereignis zu speichern.</string>
+    <string name="title_empty_error">Der Titel darf nicht leer sein. Bitte geben Sie einen Titel für das Ereignis ein.</string>
+
 </resources>

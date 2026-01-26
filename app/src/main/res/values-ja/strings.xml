@@ -178,4 +178,12 @@
     <string name="widget_no_events">イベントはありません</string>
     <string name="predefined_themes">定義済みテーマ</string>
     <string name="themes_v6">テーマ v6</string>
+
+    <string name="permission_denied_title">権限が拒否されました</string>
+    <string name="permission_denied_text">カレンダーへの書き込み権限がないため、イベントを保存できません。アプリケーション設定から権限を付与してください。</string>
+    <string name="go_to_settings">設定に移動</string>
+    <string name="error">エラー</string>
+    <string name="no_calendar_selected_error">カレンダーが選択されていません。イベントを保存するカレンダーを選択してください。</string>
+    <string name="title_empty_error">タイトルを空にすることはできません。イベントのタイトルを入力してください。</string>
+
 </resources>

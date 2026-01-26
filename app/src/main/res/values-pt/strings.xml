@@ -178,4 +178,12 @@
     <string name="widget_no_events">Não há eventos</string>
     <string name="predefined_themes">Temas predefinidos</string>
     <string name="themes_v6">Temas v6</string>
+
+    <string name="permission_denied_title">Permissão Negada</string>
+    <string name="permission_denied_text">Não é possível guardar o evento porque a aplicação não tem permissão para escrever no calendário. Por favor, conceda a permissão a partir das definições da aplicação.</string>
+    <string name="go_to_settings">Ir para Definições</string>
+    <string name="error">Erro</string>
+    <string name="no_calendar_selected_error">Nenhum calendário foi selecionado. Por favor, escolha um calendário para guardar o evento.</string>
+    <string name="title_empty_error">O título não pode estar vazio. Por favor, introduza um título para o evento.</string>
+
 </resources>

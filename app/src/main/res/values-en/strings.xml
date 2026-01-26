@@ -178,4 +178,12 @@
     <string name="widget_no_events">No events</string>
     <string name="predefined_themes">Predefined themes</string>
     <string name="themes_v6">Themes v6</string>
+
+    <string name="permission_denied_title">Permission Denied</string>
+    <string name="permission_denied_text">Cannot save event because the application does not have permission to write to the calendar. Please grant the permission from the application settings.</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="error">Error</string>
+    <string name="no_calendar_selected_error">No calendar has been selected. Please choose a calendar to save the event.</string>
+    <string name="title_empty_error">The title cannot be empty. Please enter a title for the event.</string>
+
 </resources>

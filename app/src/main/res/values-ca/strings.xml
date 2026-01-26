@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Calendari</string>
     <string name="calendar_widget_description">Mostra els teus propers esdeveniments del calendari</string>
-    <string name="permission_calendar_select">És necessari el permís de calendari per seleccionar calendaris.</string>
-    <string name="permission_calendar_write">És necessari el permís per escriure al calendari per crear esdeveniments.</string>
+    <string name="permission_calendar_select">Ès necessari el permís de calendari per seleccionar calendaris.</string>
+    <string name="permission_calendar_write">Ès necessari el permís per escriure al calendari per crear esdeveniments.</string>
     <string name="back_to_monthly_view">Tornar a la vista mensual</string>
     <string name="back_to_current_month">Tornar al mes actual</string>
     <string name="create_event">Crear esdeveniment</string>
@@ -178,4 +178,12 @@
     <string name="widget_no_events">No hi ha esdeveniments</string>
     <string name="predefined_themes">Temes predefinits</string>
     <string name="themes_v6">Temes v6</string>
+
+    <string name="permission_denied_title">Permís Denegat</string>
+    <string name="permission_denied_text">No es pot desar l\'esdeveniment perquè l\'aplicació no té permís per escriure al calendari. Si us plau, concedeix el permís des de la configuració de l\'aplicació.</string>
+    <string name="go_to_settings">Anar a Configuració</string>
+    <string name="error">Error</string>
+    <string name="no_calendar_selected_error">No s\'ha seleccionat cap calendari. Si us plau, tria un calendari per desar l\'esdeveniment.</string>
+    <string name="title_empty_error">El títol no pot estar buit. Si us plau, introdueix un títol per a l\'esdeveniment.</string>
+
 </resources>

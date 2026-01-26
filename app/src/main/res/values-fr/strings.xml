@@ -178,4 +178,12 @@
     <string name="widget_no_events">Aucun événement</string>
     <string name="predefined_themes">Thèmes prédéfinis</string>
     <string name="themes_v6">Thèmes v6</string>
+
+    <string name="permission_denied_title">Autorisation refusée</string>
+    <string name="permission_denied_text">Impossible d\'enregistrer l\'événement car l\'application n\'a pas l\'autorisation d\'écrire dans le calendrier. Veuillez accorder l\'autorisation dans les paramètres de l\'application.</string>
+    <string name="go_to_settings">Aller aux paramètres</string>
+    <string name="error">Erreur</string>
+    <string name="no_calendar_selected_error">Aucun calendrier n\'a été sélectionné. Veuillez choisir un calendrier pour enregistrer l\'événement.</string>
+    <string name="title_empty_error">Le titre ne peut pas être vide. Veuillez saisir un titre pour l\'événement.</string>
+
 </resources>

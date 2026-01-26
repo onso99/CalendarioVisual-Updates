@@ -178,4 +178,12 @@
     <string name="widget_no_events">Nessun evento</string>
     <string name="predefined_themes">Temi predefiniti</string>
     <string name="themes_v6">Temi v6</string>
+
+    <string name="permission_denied_title">Autorizzazione negata</string>
+    <string name="permission_denied_text">Impossibile salvare l\'evento perché l\'applicazione non dispone dell\'autorizzazione per scrivere sul calendario. Concedere l\'autorizzazione dalle impostazioni dell\'applicazione.</string>
+    <string name="go_to_settings">Vai alle impostazioni</string>
+    <string name="error">Errore</string>
+    <string name="no_calendar_selected_error">Nessun calendario selezionato. Scegliere un calendario in cui salvare l\'evento.</string>
+    <string name="title_empty_error">Il titolo non può essere vuoto. Inserire un titolo per l\'evento.</string>
+
 </resources>

@@ -178,4 +178,12 @@
     <string name="widget_no_events">Нет событий</string>
     <string name="predefined_themes">Предопределенные темы</string>
     <string name="themes_v6">Темы v6</string>
+
+    <string name="permission_denied_title">В разрешении отказано</string>
+    <string name="permission_denied_text">Невозможно сохранить событие, так как у приложения нет разрешения на запись в календарь. Пожалуйста, предоставьте разрешение в настройках приложения.</string>
+    <string name="go_to_settings">Перейти в настройки</string>
+    <string name="error">Ошибка</string>
+    <string name="no_calendar_selected_error">Календарь не выбран. Пожалуйста, выберите календарь для сохранения события.</string>
+    <string name="title_empty_error">Название не может быть пустым. Пожалуйста, введите название события.</string>
+
 </resources>
