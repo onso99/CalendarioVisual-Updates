@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">Ez da egutegirik hautatu. Mesedez, aukeratu egutegi bat gertaera gordetzeko.</string>
     <string name="title_empty_error">Izenburua ezin da hutsik egon. Mesedez, idatzi izenburu bat gertaerarako.</string>
 
+    <string name="event_saved_successfully">Gertaera gordeta</string>
+    <string name="error_saving_event">Errorea gertaera gordetzean. Egiaztatu hautatutako egutegiak.</string>
+    <string name="event_updated_successfully">Gertaera eguneratuta</string>
+    <string name="error_deleting_event">Errorea gertaera ezabatzean</string>
+    <string name="event_instance_canceled">Gertaeraren instantzia bertan behera utzi da</string>
+    <string name="error_canceling_event_instance">Errorea gertaeraren instantzia bertan behera uztean</string>
+    <string name="permission_denied_calendar">Errorea: Egutegian idazteko baimena ukatuta.</string>
+    <string name="unexpected_error_create">Ustekabeko errorea gertaera sortzean: %1$s</string>
+    <string name="unexpected_error_update">Ustekabeko errorea gertaera eguneratzean: %1$s</string>
+    <string name="unexpected_error_delete">Ustekabeko errorea gertaera ezabatzean: %1$s</string>
+    <string name="unexpected_error_cancel">Ustekabeko errorea gertaera bertan behera uztean: %1$s</string>
+
 </resources>

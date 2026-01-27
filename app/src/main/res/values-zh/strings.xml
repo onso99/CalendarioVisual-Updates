@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">未选择任何日历。请选择一个日历以保存活动。</string>
     <string name="title_empty_error">标题不能为空。请输入活动标题。</string>
 
+    <string name="event_saved_successfully">活动已保存</string>
+    <string name="error_saving_event">保存活动时出错。请检查所选日历。</string>
+    <string name="event_updated_successfully">活动已更新</string>
+    <string name="error_deleting_event">删除活动时出错</string>
+    <string name="event_instance_canceled">活动实例已取消</string>
+    <string name="error_canceling_event_instance">取消活动实例时出错</string>
+    <string name="permission_denied_calendar">错误：拒绝写入日历的权限。</string>
+    <string name="unexpected_error_create">创建活动时出现意外错误：%1$s</string>
+    <string name="unexpected_error_update">更新活动时出现意外错误：%1$s</string>
+    <string name="unexpected_error_delete">删除活动时出现意外错误：%1$s</string>
+    <string name="unexpected_error_cancel">取消活动时出现意外错误：%1$s</string>
+
 </resources>

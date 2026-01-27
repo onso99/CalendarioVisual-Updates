@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">No s\'ha seleccionat cap calendari. Si us plau, tria un calendari per desar l\'esdeveniment.</string>
     <string name="title_empty_error">El títol no pot estar buit. Si us plau, introdueix un títol per a l\'esdeveniment.</string>
 
+    <string name="event_saved_successfully">Esdeveniment desat</string>
+    <string name="error_saving_event">Error en desar l\'esdeveniment. Comprova els calendaris seleccionats.</string>
+    <string name="event_updated_successfully">Esdeveniment actualitzat</string>
+    <string name="error_deleting_event">Error en eliminar l\'esdeveniment</string>
+    <string name="event_instance_canceled">Instància d\'esdeveniment cancel·lada</string>
+    <string name="error_canceling_event_instance">Error en cancel·lar la instància de l\'esdeveniment</string>
+    <string name="permission_denied_calendar">Error: Permís denegat per escriure al calendari.</string>
+    <string name="unexpected_error_create">Error inesperat en crear l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_update">Error inesperat en actualitzar l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_delete">Error inesperat en eliminar l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_cancel">Error inesperat en cancel·lar l\'esdeveniment: %1$s</string>
+
 </resources>

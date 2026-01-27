@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">Nessun calendario selezionato. Scegliere un calendario in cui salvare l\'evento.</string>
     <string name="title_empty_error">Il titolo non può essere vuoto. Inserire un titolo per l\'evento.</string>
 
+    <string name="event_saved_successfully">Evento salvato</string>
+    <string name="error_saving_event">Errore durante il salvataggio dell\'evento. Controlla i calendari selezionati.</string>
+    <string name="event_updated_successfully">Evento aggiornato</string>
+    <string name="error_deleting_event">Errore durante l\'eliminazione dell\'evento</string>
+    <string name="event_instance_canceled">Istanza dell\'evento annullata</string>
+    <string name="error_canceling_event_instance">Errore durante l\'annullamento dell\'istanza dell\'evento</string>
+    <string name="permission_denied_calendar">Errore: Autorizzazione negata per scrivere sul calendario.</string>
+    <string name="unexpected_error_create">Errore imprevisto durante la creazione dell\'evento: %1$s</string>
+    <string name="unexpected_error_update">Errore imprevisto durante l\'aggiornamento dell\'evento: %1$s</string>
+    <string name="unexpected_error_delete">Errore imprevisto durante l\'eliminazione dell\'evento: %1$s</string>
+    <string name="unexpected_error_cancel">Errore imprevisto durante l\'annullamento dell\'evento: %1$s</string>
+
 </resources>

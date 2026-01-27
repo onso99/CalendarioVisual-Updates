@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">カレンダーが選択されていません。イベントを保存するカレンダーを選択してください。</string>
     <string name="title_empty_error">タイトルを空にすることはできません。イベントのタイトルを入力してください。</string>
 
+    <string name="event_saved_successfully">イベントが保存されました</string>
+    <string name="error_saving_event">イベントの保存中にエラーが発生しました。選択したカレンダーを確認してください。</string>
+    <string name="event_updated_successfully">イベントが更新されました</string>
+    <string name="error_deleting_event">イベントの削除中にエラーが発生しました</string>
+    <string name="event_instance_canceled">イベントインスタンスがキャンセルされました</string>
+    <string name="error_canceling_event_instance">イベントインスタンスのキャンセル中にエラーが発生しました</string>
+    <string name="permission_denied_calendar">エラー：カレンダーへの書き込み権限が拒否されました。</string>
+    <string name="unexpected_error_create">イベント作成中に予期しないエラーが発生しました：%1$s</string>
+    <string name="unexpected_error_update">イベント更新中に予期しないエラーが発生しました：%1$s</string>
+    <string name="unexpected_error_delete">イベント削除中に予期しないエラーが発生しました：%1$s</string>
+    <string name="unexpected_error_cancel">イベントキャンセル中に予期しないエラーが発生しました：%1$s</string>
+
 </resources>

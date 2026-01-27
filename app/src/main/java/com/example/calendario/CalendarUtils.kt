@@ -20,11 +20,11 @@ fun createEvent(
     repetitionRule: RepetitionRule
 ): Boolean {
     if (calendarId == null) {
-        Toast.makeText(context, "Error: No se ha seleccionado un calendario.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
         return false
     }
     if (title.isBlank()) {
-        Toast.makeText(context, "El título no puede estar vacío.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.title_empty_error, Toast.LENGTH_SHORT).show()
         return false
     }
 
@@ -46,17 +46,17 @@ fun createEvent(
         val results = context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
 
         if (results.isNotEmpty() && results[0].uri != null) {
-            Toast.makeText(context, "Evento guardado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.event_saved_successfully, Toast.LENGTH_SHORT).show()
             true
         } else {
-            Toast.makeText(context, "Error al guardar el evento. Comprueba los calendarios seleccionados.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
             false
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
         false
     } catch (e: Exception) {
-        Toast.makeText(context, "Error inesperado al crear el evento: ${e.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, context.getString(R.string.unexpected_error_create, e.message), Toast.LENGTH_LONG).show()
         false
     }
 }
@@ -72,11 +72,11 @@ fun updateEvent(
     repetitionRule: RepetitionRule
 ): Boolean {
      if (calendarId == null) {
-        Toast.makeText(context, "Error: No se ha seleccionado un calendario.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
         return false
     }
     if (title.isBlank()) {
-        Toast.makeText(context, "El título no puede estar vacío.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.title_empty_error, Toast.LENGTH_SHORT).show()
         return false
     }
 
@@ -101,14 +101,14 @@ fun updateEvent(
         }
         
         context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
-        Toast.makeText(context, "Evento actualizado", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
         true
 
     } catch (_: SecurityException) {
-        Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
         false
     } catch (e: Exception) {
-        Toast.makeText(context, "Error inesperado al actualizar el evento: ${e.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG).show()
         false
     }
 }
@@ -119,14 +119,14 @@ fun deleteEvent(context: Context, eventId: Long) {
         val rows = context.contentResolver.delete(deleteUri, null, null)
 
         if (rows > 0) {
-            Toast.makeText(context, "Evento eliminado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.delete, Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Error al eliminar el evento", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.error_deleting_event, Toast.LENGTH_SHORT).show()
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
-        Toast.makeText(context, "Error inesperado al eliminar el evento: ${e.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, context.getString(R.string.unexpected_error_delete, e.message), Toast.LENGTH_LONG).show()
     }
 }
 
@@ -158,14 +158,14 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
 
         if (uri != null) {
-            Toast.makeText(context, "Instancia de evento cancelada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.event_instance_canceled, Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Error al cancelar la instancia del evento", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.error_canceling_event_instance, Toast.LENGTH_SHORT).show()
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, "Error: Permiso denegado para modificar el calendario.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
     } catch (e: Exception) {
-        Toast.makeText(context, "Error inesperado al cancelar el evento: ${e.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, context.getString(R.string.unexpected_error_cancel, e.message), Toast.LENGTH_LONG).show()
     }
 }
 

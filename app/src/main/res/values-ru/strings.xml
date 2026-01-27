@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">Календарь не выбран. Пожалуйста, выберите календарь для сохранения события.</string>
     <string name="title_empty_error">Название не может быть пустым. Пожалуйста, введите название события.</string>
 
+    <string name="event_saved_successfully">Событие сохранено</string>
+    <string name="error_saving_event">Ошибка при сохранении события. Проверьте выбранные календари.</string>
+    <string name="event_updated_successfully">Событие обновлено</string>
+    <string name="error_deleting_event">Ошибка при удалении события</string>
+    <string name="event_instance_canceled">Экземпляр события отменен</string>
+    <string name="error_canceling_event_instance">Ошибка при отмене экземпляра события</string>
+    <string name="permission_denied_calendar">Ошибка: в разрешении на запись в календарь отказано.</string>
+    <string name="unexpected_error_create">Непредвиденная ошибка при создании события: %1$s</string>
+    <string name="unexpected_error_update">Непредвиденная ошибка при обновлении события: %1$s</string>
+    <string name="unexpected_error_delete">Непредвиденная ошибка при удалении события: %1$s</string>
+    <string name="unexpected_error_cancel">Непредвиденная ошибка при отмене события: %1$s</string>
+
 </resources>

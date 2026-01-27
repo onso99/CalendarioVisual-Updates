@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">Aucun calendrier n\'a été sélectionné. Veuillez choisir un calendrier pour enregistrer l\'événement.</string>
     <string name="title_empty_error">Le titre ne peut pas être vide. Veuillez saisir un titre pour l\'événement.</string>
 
+    <string name="event_saved_successfully">Événement enregistré</string>
+    <string name="error_saving_event">Erreur lors de l\'enregistrement de l\'événement. Vérifiez les calendriers sélectionnés.</string>
+    <string name="event_updated_successfully">Événement mis à jour</string>
+    <string name="error_deleting_event">Erreur lors de la suppression de l\'événement</string>
+    <string name="event_instance_canceled">Instance d\'événement annulée</string>
+    <string name="error_canceling_event_instance">Erreur lors de l\'annulation de l\'instance d\'événement</string>
+    <string name="permission_denied_calendar">Erreur : Autorisation d\'écrire dans le calendrier refusée.</string>
+    <string name="unexpected_error_create">Erreur inattendue lors de la création de l\'événement : %1$s</string>
+    <string name="unexpected_error_update">Erreur inattendue lors de la mise à jour de l\'événement : %1$s</string>
+    <string name="unexpected_error_delete">Erreur inattendue lors de la suppression de l\'événement : %1$s</string>
+    <string name="unexpected_error_cancel">Erreur inattendue lors de l\'annulation de l\'événement : %1$s</string>
+
 </resources>

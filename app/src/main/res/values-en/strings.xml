@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">No calendar has been selected. Please choose a calendar to save the event.</string>
     <string name="title_empty_error">The title cannot be empty. Please enter a title for the event.</string>
 
+    <string name="event_saved_successfully">Event saved</string>
+    <string name="error_saving_event">Error saving event. Check the selected calendars.</string>
+    <string name="event_updated_successfully">Event updated</string>
+    <string name="error_deleting_event">Error deleting event</string>
+    <string name="event_instance_canceled">Event instance canceled</string>
+    <string name="error_canceling_event_instance">Error canceling event instance</string>
+    <string name="permission_denied_calendar">Error: Permission denied to write to the calendar.</string>
+    <string name="unexpected_error_create">Unexpected error creating event: %1$s</string>
+    <string name="unexpected_error_update">Unexpected error updating event: %1$s</string>
+    <string name="unexpected_error_delete">Unexpected error deleting event: %1$s</string>
+    <string name="unexpected_error_cancel">Unexpected error canceling event: %1$s</string>
+
 </resources>

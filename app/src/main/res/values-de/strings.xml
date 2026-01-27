@@ -186,4 +186,16 @@
     <string name="no_calendar_selected_error">Es wurde kein Kalender ausgewählt. Bitte wählen Sie einen Kalender, um das Ereignis zu speichern.</string>
     <string name="title_empty_error">Der Titel darf nicht leer sein. Bitte geben Sie einen Titel für das Ereignis ein.</string>
 
+    <string name="event_saved_successfully">Ereignis gespeichert</string>
+    <string name="error_saving_event">Fehler beim Speichern des Ereignisses. Überprüfen Sie die ausgewählten Kalender.</string>
+    <string name="event_updated_successfully">Ereignis aktualisiert</string>
+    <string name="error_deleting_event">Fehler beim Löschen des Ereignisses</string>
+    <string name="event_instance_canceled">Ereignisinstanz abgebrochen</string>
+    <string name="error_canceling_event_instance">Fehler beim Abbrechen der Ereignisinstanz</string>
+    <string name="permission_denied_calendar">Fehler: Berechtigung zum Schreiben in den Kalender verweigert.</string>
+    <string name="unexpected_error_create">Unerwarteter Fehler beim Erstellen des Ereignisses: %1$s</string>
+    <string name="unexpected_error_update">Unerwarteter Fehler beim Aktualisieren des Ereignisses: %1$s</string>
+    <string name="unexpected_error_delete">Unerwarteter Fehler beim Löschen des Ereignisses: %1$s</string>
+    <string name="unexpected_error_cancel">Unerwarteter Fehler beim Abbrechen des Ereignisses: %1$s</string>
+
 </resources>
