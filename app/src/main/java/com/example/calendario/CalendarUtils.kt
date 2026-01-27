@@ -18,17 +18,17 @@ fun createEvent(
     endDate: LocalDateTime,
     isAllDay: Boolean,
     repetitionRule: RepetitionRule
-) {
+): Boolean {
     if (calendarId == null) {
         Toast.makeText(context, "Error: No se ha seleccionado un calendario.", Toast.LENGTH_LONG).show()
-        return
+        return false
     }
     if (title.isBlank()) {
         Toast.makeText(context, "El título no puede estar vacío.", Toast.LENGTH_SHORT).show()
-        return
+        return false
     }
 
-    try {
+    return try {
         val operations = ArrayList<ContentProviderOperation>()
         val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule)
         
@@ -47,13 +47,17 @@ fun createEvent(
 
         if (results.isNotEmpty() && results[0].uri != null) {
             Toast.makeText(context, "Evento guardado", Toast.LENGTH_SHORT).show()
+            true
         } else {
-            Toast.makeText(context, "Error al guardar el evento", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Error al guardar el evento. Comprueba los calendarios seleccionados.", Toast.LENGTH_LONG).show()
+            false
         }
     } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
+        false
     } catch (e: Exception) {
         Toast.makeText(context, "Error inesperado al crear el evento: ${e.message}", Toast.LENGTH_LONG).show()
+        false
     }
 }
 
@@ -66,17 +70,17 @@ fun updateEvent(
     endDate: LocalDateTime,
     isAllDay: Boolean,
     repetitionRule: RepetitionRule
-) {
+): Boolean {
      if (calendarId == null) {
         Toast.makeText(context, "Error: No se ha seleccionado un calendario.", Toast.LENGTH_LONG).show()
-        return
+        return false
     }
     if (title.isBlank()) {
         Toast.makeText(context, "El título no puede estar vacío.", Toast.LENGTH_SHORT).show()
-        return
+        return false
     }
 
-    try {
+    return try {
         val operations = ArrayList<ContentProviderOperation>()
         val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
@@ -98,11 +102,14 @@ fun updateEvent(
         
         context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
         Toast.makeText(context, "Evento actualizado", Toast.LENGTH_SHORT).show()
+        true
 
     } catch (_: SecurityException) {
         Toast.makeText(context, "Error: Permiso denegado para escribir en el calendario.", Toast.LENGTH_LONG).show()
+        false
     } catch (e: Exception) {
         Toast.makeText(context, "Error inesperado al actualizar el evento: ${e.message}", Toast.LENGTH_LONG).show()
+        false
     }
 }
 

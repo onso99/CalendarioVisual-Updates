@@ -220,19 +220,20 @@ fun AddEventScreen(
         if (error != null) {
             saveError = error
         } else {
-            if (eventToEdit != null) {
+            val success = if (eventToEdit != null) {
                 updateEvent(
                     context = context, eventId = eventToEdit.id, title = title,
                     calendarId = selectedCalendar?.id, startDate = startDate,
                     endDate = endDate, isAllDay = isAllDay, repetitionRule = repetitionRule
                 )
-                onSave()
             } else {
                 createEvent(
                     context = context, title = title, calendarId = selectedCalendar?.id,
                     startDate = startDate, endDate = endDate, isAllDay = isAllDay,
                     repetitionRule = repetitionRule
                 )
+            }
+            if (success) {
                 onSave()
             }
         }
