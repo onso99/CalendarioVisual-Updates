@@ -197,6 +197,5 @@
     <string name="unexpected_error_update">Error inesperado al actualizar el evento: %1$s</string>
     <string name="unexpected_error_delete">Error inesperado al eliminar el evento: %1$s</string>
     <string name="unexpected_error_cancel">Error inesperado al cancelar el evento: %1$s</string>
-    <string name="set_as_favorite">Establecer como favorito</string>
 
 </resources>

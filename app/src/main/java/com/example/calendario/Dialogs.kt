@@ -57,7 +57,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -318,7 +317,7 @@ fun SelectCalendarsDialog(
                                 }) {
                                     Icon(
                                         imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                                        contentDescription = stringResource(id = R.string.set_as_favorite),
+                                        contentDescription = null,
                                         tint = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                                     )
                                 }
