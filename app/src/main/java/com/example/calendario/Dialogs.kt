@@ -224,11 +224,18 @@ fun SelectCalendarsDialog(
         mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
     }
 
-    val sortedCalendars = remember(availableCalendars, favoriteCalendarId) {
+    val sortedCalendars = remember(availableCalendars) { // Key is now only availableCalendars
         availableCalendars.sortedWith(
-            compareBy<CalendarInfo> { it.id != favoriteCalendarId } // Favorite is always first
-                .then(compareBy { findBestCalendarCandidate(listOf(it)) == null }) // Then sort by our logic
-                .thenBy { it.displayName }
+            compareBy<CalendarInfo> { calendar ->
+                // This logic runs only ONCE
+                when {
+                    calendar.isPrimary && calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 0
+                    calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 1
+                    calendar.isPrimary && calendar.canModify -> 2
+                    calendar.canModify -> 3
+                    else -> 4
+                }
+            }.thenBy { it.displayName }
         )
     }
 
