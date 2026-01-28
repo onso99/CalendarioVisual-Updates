@@ -127,7 +127,8 @@ fun AddEventScreen(
     onDelete: () -> Unit,
     editableCalendars: List<CalendarInfo>,
     initialDate: LocalDate?,
-    eventToEdit: Festivo? = null
+    eventToEdit: Festivo? = null,
+    initialCalendar: CalendarInfo?
 ) {
     val context = LocalContext.current
 
@@ -184,7 +185,7 @@ fun AddEventScreen(
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             startDate = effectiveInitialDateTime
             endDate = effectiveInitialDateTime.plusHours(1)
-            selectedCalendar = editableCalendars.find { it.isPrimary } ?: editableCalendars.firstOrNull()
+            selectedCalendar = initialCalendar
 
             // Store initial state for new event
             initialTitle = ""

@@ -29,6 +29,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -213,11 +215,27 @@ fun DeleteRecurringEventDialog(
 fun SelectCalendarsDialog(
     initialSelectedIds: Set<Long>,
     availableCalendars: List<CalendarInfo>,
+    favoriteCalendarId: Long?,
     onDismissRequest: () -> Unit,
-    onApplySelection: (selectedIds: Set<Long>) -> Unit
+    onApplySelection: (selectedIds: Set<Long>) -> Unit,
+    onSetFavorite: (Long) -> Unit
 ) {
     var currentSelectedIdsInDialog by remember(initialSelectedIds, availableCalendars) {
         mutableStateOf(initialSelectedIds.filter { id -> availableCalendars.any { cal -> cal.id == id } }.toSet())
+    }
+
+    val sortedCalendars = remember(availableCalendars, favoriteCalendarId) {
+        availableCalendars.sortedWith(
+            compareBy<CalendarInfo> {
+                when {
+                    it.id == favoriteCalendarId -> 0 // Favorite is always first
+                    it.accountName.contains("@gmail", ignoreCase = true) && it.canModify -> 1
+                    it.isPrimary && it.canModify -> 2
+                    it.accountName.contains("@gmail", ignoreCase = true) -> 3
+                    else -> 4
+                }
+            }.thenBy { it.displayName }
+        )
     }
 
     AlertDialog(
@@ -233,7 +251,7 @@ fun SelectCalendarsDialog(
             )
         },
         text = {
-            if (availableCalendars.isEmpty()) {
+            if (sortedCalendars.isEmpty()) {
                 Text(stringResource(id = R.string.no_calendars_found), fontSize = 16.sp)
             } else {
                 LazyColumn(
@@ -241,7 +259,7 @@ fun SelectCalendarsDialog(
                         .heightIn(max = 400.dp)
                         .fillMaxWidth()
                 ) {
-                    items(availableCalendars, key = { it.id }) { calendar ->
+                    items(sortedCalendars, key = { it.id }) { calendar ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -296,6 +314,13 @@ fun SelectCalendarsDialog(
                                     )
                                 }
                             }
+                            IconButton(onClick = { onSetFavorite(calendar.id) }) {
+                                Icon(
+                                    imageVector = if (calendar.id == favoriteCalendarId) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                                    contentDescription = stringResource(id = R.string.set_as_favorite),
+                                    tint = if (calendar.id == favoriteCalendarId) Color.Yellow else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                                )
+                            }
                         }
                     }
                 }
@@ -317,6 +342,7 @@ fun SelectCalendarsDialog(
         }
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -665,7 +691,7 @@ fun RepetitionSelectionDialog(
 @Composable
 fun SelectCalendarDialog(
     calendars: List<CalendarInfo>,
-    currentSelection: CalendarInfo,
+    currentSelection: CalendarInfo?,
     onCalendarSelected: (CalendarInfo) -> Unit,
     onDismissRequest: () -> Unit
 ) {
@@ -691,7 +717,7 @@ fun SelectCalendarDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = (calendar.id == tempSelection.id),
+                            selected = (calendar.id == tempSelection?.id),
                             onClick = { tempSelection = calendar },
                             colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem)
                         )
@@ -702,7 +728,7 @@ fun SelectCalendarDialog(
         },
         confirmButton = {
             Button(onClick = {
-                onCalendarSelected(tempSelection)
+                tempSelection?.let(onCalendarSelected)
                 onDismissRequest()
             }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) {
                 Text(stringResource(id = R.string.accept))

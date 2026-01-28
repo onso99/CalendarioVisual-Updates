@@ -216,6 +216,14 @@ fun CalendarioScreen(
     }
 
     if (showAddEventScreen) {
+        val editableCalendars = uiState.availableCalendars.filter { it.canModify }
+        val initialCalendar = remember(uiState.favoriteCalendarId, editableCalendars) {
+            editableCalendars.find { it.id == uiState.favoriteCalendarId } 
+            ?: editableCalendars.find { it.isPrimary && it.accountName.contains("@gmail", ignoreCase = true) }
+            ?: editableCalendars.find { it.accountName.contains("@gmail", ignoreCase = true) }
+            ?: editableCalendars.firstOrNull()
+        }
+
         AddEventScreen(
             onBackPress = { showAddEventScreen = false },
             onSave = {
@@ -224,9 +232,10 @@ fun CalendarioScreen(
             onDelete = {
                 showAddEventScreen = false
             },
-            editableCalendars = uiState.availableCalendars.filter { it.canModify },
+            editableCalendars = editableCalendars,
             initialDate = dateForNewEvent,
-            eventToEdit = eventToEdit
+            eventToEdit = eventToEdit,
+            initialCalendar = initialCalendar
         )
         return
     }
@@ -586,14 +595,17 @@ fun CalendarioScreen(
                 SelectCalendarsDialog(
                     initialSelectedIds = uiState.selectedCalendarIds,
                     availableCalendars = uiState.availableCalendars,
-                    onDismissRequest = { showSelectCalendarsDialog = false }
-                ) { newlySelectedIds ->
-                    showSelectCalendarsDialog = false
-                    scope.launch {
-                        val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, uiState.availableCalendars)
-                        viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
-                    }
-                }
+                    favoriteCalendarId = uiState.favoriteCalendarId,
+                    onDismissRequest = { showSelectCalendarsDialog = false },
+                    onApplySelection = { newlySelectedIds ->
+                        showSelectCalendarsDialog = false
+                        scope.launch {
+                            val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds, uiState.availableCalendars)
+                            viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
+                        }
+                    },
+                    onSetFavorite = viewModel::setFavoriteCalendar
+                )
             }
 
             if (showDayEventsDialog && selectedDateForDialog != null) {

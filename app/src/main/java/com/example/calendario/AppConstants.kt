@@ -15,6 +15,7 @@ object AppConstants {
     const val KEY_EVENT_1_KEYWORD = "event_1_keyword"
     const val KEY_EVENT_2_KEYWORD = "event_2_keyword"
     const val KEY_MONTHLY_CALENDAR_EFFECT_TYPE = "monthly_calendar_effect_type"
+    const val KEY_FAVORITE_CALENDAR_ID = "favorite_calendar_id"
     const val CURRENT_THEME_VERSION = 6
     const val APP_SIGNATURE = "Calendario"
 

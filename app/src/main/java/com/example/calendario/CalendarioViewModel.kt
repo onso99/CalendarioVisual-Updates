@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
@@ -20,7 +21,8 @@ data class CalendarioUiState(
     val eventsByDate: Map<LocalDate, List<Festivo>> = emptyMap(),
     val availableCalendars: List<CalendarInfo> = emptyList(),
     val selectedCalendarIds: Set<Long> = emptySet(),
-    val hasCalendarPermission: Boolean = false
+    val hasCalendarPermission: Boolean = false,
+    val favoriteCalendarId: Long? = null
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,11 +36,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val initialEvents = loadEventsFromPrefs(context)
             val initialSelectedIds = loadSelectedCalendarIds(context)
             val initialPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+            val initialFavoriteId = getFavoriteCalendarId(context)
 
             _uiState.value = CalendarioUiState(
                 eventsByDate = initialEvents,
                 selectedCalendarIds = initialSelectedIds,
-                hasCalendarPermission = initialPermission
+                hasCalendarPermission = initialPermission,
+                favoriteCalendarId = initialFavoriteId
             )
 
             if (initialPermission) {
@@ -153,5 +157,23 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             saveSelectedCalendarIds(context, newSelectedIds)
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         }
+    }
+
+    fun setFavoriteCalendar(calendarId: Long) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            with(prefs.edit()) {
+                putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, calendarId)
+                apply()
+            }
+            _uiState.update { it.copy(favoriteCalendarId = calendarId) }
+        }
+    }
+
+    private fun getFavoriteCalendarId(context: Context): Long? {
+        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val favoriteId = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
+        return if (favoriteId != -1L) favoriteId else null
     }
 }
