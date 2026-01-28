@@ -83,7 +83,7 @@ object AppConstants {
         val monthlyCalendarGridBackground = Color(0xFF1F93F2)
         val monthlyCalendarGridEffect = Color(0x808FC7BA)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
-        val monthlyCalendarEmptyCellBackground = Color(0xFFEDF3F5)
+        val monthlyCalendarEmptyCellBackground = Color(0xFFC8D9E1)
         val monthlyCalendarTodayCellBorder = Color(0xFF2196F3)
         val monthlyCalendarDayNumberNormal = Color(0xFF000000)
         val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
