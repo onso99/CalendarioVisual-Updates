@@ -140,3 +140,18 @@ fun processEventsForDisplay(
         .toList()
         .sortedBy { it.first }
 }
+
+fun processEventsForWidget(allEvents: Map<LocalDate, List<Festivo>>, limit: Int): List<Festivo> {
+    val now = LocalDateTime.now()
+    val allFutureEvents = allEvents.values.flatten().filter { event ->
+        val eventEndDateTime = if (event.isAllDay) {
+            event.date.plusDays(1).atStartOfDay()
+        } else {
+            val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
+            LocalDateTime.of(event.date, endTime)
+        }
+        eventEndDateTime.isAfter(now)
+    }.sortedWith(compareBy({ it.date }, { it.startTime }))
+
+    return allFutureEvents.take(limit)
+}

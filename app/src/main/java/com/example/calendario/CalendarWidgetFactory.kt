@@ -73,16 +73,16 @@ class CalendarWidgetFactory(
     }
 
     override fun getCount(): Int {
-        return eventsList.take(eventCountToShow).size
+        return eventsList.size
     }
 
     override fun getViewAt(position: Int): RemoteViews? {
-        if (position < 0 || position >= eventsList.take(eventCountToShow).size) {
+        if (position < 0 || position >= eventsList.size) {
             Log.w("WidgetFactory", "getViewAt: Posición inválida $position.")
             return null
         }
 
-        val actualEvent = eventsList.take(eventCountToShow)[position]
+        val actualEvent = eventsList[position]
 
         // --- Lógica de Selección de Layout con 3 Niveles ---
         val fontScale = context.resources.configuration.fontScale
@@ -164,8 +164,8 @@ class CalendarWidgetFactory(
     override fun getViewTypeCount(): Int = 3
 
     override fun getItemId(position: Int): Long {
-        return if (position < eventsList.take(eventCountToShow).size && position >= 0) {
-            val event = eventsList.take(eventCountToShow)[position]
+        return if (position < eventsList.size && position >= 0) {
+            val event = eventsList[position]
             "${event.date}-${event.startTime}-${event.title}-${event.calendarId}-${event.isAllDay}".hashCode().toLong()
         } else {
             System.currentTimeMillis() + position.toLong()
@@ -176,17 +176,7 @@ class CalendarWidgetFactory(
 
     private fun loadCalendarEvents() {
         val allEventsByDateMap = loadEventsFromPrefsFromFactory(context)
-        val today = LocalDate.now()
-
-        val processedEvents = processEventsForDisplay(
-            allEvents = allEventsByDateMap,
-            currentMonth = today, // For widget, currentMonth is always today
-            today = today,
-            showAll = false
-        )
-
-        eventsList = processedEvents.flatMap { it.second }
-
+        eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
         Log.d("WidgetFactory", "Eventos procesados para el widget: ${eventsList.size}. Mostrando hasta: $eventCountToShow")
     }
 
