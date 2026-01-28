@@ -31,119 +31,86 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     val uiState: StateFlow<CalendarioUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            val context = getApplication<Application>()
-            val initialPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-            if (initialPermission) {
-                val initialEvents = loadEventsFromPrefs(context)
-                var initialSelectedIds = loadSelectedCalendarIds(context)
-                var initialFavoriteId = getFavoriteCalendarId(context)
-                val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
-
-                val favoriteExists = freshAvailableCalendars.any { it.id == initialFavoriteId }
-                if ((initialFavoriteId == null || !favoriteExists) && freshAvailableCalendars.any { it.canModify }) {
-                    val bestCandidate = freshAvailableCalendars.firstOrNull {
-                        it.isPrimary && it.canModify && it.accountName.contains("com.google", ignoreCase = true)
-                    } ?: freshAvailableCalendars.firstOrNull {
-                        it.canModify && it.accountName.contains("com.google", ignoreCase = true)
-                    } ?: freshAvailableCalendars.firstOrNull { it.canModify }
-
-                    bestCandidate?.id?.let {
-                        initialFavoriteId = it
-                        setFavoriteCalendar(it)
-                    }
-                }
-
-                if (initialFavoriteId != null && !initialSelectedIds.contains(initialFavoriteId)) {
-                    initialSelectedIds = initialSelectedIds.toMutableSet().apply { add(initialFavoriteId!!) }
-                    saveSelectedCalendarIds(context, initialSelectedIds)
-                }
-
-                _uiState.value = CalendarioUiState(
-                    eventsByDate = initialEvents,
-                    availableCalendars = freshAvailableCalendars,
-                    selectedCalendarIds = initialSelectedIds,
-                    hasCalendarPermission = true,
-                    favoriteCalendarId = initialFavoriteId
-                )
-                refreshData()
-            } else {
-                _uiState.value = CalendarioUiState(hasCalendarPermission = false)
-            }
-        }
+        loadAllData()
     }
-
 
     fun onPermissionResult(isGranted: Boolean) {
         _uiState.update { it.copy(hasCalendarPermission = isGranted) }
         if (isGranted) {
-            refreshData()
+            loadAllData()
         } else {
             viewModelScope.launch {
                 val context = getApplication<Application>()
                 _uiState.value = CalendarioUiState() // Clear all data
                 saveEventsToPrefs(context, emptyMap())
+                saveSelectedCalendarIds(context, emptySet())
+                setFavoriteCalendar(null) // Clear favorite
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             }
         }
     }
 
     fun refreshData() {
+        loadAllData()
+    }
+
+    private fun loadAllData() {
         viewModelScope.launch {
             val context = getApplication<Application>()
-            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                if (_uiState.value.hasCalendarPermission) { // Only update if state changed
-                    _uiState.value = CalendarioUiState() // Reset state
-                    saveEventsToPrefs(context, emptyMap())
-                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
-                }
+            val hasPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasPermission) {
+                _uiState.value = CalendarioUiState(hasCalendarPermission = false)
                 return@launch
             }
 
-            if (!_uiState.value.hasCalendarPermission) {
-                 _uiState.update { it.copy(hasCalendarPermission = true) }
-            }
-
             try {
-                val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
-                var currentSelectedIds = _uiState.value.selectedCalendarIds
-                var dataChanged = false
+                val initialEvents = loadEventsFromPrefs(context)
+                var selectedIds = loadSelectedCalendarIds(context)
+                var favoriteId = getFavoriteCalendarId(context)
+                val availableCalendars = loadAvailableCalendarsSuspend(context)
 
-                if (_uiState.value.availableCalendars != freshAvailableCalendars) {
-                    _uiState.update { it.copy(availableCalendars = freshAvailableCalendars) }
-                    dataChanged = true
+                val favoriteExists = availableCalendars.any { it.id == favoriteId }
+                if ((favoriteId == null || !favoriteExists) && availableCalendars.any { it.canModify }) {
+                    findBestCalendarCandidate(availableCalendars)?.id?.let {
+                        favoriteId = it
+                        setFavoriteCalendar(it)
+                    }
                 }
 
-                val validSelectedIds = currentSelectedIds.filter { sid -> freshAvailableCalendars.any { cal -> cal.id == sid } }.toSet()
-                if (validSelectedIds != _uiState.value.selectedCalendarIds) {
-                    _uiState.update { it.copy(selectedCalendarIds = validSelectedIds) }
-                    saveSelectedCalendarIds(context, validSelectedIds)
-                    dataChanged = true
+                if (favoriteId != null && !selectedIds.contains(favoriteId)) {
+                    selectedIds = selectedIds.toMutableSet().apply { add(favoriteId) }
+                    saveSelectedCalendarIds(context, selectedIds)
                 }
 
-                val freshEventsMap = if (_uiState.value.selectedCalendarIds.isNotEmpty()) {
-                    readFestivosFromCalendarsSuspend(context, _uiState.value.selectedCalendarIds, freshAvailableCalendars)
+                val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
+
+                val finalEvents = if (validSelectedIds.isNotEmpty()) {
+                    readFestivosFromCalendarsSuspend(context, validSelectedIds, availableCalendars)
                 } else {
-                    emptyMap()
+                    initialEvents
                 }
 
-                if (_uiState.value.eventsByDate != freshEventsMap) {
-                    _uiState.update { it.copy(eventsByDate = freshEventsMap) }
-                    saveEventsToPrefs(context, freshEventsMap)
-                    dataChanged = true
+                _uiState.value = CalendarioUiState(
+                    eventsByDate = finalEvents,
+                    availableCalendars = availableCalendars,
+                    selectedCalendarIds = validSelectedIds,
+                    hasCalendarPermission = true,
+                    favoriteCalendarId = favoriteId
+                )
+
+                if (validSelectedIds != selectedIds) {
+                    saveSelectedCalendarIds(context, validSelectedIds)
+                }
+                if (finalEvents != initialEvents) {
+                    saveEventsToPrefs(context, finalEvents)
                 }
 
-                if (dataChanged) {
-                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
-                }
+                CalendarAppWidgetProvider.triggerWidgetUpdate(context)
 
             } catch (e: Exception) {
-                Log.e("CalendarioViewModel", "Error refreshing calendar data", e)
+                Log.e("CalendarioViewModel", "Error loading all data", e)
                 Toast.makeText(context, "Error al actualizar datos.", Toast.LENGTH_SHORT).show()
-
-                 _uiState.value = CalendarioUiState(hasCalendarPermission = _uiState.value.hasCalendarPermission) // Keep permission state
-                saveEventsToPrefs(context, emptyMap())
-                CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             }
         }
     }
@@ -181,12 +148,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun setFavoriteCalendar(calendarId: Long) {
+    fun setFavoriteCalendar(calendarId: Long?) {
         viewModelScope.launch {
             val context = getApplication<Application>()
             val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
             with(prefs.edit()) {
-                putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, calendarId)
+                if (calendarId == null) {
+                    remove(AppConstants.KEY_FAVORITE_CALENDAR_ID)
+                } else {
+                    putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, calendarId)
+                }
                 apply()
             }
             _uiState.update { it.copy(favoriteCalendarId = calendarId) }

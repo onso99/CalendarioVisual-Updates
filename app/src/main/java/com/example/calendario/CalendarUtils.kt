@@ -214,3 +214,16 @@ private fun createEventValues(
         }
     }
 }
+
+fun findBestCalendarCandidate(calendars: List<CalendarInfo>): CalendarInfo? {
+    if (calendars.isEmpty()) return null
+
+    return calendars
+        .filter { it.canModify } // Only consider editable calendars
+        .maxByOrNull { calendar ->
+            var score = 0
+            if (calendar.accountName.contains("com.google", ignoreCase = true)) score += 10
+            if (calendar.isPrimary) score += 5
+            score
+        }
+}

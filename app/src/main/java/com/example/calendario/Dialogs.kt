@@ -227,16 +227,9 @@ fun SelectCalendarsDialog(
 
     val sortedCalendars = remember(availableCalendars, favoriteCalendarId) {
         availableCalendars.sortedWith(
-            compareBy<CalendarInfo> { calendar ->
-                // Lower score is better
-                when {
-                    calendar.isPrimary && calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 0
-                    calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 1
-                    calendar.isPrimary && calendar.canModify -> 2
-                    calendar.canModify -> 3
-                    else -> 4
-                }
-            }.thenBy { it.displayName }
+            compareBy<CalendarInfo> { it.id != favoriteCalendarId } // Favorite is always first
+                .then(compareBy { findBestCalendarCandidate(listOf(it)) == null }) // Then sort by our logic
+                .thenBy { it.displayName }
         )
     }
 
@@ -270,7 +263,9 @@ fun SelectCalendarsDialog(
                                 .clickable(enabled = !isFavorite) {
                                     val newSet = currentSelectedIdsInDialog.toMutableSet()
                                     if (newSet.contains(calendar.id)) {
-                                        newSet.remove(calendar.id)
+                                        if (!isFavorite) { // Prevent unchecking the favorite calendar
+                                            newSet.remove(calendar.id)
+                                        }
                                     } else {
                                         newSet.add(calendar.id)
                                     }
@@ -281,21 +276,12 @@ fun SelectCalendarsDialog(
                         ) {
                             Checkbox(
                                 checked = currentSelectedIdsInDialog.contains(calendar.id) || isFavorite,
-                                onCheckedChange = { isChecked ->
-                                    if (!isFavorite) {
-                                        val newSet = currentSelectedIdsInDialog.toMutableSet()
-                                        if (isChecked) {
-                                            newSet.add(calendar.id)
-                                        } else {
-                                            newSet.remove(calendar.id)
-                                        }
-                                        currentSelectedIdsInDialog = newSet
-                                    }
-                                },
+                                onCheckedChange = null, // Checkbox is controlled by the Row's clickable
                                 enabled = !isFavorite,
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = CalendarioTheme.colors.cabecera,
                                     uncheckedColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                                    disabledCheckedColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.5f),
                                     checkmarkColor = if(isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
                                 )
                             )
