@@ -33,28 +33,46 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     init {
         viewModelScope.launch {
             val context = getApplication<Application>()
-            val initialEvents = loadEventsFromPrefs(context)
-            var initialSelectedIds = loadSelectedCalendarIds(context)
             val initialPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-            var initialFavoriteId = getFavoriteCalendarId(context)
-
-            if (initialFavoriteId != null && !initialSelectedIds.contains(initialFavoriteId)) {
-                initialSelectedIds = initialSelectedIds.toMutableSet().apply { add(initialFavoriteId!!) }.toSet()
-                saveSelectedCalendarIds(context, initialSelectedIds)
-            }
-
-            _uiState.value = CalendarioUiState(
-                eventsByDate = initialEvents,
-                selectedCalendarIds = initialSelectedIds,
-                hasCalendarPermission = initialPermission,
-                favoriteCalendarId = initialFavoriteId
-            )
-
             if (initialPermission) {
+                val initialEvents = loadEventsFromPrefs(context)
+                var initialSelectedIds = loadSelectedCalendarIds(context)
+                var initialFavoriteId = getFavoriteCalendarId(context)
+                val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
+
+                val favoriteExists = freshAvailableCalendars.any { it.id == initialFavoriteId }
+                if ((initialFavoriteId == null || !favoriteExists) && freshAvailableCalendars.any { it.canModify }) {
+                    val bestCandidate = freshAvailableCalendars.firstOrNull {
+                        it.isPrimary && it.canModify && it.accountName.contains("com.google", ignoreCase = true)
+                    } ?: freshAvailableCalendars.firstOrNull {
+                        it.canModify && it.accountName.contains("com.google", ignoreCase = true)
+                    } ?: freshAvailableCalendars.firstOrNull { it.canModify }
+
+                    bestCandidate?.id?.let {
+                        initialFavoriteId = it
+                        setFavoriteCalendar(it)
+                    }
+                }
+
+                if (initialFavoriteId != null && !initialSelectedIds.contains(initialFavoriteId)) {
+                    initialSelectedIds = initialSelectedIds.toMutableSet().apply { add(initialFavoriteId!!) }
+                    saveSelectedCalendarIds(context, initialSelectedIds)
+                }
+
+                _uiState.value = CalendarioUiState(
+                    eventsByDate = initialEvents,
+                    availableCalendars = freshAvailableCalendars,
+                    selectedCalendarIds = initialSelectedIds,
+                    hasCalendarPermission = true,
+                    favoriteCalendarId = initialFavoriteId
+                )
                 refreshData()
+            } else {
+                _uiState.value = CalendarioUiState(hasCalendarPermission = false)
             }
         }
     }
+
 
     fun onPermissionResult(isGranted: Boolean) {
         _uiState.update { it.copy(hasCalendarPermission = isGranted) }
@@ -96,26 +114,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     dataChanged = true
                 }
 
-                // Auto-set favorite calendar if none is set or the saved one is gone
-                val currentFavoriteId = getFavoriteCalendarId(context)
-                val favoriteExists = freshAvailableCalendars.any { it.id == currentFavoriteId }
-                if ((currentFavoriteId == null || !favoriteExists) && freshAvailableCalendars.any { it.canModify }) {
-                    val bestCandidate = freshAvailableCalendars.firstOrNull {
-                        it.isPrimary && it.canModify && it.accountName.contains("com.google", ignoreCase = true)
-                    } ?: freshAvailableCalendars.firstOrNull {
-                        it.canModify && it.accountName.contains("com.google", ignoreCase = true)
-                    } ?: freshAvailableCalendars.firstOrNull { it.canModify }
-                    
-                    bestCandidate?.id?.let { newFavId ->
-                        setFavoriteCalendar(newFavId)
-                        if (!currentSelectedIds.contains(newFavId)) {
-                            currentSelectedIds = currentSelectedIds.toMutableSet().apply { add(newFavId) }
-                            _uiState.update { it.copy(selectedCalendarIds = currentSelectedIds) }
-                            saveSelectedCalendarIds(context, currentSelectedIds)
-                        }
-                    }
-                }
-
                 val validSelectedIds = currentSelectedIds.filter { sid -> freshAvailableCalendars.any { cal -> cal.id == sid } }.toSet()
                 if (validSelectedIds != _uiState.value.selectedCalendarIds) {
                     _uiState.update { it.copy(selectedCalendarIds = validSelectedIds) }
@@ -123,7 +121,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     dataChanged = true
                 }
 
-                val freshEventsMap = if (_uiState.value.selectedCalendarIds.isNotEmpty() || freshAvailableCalendars.isNotEmpty()) {
+                val freshEventsMap = if (_uiState.value.selectedCalendarIds.isNotEmpty()) {
                     readFestivosFromCalendarsSuspend(context, _uiState.value.selectedCalendarIds, freshAvailableCalendars)
                 } else {
                     emptyMap()
