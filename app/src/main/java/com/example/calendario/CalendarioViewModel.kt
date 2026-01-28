@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -152,13 +153,12 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             val context = getApplication<Application>()
             val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            with(prefs.edit()) {
+            prefs.edit {
                 if (calendarId == null) {
                     remove(AppConstants.KEY_FAVORITE_CALENDAR_ID)
                 } else {
                     putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, calendarId)
                 }
-                apply()
             }
             _uiState.update { it.copy(favoriteCalendarId = calendarId) }
         }

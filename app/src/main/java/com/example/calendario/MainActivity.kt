@@ -104,7 +104,6 @@ class MainActivity : ComponentActivity() {
 fun processEventsForDisplay(
     allEvents: Map<LocalDate, List<Festivo>>,
     currentMonth: LocalDate,
-    today: LocalDate,
     showAll: Boolean
 ): List<Pair<LocalDate, List<Festivo>>> {
     val now = LocalDateTime.now()
@@ -115,7 +114,6 @@ fun processEventsForDisplay(
     }
 
     // 2. Si 'showAll' es false, filtramos para mostrar solo los eventos futuros.
-    //    Esto se usará para la vista "Pendientes" y para el widget.
     if (!showAll) {
         monthEvents = monthEvents.filter { event ->
             val eventEndDateTime = if (event.isAllDay) {
@@ -132,9 +130,8 @@ fun processEventsForDisplay(
     return monthEvents
         .groupBy { it.date }
         .mapValues { (_, events) ->
-            // Reordenar por si el filtrado alteró el orden original.
             events.sortedWith(
-                compareBy<Festivo> { it.startTime }
+                compareBy { it.startTime }
             )
         }
         .toList()
