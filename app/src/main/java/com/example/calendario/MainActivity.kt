@@ -3,6 +3,7 @@ package com.example.calendario
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.database.ContentObserver
 import android.net.Uri
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -69,13 +71,15 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Register the observer to listen for changes
-        calendarObserver?.let {
-            contentResolver.registerContentObserver(
-                CalendarContract.Events.CONTENT_URI,
-                true,
-                it
-            )
+        // Register the observer only if we have permission
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+            calendarObserver?.let {
+                contentResolver.registerContentObserver(
+                    CalendarContract.Events.CONTENT_URI,
+                    true,
+                    it
+                )
+            }
         }
     }
 

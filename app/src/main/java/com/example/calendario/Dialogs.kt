@@ -229,13 +229,12 @@ fun SelectCalendarsDialog(
             compareBy<CalendarInfo> { calendar ->
                 // Lower score is better
                 when {
-                    calendar.id == favoriteCalendarId -> 0
-                    calendar.isPrimary && calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 1
-                    calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 2
-                    calendar.isPrimary && calendar.canModify -> 3
-                    calendar.canModify -> 4
-                    calendar.accountName.contains("com.google", ignoreCase = true) -> 5
-                    else -> 6
+                    calendar.isPrimary && calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 0
+                    calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 1
+                    calendar.isPrimary && calendar.canModify -> 2
+                    calendar.canModify -> 3
+                    calendar.accountName.contains("com.google", ignoreCase = true) -> 4
+                    else -> 5
                 }
             }.thenBy { it.displayName }
         )
@@ -300,7 +299,7 @@ fun SelectCalendarsDialog(
                                 Text(
                                     calendar.displayName,
                                     fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp
+                                    fontSize = 15.sp
                                 )
                                 Text(
                                     calendar.accountName,
@@ -317,12 +316,21 @@ fun SelectCalendarsDialog(
                                     )
                                 }
                             }
-                            IconButton(onClick = { onSetFavorite(calendar.id) }) {
-                                Icon(
-                                    imageVector = if (calendar.id == favoriteCalendarId) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                                    contentDescription = stringResource(id = R.string.set_as_favorite),
-                                    tint = if (calendar.id == favoriteCalendarId) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                                )
+                            if (calendar.canModify) {
+                                IconButton(onClick = { 
+                                    onSetFavorite(calendar.id)
+                                    if (!currentSelectedIdsInDialog.contains(calendar.id)) {
+                                        val newSet = currentSelectedIdsInDialog.toMutableSet()
+                                        newSet.add(calendar.id)
+                                        currentSelectedIdsInDialog = newSet
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = if (calendar.id == favoriteCalendarId) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                                        contentDescription = stringResource(id = R.string.set_as_favorite),
+                                        tint = if (calendar.id == favoriteCalendarId) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                                    )
+                                }
                             }
                         }
                     }
