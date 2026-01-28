@@ -226,13 +226,16 @@ fun SelectCalendarsDialog(
 
     val sortedCalendars = remember(availableCalendars, favoriteCalendarId) {
         availableCalendars.sortedWith(
-            compareBy<CalendarInfo> {
+            compareBy<CalendarInfo> { calendar ->
+                // Lower score is better
                 when {
-                    it.id == favoriteCalendarId -> 0 // Favorite is always first
-                    it.accountName.contains("@gmail", ignoreCase = true) && it.canModify -> 1
-                    it.isPrimary && it.canModify -> 2
-                    it.accountName.contains("@gmail", ignoreCase = true) -> 3
-                    else -> 4
+                    calendar.id == favoriteCalendarId -> 0
+                    calendar.isPrimary && calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 1
+                    calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 2
+                    calendar.isPrimary && calendar.canModify -> 3
+                    calendar.canModify -> 4
+                    calendar.accountName.contains("com.google", ignoreCase = true) -> 5
+                    else -> 6
                 }
             }.thenBy { it.displayName }
         )
@@ -318,7 +321,7 @@ fun SelectCalendarsDialog(
                                 Icon(
                                     imageVector = if (calendar.id == favoriteCalendarId) Icons.Filled.Star else Icons.Outlined.StarOutline,
                                     contentDescription = stringResource(id = R.string.set_as_favorite),
-                                    tint = if (calendar.id == favoriteCalendarId) Color.Yellow else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                                    tint = if (calendar.id == favoriteCalendarId) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                                 )
                             }
                         }

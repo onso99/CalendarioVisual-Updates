@@ -91,6 +91,19 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     _uiState.update { it.copy(availableCalendars = freshAvailableCalendars) }
                     dataChanged = true
                 }
+                
+                 // Auto-set favorite calendar if none is set or the saved one is gone
+                val currentFavoriteId = getFavoriteCalendarId(context)
+                val favoriteExists = freshAvailableCalendars.any { it.id == currentFavoriteId }
+                if (currentFavoriteId == null || !favoriteExists) {
+                    val bestCandidate = freshAvailableCalendars.firstOrNull {
+                        it.isPrimary && it.canModify && it.accountName.contains("com.google", ignoreCase = true)
+                    } ?: freshAvailableCalendars.firstOrNull {
+                        it.canModify && it.accountName.contains("com.google", ignoreCase = true)
+                    }
+                    bestCandidate?.id?.let { setFavoriteCalendar(it) }
+                }
+
 
                 val validSelectedIds = currentSelectedIds.filter { sid -> freshAvailableCalendars.any { cal -> cal.id == sid } }.toSet()
                 if (validSelectedIds != _uiState.value.selectedCalendarIds) {
