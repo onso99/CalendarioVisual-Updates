@@ -507,8 +507,8 @@ fun AddEventScreen(
         }
     }
     
-    if (saveError != null) {
-        val errorContent = when (saveError) {
+    saveError?.let { error ->
+        val (errorTitle, errorText, showSettingsButton) = when (error) {
             SaveEventError.NO_PERMISSION -> Triple(
                 stringResource(id = R.string.permission_denied_title),
                 stringResource(id = R.string.permission_denied_text),
@@ -529,40 +529,36 @@ fun AddEventScreen(
                 stringResource(id = R.string.end_time_before_start_time_error),
                 false
             )
-            null -> null
         }
 
-        if (errorContent != null) {
-            val (errorTitle, errorText, showSettingsButton) = errorContent
-            AlertDialog(
-                onDismissRequest = { saveError = null },
-                containerColor = CalendarioTheme.colors.fondoDialogos,
-                titleContentColor = CalendarioTheme.colors.textSystem,
-                textContentColor = CalendarioTheme.colors.textSystem,
-                title = { Text(errorTitle, fontWeight = FontWeight.Bold) },
-                text = { Text(errorText) },
-                confirmButton = {
-                    Button(
-                        onClick = { saveError = null },
-                        colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-                    ) {
-                        Text(stringResource(id = R.string.accept))
-                    }
-                },
-                dismissButton = {
-                    if (showSettingsButton) {
-                        TextButton(onClick = {
-                            saveError = null
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.data = Uri.fromParts("package", context.packageName, null)
-                            context.startActivity(intent)
-                        }) {
-                            Text(stringResource(id = R.string.go_to_settings), color = CalendarioTheme.colors.textSystem)
-                        }
+        AlertDialog(
+            onDismissRequest = { saveError = null },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(errorTitle, fontWeight = FontWeight.Bold) },
+            text = { Text(errorText) },
+            confirmButton = {
+                Button(
+                    onClick = { saveError = null },
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                ) {
+                    Text(stringResource(id = R.string.accept))
+                }
+            },
+            dismissButton = {
+                if (showSettingsButton) {
+                    TextButton(onClick = {
+                        saveError = null
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.fromParts("package", context.packageName, null)
+                        context.startActivity(intent)
+                    }) {
+                        Text(stringResource(id = R.string.go_to_settings), color = CalendarioTheme.colors.textSystem)
                     }
                 }
-            )
-        }
+            }
+        )
     }
 
 

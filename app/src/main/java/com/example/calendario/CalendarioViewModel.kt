@@ -86,7 +86,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
 
                 val finalEvents = if (validSelectedIds.isNotEmpty()) {
-                    readFestivosFromCalendarsSuspend(context, validSelectedIds, availableCalendars)
+                    readFestivosFromCalendarsSuspend(context, validSelectedIds)
                 } else {
                     initialEvents
                 }

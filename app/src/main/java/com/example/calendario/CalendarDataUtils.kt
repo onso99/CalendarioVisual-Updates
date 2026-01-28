@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -18,7 +17,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.YearMonth
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -69,8 +67,8 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     return mapFromString.mapNotNull { (dateStr, dtoList) ->
         val date = try {
             LocalDate.parse(dateStr)
-        } catch (e: Exception) {
-            Log.e("CalendarDataUtils", "Error parseando fecha: '$dateStr'", e); null
+        } catch (e: Exception) { 
+            Log.e("CalendarDataUtils", "Error parseando fecha: '$dateStr'", e); null 
         }
         if (date != null) {
             date to dtoList.map { dto ->
@@ -79,19 +77,19 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     title = dto.title.takeIf { !it.isNullOrBlank() } ?: dto.description.takeIf { !it.isNullOrBlank() } ?: context.getString(R.string.saved_event),
                     description = dto.description,
                     date = date,
-                    startTime = dto.startTimeStr?.let {
+                    startTime = dto.startTimeStr?.let { 
                         try {
                             LocalTime.parse(it)
-                        } catch (e: Exception) {
-                            Log.e("CalendarDataUtils", "Error parseando LocalTime en load (startTime): '$it'", e); null
-                        }
+                        } catch (e: Exception) { 
+                            Log.e("CalendarDataUtils", "Error parseando LocalTime en load (startTime): '$it'", e); null 
+                        } 
                     },
-                    endTime = dto.endTimeStr?.let {
+                    endTime = dto.endTimeStr?.let { 
                         try {
                             LocalTime.parse(it)
-                        } catch (e: Exception) {
-                            Log.e("CalendarDataUtils", "Error parseando LocalTime en load (endTime): '$it'", e); null
-                        }
+                        } catch (e: Exception) { 
+                            Log.e("CalendarDataUtils", "Error parseando LocalTime en load (endTime): '$it'", e); null 
+                        } 
                     },
                     isAllDay = dto.isAllDay,
                     calendarId = dto.id,
@@ -128,48 +126,6 @@ fun loadSelectedCalendarIds(context: Context): Set<Long> {
             }
         }
         ?.toSet() ?: emptySet()
-}
-
-fun processEventsForDisplay(
-    eventsByDate: Map<LocalDate, List<Festivo>>,
-    targetMonth: YearMonth,
-    today: LocalDate,
-    showAll: Boolean
-): List<Pair<LocalDate, List<Festivo>>> {
-    val isCurrentMonthView = targetMonth.year == today.year && targetMonth.month == today.month
-    val now = LocalTime.now()
-
-    return eventsByDate
-        .filterKeys { date -> date.month == targetMonth.month && date.year == targetMonth.year }
-        .let { eventsInMonth ->
-            if (isCurrentMonthView && !showAll) {
-                eventsInMonth
-                    .mapValues { (date, festivosOnDate) ->
-                        festivosOnDate.filter { festivo ->
-                            if (date.isEqual(today)) {
-                                if (!festivo.isAllDay && festivo.startTime != null && festivo.endTime != null) {
-                                    now.isBefore(festivo.endTime)
-                                } else {
-                                    true
-                                }
-                            } else {
-                                true
-                            }
-                        }
-                    }
-                    .filterKeys { date -> !date.isBefore(today) }
-            } else {
-                eventsInMonth
-            }
-        }
-        .filterValues { festivos -> festivos.isNotEmpty() }
-        .toSortedMap()
-        .map { entry ->
-            entry.key to entry.value.sortedWith(
-                compareBy<Festivo> { it.isAllDay }.reversed()
-                    .thenBy(nullsLast()) { it.startTime }
-            )
-        }
 }
 
 suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> {
@@ -250,8 +206,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 
 suspend fun readFestivosFromCalendarsSuspend(
     context: Context,
-    selectedCalendarIds: Set<Long>,
-    availableCalendars: List<CalendarInfo>
+    selectedCalendarIds: Set<Long>
 ): Map<LocalDate, List<Festivo>> = suspendCancellableCoroutine { continuation ->
     if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
         Log.w("CalendarDataUtils", "Permiso READ_CALENDAR no concedido en readFestivosFromCalendarsSuspend.")
@@ -276,8 +231,8 @@ suspend fun readFestivosFromCalendarsSuspend(
     val endRangeMillis = endRangeDate.plusDays(1).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
 
     val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().let { 
-        ContentUris.appendId(it, startRangeMillis)
-        ContentUris.appendId(it, endRangeMillis)
+        android.content.ContentUris.appendId(it, startRangeMillis)
+        android.content.ContentUris.appendId(it, endRangeMillis)
         it.build()
     }
 
@@ -292,133 +247,46 @@ suspend fun readFestivosFromCalendarsSuspend(
     val instancesSelection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
     try {
-        val eventInstances = mutableListOf<Festivo>()
-        val eventIds = mutableSetOf<Long>()
+        resolver.query(instancesUri, instancesProjection, instancesSelection, null, null)?.use { cursor ->
+            val eventIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
+            val calendarIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
+            val beginColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
+            val endColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.END)
+            val titleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
+            val allDayColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
 
-        resolver.query(instancesUri, instancesProjection, instancesSelection, null, null)?.use { c ->
-            val eventIdCol = c.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
-            val calIdCol = c.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
-            val beginCol = c.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
-            val endCol = c.getColumnIndexOrThrow(CalendarContract.Instances.END)
-            val titleCol = c.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
-            val allDayCol = c.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
+            while (cursor.moveToNext() && continuation.isActive) {
+                val eventId = cursor.getLong(eventIdColumn)
+                val calendarId = cursor.getLong(calendarIdColumn)
+                val beginMillis = cursor.getLong(beginColumn)
+                val endMillis = cursor.getLong(endColumn)
+                val title = cursor.getStringOrNull(titleColumn)?.trim() ?: ""
+                val isAllDay = cursor.getInt(allDayColumn) == 1
 
-            while (c.moveToNext()) {
-                val eventId = c.getLong(eventIdCol)
-                eventIds.add(eventId)
-
-                val beginMillis = c.getLong(beginCol)
-                val endMillis = c.getLong(endCol)
-                val calId = c.getLong(calIdCol)
-                val title = c.getStringOrNull(titleCol)?.trim() ?: context.getString(R.string.no_title)
-                val isAllDay = c.getInt(allDayCol) == 1
-
-                val beginInstant = Instant.ofEpochMilli(beginMillis)
-                val beginDateTime = beginInstant.atZone(systemZoneId)
-                val eventDate = beginDateTime.toLocalDate()
-                val startTime = if (isAllDay) null else beginDateTime.toLocalTime()
-                val endTime = if (isAllDay) null else Instant.ofEpochMilli(endMillis).atZone(systemZoneId).toLocalTime()
-                
-                val calendarInfo = availableCalendars.find { it.id == calId }
-                val isHolidaySource = calendarInfo?.displayName?.lowercase()?.contains("festivo") == true ||
-                        (calendarInfo?.displayName?.lowercase()?.let { name ->
-                            listOf("holiday", "fiesta", "feriado", "nacional").any { keyword -> name.contains(keyword) }
-                        } == true)
-
-                eventInstances.add(Festivo(
-                    id = eventId,
-                    title = title,
-                    description = null,
-                    date = eventDate,
-                    startTime = startTime,
-                    endTime = endTime,
-                    isAllDay = isAllDay,
-                    calendarId = calId,
-                    isFromHolidaySource = isHolidaySource,
-                    rrule = null, 
-                    age = null 
-                ))
-            }
-        } ?: Log.w("ReadFestivos", "El cursor de instancias de eventos fue nulo.")
-
-        if (!continuation.isActive || eventIds.isEmpty()) {
-            if (continuation.isActive) continuation.resume(emptyMap())
-            return@suspendCancellableCoroutine
-        }
-
-        val extendedPropertiesMap = mutableMapOf<Long, MutableMap<String, String>>()
-        if (eventIds.isNotEmpty()) {
-            val propertiesProjection = arrayOf(
-                CalendarContract.ExtendedProperties.EVENT_ID,
-                CalendarContract.ExtendedProperties.NAME,
-                CalendarContract.ExtendedProperties.VALUE
-            )
-            val propertiesSelection = "${CalendarContract.ExtendedProperties.EVENT_ID} IN (${eventIds.joinToString(",")}) AND ${CalendarContract.ExtendedProperties.NAME} = ?"
-            val propertiesSelectionArgs = arrayOf("shared:calendarProviderEventType")
-
-            resolver.query(CalendarContract.ExtendedProperties.CONTENT_URI, propertiesProjection, propertiesSelection, propertiesSelectionArgs, null)?.use { c ->
-                val eventIdCol = c.getColumnIndexOrThrow(CalendarContract.ExtendedProperties.EVENT_ID)
-                val valueCol = c.getColumnIndexOrThrow(CalendarContract.ExtendedProperties.VALUE)
-
-                while (c.moveToNext()) {
-                    val eventId = c.getLong(eventIdCol)
-                    val value = c.getStringOrNull(valueCol)
-                    if (value == "BIRTHDAY") {
-                         extendedPropertiesMap.getOrPut(eventId) { mutableMapOf() }["isBirthday"] = "true"
-                    }
-                }
-            } ?: Log.w("ReadFestivos", "El cursor de propiedades extendidas fue nulo.")
-        }
-
-        data class EventExtraData(val rrule: String?, val description: String?, val dtStart: Long?)
-        val eventDataMap = mutableMapOf<Long, EventExtraData>()
-        val eventsProjection = arrayOf(CalendarContract.Events._ID, CalendarContract.Events.RRULE, CalendarContract.Events.DESCRIPTION, CalendarContract.Events.DTSTART)
-        val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
-        
-        resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { c ->
-            val idCol = c.getColumnIndexOrThrow(CalendarContract.Events._ID)
-            val rruleCol = c.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
-            val descCol = c.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION)
-            val dtStartCol = c.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
-
-            while (c.moveToNext()) {
-                val eventId = c.getLong(idCol)
-                val rrule = c.getStringOrNull(rruleCol)
-                val description = c.getStringOrNull(descCol)
-                val dtStart = if (c.isNull(dtStartCol)) null else c.getLong(dtStartCol)
-                eventDataMap[eventId] = EventExtraData(rrule, description, dtStart)
-            }
-        } ?: Log.w("ReadFestivos", "El cursor de eventos para datos adicionales fue nulo.")
-        
-        eventInstances.forEach { instance ->
-            val eventData = eventDataMap[instance.id]
-            val isBirthday = extendedPropertiesMap[instance.id]?.get("isBirthday") == "true"
-
-            var age: Int? = null
-            var originalBirthDate: LocalDate? = null
-            if (isBirthday) {
-                eventData?.dtStart?.let { dtStartMillis ->
-                    val birthDate = Instant.ofEpochMilli(dtStartMillis).atZone(systemZoneId).toLocalDate()
-                    age = instance.date.year - birthDate.year
-                    originalBirthDate = birthDate
+                if (title.isNotBlank() || isAllDay) { // Heuristic to filter out empty/invalid events
+                    val startInstant = Instant.ofEpochMilli(beginMillis)
+                    val endInstant = Instant.ofEpochMilli(endMillis)
+                    val startDate = startInstant.atZone(systemZoneId).toLocalDate()
+                    val startTime = if (isAllDay) null else startInstant.atZone(systemZoneId).toLocalTime()
+                    val endTime = if (isAllDay) null else endInstant.atZone(systemZoneId).toLocalTime()
+                    
+                    val festivo = Festivo(
+                        id = eventId,
+                        title = title,
+                        description = null, // Will be fetched later if needed
+                        date = startDate,
+                        startTime = startTime,
+                        endTime = endTime,
+                        isAllDay = isAllDay,
+                        calendarId = calendarId,
+                        isFromHolidaySource = false,
+                        rrule = null,
+                        age = null,
+                        isBirthday = false 
+                    )
+                    finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }
             }
-
-            val finalFestivo = instance.copy(
-                description = eventData?.description,
-                rrule = eventData?.rrule,
-                age = age,
-                isBirthday = isBirthday,
-                originalBirthDate = originalBirthDate
-            )
-            finalMap.getOrPut(finalFestivo.date) { mutableListOf() }.add(finalFestivo)
-        }
-
-        finalMap.values.forEach { festivos -> 
-            festivos.sortWith(
-                compareBy<Festivo> { it.isAllDay }.reversed()
-                    .thenBy(nullsLast()) { it.startTime }
-            )
         }
 
         if (continuation.isActive) {
@@ -426,7 +294,9 @@ suspend fun readFestivosFromCalendarsSuspend(
         }
 
     } catch (e: Exception) {
-        Log.e("ReadFestivosError", "Error general al leer eventos: ${e.message}", e)
-        if (continuation.isActive) continuation.resumeWithException(e)
+        if (continuation.isActive) {
+            Log.e("CalendarDataUtils", "Error al leer festivos del calendario", e)
+            continuation.resumeWithException(e)
+        }
     }
 }

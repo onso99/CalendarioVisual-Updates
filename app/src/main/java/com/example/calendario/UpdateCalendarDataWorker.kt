@@ -51,7 +51,7 @@ class UpdateCalendarDataWorker(
             }
             Log.d(TAG_WORKER, "Calendarios válidos a procesar: $validSelectedCalendarIds. ID: ${this.id}")
 
-            val eventsMap = readFestivosFromCalendarsSuspend(context, validSelectedCalendarIds, availableCalendars)
+            val eventsMap = readFestivosFromCalendarsSuspend(context, validSelectedCalendarIds)
             Log.d(TAG_WORKER, "Eventos leídos del calendario: ${eventsMap.size} días con eventos. ID: ${this.id}")
 
             saveEventsToPrefs(context, eventsMap)
