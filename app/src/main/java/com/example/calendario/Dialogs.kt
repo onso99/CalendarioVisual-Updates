@@ -57,6 +57,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -233,8 +234,7 @@ fun SelectCalendarsDialog(
                     calendar.canModify && calendar.accountName.contains("com.google", ignoreCase = true) -> 1
                     calendar.isPrimary && calendar.canModify -> 2
                     calendar.canModify -> 3
-                    calendar.accountName.contains("com.google", ignoreCase = true) -> 4
-                    else -> 5
+                    else -> 4
                 }
             }.thenBy { it.displayName }
         )
@@ -262,10 +262,12 @@ fun SelectCalendarsDialog(
                         .fillMaxWidth()
                 ) {
                     items(sortedCalendars, key = { it.id }) { calendar ->
+                        val isFavorite = calendar.id == favoriteCalendarId
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable {
+                                .clickable(enabled = !isFavorite) {
                                     val newSet = currentSelectedIdsInDialog.toMutableSet()
                                     if (newSet.contains(calendar.id)) {
                                         newSet.remove(calendar.id)
@@ -278,16 +280,19 @@ fun SelectCalendarsDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Checkbox(
-                                checked = currentSelectedIdsInDialog.contains(calendar.id),
+                                checked = currentSelectedIdsInDialog.contains(calendar.id) || isFavorite,
                                 onCheckedChange = { isChecked ->
-                                    val newSet = currentSelectedIdsInDialog.toMutableSet()
-                                    if (isChecked) {
-                                        newSet.add(calendar.id)
-                                    } else {
-                                        newSet.remove(calendar.id)
+                                    if (!isFavorite) {
+                                        val newSet = currentSelectedIdsInDialog.toMutableSet()
+                                        if (isChecked) {
+                                            newSet.add(calendar.id)
+                                        } else {
+                                            newSet.remove(calendar.id)
+                                        }
+                                        currentSelectedIdsInDialog = newSet
                                     }
-                                    currentSelectedIdsInDialog = newSet
                                 },
+                                enabled = !isFavorite,
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = CalendarioTheme.colors.cabecera,
                                     uncheckedColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
@@ -326,9 +331,9 @@ fun SelectCalendarsDialog(
                                     }
                                 }) {
                                     Icon(
-                                        imageVector = if (calendar.id == favoriteCalendarId) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
                                         contentDescription = stringResource(id = R.string.set_as_favorite),
-                                        tint = if (calendar.id == favoriteCalendarId) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                                        tint = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                                     )
                                 }
                             }
