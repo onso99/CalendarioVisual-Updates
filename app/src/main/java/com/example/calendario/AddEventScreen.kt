@@ -427,14 +427,13 @@ fun AddEventScreen(
                         .padding(16.dp)
                         .fillMaxWidth()
                 ) {
-                    val fontScale = LocalConfiguration.current.fontScale
-                    val useVerticalLayout = fontScale > 1.1f
-
                     CompositionLocalProvider(LocalContentColor provides CalendarioTheme.colors.textSystem) {
                         Text(stringResource(id = R.string.summary), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(stringResource(id = R.string.summary_title, title.ifBlank { stringResource(id = R.string.no_title) }))
                         Text(stringResource(id = R.string.summary_calendar, selectedCalendar?.displayName ?: "N/A"))
+
+                        val summaryFormatter = remember { DateTimeFormatter.ofPattern("E dd/MM/yyyy", Locale.getDefault()) }
 
                         if (isAllDay) {
                             if (startDate.toLocalDate() != endDate.toLocalDate()) {
@@ -444,48 +443,21 @@ fun AddEventScreen(
                                         Text(stringResource(id = R.string.to))
                                     }
                                     Column {
-                                        Text(startDate.format(dateFormatter))
-                                        Text(endDate.format(dateFormatter))
+                                        Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase() })
+                                        Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase() })
                                     }
                                 }
                             } else {
-                                Text(startDate.format(dateFormatter))
+                                Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase() })
                             }
                             Text(stringResource(id = R.string.all_day_switch))
                         } else {
-                            val atString = stringResource(id = R.string.at)
-                            if (useVerticalLayout) {
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Column {
-                                        Text(stringResource(id = R.string.start))
-                                        Text(
-                                            text = "${startDate.format(dateFormatter)} $atString ${startDate.format(timeFormatter)}",
-                                            color = LocalContentColor.current.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                    Column {
-                                        Text(stringResource(id = R.string.end))
-                                        Text(
-                                            text = "${endDate.format(dateFormatter)} $atString ${endDate.format(timeFormatter)}",
-                                            color = LocalContentColor.current.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                            } else {
-                                Row {
-                                    Column(modifier = Modifier.padding(end = 8.dp)) {
-                                        Text(stringResource(id = R.string.start))
-                                        Text(stringResource(id = R.string.end))
-                                    }
-                                    Column {
-                                        Text("${startDate.format(dateFormatter)} $atString ${startDate.format(timeFormatter)}")
-                                        Text("${endDate.format(dateFormatter)} $atString ${endDate.format(timeFormatter)}")
-                                    }
-                                }
-                            }
+                            val summaryTimeFormatter = remember { DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm", Locale.getDefault()) }
+                            Text(stringResource(id = R.string.start) + ": " + startDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase() })
+                            Text(stringResource(id = R.string.end) + ": " + endDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase() })
                         }
                         if (repetitionRule != RepetitionRule.NONE) {
-                            Text(stringResource(id = repetitionRule.displayNameRes))
+                            Text(stringResource(id = R.string.repeat_event_title) + ": " + stringResource(id = repetitionRule.displayNameRes))
                         }
                     }
                 }
