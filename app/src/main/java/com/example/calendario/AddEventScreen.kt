@@ -139,7 +139,6 @@ fun AddEventScreen(
     var startDate by remember { mutableStateOf(LocalDateTime.now()) }
     var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
-    var initialRepetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
@@ -151,6 +150,7 @@ fun AddEventScreen(
     var initialSelectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
     var initialStartDate by remember { mutableStateOf(LocalDateTime.now()) }
     var initialEndDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
+    var initialRepetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
 
     LaunchedEffect(key1 = eventToEdit, key2 = editableCalendars) {
         if (eventToEdit != null) {
@@ -170,7 +170,6 @@ fun AddEventScreen(
                 eventToEdit.endTime?.let { endTime -> LocalDateTime.of(eventToEdit.date, endTime) } ?: startDate.plusHours(1)
             }
             repetitionRule = RepetitionRule.entries.find { rule -> rule.rrule != null && eventToEdit.rrule?.startsWith(rule.rrule) == true } ?: RepetitionRule.NONE
-            initialRepetitionRule = repetitionRule
 
             // Store initial state
             initialTitle = title

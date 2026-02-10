@@ -247,6 +247,33 @@ suspend fun readFestivosFromCalendarsSuspend(
     val instancesSelection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
     try {
+        val eventIds = mutableSetOf<Long>()
+
+        resolver.query(instancesUri, instancesProjection, instancesSelection, null, null)?.use { cursor ->
+            val eventIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
+
+            while (cursor.moveToNext() && continuation.isActive) {
+                eventIds.add(cursor.getLong(eventIdColumn))
+            }
+        }
+
+        val rruleMap = mutableMapOf<Long, String>()
+        if (eventIds.isNotEmpty()) {
+            val eventsProjection = arrayOf(CalendarContract.Events._ID, CalendarContract.Events.RRULE)
+            val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
+            resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { cursor ->
+                val idColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
+                val rruleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
+                while (cursor.moveToNext()) {
+                    val eventId = cursor.getLong(idColumn)
+                    val rrule = cursor.getStringOrNull(rruleColumn)
+                    if (rrule != null) {
+                        rruleMap[eventId] = rrule
+                    }
+                }
+            }
+        }
+        
         resolver.query(instancesUri, instancesProjection, instancesSelection, null, null)?.use { cursor ->
             val eventIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
             val calendarIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
@@ -280,7 +307,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isAllDay = isAllDay,
                         calendarId = calendarId,
                         isFromHolidaySource = false,
-                        rrule = null,
+                        rrule = rruleMap[eventId],
                         age = null,
                         isBirthday = false 
                     )
