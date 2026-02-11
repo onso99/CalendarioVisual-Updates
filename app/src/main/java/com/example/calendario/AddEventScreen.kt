@@ -208,21 +208,12 @@ fun AddEventScreen(
                     }
                     localEventToEdit?.let {
                         IconButton(onClick = {
-                            isCopying = true
+                            isCopying = true 
                             val today = LocalDate.now()
-                            val originalStartDate = startDate
-                            if (startDate.toLocalDate().isBefore(today)) {
-                                val duration = Duration.between(startDate, endDate)
-                                val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
-                                startDate = newStartDate
-                                endDate = newStartDate.plus(duration)
-                            }
-                            initialTitle = title
-                            initialIsAllDay = isAllDay
-                            initialSelectedCalendar = selectedCalendar
-                            initialStartDate = originalStartDate 
-                            initialEndDate = endDate
-                            initialRepetitionRule = repetitionRule
+                            val duration = Duration.between(startDate, endDate)
+                            val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
+                            startDate = newStartDate
+                            endDate = newStartDate.plus(duration)
                             localEventToEdit = null
                         }) { Icon(Icons.Default.ContentCopy, null) }
                         
@@ -298,7 +289,7 @@ fun AddEventScreen(
                         val newLocalDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
                         val duration = Duration.between(startDate, endDate)
                         startDate = LocalDateTime.of(newLocalDate, startDate.toLocalTime())
-                        endDate = if (isCopying || localEventToEdit == null) startDate.plus(duration) else startDate.plusHours(1)
+                        endDate = startDate.plus(duration)
                     }
                     showStartDatePickerDialog = false
                 }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(R.string.accept)) }
