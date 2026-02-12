@@ -368,7 +368,7 @@ fun SelectCalendarsDialog(
                                 }) {
                                     Icon(
                                         imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                                        contentDescription = null,
+                                        contentDescription = if (isFavorite) stringResource(id = R.string.favorite_calendar_marked) else stringResource(id = R.string.mark_as_favorite_calendar),
                                         tint = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                                     )
                                 }

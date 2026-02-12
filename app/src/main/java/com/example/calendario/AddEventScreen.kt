@@ -220,7 +220,7 @@ fun AddEventScreen(
                             startDate = newStartDate
                             endDate = newStartDate.plus(duration)
                             localEventToEdit = null
-                        }) { Icon(Icons.Default.ContentCopy, null) }
+                        }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
                         
                         IconButton(onClick = {
                             if (it.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true

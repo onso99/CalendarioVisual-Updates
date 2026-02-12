@@ -202,5 +202,8 @@
     <string name="edit_recurring_event_dialog_text">¿Quieres cambiar solo este evento, o todos los eventos de la serie?</string>
     <string name="edit_recurring_event_dialog_single_event">Solo este evento</string>
     <string name="edit_recurring_event_dialog_all_events">Todos los eventos</string>
+    <string name="copy_event">Copiar evento</string>
+    <string name="mark_as_favorite_calendar">Marcar como calendario favorito</string>
+    <string name="favorite_calendar_marked">Calendario favorito (marcado)</string>
 
 </resources>
