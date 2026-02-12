@@ -198,4 +198,12 @@
     <string name="unexpected_error_delete">イベント削除中に予期しないエラーが発生しました：%1$s</string>
     <string name="unexpected_error_cancel">イベントキャンセル中に予期しないエラーが発生しました：%1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">定期的なイベントを編集</string>
+    <string name="edit_recurring_event_dialog_text">このイベントのみを変更しますか、それともシリーズのすべてのイベントを変更しますか？</string>
+    <string name="edit_recurring_event_dialog_single_event">このイベントのみ</string>
+    <string name="edit_recurring_event_dialog_all_events">すべてのイベント</string>
+    <string name="copy_event">イベントをコピー</string>
+    <string name="mark_as_favorite_calendar">お気に入りのカレンダーとしてマーク</string>
+    <string name="favorite_calendar_marked">お気に入りのカレンダー（マーク付き）</string>
+
 </resources>

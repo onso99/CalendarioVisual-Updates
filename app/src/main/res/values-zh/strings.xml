@@ -198,4 +198,12 @@
     <string name="unexpected_error_delete">删除活动时出现意外错误：%1$s</string>
     <string name="unexpected_error_cancel">取消活动时出现意外错误：%1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">编辑重复活动</string>
+    <string name="edit_recurring_event_dialog_text">您要仅更改此活动，还是更改系列中的所有活动？</string>
+    <string name="edit_recurring_event_dialog_single_event">仅此活动</string>
+    <string name="edit_recurring_event_dialog_all_events">所有活动</string>
+    <string name="copy_event">复制活动</string>
+    <string name="mark_as_favorite_calendar">标记为收藏日历</string>
+    <string name="favorite_calendar_marked">收藏日历（已标记）</string>
+
 </resources>

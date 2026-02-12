@@ -198,4 +198,12 @@
     <string name="unexpected_error_delete">Непредвиденная ошибка при удалении события: %1$s</string>
     <string name="unexpected_error_cancel">Непредвиденная ошибка при отмене события: %1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">Редактировать повторяющееся событие</string>
+    <string name="edit_recurring_event_dialog_text">Вы хотите изменить только это событие или все события в серии?</string>
+    <string name="edit_recurring_event_dialog_single_event">Только это событие</string>
+    <string name="edit_recurring_event_dialog_all_events">Все события</string>
+    <string name="copy_event">Копировать событие</string>
+    <string name="mark_as_favorite_calendar">Отметить как избранный календарь</string>
+    <string name="favorite_calendar_marked">Избранный календарь (отмечен)</string>
+
 </resources>

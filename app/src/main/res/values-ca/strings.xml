@@ -198,4 +198,11 @@
     <string name="unexpected_error_delete">Error inesperat en eliminar l\'esdeveniment: %1$s</string>
     <string name="unexpected_error_cancel">Error inesperat en cancel·lar l\'esdeveniment: %1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">Editar esdeveniment recurrent</string>
+    <string name="edit_recurring_event_dialog_text">Vols canviar només aquest esdeveniment, o tots els esdeveniments de la sèrie?</string>
+    <string name="edit_recurring_event_dialog_single_event">Només aquest esdeveniment</string>
+    <string name="edit_recurring_event_dialog_all_events">Tots els esdeveniments</string>
+    <string name="copy_event">Copiar esdeveniment</string>
+    <string name="mark_as_favorite_calendar">Marcar como a calendari favorit</string>
+    <string name="favorite_calendar_marked">Calendari favorit (marcat)</string>
 </resources>

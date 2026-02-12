@@ -198,4 +198,12 @@
     <string name="unexpected_error_delete">Unerwarteter Fehler beim Löschen des Ereignisses: %1$s</string>
     <string name="unexpected_error_cancel">Unerwarteter Fehler beim Abbrechen des Ereignisses: %1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">Wiederkehrendes Ereignis bearbeiten</string>
+    <string name="edit_recurring_event_dialog_text">Möchten Sie nur dieses Ereignis ändern oder alle Ereignisse in der Serie?</string>
+    <string name="edit_recurring_event_dialog_single_event">Nur dieses Ereignis</string>
+    <string name="edit_recurring_event_dialog_all_events">Alle Ereignisse</string>
+    <string name="copy_event">Ereignis kopieren</string>
+    <string name="mark_as_favorite_calendar">Als Favoritenkalender markieren</string>
+    <string name="favorite_calendar_marked">Favoritenkalender (markiert)</string>
+
 </resources>

@@ -198,4 +198,12 @@
     <string name="unexpected_error_delete">Unexpected error deleting event: %1$s</string>
     <string name="unexpected_error_cancel">Unexpected error canceling event: %1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">Edit recurring event</string>
+    <string name="edit_recurring_event_dialog_text">Do you want to change only this event, or all events in the series?</string>
+    <string name="edit_recurring_event_dialog_single_event">Only this event</string>
+    <string name="edit_recurring_event_dialog_all_events">All events</string>
+    <string name="copy_event">Copy event</string>
+    <string name="mark_as_favorite_calendar">Mark as favorite calendar</string>
+    <string name="favorite_calendar_marked">Favorite calendar (marked)</string>
+
 </resources>

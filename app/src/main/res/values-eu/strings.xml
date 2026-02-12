@@ -198,4 +198,12 @@
     <string name="unexpected_error_delete">Ustekabeko errorea gertaera ezabatzean: %1$s</string>
     <string name="unexpected_error_cancel">Ustekabeko errorea gertaera bertan behera uztean: %1$s</string>
 
+    <string name="edit_recurring_event_dialog_title">Editatu gertaera errepikakorra</string>
+    <string name="edit_recurring_event_dialog_text">Gertaera hau bakarrik aldatu nahi duzu, ala serieko gertaera guztiak?</string>
+    <string name="edit_recurring_event_dialog_single_event">Gertaera hau bakarrik</string>
+    <string name="edit_recurring_event_dialog_all_events">Gertaera guztiak</string>
+    <string name="copy_event">Kopiatu gertaera</string>
+    <string name="mark_as_favorite_calendar">Markatu egutegi gogokoen gisa</string>
+    <string name="favorite_calendar_marked">Egutegi gogokoena (markatuta)</string>
+
 </resources>
