@@ -38,7 +38,7 @@
     <string name="restore_colors_confirmation">¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto? Las palabras clave no se verán afectadas.</string>
     <string name="restore">Restaurar</string>
     <string name="confirm_deletion_title">Confirmar eliminación</string>
-    <string name="confirm_deletion_message">¿Seguro que quieres eliminar este evento: \"%1$s\"?</string>
+    <string name="confirm_deletion_message">¿Seguro que quieres eliminar este evento: "%1$s"?</string>
     <string name="repeat_event_title">Repetir evento</string>
     <string name="select_calendar_title">Seleccionar Calendario</string>
     <string name="select_time_title">Seleccionar hora</string>
@@ -150,7 +150,7 @@
     <string name="incompatible_theme_file">Fichero de tema no compatible.</string>
     <string name="file_contains_no_theme">El fichero no contiene ni tema claro ni oscuro.</string>
     <string name="invalid_json_file">El fichero no es un JSON válido.</string>
-    <string name="invalid_color_in_theme">El tema contiene un color no válido en \"%1$s\".</string>
+    <string name="invalid_color_in_theme">El tema contiene un color no válido en "%1$s".</string>
     <string name="light_theme">Claro</string>
     <string name="dark_theme">Oscuro</string>
     <string name="header_background">Fondo cabecera</string>
@@ -197,5 +197,10 @@
     <string name="unexpected_error_update">Error inesperado al actualizar el evento: %1$s</string>
     <string name="unexpected_error_delete">Error inesperado al eliminar el evento: %1$s</string>
     <string name="unexpected_error_cancel">Error inesperado al cancelar el evento: %1$s</string>
+
+    <string name="edit_recurring_event_dialog_title">Editar evento recurrente</string>
+    <string name="edit_recurring_event_dialog_text">¿Quieres cambiar solo este evento, o todos los eventos de la serie?</string>
+    <string name="edit_recurring_event_dialog_single_event">Solo este evento</string>
+    <string name="edit_recurring_event_dialog_all_events">Todos los eventos</string>
 
 </resources>

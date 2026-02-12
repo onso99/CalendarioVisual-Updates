@@ -120,6 +120,7 @@ fun AddEventScreen(
     var saveError by remember { mutableStateOf<SaveEventError?>(null) }
     var localEventToEdit by remember { mutableStateOf(eventToEdit) }
     var isCopying by remember { mutableStateOf(false) }
+    var showEditRecurringDialog by remember { mutableStateOf(false) }
 
     var initialTitle by remember { mutableStateOf("") }
     var initialIsAllDay by remember { mutableStateOf(true) }
@@ -178,16 +179,20 @@ fun AddEventScreen(
     val backAction = { if (hasChanges) showDiscardChangesDialog = true else onBackPress() }
 
     val saveAction = {
-        val error = validateEventData(context, title, selectedCalendar, startDate, endDate)
-        if (error != null) {
-            saveError = error
+        if (localEventToEdit?.rrule != null && hasChanges) {
+            showEditRecurringDialog = true
         } else {
-            val success = if (localEventToEdit != null) {
-                updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+            val error = validateEventData(context, title, selectedCalendar, startDate, endDate)
+            if (error != null) {
+                saveError = error
             } else {
-                createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+                val success = if (localEventToEdit != null) {
+                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+                } else {
+                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+                }
+                if (success) onSave()
             }
-            if (success) onSave()
         }
     }
 
@@ -241,6 +246,33 @@ fun AddEventScreen(
 
     if (showCalendarDialog && selectedCalendar != null) {
         SelectCalendarDialog(calendars = editableCalendars, currentSelection = selectedCalendar, onCalendarSelected = { selectedCalendar = it }, onDismissRequest = { showCalendarDialog = false })
+    }
+
+    if (showEditRecurringDialog) {
+        EditRecurringEventDialog(
+            onDismissRequest = { showEditRecurringDialog = false },
+            onConfirm = { option ->
+                showEditRecurringDialog = false
+                val error = validateEventData(context, title, selectedCalendar, startDate, endDate)
+                if (error != null) {
+                    saveError = error
+                    return@EditRecurringEventDialog
+                }
+
+                when (option) {
+                    EditRecurringOption.SINGLE_EVENT -> {
+                        val success = localEventToEdit?.let { 
+                            updateSingleEventInSeries(context, it, title, startDate, endDate, isAllDay)
+                        } ?: false
+                        if (success) onSave()
+                    }
+                    EditRecurringOption.ALL_EVENTS -> {
+                        val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+                        if (success) onSave()
+                    }
+                }
+            }
+        )
     }
 
     saveError?.let { error ->

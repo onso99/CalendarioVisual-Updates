@@ -113,6 +113,44 @@ fun updateEvent(
     }
 }
 
+fun updateSingleEventInSeries(
+    context: Context,
+    originalEvent: Festivo,
+    title: String,
+    startDate: LocalDateTime,
+    endDate: LocalDateTime,
+    isAllDay: Boolean
+): Boolean {
+    return try {
+        val originalInstanceStartTime = if (originalEvent.isAllDay) {
+            originalEvent.date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+        } else {
+            originalEvent.date.atTime(originalEvent.startTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+
+        val values = createEventValues(startDate, endDate, isAllDay, title, originalEvent.calendarId, RepetitionRule.NONE).apply {
+            put(CalendarContract.Events.ORIGINAL_ID, originalEvent.id)
+            put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, originalInstanceStartTime)
+        }
+
+        val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
+        
+        if (uri != null) {
+            Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
+            true
+        } else {
+            Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
+            false
+        }
+    } catch (_: SecurityException) {
+        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
+        false
+    } catch (e: Exception) {
+        Toast.makeText(context, context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG).show()
+        false
+    }
+}
+
 fun deleteEvent(context: Context, eventId: Long) {
     try {
         val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
