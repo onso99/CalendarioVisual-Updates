@@ -36,6 +36,7 @@ data class CalendarInfo(
     val id: Long,
     val displayName: String,
     val accountName: String,
+    val ownerAccount: String?,
     val color: Int?,
     val isPrimary: Boolean,
     val canModify: Boolean,

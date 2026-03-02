@@ -93,7 +93,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     },
                     isAllDay = dto.isAllDay,
                     calendarId = dto.id,
-                    isFromHolidaySource = false,
+                    isFromHolidaySource = false, // This will be recalculated on refresh
                     rrule = dto.rrule,
                     age = dto.age,
                     isBirthday = dto.isBirthday ?: false
@@ -140,6 +140,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             CalendarContract.Calendars._ID,
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
             CalendarContract.Calendars.ACCOUNT_NAME,
+            CalendarContract.Calendars.OWNER_ACCOUNT,
             CalendarContract.Calendars.CALENDAR_COLOR,
             CalendarContract.Calendars.IS_PRIMARY,
             CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
@@ -150,7 +151,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             val cursor: Cursor? = context.contentResolver.query(
                 CalendarContract.Calendars.CONTENT_URI,
                 projection,
-                "${CalendarContract.Calendars.DELETED} != 1", // Restore original selection
+                "${CalendarContract.Calendars.DELETED} != 1", 
                 null,
                 "${CalendarContract.Calendars.CALENDAR_DISPLAY_NAME} ASC"
             )
@@ -159,6 +160,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                 val idColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
                 val displayNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
                 val accountNameColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_NAME)
+                val ownerAccountColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.OWNER_ACCOUNT)
                 val colorColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_COLOR)
                 val isPrimaryColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.IS_PRIMARY)
                 val accessLevelColumn = it.getColumnIndexOrThrow(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
@@ -167,6 +169,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                     val id = it.getLong(idColumn)
                     val displayName = it.getString(displayNameColumn) ?: context.getString(R.string.unnamed_calendar)
                     val accountName = it.getString(accountNameColumn) ?: context.getString(R.string.unknown_account)
+                    val ownerAccount = it.getString(ownerAccountColumn)
                     val colorInt = try {
                         if (it.isNull(colorColumn)) null else it.getInt(colorColumn)
                     } catch (_: Exception) {
@@ -182,11 +185,12 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
                                 id = id,
                                 displayName = displayName,
                                 accountName = accountName,
+                                ownerAccount = ownerAccount,
                                 color = colorInt,
                                 isPrimary = isPrimary,
                                 canModify = canModify,
                                 accessLevel = accessLevel,
-                                isDeleted = false // We are filtering out deleted calendars
+                                isDeleted = false 
                             )
                         )
                     }
@@ -222,6 +226,30 @@ suspend fun readFestivosFromCalendarsSuspend(
     val resolver = context.contentResolver
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val systemZoneId = ZoneId.systemDefault()
+
+    val holidayCalendarIds = mutableSetOf<Long>()
+    val birthdayCalendarIds = mutableSetOf<Long>()
+    
+    // Identify special calendars by OWNER_ACCOUNT
+    try {
+        val calProjection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.OWNER_ACCOUNT)
+        val calSelection = "${CalendarContract.Calendars._ID} IN (${selectedCalendarIds.joinToString(",")})"
+        resolver.query(CalendarContract.Calendars.CONTENT_URI, calProjection, calSelection, null, null)?.use { cursor ->
+            val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
+            val ownerCol = cursor.getColumnIndexOrThrow(CalendarContract.Calendars.OWNER_ACCOUNT)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idCol)
+                val owner = cursor.getStringOrNull(ownerCol) ?: ""
+                if (owner.contains("#holiday@group.v.calendar.google.com")) {
+                    holidayCalendarIds.add(id)
+                } else if (owner.contains("addressbook#contacts@group.v.calendar.google.com")) {
+                    birthdayCalendarIds.add(id)
+                }
+            }
+        }
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error identifying special calendars", e)
+    }
 
     val today = LocalDate.now()
     val startRangeDate = today.minusYears(1).withDayOfYear(1)
@@ -290,26 +318,29 @@ suspend fun readFestivosFromCalendarsSuspend(
                 val title = cursor.getStringOrNull(titleColumn)?.trim() ?: ""
                 val isAllDay = cursor.getInt(allDayColumn) == 1
 
-                if (title.isNotBlank() || isAllDay) { // Heuristic to filter out empty/invalid events
+                if (title.isNotBlank() || isAllDay) { 
                     val startInstant = Instant.ofEpochMilli(beginMillis)
                     val endInstant = Instant.ofEpochMilli(endMillis)
                     val startDate = startInstant.atZone(systemZoneId).toLocalDate()
                     val startTime = if (isAllDay) null else startInstant.atZone(systemZoneId).toLocalTime()
                     val endTime = if (isAllDay) null else endInstant.atZone(systemZoneId).toLocalTime()
                     
+                    val isFromHoliday = holidayCalendarIds.contains(calendarId)
+                    val isBirthday = birthdayCalendarIds.contains(calendarId)
+
                     val festivo = Festivo(
                         id = eventId,
                         title = title,
-                        description = null, // Will be fetched later if needed
+                        description = null, 
                         date = startDate,
                         startTime = startTime,
                         endTime = endTime,
                         isAllDay = isAllDay,
                         calendarId = calendarId,
-                        isFromHolidaySource = false,
+                        isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
                         age = null,
-                        isBirthday = false 
+                        isBirthday = isBirthday
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }
