@@ -51,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -178,7 +179,8 @@ fun KeywordColorPickerDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CalendarioTheme.colors.cabecera,
                         unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
-                    )
+                    ),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
                 )
             }
         },
