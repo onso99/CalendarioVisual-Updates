@@ -3,7 +3,6 @@ package com.example.calendario
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +25,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -61,7 +59,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -259,7 +256,7 @@ fun HolidayManagerScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
             ) {
                 items(adjustments.sortedByDescending { it.date }) { adj ->
-                    val isGoogleAdjustment = adj.originalEventId != null && adj.originalEventId!! >= 0L
+                    val isGoogleAdjustment = adj.originalEventId != null && adj.originalEventId >= 0L
                     
                     HolidayAdjustmentItem(
                         adjustment = adj,
@@ -318,13 +315,16 @@ fun HolidayManagerScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        val newList = adjustments.toMutableList()
-                        newList.remove(adjustmentToDelete!!)
-                        saveHolidayAdjustments(context, newList)
-                        adjustments = newList
-                        onRefresh()
-                        if (currentOriginalEventId == adjustmentToDelete!!.originalEventId && date == adjustmentToDelete!!.date) {
-                            resetForm()
+                        val toDelete = adjustmentToDelete
+                        if (toDelete != null) {
+                            val newList = adjustments.toMutableList()
+                            newList.remove(toDelete)
+                            saveHolidayAdjustments(context, newList)
+                            adjustments = newList
+                            onRefresh()
+                            if (currentOriginalEventId == toDelete.originalEventId && date == toDelete.date) {
+                                resetForm()
+                            }
                         }
                         adjustmentToDelete = null
                     },
