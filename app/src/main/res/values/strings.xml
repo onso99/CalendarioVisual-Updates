@@ -206,4 +206,14 @@
     <string name="mark_as_favorite_calendar">Marcar como calendario favorito</string>
     <string name="favorite_calendar_marked">Calendario favorito (marcado)</string>
 
+    <string name="mark_as_working_day">Tratar como día laborable</string>
+    <string name="mark_as_holiday">Tratar como día festivo</string>
+    <string name="holiday_manager">Gestor</string>
+    <string name="holiday_manager_title">Gestor de Festivos</string>
+    <string name="festivo">Festivo</string>
+    <string name="laborable">Laborable</string>
+    <string name="holiday_added_successfully">Festivo local añadido</string>
+    <string name="holiday_removed_successfully">Festivo local eliminado</string>
+    <string name="holiday_updated_successfully">Ajuste de festivo actualizado</string>
+
 </resources>

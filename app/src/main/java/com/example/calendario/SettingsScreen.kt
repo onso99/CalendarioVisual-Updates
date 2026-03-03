@@ -93,6 +93,7 @@ fun SettingsScreen(
     onBackPress: () -> Unit,
     themeManager: ThemeManager,
     onColorThemeClick: () -> Unit,
+    onHolidayManagerClick: () -> Unit,
     onThemeUpdated: () -> Unit
 ) {
     val context = LocalContext.current
@@ -309,6 +310,8 @@ fun SettingsScreen(
                         )
                     )
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick)
             }
 
             // --- Theme Section ---

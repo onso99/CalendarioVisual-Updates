@@ -93,7 +93,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     },
                     isAllDay = dto.isAllDay,
                     calendarId = dto.id,
-                    isFromHolidaySource = false, // This will be recalculated on refresh
+                    isFromHolidaySource = false, 
                     rrule = dto.rrule,
                     age = dto.age,
                     isBirthday = dto.isBirthday ?: false
@@ -208,6 +208,48 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
     }
 }
 
+fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
+    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+    val gson = Gson()
+    val dtoList = adjustments.map { 
+        HolidayAdjustmentDto(
+            dateStr = it.date.toString(),
+            type = it.type.name,
+            title = it.title,
+            originalEventId = it.originalEventId
+        )
+    }
+    prefs.edit {
+        putString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, gson.toJson(dtoList))
+    }
+}
+
+fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
+    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+    val json = prefs.getString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, null) ?: return emptyList()
+    val gson = Gson()
+    val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
+    val dtoList: List<HolidayAdjustmentDto> = try {
+        gson.fromJson(json, type)
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error loading holiday adjustments", e)
+        emptyList()
+    }
+    
+    return dtoList.mapNotNull { dto ->
+        try {
+            HolidayAdjustment(
+                date = LocalDate.parse(dto.dateStr),
+                type = HolidayAdjustmentType.valueOf(dto.type),
+                title = dto.title,
+                originalEventId = dto.originalEventId
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
+
 suspend fun readFestivosFromCalendarsSuspend(
     context: Context,
     selectedCalendarIds: Set<Long>
@@ -250,6 +292,8 @@ suspend fun readFestivosFromCalendarsSuspend(
     } catch (e: Exception) {
         Log.e("CalendarDataUtils", "Error identifying special calendars", e)
     }
+
+    val adjustments = loadHolidayAdjustments(context)
 
     val today = LocalDate.now()
     val startRangeDate = today.minusYears(1).withDayOfYear(1)
@@ -325,8 +369,15 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val startTime = if (isAllDay) null else startInstant.atZone(systemZoneId).toLocalTime()
                     val endTime = if (isAllDay) null else endInstant.atZone(systemZoneId).toLocalTime()
                     
-                    val isFromHoliday = holidayCalendarIds.contains(calendarId)
                     val isBirthday = birthdayCalendarIds.contains(calendarId)
+                    
+                    // Logic for isFromHolidaySource with adjustments
+                    var isFromHoliday = holidayCalendarIds.contains(calendarId)
+                    val adjustment = adjustments.find { it.date == startDate && (it.originalEventId == eventId || (it.originalEventId == null && it.title == title)) }
+                    
+                    if (adjustment != null) {
+                        isFromHoliday = adjustment.type == HolidayAdjustmentType.HOLIDAY
+                    }
 
                     val festivo = Festivo(
                         id = eventId,
@@ -340,9 +391,33 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
                         age = null,
-                        isBirthday = isBirthday
+                        isBirthday = isBirthday 
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
+                }
+            }
+        }
+        
+        // Add manual holidays from adjustments that weren't overwriting existing events
+        adjustments.forEach { adj ->
+            if (adj.type == HolidayAdjustmentType.HOLIDAY && adj.originalEventId == null) {
+                val exists = finalMap[adj.date]?.any { it.title == adj.title } ?: false
+                if (!exists) {
+                    val manualFestivo = Festivo(
+                        id = -2L, // Artificial ID
+                        title = adj.title,
+                        description = null,
+                        date = adj.date,
+                        startTime = null,
+                        endTime = null,
+                        isAllDay = true,
+                        calendarId = -2L,
+                        isFromHolidaySource = true,
+                        rrule = null,
+                        age = null,
+                        isBirthday = false
+                    )
+                    finalMap.getOrPut(adj.date) { mutableListOf() }.add(manualFestivo)
                 }
             }
         }

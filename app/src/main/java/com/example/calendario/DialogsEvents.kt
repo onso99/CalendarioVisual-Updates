@@ -89,9 +89,9 @@ private fun DialogDismissButton(onDismiss: () -> Unit) {
 fun ReadOnlyEventDialog(
     onDismissRequest: () -> Unit,
     festivo: Festivo,
-    calendar: CalendarInfo?
+    calendar: CalendarInfo?,
+    onOpenHolidayManager: (Festivo) -> Unit
 ) {
-    val allDay = stringResource(id = R.string.all_day)
     val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("E, dd MMM yyyy") }
 
@@ -115,8 +115,6 @@ fun ReadOnlyEventDialog(
                         val startTime = festivo.startTime?.format(timeFormatter) ?: "--:--"
                         val endTime = festivo.endTime?.format(timeFormatter) ?: "--:--"
                         Text("$startTime - $endTime", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
-                    } else {
-                        Text(allDay, fontSize = 16.sp, fontStyle = FontStyle.Italic, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
                     }
                     
                     Spacer(Modifier.height(16.dp))
@@ -125,27 +123,28 @@ fun ReadOnlyEventDialog(
                         fontSize = 16.sp, 
                         color = CalendarioTheme.colors.textSystem
                     )
-                    Spacer(Modifier.height(16.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().background(CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), RoundedCornerShape(8.dp)).padding(8.dp)) {
-                        Icon(Icons.Default.Info, contentDescription = null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            stringResource(id = R.string.read_only_event_info),
-                            fontSize = 14.sp,
-                            fontStyle = FontStyle.Italic,
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f)
-                        )
-                    }
                 }
             }
         },
         confirmButton = {
-            Button(
-                onClick = onDismissRequest,
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-            ) {
-                Text(stringResource(id = R.string.accept))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                if (festivo.isFromHolidaySource) {
+                    TextButton(
+                        onClick = {
+                            onDismissRequest()
+                            onOpenHolidayManager(festivo)
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.cabecera)
+                    ) {
+                        Text(stringResource(id = R.string.holiday_manager))
+                    }
+                }
+                Button(
+                    onClick = onDismissRequest,
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                ) {
+                    Text(stringResource(id = R.string.accept))
+                }
             }
         }
     )

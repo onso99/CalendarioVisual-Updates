@@ -43,3 +43,22 @@ data class CalendarInfo(
     val accessLevel: Int,
     val isDeleted: Boolean
 )
+
+enum class HolidayAdjustmentType {
+    HOLIDAY,
+    WORKING_DAY
+}
+
+data class HolidayAdjustment(
+    val date: LocalDate,
+    val type: HolidayAdjustmentType,
+    val title: String,
+    val originalEventId: Long? = null
+)
+
+data class HolidayAdjustmentDto(
+    val dateStr: String,
+    val type: String,
+    val title: String,
+    val originalEventId: Long? = null
+)

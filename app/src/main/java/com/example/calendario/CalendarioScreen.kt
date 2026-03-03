@@ -146,6 +146,8 @@ fun CalendarioScreen(
     var searchResults by remember { mutableStateOf<Map<LocalDate, List<Festivo>>>(emptyMap()) }
     var showReadOnlyDialog by remember { mutableStateOf(false) }
     var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
+    var showHolidayManagerScreen by remember { mutableStateOf(false) }
+    var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -246,6 +248,20 @@ fun CalendarioScreen(
         }
     }
 
+    if (showHolidayManagerScreen) {
+        HolidayManagerScreen(
+            onBackPress = { 
+                showHolidayManagerScreen = false 
+                holidayForManager = null
+            },
+            onRefresh = {
+                viewModel.refreshData()
+            },
+            initialFestivo = holidayForManager
+        )
+        return
+    }
+
     if (showAddEventScreen) {
         val editableCalendars = uiState.availableCalendars.filter { it.canModify }
         val initialCalendar = remember(uiState.favoriteCalendarId, editableCalendars) {
@@ -294,6 +310,10 @@ fun CalendarioScreen(
             },
             themeManager = themeManager,
             onColorThemeClick = { showColorThemeScreen = true },
+            onHolidayManagerClick = { 
+                holidayForManager = null
+                showHolidayManagerScreen = true 
+            },
             onThemeUpdated = onThemeUpdated
         )
         return
@@ -664,7 +684,11 @@ fun CalendarioScreen(
                 ReadOnlyEventDialog(
                     onDismissRequest = { showReadOnlyDialog = false },
                     festivo = eventForReadOnlyDialog!!,
-                    calendar = uiState.availableCalendars.find { it.id == eventForReadOnlyDialog!!.calendarId }
+                    calendar = uiState.availableCalendars.find { it.id == eventForReadOnlyDialog!!.calendarId },
+                    onOpenHolidayManager = { festivo ->
+                        holidayForManager = festivo
+                        showHolidayManagerScreen = true
+                    }
                 )
             }
 
