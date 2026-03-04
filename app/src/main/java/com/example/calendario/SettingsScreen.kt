@@ -285,31 +285,12 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // --- General Section ---
+            // --- 1. General Section ---
             SectionTitle(text = stringResource(id = R.string.general))
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
                 .padding(horizontal = 16.dp)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                        .clickable { showThemeDialog = true },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = stringResource(id = themeSetting.displayNameRes),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.End
-                    )
-                }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -352,28 +333,7 @@ fun SettingsScreen(
                 }
             }
 
-            // --- Holidays Section ---
-            SectionTitle(text = stringResource(id = R.string.holidays_section))
-            Column(modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(CalendarioTheme.colors.fondoSecciones)
-                .padding(horizontal = 16.dp)) {
-                ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick)
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow(text = stringResource(id = R.string.import_holidays)) { 
-                    importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" })
-                }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow(text = stringResource(id = R.string.export_holidays)) { 
-                    exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_TITLE, "festivos_locales.json")
-                    })
-                }
-            }
-
-            // --- Appearance Section ---
+            // --- 2. Appearance Section ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -427,11 +387,31 @@ fun SettingsScreen(
                 }
             }
 
-
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
                 .padding(horizontal = 16.dp)) {
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .clickable { showThemeDialog = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = stringResource(id = themeSetting.displayNameRes),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.End
+                    )
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(text = stringResource(id = R.string.predefined_themes)) { showBundledThemesDialog = true }
@@ -441,6 +421,27 @@ fun SettingsScreen(
                 ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.restore_default_colors)) { showRestoreDialog = true }
+            }
+
+            // --- 3. Holidays Section ---
+            SectionTitle(text = stringResource(id = R.string.holidays_section))
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
+                ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.import_holidays)) { 
+                    importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" })
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.export_holidays)) { 
+                    exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "festivos_locales.json")
+                    })
+                }
             }
 
             WidgetSectionTitle()
