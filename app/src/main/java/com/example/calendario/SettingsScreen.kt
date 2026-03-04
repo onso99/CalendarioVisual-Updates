@@ -175,7 +175,7 @@ fun SettingsScreen(
                         val success = importHolidaysFromJson(context, uri)
                         if (success) {
                             Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-                            onRefreshData() // Refresca los datos del ViewModel inmediatamente
+                            onRefreshData()
                         } else {
                             Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
                         }
@@ -373,7 +373,7 @@ fun SettingsScreen(
                 }
             }
 
-            // --- Theme Section ---
+            // --- Appearance Section ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -479,7 +479,7 @@ fun SettingsScreen(
             ) {
                 Text("${AboutInfo.LINE_1} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Text(AboutInfo.LINE_2, fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text(AboutInfo.LINE_3, fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Text(AboutInfo.getLine3(), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
         }
     }

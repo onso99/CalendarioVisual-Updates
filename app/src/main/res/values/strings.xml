@@ -32,7 +32,7 @@
     <string name="previous_year">Año anterior</string>
     <string name="next_year">Año siguiente</string>
     <string name="accept">Aceptar</string>
-    <string name="select_mode_title">Seleccionar Modo</string>
+    <string name="select_mode_title">Seleccionar Tema</string>
     <string name="custom_selected">Seleccionado</string>
     <string name="restore_colors_title">Restaurar Colores</string>
     <string name="restore_colors_confirmation">¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto? Las palabras clave no se verán afectadas.</string>
@@ -77,10 +77,10 @@
     <string name="error_saving_theme_file">Error al guardar el archivo del tema.</string>
     <string name="apply_changes">Aplicar cambios</string>
     <string name="general">General</string>
-    <string name="mode">Modo</string>
+    <string name="mode">Tema</string>
     <string name="start_of_week">Comienza semana</string>
     <string name="week_in_year_view">Número semana</string>
-    <string name="customize_theme">Personalizar Tema</string>
+    <string name="customize_theme">Apariencia</string>
     <string name="light_theme_prefix">Claro: </string>
     <string name="dark_theme_prefix">Oscuro: </string>
     <string name="customize_colors">Personalizar colores</string>
