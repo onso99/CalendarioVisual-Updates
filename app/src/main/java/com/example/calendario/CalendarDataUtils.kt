@@ -3,6 +3,7 @@ package com.example.calendario
 import android.content.Context
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -17,6 +18,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -247,6 +249,45 @@ fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
         } catch (e: Exception) {
             null
         }
+    }
+}
+
+fun exportHolidaysToJson(context: Context, uri: Uri) {
+    val adjustments = loadHolidayAdjustments(context)
+    val gson = Gson()
+    val json = gson.toJson(adjustments.map { 
+        HolidayAdjustmentDto(it.date.toString(), it.type.name, it.title, it.originalEventId)
+    })
+    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+        outputStream.write(json.toByteArray(StandardCharsets.UTF_8))
+    }
+}
+
+fun importHolidaysFromJson(context: Context, uri: Uri): Boolean {
+    return try {
+        val json = context.contentResolver.openInputStream(uri)?.bufferedReader(StandardCharsets.UTF_8)?.use { it.readText() } ?: return false
+        val gson = Gson()
+        val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
+        val importedDto: List<HolidayAdjustmentDto> = gson.fromJson(json, type)
+        
+        val currentAdjustments = loadHolidayAdjustments(context).toMutableList()
+        importedDto.forEach { dto ->
+            val importedAdj = HolidayAdjustment(
+                date = LocalDate.parse(dto.dateStr),
+                type = HolidayAdjustmentType.valueOf(dto.type),
+                title = dto.title,
+                originalEventId = dto.originalEventId
+            )
+            // Avoid duplicates by date and title (or original ID)
+            currentAdjustments.removeAll { it.date == importedAdj.date && (it.originalEventId == importedAdj.originalEventId || it.title == importedAdj.title) }
+            currentAdjustments.add(importedAdj)
+        }
+        
+        saveHolidayAdjustments(context, currentAdjustments)
+        true
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error importing holidays", e)
+        false
     }
 }
 

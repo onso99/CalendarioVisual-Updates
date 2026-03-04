@@ -314,6 +314,9 @@ fun CalendarioScreen(
                 holidayForManager = null
                 showHolidayManagerScreen = true 
             },
+            onRefreshData = {
+                viewModel.refreshData()
+            },
             onThemeUpdated = onThemeUpdated
         )
         return

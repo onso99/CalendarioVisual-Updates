@@ -118,8 +118,17 @@ fun ReadOnlyEventDialog(
                     }
                     
                     Spacer(Modifier.height(16.dp))
+                    
+                    val sourceText = if (calendar != null) {
+                        calendar.displayName
+                    } else if (festivo.calendarId == -2L || festivo.id == -2L) {
+                        "Gestor de Festivos"
+                    } else {
+                        "-"
+                    }
+                    
                     Text(
-                        stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"),
+                        stringResource(id = R.string.calendar_source, sourceText),
                         fontSize = 16.sp, 
                         color = CalendarioTheme.colors.textSystem
                     )
@@ -490,19 +499,27 @@ fun DayEventsDialog(
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
-                                Box(
-                                    Modifier
-                                        .size(10.dp)
-                                        .background(Color(colorInt), CircleShape)
-                                        .border(
-                                            0.5.dp,
-                                            CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                                            CircleShape
-                                        )
-                                )
-                                Spacer(Modifier.width(8.dp))
+                            val calendarForEvent = availableCalendars.find { it.id == festivo.calendarId }
+                            val colorToUse = if (calendarForEvent != null) {
+                                Color(calendarForEvent.color ?: 0xFFFFFFFF.toInt())
+                            } else if (festivo.calendarId == -2L || festivo.id == -2L) {
+                                Color.White
+                            } else {
+                                Color.Transparent
                             }
+
+                            Box(
+                                Modifier
+                                    .size(10.dp)
+                                    .background(colorToUse, CircleShape)
+                                    .border(
+                                        0.5.dp,
+                                        CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                                        CircleShape
+                                    )
+                            )
+                            Spacer(Modifier.width(8.dp))
+
                             Text(
                                 displayTitle,
                                 color = itemColor,

@@ -94,6 +94,7 @@ fun SettingsScreen(
     themeManager: ThemeManager,
     onColorThemeClick: () -> Unit,
     onHolidayManagerClick: () -> Unit,
+    onRefreshData: () -> Unit,
     onThemeUpdated: () -> Unit
 ) {
     val context = LocalContext.current
@@ -159,6 +160,45 @@ fun SettingsScreen(
                     } catch (e: Exception) {
                         Log.e("SettingsScreen", "Error exporting theme", e)
                         Toast.makeText(context, R.string.error_saving_theme_file, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    )
+
+    val importHolidaysLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    try {
+                        val success = importHolidaysFromJson(context, uri)
+                        if (success) {
+                            Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                            onRefreshData() // Refresca los datos del ViewModel inmediatamente
+                        } else {
+                            Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("SettingsScreen", "Error importing holidays", e)
+                        Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    )
+
+    val exportHolidaysLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    try {
+                        exportHolidaysToJson(context, uri)
+                        Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Log.e("SettingsScreen", "Error exporting holidays", e)
+                        Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -310,8 +350,27 @@ fun SettingsScreen(
                         )
                     )
                 }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+            }
+
+            // --- Holidays Section ---
+            SectionTitle(text = stringResource(id = R.string.holidays_section))
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
                 ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.import_holidays)) { 
+                    importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" })
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.export_holidays)) { 
+                    exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "festivos_locales.json")
+                    })
+                }
             }
 
             // --- Theme Section ---
