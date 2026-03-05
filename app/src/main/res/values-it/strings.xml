@@ -32,7 +32,7 @@
     <string name="previous_year">Anno precedente</string>
     <string name="next_year">Anno successivo</string>
     <string name="accept">Accetta</string>
-    <string name="select_mode_title">Seleziona la modalità</string>
+    <string name="select_mode_title">Seleziona Tema</string>
     <string name="custom_selected">Selezionato</string>
     <string name="restore_colors_title">Ripristina colori</string>
     <string name="restore_colors_confirmation">Sei sicuro di voler ripristinare tutti i colori ai valori predefiniti? Le parole chiave non saranno interessate.</string>
@@ -77,10 +77,10 @@
     <string name="error_saving_theme_file">Errore durante il salvataggio del file del tema.</string>
     <string name="apply_changes">Applica modifiche</string>
     <string name="general">Generale</string>
-    <string name="mode">Modalità</string>
+    <string name="mode">Modo</string>
     <string name="start_of_week">Inizio settimana</string>
     <string name="week_in_year_view">Numero settimana</string>
-    <string name="customize_theme">Personalizza tema</string>
+    <string name="customize_theme">Aspetto</string>
     <string name="light_theme_prefix">Chiaro: </string>
     <string name="dark_theme_prefix">Scuro: </string>
     <string name="customize_colors">Personalizza colori</string>
@@ -91,7 +91,7 @@
     <string name="widget_text_adjustment">Regolazione testo</string>
     <string name="background_color">Colore di sfondo</string>
     <string name="event_color">Colore eventi</string>
-    <string name="today_event_color">Eventi di oggi</string>
+    <string name="today_event_color">Eventos di oggi</string>
     <string name="about">Informazioni</string>
     <string name="colors_restored">I colori sono stati ripristinati.</string>
     <string name="discard_changes_title">Annulla modifiche</string>
@@ -160,7 +160,7 @@
     <string name="sundays_and_holidays">Domeniche/Festivi</string>
     <string name="title_text">Testo del titolo</string>
     <string name="today_highlight_list">Evidenziazione oggi</string>
-    <string name="events">Eventi</string>
+    <string name="events">Eventos</string>
     <string name="birthdays">Compleanni</string>
     <string name="event_1">Evento-1</string>
     <string name="event_2">Evento-2</string>
@@ -205,4 +205,22 @@
     <string name="copy_event">Copia evento</string>
     <string name="mark_as_favorite_calendar">Contrassegna come calendario preferito</string>
     <string name="favorite_calendar_marked">Calendario preferito (contrassegnato)</string>
+
+    <string name="mark_as_working_day">Tratta come giorno lavorativo</string>
+    <string name="mark_as_holiday">Tratta come giorno festivo</string>
+    <string name="holiday_manager">Gestore</string>
+    <string name="holiday_manager_title">Gestione Festività</string>
+    <string name="festivo">Festivo</string>
+    <string name="laborable">Lavorativo</string>
+    <string name="holiday_added_successfully">Festività locale aggiunta</string>
+    <string name="holiday_removed_successfully">Festività locale rimossa</string>
+    <string name="holiday_updated_successfully">Regolazione festività aggiornata</string>
+
+    <string name="holidays_section">Festività</string>
+    <string name="import_holidays">Importa festività…</string>
+    <string name="export_holidays">Esporta festività…</string>
+    <string name="holidays_imported_successfully">Festività importate con successo.</string>
+    <string name="error_reading_holidays_file">Errore durante la lecture del file delle festività.</string>
+    <string name="error_saving_holidays_file">Errore durante il salvataggio del file delle festività.</string>
+
 </resources>

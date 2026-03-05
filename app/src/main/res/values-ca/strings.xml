@@ -65,7 +65,7 @@
     <string name="to">A:</string>
     <string name="at"> a les </string>
     <string name="no_changes_to_save">No hi ha canvis per desar</string>
-    <string name="update">Actualitzar</string>
+    <string name="update">Actualizar</string>
     <string name="save">Desar</string>
     <string name="end_time_before_start_time_error">L\'hora de fi no pot ser anterior a la d\'inici</string>
     <string name="system_default">Sistema</string>
@@ -80,7 +80,7 @@
     <string name="mode">Mode</string>
     <string name="start_of_week">Comença setmana</string>
     <string name="week_in_year_view">Número setmana</string>
-    <string name="customize_theme">Personalitzar Tema</string>
+    <string name="customize_theme">Aparença</string>
     <string name="light_theme_prefix">Clar: </string>
     <string name="dark_theme_prefix">Fosc: </string>
     <string name="customize_colors">Personalitzar colors</string>
@@ -108,7 +108,7 @@
     <string name="help_calendar_views_2">A la vista mensual, llisca a esquerra o dreta per canviar de mes. La fletxa superior esquerra de la capçalera tornarà al mes actual.</string>
     <string name="help_section_event_management">Gestió d\'esdeveniments</string>
     <string name="help_event_management_1">Prem en un dia del calendari mensual per veure\'n els esdeveniments o afegir-ne un de nou. També es poden crear esdeveniments prement la icona (+) de la capçalera.</string>
-    <string name="help_event_management_2">Els esdeveniments (únics o repetits) es poden editar i esborrar a qualsevol calendari que sigui editable.</string>
+    <string name="help_event_management_2">Els esdeveniments (únics o repetits) es poden editar i esborrar a qualezvol calendari que sigui editable.</string>
     <string name="help_section_event_list">Llista d\'esdeveniments</string>
     <string name="help_event_list_1">A sota del calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendents o Tots prement el botó Pendents-Tots. Cada esdeveniment de la llista es pot editar i esborrar.</string>
     <string name="help_section_customization">Personalització</string>
@@ -176,7 +176,7 @@
     <string name="read_only_event_info">Esdeveniment de només lectura. No es pot modificar.</string>
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="widget_no_events">No hi ha esdeveniments</string>
-    <string name="predefined_themes">Temes predefinits</string>
+    <string name="predefined_themes">Temas predefinits</string>
     <string name="themes_v6">Temes v6</string>
 
     <string name="permission_denied_title">Permís Denegat</string>
@@ -205,4 +205,22 @@
     <string name="copy_event">Copiar esdeveniment</string>
     <string name="mark_as_favorite_calendar">Marcar como a calendari favorit</string>
     <string name="favorite_calendar_marked">Calendari favorit (marcat)</string>
+
+    <string name="mark_as_working_day">Tractar com a dia laborable</string>
+    <string name="mark_as_holiday">Tractar com a dia festiu</string>
+    <string name="holiday_manager">Gestor</string>
+    <string name="holiday_manager_title">Gestor de Festius</string>
+    <string name="festivo">Festiu</string>
+    <string name="laborable">Laborable</string>
+    <string name="holiday_added_successfully">Festiu local afegit</string>
+    <string name="holiday_removed_successfully">Festiu local eliminat</string>
+    <string name="holiday_updated_successfully">Ajust de festiu actualitzat</string>
+
+    <string name="holidays_section">Festius</string>
+    <string name="import_holidays">Importar festius…</string>
+    <string name="export_holidays">Exportar festivos…</string>
+    <string name="holidays_imported_successfully">Festius importats amb èxit.</string>
+    <string name="error_reading_holidays_file">Error en llegir el fitxer de festius.</string>
+    <string name="error_saving_holidays_file">Error en desar el fitxer de festius.</string>
+
 </resources>

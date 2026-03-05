@@ -32,7 +32,7 @@
     <string name="previous_year">Ano anterior</string>
     <string name="next_year">Ano seguinte</string>
     <string name="accept">Aceptar</string>
-    <string name="select_mode_title">Seleccionar Modo</string>
+    <string name="select_mode_title">Seleccionar Tema</string>
     <string name="custom_selected">Seleccionado</string>
     <string name="restore_colors_title">Restaurar Cores</string>
     <string name="restore_colors_confirmation">Estás seguro de que queres restaurar todas as cores aos seus valores por defecto? As palabras clave non se verán afectadas.</string>
@@ -80,7 +80,7 @@
     <string name="mode">Modo</string>
     <string name="start_of_week">Comeza semana</string>
     <string name="week_in_year_view">Número semana</string>
-    <string name="customize_theme">Personalizar Tema</string>
+    <string name="customize_theme">Aparencia</string>
     <string name="light_theme_prefix">Claro: </string>
     <string name="dark_theme_prefix">Escuro: </string>
     <string name="customize_colors">Personalizar cores</string>
@@ -112,10 +112,10 @@
     <string name="help_section_event_list">Lista de eventos</string>
     <string name="help_event_list_1">Debaixo do calendario mensual amósase a lista dos eventos do mes. Para o mes actual, podes elixir entre ver os eventos Pendentes ou Todos pulsando no botón Pendentes-Todos. Cada evento da lista pode ser editado e borrado.</string>
     <string name="help_section_customization">Personalización</string>
-    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de cor para compartilos.</string>
+    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de color para compartirlos.</string>
     <string name="help_customization_2"></string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os próximos eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño da letra e modificando as súas cores.</string>
+    <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os próximos eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño de la letra e modificando as súas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
     <string name="event_color_label">Cor do evento:</string>
     <string name="keyword">Palabra clave</string>
@@ -184,7 +184,7 @@
     <string name="go_to_settings">Ir a Axustes</string>
     <string name="error">Erro</string>
     <string name="no_calendar_selected_error">Non se seleccionou ningún calendario. Por favor, elixe un calendario para gardar o evento.</string>
-    <string name="title_empty_error">O título non pode estar baleiro. Por favor, introduce un título para o evento.</string>
+    <string name="title_empty_error">O título non pode estar baleiro. Por favor, introduce un título para el evento.</string>
 
     <string name="event_saved_successfully">Evento gardado</string>
     <string name="error_saving_event">Erro ao gardar o evento. Comproba os calendarios seleccionados.</string>
@@ -205,5 +205,22 @@
     <string name="copy_event">Copiar evento</string>
     <string name="mark_as_favorite_calendar">Marcar como calendario favorito</string>
     <string name="favorite_calendar_marked">Calendario favorito (marcado)</string>
+
+    <string name="mark_as_working_day">Tratar como día laborable</string>
+    <string name="mark_as_holiday">Tratar como día festivo</string>
+    <string name="holiday_manager">Xestor</string>
+    <string name="holiday_manager_title">Xestor de Festivos</string>
+    <string name="festivo">Festivo</string>
+    <string name="laborable">Laborable</string>
+    <string name="holiday_added_successfully">Festivo local engadido</string>
+    <string name="holiday_removed_successfully">Festivo local eliminado</string>
+    <string name="holiday_updated_successfully">Axuste de festivo actualizado</string>
+
+    <string name="holidays_section">Festivos</string>
+    <string name="import_holidays">Importar festivos…</string>
+    <string name="export_holidays">Exportar festivos…</string>
+    <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
+    <string name="error_reading_holidays_file">Erro ao ler o ficheiro de festivos.</string>
+    <string name="error_saving_holidays_file">Erro ao gardar o ficheiro de festivos.</string>
 
 </resources>

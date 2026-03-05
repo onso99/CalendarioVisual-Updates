@@ -80,7 +80,7 @@
     <string name="mode">Modua</string>
     <string name="start_of_week">Astearen hasiera</string>
     <string name="week_in_year_view">Asteko zenbakia</string>
-    <string name="customize_theme">Pertsonalizatu Gaia</string>
+    <string name="customize_theme">Itxura</string>
     <string name="light_theme_prefix">Argia: </string>
     <string name="dark_theme_prefix">Iluna: </string>
     <string name="customize_colors">Pertsonalizatu koloreak</string>
@@ -180,7 +180,7 @@
     <string name="themes_v6">Gaiak v6</string>
 
     <string name="permission_denied_title">Baimena ukatuta</string>
-    <string name="permission_denied_text">Ezin da gertaera gorde, aplikazioak ez duelako egutegian idazteko baimenik. Mesedez, eman baimena aplikazioaren ezarpenetatik.</string>
+    <string name="permission_denied_text">Ezin da gertaera gorde, aplikazioak ez duelako egutegian idazteko baimenik. Por favor, concede el permiso desde os axustes da aplicación.</string>
     <string name="go_to_settings">Joan Ezarpenetara</string>
     <string name="error">Errorea</string>
     <string name="no_calendar_selected_error">Ez da egutegirik hautatu. Mesedez, aukeratu egutegi bat gertaera gordetzeko.</string>
@@ -205,5 +205,22 @@
     <string name="copy_event">Kopiatu gertaera</string>
     <string name="mark_as_favorite_calendar">Markatu egutegi gogokoen gisa</string>
     <string name="favorite_calendar_marked">Egutegi gogokoena (markatuta)</string>
+
+    <string name="mark_as_working_day">Egun baliodun gisa tratatu</string>
+    <string name="mark_as_holiday">Jai-egun gisa tratatu</string>
+    <string name="holiday_manager">Kudeatzailea</string>
+    <string name="holiday_manager_title">Jai-egunen Kudeatzailea</string>
+    <string name="festivo">Jai-eguna</string>
+    <string name="laborable">Laneguna</string>
+    <string name="holiday_added_successfully">Tokiko jai-eguna gehituta</string>
+    <string name="holiday_removed_successfully">Tokiko jai-eguna kenduta</string>
+    <string name="holiday_updated_successfully">Jai-egunaren doikuntza eguneratuta</string>
+
+    <string name="holidays_section">Jai-egunak</string>
+    <string name="import_holidays">Jai-egunak inportatu…</string>
+    <string name="export_holidays">Jai-egunak esportatu…</string>
+    <string name="holidays_imported_successfully">Jai-egunak ondo inportatu dira.</string>
+    <string name="error_reading_holidays_file">Errorea jai-egunen fitxategia irakurtzean.</string>
+    <string name="error_saving_holidays_file">Errorea jai-egunen fitxategia gordetzean.</string>
 
 </resources>

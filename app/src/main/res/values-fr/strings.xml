@@ -72,7 +72,7 @@
     <string name="monday">Lundi</string>
     <string name="sunday">Dimanche</string>
     <string name="saturday">Samedi</string>
-    <string name="theme_imported_successfully">Thème importé avec succès.</string>
+    <string name="theme_imported_successfully">Thème importado con éxito.</string>
     <string name="error_reading_theme_file">Erreur lors de la lecture du fichier de thème.</string>
     <string name="error_saving_theme_file">Erreur lors de l\'enregistrement du fichier de thème.</string>
     <string name="apply_changes">Appliquer les modifications</string>
@@ -80,7 +80,7 @@
     <string name="mode">Mode</string>
     <string name="start_of_week">Début semaine</string>
     <string name="week_in_year_view">Nº semaine</string>
-    <string name="customize_theme">Personnaliser le thème</string>
+    <string name="customize_theme">Apparence</string>
     <string name="light_theme_prefix">Clair : </string>
     <string name="dark_theme_prefix">Sombre : </string>
     <string name="customize_colors">Personnaliser les couleurs</string>
@@ -203,7 +203,24 @@
     <string name="edit_recurring_event_dialog_single_event">Cet événement uniquement</string>
     <string name="edit_recurring_event_dialog_all_events">Tous les événements</string>
     <string name="copy_event">Copier l\'événement</string>
-    <string name="mark_as_favorite_calendar">Marquer comme calendrier favori</string>
+    <string name="mark_as_favorite_calendar">Marcar como calendario favori</string>
     <string name="favorite_calendar_marked">Calendrier favori (marqué)</string>
+
+    <string name="mark_as_working_day">Traiter comme jour ouvrable</string>
+    <string name="mark_as_holiday">Traiter comme jour férié</string>
+    <string name="holiday_manager">Gestionnaire</string>
+    <string name="holiday_manager_title">Gestionnaire de jours fériés</string>
+    <string name="festivo">Jour férié</string>
+    <string name="laborable">Jour ouvrable</string>
+    <string name="holiday_added_successfully">Jour férié local ajouté</string>
+    <string name="holiday_removed_successfully">Jour férié local supprimé</string>
+    <string name="holiday_updated_successfully">Ajustement du jour férié mis à jour</string>
+
+    <string name="holidays_section">Jours fériés</string>
+    <string name="import_holidays">Importer les jours fériés…</string>
+    <string name="export_holidays">Exporter les jours fériés…</string>
+    <string name="holidays_imported_successfully">Jours fériés importés avec succès.</string>
+    <string name="error_reading_holidays_file">Erreur lors de la lecture du fichier de jours fériés.</string>
+    <string name="error_saving_holidays_file">Erreur lors de l\'enregistrement du fichier de jours fériés.</string>
 
 </resources>

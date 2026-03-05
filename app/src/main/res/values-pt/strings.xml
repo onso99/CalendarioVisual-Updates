@@ -80,7 +80,7 @@
     <string name="mode">Modo</string>
     <string name="start_of_week">Início da semana</string>
     <string name="week_in_year_view">Número da semana</string>
-    <string name="customize_theme">Personalizar Tema</string>
+    <string name="customize_theme">Aparência</string>
     <string name="light_theme_prefix">Claro: </string>
     <string name="dark_theme_prefix">Escuro: </string>
     <string name="customize_colors">Personalizar cores</string>
@@ -206,4 +206,19 @@
     <string name="mark_as_favorite_calendar">Marcar como calendário favorito</string>
     <string name="favorite_calendar_marked">Calendário favorito (marcado)</string>
 
+    <string name="mark_as_working_day">Tratar como dia útil</string>
+    <string name="mark_as_holiday">Tratar como feriado</string>
+    <string name="holiday_manager">Gestor</string>
+    <string name="holiday_manager_title">Gestor de Feriados</string>
+    <string name="festivo">Feriado</string>
+    <string name="laborable">Dia útil</string>
+    <string name="holiday_added_successfully">Feriado local adicionado</string>
+    <string name="holiday_removed_successfully">Feriado local removido</string>
+    <string name="holiday_updated_successfully">Ajuste de feriado atualizado</string>
+    <string name="holidays_section">Feriados</string>
+    <string name="import_holidays">Importar feriados…</string>
+    <string name="export_holidays">Exportar feriados…</string>
+    <string name="holidays_imported_successfully">Feriados importados com sucesso.</string>
+    <string name="error_reading_holidays_file">Erro ao ler o ficheiro de feriados.</string>
+    <string name="error_saving_holidays_file">Erro ao guardar o ficheiro de feriados.</string>
 </resources>

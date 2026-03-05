@@ -80,7 +80,7 @@
     <string name="mode">模式</string>
     <string name="start_of_week">周始</string>
     <string name="week_in_year_view">周数</string>
-    <string name="customize_theme">自定义主题</string>
+    <string name="customize_theme">外观</string>
     <string name="light_theme_prefix">浅色：</string>
     <string name="dark_theme_prefix">深色：</string>
     <string name="customize_colors">自定义颜色</string>
@@ -107,7 +107,7 @@
     <string name="help_calendar_views_1">该应用程序有两个主要视图：月视图和年视图。您可以通过点击标题中的年份在它们之间切换。</string>
     <string name="help_calendar_views_2">在月视图中，向左或向右滑动可更改月份。标题中的左上角箭头将返回到当前月份。</string>
     <string name="help_section_event_management">活动管理</string>
-    <string name="help_event_management_1">点击月历中的某一天以查看其活动或添加新活动。也可以通过点击标题中的（+）图标来创建活动。</string>
+    <string name="help_event_management_1">点击月历中的某一天以查看其活动 or 添加新活动。也可以通过点击标题中的（+）图标来创建活动。</string>
     <string name="help_event_management_2">任何可编辑的日历中的活动（单个或重复）都可以编辑和删除。</string>
     <string name="help_section_event_list">活动列表</string>
     <string name="help_event_list_1">月度日历下方会显示当月的活动列表。对于当前月份，您可以通过点击“待办-全部”按钮来选择查看“待办”或“全部”活动。列表中的每个活动都可以编辑和删除。</string>
@@ -205,5 +205,22 @@
     <string name="copy_event">复制活动</string>
     <string name="mark_as_favorite_calendar">标记为收藏日历</string>
     <string name="favorite_calendar_marked">收藏日历（已标记）</string>
+
+    <string name="mark_as_working_day">设为工作日</string>
+    <string name="mark_as_holiday">设为节假日</string>
+    <string name="holiday_manager">管理</string>
+    <string name="holiday_manager_title">节假日管理</string>
+    <string name="festivo">节日</string>
+    <string name="laborable">工作日</string>
+    <string name="holiday_added_successfully">已添加本地节假日</string>
+    <string name="holiday_removed_successfully">已移除本地节假日</string>
+    <string name="holiday_updated_successfully">节假日设置已更新</string>
+
+    <string name="holidays_section">节假日</string>
+    <string name="import_holidays">导入节假日…</string>
+    <string name="export_holidays">导出节假日…</string>
+    <string name="holidays_imported_successfully">节假日导入成功。</string>
+    <string name="error_reading_holidays_file">读取节假日文件时出错。</string>
+    <string name="error_saving_holidays_file">保存节假日文件时出错。</string>
 
 </resources>
