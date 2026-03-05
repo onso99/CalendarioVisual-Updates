@@ -141,6 +141,9 @@ fun HolidayManagerScreen(
         onRefresh() 
     }
 
+    // Atenuamos el rojo solo para esta pantalla si es el rojo puro del modo claro
+    val festivoColor = if (CalendarioTheme.colors.textSundayHoliday == Color(0xFFFF0000)) Color(0xFFD32F2F) else CalendarioTheme.colors.textSundayHoliday
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -225,15 +228,15 @@ fun HolidayManagerScreen(
                     Text(
                         stringResource(id = if (isHoliday) R.string.festivo else R.string.laborable),
                         modifier = Modifier.weight(1f),
-                        color = if (isHoliday) CalendarioTheme.colors.textSundayHoliday else CalendarioTheme.colors.textSystem,
+                        color = if (isHoliday) festivoColor else CalendarioTheme.colors.textSystem,
                         fontWeight = FontWeight.Bold
                     )
                     Switch(
                         checked = isHoliday,
                         onCheckedChange = { isHoliday = it },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = CalendarioTheme.colors.cabecera,
-                            checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f)
+                            checkedThumbColor = if (isHoliday) festivoColor else CalendarioTheme.colors.cabecera,
+                            checkedTrackColor = (if (isHoliday) festivoColor else CalendarioTheme.colors.cabecera).copy(alpha = 0.54f)
                         )
                     )
                 }
@@ -284,7 +287,8 @@ fun HolidayManagerScreen(
                                 refDate = date
                                 refIsHoliday = isHoliday
                             }
-                        }
+                        },
+                        festivoColor = festivoColor
                     )
                     HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
                 }
@@ -344,7 +348,8 @@ fun HolidayAdjustmentItem(
     adjustment: HolidayAdjustment,
     isClickable: Boolean,
     onDelete: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    festivoColor: Color
 ) {
     val isGoogle = adjustment.originalEventId != null && adjustment.originalEventId >= 0L
     val isPastYear = adjustment.date.year < LocalDate.now().year
@@ -363,7 +368,7 @@ fun HolidayAdjustmentItem(
                 color = when {
                     isGoogle -> Color.Gray
                     isPastYear -> Color.Gray.copy(alpha = 0.6f)
-                    adjustment.type == HolidayAdjustmentType.HOLIDAY -> CalendarioTheme.colors.textSundayHoliday
+                    adjustment.type == HolidayAdjustmentType.HOLIDAY -> festivoColor
                     else -> CalendarioTheme.colors.textSystem
                 },
                 fontWeight = if (isPastYear) FontWeight.Normal else FontWeight.Medium,
@@ -377,7 +382,7 @@ fun HolidayAdjustmentItem(
             )
         }
         IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+            Icon(Icons.Default.Delete, contentDescription = null, tint = festivoColor.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
         }
     }
 }

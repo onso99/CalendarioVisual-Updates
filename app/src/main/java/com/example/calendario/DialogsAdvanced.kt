@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -302,7 +303,8 @@ private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
             OutlinedTextField(
                 value = state.hexCode,
                 onValueChange = { state.updateColorFromHex(it) },
-                label = { Text(stringResource(id = R.string.hex_argb)) },
+                label = { Text(stringResource(id = R.string.hex_argb), fontSize = 12.sp) },
+                textStyle = TextStyle(fontSize = 14.sp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onConfirm() }),
@@ -337,7 +339,8 @@ private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
             OutlinedTextField(
                 value = state.hexCode,
                 onValueChange = { state.updateColorFromHex(it) },
-                label = { Text(stringResource(id = R.string.hex_argb)) },
+                label = { Text(stringResource(id = R.string.hex_argb), fontSize = 12.sp) },
+                textStyle = TextStyle(fontSize = 14.sp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onConfirm() }),
