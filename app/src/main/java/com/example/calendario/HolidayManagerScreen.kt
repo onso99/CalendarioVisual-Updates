@@ -3,6 +3,7 @@ package com.example.calendario
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -326,9 +327,7 @@ fun HolidayManagerScreen(
                             saveHolidayAdjustments(context, newList)
                             adjustments = newList
                             onRefresh()
-                            if (currentOriginalEventId == toDelete.originalEventId && date == toDelete.date) {
-                                resetForm()
-                            }
+                            resetForm() // Siempre reseteamos el formulario tras borrar
                         }
                         adjustmentToDelete = null
                     },
