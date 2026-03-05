@@ -223,4 +223,6 @@
     <string name="error_reading_holidays_file">Errorea jai-egunen fitxategia irakurtzean.</string>
     <string name="error_saving_holidays_file">Errorea jai-egunen fitxategia gordetzean.</string>
 
+    <string name="help_section_holiday_manager">Jai-egunen Kudeatzailea</string>
+    <string name="help_holiday_manager_1">Funtzio honek egun zehatzak jai-egun edo lanegun gisa eskuz markatzeko aukera ematen du, sistemaren egutegiak edo inportatutako gertaerek adierazitakoa kontuan hartu gabe. Egun bat jai-egun gisa markatzean, haren zenbakia dagokion kolorean nabarmenduko da hileroko eta urteko ikuspegietan.</string>
 </resources>

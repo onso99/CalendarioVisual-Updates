@@ -114,6 +114,8 @@
     <string name="help_section_customization">Personalization</string>
     <string name="help_customization_1">From the Settings menu, you can choose Light and Dark mode. You can also customize the interface colors and Import and Export color themes to share them.</string>
     <string name="help_customization_2"></string>
+    <string name="help_section_holiday_manager">Holiday Manager</string>
+    <string name="help_holiday_manager_1">This feature allows you to manually mark specific days as holidays or working days, regardless of the system calendar or imported events. When a day is marked as a holiday, its number will be highlighted in the corresponding color in the monthly and yearly views.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">The application includes a Widget for the Home screen that displays upcoming events. You can customize its appearance by choosing the number of events to display, changing the font size, and modifying its colors.</string>
     <string name="copied_to_clipboard">Copied: %1$s</string>

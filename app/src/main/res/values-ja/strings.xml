@@ -222,5 +222,6 @@
     <string name="holidays_imported_successfully">祝日のインポートに成功しました。</string>
     <string name="error_reading_holidays_file">祝日ファイルの読み込み中にエラーが発生しました。</string>
     <string name="error_saving_holidays_file">祝日ファイルの保存中にエラーが発生しました。</string>
-
+    <string name="help_section_holiday_manager">祝日マネージャー</string>
+    <string name="help_holiday_manager_1">この機能を使用すると、システムカレンダーやインポートされたイベントに関係なく、特定の日にちを手動で祝日または営業日としてマークできます。日を祝日としてマークすると、その数字は月間ビューおよび年間ビューで対応する色で強調表示されます。</string>
 </resources>

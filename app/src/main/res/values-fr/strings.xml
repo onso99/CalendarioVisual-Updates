@@ -114,6 +114,8 @@
     <string name="help_section_customization">Personnalisation</string>
     <string name="help_customization_1">Depuis le menu Paramètres, vous pouvez choisir le mode Clair et Sombre. Vous pouvez également personnaliser les couleurs de l\'interface et Importer et Exporter des thèmes de couleurs pour les partager.</string>
     <string name="help_customization_2"></string>
+    <string name="help_section_holiday_manager">Gestionnaire de Jours Fériés</string>
+    <string name="help_holiday_manager_1">Cette fonction vous permet de marquer manuellement des jours spécifiques comme fériés ou ouvrables, indépendamment du calendrier du système ou des événements importés. Lorsqu\'un jour est marqué comme férié, son numéro sera mis en évidence dans la couleur correspondante dans les vues mensuelle et annuelle.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'application inclut un Widget pour l\'écran d\'accueil qui affiche les événements à venir. Vous pouvez personnaliser son apparence en choisissant le nombre d\'événements à afficher, en modifiant la taille de la police et en modifiant ses couleurs.</string>
     <string name="copied_to_clipboard">Copié : %1$s</string>

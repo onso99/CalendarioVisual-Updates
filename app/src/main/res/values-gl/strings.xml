@@ -222,5 +222,6 @@
     <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
     <string name="error_reading_holidays_file">Erro ao ler o ficheiro de festivos.</string>
     <string name="error_saving_holidays_file">Erro ao gardar o ficheiro de festivos.</string>
-
+    <string name="help_section_holiday_manager">Xestor de Festivos</string>
+    <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos ou laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
 </resources>
