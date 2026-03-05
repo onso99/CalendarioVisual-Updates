@@ -67,6 +67,9 @@ fun HelpScreen(onBackPress: () -> Unit) {
             HelpSection(title = stringResource(id = R.string.help_section_customization)) {
                 Text(stringResource(id = R.string.help_customization_1))
             }
+            HelpSection(title = stringResource(id = R.string.help_section_holiday_manager)) {
+                Text(stringResource(id = R.string.help_holiday_manager_1))
+            }
             HelpSection(title = stringResource(id = R.string.help_section_widget)) {
                 Text(stringResource(id = R.string.help_widget_1))
             }
