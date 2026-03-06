@@ -326,6 +326,12 @@ fun HolidayManagerScreen(
                             newList.remove(toDelete)
                             saveHolidayAdjustments(context, newList)
                             adjustments = newList
+                            
+                            // Mostrar Toast con fecha y título
+                            val dateStr = toDelete.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
+                            val message = context.getString(R.string.holiday_deleted_message, dateStr, toDelete.title)
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
                             onRefresh()
                             resetForm() // Siempre reseteamos el formulario tras borrar
                         }
@@ -381,7 +387,7 @@ fun HolidayAdjustmentItem(
             )
         }
         IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = null, tint = festivoColor.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+            Icon(Icons.Default.Delete, contentDescription = null, tint = festivoColor, modifier = Modifier.size(20.dp))
         }
     }
 }

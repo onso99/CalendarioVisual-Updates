@@ -224,5 +224,7 @@
     <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
     <string name="error_reading_holidays_file">Error al leer el archivo de festivos.</string>
     <string name="error_saving_holidays_file">Error al guardar el archivo de festivos.</string>
+    <string name="holiday_deleted_message">Eliminado %1$s %2$s</string>
+    <string name="event_deleted_message">Eliminado %1$s %2$s</string>
 
 </resources>

@@ -289,7 +289,11 @@ fun AddEventScreen(
     }
 
     if (showDeleteDialog) {
-        ConfirmDeleteDialog(onDismissRequest = { showDeleteDialog = false }, onConfirm = { showDeleteDialog = false; localEventToEdit?.id?.let { deleteEvent(context, it) }; onDelete() }, title = title)
+        ConfirmDeleteDialog(onDismissRequest = { showDeleteDialog = false }, onConfirm = { 
+            showDeleteDialog = false
+            localEventToEdit?.let { deleteEvent(context, it.id, it.title, it.date) }
+            onDelete() 
+        }, title = title)
     }
 
     if (showDeleteRecurringDialog) {
@@ -298,7 +302,7 @@ fun AddEventScreen(
             localEventToEdit?.let { event ->
                 when (option) {
                     DeleteRecurringOption.SINGLE_EVENT -> { cancelEventInstance(context, event); onDelete() }
-                    DeleteRecurringOption.ALL_EVENTS -> { deleteEvent(context, event.id); onDelete() }
+                    DeleteRecurringOption.ALL_EVENTS -> { deleteEvent(context, event.id, event.title, event.date); onDelete() }
                 }
             }
         })

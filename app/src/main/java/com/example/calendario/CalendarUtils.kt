@@ -6,8 +6,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
 import android.widget.Toast
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.TimeZone
 
 fun createEvent(
@@ -151,13 +153,16 @@ fun updateSingleEventInSeries(
     }
 }
 
-fun deleteEvent(context: Context, eventId: Long) {
+fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: LocalDate) {
     try {
         val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         val rows = context.contentResolver.delete(deleteUri, null, null)
 
         if (rows > 0) {
-            Toast.makeText(context, R.string.delete, Toast.LENGTH_SHORT).show()
+            val dateStr = eventDate.format(DateTimeFormatter.ofPattern("d/M/yy"))
+            val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
+            val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, R.string.error_deleting_event, Toast.LENGTH_SHORT).show()
         }
@@ -196,7 +201,10 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
 
         if (uri != null) {
-            Toast.makeText(context, R.string.event_instance_canceled, Toast.LENGTH_SHORT).show()
+            val dateStr = eventToCancel.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
+            val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title
+            val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, R.string.error_canceling_event_instance, Toast.LENGTH_SHORT).show()
         }
