@@ -225,4 +225,6 @@
 
     <string name="help_section_holiday_manager">Менеджер праздников</string>
     <string name="help_holiday_manager_1">Эта функция позволяет вручную помечать определенные дни как праздничные или рабочие, независимо от того, что указано в системном календаре или импортированных событиях. При маркировке дня как праздничного его номер будет выделен соответствующим цветом в месячном и годовом представлениях.</string>
+    <string name="holiday_deleted_message">Удалено %1$s %2$s</string>
+    <string name="event_deleted_message">Удалено %1$s %2$s</string>
 </resources>

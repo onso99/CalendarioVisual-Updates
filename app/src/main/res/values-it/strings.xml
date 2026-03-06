@@ -225,4 +225,6 @@
 
     <string name="help_section_holiday_manager">Gestore Festività</string>
     <string name="help_holiday_manager_1">Questa funzione consente di contrassegnare manualmente giorni specifici come festivi o lavorativi, indipendentemente da quanto indicato dal calendario di sistema o dagli eventi importati. Quando un giorno viene contrassegnato come festivo, il suo numero verrà evidenziato nel colore corrispondente nelle viste mensile e annual.</string>
+    <string name="holiday_deleted_message">Eliminato %1$s %2$s</string>
+    <string name="event_deleted_message">Eliminato %1$s %2$s</string>
 </resources>

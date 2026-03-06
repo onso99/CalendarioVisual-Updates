@@ -224,5 +224,6 @@
     <string name="holidays_imported_successfully">Holidays imported successfully.</string>
     <string name="error_reading_holidays_file">Error reading the holidays file.</string>
     <string name="error_saving_holidays_file">Error saving the holidays file.</string>
-
+    <string name="holiday_deleted_message">Deleted %1$s %2$s</string>
+    <string name="event_deleted_message">Deleted %1$s %2$s</string>
 </resources>

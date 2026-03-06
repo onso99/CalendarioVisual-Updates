@@ -225,4 +225,6 @@
 
     <string name="help_section_holiday_manager">Gestor de Festius</string>
     <string name="help_holiday_manager_1">Aquesta funció permet marcar dies específics com a festius o laborables de forma manual, independentment del que indiqui el calendari del sistema o els esdeveniments importats. En marcar un dia com a festiu, el seu número es ressaltarà en el color corresponent a les vistes mensual i anual.</string>
+    <string name="holiday_deleted_message">Eliminat %1$s %2$s</string>
+    <string name="event_deleted_message">Eliminat %1$s %2$s</string>
 </resources>

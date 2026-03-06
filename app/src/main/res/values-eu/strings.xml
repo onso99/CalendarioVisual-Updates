@@ -225,4 +225,6 @@
 
     <string name="help_section_holiday_manager">Jai-egunen Kudeatzailea</string>
     <string name="help_holiday_manager_1">Funtzio honek egun zehatzak jai-egun edo lanegun gisa eskuz markatzeko aukera ematen du, sistemaren egutegiak edo inportatutako gertaerek adierazitakoa kontuan hartu gabe. Egun bat jai-egun gisa markatzean, haren zenbakia dagokion kolorean nabarmenduko da hileroko eta urteko ikuspegietan.</string>
+    <string name="holiday_deleted_message">%1$s %2$s ezabatua</string>
+    <string name="event_deleted_message">%1$s %2$s ezabatua</string>
 </resources>

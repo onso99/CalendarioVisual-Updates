@@ -223,4 +223,6 @@
     <string name="error_saving_holidays_file">Erro ao guardar o ficheiro de feriados.</string>
     <string name="help_section_holiday_manager">Gestor de Feriados</string>
     <string name="help_holiday_manager_1">Esta função permite marcar dias específicos como feriados ou dias úteis de forma manual, independentemente do que indique o calendário do sistema ou os eventos importados. Ao marcar um dia como feriado, o seu número será realçado na cor correspondente nas vistas mensal e anual.</string>
+    <string name="holiday_deleted_message">Eliminado %1$s %2$s</string>
+    <string name="event_deleted_message">Eliminado %1$s %2$s</string>
 </resources>
