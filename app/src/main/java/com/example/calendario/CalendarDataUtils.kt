@@ -387,6 +387,9 @@ suspend fun readFestivosFromCalendarsSuspend(
             }
         }
         
+        // Track which adjustments have been matched to system events to avoid duplication
+        val matchedAdjustmentIndices = mutableSetOf<Int>()
+
         resolver.query(instancesUri, instancesProjection, instancesSelection, null, null)?.use { cursor ->
             val eventIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
             val calendarIdColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
@@ -411,13 +414,26 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val endTime = if (isAllDay) null else endInstant.atZone(systemZoneId).toLocalTime()
                     
                     val isBirthday = birthdayCalendarIds.contains(calendarId)
+                    val isSystemHolidaySource = holidayCalendarIds.contains(calendarId)
                     
-                    // Logic for isFromHolidaySource with adjustments
-                    var isFromHoliday = holidayCalendarIds.contains(calendarId)
-                    val adjustment = adjustments.find { it.date == startDate && (it.originalEventId == eventId || (it.originalEventId == null && it.title == title)) }
+                    // Logic for isFromHolidaySource with adjustments (3-level hierarchical matching)
+                    var isFromHoliday = isSystemHolidaySource
                     
-                    if (adjustment != null) {
+                    // Level 1: Match by exact originalEventId (same device)
+                    // Level 2: Match by Title + Date (same language, different device)
+                    // Level 3: Match by "System Holiday" nature + Date (different language and device)
+                    val adjIndex = adjustments.indexOfFirst { adj ->
+                        adj.date == startDate && (
+                            adj.originalEventId == eventId ||
+                            adj.title == title ||
+                            (isSystemHolidaySource && adj.originalEventId != null)
+                        )
+                    }
+                    
+                    if (adjIndex != -1) {
+                        val adjustment = adjustments[adjIndex]
                         isFromHoliday = adjustment.type == HolidayAdjustmentType.HOLIDAY
+                        matchedAdjustmentIndices.add(adjIndex)
                     }
 
                     val festivo = Festivo(
@@ -439,13 +455,14 @@ suspend fun readFestivosFromCalendarsSuspend(
             }
         }
         
-        // Add manual holidays from adjustments that weren't overwriting existing events
-        adjustments.forEach { adj ->
-            if (adj.type == HolidayAdjustmentType.HOLIDAY && adj.originalEventId == null) {
+        // Add manual holidays from adjustments that weren't matched to existing system events
+        adjustments.forEachIndexed { index, adj ->
+            if (adj.type == HolidayAdjustmentType.HOLIDAY && !matchedAdjustmentIndices.contains(index)) {
+                // Double check if we already added a manual holiday with this title today
                 val exists = finalMap[adj.date]?.any { it.title == adj.title } ?: false
                 if (!exists) {
                     val manualFestivo = Festivo(
-                        id = -2L, // Artificial ID
+                        id = -2L, // Artificial ID for manual entries
                         title = adj.title,
                         description = null,
                         date = adj.date,
