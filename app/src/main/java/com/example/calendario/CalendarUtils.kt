@@ -103,6 +103,10 @@ fun updateEvent(
         }
         
         context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
+        
+        // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
+        CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+        
         Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
         true
 
@@ -138,6 +142,9 @@ fun updateSingleEventInSeries(
         val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
         
         if (uri != null) {
+            // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
+            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            
             Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
             true
         } else {
@@ -159,6 +166,9 @@ fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: 
         val rows = context.contentResolver.delete(deleteUri, null, null)
 
         if (rows > 0) {
+            // Forzar actualización del widget tras eliminar un evento
+            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            
             val dateStr = eventDate.format(DateTimeFormatter.ofPattern("d/M/yy"))
             val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
@@ -201,6 +211,9 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
 
         if (uri != null) {
+            // Forzar actualización del widget tras cancelar una instancia
+            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+
             val dateStr = eventToCancel.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
             val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
