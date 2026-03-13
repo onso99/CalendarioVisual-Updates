@@ -102,7 +102,12 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
             if (appWidgetIds.isNotEmpty()) {
-                Log.d(TAG, "triggerWidgetUpdate - Forzando actualización completa para los widgets: ${appWidgetIds.joinToString()}")
+                Log.d(TAG, "triggerWidgetUpdate - Notificando cambio de datos y forzando actualización para: ${appWidgetIds.joinToString()}")
+                
+                // 1. Notificar cambio en la colección (lista de eventos) para limpiar la caché de la Factory
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+                
+                // 2. Actualizar la vista general del widget (layout, colores, etc.)
                 appWidgetIds.forEach { appWidgetId ->
                     updateAppWidget(context, appWidgetManager, appWidgetId)
                 }
