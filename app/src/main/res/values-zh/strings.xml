@@ -227,4 +227,11 @@
     <string name="help_holiday_manager_1">此功能允许您手动将特定日期标记为节假日或工作日，无论系统日历或导入的活动如何显示。将日期标记为节假日后，其数字将在月视图和年视图中以相应的颜色突出显示。</string>
     <string name="holiday_deleted_message">已删除 %1$s %2$s</string>
     <string name="event_deleted_message">已删除 %1$s %2$s</string>
+
+    <string name="font">字体</string>
+    <string name="font_system">系统默认</string>
+    <string name="font_sans_serif">无衬线体 (标准)</string>
+    <string name="font_serif">衬线体 (带装饰)</string>
+    <string name="font_monospace">等宽字体 (固定宽度)</string>
+    <string name="font_condensed">紧凑体 (窄体)</string>
 </resources>

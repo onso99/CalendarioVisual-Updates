@@ -226,4 +226,11 @@
     <string name="help_holiday_manager_1">この機能を使用すると、システムカレンダーやインポートされたイベントに関係なく、特定の日にちを手動で祝日または営業日としてマークできます。日を祝日としてマークすると、その数字は月間ビューおよび年間ビューで対応する色で強調表示されます。</string>
     <string name="holiday_deleted_message">%1$s %2$s を削除しました</string>
     <string name="event_deleted_message">%1$s %2$s を削除しました</string>
+
+    <string name="font">フォント</string>
+    <string name="font_system">システム</string>
+    <string name="font_sans_serif">Sans Serif (標準)</string>
+    <string name="font_serif">Serif (明朝体)</string>
+    <string name="font_monospace">Monospace (等幅)</string>
+    <string name="font_condensed">凝縮 (幅狭)</string>
 </resources>

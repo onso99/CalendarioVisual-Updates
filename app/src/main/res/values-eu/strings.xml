@@ -227,4 +227,11 @@
     <string name="help_holiday_manager_1">Funtzio honek egun zehatzak jai-egun edo lanegun gisa eskuz markatzeko aukera ematen du, sistemaren egutegiak edo inportatutako gertaerek adierazitakoa kontuan hartu gabe. Egun bat jai-egun gisa markatzean, haren zenbakia dagokion kolorean nabarmenduko da hileroko eta urteko ikuspegietan.</string>
     <string name="holiday_deleted_message">%1$s %2$s ezabatua</string>
     <string name="event_deleted_message">%1$s %2$s ezabatua</string>
+
+    <string name="font">Letra-tipoa</string>
+    <string name="font_system">Sistemakoa</string>
+    <string name="font_sans_serif">Sans Serif (Normala)</string>
+    <string name="font_serif">Serif (Eremuduna)</string>
+    <string name="font_monospace">Monospace (Zabalera finkoa)</string>
+    <string name="font_condensed">Kondentsatua (Estua)</string>
 </resources>

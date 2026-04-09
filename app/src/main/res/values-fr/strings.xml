@@ -226,4 +226,11 @@
     <string name="error_saving_holidays_file">Erreur lors de l\'enregistrement du fichier de jours fériés.</string>
     <string name="holiday_deleted_message">Supprimé %1$s %2$s</string>
     <string name="event_deleted_message">Supprimé %1$s %2$s</string>
+
+    <string name="font">Police</string>
+    <string name="font_system">Système</string>
+    <string name="font_sans_serif">Sans Serif (Normal)</string>
+    <string name="font_serif">Serif (Avec empattements)</string>
+    <string name="font_monospace">Monospace (Largeur fixe)</string>
+    <string name="font_condensed">Condensée (Étroite)</string>
 </resources>

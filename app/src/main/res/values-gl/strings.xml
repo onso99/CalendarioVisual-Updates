@@ -226,4 +226,11 @@
     <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos ou laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
     <string name="holiday_deleted_message">Eliminado %1$s %2$s</string>
     <string name="event_deleted_message">Eliminado %1$s %2$s</string>
+
+    <string name="font">Fonte</string>
+    <string name="font_system">Sistema</string>
+    <string name="font_sans_serif">Sans Serif (Normal)</string>
+    <string name="font_serif">Serif (Con remates)</string>
+    <string name="font_monospace">Monospace (Ancho fixo)</string>
+    <string name="font_condensed">Condensada (Estreita)</string>
 </resources>
