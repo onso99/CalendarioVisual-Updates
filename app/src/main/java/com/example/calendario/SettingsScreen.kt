@@ -113,6 +113,7 @@ fun SettingsScreen(
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
     var showStartDayOfWeekDialog by remember { mutableStateOf(false) }
     var showBundledThemesDialog by remember { mutableStateOf(false) }
+    var showFontFamilyDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -214,6 +215,7 @@ fun SettingsScreen(
     val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
     val originalTodayEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) }
     val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
+    val originalFontFamily = remember { widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
@@ -222,6 +224,7 @@ fun SettingsScreen(
     var pendingEventColor by remember { mutableStateOf(originalEventColor) }
     var pendingTodayEventColor by remember { mutableStateOf(originalTodayEventColor) }
     var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
+    var pendingFontFamily by remember { mutableStateOf(originalFontFamily) }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
@@ -235,7 +238,8 @@ fun SettingsScreen(
                     pendingTextBoost != originalTextBoost ||
                     pendingEventColor != originalEventColor ||
                     pendingTodayEventColor != originalTodayEventColor ||
-                    pendingWidgetBackgroundColor != originalWidgetBackgroundColor
+                    pendingWidgetBackgroundColor != originalWidgetBackgroundColor ||
+                    pendingFontFamily != originalFontFamily
         }
     }
 
@@ -265,6 +269,7 @@ fun SettingsScreen(
                                 putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
                                 putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
                                 putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
+                                putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, pendingFontFamily)
                             }
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                             onBackPress()
@@ -355,12 +360,12 @@ fun SettingsScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
-                val currentLightThemeName = lightThemeName
-                val currentDarkThemeName = darkThemeName
+                val lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
+                val darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
 
-                if (currentLightThemeName != null && currentLightThemeName == currentDarkThemeName) {
+                if (lightThemeName != null && lightThemeName == darkThemeName) {
                     Text(
-                        text = currentLightThemeName,
+                        text = lightThemeName,
                         color = titleColor,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
@@ -371,13 +376,13 @@ fun SettingsScreen(
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
-                        currentLightThemeName?.let {
+                        lightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
                                 Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
-                        currentDarkThemeName?.let {
+                        darkThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
                                 Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
@@ -460,6 +465,35 @@ fun SettingsScreen(
                 Text("${stringResource(id = R.string.widget_text_adjustment)}: $textBoostLabel", fontSize = 16.sp, modifier = Modifier.padding(top=8.dp), color = CalendarioTheme.colors.textSystem)
                 
                 Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -2f..2f, steps = 3, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .clickable { showFontFamilyDialog = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    val fontFamilyDisplay = when(pendingFontFamily) {
+                        WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
+                        WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
+                        WidgetConstants.FONT_FAMILY_CONDENSED -> stringResource(id = R.string.font_condensed)
+                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
+                        else -> stringResource(id = R.string.font_system)
+                    }
+                    Text(
+                        text = fontFamilyDisplay,
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.End
+                    )
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
                 Spacer(Modifier.height(12.dp))
@@ -488,7 +522,7 @@ fun SettingsScreen(
     if (showThemeDialog) {
         ThemeSelectionDialog(
             currentTheme = themeSetting,
-            onThemeSelected = { themeManager.setTheme(it) },
+            onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false },
             onDismiss = { showThemeDialog = false }
         )
     }
@@ -504,9 +538,20 @@ fun SettingsScreen(
         )
     }
 
+    if (showFontFamilyDialog) {
+        FontFamilySelectionDialog(
+            currentSelection = pendingFontFamily,
+            onOptionSelected = {
+                pendingFontFamily = it
+                showFontFamilyDialog = false
+            },
+            onDismiss = { showFontFamilyDialog = false }
+        )
+    }
+
     if (showBundledThemesDialog) {
         BundledThemesDialog(
-            currentThemeName = lightThemeName, // Assuming light and dark themes have the same name
+            currentThemeName = lightThemeName, 
             onDismiss = { showBundledThemesDialog = false },
             onThemeSelected = { theme ->
                 showBundledThemesDialog = false
@@ -517,9 +562,7 @@ fun SettingsScreen(
                 val themeName = manifest.optString("name", "")
 
                 ThemePersistence.applyTheme(context, parsedTheme, themeName)
-                lightThemeName = themeName
-                darkThemeName = themeName
-                onThemeUpdated()
+                onThemeImported()
                 Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
             }
         )
@@ -549,14 +592,13 @@ fun SettingsScreen(
                     remove(AppConstants.KEY_DARK_THEME_NAME)
                     putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
                 }
-                lightThemeName = null
-                darkThemeName = null
                 onThemeUpdated() // This recomposes the whole app with default colors
 
                 // --- Restore Widget Theme (UI Only) ---
                 pendingEventColor = Color(WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
                 pendingTodayEventColor = Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
                 pendingWidgetBackgroundColor = Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
+                pendingFontFamily = WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
 
                 Toast.makeText(context, R.string.colors_restored, Toast.LENGTH_SHORT).show()
                 showRestoreDialog = false
@@ -702,6 +744,61 @@ private fun StartDayOfWeekDialog(
                             fontSize = 16.sp
                         )
                         if (option.key == currentSelectionKey) {
+                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
+                                CalendarioTheme.colors.textSystem
+                            } else {
+                                CalendarioTheme.colors.cabecera
+                            }
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+            }
+        }
+    )
+}
+
+@Composable
+private fun FontFamilySelectionDialog(
+    currentSelection: String,
+    onOptionSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val options = listOf(
+        WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system,
+        WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif,
+        WidgetConstants.FONT_FAMILY_SERIF to R.string.font_serif,
+        WidgetConstants.FONT_FAMILY_MONOSPACE to R.string.font_monospace,
+        WidgetConstants.FONT_FAMILY_CONDENSED to R.string.font_condensed
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                options.forEach { (key, labelRes) ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOptionSelected(key) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = labelRes),
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp
+                        )
+                        if (key == currentSelection) {
                             val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
                                 CalendarioTheme.colors.textSystem
                             } else {
