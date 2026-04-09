@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +30,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -216,6 +219,7 @@ fun SettingsScreen(
     val originalTodayEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) }
     val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
     val originalFontFamily = remember { widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY }
+    val originalFontBold = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
@@ -225,6 +229,7 @@ fun SettingsScreen(
     var pendingTodayEventColor by remember { mutableStateOf(originalTodayEventColor) }
     var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
     var pendingFontFamily by remember { mutableStateOf(originalFontFamily) }
+    var pendingFontBold by remember { mutableStateOf(originalFontBold) }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
@@ -239,7 +244,8 @@ fun SettingsScreen(
                     pendingEventColor != originalEventColor ||
                     pendingTodayEventColor != originalTodayEventColor ||
                     pendingWidgetBackgroundColor != originalWidgetBackgroundColor ||
-                    pendingFontFamily != originalFontFamily
+                    pendingFontFamily != originalFontFamily ||
+                    pendingFontBold != originalFontBold
         }
     }
 
@@ -270,6 +276,7 @@ fun SettingsScreen(
                                 putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, pendingTodayEventColor.toArgb())
                                 putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
                                 putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, pendingFontFamily)
+                                putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold)
                             }
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                             onBackPress()
@@ -360,12 +367,12 @@ fun SettingsScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
-                val lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
-                val darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
+                val lightThemeNameLocal = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
+                val darkThemeNameLocal = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
 
-                if (lightThemeName != null && lightThemeName == darkThemeName) {
+                if (lightThemeNameLocal != null && lightThemeNameLocal == darkThemeNameLocal) {
                     Text(
-                        text = lightThemeName,
+                        text = lightThemeNameLocal,
                         color = titleColor,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
@@ -376,13 +383,13 @@ fun SettingsScreen(
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
-                        lightThemeName?.let {
+                        lightThemeNameLocal?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
                                 Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
-                        darkThemeName?.let {
+                        darkThemeNameLocal?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
                                 Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
@@ -471,12 +478,25 @@ fun SettingsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                        .clickable { showFontFamilyDialog = true },
+                        .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    IconButton(
+                        onClick = { pendingFontBold = !pendingFontBold },
+                        modifier = Modifier.size(36.dp).padding(start = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FormatBold,
+                            contentDescription = "Bold",
+                            tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
                     val fontFamilyDisplay = when(pendingFontFamily) {
                         WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
                         WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
@@ -484,13 +504,18 @@ fun SettingsScreen(
                         WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
                         else -> stringResource(id = R.string.font_system)
                     }
+                    
                     Text(
                         text = fontFamilyDisplay,
                         color = CalendarioTheme.colors.textSystem,
                         fontSize = 16.sp,
+                        fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showFontFamilyDialog = true }
                     )
                 }
 
@@ -599,6 +624,7 @@ fun SettingsScreen(
                 pendingTodayEventColor = Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
                 pendingWidgetBackgroundColor = Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
                 pendingFontFamily = WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
+                pendingFontBold = WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
 
                 Toast.makeText(context, R.string.colors_restored, Toast.LENGTH_SHORT).show()
                 showRestoreDialog = false
@@ -833,7 +859,7 @@ private fun BundledThemesDialog(
         title = { Text(stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold) },
         text = {
             LazyColumn {
-                items(BundledThemes.themes) { theme ->
+                items(BundledThemes.themes) { theme: Map<String, Any> ->
                     val themeManifest = theme["themeManifest"] as Map<String, Any>
                     val themeName = themeManifest["name"] as String
                     Row(

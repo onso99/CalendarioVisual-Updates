@@ -5,8 +5,10 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.text.style.TypefaceSpan
 import android.util.Log
 import android.util.TypedValue
@@ -29,6 +31,7 @@ class CalendarWidgetFactory(
     private var eventCountToShow: Int = WidgetConstants.DEFAULT_EVENT_COUNT
     private var textBoost: Float = 0f
     private var widgetFontFamily: String = WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
+    private var widgetFontBold: Boolean = WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
 
     private var widgetEventColor: Int = WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
     private var widgetTodayEventColor: Int = WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
@@ -59,6 +62,7 @@ class CalendarWidgetFactory(
         eventCountToShow = prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
         textBoost = prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
         widgetFontFamily = prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
+        widgetFontBold = prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
 
         widgetEventColor = prefs.getInt(
             WidgetConstants.KEY_WIDGET_EVENT_COLOR,
@@ -69,7 +73,7 @@ class CalendarWidgetFactory(
             WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         )
 
-        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, AjusteTexto=$textBoost, Fuente=$widgetFontFamily")
+        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, AjusteTexto=$textBoost, Fuente=$widgetFontFamily, Bold=$widgetFontBold")
     }
 
     override fun onDestroy() {
@@ -134,10 +138,10 @@ class CalendarWidgetFactory(
         val eventDate: LocalDate = actualEvent.date
         val dayOfWeekFullName = eventDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
         val dayOfWeekFormatted = dayOfWeekFullName.take(3).replaceFirstChar { it.titlecase(Locale.getDefault()) }
-        views.setTextViewText(R.id.widget_item_day_of_week, applyFontFamily(dayOfWeekFormatted))
+        views.setTextViewText(R.id.widget_item_day_of_week, applyFontStyles(dayOfWeekFormatted))
 
         val dateOnlyFormatter = DateTimeFormatter.ofPattern("dd/MM", Locale.getDefault())
-        views.setTextViewText(R.id.widget_item_date_formatted, applyFontFamily(actualEvent.date.format(dateOnlyFormatter)))
+        views.setTextViewText(R.id.widget_item_date_formatted, applyFontStyles(actualEvent.date.format(dateOnlyFormatter)))
 
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val baseDesc = if (!actualEvent.isAllDay && actualEvent.startTime != null) {
@@ -147,7 +151,7 @@ class CalendarWidgetFactory(
         }
         val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
         
-        views.setTextViewText(R.id.widget_item_description, applyFontFamily(displayDescription))
+        views.setTextViewText(R.id.widget_item_description, applyFontStyles(displayDescription))
 
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
@@ -164,14 +168,36 @@ class CalendarWidgetFactory(
         return views
     }
 
-    private fun applyFontFamily(text: String): CharSequence {
+    private fun applyFontStyles(text: String): CharSequence {
+        // Si no se fuerza familia y no hay negrita, devolvemos texto plano
+        if (widgetFontFamily.isEmpty() && !widgetFontBold) return text
+
         val spannable = SpannableString(text)
-        spannable.setSpan(
-            TypefaceSpan(widgetFontFamily),
-            0,
-            text.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+        
+        // 1. Aplicar Familia de Fuente (si no es Sistema)
+        if (widgetFontFamily.isNotEmpty()) {
+            try {
+                spannable.setSpan(
+                    TypefaceSpan(widgetFontFamily),
+                    0,
+                    text.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            } catch (e: Exception) {
+                Log.e("WidgetFactory", "Error aplicando TypefaceSpan: ${e.message}")
+            }
+        }
+
+        // 2. Aplicar Negrita (si está activa)
+        if (widgetFontBold) {
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
         return spannable
     }
 

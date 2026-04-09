@@ -9,6 +9,7 @@ object WidgetConstants {
     const val DEFAULT_EVENT_COUNT = 4
     const val KEY_WIDGET_TEXT_BOOST = "widget_text_boost_key"
     const val KEY_WIDGET_FONT_FAMILY = "widget_font_family_key"
+    const val KEY_WIDGET_FONT_BOLD = "widget_font_bold_key"
 
     const val KEY_WIDGET_EVENT_COLOR = "widget_event_color_key"
     const val KEY_WIDGET_TODAY_EVENT_COLOR = "widget_today_event_color_key"
@@ -24,4 +25,5 @@ object WidgetConstants {
     const val FONT_FAMILY_MONOSPACE = "monospace"
     const val FONT_FAMILY_CONDENSED = "sans-serif-condensed"
     const val DEFAULT_WIDGET_FONT_FAMILY = FONT_FAMILY_CONDENSED
+    const val DEFAULT_WIDGET_FONT_BOLD = false
 }
