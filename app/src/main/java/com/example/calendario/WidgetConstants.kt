@@ -23,5 +23,5 @@ object WidgetConstants {
     const val FONT_FAMILY_SERIF = "serif"
     const val FONT_FAMILY_MONOSPACE = "monospace"
     const val FONT_FAMILY_CONDENSED = "sans-serif-condensed"
-    const val DEFAULT_WIDGET_FONT_FAMILY = FONT_FAMILY_SYSTEM
+    const val DEFAULT_WIDGET_FONT_FAMILY = FONT_FAMILY_CONDENSED
 }

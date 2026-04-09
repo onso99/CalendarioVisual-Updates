@@ -464,7 +464,7 @@ fun SettingsScreen(
                 }
                 Text("${stringResource(id = R.string.widget_text_adjustment)}: $textBoostLabel", fontSize = 16.sp, modifier = Modifier.padding(top=8.dp), color = CalendarioTheme.colors.textSystem)
                 
-                Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -2f..2f, steps = 3, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -4f..4f, steps = 7, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 
@@ -717,53 +717,6 @@ private fun ExportThemeDialog(
 }
 
 @Composable
-private fun StartDayOfWeekDialog(
-    currentSelectionKey: String,
-    onOptionSelected: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.start_of_week), fontWeight = FontWeight.Bold) },
-        text = {
-            Column {
-                StartOfWeekOption.entries.forEach { option ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onOptionSelected(option.key) }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = option.displayNameRes),
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp
-                        )
-                        if (option.key == currentSelectionKey) {
-                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
-                                CalendarioTheme.colors.textSystem
-                            } else {
-                                CalendarioTheme.colors.cabecera
-                            }
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
-    )
-}
-
-@Composable
 private fun FontFamilySelectionDialog(
     currentSelection: String,
     onOptionSelected: (String) -> Unit,
@@ -799,6 +752,53 @@ private fun FontFamilySelectionDialog(
                             fontSize = 16.sp
                         )
                         if (key == currentSelection) {
+                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
+                                CalendarioTheme.colors.textSystem
+                            } else {
+                                CalendarioTheme.colors.cabecera
+                            }
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+            }
+        }
+    )
+}
+
+@Composable
+private fun StartDayOfWeekDialog(
+    currentSelectionKey: String,
+    onOptionSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.start_of_week), fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                StartOfWeekOption.entries.forEach { option ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOptionSelected(option.key) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = option.displayNameRes),
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp
+                        )
+                        if (option.key == currentSelectionKey) {
                             val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
                                 CalendarioTheme.colors.textSystem
                             } else {
