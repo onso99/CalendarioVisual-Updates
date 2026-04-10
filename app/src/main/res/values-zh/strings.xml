@@ -234,4 +234,5 @@
     <string name="font_serif">衬线体 (带装饰)</string>
     <string name="font_monospace">等宽字体 (固定宽度)</string>
     <string name="font_condensed">紧凑体 (窄体)</string>
+    <string name="share_event">分享活动</string>
 </resources>

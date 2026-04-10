@@ -234,4 +234,5 @@
     <string name="font_serif">Serif (Amb rematades)</string>
     <string name="font_monospace">Monospace (Ample fix)</string>
     <string name="font_condensed">Condensada (Estreta)</string>
+    <string name="share_event">Compartir esdeveniment</string>
 </resources>

@@ -234,4 +234,5 @@
     <string name="font_serif">Serif (С засечками)</string>
     <string name="font_monospace">Monospace (Фиксированная ширина)</string>
     <string name="font_condensed">Сжатый (Узкий)</string>
+    <string name="share_event">Поделиться событием</string>
 </resources>

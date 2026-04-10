@@ -234,4 +234,5 @@
     <string name="font_serif">Serif (Eremuduna)</string>
     <string name="font_monospace">Monospace (Zabalera finkoa)</string>
     <string name="font_condensed">Kondentsatua (Estua)</string>
+    <string name="share_event">Partekatu ekitaldia</string>
 </resources>

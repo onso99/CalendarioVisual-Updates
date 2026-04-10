@@ -233,4 +233,5 @@
     <string name="font_serif">Serif (明朝体)</string>
     <string name="font_monospace">Monospace (等幅)</string>
     <string name="font_condensed">凝縮 (幅狭)</string>
+    <string name="share_event">イベントを共有</string>
 </resources>

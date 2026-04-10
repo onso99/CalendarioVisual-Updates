@@ -232,4 +232,5 @@
     <string name="font_serif">Serif (Mit Serifen)</string>
     <string name="font_monospace">Monospace (Feste Breite)</string>
     <string name="font_condensed">Kondensiert (Schmal)</string>
+    <string name="share_event">Ereignis teilen</string>
 </resources>
