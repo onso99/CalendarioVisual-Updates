@@ -180,14 +180,14 @@ fun AddEventScreen(
     val backAction = { if (hasChanges) showDiscardChangesDialog = true else onBackPress() }
 
     val saveAction = {
-        if (localEventToEdit?.rrule != null && hasChanges) {
+        if (localEventToEdit?.rrule != null && localEventToEdit?.id != 0L && hasChanges) {
             showEditRecurringDialog = true
         } else {
             val error = validateEventData(context, title, selectedCalendar, startDate, endDate)
             if (error != null) {
                 saveError = error
             } else {
-                val success = if (localEventToEdit != null) {
+                val success = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
                     updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
                 } else {
                     createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
@@ -205,32 +205,35 @@ fun AddEventScreen(
 
     Scaffold(
         topBar = {
+            val isImported = localEventToEdit?.id == 0L
             TopAppBar(
-                title = { Text(if (localEventToEdit != null) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event)) },
+                title = { Text(if (localEventToEdit != null && !isImported) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event)) },
                 navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
                 actions = {
-                    if (hasChanges) {
+                    if (hasChanges || isImported) {
                         IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
                     }
                     localEventToEdit?.let { event ->
-                        if (!hasChanges) {
-                            IconButton(onClick = { IcsHelper.shareEvent(context, event) }) {
-                                Icon(Icons.Default.Share, stringResource(id = R.string.share_event))
+                        if (!isImported) {
+                            if (!hasChanges) {
+                                IconButton(onClick = { IcsHelper.shareEvent(context, event) }) {
+                                    Icon(Icons.Default.Share, stringResource(id = R.string.share_event))
+                                }
                             }
+                            IconButton(onClick = {
+                                isCopying = true 
+                                val today = LocalDate.now()
+                                val duration = Duration.between(startDate, endDate)
+                                val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
+                                startDate = newStartDate
+                                endDate = newStartDate.plus(duration)
+                                localEventToEdit = null
+                            }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
+                            
+                            IconButton(onClick = {
+                                if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
+                            }) { Icon(Icons.Default.Delete, stringResource(id = R.string.delete_event)) }
                         }
-                        IconButton(onClick = {
-                            isCopying = true 
-                            val today = LocalDate.now()
-                            val duration = Duration.between(startDate, endDate)
-                            val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
-                            startDate = newStartDate
-                            endDate = newStartDate.plus(duration)
-                            localEventToEdit = null
-                        }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
-                        
-                        IconButton(onClick = {
-                            if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
-                        }) { Icon(Icons.Default.Delete, stringResource(id = R.string.delete_event)) }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera, titleContentColor = MaterialTheme.colorScheme.onPrimary, navigationIconContentColor = MaterialTheme.colorScheme.onPrimary, actionIconContentColor = MaterialTheme.colorScheme.onPrimary)

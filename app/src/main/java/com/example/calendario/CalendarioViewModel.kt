@@ -23,7 +23,8 @@ data class CalendarioUiState(
     val availableCalendars: List<CalendarInfo> = emptyList(),
     val selectedCalendarIds: Set<Long> = emptySet(),
     val hasCalendarPermission: Boolean = false,
-    val favoriteCalendarId: Long? = null
+    val favoriteCalendarId: Long? = null,
+    val importedEvent: Festivo? = null
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -168,5 +169,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         val favoriteId = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
         return if (favoriteId != -1L) favoriteId else null
+    }
+
+    fun setImportedEvent(event: Festivo?) {
+        _uiState.update { it.copy(importedEvent = event) }
+    }
+
+    fun consumeImportedEvent() {
+        _uiState.update { it.copy(importedEvent = null) }
     }
 }

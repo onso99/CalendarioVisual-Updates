@@ -2,6 +2,7 @@ package com.example.calendario
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -47,6 +48,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        handleIntent(intent)
+
         setContent {
             val themeManager = rememberThemeManager()
             val themeSetting by themeManager.themeSetting.collectAsState()
@@ -88,6 +91,23 @@ class MainActivity : ComponentActivity() {
         // Unregister the observer to avoid memory leaks
         calendarObserver?.let {
             contentResolver.unregisterContentObserver(it)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val action = intent?.action
+        val data: Uri? = intent?.data
+
+        if (Intent.ACTION_VIEW == action && data != null) {
+            val event = IcsHelper.parseIcs(this, data)
+            if (event != null) {
+                calendarioViewModel.setImportedEvent(event)
+            }
         }
     }
 

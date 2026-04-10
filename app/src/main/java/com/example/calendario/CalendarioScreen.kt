@@ -202,6 +202,13 @@ fun CalendarioScreen(
         }
     }
 
+    LaunchedEffect(uiState.importedEvent) {
+        uiState.importedEvent?.let { event ->
+            launchAddEditScreen(event.date, event)
+            viewModel.consumeImportedEvent()
+        }
+    }
+
     LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate) {
         if (searchQuery.isNotBlank()) {
             delay(300) // Debounce
