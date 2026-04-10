@@ -3,6 +3,7 @@ package com.example.calendario
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
@@ -65,6 +66,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
@@ -196,14 +198,14 @@ fun SettingsScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    try {
+                try {
+                    result.data?.data?.let { uri ->
                         exportHolidaysToJson(context, uri)
                         Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        Log.e("SettingsScreen", "Error exporting holidays", e)
-                        Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_LONG).show()
                     }
+                } catch (e: Exception) {
+                    Log.e("SettingsScreen", "Error exporting holidays", e)
+                    Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -505,11 +507,24 @@ fun SettingsScreen(
                         else -> stringResource(id = R.string.font_system)
                     }
                     
+                    // Función para mapear la clave de fuente al objeto FontFamily de Compose
+                    val composeFontFamily = when(pendingFontFamily) {
+                        WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
+                        WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
+                        WidgetConstants.FONT_FAMILY_CONDENSED -> {
+                            val weight = if (pendingFontBold) Typeface.BOLD else Typeface.NORMAL
+                            FontFamily(Typeface.create("sans-serif-condensed", weight))
+                        }
+                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
+                        else -> FontFamily.Default
+                    }
+
                     Text(
                         text = fontFamilyDisplay,
                         color = CalendarioTheme.colors.textSystem,
                         fontSize = 16.sp,
                         fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal,
+                        fontFamily = composeFontFamily,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Start,
@@ -576,7 +591,7 @@ fun SettingsScreen(
 
     if (showBundledThemesDialog) {
         BundledThemesDialog(
-            currentThemeName = lightThemeName, 
+            currentThemeName = lightThemeName,
             onDismiss = { showBundledThemesDialog = false },
             onThemeSelected = { theme ->
                 showBundledThemesDialog = false
