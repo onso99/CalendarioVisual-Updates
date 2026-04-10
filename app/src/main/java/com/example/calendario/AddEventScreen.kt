@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -211,7 +212,12 @@ fun AddEventScreen(
                     if (hasChanges) {
                         IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
                     }
-                    localEventToEdit?.let {
+                    localEventToEdit?.let { event ->
+                        if (!hasChanges) {
+                            IconButton(onClick = { IcsHelper.shareEvent(context, event) }) {
+                                Icon(Icons.Default.Share, stringResource(id = R.string.share_event))
+                            }
+                        }
                         IconButton(onClick = {
                             isCopying = true 
                             val today = LocalDate.now()
@@ -223,7 +229,7 @@ fun AddEventScreen(
                         }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
                         
                         IconButton(onClick = {
-                            if (it.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
+                            if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
                         }) { Icon(Icons.Default.Delete, stringResource(id = R.string.delete_event)) }
                     }
                 },
