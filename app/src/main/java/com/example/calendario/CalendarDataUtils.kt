@@ -432,14 +432,17 @@ suspend fun readFestivosFromCalendarsSuspend(
                     
                     if (adjIndex != -1) {
                         val adjustment = adjustments[adjIndex]
-                        isFromHoliday = adjustment.type == HolidayAdjustmentType.HOLIDAY
                         matchedAdjustmentIndices.add(adjIndex)
+                        if (adjustment.type == HolidayAdjustmentType.WORKING_DAY) {
+                            continue // Saltamos los eventos marcados como laborables para que no aparezcan en el calendario
+                        }
+                        isFromHoliday = true
                     }
 
                     val festivo = Festivo(
                         id = eventId,
                         title = title,
-                        description = null, 
+                        description = null,
                         date = startDate,
                         startTime = startTime,
                         endTime = endTime,
@@ -448,7 +451,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
                         age = null,
-                        isBirthday = isBirthday 
+                        isBirthday = isBirthday
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }

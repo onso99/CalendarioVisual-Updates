@@ -121,7 +121,7 @@ fun HolidayManagerScreen(
             }
         }
         
-        val shouldAdd = if (isFromExistingGoogleEvent) !isHoliday else isHoliday
+        val shouldAdd = if (isFromExistingGoogleEvent) !isHoliday else true
 
         if (shouldAdd) {
             currentAdjustments.add(
@@ -264,30 +264,28 @@ fun HolidayManagerScreen(
                     
                     HolidayAdjustmentItem(
                         adjustment = adj,
-                        isClickable = !isGoogleAdjustment,
+                        isClickable = true,
                         onDelete = { adjustmentToDelete = adj },
                         onClick = {
-                            if (!isGoogleAdjustment) {
-                                title = adj.title
-                                val isPastYear = adj.date.year < LocalDate.now().year
-                                if (isPastYear) {
-                                    // Template mode
-                                    date = adj.date.withYear(LocalDate.now().year)
-                                    isHoliday = true
-                                    currentOriginalEventId = null
-                                    editingAdjustment = null
-                                    showDatePicker = true
-                                } else {
-                                    // Edit mode
-                                    date = adj.date
-                                    isHoliday = adj.type == HolidayAdjustmentType.HOLIDAY
-                                    currentOriginalEventId = adj.originalEventId
-                                    editingAdjustment = adj
-                                }
-                                refTitle = title
-                                refDate = date
-                                refIsHoliday = isHoliday
+                            title = adj.title
+                            val isPastYear = adj.date.year < LocalDate.now().year
+                            if (isPastYear && !isGoogleAdjustment) {
+                                // Template mode (only for manual holidays)
+                                date = adj.date.withYear(LocalDate.now().year)
+                                isHoliday = true
+                                currentOriginalEventId = null
+                                editingAdjustment = null
+                                showDatePicker = true
+                            } else {
+                                // Edit mode (for current year or Google events)
+                                date = adj.date
+                                isHoliday = adj.type == HolidayAdjustmentType.HOLIDAY
+                                currentOriginalEventId = adj.originalEventId
+                                editingAdjustment = adj
                             }
+                            refTitle = title
+                            refDate = date
+                            refIsHoliday = isHoliday
                         },
                         festivoColor = festivoColor
                     )
@@ -383,11 +381,18 @@ fun HolidayAdjustmentItem(
             Text(
                 text = "[${stringResource(id = if (adjustment.type == HolidayAdjustmentType.HOLIDAY) R.string.festivo else R.string.laborable)}] - $sourceLegend",
                 fontSize = 10.sp,
-                color = if (isGoogle || isPastYear) Color.Gray.copy(alpha = 0.7f) else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                color = if (isGoogle || isPastYear || adjustment.type == HolidayAdjustmentType.WORKING_DAY) Color.Gray.copy(alpha = 0.7f) else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
             )
         }
-        IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = null, tint = festivoColor, modifier = Modifier.size(20.dp))
+        if (!isGoogle) {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = if (adjustment.type == HolidayAdjustmentType.WORKING_DAY) Color.Gray else festivoColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
