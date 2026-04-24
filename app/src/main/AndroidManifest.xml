@@ -17,14 +17,16 @@
         android:theme="@style/Theme.Calendario"
         android:resizeableActivity="true"
         android:localeConfig="@xml/locales_config"
-        tools:targetApi="33">
+        tools:targetApi="33"
+        tools:ignore="RemoveWorkManagerInitializer">
 
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge"
-            tools:ignore="ManifestOrder">
+            tools:ignore="ManifestOrder,RemoveWorkManagerInitializer">
+            <!-- Esta es la forma correcta de desactivar WorkManager en versiones modernas -->
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
