@@ -167,8 +167,19 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun getFavoriteCalendarId(context: Context): Long? {
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val favoriteId = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
-        return if (favoriteId != -1L) favoriteId else null
+        return try {
+            val favoriteId = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
+            if (favoriteId != -1L) favoriteId else null
+        } catch (e: ClassCastException) {
+            // Resiliencia: si el tipo es incorrecto (ej. Integer), intentar conversión manual
+            val all = prefs.all
+            val value = all[AppConstants.KEY_FAVORITE_CALENDAR_ID]
+            when (value) {
+                is Number -> value.toLong().takeIf { it != -1L }
+                is String -> value.toLongOrNull()?.takeIf { it != -1L }
+                else -> null
+            }
+        }
     }
 
     fun setImportedEvent(event: Festivo?) {

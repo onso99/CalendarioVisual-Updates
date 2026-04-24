@@ -211,15 +211,79 @@ fun SettingsScreen(
         }
     )
 
+    val exportFullBackupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    BackupManager.exportFullBackup(context, uri)
+                }
+            }
+        }
+    )
+
+    val importFullBackupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    BackupManager.importFullBackup(context, uri) {
+                        // Reiniciar la actividad para aplicar cambios globales
+                        (context as? Activity)?.let { activity ->
+                            val intent = activity.intent
+                            activity.finish()
+                            activity.startActivity(intent)
+                        }
+                    }
+                }
+            }
+        }
+    )
+
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
     val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
     val originalStartOfWeekKey = remember { appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key }
-    val originalEventCount = remember { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) }
-    val originalTextBoost = remember { widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) }
-    val originalEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) }
-    val originalTodayEventColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) }
-    val originalWidgetBackgroundColor = remember { Color(widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) }
+    val originalEventCount = remember {
+        try {
+            widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        } catch (e: ClassCastException) {
+            val value = widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT]
+            (value as? Number)?.toInt() ?: WidgetConstants.DEFAULT_EVENT_COUNT
+        }
+    }
+    val originalTextBoost = remember {
+        try {
+            widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
+        } catch (e: ClassCastException) {
+            val value = widgetPrefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST]
+            (value as? Number)?.toFloat() ?: 0f
+        }
+    }
+    val originalEventColor = remember {
+        val colorInt = try {
+            widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
+        } catch (e: ClassCastException) {
+            (widgetPrefs.all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
+        }
+        Color(colorInt)
+    }
+    val originalTodayEventColor = remember {
+        val colorInt = try {
+            widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
+        } catch (e: ClassCastException) {
+            (widgetPrefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
+        }
+        Color(colorInt)
+    }
+    val originalWidgetBackgroundColor = remember {
+        val colorInt = try {
+            widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
+        } catch (e: ClassCastException) {
+            (widgetPrefs.all[WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB
+        }
+        Color(colorInt)
+    }
     val originalFontFamily = remember { widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY }
     val originalFontBold = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) }
 
@@ -455,6 +519,30 @@ fun SettingsScreen(
                         type = "application/json"
                         putExtra(Intent.EXTRA_TITLE, "festivos_locales.json")
                     })
+                }
+            }
+
+            // --- 4. Backup Section ---
+            SectionTitle(text = stringResource(id = R.string.backup_section_title))
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
+                ActionRow(text = stringResource(id = R.string.export_full_backup)) {
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json")
+                    }
+                    exportFullBackupLauncher.launch(intent)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.import_full_backup)) {
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                    }
+                    importFullBackupLauncher.launch(intent)
                 }
             }
 

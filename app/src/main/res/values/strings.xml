@@ -234,4 +234,14 @@
     <string name="font_monospace">Monospace (Ancho fijo)</string>
     <string name="font_condensed">Condensada (Estrecha)</string>
     <string name="share_event">Compartir evento</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Copia de seguridad completa</string>
+    <string name="export_full_backup">Crear copia de seguridad completa</string>
+    <string name="import_full_backup">Restaurar copia de seguridad completa</string>
+    <string name="backup_exported_successfully">Copia de seguridad creada con éxito</string>
+    <string name="backup_imported_successfully">Copia de seguridad restaurada con éxito</string>
+    <string name="error_exporting_backup">Error al crear la copia: %1$s</string>
+    <string name="error_importing_backup">Error al restaurar la copia: %1$s</string>
+    <string name="invalid_backup_file">Archivo de copia de seguridad no válido</string>
 </resources>

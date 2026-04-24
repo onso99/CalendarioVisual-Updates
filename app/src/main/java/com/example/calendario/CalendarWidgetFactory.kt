@@ -59,8 +59,17 @@ class CalendarWidgetFactory(
             WidgetConstants.GLOBAL_WIDGET_PREFS_NAME,
             Context.MODE_PRIVATE
         )
-        eventCountToShow = prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        textBoost = prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
+        eventCountToShow = try {
+            prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        } catch (e: ClassCastException) {
+            (prefs.all[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_EVENT_COUNT
+        }
+
+        textBoost = try {
+            prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
+        } catch (e: ClassCastException) {
+            (prefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() ?: 0f
+        }
         widgetFontFamily = prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
         widgetFontBold = prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
 
