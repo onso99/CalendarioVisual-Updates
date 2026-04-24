@@ -247,7 +247,7 @@ fun SettingsScreen(
     val originalEventCount = remember {
         try {
             widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             val value = widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT]
             (value as? Number)?.toInt() ?: WidgetConstants.DEFAULT_EVENT_COUNT
         }
@@ -255,7 +255,7 @@ fun SettingsScreen(
     val originalTextBoost = remember {
         try {
             widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             val value = widgetPrefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST]
             (value as? Number)?.toFloat() ?: 0f
         }
@@ -263,7 +263,7 @@ fun SettingsScreen(
     val originalEventColor = remember {
         val colorInt = try {
             widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (widgetPrefs.all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
         }
         Color(colorInt)
@@ -271,7 +271,7 @@ fun SettingsScreen(
     val originalTodayEventColor = remember {
         val colorInt = try {
             widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (widgetPrefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         }
         Color(colorInt)
@@ -279,7 +279,7 @@ fun SettingsScreen(
     val originalWidgetBackgroundColor = remember {
         val colorInt = try {
             widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (widgetPrefs.all[WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB
         }
         Color(colorInt)

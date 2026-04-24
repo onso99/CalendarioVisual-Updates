@@ -132,7 +132,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
     fun getSafeInt(key: String, default: Int): Int {
         return try {
             prefs.getInt(key, default)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (prefs.all[key] as? Number)?.toInt() ?: default
         }
     }

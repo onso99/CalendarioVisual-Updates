@@ -133,7 +133,7 @@ object BackupManager {
         colorMap.forEach { (key, hex) ->
             try {
                 editor.putInt(key, android.graphics.Color.parseColor(hex))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Ignorar colores inválidos
             }
         }

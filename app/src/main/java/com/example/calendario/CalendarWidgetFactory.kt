@@ -61,33 +61,33 @@ class CalendarWidgetFactory(
         )
         eventCountToShow = try {
             prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (prefs.all[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_EVENT_COUNT
         }
 
         textBoost = try {
             prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (prefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() ?: 0f
         }
         widgetFontFamily = prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
         
         widgetFontBold = try {
             prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             val value = prefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD]
             if (value is Boolean) value else WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
         }
 
         widgetEventColor = try {
             prefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (prefs.all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
         }
 
         widgetTodayEventColor = try {
             prefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             (prefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         }
 
