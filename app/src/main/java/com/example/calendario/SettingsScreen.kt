@@ -522,30 +522,6 @@ fun SettingsScreen(
                 }
             }
 
-            // --- 4. Backup Section ---
-            SectionTitle(text = stringResource(id = R.string.backup_section_title))
-            Column(modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(CalendarioTheme.colors.fondoSecciones)
-                .padding(horizontal = 16.dp)) {
-                ActionRow(text = stringResource(id = R.string.export_full_backup)) {
-                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json")
-                    }
-                    exportFullBackupLauncher.launch(intent)
-                }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow(text = stringResource(id = R.string.import_full_backup)) {
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json"
-                    }
-                    importFullBackupLauncher.launch(intent)
-                }
-            }
-
             WidgetSectionTitle()
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
@@ -629,6 +605,30 @@ fun SettingsScreen(
                 Spacer(Modifier.height(12.dp))
                 ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
                 Spacer(Modifier.height(16.dp))
+            }
+
+            // --- 4. Backup Section ---
+            SectionTitle(text = stringResource(id = R.string.backup_section_title))
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
+                ActionRow(text = stringResource(id = R.string.export_full_backup)) {
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json")
+                    }
+                    exportFullBackupLauncher.launch(intent)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                ActionRow(text = stringResource(id = R.string.import_full_backup)) {
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                    }
+                    importFullBackupLauncher.launch(intent)
+                }
             }
 
             // --- About Section ---

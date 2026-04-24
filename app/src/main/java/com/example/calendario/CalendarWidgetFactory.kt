@@ -71,16 +71,25 @@ class CalendarWidgetFactory(
             (prefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() ?: 0f
         }
         widgetFontFamily = prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
-        widgetFontBold = prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
+        
+        widgetFontBold = try {
+            prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
+        } catch (e: ClassCastException) {
+            val value = prefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD]
+            if (value is Boolean) value else WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
+        }
 
-        widgetEventColor = prefs.getInt(
-            WidgetConstants.KEY_WIDGET_EVENT_COLOR,
-            WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
-        )
-        widgetTodayEventColor = prefs.getInt(
-            WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR,
-            WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
-        )
+        widgetEventColor = try {
+            prefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
+        } catch (e: ClassCastException) {
+            (prefs.all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
+        }
+
+        widgetTodayEventColor = try {
+            prefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
+        } catch (e: ClassCastException) {
+            (prefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
+        }
 
         Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, AjusteTexto=$textBoost, Fuente=$widgetFontFamily, Bold=$widgetFontBold")
     }

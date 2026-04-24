@@ -29,8 +29,8 @@ object BackupManager {
             metadata.put("appVersion", pInfo.versionName)
             fullBackupJson.put(KEY_BACKUP_METADATA, metadata)
 
-            // 2. App Preferences (All)
-            val appPrefsMap = appPrefs.all
+            // 2. App Preferences (All except colors)
+            val appPrefsMap = appPrefs.all.filterKeys { !isColorKey(it) }
             fullBackupJson.put(KEY_APP_PREFS, JSONObject(appPrefsMap))
 
             // 3. Widget Preferences (All)
@@ -65,15 +65,25 @@ object BackupManager {
 
             // Importar App Prefs
             val appJson = json.optJSONObject(KEY_APP_PREFS)
+            var restoredLightThemeName: String? = null
+            var restoredDarkThemeName: String? = null
+            
             appJson?.let {
                 val editor = appPrefs.edit()
                 editor.clear()
                 val keys = it.keys()
                 while (keys.hasNext()) {
                     val key = keys.next()
+                    if (isColorKey(key)) continue // Ignorar colores individuales, se restaurarán vía tema
                     val value = it.get(key)
                     if (value != null && value != JSONObject.NULL) {
                         putPreference(editor, key, value)
+                        if (key == AppConstants.KEY_LIGHT_THEME_NAME) {
+                            restoredLightThemeName = value.toString()
+                        }
+                        if (key == AppConstants.KEY_DARK_THEME_NAME) {
+                            restoredDarkThemeName = value.toString()
+                        }
                     }
                 }
                 editor.apply()
@@ -87,6 +97,7 @@ object BackupManager {
                 val keys = it.keys()
                 while (keys.hasNext()) {
                     val key = keys.next()
+                    if (isColorKey(key)) continue // Ignorar colores en la importación
                     val value = it.get(key)
                     if (value != null && value != JSONObject.NULL) {
                         putPreference(editor, key, value)
@@ -95,11 +106,44 @@ object BackupManager {
                 editor.apply()
             }
 
+            // Aplicar colores de los temas restaurados si existen
+            restoredLightThemeName?.let { themeName ->
+                applyBundledThemeColors(context, themeName, false)
+            }
+            restoredDarkThemeName?.let { themeName ->
+                applyBundledThemeColors(context, themeName, true)
+            }
+
             onComplete()
+
             Toast.makeText(context, R.string.backup_imported_successfully, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(context, context.getString(R.string.error_importing_backup, e.message), Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun applyBundledThemeColors(context: Context, themeName: String, isDark: Boolean) {
+        val themeMap = BundledThemes.themes.find { 
+            (it["themeManifest"] as? Map<*, *>)?.get("name") == themeName 
+        } ?: return
+
+        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<String, String> ?: return
+        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        colorMap.forEach { (key, hex) ->
+            try {
+                editor.putInt(key, android.graphics.Color.parseColor(hex))
+            } catch (e: Exception) {
+                // Ignorar colores inválidos
+            }
+        }
+        editor.apply()
+    }
+
+    private fun isColorKey(key: String): Boolean {
+        return (key.startsWith("light_") || key.startsWith("dark_")) &&
+                key != AppConstants.KEY_LIGHT_THEME_NAME &&
+                key != AppConstants.KEY_DARK_THEME_NAME
     }
 
     private fun putPreference(editor: android.content.SharedPreferences.Editor, key: String, value: Any) {
