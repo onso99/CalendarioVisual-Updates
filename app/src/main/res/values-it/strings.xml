@@ -235,4 +235,15 @@
     <string name="font_monospace">Monospace (Larghezza fissa)</string>
     <string name="font_condensed">Condensato (Stretto)</string>
     <string name="share_event">Condividi evento</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Backup completo</string>
+    <string name="export_full_backup">Crea backup</string>
+    <string name="import_full_backup">Ripristina backup</string>
+    <string name="backup_exported_successfully">Backup creato con successo</string>
+    <string name="backup_imported_successfully">Backup ripristinato con successo</string>
+    <string name="error_exporting_backup">Errore durante la creazione del backup: %1$s</string>
+    <string name="error_importing_backup">Errore durante il ripristino del backup: %1$s</string>
+    <string name="invalid_backup_file">File di backup non valido</string>
+    <string name="custom_theme_needs_reimport">Il tema personalizzato \"%1$s\" non è stato trovato. Reimportalo manualmente per recuperare i colori.</string>
 </resources>

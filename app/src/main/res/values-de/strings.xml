@@ -233,4 +233,15 @@
     <string name="font_monospace">Monospace (Feste Breite)</string>
     <string name="font_condensed">Kondensiert (Schmal)</string>
     <string name="share_event">Ereignis teilen</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Vollständiges Backup</string>
+    <string name="export_full_backup">Backup erstellen</string>
+    <string name="import_full_backup">Backup wiederherstellen</string>
+    <string name="backup_exported_successfully">Backup erfolgreich erstellt</string>
+    <string name="backup_imported_successfully">Backup erfolgreich wiederhergestellt</string>
+    <string name="error_exporting_backup">Fehler beim Erstellen des Backups: %1$s</string>
+    <string name="error_importing_backup">Fehler beim Wiederherstellen des Backups: %1$s</string>
+    <string name="invalid_backup_file">Ungültige Backup-Datei</string>
+    <string name="custom_theme_needs_reimport">Das benutzerdefinierte Design \"%1$s\" wurde nicht gefunden. Bitte importieren Sie es manuell neu, um die Farben wiederherzustellen.</string>
 </resources>

@@ -234,4 +234,15 @@
     <string name="font_monospace">Monospace (等幅)</string>
     <string name="font_condensed">凝縮 (幅狭)</string>
     <string name="share_event">イベントを共有</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">完全なバックアップ</string>
+    <string name="export_full_backup">バックアップを作成</string>
+    <string name="import_full_backup">バックアップを復元</string>
+    <string name="backup_exported_successfully">バックアップが正常に作成されました</string>
+    <string name="backup_imported_successfully">バックアップが正常に復元されました</string>
+    <string name="error_exporting_backup">バックアップ作成中にエラーが発生しました: %1$s</string>
+    <string name="error_importing_backup">バックアップ復元中にエラーが発生しました: %1$s</string>
+    <string name="invalid_backup_file">無効なバックアップファイル</string>
+    <string name="custom_theme_needs_reimport">カスタムテーマ \"%1$s\" が見つかりません。色を復元するには、手動で再インポートしてください。</string>
 </resources>

@@ -235,4 +235,15 @@
     <string name="font_monospace">Monospace (Фиксированная ширина)</string>
     <string name="font_condensed">Сжатый (Узкий)</string>
     <string name="share_event">Поделиться событием</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Полное резервное копирование</string>
+    <string name="export_full_backup">Создать резервную копию</string>
+    <string name="import_full_backup">Восстановить из копии</string>
+    <string name="backup_exported_successfully">Резервная копия успешно создана</string>
+    <string name="backup_imported_successfully">Данные успешно восстановлены</string>
+    <string name="error_exporting_backup">Ошибка при создании копии: %1$s</string>
+    <string name="error_importing_backup">Ошибка при восстановлении данных: %1$s</string>
+    <string name="invalid_backup_file">Недопустимый файл резервной копии</string>
+    <string name="custom_theme_needs_reimport">Пользовательская тема \"%1$s\" не найдена. Переимпортируйте её вручную для восстановления цветов.</string>
 </resources>

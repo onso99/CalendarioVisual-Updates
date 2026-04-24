@@ -234,4 +234,15 @@
     <string name="font_monospace">Monospace (Ancho fixo)</string>
     <string name="font_condensed">Condensada (Estreita)</string>
     <string name="share_event">Compartir evento</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Copia de seguridade completa</string>
+    <string name="export_full_backup">Crear copia de seguridade</string>
+    <string name="import_full_backup">Restaurar copia de seguridade</string>
+    <string name="backup_exported_successfully">Copia de seguridade creada con éxito</string>
+    <string name="backup_imported_successfully">Copia de seguridade restaurada con éxito</string>
+    <string name="error_exporting_backup">Erro ao crear a copia: %1$s</string>
+    <string name="error_importing_backup">Erro ao restaurar a copia: %1$s</string>
+    <string name="invalid_backup_file">Ficheiro de copia de seguridade non válido</string>
+    <string name="custom_theme_needs_reimport">O tema personalizado \"%1$s\" non se atopou. Por favor, vólveo importar manualmente para recuperar as cores.</string>
 </resources>

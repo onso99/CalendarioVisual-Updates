@@ -234,4 +234,15 @@
     <string name="font_monospace">Monospace (Fixed width)</string>
     <string name="font_condensed">Condensed (Narrow)</string>
     <string name="share_event">Share event</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Full Backup</string>
+    <string name="export_full_backup">Create backup</string>
+    <string name="import_full_backup">Restore backup</string>
+    <string name="backup_exported_successfully">Backup created successfully</string>
+    <string name="backup_imported_successfully">Backup restored successfully</string>
+    <string name="error_exporting_backup">Error creating backup: %1$s</string>
+    <string name="error_importing_backup">Error restoring backup: %1$s</string>
+    <string name="invalid_backup_file">Invalid backup file</string>
+    <string name="custom_theme_needs_reimport">The custom theme \"%1$s\" was not found. Please re-import it manually to recover colors.</string>
 </resources>

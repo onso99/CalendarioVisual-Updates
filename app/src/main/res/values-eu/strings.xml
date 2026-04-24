@@ -235,4 +235,15 @@
     <string name="font_monospace">Monospace (Zabalera finkoa)</string>
     <string name="font_condensed">Kondentsatua (Estua)</string>
     <string name="share_event">Partekatu ekitaldia</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Segurtasun-kopia osoa</string>
+    <string name="export_full_backup">Sortu segurtasun-kopia</string>
+    <string name="import_full_backup">Berrezarri segurtasun-kopia</string>
+    <string name="backup_exported_successfully">Segurtasun-kopia ongi sortu da</string>
+    <string name="backup_imported_successfully">Segurtasun-kopia ongi berrezarri da</string>
+    <string name="error_exporting_backup">Errorea kopia sortzean: %1$s</string>
+    <string name="error_importing_backup">Errorea kopia berrezartzean: %1$s</string>
+    <string name="invalid_backup_file">Segurtasun-kopiaren fitxategi baliogabea</string>
+    <string name="custom_theme_needs_reimport">\"%1$s\" gai pertsonalizatua ez da aurkitu. Mesedez, inportatu berriro eskuz koloreak berreskuratzeko.</string>
 </resources>

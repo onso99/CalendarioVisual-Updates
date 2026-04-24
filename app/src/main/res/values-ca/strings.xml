@@ -235,4 +235,15 @@
     <string name="font_monospace">Monospace (Ample fix)</string>
     <string name="font_condensed">Condensada (Estreta)</string>
     <string name="share_event">Compartir esdeveniment</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Còpia de seguretat completa</string>
+    <string name="export_full_backup">Crear còpia de seguretat</string>
+    <string name="import_full_backup">Restaurar còpia de seguretat</string>
+    <string name="backup_exported_successfully">Còpia de seguretat creada amb èxit</string>
+    <string name="backup_imported_successfully">Còpia de seguretat restaurada amb èxit</string>
+    <string name="error_exporting_backup">Error en crear la còpia: %1$s</string>
+    <string name="error_importing_backup">Error en restaurar la còpia: %1$s</string>
+    <string name="invalid_backup_file">Fitxer de còpia de seguretat no vàlid</string>
+    <string name="custom_theme_needs_reimport">El tema personalitzat \"%1$s\" no s\'ha trobat. Si us plau, torna a importar-lo manualment per recuperar els colors.</string>
 </resources>

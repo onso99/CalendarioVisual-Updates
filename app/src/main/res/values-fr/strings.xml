@@ -234,4 +234,15 @@
     <string name="font_monospace">Monospace (Largeur fixe)</string>
     <string name="font_condensed">Condensée (Étroite)</string>
     <string name="share_event">Partager l\'événement</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">Sauvegarde complète</string>
+    <string name="export_full_backup">Créer une sauvegarde</string>
+    <string name="import_full_backup">Restaurer la sauvegarde</string>
+    <string name="backup_exported_successfully">Sauvegarde créée avec succès</string>
+    <string name="backup_imported_successfully">Sauvegarde restaurée avec succès</string>
+    <string name="error_exporting_backup">Erreur lors de la création de la sauvegarde : %1$s</string>
+    <string name="error_importing_backup">Erreur lors de la restauration de la sauvegarde : %1$s</string>
+    <string name="invalid_backup_file">Fichier de sauvegarde non valide</string>
+    <string name="custom_theme_needs_reimport">Le thème personnalisé \"%1$s\" est introuvable. Veuillez le réimporter manuellement pour récupérer les couleurs.</string>
 </resources>

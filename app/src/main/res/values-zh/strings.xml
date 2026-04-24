@@ -235,4 +235,15 @@
     <string name="font_monospace">等宽字体 (固定宽度)</string>
     <string name="font_condensed">紧凑体 (窄体)</string>
     <string name="share_event">分享活动</string>
+
+    <!-- Backup -->
+    <string name="backup_section_title">完整备份</string>
+    <string name="export_full_backup">创建备份</string>
+    <string name="import_full_backup">还原备份</string>
+    <string name="backup_exported_successfully">备份创建成功</string>
+    <string name="backup_imported_successfully">备份还原成功</string>
+    <string name="error_exporting_backup">创建备份时出错：%1$s</string>
+    <string name="error_importing_backup">还原备份时出错：%1$s</string>
+    <string name="invalid_backup_file">备份文件无效</string>
+    <string name="custom_theme_needs_reimport">未找到自定义主题 \"%1$s\"。请手动重新导入以恢复颜色。</string>
 </resources>
