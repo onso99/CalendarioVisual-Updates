@@ -48,8 +48,9 @@ fun MonthlyEventList(
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: "" }
-    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
+    val themeColors = CalendarioTheme.colors
+    val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: "" }
+    val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "") ?: "" }
 
     Box(modifier = modifier) {
         if (finalEventsToList.isEmpty()) {
@@ -75,10 +76,10 @@ fun MonthlyEventList(
                     festivos.forEach { festivo ->
 
                         val normalizedTitle = festivo.title.unaccent().lowercase()
-                        val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
-                        val esCumpleanos = festivo.isBirthday && !esFestivo
                         val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
                         val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
+                        val esCumpleanos = festivo.isBirthday
+                        val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
 
                         val textColor = if (isTodayEvents) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
@@ -88,8 +89,8 @@ fun MonthlyEventList(
                             when {
                                 esEvento1 -> CalendarioTheme.colors.textEvent1
                                 esEvento2 -> CalendarioTheme.colors.textEvent2
-                                esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                 esCumpleanos -> CalendarioTheme.colors.textBirthday
+                                esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                 else -> CalendarioTheme.colors.textEventDefault
                             }
                         }

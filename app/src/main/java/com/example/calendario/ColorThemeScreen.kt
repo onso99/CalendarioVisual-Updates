@@ -68,7 +68,8 @@ import java.lang.IllegalArgumentException
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ColorThemeScreen(
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    onThemeUpdated: () -> Unit
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -138,6 +139,7 @@ fun ColorThemeScreen(
                                 remove(AppConstants.KEY_LIGHT_THEME_NAME)
                                 remove(AppConstants.KEY_DARK_THEME_NAME)
                             }
+                            onThemeUpdated()
                             onBackPress()
                         }) {
                             Icon(Icons.Default.Check, stringResource(id = R.string.apply_changes), tint = MaterialTheme.colorScheme.onPrimary)

@@ -313,19 +313,48 @@ suspend fun readFestivosFromCalendarsSuspend(
     val holidayCalendarIds = mutableSetOf<Long>()
     val birthdayCalendarIds = mutableSetOf<Long>()
     
-    // Identify special calendars by OWNER_ACCOUNT
+    // Identify special calendars by OWNER_ACCOUNT, NAME, DISPLAY_NAME and ACCOUNT_TYPE
     try {
-        val calProjection = arrayOf(CalendarContract.Calendars._ID, CalendarContract.Calendars.OWNER_ACCOUNT)
+        val calProjection = arrayOf(
+            CalendarContract.Calendars._ID,
+            CalendarContract.Calendars.OWNER_ACCOUNT,
+            CalendarContract.Calendars.NAME,
+            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+            CalendarContract.Calendars.ACCOUNT_TYPE
+        )
         val calSelection = "${CalendarContract.Calendars._ID} IN (${selectedCalendarIds.joinToString(",")})"
         resolver.query(CalendarContract.Calendars.CONTENT_URI, calProjection, calSelection, null, null)?.use { cursor ->
             val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
             val ownerCol = cursor.getColumnIndexOrThrow(CalendarContract.Calendars.OWNER_ACCOUNT)
+            val nameCol = cursor.getColumnIndex(CalendarContract.Calendars.NAME)
+            val displayNameCol = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
+            val accountTypeCol = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE)
+            
+            val birthdayMarkers = listOf("birthday", "contacts", "cumple", "aniv", "anniv", "gebur", "compl", "födelse", "születés", "doğum", "urodzin")
+
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idCol)
-                val owner = cursor.getStringOrNull(ownerCol) ?: ""
-                if (owner.contains("#holiday@group.v.calendar.google.com")) {
+                val rawOwner = cursor.getStringOrNull(ownerCol) ?: ""
+                val rawName = if (nameCol != -1) cursor.getStringOrNull(nameCol) ?: "" else ""
+                val rawDisplayName = if (displayNameCol != -1) cursor.getStringOrNull(displayNameCol) ?: "" else ""
+                val rawAccountType = if (accountTypeCol != -1) cursor.getStringOrNull(accountTypeCol) ?: "" else ""
+
+                val owner = rawOwner.lowercase()
+                val name = rawName.lowercase()
+                val displayName = rawDisplayName.lowercase()
+                val accountType = rawAccountType.lowercase()
+
+                if (owner.contains("#holiday@group.v.calendar.google.com") || 
+                    owner.contains("holiday") || 
+                    displayName.contains("festivo") || 
+                    displayName.contains("holiday")) {
                     holidayCalendarIds.add(id)
-                } else if (owner.contains("addressbook#contacts@group.v.calendar.google.com")) {
+                } else if (birthdayMarkers.any { owner.contains(it) } || 
+                           birthdayMarkers.any { name.contains(it) } || 
+                           birthdayMarkers.any { displayName.contains(it) } || 
+                           birthdayMarkers.any { accountType.contains(it) } ||
+                           accountType.contains("com.google.android.gms.birthday") ||
+                           accountType.contains("com.android.contacts")) {
                     birthdayCalendarIds.add(id)
                 }
             }
@@ -355,7 +384,8 @@ suspend fun readFestivosFromCalendarsSuspend(
         CalendarContract.Instances.BEGIN,
         CalendarContract.Instances.END,
         CalendarContract.Instances.TITLE,
-        CalendarContract.Instances.ALL_DAY
+        CalendarContract.Instances.ALL_DAY,
+        CalendarContract.Instances.ORGANIZER
     )
     val instancesSelection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
@@ -372,14 +402,19 @@ suspend fun readFestivosFromCalendarsSuspend(
 
         val rruleMap = mutableMapOf<Long, String>()
         if (eventIds.isNotEmpty()) {
-            val eventsProjection = arrayOf(CalendarContract.Events._ID, CalendarContract.Events.RRULE)
+            val eventsProjection = arrayOf(
+                CalendarContract.Events._ID, 
+                CalendarContract.Events.RRULE
+            )
             val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
             resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { cursor ->
                 val idColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
                 val rruleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
+                
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(idColumn)
                     val rrule = cursor.getStringOrNull(rruleColumn)
+                    
                     if (rrule != null) {
                         rruleMap[eventId] = rrule
                     }
@@ -397,6 +432,7 @@ suspend fun readFestivosFromCalendarsSuspend(
             val endColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.END)
             val titleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
             val allDayColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
+            val organizerColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ORGANIZER)
 
             while (cursor.moveToNext() && continuation.isActive) {
                 val eventId = cursor.getLong(eventIdColumn)
@@ -405,6 +441,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                 val endMillis = cursor.getLong(endColumn)
                 val title = cursor.getStringOrNull(titleColumn)?.trim() ?: ""
                 val isAllDay = cursor.getInt(allDayColumn) == 1
+                val organizer = cursor.getStringOrNull(organizerColumn) ?: ""
 
                 if (title.isNotBlank() || isAllDay) { 
                     val startInstant = Instant.ofEpochMilli(beginMillis)
@@ -413,8 +450,15 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val startTime = if (isAllDay) null else startInstant.atZone(systemZoneId).toLocalTime()
                     val endTime = if (isAllDay) null else endInstant.atZone(systemZoneId).toLocalTime()
                     
-                    val isBirthday = birthdayCalendarIds.contains(calendarId)
+                    val isBirthdayCalendar = birthdayCalendarIds.contains(calendarId)
                     val isSystemHolidaySource = holidayCalendarIds.contains(calendarId)
+                    
+                    // New per-event birthday detection
+                    val isBirthdayEvent = isBirthdayCalendar || 
+                                          organizer.contains("birthday", ignoreCase = true) ||
+                                          organizer.contains("contacts", ignoreCase = true) ||
+                                          title.contains("cumpleaños", ignoreCase = true) ||
+                                          title.contains("birthday", ignoreCase = true)
                     
                     // Logic for isFromHolidaySource with adjustments (3-level hierarchical matching)
                     var isFromHoliday = isSystemHolidaySource
@@ -451,7 +495,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
                         age = null,
-                        isBirthday = isBirthday
+                        isBirthday = isBirthdayEvent
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }
