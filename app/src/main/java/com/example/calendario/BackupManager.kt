@@ -29,8 +29,8 @@ object BackupManager {
             metadata.put("appVersion", pInfo.versionName)
             fullBackupJson.put(KEY_BACKUP_METADATA, metadata)
 
-            // 2. App Preferences (All except colors)
-            val appPrefsMap = appPrefs.all.filterKeys { !isColorKey(it) }
+            // 2. App Preferences (All including custom colors)
+            val appPrefsMap = appPrefs.all
             fullBackupJson.put(KEY_APP_PREFS, JSONObject(appPrefsMap))
 
             // 3. Widget Preferences (All)
@@ -74,7 +74,6 @@ object BackupManager {
                 val keys = it.keys()
                 while (keys.hasNext()) {
                     val key = keys.next()
-                    if (isColorKey(key)) continue // Ignorar colores individuales, se restaurarán vía tema
                     val value = it.get(key)
                     if (value != null && value != JSONObject.NULL) {
                         putPreference(editor, key, value)
@@ -97,7 +96,6 @@ object BackupManager {
                 val keys = it.keys()
                 while (keys.hasNext()) {
                     val key = keys.next()
-                    if (isColorKey(key)) continue // Ignorar colores en la importación
                     val value = it.get(key)
                     if (value != null && value != JSONObject.NULL) {
                         putPreference(editor, key, value)
@@ -106,12 +104,17 @@ object BackupManager {
                 editor.apply()
             }
 
-            // Aplicar colores de los temas restaurados si existen
-            restoredLightThemeName?.let { themeName ->
-                applyBundledThemeColors(context, themeName, false)
-            }
-            restoredDarkThemeName?.let { themeName ->
-                applyBundledThemeColors(context, themeName, true)
+            // Aplicar colores de los temas restaurados SOLO si no hay colores individuales presentes
+            // (Para compatibilidad con backups antiguos que no incluían colores)
+            val hasIndividualColors = appJson?.keys()?.asSequence()?.any { it.startsWith("light_") || it.startsWith("dark_") } ?: false
+            
+            if (!hasIndividualColors) {
+                restoredLightThemeName?.let { themeName ->
+                    applyBundledThemeColors(context, themeName, false)
+                }
+                restoredDarkThemeName?.let { themeName ->
+                    applyBundledThemeColors(context, themeName, true)
+                }
             }
 
             onComplete()
@@ -140,11 +143,7 @@ object BackupManager {
         editor.apply()
     }
 
-    private fun isColorKey(key: String): Boolean {
-        return (key.startsWith("light_") || key.startsWith("dark_")) &&
-                key != AppConstants.KEY_LIGHT_THEME_NAME &&
-                key != AppConstants.KEY_DARK_THEME_NAME
-    }
+
 
     private fun putPreference(editor: android.content.SharedPreferences.Editor, key: String, value: Any) {
         // Mapeo explícito de tipos para evitar ClassCastException al restaurar desde JSON
