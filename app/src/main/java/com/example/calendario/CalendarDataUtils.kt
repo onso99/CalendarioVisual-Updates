@@ -401,22 +401,37 @@ suspend fun readFestivosFromCalendarsSuspend(
         }
 
         val rruleMap = mutableMapOf<Long, String>()
+        val birthYearMap = mutableMapOf<Long, Int>()
+
         if (eventIds.isNotEmpty()) {
             val eventsProjection = arrayOf(
                 CalendarContract.Events._ID, 
-                CalendarContract.Events.RRULE
+                CalendarContract.Events.RRULE,
+                CalendarContract.Events.DTSTART
             )
             val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
             resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { cursor ->
                 val idColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
                 val rruleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
+                val dtStartColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
                 
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(idColumn)
                     val rrule = cursor.getStringOrNull(rruleColumn)
+                    val dtStart = cursor.getLong(dtStartColumn)
                     
                     if (rrule != null) {
                         rruleMap[eventId] = rrule
+                    }
+                    
+                    // Aceptamos valores negativos (fechas antes de 1970)
+                    if (dtStart != 0L) {
+                        try {
+                            val birthDate = Instant.ofEpochMilli(dtStart).atZone(ZoneId.of("UTC")).toLocalDate()
+                            if (birthDate.year > 1900) {
+                                birthYearMap[eventId] = birthDate.year
+                            }
+                        } catch (_: Exception) { }
                     }
                 }
             }
@@ -453,12 +468,14 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val isBirthdayCalendar = birthdayCalendarIds.contains(calendarId)
                     val isSystemHolidaySource = holidayCalendarIds.contains(calendarId)
                     
-                    // New per-event birthday detection
+                    // New per-event birthday detection (Híbrida: Calendario, Organizador o Título)
                     val isBirthdayEvent = isBirthdayCalendar || 
                                           organizer.contains("birthday", ignoreCase = true) ||
                                           organizer.contains("contacts", ignoreCase = true) ||
                                           title.contains("cumpleaños", ignoreCase = true) ||
-                                          title.contains("birthday", ignoreCase = true)
+                                          title.contains("birthday", ignoreCase = true) ||
+                                          title.contains("anniversary", ignoreCase = true) ||
+                                          title.contains("aniversario", ignoreCase = true)
                     
                     // Logic for isFromHolidaySource with adjustments (3-level hierarchical matching)
                     var isFromHoliday = isSystemHolidaySource
@@ -483,6 +500,18 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHoliday = true
                     }
 
+                    val birthYear = birthYearMap[eventId]
+                    val isOldEvent = birthYear != null && birthYear < startDate.year
+                    
+                    // Si es un evento de todo el día que empezó en el pasado, lo tratamos como cumpleaños para aplicar color/edad
+                    val isEffectiveBirthday = isBirthdayEvent || (isAllDay && isOldEvent && rruleMap[eventId]?.contains("YEARLY") == true)
+
+                    val calculatedAge = if (isEffectiveBirthday) {
+                        if (birthYear != null && birthYear > 1900) {
+                            startDate.year - birthYear
+                        } else null
+                    } else null
+
                     val festivo = Festivo(
                         id = eventId,
                         title = title,
@@ -494,8 +523,8 @@ suspend fun readFestivosFromCalendarsSuspend(
                         calendarId = calendarId,
                         isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
-                        age = null,
-                        isBirthday = isBirthdayEvent
+                        age = calculatedAge,
+                        isBirthday = isEffectiveBirthday
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }
