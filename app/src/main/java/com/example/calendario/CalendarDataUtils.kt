@@ -312,6 +312,7 @@ suspend fun readFestivosFromCalendarsSuspend(
 
     val holidayCalendarIds = mutableSetOf<Long>()
     val birthdayCalendarIds = mutableSetOf<Long>()
+    val accountNames = mutableSetOf<String>()
     
     // Identify special calendars by OWNER_ACCOUNT, NAME, DISPLAY_NAME and ACCOUNT_TYPE
     try {
@@ -338,6 +339,9 @@ suspend fun readFestivosFromCalendarsSuspend(
                 val rawName = if (nameCol != -1) cursor.getStringOrNull(nameCol) ?: "" else ""
                 val rawDisplayName = if (displayNameCol != -1) cursor.getStringOrNull(displayNameCol) ?: "" else ""
                 val rawAccountType = if (accountTypeCol != -1) cursor.getStringOrNull(accountTypeCol) ?: "" else ""
+                
+                // Guardamos el nombre de la cuenta para identificar eventos del usuario
+                accountNames.add(rawOwner.lowercase())
 
                 val owner = rawOwner.lowercase()
                 val name = rawName.lowercase()
@@ -468,14 +472,14 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val isBirthdayCalendar = birthdayCalendarIds.contains(calendarId)
                     val isSystemHolidaySource = holidayCalendarIds.contains(calendarId)
                     
-                    // New per-event birthday detection (Híbrida: Calendario, Organizador o Título)
+                    // Detección técnica por origen (Calendario o Organizador) + Red de seguridad por Título
                     val isBirthdayEvent = isBirthdayCalendar || 
                                           organizer.contains("birthday", ignoreCase = true) ||
                                           organizer.contains("contacts", ignoreCase = true) ||
                                           title.contains("cumpleaños", ignoreCase = true) ||
                                           title.contains("birthday", ignoreCase = true) ||
-                                          title.contains("anniversary", ignoreCase = true) ||
-                                          title.contains("aniversario", ignoreCase = true)
+                                          title.contains("aniversario", ignoreCase = true) ||
+                                          title.contains("anniversary", ignoreCase = true)
                     
                     // Logic for isFromHolidaySource with adjustments (3-level hierarchical matching)
                     var isFromHoliday = isSystemHolidaySource
@@ -500,13 +504,9 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHoliday = true
                     }
 
-                    val birthYear = birthYearMap[eventId]
-                    val isOldEvent = birthYear != null && birthYear < startDate.year
-                    
-                    // Si es un evento de todo el día que empezó en el pasado, lo tratamos como cumpleaños para aplicar color/edad
-                    val isEffectiveBirthday = isBirthdayEvent || (isAllDay && isOldEvent && rruleMap[eventId]?.contains("YEARLY") == true)
-
-                    val calculatedAge = if (isEffectiveBirthday) {
+                    // Si el evento está marcado como cumpleaños (por calendario, organizador o título), calculamos la edad
+                    val calculatedAge = if (isBirthdayEvent) {
+                        val birthYear = birthYearMap[eventId]
                         if (birthYear != null && birthYear > 1900) {
                             startDate.year - birthYear
                         } else null
@@ -524,7 +524,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
                         age = calculatedAge,
-                        isBirthday = isEffectiveBirthday
+                        isBirthday = isBirthdayEvent
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }
