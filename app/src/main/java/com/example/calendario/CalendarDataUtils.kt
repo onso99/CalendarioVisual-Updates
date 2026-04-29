@@ -415,6 +415,7 @@ suspend fun readFestivosFromCalendarsSuspend(
         val rruleMap = mutableMapOf<Long, String>()
         val birthYearMap = mutableMapOf<Long, Int>()
         val descriptionMap = mutableMapOf<Long, String>()
+        val locationMap = mutableMapOf<Long, String>()
         val birthdayEventIds = mutableSetOf<Long>()
 
         if (eventIds.isNotEmpty()) {
@@ -473,6 +474,10 @@ suspend fun readFestivosFromCalendarsSuspend(
                     
                     if (!description.isNullOrBlank()) {
                         descriptionMap[eventId] = description
+                    }
+                    
+                    if (!location.isNullOrBlank()) {
+                        locationMap[eventId] = location
                     }
                     
                     // Firma técnica de cumpleaños (independiente del idioma)
@@ -561,18 +566,22 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHoliday = true
                     }
 
-                    // Lógica de Identificación Basada en Recursos (Sugerencia del usuario)
-                    // Obtenemos la palabra clave "Cumpleaños" traducida al idioma actual
+                    // Triple Red de Seguridad (Refinada):
+                    // 1. Detección Técnica (Prioridad: Contactos oficiales de Google)
+                    // 2. Detección por Palabra Clave (Tu propuesta: Basada en R.string.birthdays)
+                    
+                    val isTechnicalBirthday = isBirthdayEvent || isBirthdayCalendar || organizer.contains("contacts@google.com")
+                    
                     val birthdayLabel = context.getString(R.string.birthdays).lowercase()
                     val titleLower = title.lowercase()
-                    
-                    // Es un cumpleaños si:
-                    // 1. Tiene marca técnica (Google Contacts / Organizer)
-                    // 2. O contiene la palabra clave traducida (y es anual + todo el día)
+                    // Detectamos "Cumpleaños" (traducido) o el prefijo común "cumple"
                     val hasBirthdayWord = titleLower.contains(birthdayLabel) || titleLower.contains("cumple")
+                    
                     val isYearly = rruleMap[eventId]?.contains("FREQ=YEARLY") ?: false
                     
-                    val finalIsBirthday = (isBirthdayEvent || (isYearly && isAllDay && hasBirthdayWord)) && !isFromHoliday
+                    // Un evento es cumpleaños si es Técnico O (Anual + Palabra clave).
+                    // Esto excluye santorales y aniversarios manuales que no digan "Cumpleaños".
+                    val finalIsBirthday = (isTechnicalBirthday || (isYearly && isAllDay && hasBirthdayWord)) && !isFromHoliday
 
                     // Calculamos la edad solo si es un cumpleaños confirmado
                     val birthYear = birthYearMap[eventId]
