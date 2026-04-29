@@ -28,7 +28,8 @@ data class FestivoDto(
     val isAllDay: Boolean,
     val rrule: String?,
     val age: Int?,
-    val isBirthday: Boolean? = false
+    val isBirthday: Boolean? = false,
+    val isFromHolidaySource: Boolean? = false
 )
 
 

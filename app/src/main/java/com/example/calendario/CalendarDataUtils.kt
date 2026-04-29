@@ -37,7 +37,8 @@ fun saveEventsToPrefs(context: Context, eventsByDate: Map<LocalDate, List<Festiv
                     isAllDay = festivo.isAllDay,
                     rrule = festivo.rrule,
                     age = festivo.age,
-                    isBirthday = festivo.isBirthday
+                    isBirthday = festivo.isBirthday,
+                    isFromHolidaySource = festivo.isFromHolidaySource
                 )
             }
         }
@@ -95,7 +96,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     },
                     isAllDay = dto.isAllDay,
                     calendarId = dto.id,
-                    isFromHolidaySource = false, 
+                    isFromHolidaySource = dto.isFromHolidaySource ?: false,
                     rrule = dto.rrule,
                     age = dto.age,
                     isBirthday = dto.isBirthday ?: false
@@ -353,14 +354,20 @@ suspend fun readFestivosFromCalendarsSuspend(
                     displayName.contains("festivo") || 
                     displayName.contains("holiday")) {
                     holidayCalendarIds.add(id)
-                } else if (birthdayMarkers.any { owner.contains(it) } || 
-                           birthdayMarkers.any { name.contains(it) } || 
-                           birthdayMarkers.any { displayName.contains(it) } || 
-                           birthdayMarkers.any { accountType.contains(it) } ||
-                           accountType.contains("com.google.android.gms.birthday") ||
-                           accountType.contains("com.android.contacts")) {
+                } 
+                
+                // Birthday detection (Technical ONLY - Language Independent)
+                val isBirthdayCal = accountType.contains("com.google.android.gms.birthday") || 
+                                   accountType.contains("com.android.contacts") ||
+                                   owner.contains("#contacts@group.v.calendar.google.com") ||
+                                   owner.contains("birthday") ||
+                                   displayName.contains("birthday")
+
+                if (isBirthdayCal) {
                     birthdayCalendarIds.add(id)
                 }
+                
+                Log.d("CalendarDiag", "Calendario: $displayName | ID: $id | Propietario: $owner | Type: $accountType | EsCumple: $isBirthdayCal")
             }
         }
     } catch (e: Exception) {
@@ -406,32 +413,70 @@ suspend fun readFestivosFromCalendarsSuspend(
 
         val rruleMap = mutableMapOf<Long, String>()
         val birthYearMap = mutableMapOf<Long, Int>()
+        val birthdayEventIds = mutableSetOf<Long>()
 
         if (eventIds.isNotEmpty()) {
             val eventsProjection = arrayOf(
                 CalendarContract.Events._ID, 
                 CalendarContract.Events.RRULE,
-                CalendarContract.Events.DTSTART
+                CalendarContract.Events.DTSTART,
+                CalendarContract.Events.CUSTOM_APP_PACKAGE,
+                CalendarContract.Events.ORGANIZER,
+                CalendarContract.Events.SYNC_DATA1,
+                CalendarContract.Events.SYNC_DATA2,
+                CalendarContract.Events.TITLE // Solo para diagnóstico
             )
             val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
             resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { cursor ->
                 val idColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
                 val rruleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
                 val dtStartColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
+                val packageColumn = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
+                val organizerColumn = cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)
+                val sync1Column = cursor.getColumnIndexOrThrow(CalendarContract.Events.SYNC_DATA1)
+                val sync2Column = cursor.getColumnIndexOrThrow(CalendarContract.Events.SYNC_DATA2)
+                val titleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.TITLE)
                 
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(idColumn)
                     val rrule = cursor.getStringOrNull(rruleColumn)
                     val dtStart = cursor.getLong(dtStartColumn)
+                    val appPackage = if (packageColumn != -1) cursor.getStringOrNull(packageColumn) ?: "" else ""
+                    val organizer = if (organizerColumn != -1) cursor.getStringOrNull(organizerColumn) ?: "" else ""
+                    val sync1 = cursor.getStringOrNull(sync1Column) ?: ""
+                    val sync2 = cursor.getStringOrNull(sync2Column) ?: ""
+                    val evTitle = cursor.getStringOrNull(titleColumn) ?: ""
                     
+                    if (evTitle.contains("Juan", ignoreCase = true) || evTitle.contains("Rosa", ignoreCase = true)) {
+                        Log.e("AgeDiag", "EVENTO: $evTitle")
+                        Log.e("AgeDiag", " - Package: $appPackage")
+                        Log.e("AgeDiag", " - Organizer: $organizer")
+                        Log.e("AgeDiag", " - Sync1: $sync1")
+                        Log.e("AgeDiag", " - Sync2: $sync2")
+                        Log.e("AgeDiag", " - RRULE: $rrule")
+                    }
+
                     if (rrule != null) {
                         rruleMap[eventId] = rrule
                     }
                     
-                    // Aceptamos valores negativos (fechas antes de 1970)
+                    // Firma técnica de cumpleaños (independiente del idioma)
+                    val isSystemBirthday = appPackage.contains("contacts", ignoreCase = true) || 
+                                         organizer.contains("birthday", ignoreCase = true) ||
+                                         organizer.contains("contacts", ignoreCase = true) ||
+                                         sync1.contains("birthday", ignoreCase = true)
+                    
+                    if (isSystemBirthday) {
+                        birthdayEventIds.add(eventId)
+                    }
+
                     if (dtStart != 0L) {
                         try {
                             val birthDate = Instant.ofEpochMilli(dtStart).atZone(ZoneId.of("UTC")).toLocalDate()
+                            // Log para depuración de edad
+                            if (evTitle.contains("Juan", ignoreCase = true) || evTitle.contains("Rosa", ignoreCase = true)) {
+                                Log.e("AgeDiag", "EVENTO: $evTitle | DTSTART Year: ${birthDate.year} | Sync2: $sync2")
+                            }
                             if (birthDate.year > 1900) {
                                 birthYearMap[eventId] = birthDate.year
                             }
@@ -472,14 +517,8 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val isBirthdayCalendar = birthdayCalendarIds.contains(calendarId)
                     val isSystemHolidaySource = holidayCalendarIds.contains(calendarId)
                     
-                    // Detección técnica por origen (Calendario o Organizador) + Red de seguridad por Título
-                    val isBirthdayEvent = isBirthdayCalendar || 
-                                          organizer.contains("birthday", ignoreCase = true) ||
-                                          organizer.contains("contacts", ignoreCase = true) ||
-                                          title.contains("cumpleaños", ignoreCase = true) ||
-                                          title.contains("birthday", ignoreCase = true) ||
-                                          title.contains("aniversario", ignoreCase = true) ||
-                                          title.contains("anniversary", ignoreCase = true)
+                    // Detección 100% técnica (Calendario o Firma de App/Organizador)
+                    val isBirthdayEvent = isBirthdayCalendar || birthdayEventIds.contains(eventId)
                     
                     // Logic for isFromHolidaySource with adjustments (3-level hierarchical matching)
                     var isFromHoliday = isSystemHolidaySource
@@ -504,13 +543,21 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHoliday = true
                     }
 
-                    // Si el evento está marcado como cumpleaños (por calendario, organizador o título), calculamos la edad
-                    val calculatedAge = if (isBirthdayEvent) {
-                        val birthYear = birthYearMap[eventId]
-                        if (birthYear != null && birthYear > 1900) {
-                            startDate.year - birthYear
-                        } else null
+                    // Si el evento está en un calendario de cumpleaños o marcado técnicamente, lo forzamos
+                    // O si detectamos un año de nacimiento antiguo en el evento original (marcador implícito)
+                    val birthYear = birthYearMap[eventId]
+                    val isOldEvent = birthYear != null && birthYear > 1900 && birthYear < (startDate.year - 1)
+                    val finalIsBirthday = isBirthdayEvent || isBirthdayCalendar || isOldEvent
+
+                    // Si el evento está marcado como cumpleaños, calculamos la edad
+                    val calculatedAge = if (finalIsBirthday && birthYear != null) {
+                        startDate.year - birthYear
                     } else null
+
+                    // Log de depuración para confirmar el cálculo en el bucle final
+                    if (finalIsBirthday || title.contains("Juan", true) || title.contains("Rosa", true) || title.contains("Cruz", true)) {
+                        Log.e("AgeDiag", "PROCESANDO: $title | EsCumple: $finalIsBirthday | ID: $eventId | AñoNac: $birthYear | Edad: $calculatedAge")
+                    }
 
                     val festivo = Festivo(
                         id = eventId,
@@ -524,7 +571,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                         isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId],
                         age = calculatedAge,
-                        isBirthday = isBirthdayEvent
+                        isBirthday = finalIsBirthday
                     )
                     finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
                 }
