@@ -396,7 +396,8 @@ suspend fun readFestivosFromCalendarsSuspend(
         CalendarContract.Instances.END,
         CalendarContract.Instances.TITLE,
         CalendarContract.Instances.ALL_DAY,
-        CalendarContract.Instances.ORGANIZER
+        CalendarContract.Instances.ORGANIZER,
+        CalendarContract.Instances.AVAILABILITY
     )
     val instancesSelection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
@@ -413,6 +414,7 @@ suspend fun readFestivosFromCalendarsSuspend(
 
         val rruleMap = mutableMapOf<Long, String>()
         val birthYearMap = mutableMapOf<Long, Int>()
+        val descriptionMap = mutableMapOf<Long, String>()
         val birthdayEventIds = mutableSetOf<Long>()
 
         if (eventIds.isNotEmpty()) {
@@ -424,40 +426,53 @@ suspend fun readFestivosFromCalendarsSuspend(
                 CalendarContract.Events.ORGANIZER,
                 CalendarContract.Events.SYNC_DATA1,
                 CalendarContract.Events.SYNC_DATA2,
-                CalendarContract.Events.TITLE // Solo para diagnóstico
+                CalendarContract.Events.TITLE,
+                CalendarContract.Events.EVENT_LOCATION,
+                CalendarContract.Events.AVAILABILITY,
+                CalendarContract.Events.DESCRIPTION
             )
             val eventsSelection = "${CalendarContract.Events._ID} IN (${eventIds.joinToString(",")})"
             resolver.query(CalendarContract.Events.CONTENT_URI, eventsProjection, eventsSelection, null, null)?.use { cursor ->
                 val idColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
                 val rruleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
                 val dtStartColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
-                val packageColumn = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
-                val organizerColumn = cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)
+                val packageColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.CUSTOM_APP_PACKAGE)
+                val organizerColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.ORGANIZER)
                 val sync1Column = cursor.getColumnIndexOrThrow(CalendarContract.Events.SYNC_DATA1)
                 val sync2Column = cursor.getColumnIndexOrThrow(CalendarContract.Events.SYNC_DATA2)
                 val titleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.TITLE)
+                val availabilityColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.AVAILABILITY)
+                val locationColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.EVENT_LOCATION)
+                val descriptionColumn = cursor.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION)
                 
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(idColumn)
                     val rrule = cursor.getStringOrNull(rruleColumn)
                     val dtStart = cursor.getLong(dtStartColumn)
-                    val appPackage = if (packageColumn != -1) cursor.getStringOrNull(packageColumn) ?: "" else ""
-                    val organizer = if (organizerColumn != -1) cursor.getStringOrNull(organizerColumn) ?: "" else ""
+                    val organizer = (cursor.getStringOrNull(organizerColumn) ?: "").lowercase()
                     val sync1 = cursor.getStringOrNull(sync1Column) ?: ""
                     val sync2 = cursor.getStringOrNull(sync2Column) ?: ""
                     val evTitle = cursor.getStringOrNull(titleColumn) ?: ""
-                    
-                    if (evTitle.contains("Juan", ignoreCase = true) || evTitle.contains("Rosa", ignoreCase = true)) {
-                        Log.e("AgeDiag", "EVENTO: $evTitle")
-                        Log.e("AgeDiag", " - Package: $appPackage")
-                        Log.e("AgeDiag", " - Organizer: $organizer")
-                        Log.e("AgeDiag", " - Sync1: $sync1")
-                        Log.e("AgeDiag", " - Sync2: $sync2")
-                        Log.e("AgeDiag", " - RRULE: $rrule")
+                    val appPackage = (cursor.getStringOrNull(packageColumn) ?: "").lowercase()
+                    val location = cursor.getStringOrNull(locationColumn) ?: ""
+                    val description = cursor.getStringOrNull(descriptionColumn) ?: ""
+                    val availability = cursor.getInt(availabilityColumn)
+
+                    if (evTitle.contains("Hugo", true) || evTitle.contains("Benito", true) || 
+                        evTitle.contains("Juan", true) || evTitle.contains("Nieves", true)) {
+                        
+                        Log.e("SuperDiag", "--- ANÁLISIS ADN: $evTitle ---")
+                        Log.e("SuperDiag", " > ID: $eventId | Organizer: $organizer | Package: $appPackage")
+                        Log.e("SuperDiag", " > Sync2: $sync2 | Location: '$location' | Desc: '$description'")
+                        Log.e("SuperDiag", " > Availability: $availability | RRULE: $rrule")
                     }
 
                     if (rrule != null) {
                         rruleMap[eventId] = rrule
+                    }
+                    
+                    if (!description.isNullOrBlank()) {
+                        descriptionMap[eventId] = description
                     }
                     
                     // Firma técnica de cumpleaños (independiente del idioma)
@@ -497,6 +512,7 @@ suspend fun readFestivosFromCalendarsSuspend(
             val titleColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
             val allDayColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
             val organizerColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ORGANIZER)
+            val availabilityColumn = cursor.getColumnIndexOrThrow(CalendarContract.Instances.AVAILABILITY)
 
             while (cursor.moveToNext() && continuation.isActive) {
                 val eventId = cursor.getLong(eventIdColumn)
@@ -506,6 +522,7 @@ suspend fun readFestivosFromCalendarsSuspend(
                 val title = cursor.getStringOrNull(titleColumn)?.trim() ?: ""
                 val isAllDay = cursor.getInt(allDayColumn) == 1
                 val organizer = cursor.getStringOrNull(organizerColumn) ?: ""
+                val availability = cursor.getInt(availabilityColumn)
 
                 if (title.isNotBlank() || isAllDay) { 
                     val startInstant = Instant.ofEpochMilli(beginMillis)
@@ -521,7 +538,8 @@ suspend fun readFestivosFromCalendarsSuspend(
                     val isBirthdayEvent = isBirthdayCalendar || birthdayEventIds.contains(eventId)
                     
                     // Logic for isFromHolidaySource with adjustments (3-level hierarchical matching)
-                    var isFromHoliday = isSystemHolidaySource
+                    // Refinamos detectando también por el organizador (marcador universal #holiday/#festivo para santorales y festivos)
+                    var isFromHoliday = isSystemHolidaySource || organizer.contains("#holiday") || organizer.contains("#festivo")
                     
                     // Level 1: Match by exact originalEventId (same device)
                     // Level 2: Match by Title + Date (same language, different device)
@@ -538,26 +556,29 @@ suspend fun readFestivosFromCalendarsSuspend(
                         val adjustment = adjustments[adjIndex]
                         matchedAdjustmentIndices.add(adjIndex)
                         if (adjustment.type == HolidayAdjustmentType.WORKING_DAY) {
-                            continue // Saltamos los eventos marcados como laborables para que no aparezcan en el calendario
+                            continue 
                         }
                         isFromHoliday = true
                     }
 
-                    // Si el evento está en un calendario de cumpleaños o marcado técnicamente, lo forzamos
-                    // O si detectamos un año de nacimiento antiguo en el evento original (marcador implícito)
-                    val birthYear = birthYearMap[eventId]
-                    val isOldEvent = birthYear != null && birthYear > 1900 && birthYear < (startDate.year - 1)
-                    val finalIsBirthday = isBirthdayEvent || isBirthdayCalendar || isOldEvent
+                    // Lógica de Identificación Basada en Recursos (Sugerencia del usuario)
+                    // Obtenemos la palabra clave "Cumpleaños" traducida al idioma actual
+                    val birthdayLabel = context.getString(R.string.birthdays).lowercase()
+                    val titleLower = title.lowercase()
+                    
+                    // Es un cumpleaños si:
+                    // 1. Tiene marca técnica (Google Contacts / Organizer)
+                    // 2. O contiene la palabra clave traducida (y es anual + todo el día)
+                    val hasBirthdayWord = titleLower.contains(birthdayLabel) || titleLower.contains("cumple")
+                    val isYearly = rruleMap[eventId]?.contains("FREQ=YEARLY") ?: false
+                    
+                    val finalIsBirthday = (isBirthdayEvent || (isYearly && isAllDay && hasBirthdayWord)) && !isFromHoliday
 
-                    // Si el evento está marcado como cumpleaños, calculamos la edad
+                    // Calculamos la edad solo si es un cumpleaños confirmado
+                    val birthYear = birthYearMap[eventId]
                     val calculatedAge = if (finalIsBirthday && birthYear != null) {
                         startDate.year - birthYear
                     } else null
-
-                    // Log de depuración para confirmar el cálculo en el bucle final
-                    if (finalIsBirthday || title.contains("Juan", true) || title.contains("Rosa", true) || title.contains("Cruz", true)) {
-                        Log.e("AgeDiag", "PROCESANDO: $title | EsCumple: $finalIsBirthday | ID: $eventId | AñoNac: $birthYear | Edad: $calculatedAge")
-                    }
 
                     val festivo = Festivo(
                         id = eventId,
