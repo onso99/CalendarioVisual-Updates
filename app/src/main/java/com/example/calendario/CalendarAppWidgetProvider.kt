@@ -24,7 +24,17 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        Log.d(TAG, "onUpdate llamado para IDs: ${appWidgetIds.joinToString()}")
+        Log.d(TAG, "onUpdate llamado para IDs: ${appWidgetIds.joinToString()}. Forzando refresco de datos.")
+        
+        // Cada vez que el widget se actualiza por sistema, lanzamos un refresco de datos inmediato
+        val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
+            .build()
+        WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
+            "QuickUpdateOnUpdate_${System.currentTimeMillis()}",
+            ExistingWorkPolicy.REPLACE,
+            updateWorkRequest
+        )
+
         appWidgetIds.forEach { appWidgetId ->
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
@@ -70,7 +80,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
 
         WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(
             PERIODIC_WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             periodicUpdateRequest
         )
         Log.i(TAG, "onEnabled - Trabajo periódico '$PERIODIC_WORK_NAME' encolado/verificado (política KEEP).")
