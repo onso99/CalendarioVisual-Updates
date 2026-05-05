@@ -57,7 +57,8 @@ class UpdateCalendarDataWorker(
             saveEventsToPrefs(context, eventsMap)
             Log.i(TAG_WORKER, "Eventos guardados en SharedPreferences. ID: ${this.id}")
 
-            notifyCalendarWidgetDataChangedWorker(context)
+            // USAMOS EL MÉTODO UNIFICADO: Esto refresca tanto la lista como el layout
+            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
 
             Log.i(TAG_WORKER, "Worker COMPLETADO EXITOSAMENTE. ID: ${this.id}")
             Result.success()
@@ -68,19 +69,5 @@ class UpdateCalendarDataWorker(
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun notifyCalendarWidgetDataChangedWorker(context: Context) {
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-        val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-
-        if (appWidgetIds.isNotEmpty()) {
-            appWidgetIds.forEach { appWidgetId ->
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_event_list)
-            }
-            Log.d(TAG_WORKER, "Notificación de cambio de datos enviada a los widgets (ListView ID: R.id.widget_event_list). Worker ID: ${this.id}")
-        } else {
-            Log.d(TAG_WORKER, "No hay widgets activos para notificar. Worker ID: ${this.id}")
-        }
-    }
+    // Eliminamos este método porque ahora usamos el unificado de CalendarAppWidgetProvider
 }

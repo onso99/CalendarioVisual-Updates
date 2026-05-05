@@ -48,10 +48,12 @@ class CalendarWidgetFactory(
     }
 
     override fun onDataSetChanged() {
-        Log.d("WidgetFactory", "onDataSetChanged - Widget ID: $appWidgetId. Recargando ajustes y eventos.")
+        Log.d("WidgetFactory", "onDataSetChanged - Widget ID: $appWidgetId. Vaciando lista y recargando.")
+        // Forzamos el vaciado de la lista anterior para evitar solapamientos o datos antiguos
+        eventsList = emptyList()
         loadWidgetSettings()
         loadCalendarEvents()
-        Log.d("WidgetFactory", "Eventos cargados en onDataSetChanged: ${eventsList.size}, mostrando hasta: $eventCountToShow")
+        Log.d("WidgetFactory", "Eventos cargados DIRECTAMENTE: ${eventsList.size}")
     }
 
     private fun loadWidgetSettings() {
@@ -235,19 +237,21 @@ class CalendarWidgetFactory(
     override fun hasStableIds(): Boolean = true
 
     private fun loadCalendarEvents() {
-        // En lugar de leer de SharedPreferences, leemos directamente del Calendario de Android
+        // 1. Recargamos ajustes para capturar el número de eventos elegido por el usuario
+        loadWidgetSettings()
+        
+        // 2. Leemos directamente del calendario
         val selectedCalendarIds = loadSelectedCalendarIds(context)
         
         val allEventsByDateMap = if (selectedCalendarIds.isNotEmpty()) {
-            // Reutilizamos la lógica técnica de precisión que ya tenemos en DataUtils
-            // pero ejecutada de forma síncrona para el widget
             readFestivosFromCalendarsSync(context, selectedCalendarIds)
         } else {
             emptyMap()
         }
         
+        // 3. Procesamos respetando el límite seleccionado (eventCountToShow)
         eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
-        Log.d("WidgetFactory", "Eventos procesados DIRECTAMENTE del calendario: ${eventsList.size}. Widget ID: $appWidgetId")
+        Log.d("WidgetFactory", "Widget ID: $appWidgetId | Límite: $eventCountToShow | Mostrando: ${eventsList.size}")
     }
 
     private fun loadEventsFromPrefsFromFactory(context: Context): Map<LocalDate, List<Festivo>> {
