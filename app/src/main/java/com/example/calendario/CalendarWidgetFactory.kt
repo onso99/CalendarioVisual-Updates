@@ -235,9 +235,19 @@ class CalendarWidgetFactory(
     override fun hasStableIds(): Boolean = true
 
     private fun loadCalendarEvents() {
-        val allEventsByDateMap = loadEventsFromPrefsFromFactory(context)
+        // En lugar de leer de SharedPreferences, leemos directamente del Calendario de Android
+        val selectedCalendarIds = loadSelectedCalendarIds(context)
+        
+        val allEventsByDateMap = if (selectedCalendarIds.isNotEmpty()) {
+            // Reutilizamos la lógica técnica de precisión que ya tenemos en DataUtils
+            // pero ejecutada de forma síncrona para el widget
+            readFestivosFromCalendarsSync(context, selectedCalendarIds)
+        } else {
+            emptyMap()
+        }
+        
         eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
-        Log.d("WidgetFactory", "Eventos procesados para el widget: ${eventsList.size}. Mostrando hasta: $eventCountToShow")
+        Log.d("WidgetFactory", "Eventos procesados DIRECTAMENTE del calendario: ${eventsList.size}. Widget ID: $appWidgetId")
     }
 
     private fun loadEventsFromPrefsFromFactory(context: Context): Map<LocalDate, List<Festivo>> {

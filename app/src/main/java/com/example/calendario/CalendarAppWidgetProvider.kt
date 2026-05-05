@@ -39,10 +39,11 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
 
         when (action) {
             ACTION_REFRESH_WIDGET,
+            ACTION_SCHEDULED_UPDATE,
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_USER_PRESENT,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
-                Log.d(TAG, "Disparando actualización completa y re-registrando observadores por acción: $action")
+                Log.d(TAG, "Disparando actualización completa por evento: $action")
                 
                 // Aseguramos que los observadores estén activos
                 CalendarObserverManager.registerObserver(context)
@@ -51,74 +52,87 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                 val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
                     .build()
                 WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
-                    "BackgroundUpdate_${action}_${System.currentTimeMillis()}",
+                    "ManualUpdate_${System.currentTimeMillis()}",
                     ExistingWorkPolicy.REPLACE,
                     updateWorkRequest
                 )
                 
-                // Notificamos al widget para que se redibuje
+                // Si ha sido una alarma programada, agendamos la siguiente
+                if (action == ACTION_SCHEDULED_UPDATE || action == Intent.ACTION_BOOT_COMPLETED) {
+                    scheduleNextAlarm(context)
+                }
+
                 triggerWidgetUpdate(context)
             }
         }
     }
 
-    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
-        Log.i(TAG, "onDeleted - INICIO - llamado para IDs: ${appWidgetIds.joinToString()}")
-        super.onDeleted(context, appWidgetIds)
-        Log.i(TAG, "onDeleted - FIN.")
-    }
-
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        Log.i(TAG, "onEnabled - INICIO - Primera instancia de CalendarAppWidgetProvider añadida.")
-
+        Log.i(TAG, "onEnabled - Activando sistema de alarmas y observadores.")
         CalendarObserverManager.registerObserver(context)
-        Log.d(TAG, "onEnabled - CalendarObserverManager.registerObserver() llamado.")
-
-        Log.d(TAG, "onEnabled - Encolando trabajo OneTime para actualización inicial del widget.")
-        val initialUpdateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
-            .addTag(TAG_INITIAL_UPDATE_WORK)
-            .build()
-        WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
-            UNIQUE_INITIAL_WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
-            initialUpdateWorkRequest
-        )
-        Log.i(TAG, "onEnabled - Trabajo inicial '$UNIQUE_INITIAL_WORK_NAME' encolado.")
-
-        val periodicUpdateRequest =
-            PeriodicWorkRequestBuilder<UpdateCalendarDataWorker>(15, TimeUnit.MINUTES)
-                .addTag(TAG_PERIODIC_UPDATE_WORK)
-                .build()
-
-        WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(
-            PERIODIC_WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE,
-            periodicUpdateRequest
-        )
-        Log.i(TAG, "onEnabled - Trabajo periódico '$PERIODIC_WORK_NAME' encolado/verificado (política KEEP).")
-        Log.i(TAG, "onEnabled - FIN.")
+        scheduleNextAlarm(context)
+        
+        // Mantenemos WorkManager como red de seguridad secundaria
+        val periodicUpdateRequest = PeriodicWorkRequestBuilder<UpdateCalendarDataWorker>(15, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(PERIODIC_WORK_NAME, ExistingPeriodicWorkPolicy.UPDATE, periodicUpdateRequest)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        Log.i(TAG, "onDisabled - INICIO - Última instancia de CalendarAppWidgetProvider eliminada.")
-
+        Log.i(TAG, "onDisabled - Cancelando alarmas y limpieza.")
+        cancelAlarm(context)
         CalendarObserverManager.unregisterObserver()
-        Log.d(TAG, "onDisabled - CalendarObserverManager.unregisterObserver() llamado.")
-
         WorkManager.getInstance(context.applicationContext).cancelUniqueWork(PERIODIC_WORK_NAME)
-        Log.i(TAG, "onDisabled - Trabajo periódico '$PERIODIC_WORK_NAME' cancelado.")
-        Log.i(TAG, "onDisabled - FIN.")
     }
 
     companion object {
         private const val TAG = "WidgetProvider"
         const val ACTION_REFRESH_WIDGET = "com.example.calendario.ACTION_REFRESH_WIDGET"
-        private const val UNIQUE_INITIAL_WORK_NAME = "InitialCalendarWidgetUpdate"
+        const val ACTION_SCHEDULED_UPDATE = "com.example.calendario.ACTION_SCHEDULED_UPDATE"
         private const val PERIODIC_WORK_NAME = "PeriodicCalendarWidgetUpdate"
-        private const val TAG_INITIAL_UPDATE_WORK = "tag_initial_calendar_work"
-        private const val TAG_PERIODIC_UPDATE_WORK = "tag_periodic_calendar_work"
+
+        private fun scheduleNextAlarm(context: Context) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+            val intent = Intent(context, CalendarAppWidgetProvider::class.java).apply {
+                action = ACTION_SCHEDULED_UPDATE
+            }
+            
+            val pendingIntent = android.app.PendingIntent.getBroadcast(
+                context, 0, intent,
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // Programamos la próxima actualización en 15 minutos. 
+            // Usamos setAndAllowWhileIdle para que Android 14 no lo ignore en modo ahorro.
+            val triggerTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15)
+            
+            try {
+                alarmManager.setAndAllowWhileIdle(
+                    android.app.AlarmManager.RTC_WAKEUP,
+                    triggerTime,
+                    pendingIntent
+                )
+                Log.d(TAG, "Próxima alarma de actualización programada en 15 minutos.")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error programando alarma", e)
+            }
+        }
+
+        private fun cancelAlarm(context: Context) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+            val intent = Intent(context, CalendarAppWidgetProvider::class.java).apply {
+                action = ACTION_SCHEDULED_UPDATE
+            }
+            val pendingIntent = android.app.PendingIntent.getBroadcast(
+                context, 0, intent,
+                android.app.PendingIntent.FLAG_NO_CREATE or android.app.PendingIntent.FLAG_IMMUTABLE
+            )
+            if (pendingIntent != null) {
+                alarmManager.cancel(pendingIntent)
+                Log.d(TAG, "Alarma de actualización cancelada.")
+            }
+        }
 
         fun triggerWidgetUpdate(context: Context) {
             val appWidgetManager = AppWidgetManager.getInstance(context)
