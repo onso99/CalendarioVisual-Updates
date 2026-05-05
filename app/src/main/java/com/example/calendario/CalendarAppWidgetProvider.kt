@@ -34,10 +34,31 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
+        val action = intent.action
+        Log.d(TAG, "onReceive - Acción recibida: $action")
 
-        if (ACTION_REFRESH_WIDGET == intent.action) {
-            Log.d(TAG, "Acción ACTION_REFRESH_WIDGET recibida. Disparando actualización completa del widget.")
-            triggerWidgetUpdate(context)
+        when (action) {
+            ACTION_REFRESH_WIDGET,
+            Intent.ACTION_BOOT_COMPLETED,
+            Intent.ACTION_USER_PRESENT,
+            Intent.ACTION_MY_PACKAGE_REPLACED -> {
+                Log.d(TAG, "Disparando actualización completa y re-registrando observadores por acción: $action")
+                
+                // Aseguramos que los observadores estén activos
+                CalendarObserverManager.registerObserver(context)
+                
+                // Forzamos un trabajo de actualización inmediata de datos
+                val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
+                    .build()
+                WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
+                    "BackgroundUpdate_${action}_${System.currentTimeMillis()}",
+                    ExistingWorkPolicy.REPLACE,
+                    updateWorkRequest
+                )
+                
+                // Notificamos al widget para que se redibuje
+                triggerWidgetUpdate(context)
+            }
         }
     }
 
