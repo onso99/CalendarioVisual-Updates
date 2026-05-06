@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 
 object LogCollector {
     private val logs = ConcurrentLinkedQueue<String>()
-    private val maxLogs = 100
+    private val maxLogs = 1000 // Aumentamos para no perder datos
     private val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
 
     fun addLog(message: String) {

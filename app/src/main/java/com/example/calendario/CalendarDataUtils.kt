@@ -265,6 +265,8 @@ fun readFestivosFromCalendarsSync(
         CalendarContract.Instances.ORGANIZER
     )
     val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
+    LogCollector.addLog("--- INICIO LECTURA DB ANDROID ---")
+    LogCollector.addLog("Filtro IDs: $selectedCalendarIds")
     
     resolver.query(instancesUri, projection, selection, null, null)?.use { cursor ->
         val evIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
@@ -282,6 +284,12 @@ fun readFestivosFromCalendarsSync(
             val beginMillis = cursor.getLong(beginCol)
             val endMillis = cursor.getLong(endCol)
             val startDate = Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalDate()
+
+            // Log de comparación inmediata
+            if (startDate == today) {
+                val time = Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalTime()
+                LogCollector.addLog("DB_HOY: '$title' | Cal: $calendarId | Inicio: $time")
+            }
             val isAllDay = cursor.getInt(allDayCol) == 1
             
             val startTime = if (isAllDay) null else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalTime()

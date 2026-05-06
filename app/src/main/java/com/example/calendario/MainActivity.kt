@@ -160,9 +160,9 @@ fun processEventsForDisplay(
 }
 
 fun processEventsForWidget(allEvents: Map<LocalDate, List<Festivo>>, limit: Int): List<Festivo> {
-    // Redondeamos al inicio del minuto actual para mayor estabilidad en el filtrado
     val now = LocalDateTime.now().withNano(0).withSecond(0)
-    LogCollector.addLog("FILTRO: Comparando contra $now")
+    val today = LocalDate.now()
+    LogCollector.addLog(">>> FILTRO: Analizando contra $now")
     
     val allFutureEvents = allEvents.values.flatten().filter { event ->
         val eventEndDateTime = if (event.isAllDay) {
@@ -171,15 +171,22 @@ fun processEventsForWidget(allEvents: Map<LocalDate, List<Festivo>>, limit: Int)
             val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
             LocalDateTime.of(event.date, endTime)
         }
-        // El evento es futuro si termina después de 'ahora'
+        
         val isFuture = eventEndDateTime.isAfter(now)
-        if (!isFuture) {
-            LogCollector.addLog("OCULTADO (pasado): ${event.title}")
+        
+        // Solo logueamos detalles de los eventos de HOY para evitar saturación
+        if (event.date == today) {
+            if (isFuture) {
+                LogCollector.addLog("MANTENIDO (futuro hoy): ${event.title} hasta $eventEndDateTime")
+            } else {
+                LogCollector.addLog("OCULTADO (pasado hoy): ${event.title} terminó $eventEndDateTime")
+            }
         }
+        
         isFuture
     }.sortedWith(compareBy({ it.date }, { it.startTime }))
 
     val result = allFutureEvents.take(limit)
-    LogCollector.addLog("FILTRO: Resultado = ${result.size} eventos")
+    LogCollector.addLog(">>> FILTRO: Finalizado. Mostrando ${result.size} eventos.")
     return result
 }
