@@ -25,10 +25,10 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        Log.d(TAG, "onUpdate llamado para IDs: ${appWidgetIds.joinToString()}. Forzando refresco de datos.")
+        LogCollector.addLog("WIDGET: onUpdate llamado. Reiniciando despertador.")
         
-        // Obligamos al widget a limpiar su caché de datos y re-leer del calendario
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+        // Cada vez que el sistema actualiza el widget, nos aseguramos de que el ciclo de alarmas sigue vivo
+        scheduleNextAlarm(context)
 
         appWidgetIds.forEach { appWidgetId ->
             updateAppWidget(context, appWidgetManager, appWidgetId)
@@ -96,19 +96,25 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                 android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
             )
 
-            // Programamos la próxima actualización en 15 minutos. 
-            // Usamos setAndAllowWhileIdle para que Android 14 no lo ignore en modo ahorro.
+            // Programamos la próxima actualización en 15 minutos (mínimo recomendado para estabilidad)
             val triggerTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15)
             
             try {
+                // Usamos la versión EXACTA para saltarnos las restricciones de Android 14
+                alarmManager.setExactAndAllowWhileIdle(
+                    android.app.AlarmManager.RTC_WAKEUP,
+                    triggerTime,
+                    pendingIntent
+                )
+                LogCollector.addLog("ALARMA: Próxima cita en 15 min (Modo Exacto)")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error programando alarma", e)
+                // Fallback si no hay permiso de alarma exacta
                 alarmManager.setAndAllowWhileIdle(
                     android.app.AlarmManager.RTC_WAKEUP,
                     triggerTime,
                     pendingIntent
                 )
-                Log.d(TAG, "Próxima alarma de actualización programada en 15 minutos.")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error programando alarma", e)
             }
         }
 
