@@ -48,12 +48,11 @@ class CalendarWidgetFactory(
     }
 
     override fun onDataSetChanged() {
-        Log.d("WidgetFactory", "onDataSetChanged - Widget ID: $appWidgetId. Vaciando lista y recargando.")
-        // Forzamos el vaciado de la lista anterior para evitar solapamientos o datos antiguos
+        LogCollector.addLog("FÁBRICA: onDataSetChanged INICIO")
         eventsList = emptyList()
         loadWidgetSettings()
         loadCalendarEvents()
-        Log.d("WidgetFactory", "Eventos cargados DIRECTAMENTE: ${eventsList.size}")
+        LogCollector.addLog("FÁBRICA: Carga finalizada (${eventsList.size} eventos)")
     }
 
     private fun loadWidgetSettings() {
@@ -112,26 +111,6 @@ class CalendarWidgetFactory(
         }
 
         val actualEvent = eventsList[position]
-
-        // --- LÓGICA DE AUTO-CORRECCIÓN (Opción B) ---
-        // Si el primer evento ya terminó, forzamos un refresco inmediato para limpiar la lista.
-        if (position == 0) {
-            val now = java.time.LocalDateTime.now()
-            val eventEndDateTime = if (actualEvent.isAllDay) {
-                actualEvent.date.plusDays(1).atStartOfDay()
-            } else {
-                val endTime = actualEvent.endTime ?: actualEvent.startTime?.plusHours(1) ?: java.time.LocalTime.MAX
-                java.time.LocalDateTime.of(actualEvent.date, endTime)
-            }
-            if (eventEndDateTime.isBefore(now)) {
-                Log.d("WidgetFactory", "Auto-corrección: El evento '${actualEvent.title}' ya terminó. Solicitando refresco.")
-                // Disparamos el refresco de forma asíncrona para no bloquear el dibujado actual
-                android.os.Handler(android.os.Looper.getMainLooper()).post {
-                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
-                }
-            }
-        }
-        // --------------------------------------------
 
         // --- Lógica de Selección de Layout con 3 Niveles ---
         val fontScale = context.resources.configuration.fontScale
@@ -257,11 +236,9 @@ class CalendarWidgetFactory(
     override fun hasStableIds(): Boolean = true
 
     private fun loadCalendarEvents() {
-        // 1. Recargamos ajustes para capturar el número de eventos elegido por el usuario
         loadWidgetSettings()
-        
-        // 2. Leemos directamente del calendario
         val selectedCalendarIds = loadSelectedCalendarIds(context)
+        LogCollector.addLog("Cargando desde Calendarios: $selectedCalendarIds")
         
         val allEventsByDateMap = if (selectedCalendarIds.isNotEmpty()) {
             readFestivosFromCalendarsSync(context, selectedCalendarIds)
@@ -269,9 +246,8 @@ class CalendarWidgetFactory(
             emptyMap()
         }
         
-        // 3. Procesamos respetando el límite seleccionado (eventCountToShow)
+        LogCollector.addLog("Eventos brutos en agenda: ${allEventsByDateMap.values.flatten().size}")
         eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
-        Log.d("WidgetFactory", "Widget ID: $appWidgetId | Límite: $eventCountToShow | Mostrando: ${eventsList.size}")
     }
 
     private fun loadEventsFromPrefsFromFactory(context: Context): Map<LocalDate, List<Festivo>> {

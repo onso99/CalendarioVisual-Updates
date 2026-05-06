@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
+import android.util.Log
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -159,7 +160,10 @@ fun processEventsForDisplay(
 }
 
 fun processEventsForWidget(allEvents: Map<LocalDate, List<Festivo>>, limit: Int): List<Festivo> {
-    val now = LocalDateTime.now()
+    // Redondeamos al inicio del minuto actual para mayor estabilidad en el filtrado
+    val now = LocalDateTime.now().withNano(0).withSecond(0)
+    LogCollector.addLog("FILTRO: Comparando contra $now")
+    
     val allFutureEvents = allEvents.values.flatten().filter { event ->
         val eventEndDateTime = if (event.isAllDay) {
             event.date.plusDays(1).atStartOfDay()
@@ -167,8 +171,15 @@ fun processEventsForWidget(allEvents: Map<LocalDate, List<Festivo>>, limit: Int)
             val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
             LocalDateTime.of(event.date, endTime)
         }
-        eventEndDateTime.isAfter(now)
+        // El evento es futuro si termina después de 'ahora'
+        val isFuture = eventEndDateTime.isAfter(now)
+        if (!isFuture) {
+            LogCollector.addLog("OCULTADO (pasado): ${event.title}")
+        }
+        isFuture
     }.sortedWith(compareBy({ it.date }, { it.startTime }))
 
-    return allFutureEvents.take(limit)
+    val result = allFutureEvents.take(limit)
+    LogCollector.addLog("FILTRO: Resultado = ${result.size} eventos")
+    return result
 }

@@ -37,7 +37,9 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         val action = intent.action
-        Log.d(TAG, "onReceive - Acción recibida: $action")
+        val msg = ">>> SEÑAL: $action"
+        Log.e("WIDGET_LOG", msg)
+        LogCollector.addLog(msg)
 
         when (action) {
             ACTION_REFRESH_WIDGET,
@@ -45,21 +47,17 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_USER_PRESENT,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
-                Log.d(TAG, "Disparando actualización completa por evento: $action")
+                LogCollector.addLog("Procesando actualización por $action")
                 
-                // Aseguramos que los observadores estén activos
                 CalendarObserverManager.registerObserver(context)
                 
-                // Forzamos un trabajo de actualización inmediata de datos
-                val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
-                    .build()
+                val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>().build()
                 WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
                     "ManualUpdate_${System.currentTimeMillis()}",
                     ExistingWorkPolicy.REPLACE,
                     updateWorkRequest
                 )
                 
-                // Si ha sido una alarma programada, agendamos la siguiente
                 if (action == ACTION_SCHEDULED_UPDATE || action == Intent.ACTION_BOOT_COMPLETED) {
                     scheduleNextAlarm(context)
                 }
@@ -137,21 +135,25 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         }
 
         fun triggerWidgetUpdate(context: Context) {
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
-            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
-            if (appWidgetIds.isNotEmpty()) {
-                Log.d(TAG, "triggerWidgetUpdate - Notificando cambio de datos y forzando actualización para: ${appWidgetIds.joinToString()}")
+            try {
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                val componentName = ComponentName(context, CalendarAppWidgetProvider::class.java)
+                val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
                 
-                // 1. Notificar cambio en la colección (lista de eventos) para limpiar la caché de la Factory
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
-                
-                // 2. Actualizar la vista general del widget (layout, colores, etc.)
-                appWidgetIds.forEach { appWidgetId ->
-                    updateAppWidget(context, appWidgetManager, appWidgetId)
+                if (appWidgetIds.isNotEmpty()) {
+                    val msg = "Orden de REDIBUJADO a IDs: ${appWidgetIds.joinToString()}"
+                    Log.e("WIDGET_LOG", msg)
+                    LogCollector.addLog(msg)
+                    
+                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+                    
+                    // Luego forzamos el redibujado de la vista
+                    appWidgetIds.forEach { appWidgetId ->
+                        updateAppWidget(context, appWidgetManager, appWidgetId)
+                    }
                 }
-            } else {
-                 Log.d(TAG, "triggerWidgetUpdate - No hay IDs de widget activos para actualizar.")
+            } catch (e: Exception) {
+                Log.e("WIDGET_LOG", "Error en triggerWidgetUpdate: ${e.message}")
             }
         }
 

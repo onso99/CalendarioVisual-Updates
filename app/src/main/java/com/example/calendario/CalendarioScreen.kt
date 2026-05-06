@@ -148,6 +148,7 @@ fun CalendarioScreen(
     var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
+    var showWidgetLogScreen by remember { mutableStateOf(false) }
 
     val readPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -307,6 +308,13 @@ fun CalendarioScreen(
         return
     }
 
+    if (showWidgetLogScreen) {
+        WidgetLogScreen(
+            onBack = { showWidgetLogScreen = false }
+        )
+        return
+    }
+
     if (showSettingsScreen) {
         SettingsScreen(
             onBackPress = {
@@ -319,6 +327,7 @@ fun CalendarioScreen(
                 holidayForManager = null
                 showHolidayManagerScreen = true 
             },
+            onWidgetLogClick = { showWidgetLogScreen = true },
             onRefreshData = {
                 viewModel.refreshData()
             },

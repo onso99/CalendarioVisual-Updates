@@ -100,7 +100,8 @@ fun SettingsScreen(
     onColorThemeClick: () -> Unit,
     onHolidayManagerClick: () -> Unit,
     onRefreshData: () -> Unit,
-    onThemeUpdated: () -> Unit
+    onThemeUpdated: () -> Unit,
+    onWidgetLogClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val typography = MaterialTheme.typography
@@ -538,6 +539,10 @@ fun SettingsScreen(
                 Text("${stringResource(id = R.string.widget_text_adjustment)}: $textBoostLabel", fontSize = 16.sp, modifier = Modifier.padding(top=8.dp), color = CalendarioTheme.colors.textSystem)
                 
                 Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -4f..4f, steps = 7, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                
+                ActionRow(text = "Ver monitorización del Widget", onClick = onWidgetLogClick)
                 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 
