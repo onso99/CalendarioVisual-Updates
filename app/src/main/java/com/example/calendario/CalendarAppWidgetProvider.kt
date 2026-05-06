@@ -25,14 +25,17 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        LogCollector.addLog("WIDGET: onUpdate llamado. Reiniciando despertador.")
-        
-        // Cada vez que el sistema actualiza el widget, nos aseguramos de que el ciclo de alarmas sigue vivo
+        // En onUpdate solo disparamos la lógica de fondo, no pintamos todavía
+        // para evitar el doble hit con la Alarma.
+        LogCollector.addLog("WIDGET: onUpdate. Sincronizando...")
         scheduleNextAlarm(context)
-
-        appWidgetIds.forEach { appWidgetId ->
-            updateAppWidget(context, appWidgetManager, appWidgetId)
-        }
+        
+        val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .build()
+        WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
+            "UpdateOnUpdate", ExistingWorkPolicy.REPLACE, updateWorkRequest
+        )
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -45,17 +48,21 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_USER_PRESENT,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
-                LogCollector.addLog("AUTONOMÍA: Actualización por $action")
+                LogCollector.addLog("AUTONOMÍA: Despertando por $action")
                 
-                // Mantenemos al observador vigilante
                 CalendarObserverManager.registerObserver(context)
                 
                 if (action == ACTION_SCHEDULED_UPDATE || action == Intent.ACTION_BOOT_COMPLETED) {
                     scheduleNextAlarm(context)
                 }
 
-                // Redibujado directo (el widget lee solo el calendario)
-                triggerWidgetUpdate(context)
+                // Lanzamos el Worker de alta prioridad. ÉL será el único que mande redibujar.
+                val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build()
+                WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
+                    "AutonomousUpdate", ExistingWorkPolicy.REPLACE, updateWorkRequest
+                )
             }
         }
     }
