@@ -113,6 +113,26 @@ class CalendarWidgetFactory(
 
         val actualEvent = eventsList[position]
 
+        // --- LÓGICA DE AUTO-CORRECCIÓN (Opción B) ---
+        // Si el primer evento ya terminó, forzamos un refresco inmediato para limpiar la lista.
+        if (position == 0) {
+            val now = java.time.LocalDateTime.now()
+            val eventEndDateTime = if (actualEvent.isAllDay) {
+                actualEvent.date.plusDays(1).atStartOfDay()
+            } else {
+                val endTime = actualEvent.endTime ?: actualEvent.startTime?.plusHours(1) ?: java.time.LocalTime.MAX
+                java.time.LocalDateTime.of(actualEvent.date, endTime)
+            }
+            if (eventEndDateTime.isBefore(now)) {
+                Log.d("WidgetFactory", "Auto-corrección: El evento '${actualEvent.title}' ya terminó. Solicitando refresco.")
+                // Disparamos el refresco de forma asíncrona para no bloquear el dibujado actual
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+                }
+            }
+        }
+        // --------------------------------------------
+
         // --- Lógica de Selección de Layout con 3 Niveles ---
         val fontScale = context.resources.configuration.fontScale
         val densityDpi = context.resources.displayMetrics.densityDpi

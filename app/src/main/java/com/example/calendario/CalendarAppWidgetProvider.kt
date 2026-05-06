@@ -24,9 +24,11 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        Log.d(TAG, "onUpdate llamado para IDs: ${appWidgetIds.joinToString()}")
+        Log.d(TAG, "onUpdate llamado para IDs: ${appWidgetIds.joinToString()}. Forzando refresco de datos.")
         
-        // Simplemente actualizamos la vista con los datos que ya tenemos en caché
+        // Obligamos al widget a limpiar su caché de datos y re-leer del calendario
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+
         appWidgetIds.forEach { appWidgetId ->
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
