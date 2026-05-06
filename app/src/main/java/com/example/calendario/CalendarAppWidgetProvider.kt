@@ -25,17 +25,11 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        // En onUpdate solo disparamos la lógica de fondo, no pintamos todavía
-        // para evitar el doble hit con la Alarma.
-        LogCollector.addLog("WIDGET: onUpdate. Sincronizando...")
-        scheduleNextAlarm(context)
-        
-        val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .build()
-        WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
-            "UpdateOnUpdate", ExistingWorkPolicy.REPLACE, updateWorkRequest
-        )
+        // onUpdate debe ser TOTALMENTE PASIVO para evitar parpadeos.
+        // Solo pintamos la información que ya existe en el caché.
+        appWidgetIds.forEach { appWidgetId ->
+            updateAppWidget(context, appWidgetManager, appWidgetId)
+        }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -147,14 +141,16 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                 val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
                 
                 if (appWidgetIds.isNotEmpty()) {
-                    // La clave: updateAppWidget fuerza la recreación de la Factory vía timestamp
-                    // Evitamos notifyAppWidgetViewDataChanged para no causar NPE en Android 14
+                    // Usamos notifyAppWidgetViewDataChanged para refrescar la lista de forma nativa
+                    // Esto NO dispara onUpdate y por tanto no genera parpadeos.
+                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
+                    
                     appWidgetIds.forEach { appWidgetId ->
                         updateAppWidget(context, appWidgetManager, appWidgetId)
                     }
                 }
             } catch (e: Exception) {
-                LogCollector.addLog("ERROR_REDIBUJADO: ${e.message}")
+                LogCollector.addLog("ERROR_REFRESCO: ${e.message}")
             }
         }
 
