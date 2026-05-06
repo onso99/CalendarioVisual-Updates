@@ -15,6 +15,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.OutOfQuotaPolicy
 import java.util.concurrent.TimeUnit
 
 class CalendarAppWidgetProvider : AppWidgetProvider() {
@@ -37,31 +38,23 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         val action = intent.action
-        val msg = ">>> SEÑAL: $action"
-        Log.e("WIDGET_LOG", msg)
-        LogCollector.addLog(msg)
-
+        
         when (action) {
             ACTION_REFRESH_WIDGET,
             ACTION_SCHEDULED_UPDATE,
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_USER_PRESENT,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
-                LogCollector.addLog("Procesando actualización por $action")
+                LogCollector.addLog("AUTONOMÍA: Actualización por $action")
                 
+                // Mantenemos al observador vigilante
                 CalendarObserverManager.registerObserver(context)
-                
-                val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>().build()
-                WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
-                    "ManualUpdate_${System.currentTimeMillis()}",
-                    ExistingWorkPolicy.REPLACE,
-                    updateWorkRequest
-                )
                 
                 if (action == ACTION_SCHEDULED_UPDATE || action == Intent.ACTION_BOOT_COMPLETED) {
                     scheduleNextAlarm(context)
                 }
 
+                // Redibujado directo (el widget lee solo el calendario)
                 triggerWidgetUpdate(context)
             }
         }
@@ -141,19 +134,14 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                 val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
                 
                 if (appWidgetIds.isNotEmpty()) {
-                    val msg = "Orden de REDIBUJADO a IDs: ${appWidgetIds.joinToString()}"
-                    Log.e("WIDGET_LOG", msg)
-                    LogCollector.addLog(msg)
-                    
-                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
-                    
-                    // Luego forzamos el redibujado de la vista
+                    // La clave: updateAppWidget fuerza la recreación de la Factory vía timestamp
+                    // Evitamos notifyAppWidgetViewDataChanged para no causar NPE en Android 14
                     appWidgetIds.forEach { appWidgetId ->
                         updateAppWidget(context, appWidgetManager, appWidgetId)
                     }
                 }
             } catch (e: Exception) {
-                Log.e("WIDGET_LOG", "Error en triggerWidgetUpdate: ${e.message}")
+                LogCollector.addLog("ERROR_REDIBUJADO: ${e.message}")
             }
         }
 
