@@ -185,32 +185,26 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             )
 
             views.setOnClickPendingIntent(R.id.widget_root_layout, launchAppPendingIntent)
-            Log.d(TAG, "updateAppWidget - PendingIntent (directo) asignado a widget_root_layout para widget ID: $appWidgetId")
 
+            // --- LA CLAVE DEL REFRESCO (MARCA DE TIEMPO) ---
+            // Añadimos System.currentTimeMillis() para que Android crea que es un servicio distinto
+            // y fuerce la recreación de la Factory, limpiando datos antiguos.
             val serviceIntent = Intent(context, CalendarWidgetService::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                data = this.toUri(Intent.URI_INTENT_SCHEME).toUri().buildUpon()
-                    .appendPath(appWidgetId.toString())
-                    .build()
+                data = "content://widget/refresh/${appWidgetId}/${System.currentTimeMillis()}".toUri()
             }
             views.setRemoteAdapter(R.id.widget_event_list, serviceIntent)
-
-            Log.d(TAG, "updateAppWidget - RemoteAdapter configurado para R.id.widget_event_list, widget ID: $appWidgetId")
+            // -----------------------------------------------
 
             views.setEmptyView(R.id.widget_event_list, R.id.widget_empty_view)
-            Log.d(TAG, "updateAppWidget - EmptyView configurado para R.id.widget_event_list, widget ID: $appWidgetId")
-
             views.setPendingIntentTemplate(R.id.widget_event_list, launchAppPendingIntent)
-            Log.d(TAG, "updateAppWidget - PendingIntentTemplate asignado a R.id.widget_event_list, widget ID: $appWidgetId")
 
             try {
                 appWidgetManager.updateAppWidget(appWidgetId, views)
-                Log.d(TAG, "updateAppWidget - appWidgetManager.updateAppWidget llamado para widget ID: $appWidgetId")
-
+                Log.d(TAG, "updateAppWidget - Forzada recreación del adaptador para ID: $appWidgetId")
             } catch (e: Exception) {
                 Log.e(TAG, "updateAppWidget - Error actualizando widget ID $appWidgetId", e)
             }
-            Log.d(TAG, "updateAppWidget - FIN para widget ID: $appWidgetId")
         }
     }
 }
