@@ -46,9 +46,9 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                 
                 CalendarObserverManager.registerObserver(context)
                 
-                if (action == ACTION_SCHEDULED_UPDATE || action == Intent.ACTION_BOOT_COMPLETED) {
-                    scheduleNextAlarm(context)
-                }
+                // REFUERZO: Programamos la siguiente alarma en cada señal recibida.
+                // Esto garantiza que el ciclo de 15 min nunca se detenga.
+                scheduleNextAlarm(context)
 
                 // Lanzamos el Worker de alta prioridad. ÉL será el único que mande redibujar.
                 val updateWorkRequest = OneTimeWorkRequestBuilder<UpdateCalendarDataWorker>()
@@ -100,6 +100,9 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             // Programamos la próxima actualización en 15 minutos (mínimo recomendado para estabilidad)
             val triggerTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15)
             
+            // Guardamos la hora para que el usuario pueda verla en los logs (Persistente)
+            LogCollector.setNextRefreshTime(context, triggerTime)
+            
             try {
                 // Usamos la versión EXACTA para saltarnos las restricciones de Android 14
                 alarmManager.setExactAndAllowWhileIdle(
@@ -141,16 +144,14 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
                 val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
                 
                 if (appWidgetIds.isNotEmpty()) {
-                    // Usamos notifyAppWidgetViewDataChanged para refrescar la lista de forma nativa
-                    // Esto NO dispara onUpdate y por tanto no genera parpadeos.
-                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_event_list)
-                    
+                    // La clave: updateAppWidget con el timestamp ya fuerza el refresco total.
+                    // NO llamamos a notifyAppWidgetViewDataChanged para eliminar el parpadeo doble.
                     appWidgetIds.forEach { appWidgetId ->
                         updateAppWidget(context, appWidgetManager, appWidgetId)
                     }
                 }
             } catch (e: Exception) {
-                LogCollector.addLog("ERROR_REFRESCO: ${e.message}")
+                LogCollector.addLog("ERROR_REDIBUJADO: ${e.message}")
             }
         }
 

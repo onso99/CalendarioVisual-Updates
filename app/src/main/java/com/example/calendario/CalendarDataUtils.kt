@@ -219,9 +219,9 @@ fun readFestivosFromCalendarsSync(
     val systemZoneId = ZoneId.systemDefault()
     val today = LocalDate.now()
     
-    // OPTIMIZACIÓN: Solo leemos los próximos 6 meses para el widget
-    val startMillis = today.atStartOfDay(systemZoneId).toInstant().toEpochMilli()
-    val endMillis = today.plusMonths(6).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
+    // RESTAURACIÓN: Rango completo para recuperar repeticiones y eventos pasados
+    val startMillis = today.minusYears(1).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
+    val endMillis = today.plusYears(2).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
     
     val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().run {
         ContentUris.appendId(this, startMillis)
@@ -281,24 +281,37 @@ fun readFestivosFromCalendarsSync(
     val eventSelection = "${CalendarContract.Events._ID} IN (${uniqueEventIds.joinToString(",")})"
     resolver.query(CalendarContract.Events.CONTENT_URI, arrayOf(
         CalendarContract.Events._ID, CalendarContract.Events.RRULE, 
-        CalendarContract.Events.DTSTART, CalendarContract.Events.DESCRIPTION
+        CalendarContract.Events.DTSTART, CalendarContract.Events.DESCRIPTION,
+        CalendarContract.Events.SYNC_DATA2 // Columna extra para edades rebeldes
     ), eventSelection, null, null)?.use { cursor ->
         val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
         val rruleCol = cursor.getColumnIndexOrThrow(CalendarContract.Events.RRULE)
         val startCol = cursor.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
         val descCol = cursor.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION)
+        val sync2Col = cursor.getColumnIndexOrThrow(CalendarContract.Events.SYNC_DATA2)
         
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idCol)
             cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
             cursor.getStringOrNull(descCol)?.let { descMap[id] = it }
+            
+            // Lógica reforzada para el año de nacimiento
             val dtStart = cursor.getLong(startCol)
+            val sync2 = cursor.getStringOrNull(sync2Col) ?: ""
+            
+            var birthYear: Int? = null
+            
             if (dtStart > 0) {
-                try {
-                    val year = Instant.ofEpochMilli(dtStart).atZone(ZoneId.of("UTC")).toLocalDate().year
-                    if (year > 1900) birthYearMap[id] = year
-                } catch (_: Exception) {}
+                val year = Instant.ofEpochMilli(dtStart).atZone(ZoneId.of("UTC")).toLocalDate().year
+                if (year > 1900) birthYear = year
             }
+            
+            // Si DTSTART falló, intentamos con SYNC_DATA2 (formato yyyy-MM-dd común en Google)
+            if (birthYear == null && sync2.length >= 4) {
+                birthYear = sync2.substring(0, 4).toIntOrNull()
+            }
+            
+            if (birthYear != null) birthYearMap[id] = birthYear
         }
     }
 

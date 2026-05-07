@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -20,13 +21,20 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WidgetLogScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     var logText by remember { mutableStateOf(LogCollector.getLogs()) }
+    val nextRefresh = LogCollector.getNextRefreshTime(context)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Monitorización del Widget") },
+                title = { 
+                    Column {
+                        Text("Monitorización del Widget", fontSize = 18.sp)
+                        Text("Próximo refresco: $nextRefresh", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
