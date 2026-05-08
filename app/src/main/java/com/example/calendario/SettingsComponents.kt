@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
@@ -59,7 +61,7 @@ internal fun WidgetSectionTitle() {
 }
 
 @Composable
-internal fun ActionRow(text: String, onClick: () -> Unit) {
+internal fun ActionRow(text: String, detail: String? = null, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,26 +70,40 @@ internal fun ActionRow(text: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = CalendarioTheme.colors.textSystem)
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            Text(text, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+            if (detail != null) {
+                Text(
+                    text = detail,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+        )
     }
 }
 
 @Composable
-internal fun ColorPickerRow(label: String, currentColor: Color, onColorBoxClick: () -> Unit) {
+internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 12.dp)
     ) {
         Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
         Box(
             modifier = Modifier
-                .size(32.dp)
-                .background(currentColor, CircleShape)
-                .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), CircleShape)
-                .clickable(onClick = onColorBoxClick)
+                .size(24.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(color)
         )
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material3.AlertDialog
@@ -229,7 +230,6 @@ fun SettingsScreen(
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     BackupManager.importFullBackup(context, uri) {
-                        // Reiniciar la actividad para aplicar cambios globales
                         (context as? Activity)?.let { activity ->
                             val intent = activity.intent
                             activity.finish()
@@ -539,13 +539,7 @@ fun SettingsScreen(
                 Text("${stringResource(id = R.string.widget_text_adjustment)}: $textBoostLabel", fontSize = 16.sp, modifier = Modifier.padding(top=8.dp), color = CalendarioTheme.colors.textSystem)
                 
                 Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -4f..4f, steps = 7, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
-                
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                
-                ActionRow(text = "Ver monitorización del Widget", onClick = onWidgetLogClick)
-                
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -637,7 +631,33 @@ fun SettingsScreen(
             }
 
             // --- About Section ---
-            SectionTitle(text = stringResource(id = R.string.about))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val titleColor = lerp(
+                    start = CalendarioTheme.colors.cabecera,
+                    stop = CalendarioTheme.colors.textSystem,
+                    fraction = 0.4f
+                )
+                Text(
+                    text = stringResource(id = R.string.about),
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = titleColor
+                )
+                IconButton(
+                    onClick = onWidgetLogClick,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.BugReport,
+                        contentDescription = null,
+                        tint = Color.Gray.copy(alpha = 0.5f)
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
