@@ -349,6 +349,7 @@ fun CalendarioScreen(
                 searchResults = emptyMap()
             },
             onEventClick = onEventClickHandler,
+            onRefresh = { viewModel.refreshData() },
             availableCalendars = uiState.availableCalendars
         )
     } else {

@@ -1,20 +1,15 @@
 package com.example.calendario
 
+import android.content.ContentUris
 import android.content.Context
+import android.provider.CalendarContract
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,24 +20,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +33,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -79,42 +63,22 @@ fun SearchScreen(
     searchResults: Map<LocalDate, List<Festivo>>,
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
+    onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>
 ) {
+    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    
+    // --- Lógica de Multiselección ---
+    var selectedFestivos by remember { mutableStateOf(setOf<Festivo>()) }
+    val isSelectionMode = selectedFestivos.isNotEmpty()
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
-
-    LaunchedEffect(searchResults, searchScope) {
-        if (searchResults.isEmpty()) return@LaunchedEffect
-
-        when (searchScope) {
-            SearchScope.YEAR -> {
-                val currentMonth = YearMonth.now()
-                val monthIndex = searchResults.keys.indexOfFirst { YearMonth.from(it) == currentMonth }
-                if (monthIndex != -1) {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(monthIndex * 2) // Each month has a header and items
-                    }
-                }
-            }
-            SearchScope.ALL -> {
-                val currentYear = LocalDate.now().year
-                val yearIndex = searchResults.keys.indexOfFirst { it.year == currentYear }
-                if (yearIndex != -1) {
-                    val offset = (lazyListState.layoutInfo.viewportSize.height / 2)
-                    scope.launch {
-                        lazyListState.animateScrollToItem(yearIndex * 2, scrollOffset = -offset)
-                    }
-                }
-            }
-            else -> Unit // No specific scroll for MONTH
-        }
+        if (!isSelectionMode) focusRequester.requestFocus()
     }
 
     Scaffold(
@@ -124,116 +88,102 @@ fun SearchScreen(
                     .background(CalendarioTheme.colors.cabecera)
                     .statusBarsPadding()
             ) {
-                TopAppBar(
-                    title = {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = onSearchQueryChange,
-                            placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
-                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontSize = 18.sp),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(
-                                onSearch = {
-                                    keyboardController?.hide()
-                                }
-                            ),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.onPrimary,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                errorIndicatorColor = Color.Transparent
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusRequester)
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onClose) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.close_search),
-                                tint = MaterialTheme.colorScheme.onPrimary
+                if (isSelectionMode) {
+                    TopAppBar(
+                        title = { 
+                            Text(
+                                text = "${selectedFestivos.size} seleccionados", 
+                                color = Color.White,
+                                fontSize = 20.sp
+                            ) 
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { selectedFestivos = emptySet() }) {
+                                Icon(Icons.Default.Close, "Cancelar", tint = Color.White)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { /* Próximo paso: Implementar Compartir Masivo */ }) {
+                                Icon(Icons.Default.Share, "Compartir", tint = Color.White)
+                            }
+                            IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                                Icon(Icons.Default.Delete, "Borrar", tint = Color.White)
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
+                    )
+                } else {
+                    TopAppBar(
+                        title = {
+                            TextField(
+                                value = searchQuery,
+                                onValueChange = onSearchQueryChange,
+                                placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
+                                textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontSize = 18.sp),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                                keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    disabledContainerColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    errorIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
                             )
-                        }
-                    },
-                    actions = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { onSearchQueryChange("") }) {
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = onClose) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(id = R.string.clear_search),
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(id = R.string.close_search),
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
-                )
+                        },
+                        actions = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { onSearchQueryChange("") }) {
+                                    Icon(Icons.Default.Close, stringResource(id = R.string.clear_search), tint = MaterialTheme.colorScheme.onPrimary)
+                                }
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
+                    )
+                }
             }
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                val scopeOptions = listOf(stringResource(id = R.string.current_month), stringResource(id = R.string.current_year), stringResource(id = R.string.all))
-                val headerColor = CalendarioTheme.colors.cabecera
-                val backgroundColor = MaterialTheme.colorScheme.background
-
-                scopeOptions.forEachIndexed { index, text ->
-                    val scopeValue = SearchScope.entries[index]
-                    val isSelected = searchScope == scopeValue
-
-                    val buttonContainerColor = if (isSelected) {
-                        val isBgDark = ColorUtils.calculateLuminance(backgroundColor.toArgb()) < 0.5
-                        if (isBgDark) {
-                            val isHeaderDark = ColorUtils.calculateLuminance(headerColor.toArgb()) < 0.5
-                            if (isHeaderDark) {
-                                val hsl = FloatArray(3)
-                                ColorUtils.colorToHSL(headerColor.toArgb(), hsl)
-                                hsl[2] = (hsl[2] + 0.1f).coerceIn(0f, 1f)
-                                Color(ColorUtils.HSLToColor(hsl))
-                            } else {
-                                headerColor.copy(alpha = 0.2f)
-                            }
-                        } else {
-                            headerColor.copy(alpha = 0.2f)
+            if (!isSelectionMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val scopeOptions = listOf(stringResource(id = R.string.current_month), stringResource(id = R.string.current_year), stringResource(id = R.string.all))
+                    scopeOptions.forEachIndexed { index, text ->
+                        val scopeValue = SearchScope.entries[index]
+                        val isSelected = searchScope == scopeValue
+                        TextButton(
+                            onClick = { onSearchScopeChange(scopeValue) },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.2f) else Color.Transparent,
+                                contentColor = CalendarioTheme.colors.textSystem
+                            )
+                        ) { 
+                            Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                         }
-                    } else {
-                        Color.Transparent
-                    }
-
-                    val textColor = if (isSelected) {
-                        if (isColorDark(buttonContainerColor, backgroundColor)) Color.White else CalendarioTheme.colors.textSystem
-                    } else {
-                        CalendarioTheme.colors.textSystem
-                    }
-
-                    TextButton(
-                        onClick = { onSearchScopeChange(scopeValue) },
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = buttonContainerColor,
-                            contentColor = textColor
-                        )
-                    ) { 
-                        Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
             }
+
             if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(stringResource(id = R.string.no_results_found), color = CalendarioTheme.colors.textSystem)
@@ -244,87 +194,105 @@ fun SearchScreen(
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
-                    when (searchScope) {
-                        SearchScope.MONTH, SearchScope.YEAR -> {
-                            searchResults.forEach { (date, events) ->
-                                stickyHeader {
-                                    val headerText = if (searchScope == SearchScope.YEAR) {
-                                        date.format(DateTimeFormatter.ofPattern("MMMM yyyy").withLocale(Locale.getDefault()))
-                                    } else {
-                                        date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy").withLocale(Locale.getDefault()))
-                                    }.replaceFirstChar { it.titlecase(Locale.getDefault()) }
+                    searchResults.forEach { (date, events) ->
+                        stickyHeader {
+                            val headerText = when (searchScope) {
+                                SearchScope.MONTH -> date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy").withLocale(Locale.getDefault()))
+                                SearchScope.YEAR -> date.format(DateTimeFormatter.ofPattern("MMMM yyyy").withLocale(Locale.getDefault()))
+                                SearchScope.ALL -> date.format(DateTimeFormatter.ofPattern("yyyy"))
+                            }.replaceFirstChar { it.titlecase(Locale.getDefault()) }
 
-                                    Text(
-                                        text = headerText,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(CalendarioTheme.colors.fondoSecciones)
-                                            .padding(8.dp),
-                                        fontWeight = FontWeight.Bold,
-                                        color = CalendarioTheme.colors.textSystem
-                                    )
-                                }
-                                items(events) { festivo ->
-                                    EventRow(festivo, availableCalendars, onEventClick, searchScope)
-                                }
-                            }
+                            Text(
+                                text = headerText,
+                                modifier = Modifier.fillMaxWidth().background(CalendarioTheme.colors.fondoSecciones).padding(8.dp),
+                                fontWeight = FontWeight.Bold,
+                                color = CalendarioTheme.colors.textSystem
+                            )
                         }
-                        SearchScope.ALL -> {
-                            searchResults.forEach { (yearDate, eventsInYear) ->
-                                item {
-                                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                                        val titleColor = lerp(
-                                            start = CalendarioTheme.colors.cabecera,
-                                            stop = CalendarioTheme.colors.textSystem,
-                                            fraction = 0.4f
-                                        )
-                                        Text(
-                                            text = yearDate.format(DateTimeFormatter.ofPattern("yyyy")),
-                                            style = MaterialTheme.typography.titleLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            color = titleColor
-                                        )
+                        
+                        items(events) { festivo ->
+                            val isSelected = selectedFestivos.contains(festivo)
+                            EventRow(
+                                festivo = festivo,
+                                availableCalendars = availableCalendars,
+                                isSelected = isSelected,
+                                onEventClick = { clicked ->
+                                    if (isSelectionMode) {
+                                        selectedFestivos = if (isSelected) selectedFestivos - clicked else selectedFestivos + clicked
+                                    } else {
+                                        onEventClick(clicked)
                                     }
-                                }
-
-                                val eventsByMonth = eventsInYear.groupBy { YearMonth.from(it.date) }.toSortedMap()
-                                item {
-                                    Column(
-                                        modifier = Modifier
-                                            .padding(horizontal = 16.dp)
-                                            .clip(RoundedCornerShape(16.dp))
-                                            .background(CalendarioTheme.colors.fondoSecciones)
-                                    ) {
-                                        eventsByMonth.forEach { (month, eventsInMonth) ->
-                                            Text(
-                                                text = month.format(DateTimeFormatter.ofPattern("MMMM").withLocale(Locale.getDefault())).replaceFirstChar { it.titlecase(Locale.getDefault()) },
-                                                fontWeight = FontWeight.Bold,
-                                                color = CalendarioTheme.colors.textSystem,
-                                                modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
-                                            )
-                                            eventsInMonth.forEach { festivo ->
-                                                EventRow(festivo, availableCalendars, onEventClick, searchScope)
-                                            }
-                                            HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                                        }
-                                    }
-                                }
-                            }
+                                },
+                                onLongClick = { target ->
+                                    selectedFestivos = selectedFestivos + target
+                                },
+                                searchScope = searchScope
+                            )
                         }
                     }
                 }
             }
         }
     }
+
+    // --- Diálogo de Confirmación de Borrado ---
+    if (showDeleteConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = false },
+            title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold) },
+            text = { Text("¿Deseas eliminar estos ${selectedFestivos.size} eventos? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val eventsToDelete = selectedFestivos.filter { festivo ->
+                            availableCalendars.find { it.id == festivo.calendarId }?.canModify == true
+                        }
+                        
+                        var deletedCount = 0
+                        eventsToDelete.forEach { festivo ->
+                            try {
+                                val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, festivo.id)
+                                context.contentResolver.delete(deleteUri, null, null)
+                                deletedCount++
+                            } catch (e: Exception) {
+                                // Ignorar errores individuales
+                            }
+                        }
+                        
+                        if (deletedCount > 0) {
+                            Toast.makeText(context, "$deletedCount eventos eliminados.", Toast.LENGTH_SHORT).show()
+                            onRefresh() // Refresca el calendario y la búsqueda
+                        }
+                        
+                        selectedFestivos = emptySet()
+                        showDeleteConfirmDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(stringResource(id = R.string.delete), color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+                }
+            },
+            containerColor = CalendarioTheme.colors.fondoDialogos
+        )
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EventRow(
     festivo: Festivo,
     availableCalendars: List<CalendarInfo>,
+    isSelected: Boolean,
     onEventClick: (Festivo) -> Unit,
+    onLongClick: (Festivo) -> Unit,
     searchScope: SearchScope
 ) {
+    val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: "" }
@@ -353,41 +321,51 @@ private fun EventRow(
     }
 
     val descWithAge = if (festivo.age != null) "$baseDesc (${festivo.age})" else baseDesc
-
-    val displayDesc = when (searchScope) {
-        SearchScope.YEAR, SearchScope.ALL -> "${festivo.date.dayOfMonth} - $descWithAge"
-        SearchScope.MONTH -> descWithAge
-    }
+    val displayDesc = if (searchScope == SearchScope.MONTH) descWithAge else "${festivo.date.dayOfMonth} - $descWithAge"
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onEventClick(festivo) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .then(
+                if (isSelected) Modifier.border(2.dp, CalendarioTheme.colors.cabecera, RoundedCornerShape(12.dp))
+                else Modifier
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isSelected) CalendarioTheme.colors.todayHighlightColor else Color.Transparent)
+            .combinedClickable(
+                onClick = { onEventClick(festivo) },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongClick(festivo)
+                }
+            )
+            .padding(horizontal = 8.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
             Box(
-                Modifier
-                    .size(10.dp)
-                    .background(Color(colorInt), CircleShape)
-                    .border(
-                        0.5.dp,
-                        CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                        CircleShape
-                    )
+                Modifier.size(10.dp).background(Color(colorInt), CircleShape)
+                    .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), CircleShape)
             )
             Spacer(Modifier.size(8.dp))
         }
-        Text(displayDesc, color = itemColor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        
+        Text(
+            text = displayDesc, 
+            color = itemColor, 
+            maxLines = 1, 
+            overflow = TextOverflow.Ellipsis, 
+            modifier = Modifier.weight(1f),
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+        
         if (festivo.rrule != null) {
             Icon(
                 imageVector = Icons.Default.Refresh,
-                contentDescription = stringResource(id = R.string.repeated_event),
+                contentDescription = null,
                 tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(16.dp)
+                modifier = Modifier.padding(start = 8.dp).size(16.dp)
             )
         }
     }
