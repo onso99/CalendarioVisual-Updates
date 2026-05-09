@@ -309,7 +309,7 @@ fun CalendarioScreen(
     }
 
     if (showWidgetLogScreen) {
-        WidgetLogScreen(
+        LogScreen(
             onBack = { showWidgetLogScreen = false }
         )
         return
@@ -327,7 +327,7 @@ fun CalendarioScreen(
                 holidayForManager = null
                 showHolidayManagerScreen = true 
             },
-            onWidgetLogClick = { showWidgetLogScreen = true },
+            onLogClick = { showWidgetLogScreen = true },
             onRefreshData = {
                 viewModel.refreshData()
             },

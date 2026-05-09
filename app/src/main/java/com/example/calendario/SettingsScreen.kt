@@ -104,7 +104,7 @@ fun SettingsScreen(
     onHolidayManagerClick: () -> Unit,
     onRefreshData: () -> Unit,
     onThemeUpdated: () -> Unit,
-    onWidgetLogClick: () -> Unit = {}
+    onLogClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val typography = MaterialTheme.typography
@@ -654,7 +654,7 @@ fun SettingsScreen(
                 
                 val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                 IconButton(
-                    onClick = { if (loggingEnabled) onWidgetLogClick() },
+                    onClick = { if (loggingEnabled) onLogClick() },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -662,7 +662,7 @@ fun SettingsScreen(
                         contentDescription = null,
                         tint = if (loggingEnabled) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f),
                         modifier = Modifier.combinedClickable(
-                            onClick = { if (loggingEnabled) onWidgetLogClick() },
+                            onClick = { if (loggingEnabled) onLogClick() },
                             onLongClick = {
                                 haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                 loggingEnabled = !loggingEnabled

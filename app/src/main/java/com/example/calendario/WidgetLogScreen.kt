@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WidgetLogScreen(onBack: () -> Unit) {
+fun LogScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     var logText by remember { mutableStateOf(LogCollector.getLogs()) }
@@ -31,7 +31,7 @@ fun WidgetLogScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { 
                     Column {
-                        Text("Monitorización del Widget", fontSize = 18.sp)
+                        Text("Log de Depuración", fontSize = 18.sp)
                         Text("Próximo refresco: $nextRefresh", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                     }
                 },
