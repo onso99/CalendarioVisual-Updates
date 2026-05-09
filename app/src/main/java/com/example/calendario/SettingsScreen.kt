@@ -10,8 +10,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -93,7 +95,7 @@ enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SettingsScreen(
     onBackPress: () -> Unit,
@@ -631,6 +633,8 @@ fun SettingsScreen(
             }
 
             // --- About Section ---
+            var loggingEnabled by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
+            
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -647,14 +651,26 @@ fun SettingsScreen(
                     fontWeight = FontWeight.Bold,
                     color = titleColor
                 )
+                
+                val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                 IconButton(
-                    onClick = onWidgetLogClick,
+                    onClick = { if (loggingEnabled) onWidgetLogClick() },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.BugReport,
                         contentDescription = null,
-                        tint = Color.Gray.copy(alpha = 0.5f)
+                        tint = if (loggingEnabled) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f),
+                        modifier = Modifier.combinedClickable(
+                            onClick = { if (loggingEnabled) onWidgetLogClick() },
+                            onLongClick = {
+                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                loggingEnabled = !loggingEnabled
+                                LogCollector.setLoggingEnabled(context, loggingEnabled)
+                                val msg = if (loggingEnabled) "Log Activado" else "Log Desactivado"
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     )
                 }
             }

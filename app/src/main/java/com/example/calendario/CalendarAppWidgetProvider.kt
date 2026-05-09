@@ -64,6 +64,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
         Log.i(TAG, "onEnabled - Activando sistema de alarmas y observadores.")
+        LogCollector.init(context)
         CalendarObserverManager.registerObserver(context)
         scheduleNextAlarm(context)
         
