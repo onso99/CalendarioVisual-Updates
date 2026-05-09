@@ -58,6 +58,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -634,6 +635,7 @@ fun SettingsScreen(
 
             // --- About Section ---
             var loggingEnabled by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
+            var debugClickCount by remember { mutableIntStateOf(0) }
             
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp),
@@ -654,7 +656,20 @@ fun SettingsScreen(
                 
                 val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                 IconButton(
-                    onClick = { if (loggingEnabled) onLogClick() },
+                    onClick = { 
+                        if (loggingEnabled) {
+                            onLogClick()
+                        } else {
+                            debugClickCount++
+                            if (debugClickCount >= 7) {
+                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                loggingEnabled = true
+                                LogCollector.setLoggingEnabled(context, true)
+                                Toast.makeText(context, "Depuración: ON", Toast.LENGTH_SHORT).show()
+                                debugClickCount = 0
+                            }
+                        }
+                    },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -662,13 +677,28 @@ fun SettingsScreen(
                         contentDescription = null,
                         tint = if (loggingEnabled) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f),
                         modifier = Modifier.combinedClickable(
-                            onClick = { if (loggingEnabled) onLogClick() },
+                            onClick = { 
+                                if (loggingEnabled) {
+                                    onLogClick()
+                                } else {
+                                    debugClickCount++
+                                    if (debugClickCount >= 7) {
+                                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                        loggingEnabled = true
+                                        LogCollector.setLoggingEnabled(context, true)
+                                        Toast.makeText(context, "Depuración: ON", Toast.LENGTH_SHORT).show()
+                                        debugClickCount = 0
+                                    }
+                                }
+                            },
                             onLongClick = {
-                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                                loggingEnabled = !loggingEnabled
-                                LogCollector.setLoggingEnabled(context, loggingEnabled)
-                                val msg = if (loggingEnabled) "Log Activado" else "Log Desactivado"
-                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                if (loggingEnabled) {
+                                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                    loggingEnabled = false
+                                    LogCollector.setLoggingEnabled(context, false)
+                                    Toast.makeText(context, "Depuración: OFF", Toast.LENGTH_SHORT).show()
+                                    debugClickCount = 0
+                                }
                             }
                         )
                     )

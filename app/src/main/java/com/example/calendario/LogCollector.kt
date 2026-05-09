@@ -53,7 +53,7 @@ object LogCollector {
     }
 
     fun getNextRefreshTime(context: Context): String {
-        if (!isLoggingEnabled(context)) return "Log desactivado"
+        if (!isLoggingEnabled(context)) return "OFF"
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getString(KEY_NEXT_REFRESH, "No programado") ?: "No programado"
     }

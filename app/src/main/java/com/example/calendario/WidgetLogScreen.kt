@@ -31,7 +31,7 @@ fun LogScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { 
                     Column {
-                        Text("Log de Depuración", fontSize = 18.sp)
+                        Text("Depuración", fontSize = 18.sp)
                         Text("Próximo refresco: $nextRefresh", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                     }
                 },
