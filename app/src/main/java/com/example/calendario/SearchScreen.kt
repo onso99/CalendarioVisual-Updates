@@ -103,7 +103,9 @@ fun SearchScreen(
                             }
                         },
                         actions = {
-                            IconButton(onClick = { /* Próximo paso: Implementar Compartir Masivo */ }) {
+                            IconButton(onClick = { 
+                                IcsHelper.shareEvents(context, selectedFestivos)
+                            }) {
                                 Icon(Icons.Default.Share, "Compartir", tint = Color.White)
                             }
                             IconButton(onClick = { showDeleteConfirmDialog = true }) {

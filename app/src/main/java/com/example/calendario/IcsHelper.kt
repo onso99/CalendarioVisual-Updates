@@ -18,12 +18,14 @@ import java.util.Locale
 object IcsHelper {
 
     /**
-     * Genera un archivo .ics para el evento dado y abre el selector de compartir.
+     * Genera un archivo .ics para uno o varios eventos y abre el selector de compartir.
      */
-    fun shareEvent(context: Context, event: Festivo) {
+    fun shareEvents(context: Context, events: Collection<Festivo>) {
+        if (events.isEmpty()) return
         try {
-            val icsContent = generateIcsContent(event)
-            val file = File(context.cacheDir, "evento.ics")
+            val icsContent = generateMultipleIcsContent(events)
+            val fileName = if (events.size == 1) "evento.ics" else "eventos_calendario.ics"
+            val file = File(context.cacheDir, fileName)
             
             FileOutputStream(file).use { 
                 it.write(icsContent.toByteArray()) 
@@ -35,23 +37,33 @@ object IcsHelper {
                 file
             )
 
-            // Texto descriptivo para acompañar al archivo
-            val dateText = event.date.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale.getDefault()))
-            val shareMessage = "📅 Evento: ${event.title}\n🗓️ $dateText"
+            val shareMessage = if (events.size == 1) {
+                val event = events.first()
+                "📅 Evento: ${event.title}\n🗓️ ${event.date.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale.getDefault()))}"
+            } else {
+                "📅 Te comparto ${events.size} eventos de mi calendario"
+            }
 
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/calendar"
                 putExtra(Intent.EXTRA_STREAM, contentUri)
                 putExtra(Intent.EXTRA_TEXT, shareMessage)
-                putExtra(Intent.EXTRA_SUBJECT, event.title)
+                putExtra(Intent.EXTRA_SUBJECT, if (events.size == 1) events.first().title else "Eventos de Calendario")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
             context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_event)))
 
         } catch (e: Exception) {
-            Log.e("IcsHelper", "Error compartiendo evento: ${e.message}")
+            Log.e("IcsHelper", "Error compartiendo eventos: ${e.message}")
         }
+    }
+
+    /**
+     * Versión para un solo evento (mantiene compatibilidad)
+     */
+    fun shareEvent(context: Context, event: Festivo) {
+        shareEvents(context, listOf(event))
     }
 
     /**
@@ -89,14 +101,23 @@ object IcsHelper {
                             isAllDay = true
                             startDate = LocalDate.parse(value, dateFormatter)
                         } else {
-                            val dt = LocalDateTime.parse(value.take(15), dateTimeFormatter)
+                            val dt = try { 
+                                LocalDateTime.parse(value.take(15), dateTimeFormatter) 
+                            } catch (e: Exception) {
+                                // Fallback para formatos sin segundos
+                                LocalDateTime.parse(value.take(13) + "00", DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmm'00'"))
+                            }
                             startDate = dt.toLocalDate()
                             startTime = dt.toLocalTime()
                         }
                     }
                     key.startsWith("DTEND") -> {
                         if (!key.contains("VALUE=DATE")) {
-                            val dt = LocalDateTime.parse(value.take(15), dateTimeFormatter)
+                            val dt = try {
+                                LocalDateTime.parse(value.take(15), dateTimeFormatter)
+                            } catch (e: Exception) {
+                                LocalDateTime.parse(value.take(13) + "00", DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmm'00'"))
+                            }
                             endTime = dt.toLocalTime()
                         }
                     }
@@ -105,7 +126,7 @@ object IcsHelper {
             
             return if (startDate != null && title.isNotBlank()) {
                 Festivo(
-                    id = 0L, // ID 0 para indicar que es un evento nuevo
+                    id = 0L,
                     title = title,
                     description = description,
                     date = startDate!!,
@@ -124,45 +145,42 @@ object IcsHelper {
         }
     }
 
-    private fun generateIcsContent(event: Festivo): String {
+    private fun generateMultipleIcsContent(events: Collection<Festivo>): String {
         val sb = StringBuilder()
         sb.append("BEGIN:VCALENDAR\n")
         sb.append("VERSION:2.0\n")
         sb.append("PRODID:-//Calendario//ES\n")
         sb.append("CALSCALE:GREGORIAN\n")
-        sb.append("BEGIN:VEVENT\n")
         
-        // Título y Descripción
-        sb.append("SUMMARY:${escapeIcs(event.title)}\n")
-        if (!event.description.isNullOrBlank()) {
-            sb.append("DESCRIPTION:${escapeIcs(event.description)}\n")
+        events.forEach { event ->
+            sb.append("BEGIN:VEVENT\n")
+            sb.append("SUMMARY:${escapeIcs(event.title)}\n")
+            if (!event.description.isNullOrBlank()) {
+                sb.append("DESCRIPTION:${escapeIcs(event.description)}\n")
+            }
+
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss")
+
+            if (event.isAllDay) {
+                sb.append("DTSTART;VALUE=DATE:${event.date.format(dateFormatter)}\n")
+                sb.append("DTEND;VALUE=DATE:${event.date.plusDays(1).format(dateFormatter)}\n")
+            } else {
+                val startTime = event.startTime ?: LocalTime.MIDNIGHT
+                val endTime = event.endTime ?: startTime.plusHours(1)
+                val startDateTime = event.date.atTime(startTime)
+                val endDateTime = event.date.atTime(endTime)
+                sb.append("DTSTART:${startDateTime.format(dateTimeFormatter)}\n")
+                sb.append("DTEND:${endDateTime.format(dateTimeFormatter)}\n")
+            }
+
+            if (!event.rrule.isNullOrBlank()) {
+                sb.append("RRULE:${event.rrule}\n")
+            }
+            sb.append("END:VEVENT\n")
         }
-
-        // Fechas y Horas
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss")
-
-        if (event.isAllDay) {
-            sb.append("DTSTART;VALUE=DATE:${event.date.format(dateFormatter)}\n")
-            sb.append("DTEND;VALUE=DATE:${event.date.plusDays(1).format(dateFormatter)}\n")
-        } else {
-            val startTime = event.startTime ?: java.time.LocalTime.MIDNIGHT
-            val endTime = event.endTime ?: startTime.plusHours(1)
-            
-            val startDateTime = event.date.atTime(startTime)
-            val endDateTime = event.date.atTime(endTime)
-            
-            sb.append("DTSTART:${startDateTime.format(dateTimeFormatter)}\n")
-            sb.append("DTEND:${endDateTime.format(dateTimeFormatter)}\n")
-        }
-
-        if (!event.rrule.isNullOrBlank()) {
-            sb.append("RRULE:${event.rrule}\n")
-        }
-
-        sb.append("END:VEVENT\n")
+        
         sb.append("END:VCALENDAR")
-        
         return sb.toString()
     }
 
