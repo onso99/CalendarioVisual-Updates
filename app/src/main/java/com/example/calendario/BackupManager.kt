@@ -3,6 +3,7 @@ package com.example.calendario
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -11,12 +12,16 @@ object BackupManager {
 
     private const val KEY_APP_PREFS = "app_preferences"
     private const val KEY_WIDGET_PREFS = "widget_preferences"
+    private const val KEY_HOLIDAY_PREFS = "holiday_preferences"
+    private const val KEY_CALENDAR_PREFS = "calendar_preferences"
     private const val KEY_BACKUP_METADATA = "backup_metadata"
 
     fun exportFullBackup(context: Context, uri: Uri) {
         try {
             val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+            val holidayPrefs = context.getSharedPreferences("holiday_adjustments", Context.MODE_PRIVATE)
+            val calendarPrefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
 
             val fullBackupJson = JSONObject()
 
@@ -29,13 +34,21 @@ object BackupManager {
             metadata.put("appVersion", pInfo.versionName)
             fullBackupJson.put(KEY_BACKUP_METADATA, metadata)
 
-            // 2. App Preferences (All including custom colors)
-            val appPrefsMap = appPrefs.all
-            fullBackupJson.put(KEY_APP_PREFS, JSONObject(appPrefsMap))
+            // 2. App Preferences
+            fullBackupJson.put(KEY_APP_PREFS, JSONObject(appPrefs.all))
 
-            // 3. Widget Preferences (All)
-            val widgetPrefsMap = widgetPrefs.all
-            fullBackupJson.put(KEY_WIDGET_PREFS, JSONObject(widgetPrefsMap))
+            // 3. Widget Preferences
+            fullBackupJson.put(KEY_WIDGET_PREFS, JSONObject(widgetPrefs.all))
+            
+            // 4. Holiday Adjustments (Gestor de Festivos)
+            fullBackupJson.put(KEY_HOLIDAY_PREFS, JSONObject(holidayPrefs.all))
+            
+            // 5. Selected Calendars (Manejo especial para Set<String>)
+            val calPrefsMap = calendarPrefs.all.mapValues { entry ->
+                val value = entry.value
+                if (value is Set<*>) JSONArray(value) else value
+            }
+            fullBackupJson.put(KEY_CALENDAR_PREFS, JSONObject(calPrefsMap))
 
             context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                 outputStream.write(fullBackupJson.toString(4).toByteArray())
@@ -60,68 +73,71 @@ object BackupManager {
                 throw Exception(context.getString(R.string.invalid_backup_file))
             }
 
+            // --- RESTAURACIÓN ---
+            
+            // 1. App Prefs
             val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            restorePrefs(appPrefs, json.optJSONObject(KEY_APP_PREFS))
+
+            // 2. Widget Prefs
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+            restorePrefs(widgetPrefs, json.optJSONObject(KEY_WIDGET_PREFS))
+            
+            // 3. Holiday Prefs
+            val holidayPrefs = context.getSharedPreferences("holiday_adjustments", Context.MODE_PRIVATE)
+            restorePrefs(holidayPrefs, json.optJSONObject(KEY_HOLIDAY_PREFS))
+            
+            // 4. Calendar Prefs (Tratamiento especial para los IDs de calendarios que son un Set)
+            val calendarPrefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
+            val calendarJson = json.optJSONObject(KEY_CALENDAR_PREFS)
+            calendarJson?.let {
+                val editor = calendarPrefs.edit()
+                editor.clear()
+                val keys = it.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    val value = it.get(key)
+                    if (value is JSONArray) {
+                        val set = mutableSetOf<String>()
+                        for (i in 0 until value.length()) {
+                            set.add(value.getString(i))
+                        }
+                        editor.putStringSet(key, set)
+                    } else if (value != null && value != JSONObject.NULL) {
+                        putPreference(editor, key, value)
+                    }
+                }
+                editor.apply()
+            }
 
-            // Importar App Prefs
+            // Re-aplicar lógica de colores de temas si no hay colores individuales
             val appJson = json.optJSONObject(KEY_APP_PREFS)
-            var restoredLightThemeName: String? = null
-            var restoredDarkThemeName: String? = null
-            
-            appJson?.let {
-                val editor = appPrefs.edit()
-                editor.clear()
-                val keys = it.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    val value = it.get(key)
-                    if (value != null && value != JSONObject.NULL) {
-                        putPreference(editor, key, value)
-                        if (key == AppConstants.KEY_LIGHT_THEME_NAME) {
-                            restoredLightThemeName = value.toString()
-                        }
-                        if (key == AppConstants.KEY_DARK_THEME_NAME) {
-                            restoredDarkThemeName = value.toString()
-                        }
-                    }
-                }
-                editor.apply()
-            }
-
-            // Importar Widget Prefs
-            val widgetJson = json.optJSONObject(KEY_WIDGET_PREFS)
-            widgetJson?.let {
-                val editor = widgetPrefs.edit()
-                editor.clear()
-                val keys = it.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    val value = it.get(key)
-                    if (value != null && value != JSONObject.NULL) {
-                        putPreference(editor, key, value)
-                    }
-                }
-                editor.apply()
-            }
-
-            // Aplicar colores de los temas restaurados SOLO si no hay colores individuales presentes
-            // (Para compatibilidad con backups antiguos que no incluían colores)
             val hasIndividualColors = appJson?.keys()?.asSequence()?.any { it.startsWith("light_") || it.startsWith("dark_") } ?: false
-            
             if (!hasIndividualColors) {
-                restoredLightThemeName?.let { themeName ->
-                    applyBundledThemeColors(context, themeName, false)
-                }
-                restoredDarkThemeName?.let { themeName ->
-                    applyBundledThemeColors(context, themeName, true)
-                }
+                appJson?.optString(AppConstants.KEY_LIGHT_THEME_NAME)?.let { applyBundledThemeColors(context, it, false) }
+                appJson?.optString(AppConstants.KEY_DARK_THEME_NAME)?.let { applyBundledThemeColors(context, it, true) }
             }
 
             onComplete()
-
             Toast.makeText(context, R.string.backup_imported_successfully, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(context, context.getString(R.string.error_importing_backup, e.message), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun restorePrefs(prefs: android.content.SharedPreferences, json: JSONObject?) {
+        json?.let {
+            val editor = prefs.edit()
+            editor.clear()
+            val keys = it.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                val value = it.get(key)
+                if (value != null && value != JSONObject.NULL) {
+                    putPreference(editor, key, value)
+                }
+            }
+            editor.apply()
         }
     }
 
@@ -136,19 +152,13 @@ object BackupManager {
         colorMap.forEach { (key, hex) ->
             try {
                 editor.putInt(key, android.graphics.Color.parseColor(hex))
-            } catch (_: Exception) {
-                // Ignorar colores inválidos
-            }
+            } catch (_: Exception) { }
         }
         editor.apply()
     }
 
-
-
     private fun putPreference(editor: android.content.SharedPreferences.Editor, key: String, value: Any) {
-        // Mapeo explícito de tipos para evitar ClassCastException al restaurar desde JSON
         when (key) {
-            // Long
             AppConstants.KEY_FAVORITE_CALENDAR_ID -> {
                 val longValue = when (value) {
                     is Number -> value.toLong()
@@ -157,12 +167,11 @@ object BackupManager {
                 }
                 editor.putLong(key, longValue)
             }
-            // Float
             WidgetConstants.KEY_WIDGET_TEXT_BOOST -> {
                 val floatValue = when (value) {
                     is Number -> value.toFloat()
-                    is String -> value.toFloatOrNull() ?: 1.0f
-                    else -> 1.0f
+                    is String -> value.toFloatOrNull() ?: 0f
+                    else -> 0f
                 }
                 editor.putFloat(key, floatValue)
             }
@@ -220,7 +229,6 @@ object BackupManager {
                 }
                 editor.putInt(key, intValue)
             }
-            // Fallback para tipos genéricos si no es una clave crítica conocida
             else -> {
                 when (value) {
                     is Boolean -> editor.putBoolean(key, value)
@@ -229,12 +237,8 @@ object BackupManager {
                     is Float -> editor.putFloat(key, value)
                     is String -> editor.putString(key, value)
                     is Double -> {
-                        // Intentar deducir si es Int o Float
-                        if (value == value.toInt().toDouble()) {
-                            editor.putInt(key, value.toInt())
-                        } else {
-                            editor.putFloat(key, value.toFloat())
-                        }
+                        if (value == value.toInt().toDouble()) editor.putInt(key, value.toInt())
+                        else editor.putFloat(key, value.toFloat())
                     }
                     else -> editor.putString(key, value.toString())
                 }
