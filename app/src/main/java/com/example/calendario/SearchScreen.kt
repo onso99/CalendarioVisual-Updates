@@ -92,24 +92,24 @@ fun SearchScreen(
                     TopAppBar(
                         title = { 
                             Text(
-                                text = "${selectedFestivos.size} seleccionados", 
+                                text = stringResource(id = R.string.selected_count, selectedFestivos.size), 
                                 color = Color.White,
                                 fontSize = 20.sp
                             ) 
                         },
                         navigationIcon = {
                             IconButton(onClick = { selectedFestivos = emptySet() }) {
-                                Icon(Icons.Default.Close, "Cancelar", tint = Color.White)
+                                Icon(Icons.Default.Close, stringResource(id = R.string.close), tint = Color.White)
                             }
                         },
                         actions = {
                             IconButton(onClick = { 
                                 IcsHelper.shareEvents(context, selectedFestivos)
                             }) {
-                                Icon(Icons.Default.Share, "Compartir", tint = Color.White)
+                                Icon(Icons.Default.Share, stringResource(id = R.string.share_event), tint = Color.White)
                             }
                             IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                                Icon(Icons.Default.Delete, "Borrar", tint = Color.White)
+                                Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
@@ -242,7 +242,7 @@ fun SearchScreen(
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
             title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold) },
-            text = { Text("¿Deseas eliminar estos ${selectedFestivos.size} eventos? Esta acción no se puede deshacer.") },
+            text = { Text(stringResource(id = R.string.delete_multiple_confirmation, selectedFestivos.size)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -262,7 +262,8 @@ fun SearchScreen(
                         }
                         
                         if (deletedCount > 0) {
-                            Toast.makeText(context, "$deletedCount eventos eliminados.", Toast.LENGTH_SHORT).show()
+                            val msg = context.getString(R.string.events_deleted_count, deletedCount)
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             onRefresh() // Refresca el calendario y la búsqueda
                         }
                         

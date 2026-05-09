@@ -41,7 +41,7 @@ object IcsHelper {
                 val event = events.first()
                 "📅 Evento: ${event.title}\n🗓️ ${event.date.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale.getDefault()))}"
             } else {
-                "📅 Te comparto ${events.size} eventos de mi calendario"
+                context.getString(R.string.share_multiple_message, events.size)
             }
 
             val shareIntent = Intent(Intent.ACTION_SEND).apply {

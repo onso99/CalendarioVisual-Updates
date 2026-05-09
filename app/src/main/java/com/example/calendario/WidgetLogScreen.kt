@@ -24,33 +24,36 @@ fun LogScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     var logText by remember { mutableStateOf(LogCollector.getLogs()) }
-    val nextRefresh = LogCollector.getNextRefreshTime(context)
+    val nextRefresh = LogCollector.getNextRefreshTime(context).let {
+        if (it == "OFF") stringResource(id = R.string.system_default).uppercase() // O "OFF" si prefieres
+        else it
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { 
                     Column {
-                        Text("Depuración", fontSize = 18.sp)
-                        Text("Próximo refresco: $nextRefresh", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                        Text(stringResource(id = R.string.debug_title), fontSize = 18.sp)
+                        Text(stringResource(id = R.string.next_refresh_label, nextRefresh), fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
                 },
                 actions = {
                     IconButton(onClick = { 
                         clipboardManager.setText(AnnotatedString(logText))
                     }) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copiar")
+                        Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy))
                     }
                     IconButton(onClick = { 
                         LogCollector.clear()
                         logText = ""
                     }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Limpiar")
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.clear))
                     }
                 }
             )
@@ -59,7 +62,7 @@ fun LogScreen(onBack: () -> Unit) {
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             if (logText.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                    Text("No hay logs registrados todavía.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(id = R.string.no_logs_found), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyColumn(

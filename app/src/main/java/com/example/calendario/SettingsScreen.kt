@@ -665,7 +665,9 @@ fun SettingsScreen(
                                 haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                 loggingEnabled = true
                                 LogCollector.setLoggingEnabled(context, true)
-                                Toast.makeText(context, "Depuración: ON", Toast.LENGTH_SHORT).show()
+                                val status = context.getString(R.string.debug_title)
+                                val msg = context.getString(R.string.debug_status_format, status, "ON")
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                 debugClickCount = 0
                             }
                         }
@@ -686,7 +688,9 @@ fun SettingsScreen(
                                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                         loggingEnabled = true
                                         LogCollector.setLoggingEnabled(context, true)
-                                        Toast.makeText(context, "Depuración: ON", Toast.LENGTH_SHORT).show()
+                                        val status = context.getString(R.string.debug_title)
+                                        val msg = context.getString(R.string.debug_status_format, status, "ON")
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                         debugClickCount = 0
                                     }
                                 }
@@ -696,7 +700,9 @@ fun SettingsScreen(
                                     haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                     loggingEnabled = false
                                     LogCollector.setLoggingEnabled(context, false)
-                                    Toast.makeText(context, "Depuración: OFF", Toast.LENGTH_SHORT).show()
+                                    val status = context.getString(R.string.debug_title)
+                                    val msg = context.getString(R.string.debug_status_format, status, "OFF")
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                     debugClickCount = 0
                                 }
                             }
