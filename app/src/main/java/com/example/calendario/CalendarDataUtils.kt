@@ -213,7 +213,13 @@ fun readFestivosFromCalendarsSync(
     selectedCalendarIds: Set<Long>
 ): Map<LocalDate, List<Festivo>> {
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
-    if (selectedCalendarIds.isEmpty()) return finalMap
+    
+    // 0. Cargamos los ajustes de festivos (Manuales y Excepciones)
+    val holidayAdjustments = loadHolidayAdjustments(context)
+    val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
+    val manualHolidays = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }
+
+    if (selectedCalendarIds.isEmpty() && manualHolidays.isEmpty()) return finalMap
     
     val resolver = context.contentResolver
     val systemZoneId = ZoneId.systemDefault()
@@ -223,153 +229,166 @@ fun readFestivosFromCalendarsSync(
     val startMillis = today.minusMonths(2).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
     val endMillis = today.plusYears(2).atStartOfDay(systemZoneId).toInstant().toEpochMilli()
     
-    val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().run {
-        ContentUris.appendId(this, startMillis)
-        ContentUris.appendId(this, endMillis)
-        build()
-    }
-
-    val instancesProjection = arrayOf(
-        CalendarContract.Instances.EVENT_ID, CalendarContract.Instances.CALENDAR_ID,
-        CalendarContract.Instances.BEGIN, CalendarContract.Instances.END,
-        CalendarContract.Instances.TITLE, CalendarContract.Instances.ALL_DAY,
-        CalendarContract.Instances.ORGANIZER
-    )
-    val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
-
-    val tempInstancesData = mutableListOf<Map<String, Any>>()
-
-    // 1. Obtenemos las instancias
-    resolver.query(instancesUri, instancesProjection, selection, null, null)?.use { cursor ->
-        val evIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
-        val calIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
-        val beginCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
-        val endCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.END)
-        val titleCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
-        val allDayCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
-        val orgCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ORGANIZER)
-
-        while (cursor.moveToNext()) {
-            tempInstancesData.add(mapOf(
-                "eventId" to cursor.getLong(evIdCol),
-                "calendarId" to cursor.getLong(calIdCol),
-                "title" to (cursor.getStringOrNull(titleCol) ?: ""),
-                "begin" to cursor.getLong(beginCol),
-                "end" to cursor.getLong(endCol),
-                "isAllDay" to (cursor.getInt(allDayCol) == 1),
-                "organizer" to (cursor.getStringOrNull(orgCol)?.lowercase() ?: "")
-            ))
+    if (selectedCalendarIds.isNotEmpty()) {
+        val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().run {
+            ContentUris.appendId(this, startMillis)
+            ContentUris.appendId(this, endMillis)
+            build()
         }
-    }
 
-    if (tempInstancesData.isEmpty()) return finalMap
+        val instancesProjection = arrayOf(
+            CalendarContract.Instances.EVENT_ID, CalendarContract.Instances.CALENDAR_ID,
+            CalendarContract.Instances.BEGIN, CalendarContract.Instances.END,
+            CalendarContract.Instances.TITLE, CalendarContract.Instances.ALL_DAY,
+            CalendarContract.Instances.ORGANIZER
+        )
+        val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
 
-    // 2. Cargamos metadatos en BLOQUES (Diagnóstico Profundo Integrado)
-    val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
-    val rruleMap = mutableMapOf<Long, String>()
-    val birthYearMap = mutableMapOf<Long, Int>()
-    val descMap = mutableMapOf<Long, String>()
-    val technicalBirthdayIds = mutableSetOf<Long>()
+        val tempInstancesData = mutableListOf<Map<String, Any>>()
 
-    uniqueEventIds.chunked(400).forEach { chunk ->
-        val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
-        // Proyección NULL para traer TODAS las columnas posibles en el diagnóstico
-        resolver.query(CalendarContract.Events.CONTENT_URI, null, eventSelection, null, null)?.use { cursor ->
-            val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
-            val rruleCol = cursor.getColumnIndex(CalendarContract.Events.RRULE)
-            val startCol = cursor.getColumnIndex(CalendarContract.Events.DTSTART)
-            val descCol = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION)
-            val s1Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA1)
-            val s2Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA2)
-            val pkgCol = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
-            val orgCol = cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)
-            val titleCol = cursor.getColumnIndex(CalendarContract.Events.TITLE)
+        // 1. Obtenemos las instancias
+        resolver.query(instancesUri, instancesProjection, selection, null, null)?.use { cursor ->
+            val evIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
+            val calIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
+            val beginCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.BEGIN)
+            val endCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.END)
+            val titleCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
+            val allDayCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
+            val orgCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ORGANIZER)
 
             while (cursor.moveToNext()) {
-                val id = cursor.getLong(idCol)
-                val titleInRow = if (titleCol != -1) cursor.getStringOrNull(titleCol) ?: "" else ""
-                
-                // --- VOLCADO DE "CAJA NEGRA" (Súper Log) ---
-                if (titleInRow.lowercase().contains("eda") || titleInRow.lowercase().contains("yia")) {
-                    val fullData = mutableListOf<String>()
-                    for (i in 0 until cursor.columnCount) {
-                        fullData.add("${cursor.getColumnName(i)}=${cursor.getStringOrNull(i)}")
+                val eventId = cursor.getLong(evIdCol)
+                // --- FILTRO: Excepciones (Día Laborable forzado por el usuario) ---
+                if (workingDayIds.contains(eventId)) continue
+
+                tempInstancesData.add(mapOf(
+                    "eventId" to eventId,
+                    "calendarId" to cursor.getLong(calIdCol),
+                    "title" to (cursor.getStringOrNull(titleCol) ?: ""),
+                    "begin" to cursor.getLong(beginCol),
+                    "end" to cursor.getLong(endCol),
+                    "isAllDay" to (cursor.getInt(allDayCol) == 1),
+                    "organizer" to (cursor.getStringOrNull(orgCol)?.lowercase() ?: "")
+                ))
+            }
+        }
+
+        if (tempInstancesData.isNotEmpty()) {
+            // 2. Cargamos metadatos en BLOQUES
+            val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
+            val rruleMap = mutableMapOf<Long, String>()
+            val birthYearMap = mutableMapOf<Long, Int>()
+            val descMap = mutableMapOf<Long, String>()
+            val technicalBirthdayIds = mutableSetOf<Long>()
+
+            uniqueEventIds.chunked(400).forEach { chunk ->
+                val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
+                resolver.query(CalendarContract.Events.CONTENT_URI, null, eventSelection, null, null)?.use { cursor ->
+                    val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
+                    val rruleCol = cursor.getColumnIndex(CalendarContract.Events.RRULE)
+                    val startCol = cursor.getColumnIndex(CalendarContract.Events.DTSTART)
+                    val descCol = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION)
+                    val s1Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA1)
+                    val s2Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA2)
+                    val pkgCol = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
+                    val orgCol = cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)
+                    val titleCol = cursor.getColumnIndex(CalendarContract.Events.TITLE)
+
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getLong(idCol)
+                        val titleInRow = if (titleCol != -1) cursor.getStringOrNull(titleCol) ?: "" else ""
+
+                        if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
+                        if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
+                        
+                        val s1 = if (s1Col != -1) cursor.getStringOrNull(s1Col)?.lowercase() ?: "" else ""
+                        val s2 = if (s2Col != -1) cursor.getStringOrNull(s2Col) ?: "" else ""
+                        val pkg = if (pkgCol != -1) cursor.getStringOrNull(pkgCol)?.lowercase() ?: "" else ""
+                        val org = if (orgCol != -1) cursor.getStringOrNull(orgCol)?.lowercase() ?: "" else ""
+
+                        if (pkg.contains("contacts") || org.contains("contacts") || s1.contains("birthday") || pkg.contains("gms") || org.contains("contacts@google.com")) {
+                            technicalBirthdayIds.add(id)
+                        }
+
+                        var bYear: Int? = null
+                        if (s2.length >= 4) bYear = Regex("\\b(19|20)\\d{2}\\b").find(s2)?.value?.toIntOrNull()
+                        
+                        if ((bYear == null || bYear < 1850) && startCol != -1) {
+                            val dtStartValue = cursor.getLong(startCol)
+                            val year = Instant.ofEpochMilli(dtStartValue).atZone(ZoneId.of("UTC")).toLocalDate().year
+                            if (year in 1850..2024) bYear = year
+                        }
+                        if (bYear != null && bYear > 1850) birthYearMap[id] = bYear
                     }
-                    LogCollector.addLog("DIAGNÓSTICO_FULL [$titleInRow]: ${fullData.joinToString(" | ")}")
                 }
+            }
 
-                if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
-                if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
+            // 3. Procesamos instancias y aplicamos lógica final
+            tempInstancesData.forEach { data ->
+                val eventId = data["eventId"] as Long
+                val calendarId = data["calendarId"] as Long
+                val title = data["title"] as String
+                val beginMillis = data["begin"] as Long
+                val endMillis = data["end"] as Long
+                val isAllDay = data["isAllDay"] as Boolean
+                val organizer = data["organizer"] as String
                 
-                val s1 = if (s1Col != -1) cursor.getStringOrNull(s1Col)?.lowercase() ?: "" else ""
-                val s2 = if (s2Col != -1) cursor.getStringOrNull(s2Col) ?: "" else ""
-                val pkg = if (pkgCol != -1) cursor.getStringOrNull(pkgCol)?.lowercase() ?: "" else ""
-                val org = if (orgCol != -1) cursor.getStringOrNull(orgCol)?.lowercase() ?: "" else ""
+                val startDate = Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalDate()
+                val startTime = if (isAllDay) null else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalTime()
+                val endTime = if (isAllDay) null else Instant.ofEpochMilli(endMillis).atZone(systemZoneId).toLocalTime()
 
-                if (pkg.contains("contacts") || org.contains("contacts") || s1.contains("birthday") || pkg.contains("gms") || org.contains("contacts@google.com")) {
-                    technicalBirthdayIds.add(id)
-                }
-
-                var bYear: Int? = null
-                if (s2.length >= 4) bYear = Regex("\\b(19|20)\\d{2}\\b").find(s2)?.value?.toIntOrNull()
+                val isFromHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
+                val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
                 
-                if ((bYear == null || bYear < 1850) && startCol != -1) {
-                    val dtStartValue = cursor.getLong(startCol)
-                    // No restringimos a > 0 para permitir fechas antes de 1970 (valor negativo)
-                    val year = Instant.ofEpochMilli(dtStartValue).atZone(ZoneId.of("UTC")).toLocalDate().year
-                    if (year in 1850..2024) bYear = year
+                val birthdayLabel = context.getString(R.string.birthdays).lowercase()
+                val hasBirthdayWord = title.lowercase().contains(birthdayLabel) || title.lowercase().contains("cumple")
+                
+                val finalIsBirthday = (isTechnicalBirthday || (isAllDay && hasBirthdayWord)) && !isFromHoliday
+                
+                var birthYear = birthYearMap[eventId]
+                if (finalIsBirthday && birthYear == null) {
+                    val yearInTitle = Regex("\\b(19|20)\\d{2}\\b").find(title)?.value?.toIntOrNull()
+                    val yearInDesc = Regex("\\b(19|20)\\d{2}\\b").find(descMap[eventId] ?: "")?.value?.toIntOrNull()
+                    birthYear = yearInTitle ?: yearInDesc
+                    if (birthYear != null && birthYear >= startDate.year) birthYear = null
                 }
-                if (bYear != null && bYear > 1850) birthYearMap[id] = bYear
+                
+                val age = if (finalIsBirthday && birthYear != null) (startDate.year - birthYear) else null
+
+                finalMap.getOrPut(startDate) { mutableListOf() }.add(Festivo(
+                    id = eventId, title = title, description = descMap[eventId],
+                    date = startDate, startTime = startTime, endTime = endTime,
+                    isAllDay = isAllDay, calendarId = calendarId, isFromHolidaySource = isFromHoliday,
+                    rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday
+                ))
             }
         }
     }
 
-    // 3. Procesamos instancias y aplicamos lógica final
-    tempInstancesData.forEach { data ->
-        val eventId = data["eventId"] as Long
-        val calendarId = data["calendarId"] as Long
-        val title = data["title"] as String
-        val beginMillis = data["begin"] as Long
-        val endMillis = data["end"] as Long
-        val isAllDay = data["isAllDay"] as Boolean
-        val organizer = data["organizer"] as String
-        
-        val startDate = Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalDate()
-        val startTime = if (isAllDay) null else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalTime()
-        val endTime = if (isAllDay) null else Instant.ofEpochMilli(endMillis).atZone(systemZoneId).toLocalTime()
-
-        val isFromHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
-        val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
-        
-        val birthdayLabel = context.getString(R.string.birthdays).lowercase()
-        val hasBirthdayWord = title.lowercase().contains(birthdayLabel) || title.lowercase().contains("cumple")
-        
-        val finalIsBirthday = (isTechnicalBirthday || (isAllDay && hasBirthdayWord)) && !isFromHoliday
-        
-        var birthYear = birthYearMap[eventId]
-        if (finalIsBirthday && birthYear == null) {
-            val yearInTitle = Regex("\\b(19|20)\\d{2}\\b").find(title)?.value?.toIntOrNull()
-            val yearInDesc = Regex("\\b(19|20)\\d{2}\\b").find(descMap[eventId] ?: "")?.value?.toIntOrNull()
-            birthYear = yearInTitle ?: yearInDesc
-            if (birthYear != null && birthYear >= startDate.year) birthYear = null
+    // 4. Inyectamos los Festivos Manuales del Gestor
+    manualHolidays.forEach { manual ->
+        // Solo añadimos si está dentro del rango visible aproximado
+        val startRange = today.minusMonths(3)
+        val endRange = today.plusYears(2)
+        if (manual.date.isAfter(startRange) && manual.date.isBefore(endRange)) {
+            finalMap.getOrPut(manual.date) { mutableListOf() }.add(Festivo(
+                id = -100L - manual.date.toEpochDay(), // ID ficticio único
+                title = manual.title,
+                description = "Festivo manual",
+                date = manual.date,
+                startTime = null,
+                endTime = null,
+                isAllDay = true,
+                calendarId = -1L,
+                isFromHolidaySource = true,
+                rrule = null,
+                age = null,
+                isBirthday = false
+            ))
         }
-        
-        val age = if (finalIsBirthday && birthYear != null) (startDate.year - birthYear) else null
-
-        // LOG DE SEGUIMIENTO PARA EDA/YIA
-        if (title.lowercase().contains("eda") || title.lowercase().contains("yia")) {
-            LogCollector.addLog("SEGUIMIENTO [$title]: Tech=$isTechnicalBirthday | AñoHallado=$birthYear | Edad=$age")
-        }
-
-        finalMap.getOrPut(startDate) { mutableListOf() }.add(Festivo(
-            id = eventId, title = title, description = descMap[eventId],
-            date = startDate, startTime = startTime, endTime = endTime,
-            isAllDay = isAllDay, calendarId = calendarId, isFromHolidaySource = isFromHoliday,
-            rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday
-        ))
     }
     
-    LogCollector.addLog("MOTOR: Procesados ${tempInstancesData.size} eventos (Diagnóstico Activo)")
+    LogCollector.addLog("MOTOR: Procesados ${finalMap.values.flatten().size} eventos (incluyendo ${manualHolidays.size} manuales)")
     return finalMap
 }
 
