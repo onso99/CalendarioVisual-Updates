@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 object AppConstants {
     // SharedPreferences
     const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs"
+    const val HOLIDAY_PREFS_NAME = "holiday_adjustments"
 
     // Preference Keys
     const val KEY_START_OF_WEEK = "start_of_week"
@@ -16,7 +17,7 @@ object AppConstants {
     const val KEY_EVENT_2_KEYWORD = "event_2_keyword"
     const val KEY_MONTHLY_CALENDAR_EFFECT_TYPE = "monthly_calendar_effect_type"
     const val KEY_FAVORITE_CALENDAR_ID = "favorite_calendar_id"
-    const val KEY_HOLIDAY_ADJUSTMENTS = "holiday_adjustments_key"
+    const val KEY_HOLIDAY_ADJUSTMENTS = "adjustments"
     const val KEY_LOGGING_ENABLED = "logging_enabled_key"
     const val CURRENT_THEME_VERSION = 6
     const val APP_SIGNATURE = "Calendario"

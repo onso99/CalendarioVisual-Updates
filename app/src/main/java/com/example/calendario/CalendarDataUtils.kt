@@ -139,7 +139,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 // --- AJUSTES Y FESTIVOS ---
 
 fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
-    val prefs = context.getSharedPreferences("holiday_adjustments", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
     val gson = Gson()
     val dtoList = adjustments.map { adj ->
         HolidayAdjustmentDto(
@@ -149,12 +149,12 @@ fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment
             originalEventId = adj.originalEventId
         )
     }
-    prefs.edit().putString("adjustments", gson.toJson(dtoList)).apply()
+    prefs.edit().putString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, gson.toJson(dtoList)).apply()
 }
 
 fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
-    val prefs = context.getSharedPreferences("holiday_adjustments", Context.MODE_PRIVATE)
-    val json = prefs.getString("adjustments", null) ?: return emptyList()
+    val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
+    val json = prefs.getString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, null) ?: return emptyList()
     val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
     val dtoList: List<HolidayAdjustmentDto> = try { Gson().fromJson(json, type) } catch (_: Exception) { emptyList() }
     return dtoList.map { dto ->

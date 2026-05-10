@@ -20,7 +20,7 @@ object BackupManager {
         try {
             val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            val holidayPrefs = context.getSharedPreferences("holiday_adjustments", Context.MODE_PRIVATE)
+            val holidayPrefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
             val calendarPrefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
 
             val fullBackupJson = JSONObject()
@@ -84,7 +84,7 @@ object BackupManager {
             restorePrefs(widgetPrefs, json.optJSONObject(KEY_WIDGET_PREFS))
             
             // 3. Holiday Prefs
-            val holidayPrefs = context.getSharedPreferences("holiday_adjustments", Context.MODE_PRIVATE)
+            val holidayPrefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
             restorePrefs(holidayPrefs, json.optJSONObject(KEY_HOLIDAY_PREFS))
             
             // 4. Calendar Prefs (Tratamiento especial para los IDs de calendarios que son un Set)
