@@ -245,4 +245,15 @@
     <string name="error_importing_backup">Erreur lors de la restauration de la sauvegarde : %1$s</string>
     <string name="invalid_backup_file">Fichier de sauvegarde non valide</string>
     <string name="custom_theme_needs_reimport">Le thème personnalisé \"%1$s\" est introuvable. Veuillez le réimporter manuellement pour récupérer les couleurs.</string>
+
+    <!-- v1.8.80 -->
+    <string name="share_multiple_message">📅 Je partage %1$d événements de mon calendrier avec vous</string>
+    <string name="debug_title">Débogage</string>
+    <string name="debug_status_format">%1$s : %2$s</string>
+    <string name="next_refresh_label">Prochain rafraîchissement : %1$s</string>
+    <string name="not_scheduled">Non programmé</string>
+    <string name="no_logs_found">Aucun journal enregistré pour le moment.</string>
+    <string name="selected_count">%1$d sélectionnés</string>
+    <string name="delete_multiple_confirmation">Voulez-vous supprimer ces %1$d événements ? Cette action est irréversible.</string>
+    <string name="events_deleted_count">%1$d événements supprimés.</string>
 </resources>

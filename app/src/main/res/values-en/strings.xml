@@ -245,4 +245,15 @@
     <string name="error_importing_backup">Error restoring backup: %1$s</string>
     <string name="invalid_backup_file">Invalid backup file</string>
     <string name="custom_theme_needs_reimport">The custom theme \"%1$s\" was not found. Please re-import it manually to recover colors.</string>
+
+    <!-- v1.8.80 -->
+    <string name="share_multiple_message">📅 I share %1$d events from my calendar with you</string>
+    <string name="debug_title">Debugging</string>
+    <string name="debug_status_format">%1$s: %2$s</string>
+    <string name="next_refresh_label">Next refresh: %1$s</string>
+    <string name="not_scheduled">Not scheduled</string>
+    <string name="no_logs_found">No logs recorded yet.</string>
+    <string name="selected_count">%1$d selected</string>
+    <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
+    <string name="events_deleted_count">%1$d events deleted.</string>
 </resources>

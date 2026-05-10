@@ -48,7 +48,7 @@ object IcsHelper {
                 type = "text/calendar"
                 putExtra(Intent.EXTRA_STREAM, contentUri)
                 putExtra(Intent.EXTRA_TEXT, shareMessage)
-                putExtra(Intent.EXTRA_SUBJECT, if (events.size == 1) events.first().title else "Eventos de Calendario")
+                putExtra(Intent.EXTRA_SUBJECT, if (events.size == 1) events.first().title else context.getString(R.string.calendar_events_subject))
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 

@@ -245,4 +245,15 @@
     <string name="error_importing_backup">Erro ao restaurar a copia: %1$s</string>
     <string name="invalid_backup_file">Ficheiro de copia de seguridade non válido</string>
     <string name="custom_theme_needs_reimport">O tema personalizado \"%1$s\" non se atopou. Por favor, vólveo importar manualmente para recuperar as cores.</string>
+
+    <!-- v1.8.80 -->
+    <string name="share_multiple_message">📅 Compártoche %1$d eventos do meu calendario</string>
+    <string name="debug_title">Depuración</string>
+    <string name="debug_status_format">%1$s: %2$s</string>
+    <string name="next_refresh_label">Próximo refresco: %1$s</string>
+    <string name="not_scheduled">Non programado</string>
+    <string name="no_logs_found">Aínda no hai rexistros.</string>
+    <string name="selected_count">%1$d seleccionados</string>
+    <string name="delete_multiple_confirmation">Queres eliminar estes %1$d eventos? Esta acción non se pode desfacer.</string>
+    <string name="events_deleted_count">%1$d eventos eliminados.</string>
 </resources>

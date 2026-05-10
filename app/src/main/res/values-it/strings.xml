@@ -246,4 +246,15 @@
     <string name="error_importing_backup">Errore durante il ripristino del backup: %1$s</string>
     <string name="invalid_backup_file">File di backup non valido</string>
     <string name="custom_theme_needs_reimport">Il tema personalizzato \"%1$s\" non è stato trovato. Reimportalo manualmente per recuperare i colori.</string>
+
+    <!-- v1.8.80 -->
+    <string name="share_multiple_message">📅 Condivido con te %1$d eventi dal mio calendario</string>
+    <string name="debug_title">Debug</string>
+    <string name="debug_status_format">%1$s: %2$s</string>
+    <string name="next_refresh_label">Prossimo aggiornamento: %1$s</string>
+    <string name="not_scheduled">Non programmato</string>
+    <string name="no_logs_found">Nessun log registrato ancora.</string>
+    <string name="selected_count">%1$d selezionati</string>
+    <string name="delete_multiple_confirmation">Vuoi eliminare questi %1$d eventi? L\'azione è irreversibile.</string>
+    <string name="events_deleted_count">%1$d eventi eliminati.</string>
 </resources>
