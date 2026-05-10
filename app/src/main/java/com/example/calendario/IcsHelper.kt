@@ -103,7 +103,7 @@ object IcsHelper {
                         } else {
                             val dt = try { 
                                 LocalDateTime.parse(value.take(15), dateTimeFormatter) 
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 // Fallback para formatos sin segundos
                                 LocalDateTime.parse(value.take(13) + "00", DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmm'00'"))
                             }
@@ -115,7 +115,7 @@ object IcsHelper {
                         if (!key.contains("VALUE=DATE")) {
                             val dt = try {
                                 LocalDateTime.parse(value.take(15), dateTimeFormatter)
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 LocalDateTime.parse(value.take(13) + "00", DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmm'00'"))
                             }
                             endTime = dt.toLocalTime()
@@ -129,7 +129,7 @@ object IcsHelper {
                     id = 0L,
                     title = title,
                     description = description,
-                    date = startDate!!,
+                    date = startDate,
                     startTime = startTime,
                     endTime = endTime,
                     isAllDay = isAllDay,

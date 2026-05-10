@@ -24,7 +24,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
@@ -53,7 +52,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -119,13 +117,12 @@ fun ReadOnlyEventDialog(
                     
                     Spacer(Modifier.height(16.dp))
                     
-                    val sourceText = if (calendar != null) {
-                        calendar.displayName
-                    } else if (festivo.calendarId == -2L || festivo.id == -2L) {
-                        "Gestor de Festivos"
-                    } else {
-                        "-"
-                    }
+                    val sourceText = calendar?.displayName
+                        ?: if (festivo.calendarId == -2L || festivo.id == -2L) {
+                            "Gestor de Festivos"
+                        } else {
+                            "-"
+                        }
                     
                     Text(
                         stringResource(id = R.string.calendar_source, sourceText),
