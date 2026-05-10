@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
-import android.util.Log
 import java.time.LocalDateTime
 import java.time.LocalTime
 

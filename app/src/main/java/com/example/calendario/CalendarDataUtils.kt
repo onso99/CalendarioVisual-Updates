@@ -2,6 +2,7 @@ package com.example.calendario
 
 import android.content.ContentUris
 import android.content.Context
+import androidx.core.content.edit
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.CalendarContract
@@ -40,7 +41,7 @@ fun saveEventsToPrefs(context: Context, eventsMap: Map<LocalDate, List<Festivo>>
         }
     }
     val json = gson.toJson(dtoMap)
-    prefs.edit().putString("events", json).apply()
+    prefs.edit { putString("events", json) }
 }
 
 fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
@@ -79,7 +80,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
 
 fun saveSelectedCalendarIds(context: Context, ids: Set<Long>) {
     val prefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
-    prefs.edit().putStringSet("selected_ids", ids.map { it.toString() }.toSet()).apply()
+    prefs.edit { putStringSet("selected_ids", ids.map { it.toString() }.toSet()) }
 }
 
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
@@ -149,7 +150,7 @@ fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment
             originalEventId = adj.originalEventId
         )
     }
-    prefs.edit().putString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, gson.toJson(dtoList)).apply()
+    prefs.edit { putString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, gson.toJson(dtoList)) }
 }
 
 fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
@@ -306,11 +307,9 @@ fun readFestivosFromCalendarsSync(
                     val s2Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA2)
                     val pkgCol = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
                     val orgCol = cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)
-                    val titleCol = cursor.getColumnIndex(CalendarContract.Events.TITLE)
 
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(idCol)
-                        val titleInRow = if (titleCol != -1) cursor.getStringOrNull(titleCol) ?: "" else ""
 
                         if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
                         if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
