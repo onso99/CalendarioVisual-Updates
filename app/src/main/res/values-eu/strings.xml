@@ -249,11 +249,13 @@
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Nire egutegiko %1$d gertaera partekatzen dizkizut</string>
+    <string name="calendar_events_subject">Egutegiko Gertaerak</string>
     <string name="debug_title">Arazketa</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Hurrengo freskatzea: %1$s</string>
     <string name="not_scheduled">Programatu gabe</string>
     <string name="no_logs_found">Oraindik ez dago erregistrorik.</string>
+    <string name="copy_action">Kopiatu</string>
     <string name="selected_count">%1$d hautatuta</string>
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>

@@ -247,11 +247,13 @@
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Ich teile %1$d Termine aus meinem Kalender mit dir</string>
+    <string name="calendar_events_subject">Kalenderereignisse</string>
     <string name="debug_title">Fehlersuche</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Nächste Aktualisierung: %1$s</string>
     <string name="not_scheduled">Nicht geplant</string>
     <string name="no_logs_found">Noch keine Protokolle vorhanden.</string>
+    <string name="copy_action">Kopieren</string>
     <string name="selected_count">%1$d ausgewählt</string>
     <string name="delete_multiple_confirmation">Möchten Sie diese %1$d Termine löschen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="events_deleted_count">%1$d Termine gelöscht.</string>

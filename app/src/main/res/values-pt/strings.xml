@@ -246,11 +246,13 @@
     <string name="custom_theme_needs_reimport">O tema personalizado \"%1$s\" não foi encontrado. Reimporte-o manualmente para recuperar as cores.</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Compartilho com você %1$d eventos do meu calendário</string>
+    <string name="calendar_events_subject">Eventos do Calendário</string>
     <string name="debug_title">Depuração</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Próxima atualização: %1$s</string>
     <string name="not_scheduled">Não agendado</string>
     <string name="no_logs_found">Ainda não há registos.</string>
+    <string name="copy_action">Copiar</string>
     <string name="selected_count">%1$d selecionados</string>
     <string name="delete_multiple_confirmation">Deseja excluir estes %1$d eventos? Esta ação não pode ser desfeita.</string>
     <string name="events_deleted_count">%1$d eventos excluídos.</string>

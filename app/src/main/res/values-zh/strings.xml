@@ -248,11 +248,13 @@
     <string name="custom_theme_needs_reimport">未找到自定义主题 \"%1$s\"。请手动重新导入以恢复颜色。</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 我与您分享日历中的 %1$d 个事件</string>
+    <string name="calendar_events_subject">日历事件</string>
     <string name="debug_title">调试</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">下次刷新: %1$s</string>
     <string name="not_scheduled">未计划</string>
     <string name="no_logs_found">尚无日志记录。</string>
+    <string name="copy_action">复制</string>
     <string name="selected_count">已选择 %1$d 个</string>
     <string name="delete_multiple_confirmation">确定要删除这 %1$d 个事件吗？此操作无法撤销。</string>
     <string name="events_deleted_count">已删除 %1$d 个事件。</string>

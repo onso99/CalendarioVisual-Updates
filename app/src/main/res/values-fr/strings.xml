@@ -72,7 +72,7 @@
     <string name="monday">Lundi</string>
     <string name="sunday">Dimanche</string>
     <string name="saturday">Samedi</string>
-    <string name="theme_imported_successfully">Thème importado con éxito.</string>
+    <string name="theme_imported_successfully">Thème importé avec succès.</string>
     <string name="error_reading_theme_file">Erreur lors de la lecture du fichier de thème.</string>
     <string name="error_saving_theme_file">Erreur lors de l\'enregistrement du fichier de thème.</string>
     <string name="apply_changes">Appliquer les modifications</string>
@@ -205,7 +205,7 @@
     <string name="edit_recurring_event_dialog_single_event">Cet événement uniquement</string>
     <string name="edit_recurring_event_dialog_all_events">Tous les événements</string>
     <string name="copy_event">Copier l\'événement</string>
-    <string name="mark_as_favorite_calendar">Marcar como calendario favori</string>
+    <string name="mark_as_favorite_calendar">Marquer comme calendrier favori</string>
     <string name="favorite_calendar_marked">Calendrier favori (marqué)</string>
 
     <string name="mark_as_working_day">Traiter comme jour ouvrable</string>
@@ -256,4 +256,6 @@
     <string name="selected_count">%1$d sélectionnés</string>
     <string name="delete_multiple_confirmation">Voulez-vous supprimer ces %1$d événements ? Cette action est irréversible.</string>
     <string name="events_deleted_count">%1$d événements supprimés.</string>
+    <string name="calendar_events_subject">Événements du Calendrier</string>
+    <string name="copy_action">Copier</string>
 </resources>

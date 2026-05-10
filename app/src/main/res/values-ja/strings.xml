@@ -247,11 +247,13 @@
     <string name="custom_theme_needs_reimport">カスタムテーマ \"%1$s\" が見つかりません。色を復元するには、手動で再インポートしてください。</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 カレンダーから %1$d 個の予定を共有します</string>
+    <string name="calendar_events_subject">カレンダーのイベント</string>
     <string name="debug_title">デバッグ</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">次回の更新: %1$s</string>
     <string name="not_scheduled">未設定</string>
     <string name="no_logs_found">ログはまだ記録されていません。</string>
+    <string name="copy_action">コピー</string>
     <string name="selected_count">%1$d 件選択中</string>
     <string name="delete_multiple_confirmation">これら %1$d 件の予定を削除しますか？この操作は取り消せません。</string>
     <string name="events_deleted_count">%1$d 件の予定を削除しました。</string>
