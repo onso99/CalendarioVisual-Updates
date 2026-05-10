@@ -172,9 +172,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             if (favoriteId != -1L) favoriteId else null
         } catch (_: ClassCastException) {
             // Resiliencia: si el tipo es incorrecto (ej. Integer), intentar conversión manual
-            val all = prefs.all
-            val value = all[AppConstants.KEY_FAVORITE_CALENDAR_ID]
-            when (value) {
+            when (val value = prefs.all[AppConstants.KEY_FAVORITE_CALENDAR_ID]) {
                 is Number -> value.toLong().takeIf { it != -1L }
                 is String -> value.toLongOrNull()?.takeIf { it != -1L }
                 else -> null

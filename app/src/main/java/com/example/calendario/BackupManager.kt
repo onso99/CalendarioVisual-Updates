@@ -1,8 +1,11 @@
 package com.example.calendario
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.widget.Toast
+import androidx.core.content.edit
+import androidx.core.graphics.toColorInt
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -87,27 +90,27 @@ object BackupManager {
             val holidayPrefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
             restorePrefs(holidayPrefs, json.optJSONObject(KEY_HOLIDAY_PREFS))
             
-            // 4. Calendar Prefs (Tratamiento especial para los IDs de calendarios que son un Set)
+            // 4. Calendar Prefs (Tratamiento especial para los ID de calendarios que son un Set)
             val calendarPrefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
             val calendarJson = json.optJSONObject(KEY_CALENDAR_PREFS)
             calendarJson?.let {
-                val editor = calendarPrefs.edit()
-                editor.clear()
-                val keys = it.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    val value = it.get(key)
-                    if (value is JSONArray) {
-                        val set = mutableSetOf<String>()
-                        for (i in 0 until value.length()) {
-                            set.add(value.getString(i))
+                calendarPrefs.edit {
+                    clear()
+                    val keys = it.keys()
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        val value = it.get(key)
+                        if (value is JSONArray) {
+                            val set = mutableSetOf<String>()
+                            for (i in 0 until value.length()) {
+                                set.add(value.getString(i))
+                            }
+                            putStringSet(key, set)
+                        } else if (value != null && value != JSONObject.NULL) {
+                            putPreference(this, key, value)
                         }
-                        editor.putStringSet(key, set)
-                    } else if (value != null && value != JSONObject.NULL) {
-                        putPreference(editor, key, value)
                     }
                 }
-                editor.apply()
             }
 
             // Re-aplicar lógica de colores de temas si no hay colores individuales
@@ -125,19 +128,19 @@ object BackupManager {
         }
     }
 
-    private fun restorePrefs(prefs: android.content.SharedPreferences, json: JSONObject?) {
+    private fun restorePrefs(prefs: SharedPreferences, json: JSONObject?) {
         json?.let {
-            val editor = prefs.edit()
-            editor.clear()
-            val keys = it.keys()
-            while (keys.hasNext()) {
-                val key = keys.next()
-                val value = it.get(key)
-                if (value != null && value != JSONObject.NULL) {
-                    putPreference(editor, key, value)
+            prefs.edit {
+                clear()
+                val keys = it.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    val value = it.get(key)
+                    if (value != null && value != JSONObject.NULL) {
+                        putPreference(this, key, value)
+                    }
                 }
             }
-            editor.apply()
         }
     }
 
@@ -146,18 +149,18 @@ object BackupManager {
             (it["themeManifest"] as? Map<*, *>)?.get("name") == themeName 
         } ?: return
 
-        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<String, String> ?: return
+        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) ?: return
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        colorMap.forEach { (key, hex) ->
-            try {
-                editor.putInt(key, android.graphics.Color.parseColor(hex))
-            } catch (_: Exception) { }
+        prefs.edit {
+            colorMap.forEach { (key, hex) ->
+                try {
+                    putInt(key, hex.toColorInt())
+                } catch (_: Exception) { }
+            }
         }
-        editor.apply()
     }
 
-    private fun putPreference(editor: android.content.SharedPreferences.Editor, key: String, value: Any) {
+    private fun putPreference(editor: SharedPreferences.Editor, key: String, value: Any) {
         when (key) {
             AppConstants.KEY_FAVORITE_CALENDAR_ID -> {
                 val longValue = when (value) {

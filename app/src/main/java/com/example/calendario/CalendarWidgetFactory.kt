@@ -14,10 +14,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
@@ -76,8 +73,7 @@ class CalendarWidgetFactory(
         widgetFontBold = try {
             prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
         } catch (_: ClassCastException) {
-            val value = prefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD]
-            if (value is Boolean) value else WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
+            (prefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD] as? Boolean) ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
         }
 
         widgetEventColor = try {
@@ -248,49 +244,5 @@ class CalendarWidgetFactory(
         
         LogCollector.addLog("Eventos brutos en agenda: ${allEventsByDateMap.values.flatten().size}")
         eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
-    }
-
-    private fun loadEventsFromPrefsFromFactory(context: Context): Map<LocalDate, List<Festivo>> {
-        val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
-        val json = prefs.getString("events", null)
-        if (json == null) {
-            Log.d("WidgetFactory", "No hay eventos guardados en SharedPreferences para el factory.")
-            return emptyMap()
-        }
-        val gson = Gson()
-        val type = object : TypeToken<Map<String, List<FestivoDto>>>() {}.type
-        val mapFromString: Map<String, List<FestivoDto>> = try {
-            gson.fromJson(json, type)
-        } catch (e: Exception) {
-            Log.e("WidgetFactory", "Error al deserializar eventos desde SharedPreferences en el factory", e)
-            return emptyMap()
-        }
-
-        return mapFromString.mapNotNull { (dateStr, dtoList) ->
-            val date = try {
-                LocalDate.parse(dateStr)
-            } catch (_: Exception) {
-                null
-            }
-            if (date != null) {
-                date to dtoList.map { dto ->
-                    Festivo(
-                        id = -1L,
-                        title = dto.title.takeIf { !it.isNullOrBlank() } ?: dto.description.takeIf { !it.isNullOrBlank() } ?: "(Evento guardado)",
-                        description = dto.description,
-                        date = date,
-                        startTime = dto.startTimeStr?.let { try { LocalTime.parse(it) } catch (_: Exception) { null } },
-                        endTime = dto.endTimeStr?.let { try { LocalTime.parse(it) } catch (_: Exception) { null } },
-                        isAllDay = dto.isAllDay,
-                        calendarId = dto.id,
-                        isFromHolidaySource = false,
-                        rrule = dto.rrule,
-                        age = dto.age
-                    )
-                }
-            } else {
-                null
-            }
-        }.toMap()
     }
 }
