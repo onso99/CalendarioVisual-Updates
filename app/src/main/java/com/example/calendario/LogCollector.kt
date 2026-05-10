@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import android.content.Context
+import androidx.core.content.edit
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -9,7 +10,7 @@ import java.time.ZoneId
 
 object LogCollector {
     private val logs = ConcurrentLinkedQueue<String>()
-    private val maxLogs = 200 
+    private const val MAX_LOGS = 200
     private val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
     private const val PREFS_NAME = "widget_log_prefs"
     private const val KEY_NEXT_REFRESH = "next_refresh_time"
@@ -35,7 +36,7 @@ object LogCollector {
 
     fun setLoggingEnabled(context: Context, enabled: Boolean) {
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(AppConstants.KEY_LOGGING_ENABLED, enabled).apply()
+        prefs.edit { putBoolean(AppConstants.KEY_LOGGING_ENABLED, enabled) }
         isEnabledCache = enabled
         if (!enabled) clear()
     }
@@ -43,13 +44,13 @@ object LogCollector {
     fun setNextRefreshTime(context: Context, timeMillis: Long) {
         if (!isLoggingEnabled(context)) return
         
-        val timeStr = java.time.Instant.ofEpochMilli(timeMillis)
-            .atZone(java.time.ZoneId.systemDefault())
+        val timeStr = Instant.ofEpochMilli(timeMillis)
+            .atZone(ZoneId.systemDefault())
             .toLocalTime()
             .format(formatter)
             
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_NEXT_REFRESH, timeStr).apply()
+        prefs.edit { putString(KEY_NEXT_REFRESH, timeStr) }
     }
 
     fun getNextRefreshTime(context: Context): String {
@@ -65,7 +66,7 @@ object LogCollector {
             val timestamp = LocalTime.now().format(formatter)
             val logEntry = "[$timestamp] $message"
             logs.add(logEntry)
-            if (logs.size > maxLogs) {
+            if (logs.size > MAX_LOGS) {
                 logs.poll()
             }
         }
