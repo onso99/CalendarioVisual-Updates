@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Abaixo do calendário mensal, é apresentada a lista de eventos do mês. Para o mês atual, pode escolher ver os eventos Pendentes ou Todos tocando no botão Pendentes-Todos. Cada evento na lista pode ser editado e eliminado.</string>
     <string name="help_section_customization">Personalização</string>
     <string name="help_customization_1">No menu Definições, pode escolher o modo Claro e Escuro. Também pode personalizar as cores da interface e Importar e Exportar temas de cores para partilhá-los.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">A aplicação inclui um Widget para o ecrã de Início que exibe os próximos eventos. Pode personalizar a sua aparência escolhendo o número de eventos a exibir, alterando o tamanho da letra e modificando as suas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>

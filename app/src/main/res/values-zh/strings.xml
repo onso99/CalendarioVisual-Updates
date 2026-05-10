@@ -113,7 +113,6 @@
     <string name="help_event_list_1">月度日历下方会显示当月的活动列表。对于当前月份，您可以通过点击“待办-全部”按钮来选择查看“待办”或“全部”活动。列表中的每个活动都可以编辑和删除。</string>
     <string name="help_section_customization">定制</string>
     <string name="help_customization_1">在“设置”菜单中，您可以选择“亮”和“暗”模式。您还可以自定义界面颜色并导入和导出颜色主题以进行共享。</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_widget">小部件</string>
     <string name="help_widget_1">该应用程序包括一个用于主屏幕的小部件，可显示即将发生的事件。您可以通过选择要显示的事件数量、更改字体大小和修改其颜色来自定义其外观。</string>
     <string name="copied_to_clipboard">已复制：%1$s</string>

@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Hilabeteko egutegiaren azpian hilabeteko gertaeren zerrenda agertzen da. Uneko hilabeterako, Zain dauden edo Guztiak diren gertaerak ikustea aukera dezakezu Zain-Guztiak botoia sakatuz. Zerrendako gertaera bakoitza editatu eta ezaba daiteke.</string>
     <string name="help_section_customization">Pertsonalizazioa</string>
     <string name="help_customization_1">Ezarpenak menutik Argi eta Ilun modua hauta dezakezu. Interfazearen koloreak ere pertsonaliza ditzakezu eta kolore-gaiak Inportatu eta Esportatu ditzakezu partekatzeko.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_widget">Widgeta</string>
     <string name="help_widget_1">Aplikazioak Hasierako pantailarako Widget bat dakar, datozen gertaerak erakusten dituena. Haren itxura pertsonaliza daiteke, erakutsiko diren gertaeren kopurua aukeratuz, letra-tamaina aldatuz eta koloreak aldatuz.</string>
     <string name="copied_to_clipboard">Kopiatuta: %1$s</string>

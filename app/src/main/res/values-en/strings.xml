@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Below the monthly calendar, the list of events for the month is displayed. For the current month, you can choose to view Pending or All events by tapping the Pending-All button. Each event in the list can be edited and deleted.</string>
     <string name="help_section_customization">Personalization</string>
     <string name="help_customization_1">From the Settings menu, you can choose Light and Dark mode. You can also customize the interface colors and Import and Export color themes to share them.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_holiday_manager">Holiday Manager</string>
     <string name="help_holiday_manager_1">This feature allows you to manually mark specific days as holidays or working days, regardless of the system calendar or imported events. When a day is marked as a holiday, its number will be highlighted in the corresponding color in the monthly and yearly views.</string>
     <string name="help_section_widget">Widget</string>

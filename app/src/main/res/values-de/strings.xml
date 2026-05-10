@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Unterhalb des Monatskalenders wird die Liste der Ereignisse des Monats angezeigt. Für den aktuellen Monat können Sie durch Tippen auf die Schaltfläche „Anstehend-Alle“ auswählen, ob Sie anstehende oder alle Ereignisse anzeigen möchten. Jedes Ereignis in der Liste kann bearbeitet und gelöscht werden.</string>
     <string name="help_section_customization">Anpassung</string>
     <string name="help_customization_1">Im Menü „Einstellungen“ können Sie den Hell- und Dunkelmodus auswählen. Sie können auch die Farben der Benutzeroberfläche anpassen und Farbdesigns zum Teilen importieren und exportieren.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_holiday_manager">Feiertagsverwaltung</string>
     <string name="help_holiday_manager_1">Mit dieser Funktion können Sie bestimmte Tage manuell als Feiertage oder Arbeitstage markieren, unabhängig vom Systemkalender oder importierten Ereignissen. Wenn ein Tag als Feiertag markiert ist, wird seine Nummer in der entsprechenden Farbe in der Monats- und Jahresansicht hervorgehoben.</string>
     <string name="help_section_widget">Widget</string>

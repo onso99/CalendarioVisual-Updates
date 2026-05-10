@@ -113,7 +113,6 @@
     <string name="help_event_list_1">A sota del calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendents o Tots prement el botó Pendents-Tots. Cada esdeveniment de la llista es pot editar i esborrar.</string>
     <string name="help_section_customization">Personalització</string>
     <string name="help_customization_1">Des del menú Configuració es pot triar el mode Clar i Fosc. També es poden personalitzar els colors de la interfície i Importar i Exportar els temes de color per compartir-los.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'aplicació inclou un Widget per a la pantalla d\'inici que mostra els propers esdeveniments. Es pot personalitzar la seva aparença triant el nombre d\'esdeveniments a mostrar, canviant la mida de la lletra i modificant els seus colors.</string>
     <string name="copied_to_clipboard">Copiat: %1$s</string>

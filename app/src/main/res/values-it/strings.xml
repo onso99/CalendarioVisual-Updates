@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Sotto il calendario mensile, viene visualizzato l\'elenco degli eventi del mese. Per il mese corrente, puoi scegliere di visualizzare gli eventi In sospeso o Tutti toccando il pulsante In sospeso-Tutti. Ogni evento nell\'elenco può essere modificato ed eliminato.</string>
     <string name="help_section_customization">Personalizzazione</string>
     <string name="help_customization_1">Dal menu Impostazioni, puoi scegliere la modalità Chiara e Scura. Puoi anche personalizzare i colori dell\'interfaccia e Importare ed Esportare i temi di colore per condividerli.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzarne l\'aspetto scegliendo il numero di eventi da visualizzare, modificando le dimensioni del carattere e modificandone i colori.</string>
     <string name="copied_to_clipboard">Copiato: %1$s</string>

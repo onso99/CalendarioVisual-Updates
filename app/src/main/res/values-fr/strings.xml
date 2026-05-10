@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Sous le calendrier mensuel, la liste des événements du mois est affichée. Pour le mois en cours, vous pouvez choisir d\'afficher les événements En attente ou Tous en appuyant sur le bouton En attente-Tous. Chaque événement de la liste peut être modifié et supprimé.</string>
     <string name="help_section_customization">Personnalisation</string>
     <string name="help_customization_1">Depuis le menu Paramètres, vous pouvez choisir le mode Clair et Sombre. Vous pouvez également personnaliser les couleurs de l\'interface et Importer et Exporter des thèmes de couleurs pour les partager.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_holiday_manager">Gestionnaire de Jours Fériés</string>
     <string name="help_holiday_manager_1">Cette fonction vous permet de marquer manuellement des jours spécifiques comme fériés ou ouvrables, indépendamment du calendrier du système ou des événements importés. Lorsqu\'un jour est marqué comme férié, son numéro sera mis en évidence dans la couleur correspondante dans les vues mensuelle et annuelle.</string>
     <string name="help_section_widget">Widget</string>

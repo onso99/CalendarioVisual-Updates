@@ -113,7 +113,6 @@
     <string name="help_event_list_1">月間カレンダーの下に、その月のイベントのリストが表示されます。今月については、「保留中-すべて」ボタンをタップして、保留中のイベントまたはすべてのイベントの表示を選択できます。リストの各イベントは編集および削除できます。</string>
     <string name="help_section_customization">カスタマイズ</string>
     <string name="help_customization_1">設定メニューから、ライトモードとダークモードを選択できます。インターフェイスの色をカスタマイズしたり、カラーテーマをインポートおよびエクスポートして共有したりすることもできます。</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_widget">ウィジェット</string>
     <string name="help_widget_1">このアプリケーションには、今後のイベントを表示するホーム画面用のウィジェットが含まれています。表示するイベントの数を選択したり、フォントサイズを変更したり、色を変更したりして、その外観をカスタマイズできます。</string>
     <string name="copied_to_clipboard">コピーしました：%1$s</string>

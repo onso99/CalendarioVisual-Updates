@@ -113,7 +113,6 @@
     <string name="help_event_list_1">Debajo del calendario mensual se muestra la lista de los eventos del mes. Para el mes actual, puedes elegir entre ver los eventos Pendientes o Todos pulsando en el botón Pendientes-Todos. Cada evento de la lista puede ser editado y borrado.</string>
     <string name="help_section_customization">Personalización</string>
     <string name="help_customization_1">Desde el menú Ajustes se puede elegir el modo Claro y Oscuro. También se pueden personalizar los colores de la interfaz e Importar y Exportar los temas de color para compartirlos.</string>
-    <string name="help_customization_2"></string>
     <string name="help_section_holiday_manager">Gestor de Festivos</string>
     <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos o laborables de forma manual, independientemente de lo que indique el calendario del sistema o los eventos importados. Al marcar un día como festivo, su número se resaltará en el color correspondiente en las vistas mensual y anual.</string>
     <string name="help_section_widget">Widget</string>
