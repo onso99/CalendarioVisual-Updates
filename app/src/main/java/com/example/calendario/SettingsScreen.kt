@@ -437,12 +437,9 @@ fun SettingsScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
-                val lightThemeNameLocal = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
-                val darkThemeNameLocal = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
-
-                if (lightThemeNameLocal != null && lightThemeNameLocal == darkThemeNameLocal) {
+                if (lightThemeName != null && lightThemeName == darkThemeName) {
                     Text(
-                        text = lightThemeNameLocal,
+                        text = lightThemeName!!,
                         color = titleColor,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
@@ -453,13 +450,13 @@ fun SettingsScreen(
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
-                        lightThemeNameLocal?.let {
+                        lightThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
                                 Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                             }
                         }
-                        darkThemeNameLocal?.let {
+                        darkThemeName?.let {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
                                 Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)

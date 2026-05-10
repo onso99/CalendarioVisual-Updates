@@ -54,7 +54,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 
@@ -253,8 +252,16 @@ fun AddEventScreen(
         }
     }
 
-    if (showCalendarDialog && selectedCalendar != null) {
-        SelectCalendarDialog(calendars = editableCalendars, currentSelection = selectedCalendar, onCalendarSelected = { selectedCalendar = it }, onDismissRequest = { showCalendarDialog = false })
+    if (showCalendarDialog) {
+        SelectCalendarDialog(
+            calendars = editableCalendars,
+            currentSelection = selectedCalendar,
+            onCalendarSelected = { 
+                selectedCalendar = it
+                showCalendarDialog = false 
+            },
+            onDismissRequest = { showCalendarDialog = false }
+        )
     }
 
     if (showEditRecurringDialog) {
