@@ -47,7 +47,7 @@ fun LogScreen(onBack: () -> Unit) {
                     IconButton(onClick = { 
                         clipboardManager.setText(AnnotatedString(logText))
                     }) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy))
+                        Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_action))
                     }
                     IconButton(onClick = { 
                         LogCollector.clear()

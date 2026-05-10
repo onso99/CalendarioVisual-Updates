@@ -241,7 +241,7 @@
     <string name="next_refresh_label">Próximo refresco: %1$s</string>
     <string name="not_scheduled">No programado</string>
     <string name="no_logs_found">No hay logs registrados todavía.</string>
-    <string name="copy">Copiar</string>
+    <string name="copy_action">Copiar</string>
     <string name="selected_count">%1$d seleccionados</string>
     <string name="delete_multiple_confirmation">¿Deseas eliminar estos %1$d eventos? Esta acción no se puede deshacer.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
