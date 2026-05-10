@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -23,7 +24,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+        appWidgetIds: IntArray,
     ) {
         // onUpdate debe ser TOTALMENTE PASIVO para evitar parpadeos.
         // Solo pintamos la información que ya existe en el caché.
@@ -34,9 +35,8 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        val action = intent.action
-        
-        when (action) {
+
+        when (val action = intent.action) {
             ACTION_REFRESH_WIDGET,
             ACTION_SCHEDULED_UPDATE,
             Intent.ACTION_BOOT_COMPLETED,
@@ -87,50 +87,70 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
         const val ACTION_SCHEDULED_UPDATE = "com.example.calendario.ACTION_SCHEDULED_UPDATE"
         private const val PERIODIC_WORK_NAME = "PeriodicCalendarWidgetUpdate"
 
+        @android.annotation.SuppressLint("ScheduleExactAlarm")
+        @Suppress("MissingPermission")
         private fun scheduleNextAlarm(context: Context) {
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, CalendarAppWidgetProvider::class.java).apply {
                 action = ACTION_SCHEDULED_UPDATE
             }
-            
-            val pendingIntent = android.app.PendingIntent.getBroadcast(
+
+            val pendingIntent = PendingIntent.getBroadcast(
                 context, 0, intent,
-                android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             // Programamos la próxima actualización en 15 minutos (mínimo recomendado para estabilidad)
             val triggerTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15)
-            
+
             // Guardamos la hora para que el usuario pueda verla en los logs (Persistente)
             LogCollector.setNextRefreshTime(context, triggerTime)
-            
-            try {
-                // Usamos la versión EXACTA para saltarnos las restricciones de Android 14
-                alarmManager.setExactAndAllowWhileIdle(
-                    android.app.AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    pendingIntent
-                )
-                LogCollector.addLog("ALARMA: Próxima cita en 15 min (Modo Exacto)")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error programando alarma", e)
-                // Fallback si no hay permiso de alarma exacta
-                alarmManager.setAndAllowWhileIdle(
-                    android.app.AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    pendingIntent
-                )
+
+            // Comprobar si podemos programar alarmas exactas (Android 12+)
+            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                alarmManager.canScheduleExactAlarms()
+            } else {
+                true
+            }
+
+            if (canScheduleExact) {
+                try {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerTime,
+                        pendingIntent
+                    )
+                    LogCollector.addLog("ALARMA: Próxima cita en 15 min (Modo Exacto)")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error programando alarma exacta", e)
+                    scheduleInexactAlarm(alarmManager, triggerTime, pendingIntent)
+                }
+            } else {
+                scheduleInexactAlarm(alarmManager, triggerTime, pendingIntent)
             }
         }
 
+        private fun scheduleInexactAlarm(
+            alarmManager: AlarmManager,
+            triggerTime: Long,
+            pendingIntent: PendingIntent
+        ) {
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+            )
+            LogCollector.addLog("ALARMA: Próxima cita en 15 min (Modo Inexacto)")
+        }
+
         private fun cancelAlarm(context: Context) {
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, CalendarAppWidgetProvider::class.java).apply {
                 action = ACTION_SCHEDULED_UPDATE
             }
-            val pendingIntent = android.app.PendingIntent.getBroadcast(
+            val pendingIntent = PendingIntent.getBroadcast(
                 context, 0, intent,
-                android.app.PendingIntent.FLAG_NO_CREATE or android.app.PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
             )
             if (pendingIntent != null) {
                 alarmManager.cancel(pendingIntent)
@@ -192,7 +212,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             // y fuerce la recreación de la Factory, limpiando datos antiguos.
             val serviceIntent = Intent(context, CalendarWidgetService::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                data = "content://widget/refresh/${appWidgetId}/${System.currentTimeMillis()}".toUri()
+                data = "content://widget/refresh/$appWidgetId/${System.currentTimeMillis()}".toUri()
             }
             views.setRemoteAdapter(R.id.widget_event_list, serviceIntent)
             // -----------------------------------------------
