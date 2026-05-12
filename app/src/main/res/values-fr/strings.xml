@@ -250,6 +250,7 @@
     <string name="debug_title">Débogage</string>
     <string name="debug_status_format">%1$s : %2$s</string>
     <string name="next_refresh_label">Prochain rafraîchissement : %1$s</string>
+    <string name="next_refresh_pending">dans 15 min.</string>
     <string name="not_scheduled">Non programmé</string>
     <string name="no_logs_found">Aucun journal enregistré pour le moment.</string>
     <string name="selected_count">%1$d sélectionnés</string>

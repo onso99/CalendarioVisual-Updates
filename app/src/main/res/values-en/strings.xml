@@ -251,6 +251,7 @@
     <string name="debug_title">Debugging</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Next refresh: %1$s</string>
+    <string name="next_refresh_pending">in 15 min.</string>
     <string name="not_scheduled">Not scheduled</string>
     <string name="no_logs_found">No logs recorded yet.</string>
     <string name="copy_action">Copy</string>

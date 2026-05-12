@@ -38,7 +38,13 @@ object LogCollector {
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit { putBoolean(AppConstants.KEY_LOGGING_ENABLED, enabled) }
         isEnabledCache = enabled
-        if (!enabled) clear()
+        if (!enabled) {
+            clear()
+        } else {
+            // Al activar, ponemos un estado pendiente hasta que llegue la primera alarma real
+            val logPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            logPrefs.edit { putString(KEY_NEXT_REFRESH, "PENDING") }
+        }
     }
 
     fun setNextRefreshTime(context: Context, timeMillis: Long) {
@@ -56,7 +62,7 @@ object LogCollector {
     fun getNextRefreshTime(context: Context): String {
         if (!isLoggingEnabled(context)) return "OFF"
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_NEXT_REFRESH, "No programado") ?: "No programado"
+        return prefs.getString(KEY_NEXT_REFRESH, "NOT_SCHEDULED") ?: "NOT_SCHEDULED"
     }
 
     fun addLog(message: String) {

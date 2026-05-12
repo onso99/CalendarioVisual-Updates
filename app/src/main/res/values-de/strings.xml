@@ -250,6 +250,7 @@
     <string name="debug_title">Fehlersuche</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Nächste Aktualisierung: %1$s</string>
+    <string name="next_refresh_pending">in 15 Min.</string>
     <string name="not_scheduled">Nicht geplant</string>
     <string name="no_logs_found">Noch keine Protokolle vorhanden.</string>
     <string name="copy_action">Kopieren</string>

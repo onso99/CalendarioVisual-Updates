@@ -25,8 +25,12 @@ fun LogScreen(onBack: () -> Unit) {
     val clipboardManager = LocalClipboardManager.current
     var logText by remember { mutableStateOf(LogCollector.getLogs()) }
     val nextRefresh = LogCollector.getNextRefreshTime(context).let {
-        if (it == "OFF") stringResource(id = R.string.system_default).uppercase() // O "OFF" si prefieres
-        else it
+        when (it) {
+            "OFF" -> stringResource(id = R.string.system_default).uppercase()
+            "PENDING" -> stringResource(id = R.string.next_refresh_pending)
+            "NOT_SCHEDULED" -> stringResource(id = R.string.not_scheduled)
+            else -> it
+        }
     }
 
     Scaffold(

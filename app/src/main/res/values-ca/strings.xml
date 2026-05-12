@@ -252,6 +252,7 @@
     <string name="debug_title">Depuració</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Proper refresc: %1$s</string>
+    <string name="next_refresh_pending">en 15 min.</string>
     <string name="not_scheduled">No programat</string>
     <string name="no_logs_found">Encara no hi ha registres.</string>
     <string name="copy_action">Copiar</string>

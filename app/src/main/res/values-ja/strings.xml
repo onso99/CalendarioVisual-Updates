@@ -250,6 +250,7 @@
     <string name="debug_title">デバッグ</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">次回の更新: %1$s</string>
+    <string name="next_refresh_pending">15分後</string>
     <string name="not_scheduled">未設定</string>
     <string name="no_logs_found">ログはまだ記録されていません。</string>
     <string name="copy_action">コピー</string>

@@ -251,6 +251,7 @@
     <string name="debug_title">Depuración</string>
     <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Próximo refresco: %1$s</string>
+    <string name="next_refresh_pending">en 15 min.</string>
     <string name="not_scheduled">Non programado</string>
     <string name="no_logs_found">Aínda no hai rexistros.</string>
     <string name="copy_action">Copiar</string>
