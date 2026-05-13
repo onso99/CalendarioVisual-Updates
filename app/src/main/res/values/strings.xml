@@ -256,4 +256,10 @@
     <string name="error_importing_backup">Error al restaurar la copia: %1$s</string>
     <string name="invalid_backup_file">Archivo de copia de seguridad no válido</string>
     <string name="custom_theme_needs_reimport">El tema personalizado \"%1$s\" no se encuentra. Por favor, reimpórtalo manualmente para recuperar los colores.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Importar festivos</string>
+    <string name="import_holidays_confirm_message">Ya tienes festivos configurados. ¿Deseas añadirlos a tu lista actual o reemplazarlos por completo?</string>
+    <string name="import_holidays_merge">Añadir</string>
+    <string name="import_holidays_replace">Reemplazar</string>
 </resources>

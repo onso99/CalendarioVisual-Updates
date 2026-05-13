@@ -124,6 +124,8 @@ fun SettingsScreen(
     var showStartDayOfWeekDialog by remember { mutableStateOf(false) }
     var showBundledThemesDialog by remember { mutableStateOf(false) }
     var showFontFamilyDialog by remember { mutableStateOf(false) }
+    var showImportHolidaysDialog by remember { mutableStateOf(false) }
+    var pendingHolidaysUri by remember { mutableStateOf<Uri?>(null) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -182,17 +184,22 @@ fun SettingsScreen(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    try {
-                        val success = importHolidaysFromJson(context, uri)
-                        if (success) {
-                            Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-                            onRefreshData()
-                        } else {
+                    val currentAdjustments = loadHolidayAdjustments(context)
+                    if (currentAdjustments.isNotEmpty()) {
+                        pendingHolidaysUri = uri
+                        showImportHolidaysDialog = true
+                    } else {
+                        try {
+                            if (importHolidaysFromJson(context, uri, replace = true)) {
+                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                                onRefreshData()
+                            } else {
+                                Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
+                            }
+                        } catch (e: Exception) {
+                            Log.e("SettingsScreen", "Error importing holidays", e)
                             Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
                         }
-                    } catch (e: Exception) {
-                        Log.e("SettingsScreen", "Error importing holidays", e)
-                        Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -876,6 +883,57 @@ fun SettingsScreen(
                     type = "application/json"
                     putExtra(Intent.EXTRA_TITLE, "${newName}.json")
                 })
+            }
+        )
+    }
+
+    if (showImportHolidaysDialog && pendingHolidaysUri != null) {
+        AlertDialog(
+            onDismissRequest = { showImportHolidaysDialog = false; pendingHolidaysUri = null },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.import_holidays_confirm_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.import_holidays_confirm_message)) },
+            confirmButton = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = {
+                            if (importHolidaysFromJson(context, pendingHolidaysUri!!, replace = false)) {
+                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                                onRefreshData()
+                            }
+                            showImportHolidaysDialog = false
+                            pendingHolidaysUri = null
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                    ) {
+                        Text(stringResource(id = R.string.import_holidays_merge))
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            if (importHolidaysFromJson(context, pendingHolidaysUri!!, replace = true)) {
+                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                                onRefreshData()
+                            }
+                            showImportHolidaysDialog = false
+                            pendingHolidaysUri = null
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text(stringResource(id = R.string.import_holidays_replace), color = Color.White)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { showImportHolidaysDialog = false; pendingHolidaysUri = null },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+                    }
+                }
             }
         )
     }

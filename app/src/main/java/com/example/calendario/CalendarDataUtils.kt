@@ -142,7 +142,16 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
     val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
     val gson = Gson()
-    val dtoList = adjustments.map { adj ->
+    
+    // Unicidad inteligente:
+    // 1. Si es manual (eventId null): La clave es Fecha + Título
+    // 2. Si es excepción (eventId != null): La clave es Fecha + ID Evento
+    val uniqueAdjustments = adjustments.distinctBy { 
+        if (it.originalEventId != null) "${it.date}_ID_${it.originalEventId}"
+        else "${it.date}_TITLE_${it.title}"
+    }
+
+    val dtoList = uniqueAdjustments.map { adj ->
         HolidayAdjustmentDto(
             dateStr = adj.date.toString(),
             title = adj.title,
@@ -184,21 +193,39 @@ fun exportHolidaysToJson(context: Context, uri: Uri) {
     }
 }
 
-fun importHolidaysFromJson(context: Context, uri: Uri): Boolean {
+fun importHolidaysFromJson(context: Context, uri: Uri, replace: Boolean): Boolean {
     return try {
         context.contentResolver.openInputStream(uri)?.use { inputStream ->
             val json = inputStream.bufferedReader().use { it.readText() }
             val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
-            val dtoList: List<HolidayAdjustmentDto> = Gson().fromJson(json, type)
-            val adjustments = dtoList.map { dto ->
-                HolidayAdjustment(
-                    date = LocalDate.parse(dto.dateStr),
-                    title = dto.title,
-                    type = HolidayAdjustmentType.valueOf(dto.type),
-                    originalEventId = dto.originalEventId
-                )
+            val importedDtoList: List<HolidayAdjustmentDto> = Gson().fromJson(json, type)
+            
+            val currentYear = LocalDate.now().year
+            val currentAdjustments = loadHolidayAdjustments(context)
+            
+            val importedAdjustments = importedDtoList.mapNotNull { dto ->
+                val date = LocalDate.parse(dto.dateStr)
+                if (date.year == currentYear) {
+                    HolidayAdjustment(
+                        date = date,
+                        title = dto.title,
+                        type = HolidayAdjustmentType.valueOf(dto.type),
+                        originalEventId = dto.originalEventId
+                    )
+                } else null
             }
-            saveHolidayAdjustments(context, adjustments)
+            
+            val finalList = if (replace) {
+                importedAdjustments
+            } else {
+                // Modo MEZCLAR: El usuario actual tiene preferencia.
+                val currentDates = currentAdjustments.map { it.date }.toSet()
+                val newOnly = importedAdjustments.filter { it.date !in currentDates }
+                currentAdjustments + newOnly
+            }
+
+            // Guardamos
+            saveHolidayAdjustments(context, finalList)
             true
         } ?: false
     } catch (e: Exception) {
@@ -379,11 +406,11 @@ fun readFestivosFromCalendarsSync(
     }
 
     // 4. Inyectamos los Festivos Manuales del Gestor (Solo para el año en curso)
+    val currentYear = today.year
     manualHolidays.forEach { manual ->
-        val currentYear = today.year
         if (manual.date.year == currentYear) {
             finalMap.getOrPut(manual.date) { mutableListOf() }.add(Festivo(
-                id = -100L - manual.date.toEpochDay(), 
+                id = -100L - manual.date.toEpochDay() - manual.title.hashCode().toLong(),
                 title = manual.title,
                 description = "Festivo manual",
                 date = manual.date,
