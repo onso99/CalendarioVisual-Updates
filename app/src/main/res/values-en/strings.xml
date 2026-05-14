@@ -258,4 +258,10 @@
     <string name="selected_count">%1$d selected</string>
     <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
     <string name="events_deleted_count">%1$d events deleted.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Import holidays</string>
+    <string name="import_holidays_confirm_message">You already have holidays configured. Do you want to add them to your current list or replace them completely?</string>
+    <string name="import_holidays_merge">Add</string>
+    <string name="import_holidays_replace">Replace</string>
 </resources>

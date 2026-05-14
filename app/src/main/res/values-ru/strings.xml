@@ -258,4 +258,10 @@
     <string name="selected_count">Выбрано: %1$d</string>
     <string name="delete_multiple_confirmation">Удалить эти %1$d событий? Это действие нельзя отменить.</string>
     <string name="events_deleted_count">Удалено событий: %1$d.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Импорт праздников</string>
+    <string name="import_holidays_confirm_message">У вас уже настроены праздники. Хотите добавить их к текущему списку или полностью заменить?</string>
+    <string name="import_holidays_merge">Добавить</string>
+    <string name="import_holidays_replace">Заменить</string>
 </resources>

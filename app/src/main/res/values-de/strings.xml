@@ -257,4 +257,10 @@
     <string name="selected_count">%1$d ausgewählt</string>
     <string name="delete_multiple_confirmation">Möchten Sie diese %1$d Termine löschen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="events_deleted_count">%1$d Termine gelöscht.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Feiertage importieren</string>
+    <string name="import_holidays_confirm_message">Sie haben bereits Feiertage konfiguriert. Möchten Sie diese zu Ihrer aktuellen Liste hinzufügen oder vollständig ersetzen?</string>
+    <string name="import_holidays_merge">Hinzufügen</string>
+    <string name="import_holidays_replace">Ersetzen</string>
 </resources>

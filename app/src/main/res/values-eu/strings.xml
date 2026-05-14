@@ -259,4 +259,10 @@
     <string name="selected_count">%1$d hautatuta</string>
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Jaiegunak inportatu</string>
+    <string name="import_holidays_confirm_message">Dagoeneko jaiegunak konfiguratuta dituzu. Uneko zerrendara gehitu nahi dituzu ala erabat ordezkatu?</string>
+    <string name="import_holidays_merge">Gehitu</string>
+    <string name="import_holidays_replace">Ordezkatu</string>
 </resources>

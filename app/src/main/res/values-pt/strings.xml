@@ -256,4 +256,10 @@
     <string name="selected_count">%1$d selecionados</string>
     <string name="delete_multiple_confirmation">Deseja excluir estes %1$d eventos? Esta ação não pode ser desfeita.</string>
     <string name="events_deleted_count">%1$d eventos excluídos.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Importar feriados</string>
+    <string name="import_holidays_confirm_message">Você já tem feriados configurados. Deseja adicioná-los à sua lista atual ou substituí-los completamente?</string>
+    <string name="import_holidays_merge">Adicionar</string>
+    <string name="import_holidays_replace">Substituir</string>
 </resources>

@@ -259,4 +259,10 @@
     <string name="selected_count">%1$d seleccionats</string>
     <string name="delete_multiple_confirmation">Voleu eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
     <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Importar festius</string>
+    <string name="import_holidays_confirm_message">Ja teniu festius configurats. Voleu afegir-los a la llista actual o substituir-los del tot?</string>
+    <string name="import_holidays_merge">Afegir</string>
+    <string name="import_holidays_replace">Substituir</string>
 </resources>

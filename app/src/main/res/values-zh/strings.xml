@@ -258,4 +258,10 @@
     <string name="selected_count">已选择 %1$d 个</string>
     <string name="delete_multiple_confirmation">确定要删除这 %1$d 个事件吗？此操作无法撤销。</string>
     <string name="events_deleted_count">已删除 %1$d 个事件。</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">导入节假日</string>
+    <string name="import_holidays_confirm_message">您已经配置了节假日。要将它们添加到当前列表还是完全替换？</string>
+    <string name="import_holidays_merge">添加</string>
+    <string name="import_holidays_replace">替换</string>
 </resources>

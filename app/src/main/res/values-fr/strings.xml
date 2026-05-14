@@ -258,4 +258,10 @@
     <string name="events_deleted_count">%1$d événements supprimés.</string>
     <string name="calendar_events_subject">Événements du Calendrier</string>
     <string name="copy_action">Copier</string>
+
+    <!-- v1.8.80 (Holiday Import) -->
+    <string name="import_holidays_confirm_title">Importer les jours fériés</string>
+    <string name="import_holidays_confirm_message">Vous avez déjà des jours fériés configurés. Voulez-vous les ajouter à votre liste actuelle ou les remplacer complètement ?</string>
+    <string name="import_holidays_merge">Ajouter</string>
+    <string name="import_holidays_replace">Remplacer</string>
 </resources>
