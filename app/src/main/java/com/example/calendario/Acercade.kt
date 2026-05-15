@@ -2,38 +2,32 @@ package com.example.calendario
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object AboutInfo {
     const val LINE_1 = "Calendario Visual"
-    const val LINE_2 = "Gemini / Android Studio"
+    const val LINE_2 = "Android Studio"
+    const val LINE_3_AUTHOR = "Onso"
+    const val HISTORY_LABEL = "Historial"
+    const val URL_HISTORIAL = "http://calendario.onso.es"
     
-    // Definimos aquí el mes y año concretos que queremos mostrar
-    private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 3, 1)
+    private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 5, 1)
 
-    fun getLine3(): String {
-        // Formateador que obtiene el nombre completo del mes (MMMM) y el año (yyyy) 
-        // según el idioma actual del dispositivo (Locale.getDefault())
+    fun getFormattedDate(): String {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
-        
-        // Formateamos la fecha y capitalizamos la primera letra (por si el sistema la da en minúscula)
-        val formattedDate = RELEASE_DATE.format(formatter).replaceFirstChar { 
+        return RELEASE_DATE.format(formatter).replaceFirstChar { 
             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
         }
-        
-        return "Onso / $formattedDate"
     }
 
     fun getVersionName(context: Context): String {
         return try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            "V${packageInfo.versionName}"
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.e("AboutInfo", "Could not get package version name", e)
-            "V N/A"
+            "v${packageInfo.versionName}"
+        } catch (_: PackageManager.NameNotFoundException) {
+            "v N/A"
         }
     }
 }

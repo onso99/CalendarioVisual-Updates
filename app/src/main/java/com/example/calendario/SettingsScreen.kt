@@ -721,9 +721,34 @@ fun SettingsScreen(
                     .background(CalendarioTheme.colors.fondoSecciones)
                     .padding(16.dp)
             ) {
-                Text("${AboutInfo.LINE_1} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text(AboutInfo.LINE_2, fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text(AboutInfo.getLine3(), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                
+                Text(
+                    text = "${AboutInfo.LINE_1} ${AboutInfo.getVersionName(context)}",
+                    fontSize = 16.sp,
+                    color = CalendarioTheme.colors.textSystem
+                )
+                Text(
+                    text = "${AboutInfo.LINE_2} > ${AboutInfo.getFormattedDate()}",
+                    fontSize = 16.sp,
+                    color = CalendarioTheme.colors.textSystem
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${AboutInfo.LINE_3_AUTHOR} > ",
+                        fontSize = 16.sp,
+                        color = CalendarioTheme.colors.textSystem
+                    )
+                    Text(
+                        text = AboutInfo.HISTORY_LABEL,
+                        fontSize = 16.sp,
+                        color = Color(0xFF2196F3), // Azul de enlace
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable { 
+                            uriHandler.openUri(AboutInfo.URL_HISTORIAL)
+                        }
+                    )
+                }
             }
         }
     }
