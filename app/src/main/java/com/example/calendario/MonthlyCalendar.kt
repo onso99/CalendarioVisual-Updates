@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle as ComposeTextStyle
@@ -128,24 +129,32 @@ fun MonthlyCalendar(
             Row(Modifier.fillMaxWidth()) {
                 week.forEach { (date, isCurrentMonth) ->
                     val isToday = date == today && isCurrentMonth
+                    val isPastDay = isCurrentMonth && date.isBefore(today)
+                    val isDark = isColorDark(CalendarioTheme.colors.monthlyCalendarDayCellBackground, MaterialTheme.colorScheme.background)
 
                     val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
                     val dayHasEventsWithTitle = dayEvents.any { it.title.isNotBlank() }
 
                     val dayColor = when {
-                        !isCurrentMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        !isCurrentMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.20f)
                         else -> {
                             val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
                             val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
-                            when {
+                            val baseColor = when {
                                 isHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                 else -> CalendarioTheme.colors.monthlyCalendarDayNumberNormal
                             }
+                            // Atenuamos el número si el día es pasado (tanto en claro como en oscuro)
+                            if (isPastDay) baseColor.copy(alpha = 0.5f) else baseColor
                         }
                     }
                     val cellBackground = if (isCurrentMonth) {
-                        CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                        val base = CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                        // EN MODO CLARO: teñimos ligeramente con la cabecera si el día es pasado
+                        if (isPastDay && !isDark) {
+                            CalendarioTheme.colors.cabecera.copy(alpha = 0.08f).compositeOver(base)
+                        } else base
                     } else {
                         CalendarioTheme.colors.monthlyCalendarEmptyCellBackground
                     }
