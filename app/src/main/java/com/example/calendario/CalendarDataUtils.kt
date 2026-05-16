@@ -356,7 +356,7 @@ fun readFestivosFromCalendarsSync(
                         if ((bYear == null || bYear < 1850) && startCol != -1) {
                             val dtStartValue = cursor.getLong(startCol)
                             val year = Instant.ofEpochMilli(dtStartValue).atZone(ZoneId.of("UTC")).toLocalDate().year
-                            if (year in 1850..2024) bYear = year
+                            if (year in 1850..LocalDate.now().year) bYear = year
                         }
                         if (bYear != null && bYear > 1850) birthYearMap[id] = bYear
                     }

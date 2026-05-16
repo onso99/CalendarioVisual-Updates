@@ -743,7 +743,7 @@ fun SettingsScreen(
                         text = AboutInfo.HISTORY_LABEL,
                         fontSize = 16.sp,
                         color = Color(0xFF2196F3), // Azul de enlace
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                         modifier = Modifier.clickable { 
                             uriHandler.openUri(AboutInfo.URL_HISTORIAL)
                         }
