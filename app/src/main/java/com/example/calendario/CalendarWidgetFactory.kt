@@ -164,7 +164,7 @@ class CalendarWidgetFactory(
         } else {
             actualEvent.title
         }
-        val displayDescription = if (actualEvent.age != null) "$baseDesc (${actualEvent.age})" else baseDesc
+        val displayDescription = if (actualEvent.age != null && actualEvent.age > 0) "$baseDesc (${actualEvent.age})" else baseDesc
         
         views.setTextViewText(R.id.widget_item_description, applyFontStyles(displayDescription))
 

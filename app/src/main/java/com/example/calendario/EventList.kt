@@ -124,7 +124,7 @@ fun MonthlyEventList(
                         val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
                         val baseDesc = "$timePrefix$titleText"
 
-                        val displayDesc = if (festivo.age != null) {
+                        val displayDesc = if (festivo.age != null && festivo.age > 0) {
                             "$baseDesc (${festivo.age})"
                         } else {
                             baseDesc

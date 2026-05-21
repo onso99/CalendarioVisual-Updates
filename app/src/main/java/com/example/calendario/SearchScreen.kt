@@ -315,7 +315,7 @@ private fun EventRow(
         festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else "" }
     }
 
-    val descWithAge = if (festivo.age != null) "$baseDesc (${festivo.age})" else baseDesc
+    val descWithAge = if (festivo.age != null && festivo.age > 0) "$baseDesc (${festivo.age})" else baseDesc
     val displayDesc = if (searchScope == SearchScope.MONTH) descWithAge else "${festivo.date.dayOfMonth} - $descWithAge"
 
     Row(
