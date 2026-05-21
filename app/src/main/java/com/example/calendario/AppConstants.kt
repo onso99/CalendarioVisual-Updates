@@ -93,7 +93,7 @@ object AppConstants {
 
     object DarkColors {
         val cabecera = Color(0xFF1051B4)
-        val settingsBackground = Color(0xFF2C2C2C)
+        val settingsBackground = Color(0xFF051023)
         val fondoSecciones = Color(0xFF274566)
         val fondoDialogos = Color(0xFF2C2C2C)
         val textSystem = Color(0xFFE0E0E0)
@@ -103,10 +103,10 @@ object AppConstants {
         val textEvent1 = Color(0xFF66BB6A) // Verde claro
         val textEvent2 = Color(0xFFF06292) // Rosa
         val eventListTitleColor = Color(0xFFCF9A21)
-        val todayHighlightColor = Color(0x8EACACAC)
-        val monthlyCalendarGridBackground = Color(0x800000AA)
-        val monthlyCalendarGridEffect = Color(0x8000304D)
-        val monthlyCalendarDayCellBackground = Color(0xFF6A6A6A)
+        val todayHighlightColor = Color(0x35CF9A21)
+        val monthlyCalendarGridBackground = Color(0x713653FF)
+        val monthlyCalendarGridEffect = Color(0x80005285)
+        val monthlyCalendarDayCellBackground = Color(0xFF243147) // Azul medianoche integrado con la cabecera
         val monthlyCalendarTodayCellBorder = Color(0x91FF3E00)
         val monthlyCalendarDayNumberNormal = Color(0xFFE0E0E0)
         val monthlyCalendarHeaderBackground = Color(0xFF0060BF)

@@ -150,16 +150,20 @@ fun MonthlyCalendar(
                         }
                     }
                     val cellBackground = if (isDark) {
-                        // EN MODO OSCURO: Fondo uniforme, la distinción la da la atenuación del número
-                        CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                        // EN MODO OSCURO: 
+                        val base = CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                        if (!isCurrentMonth || isPastDay) {
+                            // Días inactivos: Más oscuros (20% negro) para que sea perceptible
+                            Color.Black.copy(alpha = 0.20f).compositeOver(base)
+                        } else base
                     } else {
                         // EN MODO CLARO: 
                         if (!isCurrentMonth || isPastDay) {
                             // Días inactivos: Tinte automático basado en la cabecera (8%)
                             CalendarioTheme.colors.cabecera.copy(alpha = 0.08f).compositeOver(Color.White)
                         } else {
-                            // Días activos: Fondo limpio del tema (normalmente blanco)
-                            CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                            // Días activos: Blanco puro (independiente del tema para máxima limpieza)
+                            Color.White
                         }
                     }
 
