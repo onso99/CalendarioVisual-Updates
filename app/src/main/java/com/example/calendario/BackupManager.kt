@@ -144,20 +144,19 @@ object BackupManager {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun applyBundledThemeColors(context: Context, themeName: String, isDark: Boolean) {
         val themeMap = (BundledThemes.themes as List<Map<String, Any>>).find { 
-            (it["themeManifest"] as? Map<*, *>)?.get("name") == themeName 
+            (it["themeManifest"] as? Map<String, Any>)?.get("name") == themeName 
         } ?: return
 
-        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<*, *> ?: return
+        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<String, String> ?: return
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit {
             colorMap.forEach { (key, hex) ->
-                if (key is String && hex is String) {
-                    try {
-                        putInt(key, hex.toColorInt())
-                    } catch (_: Exception) { }
-                }
+                try {
+                    putInt(key, hex.toColorInt())
+                } catch (_: Exception) { }
             }
         }
     }
