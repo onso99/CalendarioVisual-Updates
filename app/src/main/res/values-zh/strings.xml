@@ -264,4 +264,8 @@
     <string name="import_holidays_confirm_message">您已经配置了节假日。要将它们添加到当前列表还是完全替换？</string>
     <string name="import_holidays_merge">添加</string>
     <string name="import_holidays_replace">替换</string>
+
+    <!-- Birthday keywords for detection -->
+    <string name="birthday_keywords">生日,周年,诞辰</string>
+    <string name="greeting_keywords">生日快乐,恭喜,祝贺</string>
 </resources>

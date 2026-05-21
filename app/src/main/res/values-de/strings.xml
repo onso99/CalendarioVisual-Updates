@@ -263,4 +263,8 @@
     <string name="import_holidays_confirm_message">Sie haben bereits Feiertage konfiguriert. Möchten Sie diese zu Ihrer aktuellen Liste hinzufügen oder vollständig ersetzen?</string>
     <string name="import_holidays_merge">Hinzufügen</string>
     <string name="import_holidays_replace">Ersetzen</string>
+
+    <!-- Birthday keywords for detection -->
+    <string name="birthday_keywords">geburtstag,geburi,jubiläum,namenstag</string>
+    <string name="greeting_keywords">herzlichen,glückwunsch,gratuliere,gratulation,alles gute</string>
 </resources>

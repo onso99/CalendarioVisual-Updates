@@ -265,4 +265,8 @@
     <string name="import_holidays_confirm_message">Dagoeneko jaiegunak konfiguratuta dituzu. Uneko zerrendara gehitu nahi dituzu ala erabat ordezkatu?</string>
     <string name="import_holidays_merge">Gehitu</string>
     <string name="import_holidays_replace">Ordezkatu</string>
+
+    <!-- Birthday keywords for detection -->
+    <string name="birthday_keywords">urtebetetzea,urteurrena</string>
+    <string name="greeting_keywords">zorionak,zoriontzen</string>
 </resources>

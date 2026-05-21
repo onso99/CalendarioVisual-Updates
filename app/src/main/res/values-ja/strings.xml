@@ -263,4 +263,8 @@
     <string name="import_holidays_confirm_message">既に祝日が設定されています。現在のリストに追加しますか、それとも完全に置き換えますか？</string>
     <string name="import_holidays_merge">追加</string>
     <string name="import_holidays_replace">置換</string>
+
+    <!-- Birthday keywords for detection -->
+    <string name="birthday_keywords">誕生日,記念日</string>
+    <string name="greeting_keywords">おめでとう,祝</string>
 </resources>

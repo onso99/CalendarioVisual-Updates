@@ -363,11 +363,15 @@ fun readFestivosFromCalendarsSync(
                 }
             }
 
+            val birthdayKeywords = context.getString(R.string.birthday_keywords).split(",").map { it.trim().lowercase() }
+            val greetingKeywords = context.getString(R.string.greeting_keywords).split(",").map { it.trim().lowercase() }
+
             // 3. Procesamos instancias y aplicamos lógica final
             tempInstancesData.forEach { data ->
                 val eventId = data["eventId"] as Long
                 val calendarId = data["calendarId"] as Long
                 val title = data["title"] as String
+                val titleLower = title.lowercase()
                 val beginMillis = data["begin"] as Long
                 val endMillis = data["end"] as Long
                 val isAllDay = data["isAllDay"] as Boolean
@@ -380,16 +384,29 @@ fun readFestivosFromCalendarsSync(
                 val isFromHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
                 
-                val birthdayLabel = context.getString(R.string.birthdays).lowercase()
-                val hasBirthdayWord = title.lowercase().contains(birthdayLabel) || title.lowercase().contains("cumple")
+                val hasBirthdayWord = birthdayKeywords.any { titleLower.contains(it) }
+                val hasGreetingWord = greetingKeywords.any { titleLower.contains(it) }
                 
-                val finalIsBirthday = (isTechnicalBirthday || (isAllDay && hasBirthdayWord)) && !isFromHoliday
+                // Marcamos como azul si es técnico o contiene alguna palabra clave
+                val finalIsBirthday = (isTechnicalBirthday || (isAllDay && (hasBirthdayWord || hasGreetingWord))) && !isFromHoliday
                 
                 var birthYear = birthYearMap[eventId]
-                if (finalIsBirthday && birthYear == null) {
-                    val yearInTitle = Regex("\\b(19|20)\\d{2}\\b").find(title)?.value?.toIntOrNull()
-                    val yearInDesc = Regex("\\b(19|20)\\d{2}\\b").find(descMap[eventId] ?: "")?.value?.toIntOrNull()
-                    birthYear = yearInTitle ?: yearInDesc
+                
+                if (finalIsBirthday) {
+                    // ESCUDO: Si es una felicitación genérica (ej: "Feliz") y NO es contacto oficial,
+                    // anulamos el año automático porque suele ser la fecha de creación del evento.
+                    if (hasGreetingWord && !isTechnicalBirthday) {
+                        birthYear = null
+                    }
+                    
+                    // Fallback: buscamos el año en el texto si no lo tenemos todavía
+                    if (birthYear == null) {
+                        val yearInTitle = Regex("\\b(19|20)\\d{2}\\b").find(title)?.value?.toIntOrNull()
+                        val yearInDesc = Regex("\\b(19|20)\\d{2}\\b").find(descMap[eventId] ?: "")?.value?.toIntOrNull()
+                        birthYear = yearInTitle ?: yearInDesc
+                    }
+                    
+                    // Validación final
                     if (birthYear != null && birthYear >= startDate.year) birthYear = null
                 }
                 

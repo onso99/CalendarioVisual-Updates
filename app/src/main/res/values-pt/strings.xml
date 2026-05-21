@@ -262,4 +262,8 @@
     <string name="import_holidays_confirm_message">Você já tem feriados configurados. Deseja adicioná-los à sua lista atual ou substituí-los completamente?</string>
     <string name="import_holidays_merge">Adicionar</string>
     <string name="import_holidays_replace">Substituir</string>
+
+    <!-- Birthday keywords for detection -->
+    <string name="birthday_keywords">aniversário,parabéns,onomástica</string>
+    <string name="greeting_keywords">feliz,felicitações</string>
 </resources>

@@ -264,4 +264,8 @@
     <string name="import_holidays_confirm_message">You already have holidays configured. Do you want to add them to your current list or replace them completely?</string>
     <string name="import_holidays_merge">Add</string>
     <string name="import_holidays_replace">Replace</string>
+
+    <!-- Birthday keywords for detection -->
+    <string name="birthday_keywords">birthday,bday,anniversary</string>
+    <string name="greeting_keywords">happy,congratulations,congrats</string>
 </resources>
