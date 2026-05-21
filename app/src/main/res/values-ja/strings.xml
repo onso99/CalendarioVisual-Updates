@@ -166,7 +166,6 @@
     <string name="calendar_background">カレンダーの背景</string>
     <string name="effect">効果</string>
     <string name="current_month_cell">月のセル</string>
-    <string name="other_month_cell">他の月のセル</string>
     <string name="today_border">今日の境界線</string>
     <string name="normal_day_number">日付番号</string>
     <string name="week_day_header">曜日のヘッダー</string>

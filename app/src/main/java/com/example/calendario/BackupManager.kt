@@ -145,17 +145,19 @@ object BackupManager {
     }
 
     private fun applyBundledThemeColors(context: Context, themeName: String, isDark: Boolean) {
-        val themeMap = BundledThemes.themes.find { 
+        val themeMap = (BundledThemes.themes as List<Map<String, Any>>).find { 
             (it["themeManifest"] as? Map<*, *>)?.get("name") == themeName 
         } ?: return
 
-        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) ?: return
+        val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<*, *> ?: return
         val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit {
             colorMap.forEach { (key, hex) ->
-                try {
-                    putInt(key, hex.toColorInt())
-                } catch (_: Exception) { }
+                if (key is String && hex is String) {
+                    try {
+                        putInt(key, hex.toColorInt())
+                    } catch (_: Exception) { }
+                }
             }
         }
     }
@@ -198,7 +200,6 @@ object BackupManager {
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
-            AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL,
@@ -219,7 +220,6 @@ object BackupManager {
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
-            AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_EMPTY_CELL_BACKGROUND,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL,

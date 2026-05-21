@@ -168,7 +168,6 @@
     <string name="calendar_background">Calendar Background</string>
     <string name="effect">Effect</string>
     <string name="current_month_cell">Month Cell</string>
-    <string name="other_month_cell">Other Month Cell</string>
     <string name="today_border">Today Border</string>
     <string name="normal_day_number">Day Number</string>
     <string name="week_day_header">Week Day Header</string>

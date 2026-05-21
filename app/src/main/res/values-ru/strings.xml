@@ -166,7 +166,6 @@
     <string name="calendar_background">Фон календаря</string>
     <string name="effect">Эффект</string>
     <string name="current_month_cell">Ячейка месяца</string>
-    <string name="other_month_cell">Ячейка другого месяца</string>
     <string name="today_border">Граница сегодня</string>
     <string name="normal_day_number">Номер дня</string>
     <string name="week_day_header">Заголовок дня недели</string>

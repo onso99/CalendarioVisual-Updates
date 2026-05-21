@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle as ComposeTextStyle
@@ -148,10 +149,18 @@ fun MonthlyCalendar(
                             if (isPastDay) baseColor.copy(alpha = 0.5f) else baseColor
                         }
                     }
-                    val cellBackground = when {
-                        !isCurrentMonth -> CalendarioTheme.colors.monthlyCalendarEmptyCellBackground
-                        isPastDay && !isDark -> CalendarioTheme.colors.monthlyCalendarEmptyCellBackground
-                        else -> CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                    val cellBackground = if (isDark) {
+                        // EN MODO OSCURO: Fondo uniforme, la distinción la da la atenuación del número
+                        CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                    } else {
+                        // EN MODO CLARO: 
+                        if (!isCurrentMonth || isPastDay) {
+                            // Días inactivos: Tinte automático basado en la cabecera (8%)
+                            CalendarioTheme.colors.cabecera.copy(alpha = 0.08f).compositeOver(Color.White)
+                        } else {
+                            // Días activos: Fondo limpio del tema (normalmente blanco)
+                            CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                        }
                     }
 
                     Box(

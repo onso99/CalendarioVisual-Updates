@@ -168,7 +168,6 @@
     <string name="calendar_background">Kalenderhintergrund</string>
     <string name="effect">Effekt</string>
     <string name="current_month_cell">Zelle des aktuellen Monats</string>
-    <string name="other_month_cell">Zelle eines anderen Monats</string>
     <string name="today_border">Heutiger Rand</string>
     <string name="normal_day_number">Tagesnummer</string>
     <string name="week_day_header">Wochentage</string>

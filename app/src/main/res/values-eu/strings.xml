@@ -166,7 +166,6 @@
     <string name="calendar_background">Egutegiaren atzeko planoa</string>
     <string name="effect">Efektua</string>
     <string name="current_month_cell">Hilabeteko gelaxka</string>
-    <string name="other_month_cell">Beste hilabeteetako gelaxka</string>
     <string name="today_border">Gaurko ertza</string>
     <string name="normal_day_number">Egunaren zenbakia</string>
     <string name="week_day_header">Asteko egunen goiburua</string>

@@ -166,7 +166,6 @@
     <string name="calendar_background">Fondo calendario</string>
     <string name="effect">Efecto</string>
     <string name="current_month_cell">Cela do mes</string>
-    <string name="other_month_cell">Cela outros meses</string>
     <string name="today_border">Borde día actual</string>
     <string name="normal_day_number">Número de día</string>
     <string name="week_day_header">Cabeceira día semana</string>

@@ -166,7 +166,6 @@
     <string name="calendar_background">日历背景</string>
     <string name="effect">效果</string>
     <string name="current_month_cell">本月单元格</string>
-    <string name="other_month_cell">他月单元格</string>
     <string name="today_border">今日边框</string>
     <string name="normal_day_number">日期编号</string>
     <string name="week_day_header">星期标题</string>
