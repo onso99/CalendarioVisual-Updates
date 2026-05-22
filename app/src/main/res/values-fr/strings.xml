@@ -176,7 +176,7 @@
     <string name="calendar_source">Calendrier : %1$s</string>
     <string name="widget_no_events">Aucun événement</string>
     <string name="predefined_themes">Thèmes prédéfinis</string>
-    <string name="themes_v6">Thèmes v6</string>
+    <string name="themes_v6">Thèmes</string>
 
     <string name="permission_denied_title">Autorisation refusée</string>
     <string name="permission_denied_text">Impossible d\'enregistrer l\'événement car l\'application n\'a pas l\'autorisation d\'écrire dans le calendrier. Veuillez accorder l\'autorisation dans les paramètres de l\'application.</string>

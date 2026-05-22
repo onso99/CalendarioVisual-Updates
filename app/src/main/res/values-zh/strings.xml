@@ -174,7 +174,7 @@
     <string name="calendar_source">日历：%1$s</string>
     <string name="widget_no_events">没有活动</string>
     <string name="predefined_themes">预定义主题</string>
-    <string name="themes_v6">主题 v6</string>
+    <string name="themes_v6">主题</string>
 
     <string name="permission_denied_title">权限被拒绝</string>
     <string name="permission_denied_text">无法保存活动，因为应用程序没有写入日历的权限。请在应用程序设置中授予权限。</string>

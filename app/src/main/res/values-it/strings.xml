@@ -174,7 +174,7 @@
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="widget_no_events">Nessun evento</string>
     <string name="predefined_themes">Temi predefiniti</string>
-    <string name="themes_v6">Temi v6</string>
+    <string name="themes_v6">Temi</string>
 
     <string name="permission_denied_title">Autorizzazione negata</string>
     <string name="permission_denied_text">Impossibile salvare l\'evento perché l\'applicazione non dispone dell\'autorizzazione per scrivere sul calendario. Concedere l\'autorizzazione dalle impostazioni dell\'applicazione.</string>

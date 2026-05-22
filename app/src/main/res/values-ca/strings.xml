@@ -174,7 +174,7 @@
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="widget_no_events">No hi ha esdeveniments</string>
     <string name="predefined_themes">Temas predefinits</string>
-    <string name="themes_v6">Temes v6</string>
+    <string name="themes_v6">Temes</string>
 
     <string name="permission_denied_title">Permís Denegat</string>
     <string name="permission_denied_text">No es pot desar l\'esdeveniment perquè l\'aplicació no té permís per escriure al calendari. Si us plau, concedeix el permís des de la configuració de l\'aplicació.</string>

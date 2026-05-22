@@ -174,7 +174,7 @@
     <string name="calendar_source">カレンダー：%1$s</string>
     <string name="widget_no_events">イベントはありません</string>
     <string name="predefined_themes">定義済みテーマ</string>
-    <string name="themes_v6">テーマ v6</string>
+    <string name="themes_v6">テーマ</string>
 
     <string name="permission_denied_title">権限が拒否されました</string>
     <string name="permission_denied_text">カレンダーへの書き込み権限がないため、イベントを保存できません。アプリケーション設定から権限を付与してください。</string>

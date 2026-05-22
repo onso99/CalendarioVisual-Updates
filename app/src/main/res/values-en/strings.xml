@@ -176,7 +176,7 @@
     <string name="calendar_source">Calendar: %1$s</string>
     <string name="widget_no_events">No events</string>
     <string name="predefined_themes">Predefined themes</string>
-    <string name="themes_v6">Themes v6</string>
+    <string name="themes_v6">Themes</string>
 
     <string name="permission_denied_title">Permission Denied</string>
     <string name="permission_denied_text">Cannot save event because the application does not have permission to write to the calendar. Please grant the permission from the application settings.</string>

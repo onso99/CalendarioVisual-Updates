@@ -174,7 +174,7 @@
     <string name="calendar_source">Egutegia: %1$s</string>
     <string name="widget_no_events">Ez dago gertaerarik</string>
     <string name="predefined_themes">Aurrez definitutako gaiak</string>
-    <string name="themes_v6">Gaiak v6</string>
+    <string name="themes_v6">Gaiak</string>
 
     <string name="permission_denied_title">Baimena ukatuta</string>
     <string name="permission_denied_text">Ezin da gertaera gorde, aplikazioak ez duelako egutegian idazteko baimenik. Por favor, concede el permiso desde os axustes da aplicación.</string>
