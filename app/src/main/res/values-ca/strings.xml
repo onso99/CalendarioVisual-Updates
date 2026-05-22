@@ -153,7 +153,6 @@
     <string name="dark_theme">Fosc</string>
     <string name="header_background">Fons capçalera</string>
     <string name="screen_background">Fons pantalles</string>
-    <string name="section_background">Fons seccions</string>
     <string name="system_text">Text sistema</string>
     <string name="sundays_and_holidays">Diumenges/Festius</string>
     <string name="title_text">Text del títol</string>

@@ -155,7 +155,6 @@
     <string name="dark_theme">Dark</string>
     <string name="header_background">Header Background</string>
     <string name="screen_background">Screen Background</string>
-    <string name="section_background">Section Background</string>
     <string name="system_text">System Text</string>
     <string name="sundays_and_holidays">Sundays/Holidays</string>
     <string name="title_text">Title Text</string>

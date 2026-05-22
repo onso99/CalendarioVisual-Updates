@@ -155,7 +155,6 @@
     <string name="dark_theme">Dunkel</string>
     <string name="header_background">Kopfzeilenhintergrund</string>
     <string name="screen_background">Bildschirmhintergrund</string>
-    <string name="section_background">Abschnittshintergrund</string>
     <string name="system_text">Systemtext</string>
     <string name="sundays_and_holidays">Sonntage/Feiertage</string>
     <string name="title_text">Titeltext</string>
