@@ -157,7 +157,6 @@
     <string name="header_background">Fondo cabecera</string>
     <string name="screen_background">Fondo pantallas</string>
     <string name="section_background">Fondo secciones</string>
-    <string name="dialog_background">Fondo diálogos</string>
     <string name="system_text">Texto sistema</string>
     <string name="sundays_and_holidays">Domingos/Festivos</string>
     <string name="title_text">Texto del título</string>

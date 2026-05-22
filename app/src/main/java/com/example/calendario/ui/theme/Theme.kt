@@ -21,7 +21,6 @@ import com.example.calendario.AppConstants
 data class CustomColors(
     val cabecera: Color,
     val fondoSecciones: Color,
-    val fondoDialogos: Color,
     val settingsBackground: Color,
     val textSystem: Color,
     val textSundayHoliday: Color,
@@ -39,13 +38,28 @@ data class CustomColors(
     val monthlyCalendarDayNumberNormal: Color,
     val miniMonthTodayHighlightBackground: Color,
     val miniMonthDayNumberNormal: Color
-)
+) {
+    // Cálculo automático del fondo de diálogos (10% más claro que el fondo de pantalla)
+    val fondoDialogos: Color
+        get() {
+            val r = (settingsBackground.red * 255).toInt()
+            val g = (settingsBackground.green * 255).toInt()
+            val b = (settingsBackground.blue * 255).toInt()
+            val alpha = (settingsBackground.alpha * 255).toInt()
+            
+            // Sumamos 25 (aprox 10% de 255) a cada canal, limitando a 255
+            val newR = (r + 25).coerceAtMost(255)
+            val newG = (g + 25).coerceAtMost(255)
+            val newB = (b + 25).coerceAtMost(255)
+            
+            return Color(newR, newG, newB, alpha)
+        }
+}
 
 val LocalCustomColors = staticCompositionLocalOf {
     CustomColors(
         cabecera = AppConstants.LightColors.cabecera,
         fondoSecciones = AppConstants.LightColors.fondoSecciones,
-        fondoDialogos = AppConstants.LightColors.fondoDialogos,
         settingsBackground = AppConstants.LightColors.settingsBackground,
         textSystem = AppConstants.LightColors.textSystem,
         textSundayHoliday = AppConstants.LightColors.textSundayHoliday,
@@ -139,7 +153,6 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
         CustomColors(
             cabecera = Color(getSafeInt(AppConstants.ColorKeys.DARK_CABECERA, AppConstants.DarkColors.cabecera.toArgb())),
             fondoSecciones = Color(getSafeInt(AppConstants.ColorKeys.DARK_FONDO_SECCIONES, AppConstants.DarkColors.fondoSecciones.toArgb())),
-            fondoDialogos = Color(getSafeInt(AppConstants.ColorKeys.DARK_FONDO_DIALOGOS, AppConstants.DarkColors.fondoDialogos.toArgb())),
             settingsBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND, AppConstants.DarkColors.settingsBackground.toArgb())),
             textSystem = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_SYSTEM, AppConstants.DarkColors.textSystem.toArgb())),
             textSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.DarkColors.textSundayHoliday.toArgb())),
@@ -162,7 +175,6 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
         CustomColors(
             cabecera = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_CABECERA, AppConstants.LightColors.cabecera.toArgb())),
             fondoSecciones = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES, AppConstants.LightColors.fondoSecciones.toArgb())),
-            fondoDialogos = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_FONDO_DIALOGOS, AppConstants.LightColors.fondoDialogos.toArgb())),
             settingsBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppConstants.LightColors.settingsBackground.toArgb())),
             textSystem = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM, AppConstants.LightColors.textSystem.toArgb())),
             textSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday.toArgb())),

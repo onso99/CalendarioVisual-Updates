@@ -26,7 +26,6 @@ object AppConstants {
         // Light Theme
         const val LIGHT_CABECERA = "light_cabecera"
         const val LIGHT_FONDO_SECCIONES = "light_fondo_secciones"
-        const val LIGHT_FONDO_DIALOGOS = "light_fondo_dialogos"
         const val LIGHT_SETTINGS_BACKGROUND = "light_settings_background"
         const val LIGHT_TEXT_SYSTEM = "light_text_system"
         const val LIGHT_TEXT_SUNDAY_HOLIDAY = "light_text_sunday_holiday"
@@ -48,7 +47,6 @@ object AppConstants {
         // Dark Theme
         const val DARK_CABECERA = "dark_cabecera"
         const val DARK_FONDO_SECCIONES = "dark_fondo_secciones"
-        const val DARK_FONDO_DIALOGOS = "dark_fondo_dialogos"
         const val DARK_SETTINGS_BACKGROUND = "dark_settings_background"
         const val DARK_TEXT_SYSTEM = "dark_text_system"
         const val DARK_TEXT_SUNDAY_HOLIDAY = "dark_text_sunday_holiday"
@@ -72,7 +70,6 @@ object AppConstants {
         val cabecera = Color(0xFF2196F3)
         val settingsBackground = Color(0xFFF6F6FF)
         val fondoSecciones = Color(0xFFD6ECFD)
-        val fondoDialogos = Color(0xFFFFFFFF)
         val textSystem = Color(0xFF000000)
         val textSundayHoliday = Color(0xFFFF0000)
         val textBirthday = Color(0xFF0000FF)
@@ -95,7 +92,6 @@ object AppConstants {
         val cabecera = Color(0xFF1051B4)
         val settingsBackground = Color(0xFF051023)
         val fondoSecciones = Color(0xFF274566)
-        val fondoDialogos = Color(0xFF2C2C2C)
         val textSystem = Color(0xFFE0E0E0)
         val textSundayHoliday = Color(0xFFE57373)
         val textBirthday = Color(0xFFAECBFF)

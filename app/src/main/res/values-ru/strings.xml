@@ -154,7 +154,6 @@
     <string name="header_background">Фон заголовка</string>
     <string name="screen_background">Фон экрана</string>
     <string name="section_background">Фон раздела</string>
-    <string name="dialog_background">Фон диалога</string>
     <string name="system_text">Системный текст</string>
     <string name="sundays_and_holidays">Воскресенья/Праздники</string>
     <string name="title_text">Текст заголовка</string>

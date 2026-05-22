@@ -154,7 +154,6 @@
     <string name="header_background">Sfondo intestazione</string>
     <string name="screen_background">Sfondo schermo</string>
     <string name="section_background">Sfondo sezione</string>
-    <string name="dialog_background">Sfondo dialogo</string>
     <string name="system_text">Testo di sistema</string>
     <string name="sundays_and_holidays">Domeniche/Festivi</string>
     <string name="title_text">Testo del titolo</string>
