@@ -13,7 +13,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF0077C2",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFE0F7FA",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFB2EBF2",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FFE0F7FA",
@@ -34,7 +33,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FF01579B",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF001F29",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF003341",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFE0F7FA",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FF80DEEA",
@@ -64,7 +62,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF388E3C",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFF1F8E9",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFDCEDC8",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF1B5E20",
@@ -85,7 +82,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FF1B5E20",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF122112",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF1A3A1A",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFF1F8E9",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFA5D6A7",
@@ -115,7 +111,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FFE64A19",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFFFF3E0",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFFFE0B2",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF3E2723", 
@@ -136,7 +131,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FFBF360C",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF211A13",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF4E342E",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFFFF3E0",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFFF9E80",
@@ -166,7 +160,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FFFF8F00",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFFFF8E1",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFFFECB3",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF424242",
@@ -187,7 +180,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FFC56000",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF261C00",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF403000",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFFFF8E1",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFFFD54F",
@@ -217,7 +209,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF827717",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFF9FBE7",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFF0F4C3",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF33691E",
@@ -238,7 +229,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FF558B2F",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF1A1C1A",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF2E352E",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFF9FBE7",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFDCE775",
@@ -268,7 +258,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF607D8B",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFECEFF1",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFCFD8DC",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF263238",
@@ -289,7 +278,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FF455A64",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF263238",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF37474F",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFECEFF1",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFB0BEC5",
@@ -319,7 +307,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF795548",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFFBE9E7",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFFFDCC1",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF4E342E",
@@ -340,7 +327,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FF5D4037",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF261F1C",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF4E342E",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFFBE9E7",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFFFCCBC",
@@ -370,7 +356,6 @@ object BundledThemes {
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF7E57C2",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFF3E5F5",
-                AppConstants.ColorKeys.LIGHT_FONDO_SECCIONES to "#FFE1BEE7",
                 AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM to "#FF000000",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR to "#FF4A148C",
@@ -391,7 +376,6 @@ object BundledThemes {
             "darkTheme" to mapOf(
                 AppConstants.ColorKeys.DARK_CABECERA to "#FF673AB7",
                 AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND to "#FF1E122A",
-                AppConstants.ColorKeys.DARK_FONDO_SECCIONES to "#FF311B92",
                 AppConstants.ColorKeys.DARK_TEXT_SYSTEM to "#FFF3E5F5",
                 AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY to "#FFFF8A80",
                 AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR to "#FFCE93D8",
