@@ -38,7 +38,7 @@ data class CustomColors(
     val miniMonthTodayHighlightBackground: Color,
     val miniMonthDayNumberNormal: Color
 ) {
-    // Cálculo automático del fondo de secciones (15% de variación respecto al fondo)
+    // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
     val fondoSecciones: Color
         get() {
             val r = (settingsBackground.red * 255).toInt()
@@ -46,8 +46,8 @@ data class CustomColors(
             val b = (settingsBackground.blue * 255).toInt()
             val alpha = (settingsBackground.alpha * 255).toInt()
 
-            // Usamos la lógica de contraste del proyecto para decidir dirección
-            val factor = if (isColorDark(settingsBackground, Color.Black)) 38 else -38
+            val isBackgroundDark = isColorDark(settingsBackground, Color.Black)
+            val factor = if (isBackgroundDark) 25 else -25 // 10% de 255 es aprox 25
 
             val newR = (r + factor).coerceIn(0, 255)
             val newG = (g + factor).coerceIn(0, 255)
@@ -56,19 +56,17 @@ data class CustomColors(
             return Color(newR, newG, newB, alpha)
         }
 
-    // Cálculo automático del fondo de diálogos (10% más claro que el fondo de pantalla)
+    // Cálculo automático del fondo de diálogos
     val fondoDialogos: Color
         get() {
-            val r = (settingsBackground.red * 255).toInt()
-            val g = (settingsBackground.green * 255).toInt()
-            val b = (settingsBackground.blue * 255).toInt()
-            val alpha = (settingsBackground.alpha * 255).toInt()
-            
-            val newR = (r + 25).coerceAtMost(255)
-            val newG = (g + 25).coerceAtMost(255)
-            val newB = (b + 25).coerceAtMost(255)
-            
-            return Color(newR, newG, newB, alpha)
+            val isBackgroundDark = isColorDark(settingsBackground, Color.Black)
+            return if (isBackgroundDark) {
+                // En modo oscuro, el diálogo usa el color elevado de las secciones
+                fondoSecciones
+            } else {
+                // En modo claro, el diálogo usa el mismo fondo que la pantalla
+                settingsBackground
+            }
         }
 }
 

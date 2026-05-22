@@ -19,7 +19,7 @@ object AppConstants {
     const val KEY_FAVORITE_CALENDAR_ID = "favorite_calendar_id"
     const val KEY_HOLIDAY_ADJUSTMENTS = "adjustments"
     const val KEY_LOGGING_ENABLED = "logging_enabled_key"
-    const val CURRENT_THEME_VERSION = 6
+    const val CURRENT_THEME_VERSION = 7
     const val APP_SIGNATURE = "Calendario"
 
     object ColorKeys {
