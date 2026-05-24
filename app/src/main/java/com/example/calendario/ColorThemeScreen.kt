@@ -399,19 +399,3 @@ private fun EffectColorThemeRow(
 private fun ColorBox(color: Color, onClick: () -> Unit) {
     Box(modifier = Modifier.size(32.dp).background(color, CircleShape).border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), CircleShape).clickable(onClick = onClick))
 }
-
-@Composable
-private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
-    val titleColor = lerp(
-        start = CalendarioTheme.colors.cabecera,
-        stop = CalendarioTheme.colors.textSystem,
-        fraction = 0.4f
-    )
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        color = titleColor,
-        modifier = modifier
-    )
-}

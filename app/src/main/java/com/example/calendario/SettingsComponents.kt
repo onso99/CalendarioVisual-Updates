@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 
 @Composable
-internal fun SectionTitle(text: String) {
+fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     val titleColor = lerp(
         start = CalendarioTheme.colors.cabecera,
         stop = CalendarioTheme.colors.textSystem,
@@ -37,7 +37,7 @@ internal fun SectionTitle(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+        modifier = modifier.padding(bottom = 8.dp, top = 16.dp),
         fontWeight = FontWeight.Bold,
         color = titleColor
     )

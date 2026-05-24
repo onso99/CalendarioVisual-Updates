@@ -77,12 +77,12 @@
     <string name="mode">Modo</string>
     <string name="start_of_week">Comienza semana</string>
     <string name="week_in_year_view">Número semana</string>
-    <string name="customize_theme">Apariencia</string>
+    <string name="customize_theme">Estilo</string>
     <string name="light_theme_prefix">Claro: </string>
     <string name="dark_theme_prefix">Oscuro: </string>
     <string name="customize_colors">Personalizar colores</string>
-    <string name="import_theme">Importar tema…</string>
-    <string name="export_theme">Exportar tema…</string>
+    <string name="import_theme">Cargar tema…</string>
+    <string name="export_theme">Guardar tema…</string>
     <string name="widget_event_count">Número de eventos: %1$d</string>
     <string name="widget_text_adjustment">Ajuste de texto</string>
     <string name="background_color">Color de fondo</string>
@@ -95,9 +95,9 @@
     <string name="legacy_theme_detected_title">Tema Antiguo Detectado</string>
     <string name="legacy_theme_detected_message">El tema que estás importando es de una versión anterior. Algunos colores pueden no aplicarse correctamente. ¿Deseas continuar?</string>
     <string name="apply_anyway">Aplicar Igualmente</string>
-    <string name="export_theme_title">Exportar Tema</string>
+    <string name="export_theme_title">Guardar Tema</string>
     <string name="theme_name">Nombre del tema</string>
-    <string name="export">Exportar</string>
+    <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vista de calendario</string>
     <string name="help_calendar_views_1">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas pulsando en el año de la cabecera.</string>
     <string name="help_calendar_views_2">En la vista mensual, desliza a izquierda o derecha para cambiar de mes. La flecha superior izquierda de la cabecera volverá al mes actual.</string>
@@ -169,7 +169,7 @@
     <string name="mini_normal_day">Día normal</string>
     <string name="read_only_event_info">Evento de solo lectura. No se puede modificar.</string>
     <string name="calendar_source">Calendario: %1$s</string>
-    <string name="predefined_themes">Temas predefinidos</string>
+    <string name="predefined_themes">Temas</string>
     <string name="themes_v6">Temas</string>
 
     <string name="permission_denied_title">Permiso Denegado</string>

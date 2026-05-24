@@ -419,60 +419,7 @@ fun SettingsScreen(
                         )
                     )
                 }
-            }
-
-            // --- 2. Appearance Section ---
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp, top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val titleColor = lerp(
-                    start = CalendarioTheme.colors.cabecera,
-                    stop = CalendarioTheme.colors.textSystem,
-                    fraction = 0.4f
-                )
-                Text(
-                    text = stringResource(id = R.string.customize_theme),
-                    style = typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = titleColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.weight(1f))
-
-                if (lightThemeName == darkThemeName) {
-                    Text(
-                        text = truncateThemeName(lightThemeName!!, 20),
-                        color = titleColor,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.End,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = 16.dp),
-                        fontSize = 13.sp
-                    )
-                } else {
-                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
-                            Text(truncateThemeName(lightThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
-                            Text(truncateThemeName(darkThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
-                        }
-                    }
-                }
-            }
-
-            Column(modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(CalendarioTheme.colors.fondoSecciones)
-                .padding(horizontal = 16.dp)) {
-                
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -491,15 +438,50 @@ fun SettingsScreen(
                         textAlign = TextAlign.End
                     )
                 }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+            }
+
+            // --- 2. Estilo Section ---
+            SectionTitle(text = stringResource(id = R.string.customize_theme))
+
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
                 
-                ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
+                // Temas con el nombre a la derecha
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .clickable { showBundledThemesDialog = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    val titleColor = lerp(start = CalendarioTheme.colors.cabecera, stop = CalendarioTheme.colors.textSystem, fraction = 0.4f)
+                    if (lightThemeName == darkThemeName) {
+                        Text(text = truncateThemeName(lightThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 16.dp), fontSize = 14.sp)
+                    } else {
+                        Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 12.sp)
+                                Text(truncateThemeName(lightThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 12.sp)
+                                Text(truncateThemeName(darkThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+                
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow(text = stringResource(id = R.string.predefined_themes)) { showBundledThemesDialog = true }
+                ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
+                ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
             }
 
             // --- 3. Holidays Section ---
