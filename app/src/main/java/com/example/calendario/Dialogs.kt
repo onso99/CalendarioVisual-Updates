@@ -169,31 +169,6 @@ fun ThemeSelectionDialog(
     )
 }
 
-@Composable
-fun RestoreDefaultColorsDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.restore_colors_title), fontWeight = FontWeight.Bold) },
-        text = { Text(stringResource(id = R.string.restore_colors_confirmation)) },
-        confirmButton = {
-            Button(
-                onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
-                )
-            ) { Text(stringResource(id = R.string.restore)) }
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmDeleteDialog(

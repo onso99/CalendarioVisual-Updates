@@ -135,9 +135,16 @@ fun ColorThemeScreen(
                                 pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) }
                                 pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
                                 putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, monthlyCalendarEffect)
-                                // Al guardar un cambio, se anula el nombre del tema predefinido
-                                remove(AppConstants.KEY_LIGHT_THEME_NAME)
-                                remove(AppConstants.KEY_DARK_THEME_NAME)
+                                
+                                // Regla 10+3 para temas modificados
+                                val lightName = prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano") ?: "Océano"
+                                if (!lightName.endsWith("***")) {
+                                    putString(AppConstants.KEY_LIGHT_THEME_NAME, lightName.take(10) + "***")
+                                }
+                                val darkName = prefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano") ?: "Océano"
+                                if (!darkName.endsWith("***")) {
+                                    putString(AppConstants.KEY_DARK_THEME_NAME, darkName.take(10) + "***")
+                                }
                             }
                             onThemeUpdated()
                             onBackPress()

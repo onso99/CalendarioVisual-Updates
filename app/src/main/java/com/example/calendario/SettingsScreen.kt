@@ -112,11 +112,10 @@ fun SettingsScreen(
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
 
-    var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)) }
-    var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)) }
+    var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano")) }
+    var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano")) }
 
     // --- Dialog States ---
-    var showRestoreDialog by remember { mutableStateOf(false) }
     var showLegacyThemeDialog by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
@@ -444,9 +443,9 @@ fun SettingsScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
-                if (lightThemeName != null && lightThemeName == darkThemeName) {
+                if (lightThemeName == darkThemeName) {
                     Text(
-                        text = lightThemeName!!,
+                        text = truncateThemeName(lightThemeName!!, 20),
                         color = titleColor,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.End,
@@ -457,17 +456,13 @@ fun SettingsScreen(
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 16.dp)) {
-                        lightThemeName?.let {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
-                                Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
-                            }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(id = R.string.light_theme_prefix), color = titleColor, fontSize = 13.sp)
+                            Text(truncateThemeName(lightThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                         }
-                        darkThemeName?.let {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
-                                Text(it, color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
-                            }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(id = R.string.dark_theme_prefix), color = titleColor, fontSize = 13.sp)
+                            Text(truncateThemeName(darkThemeName!!, 20), color = titleColor, fontWeight = FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp)
                         }
                     }
                 }
@@ -505,8 +500,6 @@ fun SettingsScreen(
                 ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                ActionRow(stringResource(id = R.string.restore_default_colors)) { showRestoreDialog = true }
             }
 
             // --- 3. Holidays Section ---
@@ -810,35 +803,6 @@ fun SettingsScreen(
     }
     if (showWidgetBackgroundColorPalette) {
         AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false })
-    }
-
-    if (showRestoreDialog) {
-        RestoreDefaultColorsDialog(
-            onDismiss = { showRestoreDialog = false },
-            onConfirm = {
-                // --- Restore App Theme ---
-                appPrefs.edit(commit = true) {
-                    val keysToRemove = appPrefs.all.keys.filter { it.startsWith("light_") || it.startsWith("dark_") }
-                    for (key in keysToRemove) {
-                        remove(key)
-                    }
-                    remove(AppConstants.KEY_LIGHT_THEME_NAME)
-                    remove(AppConstants.KEY_DARK_THEME_NAME)
-                    putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
-                }
-                onThemeUpdated() // This recomposes the whole app with default colors
-
-                // --- Restore Widget Theme (UI Only) ---
-                pendingEventColor = Color(WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-                pendingTodayEventColor = Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-                pendingWidgetBackgroundColor = Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
-                pendingFontFamily = WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
-                pendingFontBold = WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
-
-                Toast.makeText(context, R.string.colors_restored, Toast.LENGTH_SHORT).show()
-                showRestoreDialog = false
-            }
-        )
     }
 
     if (showDiscardChangesDialog) {
@@ -1160,4 +1124,12 @@ private fun getFileName(context: Context, uri: Uri): String {
         }
     }
     return fileName.substringBeforeLast('.')
+}
+
+fun truncateThemeName(name: String, limit: Int): String {
+    return if (name.length > limit) {
+        name.take(limit - 3) + "..."
+    } else {
+        name
+    }
 }

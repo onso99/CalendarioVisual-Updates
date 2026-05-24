@@ -41,19 +41,15 @@ data class CustomColors(
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
     val fondoSecciones: Color
         get() {
-            val r = (settingsBackground.red * 255).toInt()
-            val g = (settingsBackground.green * 255).toInt()
-            val b = (settingsBackground.blue * 255).toInt()
-            val alpha = (settingsBackground.alpha * 255).toInt()
-
             val isBackgroundDark = isColorDark(settingsBackground, Color.Black)
-            val factor = if (isBackgroundDark) 25 else -25 // 10% de 255 es aprox 25
+            val factor = if (isBackgroundDark) 0.1f else -0.1f // 10% de variación
 
-            val newR = (r + factor).coerceIn(0, 255)
-            val newG = (g + factor).coerceIn(0, 255)
-            val newB = (b + factor).coerceIn(0, 255)
-            
-            return Color(newR, newG, newB, alpha)
+            return Color(
+                red = (settingsBackground.red + factor).coerceIn(0f, 1f),
+                green = (settingsBackground.green + factor).coerceIn(0f, 1f),
+                blue = (settingsBackground.blue + factor).coerceIn(0f, 1f),
+                alpha = settingsBackground.alpha
+            )
         }
 
     // Cálculo automático del fondo de diálogos

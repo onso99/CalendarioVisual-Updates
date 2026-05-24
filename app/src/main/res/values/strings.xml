@@ -34,9 +34,6 @@
     <string name="accept">Aceptar</string>
     <string name="select_mode_title">Seleccionar Modo</string>
     <string name="custom_selected">Seleccionado</string>
-    <string name="restore_colors_title">Restaurar Colores</string>
-    <string name="restore_colors_confirmation">¿Estás seguro de que quieres restaurar todos los colores a sus valores por defecto? Las palabras clave no se verán afectadas.</string>
-    <string name="restore">Restaurar</string>
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">¿Seguro que quieres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
@@ -86,14 +83,12 @@
     <string name="customize_colors">Personalizar colores</string>
     <string name="import_theme">Importar tema…</string>
     <string name="export_theme">Exportar tema…</string>
-    <string name="restore_default_colors">Restaurar colores</string>
     <string name="widget_event_count">Número de eventos: %1$d</string>
     <string name="widget_text_adjustment">Ajuste de texto</string>
     <string name="background_color">Color de fondo</string>
     <string name="event_color">Color eventos</string>
     <string name="today_event_color">Eventos de hoy</string>
     <string name="about">Acerca de</string>
-    <string name="colors_restored">Los colores han sido restaurados.</string>
     <string name="discard_changes_title">Descartar cambios</string>
     <string name="discard_changes_confirmation">Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?</string>
     <string name="discard">Descartar</string>

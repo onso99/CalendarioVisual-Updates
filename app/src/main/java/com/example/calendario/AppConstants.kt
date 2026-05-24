@@ -65,44 +65,44 @@ object AppConstants {
     }
 
     object LightColors {
-        val cabecera = Color(0xFF2196F3)
-        val settingsBackground = Color(0xFFF6F6FF)
+        val cabecera = Color(0xFF0077C2)
+        val settingsBackground = Color(0xFFE0F7FA)
         val textSystem = Color(0xFF000000)
-        val textSundayHoliday = Color(0xFFFF0000)
+        val textSundayHoliday = Color(0xFFD32F2F)
         val textBirthday = Color(0xFF0000FF)
-        val textEventDefault = Color.Black
-        val textEvent1 = Color(0xFF008000) // Verde
-        val textEvent2 = Color(0xFFFF00FF) // Magenta
-        val eventListTitleColor = Color(0xFF0A4C87)
-        val todayHighlightColor = Color(0x91FFEA82)
-        val monthlyCalendarGridBackground = Color(0xFF1F93F2)
-        val monthlyCalendarGridEffect = Color(0x808FC7BA)
+        val textEventDefault = Color(0xFF000000)
+        val textEvent1 = Color(0xFF008000)
+        val textEvent2 = Color(0xFFFFFF00FF)
+        val eventListTitleColor = Color(0xFFE0F7FA)
+        val todayHighlightColor = Color(0x80B2EBF2)
+        val monthlyCalendarGridBackground = Color(0xFF81D4FA)
+        val monthlyCalendarGridEffect = Color(0xFF0077C2)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
-        val monthlyCalendarTodayCellBorder = Color(0x910000FF)
+        val monthlyCalendarTodayCellBorder = Color(0xFF0077C2)
         val monthlyCalendarDayNumberNormal = Color(0xFF000000)
-        val monthlyCalendarHeaderBackground = Color(0xFFADD1FA)
-        val miniMonthTodayHighlightBackground = Color(0x262196F3)
+        val monthlyCalendarHeaderBackground = Color(0xFF4FC3F7)
+        val miniMonthTodayHighlightBackground = Color(0x4081D4FA)
         val miniMonthDayNumberNormal = Color(0xE6000000)
     }
 
     object DarkColors {
-        val cabecera = Color(0xFF1051B4)
-        val settingsBackground = Color(0xFF051023)
-        val textSystem = Color(0xFFE0E0E0)
-        val textSundayHoliday = Color(0xFFE57373)
-        val textBirthday = Color(0xFFAECBFF)
-        val textEventDefault = Color(0xFFE0E0E0)
-        val textEvent1 = Color(0xFF66BB6A) // Verde claro
-        val textEvent2 = Color(0xFFF06292) // Rosa
-        val eventListTitleColor = Color(0xFFCF9A21)
-        val todayHighlightColor = Color(0x35CF9A21)
-        val monthlyCalendarGridBackground = Color(0x713653FF)
-        val monthlyCalendarGridEffect = Color(0x80005285)
-        val monthlyCalendarDayCellBackground = Color(0xFF243147) // Azul medianoche integrado con la cabecera
-        val monthlyCalendarTodayCellBorder = Color(0x91FF3E00)
-        val monthlyCalendarDayNumberNormal = Color(0xFFE0E0E0)
-        val monthlyCalendarHeaderBackground = Color(0xFF0060BF)
-        val miniMonthTodayHighlightBackground = Color(0x332173ED)
-        val miniMonthDayNumberNormal = Color(0xE6E0E0E0)
+        val cabecera = Color(0xFF01579B)
+        val settingsBackground = Color(0xFF001F29)
+        val textSystem = Color(0xFFE0F7FA)
+        val textSundayHoliday = Color(0xFFFFFF8A80)
+        val textBirthday = Color(0xFF82B1FF)
+        val textEventDefault = Color(0xFFE0F7FA)
+        val textEvent1 = Color(0xFF69F0AE)
+        val textEvent2 = Color(0xFFFFFF80AB)
+        val eventListTitleColor = Color(0xFF80DEEA)
+        val todayHighlightColor = Color(0x804FC3F7)
+        val monthlyCalendarGridBackground = Color(0xFF004D40)
+        val monthlyCalendarGridEffect = Color(0xFF01579B)
+        val monthlyCalendarDayCellBackground = Color(0xFF003341)
+        val monthlyCalendarTodayCellBorder = Color(0xFF4FC3F7)
+        val monthlyCalendarDayNumberNormal = Color(0xFFE0F7FA)
+        val monthlyCalendarHeaderBackground = Color(0xFF0077C2)
+        val miniMonthTodayHighlightBackground = Color(0x4001579B)
+        val miniMonthDayNumberNormal = Color(0xE6E0F7FA)
     }
 }
