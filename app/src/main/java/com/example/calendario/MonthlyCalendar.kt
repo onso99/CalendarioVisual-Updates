@@ -89,14 +89,15 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        val onHeaderColor = if (isColorDark(CalendarioTheme.colors.monthlyCalendarHeaderBackground, CalendarioTheme.colors.monthlyCalendarGridBackground)) Color.White else Color.Black
+        val headerBg = CalendarioTheme.colors.monthlyCalendarHeaderBackground
+        val onHeaderColor = if (isColorDark(headerBg, CalendarioTheme.colors.monthlyCalendarGridBackground)) Color.White else Color.Black
         Row(Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { day ->
                 Box(
                     Modifier
                         .weight(1f)
                         .padding(1.dp)
-                        .background(CalendarioTheme.colors.monthlyCalendarHeaderBackground),
+                        .background(headerBg),
                     Alignment.Center
                 ) {
                     val dayText = remember(day, Locale.getDefault()) {

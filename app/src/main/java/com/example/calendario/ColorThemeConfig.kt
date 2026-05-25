@@ -18,11 +18,9 @@ object ColorThemeConfig {
         // --- CATEGORÍA: GENERAL ---
         ColorThemeItem(R.string.header_background, AppConstants.ColorKeys.LIGHT_CABECERA, AppConstants.ColorKeys.DARK_CABECERA, AppConstants.LightColors.cabecera, AppConstants.DarkColors.cabecera, "General"),
         ColorThemeItem(R.string.screen_background, AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND, AppConstants.LightColors.settingsBackground, AppConstants.DarkColors.settingsBackground, "General"),
-        ColorThemeItem(R.string.system_text, AppConstants.ColorKeys.LIGHT_TEXT_SYSTEM, AppConstants.ColorKeys.DARK_TEXT_SYSTEM, AppConstants.LightColors.textSystem, AppConstants.DarkColors.textSystem, "General"),
         ColorThemeItem(R.string.sundays_and_holidays, AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday, AppConstants.DarkColors.textSundayHoliday, "General"),
         
         // --- CATEGORÍA: LISTA DE EVENTOS ---
-        ColorThemeItem(R.string.title_text, AppConstants.ColorKeys.LIGHT_EVENT_LIST_TITLE_COLOR, AppConstants.ColorKeys.DARK_EVENT_LIST_TITLE_COLOR, AppConstants.LightColors.eventListTitleColor, AppConstants.DarkColors.eventListTitleColor, "Lista de Eventos"),
         ColorThemeItem(R.string.today_highlight_list, AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor, AppConstants.DarkColors.todayHighlightColor, "Lista de Eventos"),
         ColorThemeItem(0, "", "", Color.Transparent, Color.Transparent, "Lista de Eventos", isSeparator = true),
         ColorThemeItem(R.string.events, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_DEFAULT, AppConstants.ColorKeys.DARK_TEXT_EVENT_DEFAULT, AppConstants.LightColors.textEventDefault, AppConstants.DarkColors.textEventDefault, "Lista de Eventos"),
@@ -35,7 +33,6 @@ object ColorThemeConfig {
         ColorThemeItem(R.string.effect, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.LightColors.monthlyCalendarGridEffect, AppConstants.DarkColors.monthlyCalendarGridEffect, "Calendario Mensual"),
         ColorThemeItem(R.string.current_month_cell, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground, AppConstants.DarkColors.monthlyCalendarDayCellBackground, "Calendario Mensual"),
         ColorThemeItem(R.string.today_border, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppConstants.LightColors.monthlyCalendarTodayCellBorder, AppConstants.DarkColors.monthlyCalendarTodayCellBorder, "Calendario Mensual"),
-        ColorThemeItem(R.string.week_day_header, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppConstants.LightColors.monthlyCalendarHeaderBackground, AppConstants.DarkColors.monthlyCalendarHeaderBackground, "Calendario Mensual"),
 
         // --- CATEGORÍA: CALENDARIO ANUAL (MINI) ---
         ColorThemeItem(R.string.mini_today_highlight, AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppConstants.LightColors.miniMonthTodayHighlightBackground, AppConstants.DarkColors.miniMonthTodayHighlightBackground, "Calendario Anual")

@@ -151,7 +151,6 @@
     <string name="dark_theme">Oscuro</string>
     <string name="header_background">Fondo cabecera</string>
     <string name="screen_background">Fondo pantallas</string>
-    <string name="system_text">Texto sistema</string>
     <string name="sundays_and_holidays">Domingos/Festivos</string>
     <string name="title_text">Texto del título</string>
     <string name="today_highlight_list">Resaltado día actual</string>
@@ -163,7 +162,6 @@
     <string name="effect">Efecto</string>
     <string name="current_month_cell">Celda del mes</string>
     <string name="today_border">Borde día actual</string>
-    <string name="week_day_header">Cabecera día de semana</string>
     <string name="mini_today_highlight">Resaltado día actual</string>
     <string name="read_only_event_info">Evento de solo lectura. No se puede modificar.</string>
     <string name="calendar_source">Calendario: %1$s</string>

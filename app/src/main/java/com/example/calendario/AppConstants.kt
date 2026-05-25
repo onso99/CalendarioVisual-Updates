@@ -26,7 +26,6 @@ object AppConstants {
         // Light Theme
         const val LIGHT_CABECERA = "light_cabecera"
         const val LIGHT_SETTINGS_BACKGROUND = "light_settings_background"
-        const val LIGHT_TEXT_SYSTEM = "light_text_system"
         const val LIGHT_TEXT_SUNDAY_HOLIDAY = "light_text_sunday_holiday"
         const val LIGHT_TEXT_BIRTHDAY = "light_text_birthday"
         const val LIGHT_TEXT_EVENT_DEFAULT = "light_text_event_default"
@@ -38,13 +37,11 @@ object AppConstants {
         const val LIGHT_MONTHLY_CALENDAR_GRID_EFFECT = "light_monthly_calendar_grid_effect"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
         const val LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER = "light_monthly_calendar_today_cell_border"
-        const val LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND = "light_monthly_calendar_header_background"
         const val LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "light_mini_month_today_highlight_background"
 
         // Dark Theme
         const val DARK_CABECERA = "dark_cabecera"
         const val DARK_SETTINGS_BACKGROUND = "dark_settings_background"
-        const val DARK_TEXT_SYSTEM = "dark_text_system"
         const val DARK_TEXT_SUNDAY_HOLIDAY = "dark_text_sunday_holiday"
         const val DARK_TEXT_BIRTHDAY = "dark_text_birthday"
         const val DARK_TEXT_EVENT_DEFAULT = "dark_text_event_default"
@@ -56,14 +53,12 @@ object AppConstants {
         const val DARK_MONTHLY_CALENDAR_GRID_EFFECT = "dark_monthly_calendar_grid_effect"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
         const val DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER = "dark_monthly_calendar_today_cell_border"
-        const val DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND = "dark_monthly_calendar_header_background"
         const val DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "dark_mini_month_today_highlight_background"
     }
 
     object LightColors {
         val cabecera = Color(0xFF0077C2)
         val settingsBackground = Color(0xFFF0F9FE)
-        val textSystem = Color(0xFF000000)
         val textSundayHoliday = Color(0xFFD32F2F)
         val textBirthday = Color(0xFF0000FF)
         val textEventDefault = Color(0xFF000000)
@@ -75,14 +70,12 @@ object AppConstants {
         val monthlyCalendarGridEffect = Color(0xFF38A391)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
         val monthlyCalendarTodayCellBorder = Color(0xFFF0605C)
-        val monthlyCalendarHeaderBackground = Color(0xFF4FC3F7)
         val miniMonthTodayHighlightBackground = Color(0x4081D4FA)
     }
 
     object DarkColors {
         val cabecera = Color(0xFF01579B)
         val settingsBackground = Color(0xFF001F29)
-        val textSystem = Color(0xFFE0F7FA)
         val textSundayHoliday = Color(0xFFFF8A80)
         val textBirthday = Color(0xFF82B1FF)
         val textEventDefault = Color(0xFFE0F7FA)
