@@ -130,41 +130,35 @@ fun MonthlyCalendar(
                 week.forEach { (date, isCurrentMonth) ->
                     val isToday = date == today && isCurrentMonth
                     val isPastDay = isCurrentMonth && date.isBefore(today)
-                    val isDark = isColorDark(CalendarioTheme.colors.monthlyCalendarDayCellBackground, MaterialTheme.colorScheme.background)
+                    val isInactive = !isCurrentMonth || isPastDay
+                    
+                    val baseCellBackground = CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                    
+                    // Cálculo de fondo: Respetamos el color del tema, pero atenuamos si es inactivo
+                    val cellBackground = if (isInactive) {
+                        // Mezcla dinámica: Oscurecemos si es claro, aclaramos si es oscuro (10% de variación)
+                        val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
+                        overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
+                    } else {
+                        baseCellBackground
+                    }
 
                     val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
                     val dayHasEventsWithTitle = dayEvents.any { it.title.isNotBlank() }
 
-                    val dayColor = when {
-                        !isCurrentMonth -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.20f)
-                        else -> {
-                            val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                            val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
-                            val baseColor = when {
-                                isHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                else -> CalendarioTheme.colors.monthlyCalendarDayNumberNormal
-                            }
-                            // Atenuamos el número si el día es pasado (tanto en claro como en oscuro)
-                            if (isPastDay) baseColor.copy(alpha = 0.5f) else baseColor
+                    val dayColor = run {
+                        val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
+                        val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
+                        
+                        val baseColor = when {
+                            // Punto 3: Días festivos respetan 100% el color del tema
+                            isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
+                            // Punto 2: Días normales cambian automático según el fondo
+                            else -> if (isColorDark(cellBackground, Color.Transparent)) Color.White else Color.Black
                         }
-                    }
-                    val cellBackground = if (isDark) {
-                        // EN MODO OSCURO: 
-                        val base = CalendarioTheme.colors.monthlyCalendarDayCellBackground
-                        if (!isCurrentMonth || isPastDay) {
-                            // Días inactivos: Más oscuros (20% negro) para que sea perceptible
-                            Color.Black.copy(alpha = 0.20f).compositeOver(base)
-                        } else base
-                    } else {
-                        // EN MODO CLARO: 
-                        if (!isCurrentMonth || isPastDay) {
-                            // Días inactivos: Tinte automático basado en la cabecera (8%)
-                            CalendarioTheme.colors.cabecera.copy(alpha = 0.08f).compositeOver(Color.White)
-                        } else {
-                            // Días activos: Blanco puro (independiente del tema para máxima limpieza)
-                            Color.White
-                        }
+                        
+                        // Punto 4: Días pasados (o de otros meses) con 50% de opacidad
+                        if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
                     }
 
                     Box(

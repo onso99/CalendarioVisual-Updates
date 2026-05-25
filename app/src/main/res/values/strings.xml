@@ -163,10 +163,8 @@
     <string name="effect">Efecto</string>
     <string name="current_month_cell">Celda del mes</string>
     <string name="today_border">Borde día actual</string>
-    <string name="normal_day_number">Número de día</string>
     <string name="week_day_header">Cabecera día de semana</string>
     <string name="mini_today_highlight">Resaltado día actual</string>
-    <string name="mini_normal_day">Día normal</string>
     <string name="read_only_event_info">Evento de solo lectura. No se puede modificar.</string>
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temas</string>

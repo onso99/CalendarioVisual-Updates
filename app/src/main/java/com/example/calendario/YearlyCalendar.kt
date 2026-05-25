@@ -219,9 +219,8 @@ fun MiniMonthCalendar(
                                     isToday -> {
                                         if (isColorDark(CalendarioTheme.colors.miniMonthTodayHighlightBackground, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black
                                     }
-                                    isHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                    isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                    else -> CalendarioTheme.colors.miniMonthDayNumberNormal
+                                    isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
+                                    else -> if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.Black)) Color.White else Color.Black
                                 }
                                 val fontWeightText = if (isToday) FontWeight.Bold else FontWeight.Normal
 

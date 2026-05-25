@@ -34,9 +34,7 @@ data class CustomColors(
     val monthlyCalendarDayCellBackground: Color,
     val monthlyCalendarTodayCellBorder: Color,
     val monthlyCalendarHeaderBackground: Color,
-    val monthlyCalendarDayNumberNormal: Color,
-    val miniMonthTodayHighlightBackground: Color,
-    val miniMonthDayNumberNormal: Color
+    val miniMonthTodayHighlightBackground: Color
 ) {
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
     val fondoSecciones: Color
@@ -83,9 +81,7 @@ val LocalCustomColors = staticCompositionLocalOf {
         monthlyCalendarDayCellBackground = AppConstants.LightColors.monthlyCalendarDayCellBackground,
         monthlyCalendarTodayCellBorder = AppConstants.LightColors.monthlyCalendarTodayCellBorder,
         monthlyCalendarHeaderBackground = AppConstants.LightColors.monthlyCalendarHeaderBackground,
-        monthlyCalendarDayNumberNormal = AppConstants.LightColors.monthlyCalendarDayNumberNormal,
-        miniMonthTodayHighlightBackground = AppConstants.LightColors.miniMonthTodayHighlightBackground,
-        miniMonthDayNumberNormal = AppConstants.LightColors.miniMonthDayNumberNormal
+        miniMonthTodayHighlightBackground = AppConstants.LightColors.miniMonthTodayHighlightBackground
     )
 }
 
@@ -175,9 +171,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.DarkColors.monthlyCalendarDayCellBackground.toArgb())),
             monthlyCalendarTodayCellBorder = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppConstants.DarkColors.monthlyCalendarTodayCellBorder.toArgb())),
             monthlyCalendarHeaderBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppConstants.DarkColors.monthlyCalendarHeaderBackground.toArgb())),
-            monthlyCalendarDayNumberNormal = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppConstants.DarkColors.monthlyCalendarDayNumberNormal.toArgb())),
-            miniMonthTodayHighlightBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppConstants.DarkColors.miniMonthTodayHighlightBackground.toArgb())),
-            miniMonthDayNumberNormal = Color(getSafeInt(AppConstants.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL, AppConstants.DarkColors.miniMonthDayNumberNormal.toArgb()))
+            miniMonthTodayHighlightBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppConstants.DarkColors.miniMonthTodayHighlightBackground.toArgb()))
         )
     } else {
         CustomColors(
@@ -196,9 +190,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground.toArgb())),
             monthlyCalendarTodayCellBorder = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER, AppConstants.LightColors.monthlyCalendarTodayCellBorder.toArgb())),
             monthlyCalendarHeaderBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND, AppConstants.LightColors.monthlyCalendarHeaderBackground.toArgb())),
-            monthlyCalendarDayNumberNormal = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL, AppConstants.LightColors.monthlyCalendarDayNumberNormal.toArgb())),
-            miniMonthTodayHighlightBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppConstants.LightColors.miniMonthTodayHighlightBackground.toArgb())),
-            miniMonthDayNumberNormal = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL, AppConstants.LightColors.miniMonthDayNumberNormal.toArgb()))
+            miniMonthTodayHighlightBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND, AppConstants.LightColors.miniMonthTodayHighlightBackground.toArgb()))
         )
     }
 }

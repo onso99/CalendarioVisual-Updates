@@ -199,8 +199,6 @@ object BackupManager {
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_HEADER_BACKGROUND,
-            AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL,
-            AppConstants.ColorKeys.LIGHT_MINI_MONTH_DAY_NUMBER_NORMAL,
             AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND,
             AppConstants.ColorKeys.DARK_CABECERA,
             AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND,
@@ -217,8 +215,6 @@ object BackupManager {
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_HEADER_BACKGROUND,
-            AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_NUMBER_NORMAL,
-            AppConstants.ColorKeys.DARK_MINI_MONTH_DAY_NUMBER_NORMAL,
             AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND -> {
                 val intValue = when (value) {
                     is Number -> value.toInt()
