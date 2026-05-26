@@ -25,24 +25,11 @@ data class CustomColors(
     val textBirthday: Color,
     val textEvent1: Color,
     val textEvent2: Color,
+    val todayHighlightColor: Color,
     val monthlyCalendarGridBackground: Color,
     val monthlyCalendarGridEffect: Color,
     val monthlyCalendarDayCellBackground: Color,
 ) {
-    // Cálculo automático del resaltado de hoy en la lista (Tinte del color del tema con transparencia)
-    val todayHighlightColor: Color
-        get() {
-            val isBgDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
-            return if (isBgDark) {
-                val hsl = FloatArray(3)
-                ColorUtils.colorToHSL(cabecera.toArgb(), hsl)
-                hsl[2] = (hsl[2] + 0.20f).coerceAtMost(0.9f) 
-                Color(ColorUtils.HSLToColor(hsl)).copy(alpha = 0.25f)
-            } else {
-                cabecera.copy(alpha = 0.15f)
-            }
-        }
-
     // Cálculo automático del borde del día actual en el calendario anual
     val miniMonthTodayCellBorder: Color
         get() {
@@ -118,6 +105,7 @@ val LocalCustomColors = staticCompositionLocalOf {
         textBirthday = AppConstants.LightColors.textBirthday,
         textEvent1 = AppConstants.LightColors.textEvent1,
         textEvent2 = AppConstants.LightColors.textEvent2,
+        todayHighlightColor = AppConstants.LightColors.todayHighlightColor,
         monthlyCalendarGridBackground = AppConstants.LightColors.monthlyCalendarGridBackground,
         monthlyCalendarGridEffect = AppConstants.LightColors.monthlyCalendarGridEffect,
         monthlyCalendarDayCellBackground = AppConstants.LightColors.monthlyCalendarDayCellBackground
@@ -201,6 +189,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             textBirthday = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_BIRTHDAY, AppConstants.DarkColors.textBirthday.toArgb())),
             textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_1, AppConstants.DarkColors.textEvent1.toArgb())),
             textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_2, AppConstants.DarkColors.textEvent2.toArgb())),
+            todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.DarkColors.todayHighlightColor.toArgb())),
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.DarkColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.DarkColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.DarkColors.monthlyCalendarDayCellBackground.toArgb()))
@@ -213,6 +202,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             textBirthday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday.toArgb())),
             textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.LightColors.textEvent1.toArgb())),
             textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.LightColors.textEvent2.toArgb())),
+            todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor.toArgb())),
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.LightColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.LightColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground.toArgb()))
