@@ -390,12 +390,21 @@ fun CalendarioScreen(
                                     }
                                 }
                                 if (viewMode == CalendarViewMode.MONTHLY) {
+                                    val monthNameColor = run {
+                                        val cabeceraColor = CalendarioTheme.colors.cabecera
+                                        val hsl = FloatArray(3)
+                                        ColorUtils.colorToHSL(cabeceraColor.toArgb(), hsl)
+                                        val isDark = hsl[2] < 0.5f
+                                        hsl[2] = if (isDark) 0.82f else 0.22f // Suavizado para el nombre del mes
+                                        Color(ColorUtils.HSLToColor(hsl))
+                                    }
                                     Text(
                                         text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
+                                        color = monthNameColor,
                                         modifier = Modifier.padding(start = if (showHomeButton) 0.dp else 12.dp)
                                     )
                                 }
@@ -550,14 +559,11 @@ fun CalendarioScreen(
                                 
                                 val sampledColors = when (effectType) {
                                     "gradient", "radial", "none" -> {
-                                        // Analizamos los puntos 91%, 95% y 99% del degradado entre inicio y fin
                                         listOf(0.91f, 0.95f, 0.99f).map { fraction ->
                                             androidx.compose.ui.graphics.lerp(startColor, endColor, fraction)
                                         }
                                     }
                                     "sweep" -> {
-                                        // En sweep (degradado vertical de 3 colores), la zona inferior está entre midColor y endColor
-                                        // Muestreamos al final del segundo tramo (82% a 98% del total aprox)
                                         listOf(0.82f, 0.90f, 0.98f).map { fraction ->
                                             androidx.compose.ui.graphics.lerp(midColor, endColor, fraction)
                                         }
@@ -565,11 +571,18 @@ fun CalendarioScreen(
                                     else -> listOf(endColor)
                                 }
                                 
-                                val avgLuminance = sampledColors.map { 
-                                    ColorUtils.calculateLuminance(it.toArgb()) 
-                                }.average()
+                                val avgColorArgb = run {
+                                    val r = sampledColors.map { it.red }.average()
+                                    val g = sampledColors.map { it.green }.average()
+                                    val b = sampledColors.map { it.blue }.average()
+                                    Color(red = r.toFloat(), green = g.toFloat(), blue = b.toFloat()).toArgb()
+                                }
                                 
-                                if (avgLuminance < 0.5) Color.White else Color.Black
+                                val hsl = FloatArray(3)
+                                ColorUtils.colorToHSL(avgColorArgb, hsl)
+                                val isDark = hsl[2] < 0.5f
+                                hsl[2] = if (isDark) 0.80f else 0.25f // Suavizado para el título de la lista
+                                Color(ColorUtils.HSLToColor(hsl))
                             }
 
                             Text(

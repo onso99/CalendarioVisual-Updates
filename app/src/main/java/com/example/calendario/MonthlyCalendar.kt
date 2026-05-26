@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -23,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.graphics.ColorUtils
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -90,7 +91,13 @@ fun MonthlyCalendar(
             .padding(4.dp)
     ) {
         val headerBg = CalendarioTheme.colors.monthlyCalendarHeaderBackground
-        val onHeaderColor = if (isColorDark(headerBg, CalendarioTheme.colors.monthlyCalendarGridBackground)) Color.White else Color.Black
+        val onHeaderColor = run {
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(headerBg.toArgb(), hsl)
+            val isDark = hsl[2] < 0.5f
+            hsl[2] = if (isDark) 0.80f else 0.25f // Suavizado: 80% (oscuro) o 25% (claro)
+            Color(ColorUtils.HSLToColor(hsl))
+        }
         Row(Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { day ->
                 Box(
@@ -154,8 +161,14 @@ fun MonthlyCalendar(
                         val baseColor = when {
                             // Punto 3: Días festivos respetan 100% el color del tema
                             isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                            // Punto 2: Días normales cambian automático según el fondo
-                            else -> if (isColorDark(cellBackground, Color.Transparent)) Color.White else Color.Black
+                            // Punto 2: Días normales cambian automático según el fondo (con tintado suave)
+                            else -> {
+                                val hsl = FloatArray(3)
+                                ColorUtils.colorToHSL(cellBackground.toArgb(), hsl)
+                                val isDark = hsl[2] < 0.5f
+                                hsl[2] = if (isDark) 0.80f else 0.25f
+                                Color(ColorUtils.HSLToColor(hsl))
+                            }
                         }
                         
                         // Punto 4: Días pasados (o de otros meses) con 50% de opacidad
