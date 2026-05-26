@@ -122,7 +122,7 @@ fun MiniMonthCalendar(
     val dayHeadersFontSize = 8.sp
     val dayNumberFontSize = (9f / fontScale).sp
     val weekNumberFontSize = 8.sp
-    val weekNumberColumnWidth = if (showWeekNumber) 14.dp else 0.dp // Ancho condicional
+    val weekNumberColumnWidth = if (showWeekNumber) 14.dp else 0.dp
 
     Column(
         modifier.padding(2.dp),
@@ -217,11 +217,9 @@ fun MiniMonthCalendar(
                                 val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
 
                                 val textColor = when {
-                                    isToday -> {
-                                        if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.Black)) Color.White else Color.Black
-                                    }
+                                    isToday -> CalendarioTheme.colors.textSystem
                                     isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                    else -> if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.Black)) Color.White else Color.Black
+                                    else -> CalendarioTheme.colors.textSystem // Unificado con eventos normales
                                 }
                                 val fontWeightText = if (isToday) FontWeight.Bold else FontWeight.Normal
 
@@ -238,7 +236,7 @@ fun MiniMonthCalendar(
                                         )
                                     }
                                     Text(
-                                        "${date.dayOfMonth}",
+                                        text = date.dayOfMonth.toString(),
                                         fontSize = dayNumberFontSize,
                                         fontWeight = fontWeightText,
                                         color = textColor,

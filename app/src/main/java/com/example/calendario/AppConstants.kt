@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 object AppConstants {
     // SharedPreferences
-    const val APP_SETTINGS_PREFS_NAME = "app_settings_prefs"
+    const val APP_SETTINGS_PREFS_NAME = "app_preferences" // Sincronizado con BackupManager
     const val HOLIDAY_PREFS_NAME = "holiday_adjustments"
 
     // Preference Keys
@@ -30,6 +30,7 @@ object AppConstants {
         const val LIGHT_TEXT_BIRTHDAY = "light_text_birthday"
         const val LIGHT_TEXT_EVENT_1 = "light_text_event_1"
         const val LIGHT_TEXT_EVENT_2 = "light_text_event_2"
+        const val LIGHT_TODAY_HIGHLIGHT_COLOR = "light_today_highlight_color"
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_GRID_EFFECT = "light_monthly_calendar_grid_effect"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
@@ -41,6 +42,7 @@ object AppConstants {
         const val DARK_TEXT_BIRTHDAY = "dark_text_birthday"
         const val DARK_TEXT_EVENT_1 = "dark_text_event_1"
         const val DARK_TEXT_EVENT_2 = "dark_text_event_2"
+        const val DARK_TODAY_HIGHLIGHT_COLOR = "dark_today_highlight_color"
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_GRID_EFFECT = "dark_monthly_calendar_grid_effect"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
@@ -53,6 +55,7 @@ object AppConstants {
         val textBirthday = Color(0xFF0000FF)
         val textEvent1 = Color(0xFF008000)
         val textEvent2 = Color(0xFF6700FF)
+        val todayHighlightColor = Color(0x260077C2) // 15% opacidad
         val monthlyCalendarGridBackground = Color(0xFF0077C2)
         val monthlyCalendarGridEffect = Color(0xFF38A391)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
@@ -65,6 +68,7 @@ object AppConstants {
         val textBirthday = Color(0xFF82B1FF)
         val textEvent1 = Color(0xFF69F0AE)
         val textEvent2 = Color(0xFFFF80AB)
+        val todayHighlightColor = Color(0x4D4FC3F7) // 30% opacidad
         val monthlyCalendarGridBackground = Color(0xFF004D40)
         val monthlyCalendarGridEffect = Color(0xFF01579B)
         val monthlyCalendarDayCellBackground = Color(0xFF003341)
