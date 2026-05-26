@@ -352,7 +352,7 @@ private fun EffectColorThemeRow(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.Center
         ) {
-            val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2", "radial" to "3")
+            val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
             val baseColor = CalendarioTheme.colors.fondoSecciones
             val activeColor = CalendarioTheme.colors.cabecera
 

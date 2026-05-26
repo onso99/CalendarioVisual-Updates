@@ -70,7 +70,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Volcán",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "radial"
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FFE64A19",
@@ -163,7 +163,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Grafito",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "radial"
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF607D8B",

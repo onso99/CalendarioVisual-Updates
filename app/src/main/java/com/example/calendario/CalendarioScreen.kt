@@ -504,14 +504,13 @@ fun CalendarioScreen(
                     val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
                     
                     val endColor = when (effectType) {
-                        "gradient", "radial" -> CalendarioTheme.colors.monthlyCalendarGridEffect
+                        "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
                         else -> CalendarioTheme.colors.monthlyCalendarGridBackground
                     }
 
                     val monthlyCalendarGridBrush = when (effectType) {
                         "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
                         "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, endColor))
-                        "radial" -> Brush.radialGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
                         else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
                     }
                     
@@ -558,7 +557,7 @@ fun CalendarioScreen(
                                 val midColor = CalendarioTheme.colors.monthlyCalendarGridEffect
                                 
                                 val sampledColors = when (effectType) {
-                                    "gradient", "radial", "none" -> {
+                                    "gradient", "none" -> {
                                         listOf(0.91f, 0.95f, 0.99f).map { fraction ->
                                             androidx.compose.ui.graphics.lerp(startColor, endColor, fraction)
                                         }
@@ -595,7 +594,7 @@ fun CalendarioScreen(
 
                             if (isCurrentMonthView) {
                                 val baseColor = when (effectType) {
-                                    "gradient", "radial" -> CalendarioTheme.colors.monthlyCalendarGridEffect
+                                    "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
                                     else -> CalendarioTheme.colors.monthlyCalendarGridBackground
                                 }
 
