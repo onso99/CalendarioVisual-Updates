@@ -34,7 +34,6 @@ object AppConstants {
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_GRID_EFFECT = "light_monthly_calendar_grid_effect"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
-        const val LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "light_mini_month_today_highlight_background"
 
         // Dark Theme
         const val DARK_CABECERA = "dark_cabecera"
@@ -47,7 +46,6 @@ object AppConstants {
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_GRID_EFFECT = "dark_monthly_calendar_grid_effect"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
-        const val DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND = "dark_mini_month_today_highlight_background"
     }
 
     object LightColors {
@@ -61,7 +59,6 @@ object AppConstants {
         val monthlyCalendarGridBackground = Color(0xFF0077C2)
         val monthlyCalendarGridEffect = Color(0xFF38A391)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
-        val miniMonthTodayHighlightBackground = Color(0x4081D4FA)
     }
 
     object DarkColors {
@@ -75,6 +72,5 @@ object AppConstants {
         val monthlyCalendarGridBackground = Color(0xFF004D40)
         val monthlyCalendarGridEffect = Color(0xFF01579B)
         val monthlyCalendarDayCellBackground = Color(0xFF003341)
-        val miniMonthTodayHighlightBackground = Color(0x4001579B)
     }
 }

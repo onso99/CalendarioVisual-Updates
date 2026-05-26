@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -217,7 +218,7 @@ fun MiniMonthCalendar(
 
                                 val textColor = when {
                                     isToday -> {
-                                        if (isColorDark(CalendarioTheme.colors.miniMonthTodayHighlightBackground, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black
+                                        if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.Black)) Color.White else Color.Black
                                     }
                                     isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
                                     else -> if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.Black)) Color.White else Color.Black
@@ -229,8 +230,11 @@ fun MiniMonthCalendar(
                                         Box(
                                             Modifier
                                                 .size((dayNumberFontSize.value * 2.1f).dp)
-                                                .clip(RoundedCornerShape(3.dp))
-                                                .background(CalendarioTheme.colors.miniMonthTodayHighlightBackground)
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = CalendarioTheme.colors.miniMonthTodayCellBorder,
+                                                    shape = RoundedCornerShape(3.dp)
+                                                )
                                         )
                                     }
                                     Text(
