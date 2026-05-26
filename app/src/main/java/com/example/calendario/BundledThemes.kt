@@ -21,7 +21,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF0077C2",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF38A391",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFF0605C",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#4081D4FA"
             ),
             "darkTheme" to mapOf(
@@ -35,7 +34,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF004D40",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FF01579B",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF003341",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF4FC3F7",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#4001579B"
             )
         ),
@@ -58,7 +56,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFA5D6A7",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF388E3C",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF388E3C",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40A5D6A7"
             ),
             "darkTheme" to mapOf(
@@ -72,7 +69,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF2E7D32",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FF1B5E20",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF1A3A1A",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF81C784",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#401B5E20"
             )
         ),
@@ -95,7 +91,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFB74D",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFE64A19",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFE64A19",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40FFB74D"
             ),
             "darkTheme" to mapOf(
@@ -109,7 +104,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFD84315",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FFBF360C",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF4E342E",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFFF8A65",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40BF360C"
             )
         ),
@@ -132,7 +126,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFD54F",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFFF8F00",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFFF8F00",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40FFD54F"
             ),
             "darkTheme" to mapOf(
@@ -146,7 +139,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFB300",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FFC56000",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF403000",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFFFB74D",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40C56000"
             )
         ),
@@ -169,7 +161,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFDCE775",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF827717",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF827717",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40DCE775"
             ),
             "darkTheme" to mapOf(
@@ -183,7 +174,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF33691E",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FF558B2F",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF2E352E",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFAED581",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40558B2F"
             )
         ),
@@ -206,7 +196,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFB0BEC5",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF607D8B",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF607D8B",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40B0BEC5"
             ),
             "darkTheme" to mapOf(
@@ -220,7 +209,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF546E7A",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FF455A64",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF37474F",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF90A4AE",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40455A64"
             )
         ),
@@ -243,7 +231,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFCCBC",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF795548",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF795548",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40FFCCBC"
             ),
             "darkTheme" to mapOf(
@@ -257,7 +244,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF6D4C41",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FF5D4037",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF4E342E",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFA1887F",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#405D4037"
             )
         ),
@@ -280,7 +266,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFCE93D8",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF7E57C2",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FF7E57C2",
                 AppConstants.ColorKeys.LIGHT_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40CE93D8"
             ),
             "darkTheme" to mapOf(
@@ -294,7 +279,6 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF8E24AA",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT to "#FF673AB7",
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF311B92",
-                AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BORDER to "#FFBA68C8",
                 AppConstants.ColorKeys.DARK_MINI_MONTH_TODAY_HIGHLIGHT_BACKGROUND to "#40673AB7"
             )
         )
