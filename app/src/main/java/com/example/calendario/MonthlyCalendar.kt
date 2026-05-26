@@ -91,13 +91,9 @@ fun MonthlyCalendar(
             .padding(4.dp)
     ) {
         val headerBg = CalendarioTheme.colors.monthlyCalendarHeaderBackground
-        val onHeaderColor = run {
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(headerBg.toArgb(), hsl)
-            val isDark = hsl[2] < 0.5f
-            hsl[2] = if (isDark) 0.80f else 0.25f // Suavizado: 80% (oscuro) o 25% (claro)
-            Color(ColorUtils.HSLToColor(hsl))
-        }
+        val onHeaderColor = CalendarioTheme.colors.textSystem
+
+        // CABECERA: Restaurada FORMA EXACTA v1.8.943
         Row(Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { day ->
                 Box(
@@ -123,7 +119,7 @@ fun MonthlyCalendar(
                         color = onHeaderColor,
                         maxLines = 1,
                         softWrap = false,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier.padding(vertical = 4.dp) // Padding original v1.8.943
                     )
                 }
             }
@@ -142,9 +138,7 @@ fun MonthlyCalendar(
                     
                     val baseCellBackground = CalendarioTheme.colors.monthlyCalendarDayCellBackground
                     
-                    // Cálculo de fondo: Respetamos el color del tema, pero atenuamos si es inactivo
                     val cellBackground = if (isInactive) {
-                        // Mezcla dinámica: Oscurecemos si es claro, aclaramos si es oscuro (10% de variación)
                         val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
                         overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
                     } else {
@@ -159,19 +153,10 @@ fun MonthlyCalendar(
                         val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
                         
                         val baseColor = when {
-                            // Punto 3: Días festivos respetan 100% el color del tema
                             isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                            // Punto 2: Días normales cambian automático según el fondo (con tintado suave)
-                            else -> {
-                                val hsl = FloatArray(3)
-                                ColorUtils.colorToHSL(cellBackground.toArgb(), hsl)
-                                val isDark = hsl[2] < 0.5f
-                                hsl[2] = if (isDark) 0.80f else 0.25f
-                                Color(ColorUtils.HSLToColor(hsl))
-                            }
+                            else -> CalendarioTheme.colors.textSystem
                         }
                         
-                        // Punto 4: Días pasados (o de otros meses) con 50% de opacidad
                         if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
                     }
 
@@ -181,11 +166,10 @@ fun MonthlyCalendar(
                             .aspectRatio(1f),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Day Cell Content
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(1.dp) // Apply padding here to create spacing
+                                .padding(1.dp)
                                 .background(cellBackground, RoundedCornerShape(4.dp))
                                 .clickable(enabled = isCurrentMonth) {
                                     if (dayHasEventsWithTitle) {
@@ -257,7 +241,6 @@ fun MonthlyCalendar(
                             }
                         }
 
-                        // Superimposed Halo for Today
                         if (isToday) {
                             Box(
                                 modifier = Modifier

@@ -34,18 +34,16 @@ data class CustomColors(
         get() {
             val isBgDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
             return if (isBgDark) {
-                // En modo oscuro, aclaramos el color un 20% y subimos opacidad al 25% para que sea visible
                 val hsl = FloatArray(3)
                 ColorUtils.colorToHSL(cabecera.toArgb(), hsl)
                 hsl[2] = (hsl[2] + 0.20f).coerceAtMost(0.9f) 
                 Color(ColorUtils.HSLToColor(hsl)).copy(alpha = 0.25f)
             } else {
-                // En modo claro, el 15% original funciona bien
                 cabecera.copy(alpha = 0.15f)
             }
         }
 
-    // Cálculo automático del resaltado de hoy en el calendario anual
+    // Cálculo automático del borde del día actual en el calendario anual
     val miniMonthTodayCellBorder: Color
         get() {
             val hsl = FloatArray(3)
@@ -55,14 +53,11 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // Cálculo automático del texto del sistema (Tintado suave: 80% o 25% luz)
+    // Cálculo automático del texto del sistema (NEUTRALIZADO: Gris 80% o 25%)
     val textSystem: Color
         get() {
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(settingsBackground.toArgb(), hsl)
-            val isDark = hsl[2] < 0.5f
-            hsl[2] = if (isDark) 0.80f else 0.25f
-            return Color(ColorUtils.HSLToColor(hsl))
+            val isBgDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
+            return if (isBgDark) Color(0xFFCCCCCC) else Color(0xFF404040)
         }
 
     // Cálculo automático del texto del título (Eventos de...) basándose en el fondo de pantalla
@@ -79,17 +74,14 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // Cálculo automático de la cabecera de días (10% de variación respecto al fondo del calendario)
+    // Cálculo automático de la cabecera de días (Variación de luminosidad respecto al fondo)
     val monthlyCalendarHeaderBackground: Color
         get() {
-            val isGridDark = isColorDark(monthlyCalendarGridBackground, Color.Black)
-            val factor = if (isGridDark) 0.1f else -0.1f
-            return Color(
-                red = (monthlyCalendarGridBackground.red + factor).coerceIn(0f, 1f),
-                green = (monthlyCalendarGridBackground.green + factor).coerceIn(0f, 1f),
-                blue = (monthlyCalendarGridBackground.blue + factor).coerceIn(0f, 1f),
-                alpha = monthlyCalendarGridBackground.alpha
-            )
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(monthlyCalendarGridBackground.toArgb(), hsl)
+            val isDark = hsl[2] < 0.5f
+            hsl[2] = if (isDark) (hsl[2] + 0.10f).coerceAtMost(1f) else (hsl[2] - 0.10f).coerceAtLeast(0f)
+            return Color(ColorUtils.HSLToColor(hsl))
         }
 
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
