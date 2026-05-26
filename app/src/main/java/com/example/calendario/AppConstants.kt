@@ -28,7 +28,6 @@ object AppConstants {
         const val LIGHT_SETTINGS_BACKGROUND = "light_settings_background"
         const val LIGHT_TEXT_SUNDAY_HOLIDAY = "light_text_sunday_holiday"
         const val LIGHT_TEXT_BIRTHDAY = "light_text_birthday"
-        const val LIGHT_TEXT_EVENT_DEFAULT = "light_text_event_default"
         const val LIGHT_TEXT_EVENT_1 = "light_text_event_1"
         const val LIGHT_TEXT_EVENT_2 = "light_text_event_2"
         const val LIGHT_TODAY_HIGHLIGHT_COLOR = "light_today_highlight_color"
@@ -43,7 +42,6 @@ object AppConstants {
         const val DARK_SETTINGS_BACKGROUND = "dark_settings_background"
         const val DARK_TEXT_SUNDAY_HOLIDAY = "dark_text_sunday_holiday"
         const val DARK_TEXT_BIRTHDAY = "dark_text_birthday"
-        const val DARK_TEXT_EVENT_DEFAULT = "dark_text_event_default"
         const val DARK_TEXT_EVENT_1 = "dark_text_event_1"
         const val DARK_TEXT_EVENT_2 = "dark_text_event_2"
         const val DARK_TODAY_HIGHLIGHT_COLOR = "dark_today_highlight_color"
@@ -59,7 +57,6 @@ object AppConstants {
         val settingsBackground = Color(0xFFF0F9FE)
         val textSundayHoliday = Color(0xFFD32F2F)
         val textBirthday = Color(0xFF0000FF)
-        val textEventDefault = Color(0xFF000000)
         val textEvent1 = Color(0xFF008000)
         val textEvent2 = Color(0xFF6700FF)
         val todayHighlightColor = Color(0x30D6CF15)
@@ -75,7 +72,6 @@ object AppConstants {
         val settingsBackground = Color(0xFF001F29)
         val textSundayHoliday = Color(0xFFFF8A80)
         val textBirthday = Color(0xFF82B1FF)
-        val textEventDefault = Color(0xFFE0F7FA)
         val textEvent1 = Color(0xFF69F0AE)
         val textEvent2 = Color(0xFFFF80AB)
         val todayHighlightColor = Color(0x804FC3F7)

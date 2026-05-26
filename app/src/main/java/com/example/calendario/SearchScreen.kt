@@ -304,7 +304,7 @@ private fun EventRow(
         esEvento2 -> CalendarioTheme.colors.textEvent2
         esFestivo -> CalendarioTheme.colors.textSundayHoliday
         esCumpleanos -> CalendarioTheme.colors.textBirthday
-        else -> CalendarioTheme.colors.textEventDefault
+        else -> CalendarioTheme.colors.textSystem // Eventos normales adaptativos
     }
 
     val noTitle = stringResource(id = R.string.no_title)

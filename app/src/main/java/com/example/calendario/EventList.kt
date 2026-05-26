@@ -89,19 +89,16 @@ fun MonthlyEventList(
                             esEvento2 -> CalendarioTheme.colors.textEvent2
                             esCumpleanos -> CalendarioTheme.colors.textBirthday
                             esFestivo -> CalendarioTheme.colors.textSundayHoliday
-                            else -> CalendarioTheme.colors.textEventDefault
+                            else -> CalendarioTheme.colors.textSystem // Eventos normales ahora usan textSystem adaptativo
                         }
 
-                        // Si es HOY, intentamos mantener el color específico si es legible, 
+                        // Si es HOY, intentamos mantener el color específico si es legible sobre el fondo de hoy, 
                         // de lo contrario usamos el color de contraste del tema.
                         val textColor = if (isTodayEvents) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
-                            // ColorUtils.calculateContrast requiere colores opacos.
-                            // Usamos setAlphaComponent para asegurar opacidad total (255)
                             val opaqueHighlightInt = ColorUtils.setAlphaComponent(highlightColor.toArgb(), 255)
                             val opaqueEventColorInt = ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255)
                             
-                            // Bajamos el umbral a 1.5 para permitir que se vean más colores sobre el resaltado
                             if (ColorUtils.calculateContrast(opaqueEventColorInt, opaqueHighlightInt) > 1.5) {
                                 eventSpecificColor
                             } else {
@@ -139,7 +136,7 @@ fun MonthlyEventList(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(16.dp))
-                                        .then(
+                                    .then(
                                             if (isTodayEvents) {
                                                 Modifier.background(CalendarioTheme.colors.todayHighlightColor)
                                             } else {

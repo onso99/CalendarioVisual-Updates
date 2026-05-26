@@ -23,7 +23,6 @@ data class CustomColors(
     val settingsBackground: Color,
     val textSundayHoliday: Color,
     val textBirthday: Color,
-    val textEventDefault: Color,
     val textEvent1: Color,
     val textEvent2: Color,
     val todayHighlightColor: Color,
@@ -33,9 +32,15 @@ data class CustomColors(
     val monthlyCalendarTodayCellBorder: Color,
     val miniMonthTodayHighlightBackground: Color,
 ) {
-    // Cálculo automático del texto del sistema (Blanco o Negro según el fondo)
+    // Cálculo automático del texto del sistema (Tintado suave: 80% o 25% luz)
     val textSystem: Color
-        get() = if (isColorDark(settingsBackground, Color.Black)) Color.White else Color.Black
+        get() {
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(settingsBackground.toArgb(), hsl)
+            val isDark = hsl[2] < 0.5f
+            hsl[2] = if (isDark) 0.80f else 0.25f
+            return Color(ColorUtils.HSLToColor(hsl))
+        }
 
     // Cálculo automático del texto del título (Eventos de...) basándose en el fondo de pantalla
     val eventListTitleColor: Color
@@ -88,7 +93,6 @@ val LocalCustomColors = staticCompositionLocalOf {
         settingsBackground = AppConstants.LightColors.settingsBackground,
         textSundayHoliday = AppConstants.LightColors.textSundayHoliday,
         textBirthday = AppConstants.LightColors.textBirthday,
-        textEventDefault = AppConstants.LightColors.textEventDefault,
         textEvent1 = AppConstants.LightColors.textEvent1,
         textEvent2 = AppConstants.LightColors.textEvent2,
         todayHighlightColor = AppConstants.LightColors.todayHighlightColor,
@@ -103,7 +107,7 @@ val LocalCustomColors = staticCompositionLocalOf {
 @Composable
 fun CalendarioTheme(
     darkTheme: Boolean,
-    themeUpdateTrigger: Int, // Agrega este parámetro
+    themeUpdateTrigger: Int,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -175,7 +179,6 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             settingsBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND, AppConstants.DarkColors.settingsBackground.toArgb())),
             textSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.DarkColors.textSundayHoliday.toArgb())),
             textBirthday = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_BIRTHDAY, AppConstants.DarkColors.textBirthday.toArgb())),
-            textEventDefault = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_DEFAULT, AppConstants.DarkColors.textEventDefault.toArgb())),
             textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_1, AppConstants.DarkColors.textEvent1.toArgb())),
             textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_2, AppConstants.DarkColors.textEvent2.toArgb())),
             todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.DarkColors.todayHighlightColor.toArgb())),
@@ -191,7 +194,6 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             settingsBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppConstants.LightColors.settingsBackground.toArgb())),
             textSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday.toArgb())),
             textBirthday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday.toArgb())),
-            textEventDefault = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_DEFAULT, AppConstants.LightColors.textEventDefault.toArgb())),
             textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.LightColors.textEvent1.toArgb())),
             textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.LightColors.textEvent2.toArgb())),
             todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor.toArgb())),

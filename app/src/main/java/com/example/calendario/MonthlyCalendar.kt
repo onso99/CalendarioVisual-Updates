@@ -227,13 +227,13 @@ fun MonthlyCalendar(
                                 val hasEvent1 = normalizedEvent1Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent1Keyword) }
                                 val hasEvent2 = normalizedEvent2Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent2Keyword) }
 
-                                if (hasNormalEvent) indicatorColors.add(CalendarioTheme.colors.textEventDefault)
+                                if (hasNormalEvent) indicatorColors.add(CalendarioTheme.colors.textSystem)
                                 if (hasBirthday) indicatorColors.add(CalendarioTheme.colors.textBirthday)
                                 if (hasEvent1) indicatorColors.add(CalendarioTheme.colors.textEvent1)
                                 if (hasEvent2) indicatorColors.add(CalendarioTheme.colors.textEvent2)
 
                                 val finalIndicators = if (indicatorColors.size > 3 && hasNormalEvent) {
-                                    indicatorColors.filter { it != CalendarioTheme.colors.textEventDefault }
+                                    indicatorColors.filter { it != CalendarioTheme.colors.textSystem }
                                 } else {
                                     indicatorColors
                                 }.take(3)
