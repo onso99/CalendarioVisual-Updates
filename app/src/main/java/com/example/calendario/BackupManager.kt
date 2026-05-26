@@ -190,7 +190,6 @@ object BackupManager {
             AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY,
             AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1,
             AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2,
-            AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT,
             AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
@@ -200,7 +199,6 @@ object BackupManager {
             AppConstants.ColorKeys.DARK_TEXT_BIRTHDAY,
             AppConstants.ColorKeys.DARK_TEXT_EVENT_1,
             AppConstants.ColorKeys.DARK_TEXT_EVENT_2,
-            AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND -> {

@@ -10,7 +10,7 @@ data class ColorThemeItem(
     val defaultLight: Color,
     val defaultDark: Color,
     val category: String, // Keep category as String for grouping
-    val isSeparator: Boolean = false
+    val isSeparator: Boolean = false,
 )
 
 object ColorThemeConfig {
@@ -21,8 +21,6 @@ object ColorThemeConfig {
         ColorThemeItem(R.string.sundays_and_holidays, AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday, AppConstants.DarkColors.textSundayHoliday, "General"),
         
         // --- CATEGORÍA: LISTA DE EVENTOS ---
-        ColorThemeItem(R.string.today_highlight_list, AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor, AppConstants.DarkColors.todayHighlightColor, "Lista de Eventos"),
-        ColorThemeItem(0, "", "", Color.Transparent, Color.Transparent, "Lista de Eventos", isSeparator = true),
         ColorThemeItem(R.string.birthdays, AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.ColorKeys.DARK_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday, AppConstants.DarkColors.textBirthday, "Lista de Eventos"),
         ColorThemeItem(R.string.event_1, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.ColorKeys.DARK_TEXT_EVENT_1, AppConstants.LightColors.textEvent1, AppConstants.DarkColors.textEvent1, "Lista de Eventos"),
         ColorThemeItem(R.string.event_2, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.ColorKeys.DARK_TEXT_EVENT_2, AppConstants.LightColors.textEvent2, AppConstants.DarkColors.textEvent2, "Lista de Eventos"),
