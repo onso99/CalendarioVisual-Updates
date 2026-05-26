@@ -32,7 +32,6 @@ object AppConstants {
         const val LIGHT_TEXT_EVENT_1 = "light_text_event_1"
         const val LIGHT_TEXT_EVENT_2 = "light_text_event_2"
         const val LIGHT_TODAY_HIGHLIGHT_COLOR = "light_today_highlight_color"
-        const val LIGHT_EVENT_LIST_TITLE_COLOR = "light_event_list_title_color"
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_GRID_EFFECT = "light_monthly_calendar_grid_effect"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
@@ -47,7 +46,6 @@ object AppConstants {
         const val DARK_TEXT_EVENT_DEFAULT = "dark_text_event_default"
         const val DARK_TEXT_EVENT_1 = "dark_text_event_1"
         const val DARK_TEXT_EVENT_2 = "dark_text_event_2"
-        const val DARK_EVENT_LIST_TITLE_COLOR = "dark_event_list_title_color"
         const val DARK_TODAY_HIGHLIGHT_COLOR = "dark_today_highlight_color"
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_GRID_EFFECT = "dark_monthly_calendar_grid_effect"
@@ -64,7 +62,6 @@ object AppConstants {
         val textEventDefault = Color(0xFF000000)
         val textEvent1 = Color(0xFF008000)
         val textEvent2 = Color(0xFF6700FF)
-        val eventListTitleColor = Color(0xFFE9FAFB)
         val todayHighlightColor = Color(0x30D6CF15)
         val monthlyCalendarGridBackground = Color(0xFF0077C2)
         val monthlyCalendarGridEffect = Color(0xFF38A391)
@@ -81,13 +78,11 @@ object AppConstants {
         val textEventDefault = Color(0xFFE0F7FA)
         val textEvent1 = Color(0xFF69F0AE)
         val textEvent2 = Color(0xFFFF80AB)
-        val eventListTitleColor = Color(0xFF80DEEA)
         val todayHighlightColor = Color(0x804FC3F7)
         val monthlyCalendarGridBackground = Color(0xFF004D40)
         val monthlyCalendarGridEffect = Color(0xFF01579B)
         val monthlyCalendarDayCellBackground = Color(0xFF003341)
         val monthlyCalendarTodayCellBorder = Color(0xFF4FC3F7)
-        val monthlyCalendarHeaderBackground = Color(0xFF0077C2)
         val miniMonthTodayHighlightBackground = Color(0x4001579B)
     }
 }

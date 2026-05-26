@@ -543,10 +543,39 @@ fun CalendarioScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
+                            // Cálculo dinámico del color del título analizando 3 puntos de la celda (muestreo al final del degradado)
+                            val titleTextColor = run {
+                                val startColor = CalendarioTheme.colors.monthlyCalendarGridBackground
+                                val midColor = CalendarioTheme.colors.monthlyCalendarGridEffect
+                                
+                                val sampledColors = when (effectType) {
+                                    "gradient", "radial", "none" -> {
+                                        // Analizamos los puntos 91%, 95% y 99% del degradado entre inicio y fin
+                                        listOf(0.91f, 0.95f, 0.99f).map { fraction ->
+                                            androidx.compose.ui.graphics.lerp(startColor, endColor, fraction)
+                                        }
+                                    }
+                                    "sweep" -> {
+                                        // En sweep (degradado vertical de 3 colores), la zona inferior está entre midColor y endColor
+                                        // Muestreamos al final del segundo tramo (82% a 98% del total aprox)
+                                        listOf(0.82f, 0.90f, 0.98f).map { fraction ->
+                                            androidx.compose.ui.graphics.lerp(midColor, endColor, fraction)
+                                        }
+                                    }
+                                    else -> listOf(endColor)
+                                }
+                                
+                                val avgLuminance = sampledColors.map { 
+                                    ColorUtils.calculateLuminance(it.toArgb()) 
+                                }.average()
+                                
+                                if (avgLuminance < 0.5) Color.White else Color.Black
+                            }
+
                             Text(
                                 text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }),
                                 fontSize = 18.sp,
-                                color = CalendarioTheme.colors.eventListTitleColor,
+                                color = titleTextColor,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
