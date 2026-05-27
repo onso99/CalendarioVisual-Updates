@@ -11,6 +11,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -74,14 +75,17 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // Cálculo automático de la cabecera de días (Variación de luminosidad respecto al fondo)
+    // Cálculo automático de la cabecera de días (Sistema de capas para contraste garantizado)
     val monthlyCalendarHeaderBackground: Color
         get() {
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(monthlyCalendarGridBackground.toArgb(), hsl)
-            val isDark = hsl[2] < 0.5f
-            hsl[2] = if (isDark) (hsl[2] + 0.10f).coerceAtMost(1f) else (hsl[2] - 0.10f).coerceAtLeast(0f)
-            return Color(ColorUtils.HSLToColor(hsl))
+            val isBgDark = ColorUtils.calculateLuminance(monthlyCalendarGridBackground.toArgb()) < 0.5
+            return if (isBgDark) {
+                // Si el fondo es oscuro, aplicamos un 15% de blanco para que "brille"
+                Color.White.copy(alpha = 0.15f).compositeOver(monthlyCalendarGridBackground)
+            } else {
+                // Si el fondo es claro, aplicamos un 12% de negro para dar profundidad sólida
+                Color.Black.copy(alpha = 0.12f).compositeOver(monthlyCalendarGridBackground)
+            }
         }
 
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
