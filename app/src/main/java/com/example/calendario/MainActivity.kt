@@ -147,12 +147,14 @@ fun processEventsForDisplay(
         }
     }
 
-    // 3. Agrupar por fecha y ordenar para la lista.
+    // 3. Agrupar por fecha y aplicar ordenación estándar
     return monthEvents
         .groupBy { it.date }
         .mapValues { (_, events) ->
             events.sortedWith(
-                compareBy { it.startTime }
+                compareBy<Festivo> { !it.isAllDay }
+                    .thenBy { it.startTime }
+                    .thenBy { it.title }
             )
         }
         .toList()

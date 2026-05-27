@@ -443,6 +443,15 @@ fun readFestivosFromCalendarsSync(
         }
     }
     
+    // 5. Ordenación Definitiva: Todo el día > Hora inicio > Título
+    finalMap.values.forEach { list ->
+        list.sortWith(
+            compareBy<Festivo> { !it.isAllDay }
+                .thenBy { it.startTime }
+                .thenBy { it.title }
+        )
+    }
+    
     LogCollector.addLog("MOTOR: Carga finalizada con ${finalMap.values.flatten().size} eventos (+- 2 años)")
     return finalMap
 }
