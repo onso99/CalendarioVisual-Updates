@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -544,11 +545,10 @@ fun CalendarioScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            // Cálculo dinámico del color del título analizando 3 puntos de la celda (muestreo al final del degradado)
-                            val titleTextColor = run {
+                            // Muestreo dinámico del fondo para elementos de la barra de título de la lista
+                            val colorBehindTitle = run {
                                 val startColor = CalendarioTheme.colors.monthlyCalendarGridBackground
                                 val midColor = CalendarioTheme.colors.monthlyCalendarGridEffect
-                                
                                 val sampledColors = when (effectType) {
                                     "gradient", "none" -> {
                                         listOf(0.91f, 0.95f, 0.99f).map { fraction ->
@@ -562,17 +562,15 @@ fun CalendarioScreen(
                                     }
                                     else -> listOf(endColor)
                                 }
-                                
-                                val avgColorArgb = run {
-                                    val r = sampledColors.map { it.red }.average()
-                                    val g = sampledColors.map { it.green }.average()
-                                    val b = sampledColors.map { it.blue }.average()
-                                    Color(red = r.toFloat(), green = g.toFloat(), blue = b.toFloat()).toArgb()
-                                }
-                                
+                                val r = sampledColors.map { it.red }.average()
+                                val g = sampledColors.map { it.green }.average()
+                                val b = sampledColors.map { it.blue }.average()
+                                Color(red = r.toFloat(), green = g.toFloat(), blue = b.toFloat())
+                            }
+
+                            val titleTextColor = run {
                                 val hsl = FloatArray(3)
-                                ColorUtils.colorToHSL(avgColorArgb, hsl)
-                                // Umbral al 65% y tono oscuro suavizado al 25% para carácter de etiqueta
+                                ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
                                 val isDarkRegion = hsl[2] < 0.65f
                                 hsl[2] = if (isDarkRegion) 0.85f else 0.25f
                                 Color(ColorUtils.HSLToColor(hsl))
@@ -587,24 +585,16 @@ fun CalendarioScreen(
                             )
 
                             if (isCurrentMonthView) {
-                                val baseColor = when (effectType) {
-                                    "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
-                                    else -> CalendarioTheme.colors.monthlyCalendarGridBackground
-                                }
-
-                                val buttonContainerColor = run {
-                                    val hsl = FloatArray(3)
-                                    ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
-                                    val isDark = hsl[2] < 0.5f
-                                    hsl[2] = if (isDark) {
-                                        (hsl[2] + 0.1f).coerceIn(0f, 1f)
+                                val buttonContainerColor = run<Color> {
+                                    val isBgDark = ColorUtils.calculateLuminance(colorBehindTitle.toArgb()) < 0.5
+                                    if (isBgDark) {
+                                        Color.White.copy(alpha = 0.20f).compositeOver(colorBehindTitle)
                                     } else {
-                                        (hsl[2] - 0.1f).coerceIn(0f, 1f)
+                                        Color.Black.copy(alpha = 0.20f).compositeOver(colorBehindTitle)
                                     }
-                                    Color(ColorUtils.HSLToColor(hsl))
                                 }
 
-                                val textColor = if (isColorDark(buttonContainerColor, baseColor)) Color.White else Color.Black
+                                val textColor = if (isColorDark(buttonContainerColor, colorBehindTitle)) Color.White else Color.Black
 
                                 Box(
                                     modifier = Modifier
