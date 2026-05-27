@@ -443,7 +443,7 @@ fun readFestivosFromCalendarsSync(
         }
     }
     
-    // 5. Ordenación Definitiva: Todo el día > Hora inicio > Título
+    // 5. Ordenación Final: Eventos de día completo > Hora inicio > Título
     finalMap.values.forEach { list ->
         list.sortWith(
             compareBy<Festivo> { !it.isAllDay }
