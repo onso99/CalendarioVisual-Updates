@@ -89,7 +89,7 @@ fun MonthlyCalendar(
             .padding(4.dp)
     ) {
         val headerBg = CalendarioTheme.colors.monthlyCalendarHeaderBackground
-        val onHeaderColor = CalendarioTheme.colors.textSystem
+        val onHeaderColor = CalendarioTheme.colors.textLabel
 
         // CABECERA: Restaurada FORMA EXACTA v1.8.943
         Row(Modifier.fillMaxWidth()) {

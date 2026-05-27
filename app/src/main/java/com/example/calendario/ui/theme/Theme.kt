@@ -40,16 +40,29 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // Cálculo automático del texto del sistema (NEUTRALIZADO: Gris 80% o 25%)
+    // Cálculo automático del texto del sistema (NEUTRALIZADO: Gris 80% o 25% para datos base)
     val textSystem: Color
         get() {
             val isBgDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
             return if (isBgDark) Color(0xFFCCCCCC) else Color(0xFF404040)
         }
 
-    // Cálculo automático del texto del título (Eventos de...) basándose en el fondo de pantalla
+    // Color para etiquetas estructurales (CONTRASTE REAL sobre el color del tema)
+    val textLabel: Color
+        get() {
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(cabecera.toArgb(), hsl)
+            // Determinamos si el fondo sobre el que va la etiqueta (cabecera) es oscuro
+            val isCabeceraDark = hsl[2] < 0.52f 
+            
+            // Aplicamos contraste: Si el fondo es oscuro, texto muy claro; si es claro, texto muy oscuro
+            hsl[2] = if (isCabeceraDark) 0.85f else 0.15f
+            return Color(ColorUtils.HSLToColor(hsl))
+        }
+
+    // El título de la lista de eventos se unifica con el color de etiquetas cromáticas
     val eventListTitleColor: Color
-        get() = textSystem
+        get() = textLabel
 
     // Cálculo automático del borde del día actual (Tintado sutil basado en el color principal)
     val monthlyCalendarTodayCellBorder: Color

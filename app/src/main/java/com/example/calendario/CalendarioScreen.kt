@@ -390,14 +390,7 @@ fun CalendarioScreen(
                                     }
                                 }
                                 if (viewMode == CalendarViewMode.MONTHLY) {
-                                    val monthNameColor = run {
-                                        val cabeceraColor = CalendarioTheme.colors.cabecera
-                                        val hsl = FloatArray(3)
-                                        ColorUtils.colorToHSL(cabeceraColor.toArgb(), hsl)
-                                        val isDark = hsl[2] < 0.5f
-                                        hsl[2] = if (isDark) 0.82f else 0.22f // Suavizado para el nombre del mes
-                                        Color(ColorUtils.HSLToColor(hsl))
-                                    }
+                                    val monthNameColor = CalendarioTheme.colors.textLabel
                                     Text(
                                         text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
                                         fontSize = 20.sp,
