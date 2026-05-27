@@ -572,8 +572,9 @@ fun CalendarioScreen(
                                 
                                 val hsl = FloatArray(3)
                                 ColorUtils.colorToHSL(avgColorArgb, hsl)
-                                val isDark = hsl[2] < 0.5f
-                                hsl[2] = if (isDark) 0.80f else 0.25f // Suavizado para el título de la lista
+                                // Umbral al 65% y tono oscuro suavizado al 25% para carácter de etiqueta
+                                val isDarkRegion = hsl[2] < 0.65f
+                                hsl[2] = if (isDarkRegion) 0.85f else 0.25f
                                 Color(ColorUtils.HSLToColor(hsl))
                             }
 
