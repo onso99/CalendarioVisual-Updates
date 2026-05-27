@@ -53,10 +53,10 @@ data class CustomColors(
         get() {
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(cabecera.toArgb(), hsl)
-            // Determinamos si el fondo sobre el que va la etiqueta (cabecera) es oscuro
-            val isCabeceraDark = hsl[2] < 0.52f 
+            // Umbral al 75% para forzar texto blanco incluso en colores muy claros
+            val isCabeceraDark = hsl[2] < 0.75f 
             
-            // Aplicamos contraste: Si el fondo es oscuro, texto muy claro; si es claro, texto muy oscuro
+            // Aplicamos contraste: Si el fondo es <75%, texto muy claro; si es >75%, texto muy oscuro
             hsl[2] = if (isCabeceraDark) 0.85f else 0.15f
             return Color(ColorUtils.HSLToColor(hsl))
         }
@@ -75,23 +75,24 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // Cálculo automático de la cabecera de días (Sistema de capas para contraste garantizado)
+    // Cálculo automático de la cabecera de días (Sistema de capas dinámico sincronizado con el modo)
     val monthlyCalendarHeaderBackground: Color
         get() {
-            val isBgDark = ColorUtils.calculateLuminance(monthlyCalendarGridBackground.toArgb()) < 0.5
-            return if (isBgDark) {
-                // Si el fondo es oscuro, aplicamos un 15% de blanco para que "brille"
+            val isMainBgDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
+            return if (isMainBgDark) {
                 Color.White.copy(alpha = 0.15f).compositeOver(monthlyCalendarGridBackground)
             } else {
-                // Si el fondo es claro, aplicamos un 12% de negro para dar profundidad sólida
-                Color.Black.copy(alpha = 0.12f).compositeOver(monthlyCalendarGridBackground)
+                // Lógica dinámica para modo claro: 30% sobre fondo claro, 15% sobre ya oscuro
+                val isLocalDark = ColorUtils.calculateLuminance(monthlyCalendarGridBackground.toArgb()) < 0.5
+                val overlayAlpha = if (isLocalDark) 0.15f else 0.30f
+                Color.Black.copy(alpha = overlayAlpha).compositeOver(monthlyCalendarGridBackground)
             }
         }
 
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
     val fondoSecciones: Color
         get() {
-            val isBackgroundDark = isColorDark(settingsBackground, Color.Black)
+            val isBackgroundDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
             val factor = if (isBackgroundDark) 0.1f else -0.1f // 10% de variación
 
             return Color(
@@ -105,7 +106,7 @@ data class CustomColors(
     // Cálculo automático del fondo de diálogos
     val fondoDialogos: Color
         get() {
-            val isBackgroundDark = isColorDark(settingsBackground, Color.Black)
+            val isBackgroundDark = ColorUtils.calculateLuminance(settingsBackground.toArgb()) < 0.5
             return if (isBackgroundDark) {
                 fondoSecciones
             } else {

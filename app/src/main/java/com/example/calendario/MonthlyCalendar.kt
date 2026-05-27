@@ -22,12 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.DayOfWeek
@@ -50,6 +53,7 @@ fun MonthlyCalendar(
     val themeColors = CalendarioTheme.colors
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
     val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val effectType = remember(themeColors) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
 
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
@@ -88,8 +92,38 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        val headerBg = CalendarioTheme.colors.monthlyCalendarHeaderBackground
-        val onHeaderColor = CalendarioTheme.colors.textLabel
+        // MUESTREO POR POSICIÓN + SINCRONIZACIÓN MODO APP
+        val headerBg = run {
+            val startColor = themeColors.monthlyCalendarGridBackground
+            val midColor = themeColors.monthlyCalendarGridEffect
+            val endColor = if (effectType == "gradient") midColor else startColor
+            
+            val colorBehind = when (effectType) {
+                "gradient" -> lerp(startColor, endColor, 0.02f)
+                "sweep" -> lerp(startColor, midColor, 0.04f)
+                else -> startColor
+            }
+            
+            // Decisión basada en el Modo de la App (no en la luminancia local)
+            val isMainBgDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
+            if (isMainBgDark) {
+                Color.White.copy(alpha = 0.15f).compositeOver(colorBehind)
+            } else {
+                // Lógica dinámica: Oscurecemos 30% sobre fondos claros y 15% sobre fondos oscuros
+                val isLocalDark = ColorUtils.calculateLuminance(colorBehind.toArgb()) < 0.5
+                val overlayAlpha = if (isLocalDark) 0.15f else 0.30f
+                Color.Black.copy(alpha = overlayAlpha).compositeOver(colorBehind)
+            }
+        }
+
+        // El color del texto se adapta con umbral al 75%
+        val onHeaderColor = run {
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(headerBg.toArgb(), hsl)
+            val isDark = hsl[2] < 0.75f
+            hsl[2] = if (isDark) 0.85f else 0.15f
+            Color(ColorUtils.HSLToColor(hsl))
+        }
 
         // CABECERA: Restaurada FORMA EXACTA v1.8.943
         Row(Modifier.fillMaxWidth()) {
@@ -117,7 +151,7 @@ fun MonthlyCalendar(
                         color = onHeaderColor,
                         maxLines = 1,
                         softWrap = false,
-                        modifier = Modifier.padding(vertical = 4.dp) // Padding original v1.8.943
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             }
@@ -134,7 +168,7 @@ fun MonthlyCalendar(
                     val isPastDay = isCurrentMonth && date.isBefore(today)
                     val isInactive = !isCurrentMonth || isPastDay
                     
-                    val baseCellBackground = CalendarioTheme.colors.monthlyCalendarDayCellBackground
+                    val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
                     
                     val cellBackground = if (isInactive) {
                         val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
@@ -151,8 +185,8 @@ fun MonthlyCalendar(
                         val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
                         
                         val baseColor = when {
-                            isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                            else -> CalendarioTheme.colors.textSystem
+                            isHoliday || isSundayNonHoliday -> themeColors.textSundayHoliday
+                            else -> themeColors.textSystem
                         }
                         
                         if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
@@ -209,13 +243,13 @@ fun MonthlyCalendar(
                                 val hasEvent1 = normalizedEvent1Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent1Keyword) }
                                 val hasEvent2 = normalizedEvent2Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent2Keyword) }
 
-                                if (hasNormalEvent) indicatorColors.add(CalendarioTheme.colors.textSystem)
-                                if (hasBirthday) indicatorColors.add(CalendarioTheme.colors.textBirthday)
-                                if (hasEvent1) indicatorColors.add(CalendarioTheme.colors.textEvent1)
-                                if (hasEvent2) indicatorColors.add(CalendarioTheme.colors.textEvent2)
+                                if (hasNormalEvent) indicatorColors.add(themeColors.textSystem)
+                                if (hasBirthday) indicatorColors.add(themeColors.textBirthday)
+                                if (hasEvent1) indicatorColors.add(themeColors.textEvent1)
+                                if (hasEvent2) indicatorColors.add(themeColors.textEvent2)
 
                                 val finalIndicators = if (indicatorColors.size > 3 && hasNormalEvent) {
-                                    indicatorColors.filter { it != CalendarioTheme.colors.textSystem }
+                                    indicatorColors.filter { it != themeColors.textSystem }
                                 } else {
                                     indicatorColors
                                 }.take(3)
@@ -245,7 +279,7 @@ fun MonthlyCalendar(
                                     .fillMaxSize()
                                     .border(
                                         width = 3.5.dp,
-                                        color = CalendarioTheme.colors.monthlyCalendarTodayCellBorder,
+                                        color = themeColors.monthlyCalendarTodayCellBorder,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )
