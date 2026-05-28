@@ -44,15 +44,15 @@ object BundledThemes {
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep"
             ),
             "lightTheme" to mapOf(
-                AppConstants.ColorKeys.LIGHT_CABECERA to "#FF388E3C",
+                AppConstants.ColorKeys.LIGHT_CABECERA to "#FF5B9741",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFF1F8E9",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
                 AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR to "#26388E3C",
                 AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY to "#FF0000FF",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFA5D6A7",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF388E3C",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF5B9741",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFADC672",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),
             "darkTheme" to mapOf(
@@ -74,7 +74,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Volcán",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep"
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FFE64A19",
@@ -85,7 +85,7 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFB74D",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFE64A19",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFCC4317",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),
             "darkTheme" to mapOf(
@@ -107,7 +107,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Amanecer",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep",
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient",
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FFFF8F00",
@@ -118,7 +118,7 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFD54F",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFFF8F00",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFD17400",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),
             "darkTheme" to mapOf(
@@ -140,7 +140,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Verde Oliva",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep",
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient",
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF827717",
@@ -150,7 +150,7 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY to "#FF0000FF",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF9BA61D",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFB1C021",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF827717",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),
@@ -173,7 +173,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Grafito",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep"
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF607D8B",
@@ -206,7 +206,7 @@ object BundledThemes {
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
                 "name" to "Tierra",
-                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep"
+                AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF795548",
@@ -216,8 +216,8 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY to "#FF0000FF",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFFFCCBC",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF795548",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFB59080",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF975548",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),
             "darkTheme" to mapOf(
@@ -249,8 +249,8 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY to "#FF0000FF",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFCE93D8",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF7E57C2",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF7E57C2",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FFCFAADE",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),
             "darkTheme" to mapOf(
