@@ -586,12 +586,20 @@ fun CalendarioScreen(
 
                             if (isCurrentMonthView) {
                                 val buttonContainerColor = run<Color> {
-                                    val isBgDark = ColorUtils.calculateLuminance(colorBehindTitle.toArgb()) < 0.5
+                                    val hsl = FloatArray(3)
+                                    ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
+                                    val isBgDark = hsl[2] < 0.5f
+                                    
                                     if (isBgDark) {
-                                        Color.White.copy(alpha = 0.20f).compositeOver(colorBehindTitle)
+                                        // En fondos oscuros, aclaramos cromáticamente (+10% luz, +5% saturación)
+                                        hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
+                                        hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
                                     } else {
-                                        Color.Black.copy(alpha = 0.20f).compositeOver(colorBehindTitle)
+                                        // En fondos claros, oscurecemos cromáticamente (-10% luz, +10% saturación)
+                                        hsl[2] = (hsl[2] - 0.10f).coerceAtLeast(0f)
+                                        hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
                                     }
+                                    Color(ColorUtils.HSLToColor(hsl))
                                 }
 
                                 val textColor = if (isColorDark(buttonContainerColor, colorBehindTitle)) Color.White else Color.Black
