@@ -150,7 +150,7 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY to "#FF0000FF",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1 to "#FF008000",
                 AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2 to "#FFFF00FF",
-                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FFDCE775",
+                AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF9BA61D",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF827717",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"
             ),

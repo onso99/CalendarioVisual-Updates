@@ -595,8 +595,13 @@ fun CalendarioScreen(
                                         hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
                                         hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
                                     } else {
-                                        // En fondos claros, oscurecemos cromáticamente (-10% luz, +10% saturación)
-                                        hsl[2] = (hsl[2] - 0.10f).coerceAtLeast(0f)
+                                        // Curva de Contraste Adaptativa v2 para el botón
+                                        val darkenFactor = when {
+                                            hsl[2] > 0.60f -> 0.20f
+                                            hsl[2] > 0.45f -> 0.10f
+                                            else -> 0.05f
+                                        }
+                                        hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
                                         hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
                                     }
                                     Color(ColorUtils.HSLToColor(hsl))

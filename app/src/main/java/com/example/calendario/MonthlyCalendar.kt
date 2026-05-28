@@ -106,14 +106,24 @@ fun MonthlyCalendar(
             
             // Decisión basada en el Modo de la App (no en la luminancia local)
             val isMainBgDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(colorBehind.toArgb(), hsl)
+            
             if (isMainBgDark) {
-                Color.White.copy(alpha = 0.15f).compositeOver(colorBehind)
+                // Modo Oscuro: aclaramos cromáticamente (+10% luz, +5% saturación)
+                hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
+                hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
             } else {
-                // Lógica dinámica: Oscurecemos 30% sobre fondos claros y 15% sobre fondos oscuros
-                val isLocalDark = ColorUtils.calculateLuminance(colorBehind.toArgb()) < 0.5
-                val overlayAlpha = if (isLocalDark) 0.15f else 0.30f
-                Color.Black.copy(alpha = overlayAlpha).compositeOver(colorBehind)
+                // Curva de Contraste Adaptativa v2 para Modo Claro
+                val darkenFactor = when {
+                    hsl[2] > 0.60f -> 0.20f // Atrapamos Volcán, Amanecer, Verde Oliva, Grafito...
+                    hsl[2] > 0.45f -> 0.10f // Lavanda y similares
+                    else -> 0.05f          // Océano y temas ya intensos
+                }
+                hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
+                hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
             }
+            Color(ColorUtils.HSLToColor(hsl))
         }
 
         // El color del texto se adapta con umbral al 75%
