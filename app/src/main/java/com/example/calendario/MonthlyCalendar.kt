@@ -46,7 +46,7 @@ fun MonthlyCalendar(
     eventsByDate: Map<LocalDate, List<Festivo>>,
     onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit,
     onEmptyDayClick: (date: LocalDate) -> Unit,
-    startOfWeek: DayOfWeek
+    startOfWeek: DayOfWeek,
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -73,7 +73,7 @@ fun MonthlyCalendar(
     val visibleDays = mutableListOf<Pair<LocalDate, Boolean>>()
 
     for (i in 0 until firstDayOfWeekIndex) {
-        val day = daysInPrevMonth - firstDayOfWeekIndex + 1 + i
+        val day = (daysInPrevMonth - firstDayOfWeekIndex + 1) + i
         visibleDays.add(prevMonth.atDay(day) to false)
     }
 
@@ -167,7 +167,7 @@ fun MonthlyCalendar(
             }
         }
 
-        val weeksToDisplay = visibleDays.chunked(7).filter { week ->
+        val weeksToDisplay = visibleDays.asSequence().chunked(7).filter { week ->
             week.any { it.second }
         }
 
@@ -222,7 +222,7 @@ fun MonthlyCalendar(
                                 }
                         ) {
                             Text(
-                                text = "${date.dayOfMonth}",
+                                text = date.dayOfMonth.toString(),
                                 fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,
                                 color = dayColor,
                                 softWrap = false,
