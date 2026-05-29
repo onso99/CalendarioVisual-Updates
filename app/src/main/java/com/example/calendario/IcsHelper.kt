@@ -20,7 +20,13 @@ object IcsHelper {
     /**
      * Genera un archivo .ics para uno o varios eventos y abre el selector de compartir.
      */
-    fun shareEvents(context: Context, events: Collection<Festivo>) {
+    fun shareEvents(
+        context: Context,
+        events: Collection<Festivo>,
+        shareMultipleMessage: String? = null,
+        calendarEventsSubject: String? = null,
+        shareEventTitle: String? = null
+    ) {
         if (events.isEmpty()) return
         try {
             val icsContent = generateMultipleIcsContent(events)
@@ -41,18 +47,20 @@ object IcsHelper {
                 val event = events.first()
                 "📅 Evento: ${event.title}\n🗓️ ${event.date.format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", Locale.getDefault()))}"
             } else {
-                context.getString(R.string.share_multiple_message, events.size)
+                shareMultipleMessage ?: "Eventos de Calendario"
             }
 
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/calendar"
                 putExtra(Intent.EXTRA_STREAM, contentUri)
                 putExtra(Intent.EXTRA_TEXT, shareMessage)
-                putExtra(Intent.EXTRA_SUBJECT, if (events.size == 1) events.first().title else context.getString(R.string.calendar_events_subject))
+                val subject = if (events.size == 1) events.first().title else calendarEventsSubject ?: "Calendario"
+                putExtra(Intent.EXTRA_SUBJECT, subject)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_event)))
+            val chooserTitle = shareEventTitle ?: "Compartir"
+            context.startActivity(Intent.createChooser(shareIntent, chooserTitle))
 
         } catch (e: Exception) {
             Log.e("IcsHelper", "Error compartiendo eventos: ${e.message}")

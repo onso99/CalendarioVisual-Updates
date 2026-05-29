@@ -634,6 +634,10 @@ fun SettingsScreen(
                 )
                 
                 val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                val debugTitle = stringResource(id = R.string.debug_title)
+                val debugOnMsg = stringResource(id = R.string.debug_status_format, debugTitle, "ON")
+                val debugOffMsg = stringResource(id = R.string.debug_status_format, debugTitle, "OFF")
+
                 IconButton(
                     onClick = { 
                         if (loggingEnabled) {
@@ -644,9 +648,7 @@ fun SettingsScreen(
                                 haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                 loggingEnabled = true
                                 LogCollector.setLoggingEnabled(context, true)
-                                val status = context.getString(R.string.debug_title)
-                                val msg = context.getString(R.string.debug_status_format, status, "ON")
-                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, debugOnMsg, Toast.LENGTH_SHORT).show()
                                 debugClickCount = 0
                             }
                         }
@@ -667,9 +669,7 @@ fun SettingsScreen(
                                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                         loggingEnabled = true
                                         LogCollector.setLoggingEnabled(context, true)
-                                        val status = context.getString(R.string.debug_title)
-                                        val msg = context.getString(R.string.debug_status_format, status, "ON")
-                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, debugOnMsg, Toast.LENGTH_SHORT).show()
                                         debugClickCount = 0
                                     }
                                 }
@@ -679,9 +679,7 @@ fun SettingsScreen(
                                     haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                     loggingEnabled = false
                                     LogCollector.setLoggingEnabled(context, false)
-                                    val status = context.getString(R.string.debug_title)
-                                    val msg = context.getString(R.string.debug_status_format, status, "OFF")
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, debugOffMsg, Toast.LENGTH_SHORT).show()
                                     debugClickCount = 0
                                 }
                             }

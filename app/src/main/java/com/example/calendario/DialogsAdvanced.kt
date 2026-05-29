@@ -319,9 +319,10 @@ private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
                 IconButton(onClick = { state.clearHex() }) {
                     Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
                 }
+                val copiedMessage = stringResource(id = R.string.copied_to_clipboard, state.hexCode)
                 IconButton(onClick = {
                     clipboardManager.setText(AnnotatedString(state.hexCode))
-                    Toast.makeText(context, context.getString(R.string.copied_to_clipboard, state.hexCode), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
                 }) {
                     Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
                 }
@@ -356,9 +357,10 @@ private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
                 Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear), tint = CalendarioTheme.colors.textSystem)
             }
 
+            val copiedMessage = stringResource(id = R.string.copied_to_clipboard, state.hexCode)
             IconButton(onClick = {
                 clipboardManager.setText(AnnotatedString(state.hexCode))
-                Toast.makeText(context, context.getString(R.string.copied_to_clipboard, state.hexCode), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
             }) {
                 Icon(Icons.Default.ContentCopy, contentDescription = stringResource(id = R.string.copy_color), tint = CalendarioTheme.colors.textSystem)
             }

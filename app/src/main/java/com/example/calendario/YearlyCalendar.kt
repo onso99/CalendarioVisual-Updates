@@ -105,6 +105,7 @@ fun MiniMonthCalendar(
     modifier: Modifier = Modifier,
     fontScale: Float
 ) {
+    val locale = LocalConfiguration.current.locales[0]
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
         val startDayIndex = days.indexOf(startOfWeek)
@@ -127,7 +128,7 @@ fun MiniMonthCalendar(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar(Char::titlecase),
+            month.month.getDisplayName(TextStyle.FULL, locale).replaceFirstChar { it.titlecase(locale) },
             fontSize = monthNameFontSize,
             fontWeight = FontWeight.Normal,
             maxLines = 1,
@@ -151,10 +152,10 @@ fun MiniMonthCalendar(
                     Modifier.weight(1f),
                     Alignment.Center
                 ) {
-                    val dayText = remember(day, Locale.getDefault()) {
-                        val narrowText = day.getDisplayName(TextStyle.NARROW, Locale.getDefault())
+                    val dayText = remember(day, locale) {
+                        val narrowText = day.getDisplayName(TextStyle.NARROW, locale)
                         if (narrowText.isNotEmpty()) {
-                            narrowText.first().uppercase()
+                            narrowText.first().uppercase(locale)
                         } else {
                             ""
                         }
@@ -178,7 +179,7 @@ fun MiniMonthCalendar(
                     if (day in 1..daysInMonth) month.atDay(day) else null
                 }
             }
-            val weekFields = remember { WeekFields.of(Locale.getDefault()) }
+            val weekFields = remember(locale) { WeekFields.of(locale) }
             dayCellsData.chunked(7).forEach { weekDates ->
                 Row(
                     Modifier

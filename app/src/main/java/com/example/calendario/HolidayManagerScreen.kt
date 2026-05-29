@@ -310,6 +310,10 @@ fun HolidayManagerScreen(
     }
 
     if (adjustmentToDelete != null) {
+        val toDelete = adjustmentToDelete!!
+        val dateStr = toDelete.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
+        val holidayDeletedMsg = stringResource(id = R.string.holiday_deleted_message, dateStr, toDelete.title)
+
         AlertDialog(
             onDismissRequest = { adjustmentToDelete = null },
             title = { Text(stringResource(id = R.string.confirm_deletion_title)) },
@@ -317,21 +321,15 @@ fun HolidayManagerScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        val toDelete = adjustmentToDelete
-                        if (toDelete != null) {
-                            val newList = adjustments.toMutableList()
-                            newList.remove(toDelete)
-                            saveHolidayAdjustments(context, newList)
-                            adjustments = newList
-                            
-                            // Mostrar Toast con fecha y título
-                            val dateStr = toDelete.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
-                            val message = context.getString(R.string.holiday_deleted_message, dateStr, toDelete.title)
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        val newList = adjustments.toMutableList()
+                        newList.remove(toDelete)
+                        saveHolidayAdjustments(context, newList)
+                        adjustments = newList
+                        
+                        Toast.makeText(context, holidayDeletedMsg, Toast.LENGTH_SHORT).show()
 
-                            onRefresh()
-                            resetForm() // Siempre reseteamos el formulario tras borrar
-                        }
+                        onRefresh()
+                        resetForm()
                         adjustmentToDelete = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)

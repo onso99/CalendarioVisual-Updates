@@ -57,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -90,10 +91,11 @@ fun CharSequence.unaccent(): String {
 
 @Composable
 private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {
+    val locale = LocalConfiguration.current.locales[0]
     val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
     val startOfWeekKey = prefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
     return when (StartOfWeekOption.fromKey(startOfWeekKey)) {
-        StartOfWeekOption.SYSTEM -> WeekFields.of(Locale.getDefault()).firstDayOfWeek
+        StartOfWeekOption.SYSTEM -> WeekFields.of(locale).firstDayOfWeek
         StartOfWeekOption.MONDAY -> DayOfWeek.MONDAY
         StartOfWeekOption.SUNDAY -> DayOfWeek.SUNDAY
         StartOfWeekOption.SATURDAY -> DayOfWeek.SATURDAY
@@ -108,6 +110,7 @@ fun CalendarioScreen(
     viewModel: CalendarioViewModel
 ) {
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val scope = rememberCoroutineScope()
 
     val uiState by viewModel.uiState.collectAsState()
@@ -219,10 +222,10 @@ fun CalendarioScreen(
                 SearchScope.YEAR -> allEvents.filter { it.date.year == currentMonth.year }
                 SearchScope.ALL -> allEvents
             }
-            val normalizedQuery = searchQuery.unaccent().lowercase(Locale.getDefault())
+            val normalizedQuery = searchQuery.unaccent().lowercase(locale)
 
             val groupedEvents = scopeFilteredEvents
-                .filter { it.title.unaccent().lowercase(Locale.getDefault()).contains(normalizedQuery) }
+                .filter { it.title.unaccent().lowercase(locale).contains(normalizedQuery) }
                 .groupBy {
                     when (searchScope) {
                         SearchScope.MONTH -> it.date
@@ -392,7 +395,7 @@ fun CalendarioScreen(
                                 if (viewMode == CalendarViewMode.MONTHLY) {
                                     val monthNameColor = CalendarioTheme.colors.textLabel
                                     Text(
-                                        text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() },
+                                        text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) },
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1,
@@ -576,7 +579,7 @@ fun CalendarioScreen(
                             }
 
                             Text(
-                                text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }),
+                                text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) }),
                                 fontSize = 18.sp,
                                 color = titleTextColor,
                                 fontWeight = FontWeight.Bold,

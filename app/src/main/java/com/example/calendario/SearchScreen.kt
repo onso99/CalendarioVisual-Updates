@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -44,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -57,9 +57,10 @@ fun SearchScreen(
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
     onRefresh: () -> Unit,
-    availableCalendars: List<CalendarInfo>
+    availableCalendars: List<CalendarInfo>,
 ) {
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
@@ -68,6 +69,10 @@ fun SearchScreen(
     var selectedFestivos by remember { mutableStateOf(setOf<Festivo>()) }
     val isSelectionMode = selectedFestivos.isNotEmpty()
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+
+    val shareMultipleMessage = stringResource(id = R.string.share_multiple_message, selectedFestivos.size)
+    val calendarEventsSubject = stringResource(id = R.string.calendar_events_subject)
+    val shareEventTitle = stringResource(id = R.string.share_event)
 
     LaunchedEffect(Unit) {
         if (!isSelectionMode) focusRequester.requestFocus()
@@ -96,7 +101,13 @@ fun SearchScreen(
                         },
                         actions = {
                             IconButton(onClick = { 
-                                IcsHelper.shareEvents(context, selectedFestivos)
+                                IcsHelper.shareEvents(
+                                    context = context,
+                                    events = selectedFestivos,
+                                    shareMultipleMessage = shareMultipleMessage,
+                                    calendarEventsSubject = calendarEventsSubject,
+                                    shareEventTitle = shareEventTitle
+                                )
                             }) {
                                 Icon(Icons.Default.Share, stringResource(id = R.string.share_event), tint = Color.White)
                             }
@@ -191,10 +202,10 @@ fun SearchScreen(
                     searchResults.forEach { (date, events) ->
                         stickyHeader {
                             val headerText = when (searchScope) {
-                                SearchScope.MONTH -> date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy").withLocale(Locale.getDefault()))
-                                SearchScope.YEAR -> date.format(DateTimeFormatter.ofPattern("MMMM yyyy").withLocale(Locale.getDefault()))
-                                SearchScope.ALL -> date.format(DateTimeFormatter.ofPattern("yyyy"))
-                            }.replaceFirstChar { it.titlecase(Locale.getDefault()) }
+                                SearchScope.MONTH -> date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", locale))
+                                SearchScope.YEAR -> date.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale))
+                                SearchScope.ALL -> date.format(DateTimeFormatter.ofPattern("yyyy", locale))
+                            }.replaceFirstChar { it.titlecase(locale) }
 
                             Text(
                                 text = headerText,
@@ -218,7 +229,7 @@ fun SearchScreen(
                                     }
                                 },
                                 onLongClick = { target ->
-                                    selectedFestivos = selectedFestivos + target
+                                    selectedFestivos += target
                                 },
                                 searchScope = searchScope
                             )
@@ -231,10 +242,13 @@ fun SearchScreen(
 
     // --- Diálogo de Confirmación de Borrado ---
     if (showDeleteConfirmDialog) {
+        val deleteMultipleConfirmation = stringResource(id = R.string.delete_multiple_confirmation, selectedFestivos.size)
+        val eventsDeletedTemplate = stringResource(id = R.string.events_deleted_count)
+
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
             title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold) },
-            text = { Text(stringResource(id = R.string.delete_multiple_confirmation, selectedFestivos.size)) },
+            text = { Text(deleteMultipleConfirmation) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -254,7 +268,7 @@ fun SearchScreen(
                         }
                         
                         if (deletedCount > 0) {
-                            val msg = context.getString(R.string.events_deleted_count, deletedCount)
+                            val msg = String.format(locale, eventsDeletedTemplate, deletedCount)
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             onRefresh() // Refresca el calendario y la búsqueda
                         }
@@ -309,7 +323,7 @@ private fun EventRow(
 
     val noTitle = stringResource(id = R.string.no_title)
     val allDayEvent = stringResource(id = R.string.all_day_event)
-    val baseDesc = if (!festivo.isAllDay && festivo.startTime != null) {
+    val baseDesc = if (!festivo.isAllDay && (festivo.startTime != null)) {
         "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { noTitle }}"
     } else {
         festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else "" }

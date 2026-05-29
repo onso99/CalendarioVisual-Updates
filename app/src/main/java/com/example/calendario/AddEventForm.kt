@@ -40,7 +40,6 @@ import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.util.Locale
 
 private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
@@ -62,6 +61,9 @@ fun AddEventForm(
     repetitionRule: RepetitionRule,
     onRepetitionClick: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val locale = configuration.locales[0]
+
     Column(modifier = Modifier.padding(16.dp)) {
         // --- First Block ---
         Column(
@@ -192,7 +194,7 @@ fun AddEventForm(
                 Text(stringResource(id = R.string.summary_title, title.ifBlank { stringResource(id = R.string.no_title) }))
                 Text(stringResource(id = R.string.summary_calendar, selectedCalendar?.displayName ?: "N/A"))
 
-                val summaryFormatter = remember { DateTimeFormatter.ofPattern("E dd/MM/yyyy", Locale.getDefault()) }
+                val summaryFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy", locale) }
 
                 if (isAllDay) {
                     if (startDate.toLocalDate() != endDate.toLocalDate()) {
@@ -202,18 +204,18 @@ fun AddEventForm(
                                 Text(stringResource(id = R.string.to))
                             }
                             Column {
-                                Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase() })
-                                Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase() })
+                                Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                                Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                             }
                         }
                     } else {
-                        Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase() })
+                        Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                     }
                     Text(stringResource(id = R.string.all_day_switch))
                 } else {
-                    val summaryTimeFormatter = remember { DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm", Locale.getDefault()) }
-                    Text(stringResource(id = R.string.start) + ": " + startDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase() })
-                    Text(stringResource(id = R.string.end) + ": " + endDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase() })
+                    val summaryTimeFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm", locale) }
+                    Text(stringResource(id = R.string.start) + ": " + startDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase(locale) })
+                    Text(stringResource(id = R.string.end) + ": " + endDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase(locale) })
                 }
                 if (repetitionRule != RepetitionRule.NONE) {
                     Text(stringResource(id = R.string.repeat_event_title) + ": " + stringResource(id = repetitionRule.displayNameRes))
@@ -232,9 +234,13 @@ private fun AdaptiveDateTimeRow(
     onTimeClick: () -> Unit,
     fontScale: Float
 ) {
+    val configuration = LocalConfiguration.current
+    val locale = configuration.locales[0]
     val showTwoLines = fontScale > 1.1f
 
-    val dateText = "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar(Char::uppercase)} ${date.format(dateFormatter)}"
+    val dateText = remember(date, locale) {
+        "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${date.format(dateFormatter)}"
+    }
 
     if (showTwoLines) {
         Column(

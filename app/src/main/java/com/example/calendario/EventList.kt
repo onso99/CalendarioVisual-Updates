@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +37,6 @@ import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun MonthlyEventList(
@@ -49,6 +49,7 @@ fun MonthlyEventList(
     onEventClick: (Festivo) -> Unit
 ) {
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val themeColors = CalendarioTheme.colors
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
@@ -152,7 +153,7 @@ fun MonthlyEventList(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            String.format(Locale.getDefault(), "%02d", date.dayOfMonth),
+                                            String.format(locale, "%02d", date.dayOfMonth),
                                             color = textColor,
                                             fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
                                             fontSize = 16.sp

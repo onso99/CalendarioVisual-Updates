@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle as ComposeTextStyle
@@ -49,6 +50,7 @@ fun MonthlyCalendar(
     startOfWeek: DayOfWeek,
 ) {
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val themeColors = CalendarioTheme.colors
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
@@ -145,12 +147,12 @@ fun MonthlyCalendar(
                         .background(headerBg),
                     Alignment.Center
                 ) {
-                    val dayText = remember(day, Locale.getDefault()) {
-                        val shortText = day.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                    val dayText = remember(day, locale) {
+                        val shortText = day.getDisplayName(TextStyle.SHORT, locale)
                         if (shortText.length >= 2) {
-                            shortText.take(2).replaceFirstChar { it.titlecase(Locale.getDefault()) }
+                            shortText.take(2).replaceFirstChar { it.titlecase(locale) }
                         } else {
-                            shortText.uppercase(Locale.getDefault())
+                            shortText.uppercase(locale)
                         }
                     }
 
