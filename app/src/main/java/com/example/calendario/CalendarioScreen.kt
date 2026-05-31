@@ -78,7 +78,6 @@ import java.time.Year
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
-import java.util.Locale
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 enum class SearchScope { MONTH, YEAR, ALL }

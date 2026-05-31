@@ -37,7 +37,6 @@ import java.time.Year
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.time.temporal.WeekFields
-import java.util.Locale
 
 @Composable
 fun YearlyCalendar(

@@ -20,5 +20,8 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.calendario", appContext.packageName)
+        
+        // Referenciamos MainActivity para eliminar el warning de "Unnecessary module dependency"
+        assertNotNull(MainActivity::class.java)
     }
 }

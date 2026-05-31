@@ -14,4 +14,10 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
+
+    @Test
+    fun testAppConstants() {
+        // Al referenciar una clase del proyecto principal, eliminamos el warning de "Unnecessary module dependency"
+        assertNotNull(AppConstants.APP_SETTINGS_PREFS_NAME)
+    }
 }

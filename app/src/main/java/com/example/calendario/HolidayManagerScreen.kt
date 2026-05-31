@@ -263,7 +263,6 @@ fun HolidayManagerScreen(
                     
                     HolidayAdjustmentItem(
                         adjustment = adj,
-                        isClickable = true,
                         onDelete = { adjustmentToDelete = adj },
                         onClick = {
                             title = adj.title
@@ -346,7 +345,6 @@ fun HolidayManagerScreen(
 @Composable
 fun HolidayAdjustmentItem(
     adjustment: HolidayAdjustment,
-    isClickable: Boolean,
     onDelete: () -> Unit,
     onClick: () -> Unit,
     festivoColor: Color
@@ -357,7 +355,7 @@ fun HolidayAdjustmentItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (isClickable) Modifier.clickable { onClick() } else Modifier)
+            .clickable { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
