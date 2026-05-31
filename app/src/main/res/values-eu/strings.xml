@@ -60,8 +60,6 @@
     <string name="summary_calendar">Egutegia: %1$s</string>
     <string name="from">Noiztik:</string>
     <string name="to">Noiz arte:</string>
-    <string name="no_changes_to_save">Ez dago gordetzeko aldaketarik</string>
-    <string name="update">Eguneratu</string>
     <string name="save">Gorde</string>
     <string name="end_time_before_start_time_error">Amaiera-ordua ezin da hasiera-ordua baino lehenagokoa izan</string>
     <string name="system_default">Sistema</string>
@@ -133,9 +131,6 @@
     <string name="yearly_calendar">Urteko Egutegia</string>
     <string name="theme_exported_successfully">Gaia behar bezala esportatu da</string>
     <string name="error_exporting_theme">Errorea gaia esportatzean: %1$s</string>
-    <string name="saved_event">(Gordetako gertaera)</string>
-    <string name="unnamed_calendar">Izenik gabeko egutegia</string>
-    <string name="unknown_account">Kontu ezezaguna</string>
     <string name="widget">Widgeta</string>
     <string name="could_not_read_file">Ezin izan da fitxategia irakurri.</string>
     <string name="error_processing_theme">Errorea gaia prozesatzean: %1$s</string>
@@ -155,7 +150,6 @@
     <string name="calendar_background">Egutegiaren atzeko planoa</string>
     <string name="effect">Efektua</string>
     <string name="current_month_cell">Hilabeteko gelaxka</string>
-    <string name="read_only_event_info">Irakurtzeko soilik den gertaera. Ezin da aldatu.</string>
     <string name="calendar_source">Egutegia: %1$s</string>
     <string name="widget_no_events">Ez dago gertaerarik</string>
     <string name="predefined_themes">Gaiak</string>
@@ -172,7 +166,6 @@
     <string name="error_saving_event">Errorea gertaera gordetzean. Egiaztatu hautatutako egutegiak.</string>
     <string name="event_updated_successfully">Gertaera eguneratuta</string>
     <string name="error_deleting_event">Errorea gertaera ezabatzean</string>
-    <string name="event_instance_canceled">Gertaeraren instantzia bertan behera utzi da</string>
     <string name="error_canceling_event_instance">Errorea gertaeraren instantzia bertan behera uztean</string>
     <string name="permission_denied_calendar">Errorea: Egutegian idazteko baimena ukatuta.</string>
     <string name="unexpected_error_create">Ustekabeko errorea gertaera sortzean: %1$s</string>
@@ -181,21 +174,16 @@
     <string name="unexpected_error_cancel">Ustekabeko errorea gertaera bertan behera uztean: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Editatu gertaera errepikakorra</string>
-    <string name="edit_recurring_event_dialog_text">Gertaera hau bakarrik aldatu nahi duzu, ala serieko gertaera guztiak?</string>
     <string name="edit_recurring_event_dialog_single_event">Gertaera hau bakarrik</string>
     <string name="edit_recurring_event_dialog_all_events">Gertaera guztiak</string>
     <string name="copy_event">Kopiatu gertaera</string>
     <string name="mark_as_favorite_calendar">Markatu egutegi gogokoen gisa</string>
     <string name="favorite_calendar_marked">Egutegi gogokoena (markatuta)</string>
 
-    <string name="mark_as_working_day">Egun baliodun gisa tratatu</string>
-    <string name="mark_as_holiday">Jai-egun gisa tratatu</string>
     <string name="holiday_manager">Kudeatzailea</string>
     <string name="holiday_manager_title">Jai-egunen Kudeatzailea</string>
     <string name="festivo">Jai-eguna</string>
     <string name="laborable">Laneguna</string>
-    <string name="holiday_added_successfully">Tokiko jai-eguna gehituta</string>
-    <string name="holiday_removed_successfully">Tokiko jai-eguna kenduta</string>
     <string name="holiday_updated_successfully">Jai-egunaren doikuntza eguneratuta</string>
 
     <string name="holidays_section">Jai-egunak</string>
@@ -227,7 +215,6 @@
     <string name="error_exporting_backup">Errorea kopia sortzean: %1$s</string>
     <string name="error_importing_backup">Errorea kopia berrezartzean: %1$s</string>
     <string name="invalid_backup_file">Segurtasun-kopiaren fitxategi baliogabea</string>
-    <string name="custom_theme_needs_reimport">\"%1$s\" gai pertsonalizatua ez da aurkitu. Mesedez, inportatu berriro eskuz koloreak berreskuratzeko.</string>
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Nire egutegiko %1$d gertaera partekatzen dizkizut</string>

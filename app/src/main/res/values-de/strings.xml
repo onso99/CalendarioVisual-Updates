@@ -60,8 +60,6 @@
     <string name="summary_calendar">Kalender: %1$s</string>
     <string name="from">Von:</string>
     <string name="to">Bis:</string>
-    <string name="no_changes_to_save">Keine Änderungen zum Speichern</string>
-    <string name="update">Aktualisieren</string>
     <string name="save">Speichern</string>
     <string name="end_time_before_start_time_error">Die Endzeit darf nicht vor der Startzeit liegen</string>
     <string name="system_default">System</string>
@@ -135,9 +133,6 @@
     <string name="yearly_calendar">Jahreskalender</string>
     <string name="theme_exported_successfully">Thema erfolgreich exportiert</string>
     <string name="error_exporting_theme">Fehler beim Exportieren des Themas: %1$s</string>
-    <string name="saved_event">(Gespeichertes Ereignis)</string>
-    <string name="unnamed_calendar">Unbenannter Kalender</string>
-    <string name="unknown_account">Unbekanntes Konto</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">Datei konnte nicht gelesen werden.</string>
     <string name="error_processing_theme">Fehler beim Verarbeiten des Themas: %1$s</string>
@@ -157,7 +152,6 @@
     <string name="calendar_background">Kalenderhintergrund</string>
     <string name="effect">Effekt</string>
     <string name="current_month_cell">Zelle des aktuellen Monats</string>
-    <string name="read_only_event_info">Schreibgeschütztes Ereignis. Kann nicht geändert werden.</string>
     <string name="calendar_source">Kalender: %1$s</string>
     <string name="widget_no_events">Keine Ereignisse</string>
     <string name="predefined_themes">Themen</string>
@@ -174,7 +168,6 @@
     <string name="error_saving_event">Fehler beim Speichern des Ereignisses. Überprüfen Sie die ausgewählten Kalender.</string>
     <string name="event_updated_successfully">Ereignis aktualisiert</string>
     <string name="error_deleting_event">Fehler beim Löschen des Ereignisses</string>
-    <string name="event_instance_canceled">Ereignisinstanz abgebrochen</string>
     <string name="error_canceling_event_instance">Fehler beim Abbrechen der Ereignisinstanz</string>
     <string name="permission_denied_calendar">Fehler: Berechtigung zum Schreiben in den Kalender verweigert.</string>
     <string name="unexpected_error_create">Unerwarteter Fehler beim Erstellen des Ereignisses: %1$s</string>
@@ -183,21 +176,16 @@
     <string name="unexpected_error_cancel">Unerwarteter Fehler beim Abbrechen des Ereignisses: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Wiederkehrendes Ereignis bearbeiten</string>
-    <string name="edit_recurring_event_dialog_text">Möchten Sie nur dieses Ereignis ändern oder alle Ereignisse in der Serie?</string>
     <string name="edit_recurring_event_dialog_single_event">Nur dieses Ereignis</string>
     <string name="edit_recurring_event_dialog_all_events">Alle Ereignisse</string>
     <string name="copy_event">Ereignis kopieren</string>
     <string name="mark_as_favorite_calendar">Als Favoritenkalender markieren</string>
     <string name="favorite_calendar_marked">Favoritenkalender (markiert)</string>
 
-    <string name="mark_as_working_day">Als Arbeitstag behandeln</string>
-    <string name="mark_as_holiday">Als Feiertag behandeln</string>
     <string name="holiday_manager">Verwalter</string>
     <string name="holiday_manager_title">Feiertagsverwaltung</string>
     <string name="festivo">Feiertag</string>
     <string name="laborable">Arbeitstag</string>
-    <string name="holiday_added_successfully">Lokaler Feiertag hinzugefügt</string>
-    <string name="holiday_removed_successfully">Lokaler Feiertag entfernt</string>
     <string name="holiday_updated_successfully">Feiertagsanpassung aktualisiert</string>
 
     <string name="holidays_section">Feiertage</string>
@@ -225,7 +213,6 @@
     <string name="error_exporting_backup">Fehler beim Erstellen des Backups: %1$s</string>
     <string name="error_importing_backup">Fehler beim Wiederherstellen des Backups: %1$s</string>
     <string name="invalid_backup_file">Ungültige Backup-Datei</string>
-    <string name="custom_theme_needs_reimport">Das benutzerdefinierte Design \"%1$s\" wurde nicht gefunden. Bitte importieren Sie es manuell neu, um die Farben wiederherzustellen.</string>
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Ich teile %1$d Termine aus meinem Kalender mit dir</string>

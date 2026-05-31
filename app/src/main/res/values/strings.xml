@@ -60,8 +60,6 @@
     <string name="summary_calendar">Calendario: %1$s</string>
     <string name="from">Del:</string>
     <string name="to">Al:</string>
-    <string name="no_changes_to_save">No hay cambios que guardar</string>
-    <string name="update">Actualizar</string>
     <string name="save">Guardar</string>
     <string name="end_time_before_start_time_error">La hora de fin no puede ser anterior a la de inicio</string>
     <string name="system_default">Sistema</string>
@@ -136,9 +134,6 @@
     <string name="yearly_calendar">Calendario Anual</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="error_exporting_theme">Error al exportar el tema: %1$s</string>
-    <string name="saved_event">(Evento guardado)</string>
-    <string name="unnamed_calendar">Calendario sin nombre</string>
-    <string name="unknown_account">Cuenta desconocida</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">No se pudo leer el archivo.</string>
     <string name="error_processing_theme">Error al procesar el tema: %1$s</string>
@@ -158,7 +153,6 @@
     <string name="calendar_background">Fondo calendario</string>
     <string name="effect">Efecto</string>
     <string name="current_month_cell">Celda del mes</string>
-    <string name="read_only_event_info">Evento de solo lectura. No se puede modificar.</string>
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temas</string>
     <string name="themes_v6">Temas</string>
@@ -174,7 +168,6 @@
     <string name="error_saving_event">Error al guardar el evento. Comprueba los calendarios seleccionados.</string>
     <string name="event_updated_successfully">Evento actualizado</string>
     <string name="error_deleting_event">Error al eliminar el evento</string>
-    <string name="event_instance_canceled">Instancia de evento cancelada</string>
     <string name="error_canceling_event_instance">Error al cancelar la instancia del evento</string>
     <string name="permission_denied_calendar">Error: Permiso denegado para escribir en el calendario.</string>
     <string name="unexpected_error_create">Error inesperado al crear el evento: %1$s</string>
@@ -183,21 +176,16 @@
     <string name="unexpected_error_cancel">Error inesperado al cancelar el evento: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Editar evento recurrente</string>
-    <string name="edit_recurring_event_dialog_text">¿Quieres cambiar solo este evento, o todos los eventos de la serie?</string>
     <string name="edit_recurring_event_dialog_single_event">Solo este evento</string>
     <string name="edit_recurring_event_dialog_all_events">Todos los eventos</string>
     <string name="copy_event">Copiar evento</string>
     <string name="mark_as_favorite_calendar">Marcar como calendario favorito</string>
     <string name="favorite_calendar_marked">Calendario favorito (marcado)</string>
 
-    <string name="mark_as_working_day">Tratar como día laborable</string>
-    <string name="mark_as_holiday">Tratar como día festivo</string>
     <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Festivos</string>
     <string name="festivo">Festivo</string>
     <string name="laborable">Laborable</string>
-    <string name="holiday_added_successfully">Festivo local añadido</string>
-    <string name="holiday_removed_successfully">Festivo local eliminado</string>
     <string name="holiday_updated_successfully">Ajuste de festivo actualizado</string>
 
     <string name="holidays_section">Festivos</string>
@@ -238,7 +226,6 @@
     <string name="error_exporting_backup">Error al crear la copia: %1$s</string>
     <string name="error_importing_backup">Error al restaurar la copia: %1$s</string>
     <string name="invalid_backup_file">Archivo de copia de seguridad no válido</string>
-    <string name="custom_theme_needs_reimport">El tema personalizado \"%1$s\" no se encuentra. Por favor, reimpórtalo manualmente para recuperar los colores.</string>
 
     <!-- v1.8.80 (Holiday Import) -->
     <string name="import_holidays_confirm_title">Importar festivos</string>

@@ -60,8 +60,6 @@
     <string name="summary_calendar">日历：%1$s</string>
     <string name="from">从：</string>
     <string name="to">到：</string>
-    <string name="no_changes_to_save">沒有要儲存的變更</string>
-    <string name="update">更新</string>
     <string name="save">保存</string>
     <string name="end_time_before_start_time_error">结束时间不能早于开始时间</string>
     <string name="system_default">系统</string>
@@ -133,9 +131,6 @@
     <string name="yearly_calendar">年历</string>
     <string name="theme_exported_successfully">主题已成功导出</string>
     <string name="error_exporting_theme">导出主题时出错：%1$s</string>
-    <string name="saved_event">（已保存的活动）</string>
-    <string name="unnamed_calendar">未命名日历</string>
-    <string name="unknown_account">未知帐户</string>
     <string name="widget">小部件</string>
     <string name="could_not_read_file">无法读取文件。</string>
     <string name="error_processing_theme">处理主题时出错：%1$s</string>
@@ -155,7 +150,6 @@
     <string name="calendar_background">日历背景</string>
     <string name="effect">效果</string>
     <string name="current_month_cell">本月单元格</string>
-    <string name="read_only_event_info">只读事件。无法修改。</string>
     <string name="calendar_source">日历：%1$s</string>
     <string name="widget_no_events">没有活动</string>
     <string name="predefined_themes">主题</string>
@@ -172,7 +166,6 @@
     <string name="error_saving_event">保存活动时出错。请检查所选日历。</string>
     <string name="event_updated_successfully">活动已更新</string>
     <string name="error_deleting_event">删除活动时出错</string>
-    <string name="event_instance_canceled">活动实例已取消</string>
     <string name="error_canceling_event_instance">取消活动实例时出错</string>
     <string name="permission_denied_calendar">错误：拒绝写入日历的权限。</string>
     <string name="unexpected_error_create">创建活动时出现意外错误：%1$s</string>
@@ -181,21 +174,16 @@
     <string name="unexpected_error_cancel">取消活动时出现意外错误：%1$s</string>
 
     <string name="edit_recurring_event_dialog_title">编辑重复活动</string>
-    <string name="edit_recurring_event_dialog_text">您要仅更改此活动，还是更改系列中的所有活动？</string>
     <string name="edit_recurring_event_dialog_single_event">仅此活动</string>
     <string name="edit_recurring_event_dialog_all_events">所有活动</string>
     <string name="copy_event">复制活动</string>
     <string name="mark_as_favorite_calendar">标记为收藏日历</string>
     <string name="favorite_calendar_marked">收藏日历（已标记）</string>
 
-    <string name="mark_as_working_day">设为工作日</string>
-    <string name="mark_as_holiday">设为节假日</string>
     <string name="holiday_manager">管理</string>
     <string name="holiday_manager_title">节假日管理</string>
     <string name="festivo">节日</string>
     <string name="laborable">工作日</string>
-    <string name="holiday_added_successfully">已添加本地节假日</string>
-    <string name="holiday_removed_successfully">已移除本地节假日</string>
     <string name="holiday_updated_successfully">节假日设置已更新</string>
 
     <string name="holidays_section">节假日</string>
@@ -227,7 +215,6 @@
     <string name="error_exporting_backup">创建备份时出错：%1$s</string>
     <string name="error_importing_backup">还原备份时出错：%1$s</string>
     <string name="invalid_backup_file">备份文件无效</string>
-    <string name="custom_theme_needs_reimport">未找到自定义主题 \"%1$s\"。请手动重新导入以恢复颜色。</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 我与您分享日历中的 %1$d 个事件</string>
     <string name="calendar_events_subject">日历事件</string>

@@ -60,8 +60,6 @@
     <string name="summary_calendar">Календарь: %1$s</string>
     <string name="from">С:</string>
     <string name="to">До:</string>
-    <string name="no_changes_to_save">Нет изменений для сохранения</string>
-    <string name="update">Обновить</string>
     <string name="save">Сохранить</string>
     <string name="end_time_before_start_time_error">Время окончания не может быть раньше времени начала</string>
     <string name="system_default">Система</string>
@@ -133,9 +131,6 @@
     <string name="yearly_calendar">Годовой календарь</string>
     <string name="theme_exported_successfully">Тема успешно экспортирована</string>
     <string name="error_exporting_theme">Ошибка при экспорте темы: %1$s</string>
-    <string name="saved_event">(Сохраненное событие)</string>
-    <string name="unnamed_calendar">Безымянный календарь</string>
-    <string name="unknown_account">Неизвестная учетная запись</string>
     <string name="widget">Виджет</string>
     <string name="could_not_read_file">Не удалось прочитать файл.</string>
     <string name="error_processing_theme">Ошибка при обработке темы: %1$s</string>
@@ -155,7 +150,6 @@
     <string name="calendar_background">Фон календаря</string>
     <string name="effect">Эффект</string>
     <string name="current_month_cell">Ячейка месяца</string>
-    <string name="read_only_event_info">Событие только для чтения. Его нельзя изменить.</string>
     <string name="calendar_source">Календарь: %1$s</string>
     <string name="widget_no_events">Нет событий</string>
     <string name="predefined_themes">Темы</string>
@@ -172,7 +166,6 @@
     <string name="error_saving_event">Ошибка при сохранении события. Проверьте выбранные календари.</string>
     <string name="event_updated_successfully">Событие обновлено</string>
     <string name="error_deleting_event">Ошибка при удалении события</string>
-    <string name="event_instance_canceled">Экземпляр события отменен</string>
     <string name="error_canceling_event_instance">Ошибка при отмене экземпляра события</string>
     <string name="permission_denied_calendar">Ошибка: в разрешении на запись в календарь отказано.</string>
     <string name="unexpected_error_create">Непредвиденная ошибка при создании события: %1$s</string>
@@ -181,21 +174,16 @@
     <string name="unexpected_error_cancel">Непредвиденная ошибка при отмене события: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Редактировать повторяющееся событие</string>
-    <string name="edit_recurring_event_dialog_text">Вы хотите изменить только это событие или все события в серии?</string>
     <string name="edit_recurring_event_dialog_single_event">Только это событие</string>
     <string name="edit_recurring_event_dialog_all_events">Все события</string>
     <string name="copy_event">Копировать событие</string>
     <string name="mark_as_favorite_calendar">Отметить как избранный календарь</string>
     <string name="favorite_calendar_marked">Избранный календарь (отмечен)</string>
 
-    <string name="mark_as_working_day">Считать рабочим днем</string>
-    <string name="mark_as_holiday">Считать праздником</string>
     <string name="holiday_manager">Менеджер</string>
     <string name="holiday_manager_title">Менеджер праздников</string>
     <string name="festivo">Праздник</string>
     <string name="laborable">Рабочий день</string>
-    <string name="holiday_added_successfully">Местный праздник добавлен</string>
-    <string name="holiday_removed_successfully">Местный праздник удален</string>
     <string name="holiday_updated_successfully">Настройка праздника обновлена</string>
 
     <string name="holidays_section">Праздники</string>
@@ -227,7 +215,6 @@
     <string name="error_exporting_backup">Ошибка при создании копии: %1$s</string>
     <string name="error_importing_backup">Ошибка при восстановлении данных: %1$s</string>
     <string name="invalid_backup_file">Недопустимый файл резервной копии</string>
-    <string name="custom_theme_needs_reimport">Пользовательская тема \"%1$s\" не найдена. Переимпортируйте её вручную для восстановления цветов.</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Я делюсь с вами %1$d событиями из моего календаря</string>
     <string name="calendar_events_subject">События календаря</string>

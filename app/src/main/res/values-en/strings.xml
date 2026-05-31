@@ -60,8 +60,6 @@
     <string name="summary_calendar">Calendar: %1$s</string>
     <string name="from">From:</string>
     <string name="to">To:</string>
-    <string name="no_changes_to_save">No changes to save</string>
-    <string name="update">Update</string>
     <string name="save">Save</string>
     <string name="end_time_before_start_time_error">End time cannot be earlier than start time</string>
     <string name="system_default">System</string>
@@ -135,9 +133,6 @@
     <string name="yearly_calendar">Yearly Calendar</string>
     <string name="theme_exported_successfully">Theme exported successfully</string>
     <string name="error_exporting_theme">Error exporting theme: %1$s</string>
-    <string name="saved_event">(Saved event)</string>
-    <string name="unnamed_calendar">Unnamed calendar</string>
-    <string name="unknown_account">Unknown account</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">Could not read the file.</string>
     <string name="error_processing_theme">Error processing theme: %1$s</string>
@@ -157,7 +152,6 @@
     <string name="calendar_background">Calendar Background</string>
     <string name="effect">Effect</string>
     <string name="current_month_cell">Month Cell</string>
-    <string name="read_only_event_info">Read-only event. Cannot be modified.</string>
     <string name="calendar_source">Calendar: %1$s</string>
     <string name="widget_no_events">No events</string>
     <string name="predefined_themes">Themes</string>
@@ -174,7 +168,6 @@
     <string name="error_saving_event">Error saving event. Check the selected calendars.</string>
     <string name="event_updated_successfully">Event updated</string>
     <string name="error_deleting_event">Error deleting event</string>
-    <string name="event_instance_canceled">Event instance canceled</string>
     <string name="error_canceling_event_instance">Error canceling event instance</string>
     <string name="permission_denied_calendar">Error: Permission denied to write to the calendar.</string>
     <string name="unexpected_error_create">Unexpected error creating event: %1$s</string>
@@ -183,21 +176,16 @@
     <string name="unexpected_error_cancel">Unexpected error canceling event: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Edit recurring event</string>
-    <string name="edit_recurring_event_dialog_text">Do you want to change only this event, or all events in the series?</string>
     <string name="edit_recurring_event_dialog_single_event">Only this event</string>
     <string name="edit_recurring_event_dialog_all_events">All events</string>
     <string name="copy_event">Copy event</string>
     <string name="mark_as_favorite_calendar">Mark as favorite calendar</string>
     <string name="favorite_calendar_marked">Favorite calendar (marked)</string>
 
-    <string name="mark_as_working_day">Treat as working day</string>
-    <string name="mark_as_holiday">Treat as holiday</string>
     <string name="holiday_manager">Manager</string>
     <string name="holiday_manager_title">Holiday Manager</string>
     <string name="festivo">Holiday</string>
     <string name="laborable">Working day</string>
-    <string name="holiday_added_successfully">Local holiday added</string>
-    <string name="holiday_removed_successfully">Local holiday removed</string>
     <string name="holiday_updated_successfully">Holiday adjustment updated</string>
 
     <string name="holidays_section">Holidays</string>
@@ -226,7 +214,6 @@
     <string name="error_exporting_backup">Error creating backup: %1$s</string>
     <string name="error_importing_backup">Error restoring backup: %1$s</string>
     <string name="invalid_backup_file">Invalid backup file</string>
-    <string name="custom_theme_needs_reimport">The custom theme \"%1$s\" was not found. Please re-import it manually to recover colors.</string>
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 I share %1$d events from my calendar with you</string>

@@ -60,8 +60,6 @@
     <string name="summary_calendar">Calendário: %1$s</string>
     <string name="from">De:</string>
     <string name="to">Para:</string>
-    <string name="no_changes_to_save">Nenhuma alteração a guardar</string>
-    <string name="update">Atualizar</string>
     <string name="save">Guardar</string>
     <string name="end_time_before_start_time_error">A hora de fim não pode ser anterior à hora de início</string>
     <string name="system_default">Sistema</string>
@@ -133,9 +131,6 @@
     <string name="yearly_calendar">Calendário Anual</string>
     <string name="theme_exported_successfully">Tema exportado com sucesso</string>
     <string name="error_exporting_theme">Erro ao exportar o tema: %1$s</string>
-    <string name="saved_event">(Evento guardado)</string>
-    <string name="unnamed_calendar">Calendário sem nome</string>
-    <string name="unknown_account">Conta desconhecida</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">Não foi possível ler o ficheiro.</string>
     <string name="error_processing_theme">Erro ao processar o tema: %1$s</string>
@@ -155,7 +150,6 @@
     <string name="calendar_background">Fundo do calendário</string>
     <string name="effect">Efeito</string>
     <string name="current_month_cell">Célula do mês</string>
-    <string name="read_only_event_info">Evento somente leitura. Não pode ser modificado.</string>
     <string name="calendar_source">Calendário: %1$s</string>
     <string name="widget_no_events">Não há eventos</string>
     <string name="predefined_themes">Temas</string>
@@ -172,7 +166,6 @@
     <string name="error_saving_event">Erro ao guardar o evento. Verifique os calendários selecionados.</string>
     <string name="event_updated_successfully">Evento atualizado</string>
     <string name="error_deleting_event">Erro ao eliminar o evento</string>
-    <string name="event_instance_canceled">Instância de evento cancelada</string>
     <string name="error_canceling_event_instance">Erro ao cancelar a instância do evento</string>
     <string name="permission_denied_calendar">Erro: Permissão negada para escrever no calendário.</string>
     <string name="unexpected_error_create">Erro inesperado ao criar o evento: %1$s</string>
@@ -181,21 +174,16 @@
     <string name="unexpected_error_cancel">Erro inesperado ao cancelar o evento: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Editar evento recorrente</string>
-    <string name="edit_recurring_event_dialog_text">Deseja alterar apenas este evento ou todos os eventos da série?</string>
     <string name="edit_recurring_event_dialog_single_event">Apenas este evento</string>
     <string name="edit_recurring_event_dialog_all_events">Todos os eventos</string>
     <string name="copy_event">Copiar evento</string>
     <string name="mark_as_favorite_calendar">Marcar como calendário favorito</string>
     <string name="favorite_calendar_marked">Calendário favorito (marcado)</string>
 
-    <string name="mark_as_working_day">Tratar como dia útil</string>
-    <string name="mark_as_holiday">Tratar como feriado</string>
     <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Feriados</string>
     <string name="festivo">Feriado</string>
     <string name="laborable">Dia útil</string>
-    <string name="holiday_added_successfully">Feriado local adicionado</string>
-    <string name="holiday_removed_successfully">Feriado local removido</string>
     <string name="holiday_updated_successfully">Ajuste de feriado atualizado</string>
     <string name="holidays_section">Feriados</string>
     <string name="import_holidays">Importar feriados…</string>
@@ -225,7 +213,6 @@
     <string name="error_exporting_backup">Erro ao criar cópia de segurança: %1$s</string>
     <string name="error_importing_backup">Erro ao restaurar cópia de segurança: %1$s</string>
     <string name="invalid_backup_file">Ficheiro de cópia de segurança inválido</string>
-    <string name="custom_theme_needs_reimport">O tema personalizado \"%1$s\" não foi encontrado. Reimporte-o manualmente para recuperar as cores.</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Compartilho com você %1$d eventos do meu calendário</string>
     <string name="calendar_events_subject">Eventos do Calendário</string>

@@ -60,8 +60,6 @@
     <string name="summary_calendar">Calendari: %1$s</string>
     <string name="from">De:</string>
     <string name="to">A:</string>
-    <string name="no_changes_to_save">No hi ha canvis per desar</string>
-    <string name="update">Actualizar</string>
     <string name="save">Desar</string>
     <string name="end_time_before_start_time_error">L\'hora de fi no pot ser anterior a la d\'inici</string>
     <string name="system_default">Sistema</string>
@@ -133,9 +131,6 @@
     <string name="yearly_calendar">Calendari Anual</string>
     <string name="theme_exported_successfully">Tema exportat amb èxit</string>
     <string name="error_exporting_theme">Error en exportar el tema: %1$s</string>
-    <string name="saved_event">(Esdeveniment desat)</string>
-    <string name="unnamed_calendar">Calendari sense nom</string>
-    <string name="unknown_account">Compte desconegut</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">No s\'ha pogut llegir el fitxer.</string>
     <string name="error_processing_theme">Error en processar el tema: %1$s</string>
@@ -155,7 +150,6 @@
     <string name="calendar_background">Fons calendari</string>
     <string name="effect">Efecte</string>
     <string name="current_month_cell">Cel·la del mes</string>
-    <string name="read_only_event_info">Esdeveniment de només lectura. No es pot modificar.</string>
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="widget_no_events">No hi ha esdeveniments</string>
     <string name="predefined_themes">Temes</string>
@@ -172,7 +166,6 @@
     <string name="error_saving_event">Error en desar l\'esdeveniment. Comprova els calendaris seleccionats.</string>
     <string name="event_updated_successfully">Esdeveniment actualitzat</string>
     <string name="error_deleting_event">Error en eliminar l\'esdeveniment</string>
-    <string name="event_instance_canceled">Instància d\'esdeveniment cancel·lada</string>
     <string name="error_canceling_event_instance">Error en cancel·lar la instància de l\'esdeveniment</string>
     <string name="permission_denied_calendar">Error: Permís denegat per escriure al calendari.</string>
     <string name="unexpected_error_create">Error inesperat en crear l\'esdeveniment: %1$s</string>
@@ -181,21 +174,16 @@
     <string name="unexpected_error_cancel">Error inesperat en cancel·lar l\'esdeveniment: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Editar esdeveniment recurrent</string>
-    <string name="edit_recurring_event_dialog_text">Vols canviar només aquest esdeveniment, o tots els esdeveniments de la sèrie?</string>
     <string name="edit_recurring_event_dialog_single_event">Només aquest esdeveniment</string>
     <string name="edit_recurring_event_dialog_all_events">Tots els esdeveniments</string>
     <string name="copy_event">Copiar esdeveniment</string>
     <string name="mark_as_favorite_calendar">Marcar como a calendari favorit</string>
     <string name="favorite_calendar_marked">Calendari favorit (marcat)</string>
 
-    <string name="mark_as_working_day">Tractar com a dia laborable</string>
-    <string name="mark_as_holiday">Tractar com a dia festiu</string>
     <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Festius</string>
     <string name="festivo">Festiu</string>
     <string name="laborable">Laborable</string>
-    <string name="holiday_added_successfully">Festiu local afegit</string>
-    <string name="holiday_removed_successfully">Festiu local eliminat</string>
     <string name="holiday_updated_successfully">Ajust de festiu actualitzat</string>
 
     <string name="holidays_section">Festius</string>
@@ -227,7 +215,6 @@
     <string name="error_exporting_backup">Error en crear la còpia: %1$s</string>
     <string name="error_importing_backup">Error en restaurar la còpia: %1$s</string>
     <string name="invalid_backup_file">Fitxer de còpia de seguretat no vàlid</string>
-    <string name="custom_theme_needs_reimport">El tema personalitzat \"%1$s\" no s\'ha trobat. Si us plau, torna a importar-lo manualment per recuperar els colors.</string>
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Et comparteixo %1$d esdeveniments del meu calendari</string>

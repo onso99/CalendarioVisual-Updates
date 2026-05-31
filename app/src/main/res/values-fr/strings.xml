@@ -60,8 +60,6 @@
     <string name="summary_calendar">Calendrier : %1$s</string>
     <string name="from">De :</string>
     <string name="to">À :</string>
-    <string name="no_changes_to_save">Aucune modification à enregistrer</string>
-    <string name="update">Mettre à jour</string>
     <string name="save">Enregistrer</string>
     <string name="end_time_before_start_time_error">L\'heure de fin ne peut pas être antérieure à l\'heure de début</string>
     <string name="system_default">Système</string>
@@ -135,9 +133,6 @@
     <string name="yearly_calendar">Calendrier annuel</string>
     <string name="theme_exported_successfully">Thème exporté avec succès</string>
     <string name="error_exporting_theme">Erreur lors de l\'exportation du thème : %1$s</string>
-    <string name="saved_event">(Événement enregistré)</string>
-    <string name="unnamed_calendar">Calendrier sans nom</string>
-    <string name="unknown_account">Compte inconnu</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">Impossible de lire le fichier.</string>
     <string name="error_processing_theme">Erreur lors du traitement du thème : %1$s</string>
@@ -157,7 +152,6 @@
     <string name="calendar_background">Fond calendrier</string>
     <string name="effect">Effet</string>
     <string name="current_month_cell">Cellule mois</string>
-    <string name="read_only_event_info">Événement en lecture seule. Ne peut pas être modifié.</string>
     <string name="calendar_source">Calendrier : %1$s</string>
     <string name="widget_no_events">Aucun événement</string>
     <string name="predefined_themes">Thèmes</string>
@@ -174,7 +168,6 @@
     <string name="error_saving_event">Erreur lors de l\'enregistrement de l\'événement. Vérifiez les calendriers sélectionnés.</string>
     <string name="event_updated_successfully">Événement mis à jour</string>
     <string name="error_deleting_event">Erreur lors de la suppression de l\'événement</string>
-    <string name="event_instance_canceled">Instance d\'événement annulée</string>
     <string name="error_canceling_event_instance">Erreur lors de l\'annulation de l\'instance d\'événement</string>
     <string name="permission_denied_calendar">Erreur : Autorisation d\'écrire dans le calendrier refusée.</string>
     <string name="unexpected_error_create">Erreur inattendue lors de la création de l\'événement : %1$s</string>
@@ -183,21 +176,16 @@
     <string name="unexpected_error_cancel">Erreur inattendue lors de l\'annulation de l\'événement : %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Modifier l\'événement récurrent</string>
-    <string name="edit_recurring_event_dialog_text">Voulez-vous modifier cet événement uniquement ou tous les événements de la série ?</string>
     <string name="edit_recurring_event_dialog_single_event">Cet événement uniquement</string>
     <string name="edit_recurring_event_dialog_all_events">Tous les événements</string>
     <string name="copy_event">Copier l\'événement</string>
     <string name="mark_as_favorite_calendar">Marquer comme calendrier favori</string>
     <string name="favorite_calendar_marked">Calendrier favori (marqué)</string>
 
-    <string name="mark_as_working_day">Traiter comme jour ouvrable</string>
-    <string name="mark_as_holiday">Traiter comme jour férié</string>
     <string name="holiday_manager">Gestionnaire</string>
     <string name="holiday_manager_title">Gestionnaire de jours fériés</string>
     <string name="festivo">Jour férié</string>
     <string name="laborable">Jour ouvrable</string>
-    <string name="holiday_added_successfully">Jour férié local ajouté</string>
-    <string name="holiday_removed_successfully">Jour férié local supprimé</string>
     <string name="holiday_updated_successfully">Ajustement du jour férié mis à jour</string>
 
     <string name="holidays_section">Jours fériés</string>
@@ -226,7 +214,6 @@
     <string name="error_exporting_backup">Erreur lors de la création de la sauvegarde : %1$s</string>
     <string name="error_importing_backup">Erreur lors de la restauration de la sauvegarde : %1$s</string>
     <string name="invalid_backup_file">Fichier de sauvegarde non valide</string>
-    <string name="custom_theme_needs_reimport">Le thème personnalisé \"%1$s\" est introuvable. Veuillez le réimporter manuellement pour récupérer les couleurs.</string>
 
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Je partage %1$d événements de mon calendrier avec vous</string>

@@ -60,8 +60,6 @@
     <string name="summary_calendar">カレンダー：%1$s</string>
     <string name="from">から：</string>
     <string name="to">まで：</string>
-    <string name="no_changes_to_save">保存する変更はありません</string>
-    <string name="update">更新</string>
     <string name="save">保存</string>
     <string name="end_time_before_start_time_error">終了時刻を開始時刻より前にすることはできません</string>
     <string name="system_default">システム</string>
@@ -133,9 +131,6 @@
     <string name="yearly_calendar">年間カレンダー</string>
     <string name="theme_exported_successfully">テーマが正常にエクスポートされました</string>
     <string name="error_exporting_theme">テーマのエクスポート中にエラーが発生しました：%1$s</string>
-    <string name="saved_event">（保存されたイベント）</string>
-    <string name="unnamed_calendar">無名のカレンダー</string>
-    <string name="unknown_account">不明なアカウント</string>
     <string name="widget">ウィジェット</string>
     <string name="could_not_read_file">ファイルを読み取れませんでした。</string>
     <string name="error_processing_theme">テーマの処理中にエラーが発生しました：%1$s</string>
@@ -155,7 +150,6 @@
     <string name="calendar_background">カレンダーの背景</string>
     <string name="effect">効果</string>
     <string name="current_month_cell">月のセル</string>
-    <string name="read_only_event_info">読み取り専用イベント。変更できません。</string>
     <string name="calendar_source">カレンダー：%1$s</string>
     <string name="widget_no_events">イベントはありません</string>
     <string name="predefined_themes">テーマ</string>
@@ -172,7 +166,6 @@
     <string name="error_saving_event">イベントの保存中にエラーが発生しました。選択したカレンダーを確認してください。</string>
     <string name="event_updated_successfully">イベントが更新されました</string>
     <string name="error_deleting_event">イベントの削除中にエラーが発生しました</string>
-    <string name="event_instance_canceled">イベントインスタンスがキャンセルされました</string>
     <string name="error_canceling_event_instance">イベントインスタンスのキャンセル中にエラーが発生しました</string>
     <string name="permission_denied_calendar">エラー：カレンダーへの書き込み権限が拒否されました。</string>
     <string name="unexpected_error_create">イベント作成中に予期しないエラーが発生しました：%1$s</string>
@@ -181,21 +174,16 @@
     <string name="unexpected_error_cancel">イベントキャンセル中に予期しないエラーが発生しました：%1$s</string>
 
     <string name="edit_recurring_event_dialog_title">定期的なイベントを編集</string>
-    <string name="edit_recurring_event_dialog_text">このイベントのみを変更しますか、それともシリーズのすべてのイベントを変更しますか？</string>
     <string name="edit_recurring_event_dialog_single_event">このイベントのみ</string>
     <string name="edit_recurring_event_dialog_all_events">すべてのイベント</string>
     <string name="copy_event">イベントをコピー</string>
     <string name="mark_as_favorite_calendar">お気に入りのカレンダーとしてマーク</string>
     <string name="favorite_calendar_marked">お気に入りのカレンダー（マーク付き）</string>
 
-    <string name="mark_as_working_day">平日として扱う</string>
-    <string name="mark_as_holiday">祝日として扱う</string>
     <string name="holiday_manager">管理</string>
     <string name="holiday_manager_title">祝日管理</string>
     <string name="festivo">祝日</string>
     <string name="laborable">平日</string>
-    <string name="holiday_added_successfully">現地の祝日を追加しました</string>
-    <string name="holiday_removed_successfully">現地の祝日を削除しました</string>
     <string name="holiday_updated_successfully">祝日設定を更新しました</string>
 
     <string name="holidays_section">祝日</string>
@@ -226,7 +214,6 @@
     <string name="error_exporting_backup">バックアップ作成中にエラーが発生しました: %1$s</string>
     <string name="error_importing_backup">バックアップ復元中にエラーが発生しました: %1$s</string>
     <string name="invalid_backup_file">無効なバックアップファイル</string>
-    <string name="custom_theme_needs_reimport">カスタムテーマ \"%1$s\" が見つかりません。色を復元するには、手動で再インポートしてください。</string>
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 カレンダーから %1$d 個の予定を共有します</string>
     <string name="calendar_events_subject">カレンダーのイベント</string>
