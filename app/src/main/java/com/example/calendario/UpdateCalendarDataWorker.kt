@@ -27,7 +27,7 @@ class UpdateCalendarDataWorker(
 
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle("Actualizando calendario...")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Asegúrate de que este icono existe
+            .setSmallIcon(R.drawable.ic_notification_icon) // Icono vectorial específico para notificaciones
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
