@@ -60,7 +60,6 @@
     <string name="summary_calendar">Calendari: %1$s</string>
     <string name="from">De:</string>
     <string name="to">A:</string>
-    <string name="at"> a les </string>
     <string name="no_changes_to_save">No hi ha canvis per desar</string>
     <string name="update">Actualizar</string>
     <string name="save">Desar</string>

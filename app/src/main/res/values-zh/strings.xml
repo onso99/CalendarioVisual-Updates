@@ -60,7 +60,6 @@
     <string name="summary_calendar">日历：%1$s</string>
     <string name="from">从：</string>
     <string name="to">到：</string>
-    <string name="at">在</string>
     <string name="no_changes_to_save">沒有要儲存的變更</string>
     <string name="update">更新</string>
     <string name="save">保存</string>

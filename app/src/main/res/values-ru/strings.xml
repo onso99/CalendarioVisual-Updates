@@ -60,7 +60,6 @@
     <string name="summary_calendar">Календарь: %1$s</string>
     <string name="from">С:</string>
     <string name="to">До:</string>
-    <string name="at"> в </string>
     <string name="no_changes_to_save">Нет изменений для сохранения</string>
     <string name="update">Обновить</string>
     <string name="save">Сохранить</string>

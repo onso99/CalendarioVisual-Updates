@@ -60,7 +60,6 @@
     <string name="summary_calendar">Calendario: %1$s</string>
     <string name="from">Da:</string>
     <string name="to">A:</string>
-    <string name="at"> alle </string>
     <string name="no_changes_to_save">Nessuna modifica da salvare</string>
     <string name="update">Aggiorna</string>
     <string name="save">Salva</string>
