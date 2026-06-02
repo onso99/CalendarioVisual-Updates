@@ -20,14 +20,14 @@ fun createEvent(
     endDate: LocalDateTime,
     isAllDay: Boolean,
     repetitionRule: RepetitionRule
-): Boolean {
+): Long? {
     if (calendarId == null) {
         Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
-        return false
+        return null
     }
     if (title.isBlank()) {
         Toast.makeText(context, R.string.title_empty_error, Toast.LENGTH_SHORT).show()
-        return false
+        return null
     }
 
     return try {
@@ -49,17 +49,17 @@ fun createEvent(
 
         if (results.isNotEmpty() && results[0].uri != null) {
             Toast.makeText(context, R.string.event_saved_successfully, Toast.LENGTH_SHORT).show()
-            true
+            ContentUris.parseId(results[0].uri!!)
         } else {
             Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
-            false
+            null
         }
     } catch (_: SecurityException) {
         Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
-        false
+        null
     } catch (e: Exception) {
         Toast.makeText(context, context.getString(R.string.unexpected_error_create, e.message), Toast.LENGTH_LONG).show()
-        false
+        null
     }
 }
 
@@ -126,7 +126,7 @@ fun updateSingleEventInSeries(
     startDate: LocalDateTime,
     endDate: LocalDateTime,
     isAllDay: Boolean
-): Boolean {
+): Long? {
     return try {
         val originalInstanceStartTime = if (originalEvent.isAllDay) {
             originalEvent.date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
@@ -146,17 +146,17 @@ fun updateSingleEventInSeries(
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             
             Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
-            true
+            ContentUris.parseId(uri)
         } else {
             Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
-            false
+            null
         }
     } catch (_: SecurityException) {
         Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
-        false
+        null
     } catch (e: Exception) {
         Toast.makeText(context, context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG).show()
-        false
+        null
     }
 }
 
@@ -169,6 +169,10 @@ fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: 
             // Forzar actualización del widget tras eliminar un evento
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             
+            // Cancelamos la alarma asociada si existe
+            AlarmUtils.cancelAlarm(context, eventId)
+            AlarmUtils.saveAlarmSetting(context, eventId, null)
+
             val dateStr = eventDate.format(DateTimeFormatter.ofPattern("d/M/yy"))
             val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
@@ -213,6 +217,10 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         if (uri != null) {
             // Forzar actualización del widget tras cancelar una instancia
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+
+            // Cancelamos la alarma asociada si existe
+            AlarmUtils.cancelAlarm(context, eventToCancel.id)
+            AlarmUtils.saveAlarmSetting(context, eventToCancel.id, null)
 
             val dateStr = eventToCancel.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
             val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title

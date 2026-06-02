@@ -235,6 +235,9 @@
     <string name="import_holidays_merge">Add</string>
     <string name="import_holidays_replace">Replace</string>
 
+    <string name="alarm">Alarm</string>
+    <string name="alarm_time">Alarm time</string>
+
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">birthday,bday,anniversary</string>
     <string name="greeting_keywords">happy,congratulations,congrats</string>

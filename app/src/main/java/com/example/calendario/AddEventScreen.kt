@@ -4,10 +4,15 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -54,8 +59,43 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+
+private fun processAlarmForEvent(
+    context: Context,
+    eventId: Long,
+    hasAlarm: Boolean,
+    alarmTime: LocalTime,
+    startDate: LocalDateTime,
+    title: String,
+    isAllDay: Boolean,
+    selectedCalendarId: Long?,
+    repetitionRule: RepetitionRule
+) {
+    if (hasAlarm) {
+        // Forzamos limpieza de segundos para el cálculo exacto del offset
+        val cleanStartTime = startDate.toLocalTime().withSecond(0).withNano(0)
+        val cleanAlarmTime = alarmTime.withSecond(0).withNano(0)
+        
+        val offset = Duration.between(cleanAlarmTime, cleanStartTime).toMinutes().toInt()
+        AlarmUtils.saveAlarmSetting(context, eventId, offset)
+        val tempFestivo = Festivo(
+            id = eventId,
+            title = title,
+            description = null,
+            date = startDate.toLocalDate(),
+            startTime = if (isAllDay) null else startDate.toLocalTime(),
+            endTime = null,
+            isAllDay = isAllDay,
+            calendarId = selectedCalendarId ?: -1,
+            isFromHolidaySource = false,
+            rrule = repetitionRule.rrule
+        )
+        AlarmUtils.scheduleAlarm(context, tempFestivo)
+    } else {
+        AlarmUtils.saveAlarmSetting(context, eventId, null)
+        AlarmUtils.cancelAlarm(context, eventId)
+    }
+}
 
 enum class RepetitionRule(val rrule: String?, val displayNameRes: Int) {
     NONE(null, R.string.does_not_repeat),
@@ -107,6 +147,11 @@ fun AddEventScreen(
 ) {
     val context = LocalContext.current
 
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { _ -> /* Seguimos adelante independientemente */ }
+    )
+
     var title by remember { mutableStateOf("") }
     var isAllDay by remember { mutableStateOf(true) }
     var selectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
@@ -122,6 +167,10 @@ fun AddEventScreen(
     var isCopying by remember { mutableStateOf(false) }
     var showEditRecurringDialog by remember { mutableStateOf(false) }
 
+    var hasAlarm by remember { mutableStateOf(false) }
+    var alarmTime by remember { mutableStateOf(LocalTime.now()) }
+    var showAlarmTimePickerDialog by remember { mutableStateOf(false) }
+
     var initialTitle by remember { mutableStateOf("") }
     var initialIsAllDay by remember { mutableStateOf(true) }
     var initialSelectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
@@ -134,9 +183,22 @@ fun AddEventScreen(
             title = localEventToEdit!!.title
             isAllDay = localEventToEdit!!.isAllDay
             selectedCalendar = editableCalendars.find { it.id == localEventToEdit!!.calendarId }
-            startDate = if (localEventToEdit!!.isAllDay) localEventToEdit!!.date.atStartOfDay() else LocalDateTime.of(localEventToEdit!!.date, localEventToEdit!!.startTime ?: LocalTime.now())
-            endDate = if (localEventToEdit!!.isAllDay) localEventToEdit!!.date.atStartOfDay() else localEventToEdit!!.endTime?.let { LocalDateTime.of(localEventToEdit!!.date, it) } ?: startDate.plusHours(1)
+            
+            // Saneamos tiempos al cargar para edición: forzar 0 segundos/nanos
+            startDate = (if (localEventToEdit!!.isAllDay) localEventToEdit!!.date.atStartOfDay() else LocalDateTime.of(localEventToEdit!!.date, localEventToEdit!!.startTime ?: LocalTime.now()))
+                .withSecond(0).withNano(0)
+            endDate = (if (localEventToEdit!!.isAllDay) localEventToEdit!!.date.atStartOfDay() else localEventToEdit!!.endTime?.let { LocalDateTime.of(localEventToEdit!!.date, it) } ?: startDate.plusHours(1))
+                .withSecond(0).withNano(0)
+
             repetitionRule = RepetitionRule.entries.find { it.rrule != null && localEventToEdit!!.rrule?.startsWith(it.rrule) == true } ?: RepetitionRule.NONE
+
+            val offset = AlarmUtils.getAlarmOffset(context, localEventToEdit!!.id)
+            hasAlarm = offset != null
+            alarmTime = if (offset != null) {
+                startDate.toLocalTime().minusMinutes(offset.toLong())
+            } else {
+                startDate.toLocalTime().minusMinutes(20)
+            }
 
             initialTitle = title
             initialIsAllDay = isAllDay
@@ -147,7 +209,7 @@ fun AddEventScreen(
         } else if (isCopying) {
             isCopying = false
         } else {
-            val now = LocalDateTime.now()
+            val now = LocalDateTime.now().withSecond(0).withNano(0)
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             title = ""
             isAllDay = true
@@ -155,6 +217,8 @@ fun AddEventScreen(
             endDate = effectiveInitialDateTime.plusHours(1)
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
+            hasAlarm = false
+            alarmTime = startDate.toLocalTime().minusMinutes(20)
 
             initialTitle = ""
             initialIsAllDay = true
@@ -165,14 +229,16 @@ fun AddEventScreen(
         }
     }
 
-    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule) {
+    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, hasAlarm, alarmTime) {
         derivedStateOf {
             title != initialTitle ||
             isAllDay != initialIsAllDay ||
             selectedCalendar?.id != initialSelectedCalendar?.id ||
             startDate != initialStartDate ||
             endDate != initialEndDate ||
-            repetitionRule != initialRepetitionRule
+            repetitionRule != initialRepetitionRule ||
+            hasAlarm != (AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) != null) ||
+            (hasAlarm && alarmTime != startDate.toLocalTime().minusMinutes((AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) ?: 20).toLong()))
         }
     }
 
@@ -186,12 +252,17 @@ fun AddEventScreen(
             if (error != null) {
                 saveError = error
             } else {
-                val success = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
-                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+                val createdEventId = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
+                    val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
+                    if (success) localEventToEdit!!.id else null
                 } else {
                     createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
                 }
-                if (success) onSave()
+
+                if (createdEventId != null) {
+                    processAlarmForEvent(context, createdEventId, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule)
+                    onSave()
+                }
             }
         }
     }
@@ -247,7 +318,20 @@ fun AddEventScreen(
                 isAllDay = isAllDay, onAllDayChange = { isAllDay = it },
                 startDate = startDate, onStartDateClick = { showStartDatePickerDialog = true }, onStartTimeClick = { showStartTimePickerDialog = true },
                 endDate = endDate, onEndDateClick = { showEndDatePickerDialog = true }, onEndTimeClick = { showEndTimePickerDialog = true },
-                repetitionRule = repetitionRule, onRepetitionClick = { showRepetitionDialog = true }
+                repetitionRule = repetitionRule, onRepetitionClick = { showRepetitionDialog = true },
+                hasAlarm = hasAlarm, 
+                onHasAlarmChange = { 
+                    hasAlarm = it
+                    if (it) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                        alarmTime = startDate.toLocalTime().minusMinutes(20)
+                        showAlarmTimePickerDialog = true
+                    }
+                },
+                alarmTime = alarmTime,
+                onAlarmTimeClick = { showAlarmTimePickerDialog = true }
             )
         }
     }
@@ -277,14 +361,20 @@ fun AddEventScreen(
 
                 when (option) {
                     EditRecurringOption.SINGLE_EVENT -> {
-                        val success = localEventToEdit?.let { 
+                        val createdId = localEventToEdit?.let { 
                             updateSingleEventInSeries(context, it, title, startDate, endDate, isAllDay)
-                        } ?: false
-                        if (success) onSave()
+                        }
+                        if (createdId != null) {
+                            processAlarmForEvent(context, createdId, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule)
+                            onSave()
+                        }
                     }
                     EditRecurringOption.ALL_EVENTS -> {
                         val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
-                        if (success) onSave()
+                        if (success) {
+                            processAlarmForEvent(context, localEventToEdit!!.id, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule)
+                            onSave()
+                        }
                     }
                 }
             }
@@ -386,5 +476,12 @@ fun AddEventScreen(
 
     if (showRepetitionDialog) {
         RepetitionSelectionDialog(currentRule = repetitionRule, onConfirm = { repetitionRule = it; showRepetitionDialog = false }, onDismissRequest = { showRepetitionDialog = false })
+    }
+
+    if (showAlarmTimePickerDialog) {
+        TimePickerDialog(onDismissRequest = { showAlarmTimePickerDialog = false }, onConfirm = { hour, minute ->
+            alarmTime = LocalTime.of(hour, minute)
+            showAlarmTimePickerDialog = false
+        }, initialHour = alarmTime.hour, initialMinute = alarmTime.minute)
     }
 }

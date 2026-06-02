@@ -6,6 +6,7 @@ object AppConstants {
     // SharedPreferences
     const val APP_SETTINGS_PREFS_NAME = "app_preferences" // Sincronizado con BackupManager
     const val HOLIDAY_PREFS_NAME = "holiday_adjustments"
+    const val ALARM_PREFS_NAME = "alarm_preferences"
 
     // Preference Keys
     const val KEY_START_OF_WEEK = "start_of_week"

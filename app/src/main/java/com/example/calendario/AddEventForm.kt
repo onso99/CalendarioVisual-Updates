@@ -59,7 +59,11 @@ fun AddEventForm(
     onEndDateClick: () -> Unit,
     onEndTimeClick: () -> Unit,
     repetitionRule: RepetitionRule,
-    onRepetitionClick: () -> Unit
+    onRepetitionClick: () -> Unit,
+    hasAlarm: Boolean,
+    onHasAlarmChange: (Boolean) -> Unit,
+    alarmTime: java.time.LocalTime,
+    onAlarmTimeClick: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
@@ -176,6 +180,49 @@ fun AddEventForm(
                     tint = CalendarioTheme.colors.textSystem
                 )
             }
+
+            // --- Alarm Section ---
+            HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(id = R.string.alarm), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
+                Switch(
+                    checked = hasAlarm,
+                    onCheckedChange = onHasAlarmChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = CalendarioTheme.colors.cabecera,
+                        checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
+                        uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                        uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+                    )
+                )
+            }
+
+            if (hasAlarm) {
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onAlarmTimeClick)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.alarm_time),
+                        modifier = Modifier.weight(1f),
+                        color = CalendarioTheme.colors.textSystem
+                    )
+                    Text(
+                        text = alarmTime.format(timeFormatter),
+                        color = CalendarioTheme.colors.textSystem
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -219,6 +266,9 @@ fun AddEventForm(
                 }
                 if (repetitionRule != RepetitionRule.NONE) {
                     Text(stringResource(id = R.string.repeat_event_title) + ": " + stringResource(id = repetitionRule.displayNameRes))
+                }
+                if (hasAlarm) {
+                    Text(stringResource(id = R.string.alarm) + ": " + alarmTime.format(timeFormatter))
                 }
             }
         }

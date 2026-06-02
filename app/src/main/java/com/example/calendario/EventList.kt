@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -165,6 +166,17 @@ fun MonthlyEventList(
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                             modifier = Modifier.padding(start = 8.dp)
+                                        )
+                                    }
+                                    val alarmOffset = remember(festivo.id) { AlarmUtils.getAlarmOffset(context, festivo.id) }
+                                    if (alarmOffset != null) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Notifications,
+                                            contentDescription = stringResource(id = R.string.alarm),
+                                            tint = iconColor,
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .size(16.dp)
                                         )
                                     }
                                     if (festivo.rrule != null) {
