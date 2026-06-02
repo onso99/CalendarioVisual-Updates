@@ -2,7 +2,6 @@ package com.example.calendario
 
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,10 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
@@ -55,6 +58,63 @@ fun MonthlyCalendar(
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
     val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
     val effectType = remember(themeColors) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
+
+    val intelligentTodayBorderColor = remember(themeColors.monthlyCalendarTodayCellBorder, themeColors.settingsBackground) {
+        val hsl = FloatArray(3)
+        ColorUtils.colorToHSL(themeColors.monthlyCalendarTodayCellBorder.toArgb(), hsl)
+        val originalHue = hsl[0]
+
+        // Ajustar color según la luminancia del fondo de ajustes (modo app)
+        val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
+        
+        if (isAppDark) {
+            // Modo Oscuro: Ecualización Cromática por Tramos de Percepción
+            hsl[0] = (originalHue + 25f) % 360
+            
+            when (originalHue) {
+                // Océano y Grafito: Ajustado para no deslumbrar
+                in 190f..225f -> {
+                    hsl[1] = 0.90f 
+                    hsl[2] = 0.70f 
+                }
+                // Bosque y Verdes
+                in 60f..160f -> {
+                    hsl[1] = 0.50f 
+                    hsl[2] = 0.40f
+                }
+                // Volcán, Lavanda, Amanecer
+                else -> {
+                    hsl[1] = 0.70f 
+                    hsl[2] = 0.55f
+                }
+            }
+        } else {
+            // Modo Claro: Lógica unificada con refuerzo para Lavanda
+            val isLavandaTramo = originalHue in 230f..290f
+            
+            hsl[0] = (originalHue + 140f) % 360
+            
+            // Refuerzo de saturación para el tramo Lavanda
+            hsl[1] = if (isLavandaTramo) 0.80f else 0.40f
+            hsl[2] = 0.55f
+        }
+        
+        Color(ColorUtils.HSLToColor(hsl))
+    }
+
+    // Calculamos el alpha final: si es Lavanda lo hacemos más compacto (menos transparente)
+    val finalTodayAlpha = remember(themeColors.monthlyCalendarTodayCellBorder, themeColors.settingsBackground) {
+        val hsl = FloatArray(3)
+        ColorUtils.colorToHSL(themeColors.monthlyCalendarTodayCellBorder.toArgb(), hsl)
+        val isAppLight = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) >= 0.5
+        
+        // Detectamos si es el tema lavanda en modo claro
+        if (hsl[0] in 230f..290f && isAppLight) {
+            1.0f 
+        } else {
+            0.8f
+        }
+    }
 
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
@@ -173,14 +233,19 @@ fun MonthlyCalendar(
         }
 
         weeksToDisplay.forEach { week ->
-            Row(Modifier.fillMaxWidth()) {
+            val weekContainsToday = week.any { it.first == today && it.second }
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .zIndex(if (weekContainsToday) 2f else 0f)
+            ) {
                 week.forEach { (date, isCurrentMonth) ->
                     val isToday = date == today && isCurrentMonth
                     val isPastDay = isCurrentMonth && date.isBefore(today)
                     val isInactive = !isCurrentMonth || isPastDay
                     
                     val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
-                    
+
                     val cellBackground = if (isInactive) {
                         val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
                         overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
@@ -194,19 +259,20 @@ fun MonthlyCalendar(
                     val dayColor = run {
                         val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
                         val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
-                        
+
                         val baseColor = when {
                             isHoliday || isSundayNonHoliday -> themeColors.textSundayHoliday
                             else -> themeColors.textSystem
                         }
-                        
+
                         if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
                     }
 
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(1f),
+                            .aspectRatio(1f)
+                            .zIndex(if (isToday) 10f else 0f),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
@@ -288,11 +354,14 @@ fun MonthlyCalendar(
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .border(
-                                        width = 3.5.dp,
-                                        color = themeColors.monthlyCalendarTodayCellBorder,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .drawBehind {
+                                        val strokeWidth = 4.dp.toPx()
+                                        drawRoundRect(
+                                            color = intelligentTodayBorderColor.copy(alpha = finalTodayAlpha),
+                                            style = Stroke(width = strokeWidth),
+                                            cornerRadius = CornerRadius(4.dp.toPx())
+                                        )
+                                    }
                             )
                         }
                     }
