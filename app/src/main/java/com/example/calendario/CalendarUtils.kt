@@ -72,14 +72,14 @@ fun updateEvent(
     endDate: LocalDateTime,
     isAllDay: Boolean,
     repetitionRule: RepetitionRule
-): Boolean {
+): Long? {
      if (calendarId == null) {
         Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
-        return false
+        return null
     }
     if (title.isBlank()) {
         Toast.makeText(context, R.string.title_empty_error, Toast.LENGTH_SHORT).show()
-        return false
+        return null
     }
 
     return try {
@@ -108,14 +108,14 @@ fun updateEvent(
         CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         
         Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
-        true
+        eventId
 
     } catch (_: SecurityException) {
         Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
-        false
+        null
     } catch (e: Exception) {
         Toast.makeText(context, context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG).show()
-        false
+        null
     }
 }
 

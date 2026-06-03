@@ -253,13 +253,13 @@ fun AddEventScreen(
                 saveError = error
             } else {
                 val createdEventId = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
-                    val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
-                    if (success) localEventToEdit!!.id else null
+                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
                 } else {
                     createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
                 }
 
                 if (createdEventId != null) {
+                    LogCollector.addLog("ALARMA: Procesando tras guardar evento $createdEventId")
                     processAlarmForEvent(context, createdEventId, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule)
                     onSave()
                 }
@@ -326,7 +326,12 @@ fun AddEventScreen(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                        alarmTime = startDate.toLocalTime().minusMinutes(20)
+                        // COMPORTAMIENTO DIFERENCIADO:
+                        alarmTime = if (isAllDay) {
+                            LocalTime.now().withSecond(0).withNano(0)
+                        } else {
+                            startDate.toLocalTime().minusMinutes(20)
+                        }
                         showAlarmTimePickerDialog = true
                     }
                 },
@@ -371,7 +376,7 @@ fun AddEventScreen(
                     }
                     EditRecurringOption.ALL_EVENTS -> {
                         val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule)
-                        if (success) {
+                        if (success != null) {
                             processAlarmForEvent(context, localEventToEdit!!.id, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule)
                             onSave()
                         }
