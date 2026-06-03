@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,20 +37,19 @@ import java.time.format.DateTimeFormatter
 class AlarmActivity : ComponentActivity() {
     private var ringtone: Ringtone? = null
     private var vibrator: Vibrator? = null
+    
+    private var currentEventTitle by mutableStateOf("")
+    private var currentEventId by mutableLongStateOf(-1L)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         setupScreenFlags()
 
-        val eventTitle = intent.getStringExtra("event_title") ?: "Evento"
-        val eventId = intent.getLongExtra("event_id", -1L)
+        currentEventTitle = intent.getStringExtra("event_title") ?: "Evento"
+        currentEventId = intent.getLongExtra("event_id", -1L)
 
-        // Cancelamos la notificación inmediatamente para que su sonido se detenga
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(eventId.toInt())
-
-        startAlarm()
+        handleAlarmTrigger(currentEventId)
 
         setContent {
             val isDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.settingsBackground.toArgb()) < 0.5
@@ -59,19 +59,45 @@ class AlarmActivity : ComponentActivity() {
                     color = CalendarioTheme.colors.settingsBackground,
                 ) {
                     AlarmScreen(
-                        title = eventTitle,
+                        title = currentEventTitle,
                         onStop = {
                             stopAlarm()
                             finish()
                         },
                         onSnooze = {
                             stopAlarm()
-                            snoozeAlarm(eventId, eventTitle)
+                            snoozeAlarm(currentEventId, currentEventTitle)
                             finish()
                         }
                     )
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        
+        val newTitle = intent.getStringExtra("event_title") ?: "Evento"
+        val newId = intent.getLongExtra("event_id", -1L)
+        
+        LogCollector.addLog("ALARMA: Recibida nueva alarma en cola: '$newTitle'")
+        
+        currentEventTitle = newTitle
+        currentEventId = newId
+        
+        handleAlarmTrigger(newId)
+    }
+
+    private fun handleAlarmTrigger(eventId: Long) {
+        // Cancelamos la notificación del sistema para este evento
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(eventId.toInt())
+        
+        // Si ya está sonando, no reiniciamos el ringtone, solo actualizamos la UI (que ya se hace con state)
+        if (ringtone == null || !ringtone!!.isPlaying) {
+            startAlarm()
         }
     }
 
@@ -190,7 +216,7 @@ fun AlarmScreen(title: String, onStop: () -> Unit, onSnooze: () -> Unit) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                 shape = CircleShape,
             ) {
-                Text("DETENER", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(stringResource(id = R.string.stop_alarm), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
 
             OutlinedButton(
@@ -201,7 +227,7 @@ fun AlarmScreen(title: String, onStop: () -> Unit, onSnooze: () -> Unit) {
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = CalendarioTheme.colors.textSystem),
                 shape = CircleShape,
             ) {
-                Text("POSPONER (10 min)", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(id = R.string.snooze_alarm), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

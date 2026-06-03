@@ -60,7 +60,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle(title)
-            .setContentText("¡Es hora de tu evento!")
+            .setContentText(context.getString(R.string.event_alarm_reminder))
             .setPriority(NotificationCompat.PRIORITY_MAX) // Prioridad Máxima
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setFullScreenIntent(fullScreenPendingIntent, true)
