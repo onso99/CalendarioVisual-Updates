@@ -149,33 +149,60 @@ object AlarmUtils {
     fun cancelAlarm(context: Context, eventId: Long, date: LocalDate? = null) {
         try {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            
+            // 1. Cancelar Alarma Normal (del día actual o específico)
             val targetDate = date ?: LocalDate.now()
             val requestCode = getUniqueRequestCode(eventId, targetDate)
-
             val intent = Intent(context, AlarmReceiver::class.java).apply {
                 action = "com.example.calendario.ALARM_DISPARO_${eventId}_$targetDate"
             }
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                requestCode,
-                intent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
+            val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
             if (pendingIntent != null) {
                 alarmManager.cancel(pendingIntent)
                 pendingIntent.cancel()
             }
+
+            // 2. Cancelar Snooze (si existiera)
+            val snoozeRequestCode = (eventId.toInt() % 10000) * 1000 + 999
+            val snoozeIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = "com.example.calendario.ALARM_DISPARO_${eventId}_SNOOZE"
+            }
+            val snoozePendingIntent = PendingIntent.getBroadcast(context, snoozeRequestCode, snoozeIntent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+            if (snoozePendingIntent != null) {
+                alarmManager.cancel(snoozePendingIntent)
+                snoozePendingIntent.cancel()
+            }
+
         } catch (_: Exception) {}
     }
 
     fun rescheduleAllAlarms(context: Context) {
         val eventsMap = loadEventsFromPrefs(context)
         val allEvents = eventsMap.values.flatten()
-        LogCollector.addLog("ALARMA: Sincronizando ventana de 3 días...")
+        val allEventIds = allEvents.map { it.id }.toSet()
         
+        // 1. Limpieza de Preferencias (Quitar IDs de eventos que ya no existen)
+        val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
+        val savedEventIds = prefs.all.keys
+        prefs.edit(commit = true) {
+            savedEventIds.forEach { idStr ->
+                val id = idStr.toLongOrNull() ?: -1L
+                if (!allEventIds.contains(id)) {
+                    remove(idStr)
+                    // Si el evento no existe, intentamos cancelar su alarma (por si acaso)
+                    cancelAlarm(context, id) 
+                }
+            }
+        }
+
+        // 2. Reprogramación de la ventana de 3 días
+        LogCollector.addLog("ALARMA: Sincronizando ventana de 3 días...")
         var count = 0
         allEvents.forEach { event ->
             if (getAlarmOffset(context, event.id) != null) {
+                // Antes de programar, cancelamos la posible alarma anterior del mismo día 
+                // para evitar duplicados si ha cambiado la hora exacta
+                cancelAlarm(context, event.id, event.date)
                 scheduleAlarm(context, event)
                 count++
             }
