@@ -5,7 +5,10 @@ import android.app.AlarmManager
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.Ringtone
 import android.media.RingtoneManager
@@ -18,13 +21,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,10 +45,27 @@ class AlarmActivity : ComponentActivity() {
     private var currentEventTitle by mutableStateOf("")
     private var currentEventId by mutableLongStateOf(-1L)
 
+    private val stopSignalReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "com.example.calendario.ALARM_STOP_SIGNAL") {
+                stopAlarm()
+                finish()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         setupScreenFlags()
+
+        // Registramos el receptor de señal de parada
+        val filter = IntentFilter("com.example.calendario.ALARM_STOP_SIGNAL")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(stopSignalReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(stopSignalReceiver, filter)
+        }
 
         currentEventTitle = intent.getStringExtra("event_title") ?: "Evento"
         currentEventId = intent.getLongExtra("event_id", -1L)
@@ -138,39 +159,12 @@ class AlarmActivity : ComponentActivity() {
         vibrator?.cancel()
     }
 
-    @SuppressLint("ScheduleExactAlarm")
     private fun snoozeAlarm(eventId: Long, title: String) {
-        val snoozeTime = System.currentTimeMillis() + (10 * 60 * 1000)
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlarmReceiver::class.java).apply {
-            putExtra("event_id", eventId)
-            putExtra("event_title", title)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            eventId.toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        
-        val showIntent = Intent(this, MainActivity::class.java).apply {
-            action = "com.example.calendario.ACTION_SHOW_ALARM"
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        val showPendingIntent = PendingIntent.getActivity(
-            this,
-            eventId.toInt(),
-            showIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-        )
-
-        val info = AlarmManager.AlarmClockInfo(snoozeTime, showPendingIntent)
-        alarmManager.setAlarmClock(info, pendingIntent)
-        
-        LogCollector.addLog("ALARMA: Pospuesta 10 min para '$title'")
+        AlarmUtils.scheduleSnooze(this, eventId, title)
     }
 
     override fun onDestroy() {
+        unregisterReceiver(stopSignalReceiver)
         stopAlarm()
         super.onDestroy()
     }
@@ -205,31 +199,31 @@ fun AlarmScreen(title: String, onStop: () -> Unit, onSnooze: () -> Unit) {
             )
         }
 
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
-                onClick = onStop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                shape = CircleShape,
-            ) {
-                Text(stringResource(id = R.string.stop_alarm), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-            }
-
             OutlinedButton(
                 onClick = onSnooze,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
                     .height(80.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = CalendarioTheme.colors.textSystem),
-                shape = CircleShape,
+                shape = RoundedCornerShape(16.dp),
             ) {
-                Text(stringResource(id = R.string.snooze_alarm), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(id = R.string.snooze_alarm), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Button(
+                onClick = onStop,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(80.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Text(stringResource(id = R.string.stop_alarm), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
         }
     }
