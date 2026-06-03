@@ -196,17 +196,19 @@ object AlarmUtils {
         }
 
         // 2. Reprogramación de la ventana de 3 días
-        LogCollector.addLog("ALARMA: Sincronizando ventana de 3 días...")
+        LogCollector.addLog("ALARMA: Sincronizando ventana de 7 días...")
         var count = 0
         allEvents.forEach { event ->
             if (getAlarmOffset(context, event.id) != null) {
-                // Antes de programar, cancelamos la posible alarma anterior del mismo día 
-                // para evitar duplicados si ha cambiado la hora exacta
+                // Si tiene alarma, cancelamos la anterior y programamos la nueva (por si cambió la hora)
                 cancelAlarm(context, event.id, event.date)
                 scheduleAlarm(context, event)
                 count++
+            } else {
+                // SI NO TIENE ALARMA: Barrido de seguridad para cancelar cualquier rastro previo
+                cancelAlarm(context, event.id, event.date)
             }
         }
-        LogCollector.addLog("ALARMA: Fin sincronización ($count procesadas)")
+        LogCollector.addLog("ALARMA: Fin sincronización ($count activas)")
     }
 }

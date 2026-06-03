@@ -93,7 +93,8 @@ private fun processAlarmForEvent(
         AlarmUtils.scheduleAlarm(context, tempFestivo)
     } else {
         AlarmUtils.saveAlarmSetting(context, eventId, null)
-        AlarmUtils.cancelAlarm(context, eventId)
+        // CANCELACIÓN INMEDIATA: Usamos la fecha del formulario para asegurar el borrado
+        AlarmUtils.cancelAlarm(context, eventId, startDate.toLocalDate())
     }
 }
 
