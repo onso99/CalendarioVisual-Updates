@@ -153,13 +153,15 @@ class AlarmActivity : ComponentActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         
-        // Al posponer, también usamos setAlarmClock para que se vea el icono de alarma
-        val showIntent = Intent(this, MainActivity::class.java)
+        val showIntent = Intent(this, MainActivity::class.java).apply {
+            action = "com.example.calendario.ACTION_SHOW_ALARM"
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         val showPendingIntent = PendingIntent.getActivity(
             this,
             eventId.toInt(),
             showIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
 
         val info = AlarmManager.AlarmClockInfo(snoozeTime, showPendingIntent)
