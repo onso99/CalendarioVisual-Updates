@@ -72,7 +72,6 @@ private fun processAlarmForEvent(
     repetitionRule: RepetitionRule
 ) {
     if (hasAlarm) {
-        // Forzamos limpieza de segundos para el cálculo exacto del offset
         val cleanStartTime = startDate.toLocalTime().withSecond(0).withNano(0)
         val cleanAlarmTime = alarmTime.withSecond(0).withNano(0)
         
@@ -93,7 +92,6 @@ private fun processAlarmForEvent(
         AlarmUtils.scheduleAlarm(context, tempFestivo)
     } else {
         AlarmUtils.saveAlarmSetting(context, eventId, null)
-        // CANCELACIÓN INMEDIATA: Usamos la fecha del formulario para asegurar el borrado
         AlarmUtils.cancelAlarm(context, eventId, startDate.toLocalDate())
     }
 }
@@ -147,10 +145,12 @@ fun AddEventScreen(
     initialCalendar: CalendarInfo?
 ) {
     val context = LocalContext.current
+    val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val defaultAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { _ -> /* Seguimos adelante independientemente */ }
+        onResult = { _ -> }
     )
 
     var title by remember { mutableStateOf("") }
@@ -185,12 +185,11 @@ fun AddEventScreen(
             isAllDay = localEventToEdit!!.isAllDay
             selectedCalendar = editableCalendars.find { it.id == localEventToEdit!!.calendarId }
             
-            // Saneamos tiempos al cargar para edición: forzar 0 segundos/nanos
             startDate = (if (localEventToEdit!!.isAllDay) localEventToEdit!!.date.atStartOfDay() else LocalDateTime.of(localEventToEdit!!.date, localEventToEdit!!.startTime ?: LocalTime.now()))
                 .withSecond(0).withNano(0)
             endDate = (if (localEventToEdit!!.isAllDay) localEventToEdit!!.date.atStartOfDay() else localEventToEdit!!.endTime?.let { LocalDateTime.of(localEventToEdit!!.date, it) } ?: startDate.plusHours(1))
                 .withSecond(0).withNano(0)
-
+                
             repetitionRule = RepetitionRule.entries.find { it.rrule != null && localEventToEdit!!.rrule?.startsWith(it.rrule) == true } ?: RepetitionRule.NONE
 
             val offset = AlarmUtils.getAlarmOffset(context, localEventToEdit!!.id)
@@ -198,7 +197,7 @@ fun AddEventScreen(
             alarmTime = if (offset != null) {
                 startDate.toLocalTime().minusMinutes(offset.toLong())
             } else {
-                startDate.toLocalTime().minusMinutes(20)
+                startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
             }
 
             initialTitle = title
@@ -219,7 +218,7 @@ fun AddEventScreen(
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
             hasAlarm = false
-            alarmTime = startDate.toLocalTime().minusMinutes(20)
+            alarmTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
 
             initialTitle = ""
             initialIsAllDay = true
@@ -239,7 +238,7 @@ fun AddEventScreen(
             endDate != initialEndDate ||
             repetitionRule != initialRepetitionRule ||
             hasAlarm != (AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) != null) ||
-            (hasAlarm && alarmTime != startDate.toLocalTime().minusMinutes((AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) ?: 20).toLong()))
+            (hasAlarm && alarmTime != startDate.toLocalTime().minusMinutes((AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) ?: defaultAlarmOffset).toLong()))
         }
     }
 
@@ -327,11 +326,10 @@ fun AddEventScreen(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                        // COMPORTAMIENTO DIFERENCIADO:
                         alarmTime = if (isAllDay) {
                             LocalTime.now().withSecond(0).withNano(0)
                         } else {
-                            startDate.toLocalTime().minusMinutes(20)
+                            startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
                         }
                         showAlarmTimePickerDialog = true
                     }

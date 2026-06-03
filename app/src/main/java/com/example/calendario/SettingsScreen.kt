@@ -297,6 +297,9 @@ fun SettingsScreen(
     val originalFontFamily = remember { widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY }
     val originalFontBold = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) }
 
+    val originalAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) }
+    val originalSnoozeInterval = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) }
+
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
     var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
@@ -306,6 +309,9 @@ fun SettingsScreen(
     var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
     var pendingFontFamily by remember { mutableStateOf(originalFontFamily) }
     var pendingFontBold by remember { mutableStateOf(originalFontBold) }
+    
+    var pendingAlarmOffset by remember { mutableFloatStateOf(originalAlarmOffset.toFloat()) }
+    var pendingSnoozeInterval by remember { mutableFloatStateOf(originalSnoozeInterval.toFloat()) }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
@@ -321,7 +327,9 @@ fun SettingsScreen(
                     pendingTodayEventColor != originalTodayEventColor ||
                     pendingWidgetBackgroundColor != originalWidgetBackgroundColor ||
                     pendingFontFamily != originalFontFamily ||
-                    pendingFontBold != originalFontBold
+                    pendingFontBold != originalFontBold ||
+                    pendingAlarmOffset.roundToInt() != originalAlarmOffset ||
+                    pendingSnoozeInterval.roundToInt() != originalSnoozeInterval
         }
     }
 
@@ -440,7 +448,8 @@ fun SettingsScreen(
                 }
             }
 
-            // --- 2. Estilo Section ---
+
+            // --- 3. Estilo Section ---
             SectionTitle(text = stringResource(id = R.string.customize_theme))
 
             Column(modifier = Modifier
@@ -484,7 +493,73 @@ fun SettingsScreen(
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
             }
 
-            // --- 3. Holidays Section ---
+            // --- 3. Alarm Section ---
+            SectionTitle(text = stringResource(id = R.string.alarm))
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp)) {
+                
+                Text(
+                    text = stringResource(id = R.string.alarm_offset_label),
+                    modifier = Modifier.padding(top = 16.dp),
+                    color = CalendarioTheme.colors.textSystem,
+                    fontSize = 16.sp
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Slider(
+                        value = pendingAlarmOffset,
+                        onValueChange = { pendingAlarmOffset = it },
+                        valueRange = 0f..60f,
+                        steps = 11,
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                        )
+                    )
+                    Text(
+                        text = pendingAlarmOffset.roundToInt().toString(),
+                        modifier = Modifier.width(40.dp).padding(start = 8.dp),
+                        color = CalendarioTheme.colors.textSystem,
+                        textAlign = TextAlign.End,
+                        fontSize = 16.sp
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+
+                Text(
+                    text = stringResource(id = R.string.snooze_interval_label),
+                    modifier = Modifier.padding(top = 8.dp),
+                    color = CalendarioTheme.colors.textSystem,
+                    fontSize = 16.sp
+                )
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
+                    Slider(
+                        value = pendingSnoozeInterval,
+                        onValueChange = { pendingSnoozeInterval = it },
+                        valueRange = 5f..30f,
+                        steps = 4,
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                        )
+                    )
+                    Text(
+                        text = pendingSnoozeInterval.roundToInt().toString(),
+                        modifier = Modifier.width(40.dp).padding(start = 8.dp),
+                        color = CalendarioTheme.colors.textSystem,
+                        textAlign = TextAlign.End,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            // --- 4. Holidays Section ---
             SectionTitle(text = stringResource(id = R.string.holidays_section))
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))

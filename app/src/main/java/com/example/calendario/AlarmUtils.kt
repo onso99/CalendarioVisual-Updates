@@ -113,7 +113,10 @@ object AlarmUtils {
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleSnooze(context: Context, eventId: Long, title: String) {
         try {
-            val snoozeTime = System.currentTimeMillis() + (10 * 60 * 1000)
+            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            val snoozeMinutes = prefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10)
+            
+            val snoozeTime = System.currentTimeMillis() + (snoozeMinutes.toLong() * 60 * 1000)
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val requestCode = (eventId.toInt() % 10000) * 1000 + 999 // Código especial para snooze
             
@@ -181,31 +184,37 @@ object AlarmUtils {
         val allEvents = eventsMap.values.flatten()
         val allEventIds = allEvents.map { it.id }.toSet()
         
-        // 1. Limpieza de Preferencias (Quitar IDs de eventos que ya no existen)
+        // 1. LIMPIEZA DE HISTORIAL: Quitar registros de eventos que ya no existen o son antiguos
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
-        val savedEventIds = prefs.all.keys
+        val savedEntries = prefs.all
+        val today = LocalDate.now()
+
         prefs.edit(commit = true) {
-            savedEventIds.forEach { idStr ->
+            savedEntries.keys.forEach { idStr ->
                 val id = idStr.toLongOrNull() ?: -1L
-                if (!allEventIds.contains(id)) {
+                val event = allEvents.find { it.id == id }
+                
+                // Borramos registro si el evento ya no existe o pasó hace más de 30 días
+                if (event == null || event.date.isBefore(today.minusDays(30))) {
                     remove(idStr)
-                    // Si el evento no existe, intentamos cancelar su alarma (por si acaso)
-                    cancelAlarm(context, id) 
+                    if (event == null) cancelAlarm(context, id)
                 }
             }
         }
 
-        // 2. Reprogramación de la ventana de 3 días
+        // 2. SINCRONIZACIÓN DE VENTANA (7 DÍAS)
         LogCollector.addLog("ALARMA: Sincronizando ventana de 7 días...")
         var count = 0
         allEvents.forEach { event ->
             if (getAlarmOffset(context, event.id) != null) {
-                // Si tiene alarma, cancelamos la anterior y programamos la nueva (por si cambió la hora)
-                cancelAlarm(context, event.id, event.date)
-                scheduleAlarm(context, event)
-                count++
+                // Solo procesamos eventos futuros dentro de la ventana de 7 días
+                val eventDateTime = if (event.isAllDay || event.startTime == null) event.date.atStartOfDay() else LocalDateTime.of(event.date, event.startTime)
+                if (eventDateTime.isAfter(LocalDateTime.now())) {
+                    cancelAlarm(context, event.id, event.date)
+                    scheduleAlarm(context, event)
+                    count++
+                }
             } else {
-                // SI NO TIENE ALARMA: Barrido de seguridad para cancelar cualquier rastro previo
                 cancelAlarm(context, event.id, event.date)
             }
         }
