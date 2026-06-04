@@ -47,7 +47,9 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.cancel(eventId.toInt())
 
         // 2. Avisamos a la AlarmActivity (si está abierta) para que se cierre y pare el sonido
-        val stopIntent = Intent("com.example.calendario.ALARM_STOP_SIGNAL")
+        val stopIntent = Intent("com.example.calendario.ALARM_STOP_SIGNAL").apply {
+            setPackage(context.packageName)
+        }
         context.sendBroadcast(stopIntent)
     }
 
@@ -69,13 +71,13 @@ class AlarmReceiver : BroadcastReceiver() {
             context, 
             eventId.toInt(), 
             fullScreenIntent, 
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
         val channel = NotificationChannel(
             channelId,
             "Alarmas del Calendario",
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_HIGH,
         ).apply {
             description = "Canal crítico para alarmas de eventos"
             val audioAttributes = AudioAttributes.Builder()
@@ -95,14 +97,24 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("event_id", eventId)
             putExtra("event_title", title)
         }
-        val stopBtnPendingIntent = PendingIntent.getBroadcast(context, eventId.toInt() + 1, stopBtnIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val stopBtnPendingIntent = PendingIntent.getBroadcast(
+            context,
+            eventId.toInt() + 1,
+            stopBtnIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
 
         val snoozeBtnIntent = Intent(context, AlarmReceiver::class.java).apply {
             action = ACTION_SNOOZE
             putExtra("event_id", eventId)
             putExtra("event_title", title)
         }
-        val snoozeBtnPendingIntent = PendingIntent.getBroadcast(context, eventId.toInt() + 2, snoozeBtnIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val snoozeBtnPendingIntent = PendingIntent.getBroadcast(
+            context,
+            eventId.toInt() + 2,
+            snoozeBtnIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification_icon)

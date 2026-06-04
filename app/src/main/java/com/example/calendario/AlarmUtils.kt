@@ -17,7 +17,7 @@ import java.time.ZoneId
 object AlarmUtils {
 
     private fun getUniqueRequestCode(eventId: Long, date: LocalDate): Int {
-        return (eventId.toInt() % 10000) * 1000 + date.dayOfYear
+        return ((eventId.toInt() % 10000) * 1000) + date.dayOfYear
     }
 
     fun saveAlarmSetting(context: Context, eventId: Long, offsetMinutes: Int?) {
@@ -44,7 +44,7 @@ object AlarmUtils {
     fun scheduleAlarm(context: Context, event: Festivo) {
         val offset = getAlarmOffset(context, event.id) ?: return
         
-        val referenceDateTime = if ((event.isAllDay || event.startTime == null)) {
+        val referenceDateTime = if ((event.isAllDay) || (event.startTime == null)) {
             event.date.atStartOfDay()
         } else {
             LocalDateTime.of(event.date, event.startTime)
@@ -68,7 +68,7 @@ object AlarmUtils {
             val channel = NotificationChannel(
                 "event_alarms_v3",
                 "Alarmas del Calendario",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_HIGH,
             ).apply {
                 val audioAttributes = AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ALARM)
@@ -88,7 +88,7 @@ object AlarmUtils {
                 context,
                 requestCode,
                 receiverIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
             // 2. Intent de visualización (Usamos el oficial de apertura de la app)
@@ -97,7 +97,7 @@ object AlarmUtils {
                 context,
                 0, // Código 0 para el intent principal
                 showIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
             val info = AlarmManager.AlarmClockInfo(alarmMillis, showPendingIntent)
@@ -118,7 +118,7 @@ object AlarmUtils {
             
             val snoozeTime = System.currentTimeMillis() + (snoozeMinutes.toLong() * 60 * 1000)
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val requestCode = (eventId.toInt() % 10000) * 1000 + 999 // Código especial para snooze
+            val requestCode = ((eventId.toInt() % 10000) * 1000) + 999 // Código especial para snooze
             
             val receiverIntent = Intent(context, AlarmReceiver::class.java).apply {
                 action = "com.example.calendario.ALARM_DISPARO_${eventId}_SNOOZE"
@@ -129,7 +129,7 @@ object AlarmUtils {
                 context,
                 requestCode,
                 receiverIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
             val showIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
@@ -137,7 +137,7 @@ object AlarmUtils {
                 context,
                 requestCode,
                 showIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
             val info = AlarmManager.AlarmClockInfo(snoozeTime, showPendingIntent)

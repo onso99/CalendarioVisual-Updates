@@ -16,6 +16,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -57,12 +58,12 @@ class AlarmActivity : ComponentActivity() {
 
         // Registramos el receptor de señal de parada
         val filter = IntentFilter("com.example.calendario.ALARM_STOP_SIGNAL")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(stopSignalReceiver, filter, RECEIVER_NOT_EXPORTED)
-        } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
-            registerReceiver(stopSignalReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            stopSignalReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
 
         currentEventTitle = intent.getStringExtra("event_title") ?: "Evento"
         currentEventId = intent.getLongExtra("event_id", -1L)
@@ -114,7 +115,7 @@ class AlarmActivity : ComponentActivity() {
         notificationManager.cancel(eventId.toInt())
         
         // Si ya está sonando, no reiniciamos el ringtone, solo actualizamos la UI (que ya se hace con state)
-        if ((ringtone == null || !ringtone!!.isPlaying)) {
+        if ((ringtone == null) || (!ringtone!!.isPlaying)) {
             startAlarm()
         }
     }
