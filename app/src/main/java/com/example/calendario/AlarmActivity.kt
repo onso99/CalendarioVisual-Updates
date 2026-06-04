@@ -1,10 +1,7 @@
 package com.example.calendario
 
-import android.annotation.SuppressLint
-import android.app.AlarmManager
 import android.app.KeyguardManager
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -20,7 +17,6 @@ import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -64,6 +60,7 @@ class AlarmActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(stopSignalReceiver, filter, RECEIVER_NOT_EXPORTED)
         } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
             registerReceiver(stopSignalReceiver, filter)
         }
 
@@ -117,7 +114,7 @@ class AlarmActivity : ComponentActivity() {
         notificationManager.cancel(eventId.toInt())
         
         // Si ya está sonando, no reiniciamos el ringtone, solo actualizamos la UI (que ya se hace con state)
-        if (ringtone == null || !ringtone!!.isPlaying) {
+        if ((ringtone == null || !ringtone!!.isPlaying)) {
             startAlarm()
         }
     }

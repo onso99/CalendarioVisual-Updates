@@ -182,7 +182,6 @@ object AlarmUtils {
     fun rescheduleAllAlarms(context: Context) {
         val eventsMap = loadEventsFromPrefs(context)
         val allEvents = eventsMap.values.flatten()
-        val allEventIds = allEvents.map { it.id }.toSet()
         
         // 1. LIMPIEZA DE HISTORIAL: Quitar registros de eventos que ya no existen o son antiguos
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
