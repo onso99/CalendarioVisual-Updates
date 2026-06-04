@@ -135,14 +135,21 @@ fun ColorThemeScreen(
                                 pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
                                 putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, monthlyCalendarEffect)
                                 
-                                // Regla 10+3 para temas modificados
-                                val lightName = prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano") ?: "Océano"
-                                if (!lightName.endsWith("***")) {
-                                    putString(AppConstants.KEY_LIGHT_THEME_NAME, lightName.take(10) + "***")
-                                }
-                                val darkName = prefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano") ?: "Océano"
-                                if (!darkName.endsWith("***")) {
-                                    putString(AppConstants.KEY_DARK_THEME_NAME, darkName.take(10) + "***")
+                                // --- Lógica de Renombrado Inteligente ---
+                                // Solo renombramos si se han tocado colores vinculados al tema o el efecto
+                                val hasThemeBoundChanges = pendingColorChanges.keys.any { key ->
+                                    ColorThemeConfig.colorThemeItems.any { (it.lightThemeKey == key || it.darkThemeKey == key) && !it.isIndependent }
+                                } || monthlyCalendarEffect != prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")
+
+                                if (hasThemeBoundChanges) {
+                                    val lightName = prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano") ?: "Océano"
+                                    if (!lightName.endsWith("***")) {
+                                        putString(AppConstants.KEY_LIGHT_THEME_NAME, lightName.take(10) + "***")
+                                    }
+                                    val darkName = prefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano") ?: "Océano"
+                                    if (!darkName.endsWith("***")) {
+                                        putString(AppConstants.KEY_DARK_THEME_NAME, darkName.take(10) + "***")
+                                    }
                                 }
                             }
                             onThemeUpdated()

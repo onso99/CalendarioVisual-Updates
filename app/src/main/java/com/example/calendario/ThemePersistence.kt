@@ -45,21 +45,20 @@ object ThemePersistence {
     }
 
     private fun android.content.SharedPreferences.Editor.applyThemeColors(theme: JSONObject, themeType: String) {
-        val allKeys = ColorThemeConfig.colorThemeItems.map { if (themeType == "light") it.lightThemeKey else it.darkThemeKey }
+        // Solo operamos con los colores que NO son independientes (ajustes globales)
+        val themeItems = ColorThemeConfig.colorThemeItems.filter { !it.isIndependent }
+        val allKeys = themeItems.map { if (themeType == "light") it.lightThemeKey else it.darkThemeKey }
         
-        // Primero, limpiar todas las claves de color existentes para este tipo de tema
+        // 1. Limpiar colores estéticos anteriores
         allKeys.forEach { key ->
-            if (key.isNotBlank()) {
-                remove(key)
-            }
+            if (key.isNotBlank()) remove(key)
         }
 
-        // Ahora, aplicar los nuevos colores desde el JSON
-        for (item in ColorThemeConfig.colorThemeItems) {
+        // 2. Aplicar nuevos colores del tema (solo los estéticos)
+        for (item in themeItems) {
             val key = if (themeType == "light") item.lightThemeKey else item.darkThemeKey
             if (key.isNotBlank() && theme.has(key)) {
                 val colorString = theme.getString(key)
-                // La validación del color ya se hizo en ThemeImportManager
                 putInt(key, colorString.toColorInt())
             }
         }
@@ -84,7 +83,11 @@ object ThemePersistence {
             val lightTheme = JSONObject()
             val darkTheme = JSONObject()
 
-            ColorThemeConfig.colorThemeItems.forEach { item ->
+            // Filtramos la lista para que SOLO exporte los colores vinculados al tema
+            // (Ignoramos Cumpleaños, Evento-1 y Evento-2 ya que son ajustes globales)
+            val themeItems = ColorThemeConfig.colorThemeItems.filter { !it.isIndependent }
+
+            themeItems.forEach { item ->
                 // Light
                 if (item.lightThemeKey.isNotBlank()) {
                     val lightColor = prefs.getInt(item.lightThemeKey, item.defaultLight.toArgb())

@@ -57,7 +57,7 @@ object AppConstants {
         val textSundayHoliday = Color(0xFFD32F2F)
         val textBirthday = Color(0xFF0000FF)
         val textEvent1 = Color(0xFF008000)
-        val textEvent2 = Color(0xFF6700FF)
+        val textEvent2 = Color(0xFF980062)
         val todayHighlightColor = Color(0x260077C2) // 15% opacidad
         val monthlyCalendarGridBackground = Color(0xFF0077C2)
         val monthlyCalendarGridEffect = Color(0xFF38A391)
@@ -68,9 +68,9 @@ object AppConstants {
         val cabecera = Color(0xFF01579B)
         val settingsBackground = Color(0xFF001F29)
         val textSundayHoliday = Color(0xFFFF8A80)
-        val textBirthday = Color(0xFF82B1FF)
-        val textEvent1 = Color(0xFF69F0AE)
-        val textEvent2 = Color(0xFFFF80AB)
+        val textBirthday = Color(0xFF0000FF)
+        val textEvent1 = Color(0xFF008000)
+        val textEvent2 = Color(0xFF980062)
         val todayHighlightColor = Color(0x4D4FC3F7) // 30% opacidad
         val monthlyCalendarGridBackground = Color(0xFF004D40)
         val monthlyCalendarGridEffect = Color(0xFF01579B)
