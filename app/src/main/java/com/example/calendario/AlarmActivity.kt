@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.content.ContextCompat
@@ -121,10 +122,19 @@ class AlarmActivity : ComponentActivity() {
     }
 
     private fun setupScreenFlags() {
+        // 1. Usamos los métodos oficiales para mostrar sobre el bloqueo
         setShowWhenLocked(true)
         setTurnScreenOn(true)
-        val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-        keyguardManager.requestDismissKeyguard(this, null)
+
+        // 2. IMPORTANTE: NO usamos requestDismissKeyguard aquí para evitar que pida el PIN.
+        // En su lugar, usamos flags de ventana para asegurar la visibilidad del overlay.
+        @Suppress("DEPRECATION")
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        )
     }
 
     private fun startAlarm() {
