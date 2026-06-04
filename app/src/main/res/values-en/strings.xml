@@ -237,6 +237,10 @@
 
     <string name="alarm">Alarm</string>
     <string name="alarm_time">Alarm time</string>
+    <string name="stop_alarm">STOP</string>
+    <string name="snooze_alarm">SNOOZE</string>
+    <string name="alarm_offset_label">Anticipation (minutes)</string>
+    <string name="snooze_interval_label">Snooze (minutes)</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">birthday,bday,anniversary</string>

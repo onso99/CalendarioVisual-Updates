@@ -234,6 +234,13 @@
     <string name="import_holidays_merge">Hinzufügen</string>
     <string name="import_holidays_replace">Ersetzen</string>
 
+    <string name="alarm">Alarm</string>
+    <string name="alarm_time">Alarmzeit</string>
+    <string name="stop_alarm">STOPPEN</string>
+    <string name="snooze_alarm">SCHLUMMERN</string>
+    <string name="alarm_offset_label">Vorlauf (Minuten)</string>
+    <string name="snooze_interval_label">Schlummern (Minuten)</string>
+
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">geburtstag,geburi,jubiläum,namenstag</string>
     <string name="greeting_keywords">herzlichen,glückwunsch,gratuliere,gratulation,alles gute</string>

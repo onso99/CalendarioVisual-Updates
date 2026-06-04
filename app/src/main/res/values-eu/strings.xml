@@ -236,6 +236,13 @@
     <string name="import_holidays_merge">Gehitu</string>
     <string name="import_holidays_replace">Ordezkatu</string>
 
+    <string name="alarm">Alarma</string>
+    <string name="alarm_time">Alarmaren ordua</string>
+    <string name="stop_alarm">GELDITU</string>
+    <string name="snooze_alarm">ATZERATU</string>
+    <string name="alarm_offset_label">Aurreikuspena (minutuak)</string>
+    <string name="snooze_interval_label">Atzeratu (minutuak)</string>
+
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">urtebetetzea,urteurrena</string>
     <string name="greeting_keywords">zorionak,zoriontzen</string>

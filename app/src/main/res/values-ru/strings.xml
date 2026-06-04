@@ -235,6 +235,13 @@
     <string name="import_holidays_merge">Добавить</string>
     <string name="import_holidays_replace">Заменить</string>
 
+    <string name="alarm">Будильник</string>
+    <string name="alarm_time">Время будильника</string>
+    <string name="stop_alarm">СТОП</string>
+    <string name="snooze_alarm">ОТЛОЖИТЬ</string>
+    <string name="alarm_offset_label">Упреждение (минуты)</string>
+    <string name="snooze_interval_label">Отложить (минуты)</string>
+
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">день рождения,юбилей,именины</string>
     <string name="greeting_keywords">поздравляем,поздравляю,с днем рождения,с праздником</string>

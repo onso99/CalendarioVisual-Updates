@@ -235,6 +235,13 @@
     <string name="import_holidays_merge">Ajouter</string>
     <string name="import_holidays_replace">Remplacer</string>
 
+    <string name="alarm">Alarme</string>
+    <string name="alarm_time">Heure de l\'alarme</string>
+    <string name="stop_alarm">ARRÊTER</string>
+    <string name="snooze_alarm">REPORTER</string>
+    <string name="alarm_offset_label">Anticipation (minutes)</string>
+    <string name="snooze_interval_label">Reporter (minutes)</string>
+
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">anniversaire,anniv</string>
     <string name="greeting_keywords">joyeux,félicitations,félicitons</string>
