@@ -42,9 +42,22 @@
         android:layout_weight="6.6"
         android:ellipsize="end"
         android:gravity="start"
+        android:includeFontPadding="false"
         android:maxLines="1"
         android:textColor="#A9A9A9"
         android:textSize="14sp"
-        tools:text="Descripción del evento muy larga" />
+        tools:text="Descripción del evento" />
+
+    <ImageView
+        android:id="@+id/widget_item_alarm_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="4dp"
+        android:contentDescription="@string/alarm"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_alarm_bell_outlined"
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
 </LinearLayout>

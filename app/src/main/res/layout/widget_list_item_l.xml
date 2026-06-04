@@ -4,45 +4,58 @@
     android:id="@+id/widget_list_item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="0dp"
-    android:paddingHorizontal="6dp"
-    android:gravity="center_vertical">
+    android:paddingHorizontal="6dp">
 
     <TextView
         android:id="@+id/widget_item_day_of_week"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         android:ellipsize="end"
-        android:textColor="#A9A9A9"
         android:gravity="start"
-        tools:text="Mié"
-        android:textSize="17sp" />
+        android:maxLines="1"
+        android:textColor="#A9A9A9"
+        android:textSize="17sp"
+        tools:text="Mié" />
 
     <TextView
         android:id="@+id/widget_item_date_formatted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         android:ellipsize="end"
-        android:textColor="#A9A9A9"
         android:gravity="start"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8.dp"
-        tools:text="26/11"
-        android:textSize="17sp" />
+        android:layout_marginEnd="8dp"
+        android:maxLines="1"
+        android:textColor="#A9A9A9"
+        android:textSize="17sp"
+        tools:text="26/11" />
 
     <TextView
         android:id="@+id/widget_item_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:maxLines="1"
         android:ellipsize="end"
         android:gravity="start"
+        android:includeFontPadding="false"
+        android:maxLines="1"
         android:textColor="#A9A9A9"
-        tools:text="Descripción del evento muy larga para probar el wrap y el espacio"
-        android:textSize="17sp" />
+        android:textSize="17sp"
+        tools:text="Descripción del evento" />
+
+    <ImageView
+        android:id="@+id/widget_item_alarm_icon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/alarm"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_alarm_bell_outlined"
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
 </LinearLayout>

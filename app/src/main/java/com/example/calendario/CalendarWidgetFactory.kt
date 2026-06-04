@@ -1,6 +1,5 @@
 package com.example.calendario
 
-// Imports necesarios para la Factory
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
@@ -12,6 +11,7 @@ import android.text.style.StyleSpan
 import android.text.style.TypefaceSpan
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import java.time.LocalDate
@@ -39,7 +39,6 @@ class CalendarWidgetFactory(
     )
 
     override fun onCreate() {
-        Log.d("WidgetFactory", "onCreate - Widget ID: $appWidgetId. Cargando ajustes iniciales y eventos.")
         loadWidgetSettings()
         loadCalendarEvents()
     }
@@ -87,28 +86,20 @@ class CalendarWidgetFactory(
         } catch (_: ClassCastException) {
             (prefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         }
-
-        Log.d("WidgetFactory", "Configuración del widget cargada: Eventos a mostrar=$eventCountToShow, AjusteTexto=$textBoost, Fuente=$widgetFontFamily, Bold=$widgetFontBold")
     }
 
     override fun onDestroy() {
-        Log.d("WidgetFactory", "onDestroy - Widget ID: $appWidgetId")
         eventsList = emptyList()
     }
 
-    override fun getCount(): Int {
-        return eventsList.size
-    }
+    override fun getCount(): Int = eventsList.size
 
     override fun getViewAt(position: Int): RemoteViews? {
-        if (position < 0 || position >= eventsList.size) {
-            Log.w("WidgetFactory", "getViewAt: Posición inválida $position.")
-            return null
-        }
+        if (position < 0 || position >= eventsList.size) return null
 
         val actualEvent = eventsList[position]
 
-        // --- Lógica de Selección de Layout con 3 Niveles ---
+        // --- Layout Selection ---
         val fontScale = context.resources.configuration.fontScale
         val densityDpi = context.resources.displayMetrics.densityDpi
         val stressFactor = fontScale * (densityDpi / 160f)
@@ -133,49 +124,51 @@ class CalendarWidgetFactory(
 
         val views = RemoteViews(context.packageName, layoutId)
 
-        // --- Lógica de Multiplicador Inteligente ---
-        val baseMultiplier = when {
-            fontScale <= 1.35f -> 1.20f // Calibrado
-            fontScale <= 1.5f -> 1.1f
-            else -> 1.0f
-        }
-        val boostAmount = when {
-            fontScale <= 1.35f -> textBoost * 0.10f // Calibrado
-            else -> textBoost * 0.05f
-        }
-        val finalMultiplier = baseMultiplier + boostAmount
-        val finalSize = baseTextSize * finalMultiplier
+        // --- Text Sizing ---
+        val baseMultiplier = if (fontScale <= 1.35f) 1.20f else if (fontScale <= 1.5f) 1.1f else 1.0f
+        val boostAmount = if (fontScale <= 1.35f) textBoost * 0.10f else textBoost * 0.05f
+        val finalSize = baseTextSize * (baseMultiplier + boostAmount)
 
         views.setTextViewTextSize(R.id.widget_item_day_of_week, TypedValue.COMPLEX_UNIT_SP, finalSize)
         views.setTextViewTextSize(R.id.widget_item_date_formatted, TypedValue.COMPLEX_UNIT_SP, finalSize)
         views.setTextViewTextSize(R.id.widget_item_description, TypedValue.COMPLEX_UNIT_SP, finalSize)
 
-        val eventDate: LocalDate = actualEvent.date
-        val dayOfWeekFullName = eventDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        // --- Day and Date ---
+        val dayOfWeekFullName = actualEvent.date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
         val dayOfWeekFormatted = dayOfWeekFullName.take(3).replaceFirstChar { it.titlecase(Locale.getDefault()) }
         views.setTextViewText(R.id.widget_item_day_of_week, applyFontStyles(dayOfWeekFormatted))
 
         val dateOnlyFormatter = DateTimeFormatter.ofPattern("dd/MM", Locale.getDefault())
         views.setTextViewText(R.id.widget_item_date_formatted, applyFontStyles(actualEvent.date.format(dateOnlyFormatter)))
 
+        // --- Description ---
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val baseDesc = if (!actualEvent.isAllDay && actualEvent.startTime != null) {
             "${actualEvent.startTime.format(timeFormatter)} ${actualEvent.title}"
         } else {
             actualEvent.title
         }
-        val displayDescription = if (actualEvent.age != null && actualEvent.age > 0) "$baseDesc (${actualEvent.age})" else baseDesc
+        val fullDesc = if (actualEvent.age != null && actualEvent.age > 0) "$baseDesc (${actualEvent.age})" else baseDesc
         
-        views.setTextViewText(R.id.widget_item_description, applyFontStyles(displayDescription))
+        views.setTextViewText(R.id.widget_item_description, applyFontStyles(fullDesc))
 
+        // --- Colors and Alarm Icon (Usando INVISIBLE para mantener alineación) ---
         val today = LocalDate.now()
         val isTodayEvent = actualEvent.date.isEqual(today)
-
         val currentTextColor = if (isTodayEvent) widgetTodayEventColor else widgetEventColor
 
         views.setTextColor(R.id.widget_item_day_of_week, currentTextColor)
         views.setTextColor(R.id.widget_item_date_formatted, currentTextColor)
         views.setTextColor(R.id.widget_item_description, currentTextColor)
+
+        val hasAlarm = AlarmUtils.getAlarmOffset(context, actualEvent.id) != null
+        if (hasAlarm) {
+            views.setViewVisibility(R.id.widget_item_alarm_icon, View.VISIBLE)
+            views.setInt(R.id.widget_item_alarm_icon, "setColorFilter", currentTextColor)
+        } else {
+            // Usamos INVISIBLE en lugar de GONE para que la columna de descripción mantenga su ancho fijo
+            views.setViewVisibility(R.id.widget_item_alarm_icon, View.INVISIBLE)
+        }
 
         val fillInIntent = Intent()
         views.setOnClickFillInIntent(R.id.widget_list_item_root, fillInIntent)
@@ -184,42 +177,21 @@ class CalendarWidgetFactory(
     }
 
     private fun applyFontStyles(text: String): CharSequence {
-        // Si no se fuerza familia y no hay negrita, devolvemos texto plano
         if (widgetFontFamily.isEmpty() && !widgetFontBold) return text
-
         val spannable = SpannableString(text)
-        
-        // 1. Aplicar Familia de Fuente (si no es Sistema)
         if (widgetFontFamily.isNotEmpty()) {
             try {
-                spannable.setSpan(
-                    TypefaceSpan(widgetFontFamily),
-                    0,
-                    text.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            } catch (e: Exception) {
-                Log.e("WidgetFactory", "Error aplicando TypefaceSpan: ${e.message}")
-            }
+                spannable.setSpan(TypefaceSpan(widgetFontFamily), 0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            } catch (_: Exception) {}
         }
-
-        // 2. Aplicar Negrita (si está activa)
         if (widgetFontBold) {
-            spannable.setSpan(
-                StyleSpan(Typeface.BOLD),
-                0,
-                text.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            spannable.setSpan(StyleSpan(Typeface.BOLD), 0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-
         return spannable
     }
 
     override fun getLoadingView(): RemoteViews? = null
-
     override fun getViewTypeCount(): Int = 3
-
     override fun getItemId(position: Int): Long {
         return if (position < eventsList.size && position >= 0) {
             val event = eventsList[position]
@@ -228,21 +200,15 @@ class CalendarWidgetFactory(
             System.currentTimeMillis() + position.toLong()
         }
     }
-
     override fun hasStableIds(): Boolean = true
 
     private fun loadCalendarEvents() {
-        loadWidgetSettings()
         val selectedCalendarIds = loadSelectedCalendarIds(context)
-        LogCollector.addLog("Cargando desde Calendarios: $selectedCalendarIds")
-        
         val allEventsByDateMap = if (selectedCalendarIds.isNotEmpty()) {
             readFestivosFromCalendarsSync(context, selectedCalendarIds)
         } else {
             emptyMap()
         }
-        
-        LogCollector.addLog("Eventos brutos en agenda: ${allEventsByDateMap.values.flatten().size}")
         eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
     }
 }
