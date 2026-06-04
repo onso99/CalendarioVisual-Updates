@@ -17,6 +17,7 @@ object BackupManager {
     private const val KEY_WIDGET_PREFS = "widget_preferences"
     private const val KEY_HOLIDAY_PREFS = "holiday_preferences"
     private const val KEY_CALENDAR_PREFS = "calendar_preferences"
+    private const val KEY_ALARM_PREFS = "alarm_preferences"
     private const val KEY_BACKUP_METADATA = "backup_metadata"
 
     fun exportFullBackup(context: Context, uri: Uri) {
@@ -25,6 +26,7 @@ object BackupManager {
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
             val holidayPrefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
             val calendarPrefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
+            val alarmPrefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
 
             val fullBackupJson = JSONObject()
 
@@ -52,6 +54,9 @@ object BackupManager {
                 if (value is Set<*>) JSONArray(value) else value
             }
             fullBackupJson.put(KEY_CALENDAR_PREFS, JSONObject(calPrefsMap))
+            
+            // 6. Alarm Preferences
+            fullBackupJson.put(KEY_ALARM_PREFS, JSONObject(alarmPrefs.all))
 
             context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                 outputStream.write(fullBackupJson.toString(4).toByteArray())
@@ -112,6 +117,13 @@ object BackupManager {
                     }
                 }
             }
+            
+            // 5. Alarm Prefs
+            val alarmPrefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
+            restorePrefs(alarmPrefs, json.optJSONObject(KEY_ALARM_PREFS))
+            
+            // 6. Re-programar todas las alarmas restauradas
+            AlarmUtils.rescheduleAllAlarms(context)
 
             // Re-aplicar lógica de colores de temas si no hay colores individuales
             val appJson = json.optJSONObject(KEY_APP_PREFS)
@@ -203,7 +215,9 @@ object BackupManager {
             AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND,
             AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT,
-            AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND -> {
+            AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND,
+            AppConstants.KEY_DEFAULT_ALARM_OFFSET,
+            AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL -> {
                 val intValue = when (value) {
                     is Number -> value.toInt()
                     is String -> value.toIntOrNull() ?: 0
