@@ -6,7 +6,7 @@ import android.widget.RemoteViewsService
 class CalendarWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         // Aquí devolvemos una instancia de nuestra implementación de RemoteViewsFactory.
-        // Le pasamos el contexto de la aplicación y el intent (que puede contener el appWidgetId).
-        return CalendarWidgetFactory(this.applicationContext, intent)
+        // Le pasamos el contexto de la aplicación.
+        return CalendarWidgetFactory(this.applicationContext)
     }
 }

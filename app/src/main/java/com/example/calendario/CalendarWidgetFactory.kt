@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,7 +8,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.text.style.TypefaceSpan
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
@@ -21,7 +19,6 @@ import java.util.Locale
 
 class CalendarWidgetFactory(
     private val context: Context,
-    intent: Intent
 ) : RemoteViewsService.RemoteViewsFactory {
 
     private var eventsList: List<Festivo> = emptyList()
@@ -32,11 +29,6 @@ class CalendarWidgetFactory(
 
     private var widgetEventColor: Int = WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
     private var widgetTodayEventColor: Int = WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
-
-    private val appWidgetId: Int = intent.getIntExtra(
-        AppWidgetManager.EXTRA_APPWIDGET_ID,
-        AppWidgetManager.INVALID_APPWIDGET_ID
-    )
 
     override fun onCreate() {
         loadWidgetSettings()
@@ -95,7 +87,7 @@ class CalendarWidgetFactory(
     override fun getCount(): Int = eventsList.size
 
     override fun getViewAt(position: Int): RemoteViews? {
-        if (position < 0 || position >= eventsList.size) return null
+        if ((position < 0) || (position >= eventsList.size)) return null
 
         val actualEvent = eventsList[position]
 
