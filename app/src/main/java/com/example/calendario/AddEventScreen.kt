@@ -72,7 +72,8 @@ private fun processAlarmForEvent(
     repetitionRule: RepetitionRule
 ) {
     if (hasAlarm) {
-        val cleanStartTime = startDate.toLocalTime().withSecond(0).withNano(0)
+        // PUNTO CLAVE: Si es todo el día, el punto de referencia es la medianoche
+        val cleanStartTime = if (isAllDay) LocalTime.MIDNIGHT else startDate.toLocalTime().withSecond(0).withNano(0)
         val cleanAlarmTime = alarmTime.withSecond(0).withNano(0)
         
         val offset = Duration.between(cleanAlarmTime, cleanStartTime).toMinutes().toInt()
@@ -194,10 +195,22 @@ fun AddEventScreen(
 
             val offset = AlarmUtils.getAlarmOffset(context, localEventToEdit!!.id)
             hasAlarm = offset != null
+            
             alarmTime = if (offset != null) {
-                startDate.toLocalTime().minusMinutes(offset.toLong())
+                if (localEventToEdit!!.isAllDay) {
+                    // Para todo el día, recuperamos desde la medianoche (ancla absoluta)
+                    LocalTime.MIDNIGHT.minusMinutes(offset.toLong())
+                } else {
+                    // Para eventos con hora, recuperamos restando el desfase al inicio
+                    startDate.toLocalTime().minusMinutes(offset.toLong())
+                }
             } else {
-                startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                // Sugerencia inicial si no tenía alarma
+                if (localEventToEdit!!.isAllDay) {
+                    LocalTime.now().withSecond(0).withNano(0)
+                } else {
+                    startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                }
             }
 
             initialTitle = title
