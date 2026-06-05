@@ -1,7 +1,10 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.KeyguardManager
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,7 +20,6 @@ import android.os.VibratorManager
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalTime
@@ -53,9 +56,10 @@ class AlarmActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        
+        // Configuramos la ventana ANTES de super.onCreate para máxima prioridad
         setupScreenFlags()
+        
+        super.onCreate(savedInstanceState)
 
         // Registramos el receptor de señal de parada
         val filter = IntentFilter("com.example.calendario.ALARM_STOP_SIGNAL")
@@ -111,24 +115,20 @@ class AlarmActivity : ComponentActivity() {
     }
 
     private fun handleAlarmTrigger(eventId: Long) {
-        // Cancelamos la notificación del sistema para este evento
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(eventId.toInt())
         
-        // Si ya está sonando, no reiniciamos el ringtone, solo actualizamos la UI (que ya se hace con state)
         if ((ringtone == null) || (!ringtone!!.isPlaying)) {
             startAlarm()
         }
     }
 
     private fun setupScreenFlags() {
-        // 1. Usamos los métodos oficiales para mostrar sobre el bloqueo
+        // Métodos modernos (API 27+)
         setShowWhenLocked(true)
         setTurnScreenOn(true)
-
-        // 2. IMPORTANTE: NO usamos requestDismissKeyguard aquí para evitar que pida el PIN.
-        // En su lugar, usamos flags de ventana para asegurar la visibilidad del overlay.
-        @Suppress("DEPRECATION")
+        
+        // Flags de ventana para forzar la visibilidad sobre el Keyguard
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
@@ -172,7 +172,9 @@ class AlarmActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        unregisterReceiver(stopSignalReceiver)
+        try {
+            unregisterReceiver(stopSignalReceiver)
+        } catch (_: Exception) {}
         stopAlarm()
         super.onDestroy()
     }
