@@ -80,7 +80,7 @@
     <string name="customize_colors">Pertsonalizatu koloreak</string>
     <string name="import_theme">Gaia kargatu…</string>
     <string name="export_theme">Gaia gorde…</string>
-    <string name="widget_event_count">Gertaera kopurua: %1$d</string>
+    <string name="widget_event_count">Gertaera kopurua</string>
     <string name="widget_text_adjustment">Testuaren doikuntza</string>
     <string name="background_color">Atzeko planoa</string>
     <string name="event_color">Gertaeren kolorea</string>

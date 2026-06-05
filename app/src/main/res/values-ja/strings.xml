@@ -80,7 +80,7 @@
     <string name="customize_colors">色をカスタマイズ</string>
     <string name="import_theme">テーマを読み込む…</string>
     <string name="export_theme">テーマを保存…</string>
-    <string name="widget_event_count">イベント数：%1$d</string>
+    <string name="widget_event_count">イベント数</string>
     <string name="widget_text_adjustment">テキスト調整</string>
     <string name="background_color">背景色</string>
     <string name="event_color">イベントの色</string>

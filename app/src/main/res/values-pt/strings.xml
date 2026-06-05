@@ -80,7 +80,7 @@
     <string name="customize_colors">Personalizar cores</string>
     <string name="import_theme">Carregar tema…</string>
     <string name="export_theme">Salvar tema…</string>
-    <string name="widget_event_count">Número de eventos: %1$d</string>
+    <string name="widget_event_count">Número de eventos</string>
     <string name="widget_text_adjustment">Ajuste de texto</string>
     <string name="background_color">Cor de fundo</string>
     <string name="event_color">Cor dos eventos</string>

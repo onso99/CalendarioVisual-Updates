@@ -80,7 +80,7 @@
     <string name="customize_colors">Настроить цвета</string>
     <string name="import_theme">Загрузить тему…</string>
     <string name="export_theme">Сохранить тему…</string>
-    <string name="widget_event_count">Количество событий: %1$d</string>
+    <string name="widget_event_count">Количество событий</string>
     <string name="widget_text_adjustment">Регулировка текста</string>
     <string name="background_color">Цвет фона</string>
     <string name="event_color">Цвет событий</string>

@@ -80,7 +80,7 @@
     <string name="customize_colors">自定义颜色</string>
     <string name="import_theme">加载主题…</string>
     <string name="export_theme">保存主题…</string>
-    <string name="widget_event_count">活动数量：%1$d</string>
+    <string name="widget_event_count">活动数量</string>
     <string name="widget_text_adjustment">文本调整</string>
     <string name="background_color">背景颜色</string>
     <string name="event_color">活动颜色</string>
