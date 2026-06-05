@@ -117,7 +117,6 @@ fun SettingsScreen(
     var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano")) }
 
     // --- Dialog States ---
-    var showLegacyThemeDialog by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
@@ -148,9 +147,7 @@ fun SettingsScreen(
                                 onThemeImported()
                                 Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
                             }
-                            is ImportResult.LegacyThemeDetected -> {
-                                showLegacyThemeDialog = importResult.parsedTheme to fileName
-                            }
+                            is ImportResult.LegacyThemeDetected -> { }
                             is ImportResult.Failure -> {
                                 Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
                             }
@@ -336,11 +333,7 @@ fun SettingsScreen(
     }
 
     val backAction = {
-        if (hasPendingChanges) {
-            showDiscardChangesDialog = true
-        } else {
-            onBackPress()
-        }
+        if (hasPendingChanges) showDiscardChangesDialog = true else onBackPress()
     }
 
     // --- Permisos Logic ---
@@ -408,7 +401,7 @@ fun SettingsScreen(
                     Text(text = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(modifier = Modifier.fillMaxWidth().clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp).padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Switch(checked = pendingShowWeekNumber, onCheckedChange = { pendingShowWeekNumber = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
@@ -446,14 +439,14 @@ fun SettingsScreen(
             // --- 3. Alarm Section ---
             SectionTitle(text = stringResource(id = R.string.alarm))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
                     Text(text = stringResource(id = R.string.alarm_offset_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Slider(value = pendingAlarmOffset, onValueChange = { pendingAlarmOffset = it }, valueRange = 0f..60f, steps = 11, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                         Text(text = pendingAlarmOffset.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
-                // SIN LÍNEA ENTRE LOS APARTADOS DE ALARMA PARA MANTENER SIMETRÍA
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp)) {
                     Text(text = stringResource(id = R.string.snooze_interval_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -475,15 +468,15 @@ fun SettingsScreen(
 
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
                     Text(text = stringResource(id = R.string.widget_event_count), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
                         Text(text = pendingEventCount.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
-                
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp)) {
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 8.dp)) {
                     val textBoostLabel = if (pendingTextBoost.roundToInt() > 0) "+${pendingTextBoost.roundToInt()}" else pendingTextBoost.roundToInt().toString()
                     Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -491,8 +484,8 @@ fun SettingsScreen(
                         Text(text = textBoostLabel, modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
-
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     IconButton(onClick = { pendingFontBold = !pendingFontBold }, modifier = Modifier.size(36.dp).padding(start = 8.dp)) {
                         Icon(Icons.Default.FormatBold, "Bold", tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
@@ -508,11 +501,11 @@ fun SettingsScreen(
                     Text(fontFamilyDisplay, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f).clickable { showFontFamilyDialog = true })
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)) { ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true } }
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true } }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)) { ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true } }
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true } }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)) { ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true } }
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true } }
             }
 
             // --- 5. Backup Section ---
@@ -554,20 +547,7 @@ fun SettingsScreen(
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
     if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.discard)) } }, dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }) }
-    if (showPermissionsDialog) {
-        PermissionsDialog(
-            calStatus = calStatus,
-            notifStatus = notifStatus,
-            alarmStatus = alarmStatus,
-            onDismiss = { showPermissionsDialog = false },
-            onFix = { type -> 
-                when (type) { 
-                    "calendar", "notifications" -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) })
-                    "alarms" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.fromParts("package", context.packageName, null) }) else context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) 
-                } 
-            }
-        )
-    }
+    if (showPermissionsDialog) { PermissionsDialog(calStatus = calStatus, notifStatus = notifStatus, alarmStatus = alarmStatus, onDismiss = { showPermissionsDialog = false }, onFix = { type -> when (type) { "calendar", "notifications" -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }); "alarms" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.fromParts("package", context.packageName, null) }) else context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) } }) }
 
     if (showExportDialog) {
         ExportThemeDialog(
