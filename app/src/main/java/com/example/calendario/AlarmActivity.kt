@@ -1,10 +1,6 @@
 package com.example.calendario
 
-import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.KeyguardManager
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -129,6 +125,7 @@ class AlarmActivity : ComponentActivity() {
         setTurnScreenOn(true)
         
         // Flags de ventana para forzar la visibilidad sobre el Keyguard
+        @Suppress("DEPRECATION")
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
