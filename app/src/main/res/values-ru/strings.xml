@@ -241,6 +241,12 @@
     <string name="snooze_alarm">ОТЛОЖИТЬ</string>
     <string name="alarm_offset_label">Упреждение (минуты)</string>
     <string name="snooze_interval_label">Отложить (минуты)</string>
+    <string name="system_permissions">Системные разрешения</string>
+    <string name="permissions_dialog_title">Статус разрешений</string>
+    <string name="calendar_permission_label">Календарь: управление событиями</string>
+    <string name="notifications_permission_label">Уведомления: оповещения в статус-баре</string>
+    <string name="alarms_permission_label">Будильники: точные и полноэкранные оповещения</string>
+    <string name="fix_permission">НАСТРОЙКИ</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">день рождения,юбилей,именины</string>

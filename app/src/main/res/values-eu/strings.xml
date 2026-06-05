@@ -242,6 +242,12 @@
     <string name="snooze_alarm">ATZERATU</string>
     <string name="alarm_offset_label">Aurreikuspena (minutuak)</string>
     <string name="snooze_interval_label">Atzeratu (minutuak)</string>
+    <string name="system_permissions">Sistemako baimenak</string>
+    <string name="permissions_dialog_title">Baimenen egoera</string>
+    <string name="calendar_permission_label">Egutegia: gertaeren kudeaketa</string>
+    <string name="notifications_permission_label">Jakinarazpenak: goiko barrako abisuak</string>
+    <string name="alarms_permission_label">Alarmak: abisuak orduan eta pantaila osoan</string>
+    <string name="fix_permission">EZARPENAK</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">urtebetetzea,urteurrena</string>

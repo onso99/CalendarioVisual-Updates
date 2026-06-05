@@ -240,6 +240,12 @@
     <string name="snooze_alarm">SCHLUMMERN</string>
     <string name="alarm_offset_label">Vorlauf (Minuten)</string>
     <string name="snooze_interval_label">Schlummern (Minuten)</string>
+    <string name="system_permissions">Systemberechtigungen</string>
+    <string name="permissions_dialog_title">Berechtigungsstatus</string>
+    <string name="calendar_permission_label">Kalender: Ereignisverwaltung</string>
+    <string name="notifications_permission_label">Benachrichtigungen: Statusleisten-Warnungen</string>
+    <string name="alarms_permission_label">Alarme: Präzise und Vollbild-Warnungen</string>
+    <string name="fix_permission">EINSTELLUNGEN</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">geburtstag,geburi,jubiläum,namenstag</string>

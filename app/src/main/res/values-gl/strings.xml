@@ -241,6 +241,12 @@
     <string name="snooze_alarm">POSTPOÑER</string>
     <string name="alarm_offset_label">Anticipación (minutos)</string>
     <string name="snooze_interval_label">Postpoñer (minutos)</string>
+    <string name="system_permissions">Permisos do sistema</string>
+    <string name="permissions_dialog_title">Estado dos Permisos</string>
+    <string name="calendar_permission_label">Calendario: xestión de eventos</string>
+    <string name="notifications_permission_label">Notificacións: avisos na barra superior</string>
+    <string name="alarms_permission_label">Alarmas: avisos en hora e a pantalla completa</string>
+    <string name="fix_permission">AXUSTES</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">aniversario,cumpre,onomástica</string>

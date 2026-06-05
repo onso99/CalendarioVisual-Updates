@@ -242,6 +242,12 @@
     <string name="snooze_alarm">POSTPOSAR</string>
     <string name="alarm_offset_label">Anticipació (minuts)</string>
     <string name="snooze_interval_label">Postposar (minuts)</string>
+    <string name="system_permissions">Permisos del sistema</string>
+    <string name="permissions_dialog_title">Estat dels Permisos</string>
+    <string name="calendar_permission_label">Calendari: gestió d\'esdeveniments</string>
+    <string name="notifications_permission_label">Notificacions: avisos a la barra superior</string>
+    <string name="alarms_permission_label">Alarmes: avisos en hora i a pantalla completa</string>
+    <string name="fix_permission">CONFIGURACIÓ</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">aniversari,cumple,aniversari,onomàstica</string>

@@ -240,6 +240,12 @@
     <string name="snooze_alarm">スヌーズ</string>
     <string name="alarm_offset_label">事前通知 (分)</string>
     <string name="snooze_interval_label">スヌーズ (分)</string>
+    <string name="system_permissions">システム権限</string>
+    <string name="permissions_dialog_title">権限ステータス</string>
+    <string name="calendar_permission_label">カレンダー：イベント管理</string>
+    <string name="notifications_permission_label">通知：ステータスバーのアラート</string>
+    <string name="alarms_permission_label">アラーム：正確なフルスクリーンアラート</string>
+    <string name="fix_permission">設定</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">誕生日,記念日</string>

@@ -241,6 +241,12 @@
     <string name="snooze_alarm">稍后提醒</string>
     <string name="alarm_offset_label">预提前 (分钟)</string>
     <string name="snooze_interval_label">稍后提醒 (分钟)</string>
+    <string name="system_permissions">系统权限</string>
+    <string name="permissions_dialog_title">权限状态</string>
+    <string name="calendar_permission_label">日历：活动管理</string>
+    <string name="notifications_permission_label">通知：状态栏提示</string>
+    <string name="alarms_permission_label">闹钟：精准和全屏提示</string>
+    <string name="fix_permission">设置</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">生日,周年,诞辰</string>

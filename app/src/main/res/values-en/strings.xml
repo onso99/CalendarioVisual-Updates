@@ -241,6 +241,12 @@
     <string name="snooze_alarm">SNOOZE</string>
     <string name="alarm_offset_label">Anticipation (minutes)</string>
     <string name="snooze_interval_label">Snooze (minutes)</string>
+    <string name="system_permissions">System permissions</string>
+    <string name="permissions_dialog_title">Permission Status</string>
+    <string name="calendar_permission_label">Calendar: event management</string>
+    <string name="notifications_permission_label">Notifications: status bar alerts</string>
+    <string name="alarms_permission_label">Alarms: precise and full-screen alerts</string>
+    <string name="fix_permission">SETTINGS</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">birthday,bday,anniversary</string>
