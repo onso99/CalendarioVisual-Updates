@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,6 +17,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +30,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -125,6 +129,7 @@ fun SettingsScreen(
     var showFontFamilyDialog by remember { mutableStateOf(false) }
     var showImportHolidaysDialog by remember { mutableStateOf(false) }
     var pendingHolidaysUri by remember { mutableStateOf<Uri?>(null) }
+    var showPermissionsDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -341,6 +346,17 @@ fun SettingsScreen(
         }
     }
 
+    // --- Permisos Logic ---
+    val calStatus = PermissionChecker.getCalendarStatus(context)
+    val notifStatus = PermissionChecker.getNotificationsStatus(context)
+    val alarmStatus = PermissionChecker.getAlarmsStatus(context)
+
+    val permissionPointColor = when {
+        calStatus == PermissionStatus.DENIED -> Color.Red
+        notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED -> Color(0xFFFFA500) // Naranja
+        else -> Color.Green
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -352,6 +368,8 @@ fun SettingsScreen(
                             appPrefs.edit {
                                 putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, pendingShowWeekNumber)
                                 putString(AppConstants.KEY_START_OF_WEEK, pendingStartOfWeekKey)
+                                putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, pendingAlarmOffset.roundToInt())
+                                putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, pendingSnoozeInterval.roundToInt())
                             }
                             widgetPrefs.edit {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
@@ -444,6 +462,22 @@ fun SettingsScreen(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.End
+                    )
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .clickable { showPermissionsDialog = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.system_permissions), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .background(permissionPointColor, CircleShape)
                     )
                 }
             }
@@ -887,6 +921,38 @@ fun SettingsScreen(
         )
     }
 
+    if (showPermissionsDialog) {
+        PermissionsDialog(
+            calStatus = calStatus,
+            notifStatus = notifStatus,
+            alarmStatus = alarmStatus,
+            onDismiss = { showPermissionsDialog = false },
+            onFix = { permissionType ->
+                when (permissionType) {
+                    "calendar", "notifications" -> {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                        context.startActivity(intent)
+                    }
+                    "alarms" -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }
+                            context.startActivity(intent)
+                        } else {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }
+                            context.startActivity(intent)
+                        }
+                    }
+                }
+            }
+        )
+    }
+
     showLegacyThemeDialog?.let { (parsedTheme, fileName) ->
         AlertDialog(
             onDismissRequest = { showLegacyThemeDialog = null },
@@ -1186,5 +1252,61 @@ fun truncateThemeName(name: String, limit: Int): String {
         name.take(limit - 3) + "..."
     } else {
         name
+    }
+}
+
+@Composable
+private fun PermissionsDialog(
+    calStatus: PermissionStatus,
+    notifStatus: PermissionStatus,
+    alarmStatus: PermissionStatus,
+    onDismiss: () -> Unit,
+    onFix: (String) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                PermissionRow(stringResource(id = R.string.calendar_permission_label), calStatus) { onFix("calendar") }
+                PermissionRow(stringResource(id = R.string.notifications_permission_label), notifStatus) { onFix("notifications") }
+                PermissionRow(stringResource(id = R.string.alarms_permission_label), alarmStatus) { onFix("alarms") }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.close), color = CalendarioTheme.colors.textSystem)
+            }
+        }
+    )
+}
+
+@Composable
+private fun PermissionRow(label: String, status: PermissionStatus, onFix: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .background(if (status == PermissionStatus.GRANTED) Color.Green else Color.Red, CircleShape)
+        )
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 14.sp,
+            lineHeight = 18.sp
+        )
+        if (status == PermissionStatus.DENIED) {
+            TextButton(onClick = onFix) {
+                Text(stringResource(id = R.string.fix_permission), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+            }
+        }
     }
 }
