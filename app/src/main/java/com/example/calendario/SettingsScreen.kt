@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
@@ -336,10 +335,23 @@ fun SettingsScreen(
         if (hasPendingChanges) showDiscardChangesDialog = true else onBackPress()
     }
 
-    // --- Permisos Logic ---
-    val calStatus = PermissionChecker.getCalendarStatus(context)
-    val notifStatus = PermissionChecker.getNotificationsStatus(context)
-    val alarmStatus = PermissionChecker.getAlarmsStatus(context)
+    // --- Lógica de Refresco de Permisos al volver de Ajustes ---
+    var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                permissionsUpdateTrigger++
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val calStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getCalendarStatus(context) }
+    val notifStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getNotificationsStatus(context) }
+    val alarmStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getAlarmsStatus(context) }
 
     val permissionPointColor = when {
         calStatus == PermissionStatus.DENIED -> Color.Red
@@ -547,7 +559,20 @@ fun SettingsScreen(
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
     if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.discard)) } }, dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }) }
-    if (showPermissionsDialog) { PermissionsDialog(calStatus = calStatus, notifStatus = notifStatus, alarmStatus = alarmStatus, onDismiss = { showPermissionsDialog = false }, onFix = { type -> when (type) { "calendar", "notifications" -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }); "alarms" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.fromParts("package", context.packageName, null) }) else context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) } }) }
+    if (showPermissionsDialog) {
+        PermissionsDialog(
+            calStatus = calStatus,
+            notifStatus = notifStatus,
+            alarmStatus = alarmStatus,
+            onDismiss = { showPermissionsDialog = false },
+            onFix = { _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
+            }
+        )
+    }
 
     if (showExportDialog) {
         ExportThemeDialog(
@@ -694,25 +719,39 @@ private fun PermissionsDialog(
 @Composable
 private fun PermissionRow(label: String, status: PermissionStatus, onFix: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // El punto de color se mantiene arriba junto a la primera línea de texto
         Box(
             modifier = Modifier
+                .padding(top = 6.dp)
                 .size(10.dp)
                 .background(if (status == PermissionStatus.GRANTED) Color.Green else Color.Red, CircleShape)
         )
-        Text(
-            text = label,
-            modifier = Modifier.weight(1f),
-            color = CalendarioTheme.colors.textSystem,
-            fontSize = 14.sp,
-            lineHeight = 18.sp
-        )
-        if (status == PermissionStatus.DENIED) {
-            TextButton(onClick = onFix) {
-                Text(stringResource(id = R.string.fix_permission), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = label,
+                color = CalendarioTheme.colors.textSystem,
+                fontSize = 15.sp,
+                lineHeight = 20.sp
+            )
+            
+            if (status == PermissionStatus.DENIED) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(id = R.string.fix_permission),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    modifier = Modifier
+                        .clickable { onFix() }
+                        .padding(vertical = 4.dp)
+                )
             }
         }
     }
