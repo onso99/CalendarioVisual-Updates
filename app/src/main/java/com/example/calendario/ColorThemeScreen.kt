@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -92,7 +94,7 @@ fun ColorThemeScreen(
     }
 
     val pendingColorChanges = remember { mutableStateMapOf<String, Color>() }
-    val pendingKeywordChanges = remember { mutableStateMapOf<String, String>() }
+    val pendingKeywordChanges = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var monthlyCalendarEffect by remember { mutableStateOf(prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")) }
 
     var showAdvancedColorDialog by remember { mutableStateOf(false) }
@@ -104,8 +106,11 @@ fun ColorThemeScreen(
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
 
     val hasPendingChanges by remember {
-        derivedStateOf { pendingColorChanges.isNotEmpty() || pendingKeywordChanges.isNotEmpty() || monthlyCalendarEffect != prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none") }
+        derivedStateOf { pendingColorChanges.isNotEmpty() || pendingKeywordChanges.value.isNotEmpty() || monthlyCalendarEffect != prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none") }
     }
+
+    val dividerColor = CalendarioTheme.colors.settingsBackground
+    val dividerThickness = 1.dp
 
     val backAction = {
         if (hasPendingChanges) {
@@ -132,11 +137,9 @@ fun ColorThemeScreen(
                         IconButton(onClick = { 
                             prefs.edit {
                                 pendingColorChanges.forEach { (key, color) -> putInt(key, color.toArgb()) }
-                                pendingKeywordChanges.forEach { (key, keyword) -> putString(key, keyword) }
+                                pendingKeywordChanges.value.forEach { (key, keyword) -> putString(key, keyword) }
                                 putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, monthlyCalendarEffect)
                                 
-                                // --- Lógica de Renombrado Inteligente ---
-                                // Solo renombramos si se han tocado colores vinculados al tema o el efecto
                                 val hasThemeBoundChanges = pendingColorChanges.keys.any { key ->
                                     ColorThemeConfig.colorThemeItems.any { (it.lightThemeKey == key || it.darkThemeKey == key) && !it.isIndependent }
                                 } || monthlyCalendarEffect != prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")
@@ -176,12 +179,14 @@ fun ColorThemeScreen(
                 )
                 
                 Column(
-                    modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(horizontal = 16.dp)
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)
                 ) {
-                    items.forEach { item ->
-                        if (item.isSeparator) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                        } else {
+                    items.forEachIndexed { itemIndex, item ->
+                        if (itemIndex > 0) {
+                            HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                        }
+
+                        if (!item.isSeparator) {
                             val (colorKey, defaultColor) = if (isDarkTheme) {
                                 item.darkThemeKey to item.defaultDark
                             } else {
@@ -206,7 +211,7 @@ fun ColorThemeScreen(
                                     }
                                     R.string.event_1, R.string.event_2 -> {
                                         val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
-                                        val currentKeyword = pendingKeywordChanges[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
+                                        val currentKeyword = pendingKeywordChanges.value[keywordKey] ?: prefs.getString(keywordKey, "") ?: ""
 
                                         SingleColorThemeRow(
                                             label = currentKeyword.ifBlank { stringResource(id = item.labelRes) },
@@ -256,7 +261,9 @@ fun ColorThemeScreen(
             onDismissRequest = { showKeywordColorDialog = false },
             onConfirm = { newColor, newKeyword ->
                 pendingColorChanges[keywordColorToEdit!!.colorKey] = newColor
-                pendingKeywordChanges[keywordColorToEdit!!.keywordKey] = newKeyword
+                val updatedKeywords = pendingKeywordChanges.value.toMutableMap()
+                updatedKeywords[keywordColorToEdit!!.keywordKey] = newKeyword
+                pendingKeywordChanges.value = updatedKeywords
                 showKeywordColorDialog = false
             }
         )
@@ -316,8 +323,9 @@ private fun SingleColorThemeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(48.dp)
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -328,7 +336,7 @@ private fun SingleColorThemeRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         ColorBox(color = color, onClick = onClick)
     }
 }
@@ -344,7 +352,8 @@ private fun EffectColorThemeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .height(48.dp)
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -388,14 +397,15 @@ private fun EffectColorThemeRow(
                             .clip(RoundedCornerShape(12.dp))
                             .background(containerColor)
                             .clickable { onEffectChange(type) }
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                            .padding(horizontal = 12.dp, vertical = 4.dp) // Ajustado para encajar en 48dp
                     ) {
-                        Text(text, color = textColor, fontWeight = FontWeight.Bold)
+                        Text(text, color = textColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
                 }
             }
         }
 
+        Spacer(modifier = Modifier.width(12.dp))
         ColorBox(color = color, onClick = onColorClick)
     }
 }
@@ -403,5 +413,12 @@ private fun EffectColorThemeRow(
 
 @Composable
 private fun ColorBox(color: Color, onClick: () -> Unit) {
-    Box(modifier = Modifier.size(32.dp).background(color, CircleShape).border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), CircleShape).clickable(onClick = onClick))
+    Box(
+        modifier = Modifier
+            .size(24.dp) // Unificado a 24dp como en el resto de la app
+            .background(color, CircleShape)
+            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), CircleShape)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+    )
 }
