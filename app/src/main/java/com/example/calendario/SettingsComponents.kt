@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -64,8 +65,9 @@ internal fun ActionRow(text: String, detail: String? = null, onClick: () -> Unit
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(48.dp)
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -83,7 +85,8 @@ internal fun ActionRow(text: String, detail: String? = null, onClick: () -> Unit
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+            modifier = Modifier.size(24.dp)
         )
     }
 }
@@ -94,8 +97,9 @@ internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .height(48.dp)
             .clickable { onClick() }
-            .padding(vertical = 12.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Text(
             text = label, 
@@ -105,7 +109,7 @@ internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
         )
         Box(
             modifier = Modifier
-                .size(28.dp)
+                .size(24.dp)
                 .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), CircleShape)
                 .clip(CircleShape)
                 .background(color)

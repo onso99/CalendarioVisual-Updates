@@ -12,6 +12,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -407,24 +408,24 @@ fun SettingsScreen(
             // --- 1. General Section ---
             SectionTitle(text = stringResource(id = R.string.general))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 12.dp).clickable { showStartDayOfWeekDialog = true }, verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showStartDayOfWeekDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.start_of_week), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(text = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp).padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Switch(checked = pendingShowWeekNumber, onCheckedChange = { pendingShowWeekNumber = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 12.dp).clickable { showThemeDialog = true }, verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(text = stringResource(id = themeSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 12.dp).clickable { showPermissionsDialog = true }, verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showPermissionsDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.system_permissions), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Box(modifier = Modifier.size(10.dp).background(permissionPointColor, CircleShape))
@@ -434,18 +435,18 @@ fun SettingsScreen(
             // --- 2. Estilo Section ---
             SectionTitle(text = stringResource(id = R.string.customize_theme))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 12.dp).clickable { showBundledThemesDialog = true }, verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showBundledThemesDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     val titleColor = lerp(start = CalendarioTheme.colors.cabecera, stop = CalendarioTheme.colors.textSystem, fraction = 0.4f)
                     Text(text = truncateThemeName(lightThemeName!!, 20), color = titleColor, fontSize = 14.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true } }
+                ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) } }
+                ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick) }
+                ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
             }
 
             // --- 3. Alarm Section ---
@@ -471,11 +472,11 @@ fun SettingsScreen(
             // --- 4. Holidays Section ---
             SectionTitle(text = stringResource(id = R.string.holidays_section))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick) }
+                ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick)
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(text = stringResource(id = R.string.import_holidays)) { importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) } }
+                ActionRow(text = stringResource(id = R.string.import_holidays)) { importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(text = stringResource(id = R.string.export_holidays)) { exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") }) } }
+                ActionRow(text = stringResource(id = R.string.export_holidays)) { exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") }) }
             }
 
             WidgetSectionTitle()
@@ -497,10 +498,24 @@ fun SettingsScreen(
                     }
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    IconButton(onClick = { pendingFontBold = !pendingFontBold }, modifier = Modifier.size(36.dp).padding(start = 8.dp)) {
-                        Icon(Icons.Default.FormatBold, "Bold", tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
+                    Spacer(modifier = Modifier.weight(1f))
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .background(if (pendingFontBold) CalendarioTheme.colors.cabecera.copy(alpha = 0.12f) else Color.Transparent)
+                            .border(1.dp, if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.15f), CircleShape)
+                            .clickable { pendingFontBold = !pendingFontBold },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.FormatBold,
+                            null,
+                            tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                            modifier = Modifier.size(34.dp) // La B es grande, pero el Box la contiene en 30dp
+                        )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     val fontFamilyDisplay = when(pendingFontFamily) {
@@ -510,22 +525,22 @@ fun SettingsScreen(
                         WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
                         else -> stringResource(id = R.string.font_system)
                     }
-                    Text(fontFamilyDisplay, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f).clickable { showFontFamilyDialog = true })
+                    Text(fontFamilyDisplay, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true } }
+                ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true } }
+                ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true } }
+                ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
             }
 
             // --- 5. Backup Section ---
             SectionTitle(text = stringResource(id = R.string.backup_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(text = stringResource(id = R.string.export_full_backup)) { val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json") }; exportFullBackupLauncher.launch(intent) } }
+                ActionRow(text = stringResource(id = R.string.export_full_backup)) { val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json") }; exportFullBackupLauncher.launch(intent) }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) { ActionRow(text = stringResource(id = R.string.import_full_backup)) { val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }; importFullBackupLauncher.launch(intent) } }
+                ActionRow(text = stringResource(id = R.string.import_full_backup)) { val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }; importFullBackupLauncher.launch(intent) }
             }
 
             // --- About Section ---
