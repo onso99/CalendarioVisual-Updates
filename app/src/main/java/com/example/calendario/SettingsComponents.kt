@@ -38,7 +38,7 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        modifier = modifier.padding(bottom = 8.dp, top = 16.dp),
+        modifier = modifier.padding(bottom = 8.dp, top = 24.dp),
         fontWeight = FontWeight.Bold,
         color = titleColor
     )
@@ -54,7 +54,7 @@ internal fun WidgetSectionTitle() {
     Text(
         text = stringResource(id = R.string.widget),
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+        modifier = Modifier.padding(bottom = 8.dp, top = 24.dp),
         fontWeight = FontWeight.Bold,
         color = titleColor
     )
@@ -65,7 +65,7 @@ internal fun ActionRow(text: String, detail: String? = null, onClick: () -> Unit
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(52.dp)
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -97,7 +97,7 @@ internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(52.dp)
             .clickable { onClick() }
             .padding(horizontal = 16.dp)
     ) {

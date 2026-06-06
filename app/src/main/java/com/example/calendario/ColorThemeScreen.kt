@@ -170,12 +170,11 @@ fun ColorThemeScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            categories.forEachIndexed { index, (category, categoryRes) ->
+            categories.forEachIndexed { _, (category, categoryRes) ->
                 val items = groupedItems[category]!!
 
                 SectionTitle(
-                    text = stringResource(id = categoryRes),
-                    modifier = Modifier.padding(top = if(index > 0) 24.dp else 0.dp, bottom = 8.dp)
+                    text = stringResource(id = categoryRes)
                 )
                 
                 Column(
@@ -323,7 +322,7 @@ private fun SingleColorThemeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(52.dp)
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -352,7 +351,7 @@ private fun EffectColorThemeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(52.dp)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

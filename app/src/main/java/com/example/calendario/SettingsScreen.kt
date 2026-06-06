@@ -408,24 +408,24 @@ fun SettingsScreen(
             // --- 1. General Section ---
             SectionTitle(text = stringResource(id = R.string.general))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showStartDayOfWeekDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showStartDayOfWeekDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.start_of_week), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(text = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Switch(checked = pendingShowWeekNumber, onCheckedChange = { pendingShowWeekNumber = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(text = stringResource(id = themeSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showPermissionsDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showPermissionsDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.system_permissions), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Box(modifier = Modifier.size(10.dp).background(permissionPointColor, CircleShape))
@@ -435,7 +435,7 @@ fun SettingsScreen(
             // --- 2. Estilo Section ---
             SectionTitle(text = stringResource(id = R.string.customize_theme))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showBundledThemesDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBundledThemesDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     val titleColor = lerp(start = CalendarioTheme.colors.cabecera, stop = CalendarioTheme.colors.textSystem, fraction = 0.4f)
@@ -498,7 +498,7 @@ fun SettingsScreen(
                     }
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().height(48.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Box(
