@@ -153,8 +153,8 @@ class CalendarWidgetFactory(
         views.setTextColor(R.id.widget_item_date_formatted, currentTextColor)
         views.setTextColor(R.id.widget_item_description, currentTextColor)
 
-        val hasAlarm = AlarmUtils.getAlarmOffset(context, actualEvent.id) != null
-        if (hasAlarm) {
+        val showAlarmIcon = AlarmUtils.shouldShowAlarmIcon(context, actualEvent)
+        if (showAlarmIcon) {
             views.setViewVisibility(R.id.widget_item_alarm_icon, View.VISIBLE)
             views.setInt(R.id.widget_item_alarm_icon, "setColorFilter", currentTextColor)
         } else {

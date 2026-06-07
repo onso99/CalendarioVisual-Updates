@@ -183,20 +183,26 @@ object AlarmUtils {
         val eventsMap = loadEventsFromPrefs(context)
         val allEvents = eventsMap.values.flatten()
         
-        // 1. LIMPIEZA DE HISTORIAL: Quitar registros de eventos que ya no existen o son antiguos
+        // 1. LIMPIEZA DE HISTORIAL: Quitar registros de eventos que ya no existen o son muy antiguos
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
         val savedEntries = prefs.all
-        val today = LocalDate.now()
+        val now = LocalDateTime.now()
 
         prefs.edit(commit = true) {
-            savedEntries.keys.forEach { idStr ->
-                val id = idStr.toLongOrNull() ?: -1L
-                val event = allEvents.find { it.id == id }
-                
-                // Borramos registro si el evento ya no existe o pasó hace más de 30 días
-                if (event == null || event.date.isBefore(today.minusDays(30))) {
-                    remove(idStr)
-                    if (event == null) cancelAlarm(context, id)
+            allEvents.forEach { event ->
+                val offset = getAlarmOffset(context, event.id)
+                if (offset != null) {
+                    val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+                        event.date.atStartOfDay()
+                    } else {
+                        LocalDateTime.of(event.date, event.startTime)
+                    }
+                    val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+
+                    // Si la alarma ya pasó y NO es recurrente, apagamos el switch (Auto-apagado)
+                    if (alarmDateTime.isBefore(now) && event.rrule == null) {
+                        remove(event.id.toString())
+                    }
                 }
             }
         }
@@ -206,9 +212,14 @@ object AlarmUtils {
         var count = 0
         allEvents.forEach { event ->
             if (getAlarmOffset(context, event.id) != null) {
-                // Solo procesamos eventos futuros dentro de la ventana de 7 días
-                val eventDateTime = if (event.isAllDay || event.startTime == null) event.date.atStartOfDay() else LocalDateTime.of(event.date, event.startTime)
-                if (eventDateTime.isAfter(LocalDateTime.now())) {
+                val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+                    event.date.atStartOfDay()
+                } else {
+                    LocalDateTime.of(event.date, event.startTime)
+                }
+                
+                // Solo programamos si es futuro
+                if (referenceDateTime.isAfter(now)) {
                     cancelAlarm(context, event.id, event.date)
                     scheduleAlarm(context, event)
                     count++
@@ -218,5 +229,24 @@ object AlarmUtils {
             }
         }
         LogCollector.addLog("ALARMA: Fin sincronización ($count activas)")
+    }
+
+    /**
+     * Determina si se debe mostrar el icono de campana.
+     * Criterio: Switch ON Y (Es futuro O es serie recurrente que aún no ha pasado en el día)
+     */
+    fun shouldShowAlarmIcon(context: Context, event: Festivo): Boolean {
+        val offset = getAlarmOffset(context, event.id) ?: return false
+        
+        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+            event.date.atStartOfDay()
+        } else {
+            LocalDateTime.of(event.date, event.startTime)
+        }.withSecond(0).withNano(0)
+
+        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+        
+        // Solo mostramos si la alarma está en el futuro
+        return alarmDateTime.isAfter(LocalDateTime.now())
     }
 }

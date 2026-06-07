@@ -168,8 +168,10 @@ fun MonthlyEventList(
                                             modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
-                                    val alarmOffset = remember(festivo.id) { AlarmUtils.getAlarmOffset(context, festivo.id) }
-                                    if (alarmOffset != null) {
+                                    val showAlarmIcon = remember(festivo.id, date) { 
+                                        AlarmUtils.shouldShowAlarmIcon(context, festivo) 
+                                    }
+                                    if (showAlarmIcon) {
                                         Icon(
                                             imageVector = Icons.Outlined.Notifications,
                                             contentDescription = stringResource(id = R.string.alarm),
