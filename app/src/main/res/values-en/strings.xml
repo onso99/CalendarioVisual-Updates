@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calendar</string>
+    <string name="app_name">Visual Calendar</string>
     <string name="calendar_widget_description">Displays your upcoming calendar events</string>
     <string name="permission_calendar_select">Calendar permission is required to select calendars.</string>
     <string name="permission_calendar_write">Permission to write to the calendar is required to create events.</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kalender</string>
+    <string name="app_name">Visueller Kalender</string>
     <string name="calendar_widget_description">Zeigt Ihre bevorstehenden Kalenderereignisse an</string>
     <string name="permission_calendar_select">Kalenderberechtigung ist erforderlich, um Kalender auszuwählen.</string>
     <string name="permission_calendar_write">Berechtigung zum Schreiben in den Kalender ist erforderlich, um Ereignisse zu erstellen.</string>

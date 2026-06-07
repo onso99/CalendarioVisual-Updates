@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calendari</string>
+    <string name="app_name">Calendari Visual</string>
     <string name="calendar_widget_description">Mostra els teus propers esdeveniments del calendari</string>
     <string name="permission_calendar_select">Ès necessari el permís de calendari per seleccionar calendaris.</string>
     <string name="permission_calendar_write">Ès necessari el permís per escriure al calendari per crear esdeveniments.</string>

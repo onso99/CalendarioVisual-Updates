@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">カレンダー</string>
+    <string name="app_name">ビジュアルカレンダー</string>
     <string name="calendar_widget_description">今後のカレンダーイベントを表示します</string>
     <string name="permission_calendar_select">カレンダーを選択するにはカレンダーの権限が必要です。</string>
     <string name="permission_calendar_write">イベントを作成するにはカレンダーへの書き込み権限が必要です。</string>

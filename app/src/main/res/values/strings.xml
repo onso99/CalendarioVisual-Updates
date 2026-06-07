@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calendario</string>
+    <string name="app_name">Calendario Visual</string>
     <string name="calendar_widget_description">Muestra tus próximos eventos del calendario</string>
     <string name="permission_calendar_select">Permiso de calendario necesario para seleccionar calendarios.</string>
     <string name="permission_calendar_write">Permiso para escribir en el calendario es necesario para crear eventos.</string>

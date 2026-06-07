@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">日历</string>
+    <string name="app_name">视觉日历</string>
     <string name="calendar_widget_description">显示您即将到来的日历活动</string>
     <string name="permission_calendar_select">需要日历权限才能选择日历。</string>
     <string name="permission_calendar_write">需要日历写入权限才能创建活动。</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Календарь</string>
+    <string name="app_name">Визуальный календарь</string>
     <string name="calendar_widget_description">Отображает ваши предстоящие события в календаре</string>
     <string name="permission_calendar_select">Для выбора календарей требуется разрешение на доступ к календарю.</string>
     <string name="permission_calendar_write">Для создания событий требуется разрешение на запись в календарь.</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Egutegia</string>
+    <string name="app_name">Egutegi Bisuala</string>
     <string name="calendar_widget_description">Zure hurrengo egutegiko gertaerak erakusten ditu</string>
     <string name="permission_calendar_select">Egutegiak hautatzeko egutegiaren baimena behar da.</string>
     <string name="permission_calendar_write">Gertaerak sortzeko egutegian idazteko baimena behar da.</string>
