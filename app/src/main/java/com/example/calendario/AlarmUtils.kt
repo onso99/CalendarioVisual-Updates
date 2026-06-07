@@ -185,7 +185,6 @@ object AlarmUtils {
         
         // 1. LIMPIEZA DE HISTORIAL: Quitar registros de eventos que ya no existen o son muy antiguos
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
-        val savedEntries = prefs.all
         val now = LocalDateTime.now()
 
         prefs.edit(commit = true) {
