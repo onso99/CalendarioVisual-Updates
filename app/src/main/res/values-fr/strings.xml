@@ -247,6 +247,7 @@
     <string name="notifications_permission_label">Notifications : alertes barre d\'état</string>
     <string name="alarms_permission_label">Alarmes : alertes précises et plein écran</string>
     <string name="fix_permission">RÉGLAGES</string>
+    <string name="history">Historique</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">anniversaire,anniv</string>

@@ -246,6 +246,7 @@
     <string name="notifications_permission_label">Benachrichtigungen: Statusleisten-Warnungen</string>
     <string name="alarms_permission_label">Alarme: Präzise und Vollbild-Warnungen</string>
     <string name="fix_permission">EINSTELLUNGEN</string>
+    <string name="history">Verlauf</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">geburtstag,geburi,jubiläum,namenstag</string>

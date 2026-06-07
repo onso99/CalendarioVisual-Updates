@@ -245,6 +245,7 @@
     <string name="notifications_permission_label">Notificações: avisos na barra de status</string>
     <string name="alarms_permission_label">Alarmes: avisos precisos e tela cheia</string>
     <string name="fix_permission">AJUSTES</string>
+    <string name="history">Histórico</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">aniversário,parabéns,onomástica</string>

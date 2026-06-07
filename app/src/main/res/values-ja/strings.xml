@@ -246,6 +246,7 @@
     <string name="notifications_permission_label">通知：ステータスバーのアラート</string>
     <string name="alarms_permission_label">アラーム：正確なフルスクリーンアラート</string>
     <string name="fix_permission">設定</string>
+    <string name="history">履歴</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">誕生日,記念日</string>

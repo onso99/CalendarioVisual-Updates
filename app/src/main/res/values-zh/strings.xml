@@ -247,6 +247,7 @@
     <string name="notifications_permission_label">通知：状态栏提示</string>
     <string name="alarms_permission_label">闹钟：精准和全屏提示</string>
     <string name="fix_permission">设置</string>
+    <string name="history">历史</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">生日,周年,诞辰</string>

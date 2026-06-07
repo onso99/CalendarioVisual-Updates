@@ -245,6 +245,7 @@
     <string name="notifications_permission_label">Notificaciones: avisos en barra superior</string>
     <string name="alarms_permission_label">Alarmas: avisos en hora y a pantalla completa</string>
     <string name="fix_permission">AJUSTES</string>
+    <string name="history">Historial</string>
 
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">cumpleaños,cumple,aniversario,onomástica</string>
