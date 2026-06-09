@@ -73,7 +73,9 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -524,7 +526,7 @@ fun SettingsScreen(
                             modifier = Modifier.size(34.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(8.dp))
                     val fontFamilyDisplay = when(pendingFontFamily) {
                         WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
                         WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
@@ -532,12 +534,28 @@ fun SettingsScreen(
                         WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
                         else -> stringResource(id = R.string.font_system)
                     }
+                    val currentFontFamily = when(pendingFontFamily) {
+                        WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
+                        WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
+                        WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(
+                            android.graphics.Typeface.create(
+                                "sans-serif-condensed",
+                                if (pendingFontBold) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL
+                            )
+                        )
+                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
+                        else -> FontFamily.Default
+                    }
                     Text(
                         text = fontFamilyDisplay,
                         color = CalendarioTheme.colors.textSystem,
                         fontSize = 16.sp,
                         textAlign = TextAlign.End,
-                        fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal,
+                        fontFamily = currentFontFamily,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
