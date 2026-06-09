@@ -532,7 +532,13 @@ fun SettingsScreen(
                         WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
                         else -> stringResource(id = R.string.font_system)
                     }
-                    Text(fontFamilyDisplay, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
+                    Text(
+                        text = fontFamilyDisplay,
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.End,
+                        fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal
+                    )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
