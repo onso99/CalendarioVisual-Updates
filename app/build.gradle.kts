@@ -21,7 +21,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 37
         versionCode = 2
-        versionName = "1.966"
+        versionName = "1.966.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

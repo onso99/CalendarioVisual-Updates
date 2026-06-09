@@ -507,7 +507,7 @@ fun SettingsScreen(
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Box(
                         modifier = Modifier
                             .size(30.dp)
@@ -521,10 +521,10 @@ fun SettingsScreen(
                             Icons.Default.FormatBold,
                             null,
                             tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                            modifier = Modifier.size(34.dp) // La B es grande, pero el Box la contiene en 30dp
+                            modifier = Modifier.size(34.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.weight(1f))
                     val fontFamilyDisplay = when(pendingFontFamily) {
                         WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
                         WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
