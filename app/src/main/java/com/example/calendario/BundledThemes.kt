@@ -14,7 +14,7 @@ object BundledThemes {
                 AppConstants.ColorKeys.LIGHT_CABECERA to "#FF0077C2",
                 AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND to "#FFF0F9FE",
                 AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY to "#FFD32F2F",
-                AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR to "#260077C2",
+                AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR to "#2B38A391",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND to "#FF0077C2",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT to "#FF38A391",
                 AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FFFFFFFF"

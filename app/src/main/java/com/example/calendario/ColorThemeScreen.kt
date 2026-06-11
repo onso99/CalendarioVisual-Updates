@@ -78,8 +78,8 @@ fun ColorThemeScreen(
     val categories = remember {
         listOf(
             "General" to R.string.general,
-            "Lista de Eventos" to R.string.event_list,
             "Calendario Mensual" to R.string.monthly_calendar,
+            "Lista de Eventos" to R.string.event_list,
             "Calendario Anual" to R.string.yearly_calendar
         )
             .filter { groupedItems.containsKey(it.first) }
