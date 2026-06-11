@@ -143,7 +143,7 @@
     <string name="header_background">标题背景</string>
     <string name="screen_background">屏幕背景</string>
     <string name="sundays_and_holidays">周日/节假日</string>
-    <string name="today_highlight_list">今日突出显示</string>
+    <string name="today_highlight_list">今日活动</string>
     <string name="birthdays">生日</string>
     <string name="event_1">活动-1</string>
     <string name="event_2">活动-2</string>

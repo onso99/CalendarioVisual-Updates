@@ -145,7 +145,7 @@
     <string name="header_background">Header Background</string>
     <string name="screen_background">Screen Background</string>
     <string name="sundays_and_holidays">Sundays/Holidays</string>
-    <string name="today_highlight_list">Today Highlight</string>
+    <string name="today_highlight_list">Today\'s events</string>
     <string name="birthdays">Birthdays</string>
     <string name="event_1">Event-1</string>
     <string name="event_2">Event-2</string>

@@ -145,7 +145,7 @@
     <string name="header_background">Kopfzeilenhintergrund</string>
     <string name="screen_background">Bildschirmhintergrund</string>
     <string name="sundays_and_holidays">Sonntage/Feiertage</string>
-    <string name="today_highlight_list">Hervorhebung für heute</string>
+    <string name="today_highlight_list">Heutige Ereignisse</string>
     <string name="birthdays">Geburtstage</string>
     <string name="event_1">Ereignis-1</string>
     <string name="event_2">Ereignis-2</string>

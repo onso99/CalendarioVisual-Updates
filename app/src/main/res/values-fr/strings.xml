@@ -145,7 +145,7 @@
     <string name="header_background">Fond en-tête</string>
     <string name="screen_background">Fond écran</string>
     <string name="sundays_and_holidays">Dimanches/Fériés</string>
-    <string name="today_highlight_list">Surlignage d\'aujourd\'hui</string>
+    <string name="today_highlight_list">Événements d\'aujourd\'hui</string>
     <string name="birthdays">Anniversaires</string>
     <string name="event_1">Événement-1</string>
     <string name="event_2">Événement-2</string>
