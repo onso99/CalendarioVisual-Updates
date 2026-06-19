@@ -48,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -210,6 +211,7 @@ fun AddEventScreen(
     var initialRepeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
     var isLongPeriod by remember { mutableStateOf(false) }
     var selectedColorInt by remember { mutableStateOf<Int?>(null) }
+    var showCustomColorPicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = localEventToEdit, key2 = editableCalendars) {
         if (localEventToEdit != null && !isCopying) {
@@ -414,6 +416,7 @@ fun AddEventScreen(
                 },
                 selectedColorInt = selectedColorInt,
                 onColorSelect = { selectedColorInt = it },
+                onPaletteClick = { showCustomColorPicker = true },
                 hasAlarm = hasAlarm, 
                 onHasAlarmChange = { 
                     hasAlarm = it
@@ -612,5 +615,16 @@ fun AddEventScreen(
             alarmTime = LocalTime.of(hour, minute)
             showAlarmTimePickerDialog = false
         }, initialHour = alarmTime.hour, initialMinute = alarmTime.minute)
+    }
+
+    if (showCustomColorPicker) {
+        AdvancedColorPickerDialog(
+            initialColor = if (selectedColorInt != null) Color(selectedColorInt!!) else Color.Blue,
+            onDismissRequest = { showCustomColorPicker = false },
+            onColorConfirm = { color ->
+                selectedColorInt = color.toArgb()
+                showCustomColorPicker = false
+            }
+        )
     }
 }

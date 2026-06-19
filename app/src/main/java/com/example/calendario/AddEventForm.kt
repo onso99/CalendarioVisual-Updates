@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -43,6 +44,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -72,6 +74,7 @@ fun AddEventForm(
     onLongPeriodChange: (Boolean) -> Unit,
     selectedColorInt: Int?,
     onColorSelect: (Int?) -> Unit,
+    onPaletteClick: () -> Unit,
     hasAlarm: Boolean,
     onHasAlarmChange: (Boolean) -> Unit,
     alarmTime: java.time.LocalTime,
@@ -281,32 +284,75 @@ fun AddEventForm(
                 // --- COLOR SELECTOR (Solo para periodos largos) ---
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(stringResource(id = R.string.select_color), color = CalendarioTheme.colors.textSystem, style = MaterialTheme.typography.bodyMedium)
-                    Spacer(Modifier.height(12.dp))
+                    val periodColors = listOf(
+                        0xFFE91E63.toInt(), // Rosa
+                        0xFF2196F3.toInt(), // Azul
+                        0xFFFF9800.toInt(), // Naranja
+                        0xFF4CAF50.toInt(), // Verde
+                        0xFF9C27B0.toInt(), // Morado
+                        0xFF795548.toInt(), // Marrón
+                        0xFF607D8B.toInt(), // Gris
+                        0xFF4C58D8.toInt()  // Azul Especial
+                    )
+                    
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val periodColors = listOf(
-                            0xFFE91E63.toInt(), // Rosa
-                            0xFF2196F3.toInt(), // Azul
-                            0xFFFF9800.toInt(), // Naranja
-                            0xFF4CAF50.toInt(), // Verde
-                            0xFF9C27B0.toInt(), // Morado
-                            0xFF795548.toInt(), // Marrón
-                            0xFF607D8B.toInt()  // Gris
-                        )
-                        periodColors.forEach { colorInt ->
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .background(Color(colorInt), CircleShape)
-                                    .border(
-                                        width = if (selectedColorInt == colorInt) 3.dp else 1.dp,
-                                        color = if (selectedColorInt == colorInt) CalendarioTheme.colors.textSystem else Color.Transparent,
-                                        shape = CircleShape
+                        // Bloque de 4 columnas de 2 colores
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            for (i in 0..3) {
+                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    ColorCircle(
+                                        colorInt = periodColors[i],
+                                        isSelected = selectedColorInt == periodColors[i],
+                                        onClick = { onColorSelect(periodColors[i]) }
                                     )
-                                    .clickable { onColorSelect(colorInt) }
+                                    ColorCircle(
+                                        colorInt = periodColors[i + 4],
+                                        isSelected = selectedColorInt == periodColors[i + 4],
+                                        onClick = { onColorSelect(periodColors[i + 4]) }
+                                    )
+                                }
+                            }
+                        }
+
+                        // Separador sutil
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .width(1.dp)
+                                .height(64.dp)
+                                .background(CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
+                        )
+
+                        // Quinta Columna: Paleta (Selector personalizado)
+                        val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp) // Un poco más grande para destacar
+                                .clip(CircleShape)
+                                .background(if (isCustomColor) Color(selectedColorInt!!) else Color.Transparent)
+                                .border(
+                                    width = if (isCustomColor) 3.dp else 1.dp,
+                                    color = if (isCustomColor) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                                    shape = CircleShape
+                                )
+                                .clickable { onPaletteClick() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Palette,
+                                contentDescription = null,
+                                modifier = Modifier.size(22.dp),
+                                tint = if (isCustomColor) {
+                                    if (isColorDark(Color(selectedColorInt!!), Color.White)) Color.White else Color.Black
+                                } else {
+                                    CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                                }
                             )
                         }
                     }
@@ -410,6 +456,25 @@ fun AddEventForm(
             }
         }
     }
+}
+
+@Composable
+private fun ColorCircle(
+    colorInt: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(32.dp)
+            .background(Color(colorInt), CircleShape)
+            .border(
+                width = if (isSelected) 3.dp else 1.dp,
+                color = if (isSelected) CalendarioTheme.colors.textSystem else Color.Transparent,
+                shape = CircleShape
+            )
+            .clickable { onClick() }
+    )
 }
 
 @Composable
