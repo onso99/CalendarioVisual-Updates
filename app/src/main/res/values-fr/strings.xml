@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Confirmer la suppression</string>
     <string name="confirm_deletion_message">Êtes-vous sûr de vouloir supprimer cet événement : \"%1$s\" ?</string>
     <string name="repeat_event_title">Répéter l\'événement</string>
+    <string name="repeat_until">Se termine</string>
+    <string name="repeat_indefinite">Indéfiniment</string>
+    <string name="repeat_on_date">Jusqu\'à la date</string>
+    <string name="repeat_after">Répétitions</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Période longue</string>
+    <string name="date">Date</string>
+    <string name="end_time">Fin</string>
+    <string name="lanes_full_error">La limite de 6 périodes longues simultanées pour les dates sélectionnées a été dépassée. Essayez de réduire la durée ou enregistrez l\'événement comme un événement normal.</string>
     <string name="select_calendar_title">Sélectionner le calendrier</string>
     <string name="select_time_title">Sélectionner l\'heure</string>
     <string name="does_not_repeat">Ne se répète pas</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Annuler les modifications</string>
     <string name="discard_changes_confirmation">Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les annuler ?</string>
     <string name="discard">Annuler</string>
-    <string name="legacy_theme_detected_title">Ancien thème détecté</string>
-    <string name="legacy_theme_detected_message">Le thème que vous importez provient d\'une version antérieure. Certaines couleurs peuvent ne pas s\'appliquer correctement. Voulez-vous continuer ?</string>
-    <string name="apply_anyway">Appliquer quand même</string>
     <string name="export_theme_title">Enregistrer le thème</string>
     <string name="theme_name">Nom du thème</string>
     <string name="export">Enregistrer</string>
@@ -128,9 +134,7 @@
     <string name="repeated_event">Événement répété</string>
     <string name="no_pending_events_this_month">Aucun événement en attente pour ce mois-ci.</string>
     <string name="no_events_this_month">Aucun événement pour ce mois-ci.</string>
-    <string name="event_list">Liste d\'événements</string>
     <string name="monthly_calendar">Calendrier mensuel</string>
-    <string name="yearly_calendar">Calendrier annuel</string>
     <string name="theme_exported_successfully">Thème exporté avec succès</string>
     <string name="error_exporting_theme">Erreur lors de l\'exportation du thème : %1$s</string>
     <string name="widget">Widget</string>

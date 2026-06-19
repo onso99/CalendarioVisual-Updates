@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Подтвердить удаление</string>
     <string name="confirm_deletion_message">Вы уверены, что хотите удалить это событие: \"%1$s\"?</string>
     <string name="repeat_event_title">Повторить событие</string>
+    <string name="repeat_until">Заканчивается</string>
+    <string name="repeat_indefinite">Бессрочно</string>
+    <string name="repeat_on_date">До даты</string>
+    <string name="repeat_after">Повторений</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Длительный период</string>
+    <string name="date">Дата</string>
+    <string name="end_time">Конец</string>
+    <string name="lanes_full_error">Превышен лимит из 6 одновременных длительных периодов для выбранных дат. Попробуйте сократить длительность или сохранить как обычное событие.</string>
     <string name="select_calendar_title">Выбрать календарь</string>
     <string name="select_time_title">Выбрать время</string>
     <string name="does_not_repeat">Не повторяется</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Отменить изменения</string>
     <string name="discard_changes_confirmation">У вас есть несохраненные изменения. Вы уверены, что хотите их отменить?</string>
     <string name="discard">Отменить</string>
-    <string name="legacy_theme_detected_title">Обнаружена устаревшая тема</string>
-    <string name="legacy_theme_detected_message">Импортируемая тема из предыдущей версии. Некоторые цвета могут применяться некорректно. Хотите продолжить?</string>
-    <string name="apply_anyway">Все равно применить</string>
     <string name="export_theme_title">Сохранить тему</string>
     <string name="theme_name">Название темы</string>
     <string name="export">Сохранить</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">Повторяющееся событие</string>
     <string name="no_pending_events_this_month">Нет ожидающих событий на этот месяц.</string>
     <string name="no_events_this_month">Нет событий на этот месяц.</string>
-    <string name="event_list">Список событий</string>
     <string name="monthly_calendar">Месячный календарь</string>
-    <string name="yearly_calendar">Годовой календарь</string>
     <string name="theme_exported_successfully">Тема успешно экспортирована</string>
     <string name="error_exporting_theme">Ошибка при экспорте темы: %1$s</string>
     <string name="widget">Виджет</string>

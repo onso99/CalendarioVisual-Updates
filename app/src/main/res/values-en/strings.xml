@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Confirm Deletion</string>
     <string name="confirm_deletion_message">Are you sure you want to delete this event: \"%1$s\"?</string>
     <string name="repeat_event_title">Repeat Event</string>
+    <string name="repeat_until">Ends</string>
+    <string name="repeat_indefinite">Indefinitely</string>
+    <string name="repeat_on_date">Until date</string>
+    <string name="repeat_after">Repetitions</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Long period</string>
+    <string name="date">Date</string>
+    <string name="end_time">End</string>
+    <string name="lanes_full_error">The limit of 6 concurrent long periods for the selected dates has been exceeded. Try reducing the duration or saving it as a normal event.</string>
     <string name="select_calendar_title">Select Calendar</string>
     <string name="select_time_title">Select Time</string>
     <string name="does_not_repeat">Does not repeat</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Discard changes</string>
     <string name="discard_changes_confirmation">You have unsaved changes. Are you sure you want to discard them?</string>
     <string name="discard">Discard</string>
-    <string name="legacy_theme_detected_title">Legacy Theme Detected</string>
-    <string name="legacy_theme_detected_message">The theme you are importing is from a previous version. Some colors may not apply correctly. Do you want to continue?</string>
-    <string name="apply_anyway">Apply Anyway</string>
     <string name="export_theme_title">Save Theme</string>
     <string name="theme_name">Theme name</string>
     <string name="export">Save</string>
@@ -128,9 +134,7 @@
     <string name="repeated_event">Repeated event</string>
     <string name="no_pending_events_this_month">No pending events for this month.</string>
     <string name="no_events_this_month">No events for this month.</string>
-    <string name="event_list">Event List</string>
     <string name="monthly_calendar">Monthly Calendar</string>
-    <string name="yearly_calendar">Yearly Calendar</string>
     <string name="theme_exported_successfully">Theme exported successfully</string>
     <string name="error_exporting_theme">Error exporting theme: %1$s</string>
     <string name="widget">Widget</string>

@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Löschung bestätigen</string>
     <string name="confirm_deletion_message">Sind Sie sicher, dass Sie dieses Ereignis löschen möchten: \"%1$s\"?</string>
     <string name="repeat_event_title">Ereignis wiederholen</string>
+    <string name="repeat_until">Endet</string>
+    <string name="repeat_indefinite">Unbegrenzt</string>
+    <string name="repeat_on_date">Bis zum Datum</string>
+    <string name="repeat_after">Wiederholungen</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Langer Zeitraum</string>
+    <string name="date">Datum</string>
+    <string name="end_time">Ende</string>
+    <string name="lanes_full_error">Das Limit von 6 gleichzeitigen langen Zeiträumen für die ausgewählten Termine wurde überschritten. Versuchen Sie, die Dauer zu verkürzen oder als normales Ereignis zu speichern.</string>
     <string name="select_calendar_title">Kalender auswählen</string>
     <string name="select_time_title">Zeit auswählen</string>
     <string name="does_not_repeat">Wiederholt sich nicht</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Änderungen verwerfen</string>
     <string name="discard_changes_confirmation">Sie haben nicht gespeicherte Änderungen. Möchten Sie sie wirklich verwerfen?</string>
     <string name="discard">Verwerfen</string>
-    <string name="legacy_theme_detected_title">Altes Thema erkannt</string>
-    <string name="legacy_theme_detected_message">Das zu importierende Thema stammt aus einer früheren Version. Einige Farben werden möglicherweise nicht korrekt angewendet. Möchten Sie fortfahren?</string>
-    <string name="apply_anyway">Trotzdem anwenden</string>
     <string name="export_theme_title">Thema speichern</string>
     <string name="theme_name">Themenname</string>
     <string name="export">Speichern</string>
@@ -128,9 +134,7 @@
     <string name="repeated_event">Wiederholtes Ereignis</string>
     <string name="no_pending_events_this_month">Keine anstehenden Ereignisse für diesen Monat.</string>
     <string name="no_events_this_month">Keine Ereignisse für diesen Monat.</string>
-    <string name="event_list">Ereignisliste</string>
     <string name="monthly_calendar">Monatskalender</string>
-    <string name="yearly_calendar">Jahreskalender</string>
     <string name="theme_exported_successfully">Thema erfolgreich exportiert</string>
     <string name="error_exporting_theme">Fehler beim Exportieren des Themas: %1$s</string>
     <string name="widget">Widget</string>

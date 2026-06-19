@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Confirmar eliminació</string>
     <string name="confirm_deletion_message">Segur que vols eliminar aquest esdeveniment: "%1$s"?</string>
     <string name="repeat_event_title">Repetir esdeveniment</string>
+    <string name="repeat_until">Finalitza</string>
+    <string name="repeat_indefinite">Indefinidament</string>
+    <string name="repeat_on_date">Fins a la data</string>
+    <string name="repeat_after">Repeticions</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Període llarg</string>
+    <string name="date">Data</string>
+    <string name="end_time">Fi</string>
+    <string name="lanes_full_error">S\'ha superat el límit de 6 períodes llargs concurrents per a les dates seleccionades. Intenteu reduir la durada o deseu-lo com a esdeveniment normal.</string>
     <string name="select_calendar_title">Seleccionar Calendari</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="does_not_repeat">No es repeteix</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Descartar canvis</string>
     <string name="discard_changes_confirmation">Tens canvis sense desar. Estàs segur que vols descartar-los?</string>
     <string name="discard">Descartar</string>
-    <string name="legacy_theme_detected_title">Tema Antic Detectat</string>
-    <string name="legacy_theme_detected_message">El tema que estàs important és d\'una versió anterior. Alguns colors poden no aplicar-se correctament. Vols continuar?</string>
-    <string name="apply_anyway">Aplicar Igualment</string>
     <string name="export_theme_title">Guardar Tema</string>
     <string name="theme_name">Nom del tema</string>
     <string name="export">Guardar</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">Esdeveniment repetit</string>
     <string name="no_pending_events_this_month">No hi ha esdeveniments pendents per a aquest mes.</string>
     <string name="no_events_this_month">No hi ha esdeveniments per a aquest mes.</string>
-    <string name="event_list">Llista d\'Esdeveniments</string>
     <string name="monthly_calendar">Calendari Mensual</string>
-    <string name="yearly_calendar">Calendari Anual</string>
     <string name="theme_exported_successfully">Tema exportat amb èxit</string>
     <string name="error_exporting_theme">Error en exportar el tema: %1$s</string>
     <string name="widget">Widget</string>

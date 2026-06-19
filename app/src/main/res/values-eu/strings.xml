@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Berretsi ezabatzea</string>
     <string name="confirm_deletion_message">Ziur zaude \"%1$s\" gertaera ezabatu nahi duzula?</string>
     <string name="repeat_event_title">Errepikatu gertaera</string>
+    <string name="repeat_until">Amaiera</string>
+    <string name="repeat_indefinite">Mugagabe</string>
+    <string name="repeat_on_date">Data honetara arte</string>
+    <string name="repeat_after">Errepikapenak</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Aldizkako luzea</string>
+    <string name="date">Data</string>
+    <string name="end_time">Amaiera</string>
+    <string name="lanes_full_error">Hautatutako datetarako aldi bereko 6 aldizkako luzeen muga gainditu da. Saiatu iraupena murrizten edo gorde gertaera arrunt gisa.</string>
     <string name="select_calendar_title">Hautatu Egutegia</string>
     <string name="select_time_title">Hautatu Ordua</string>
     <string name="does_not_repeat">Ez da errepikatzen</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Baztertu aldaketak</string>
     <string name="discard_changes_confirmation">Gorde gabeko aldaketak dituzu. Ziur zaude baztertu nahi dituzula?</string>
     <string name="discard">Baztertu</string>
-    <string name="legacy_theme_detected_title">Gai Zaharra Detektatu da</string>
-    <string name="legacy_theme_detected_message">Inportatzen ari zaren gaia aurreko bertsio batekoa da. Baliteke kolore batzuk behar bezala ez aplikatzea. Jarraitu nahi duzu?</string>
-    <string name="apply_anyway">Aplikatu Dena den</string>
     <string name="export_theme_title">Gaia gorde</string>
     <string name="theme_name">Gaiaren izena</string>
     <string name="export">Gorde</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">Errepikatutako gertaera</string>
     <string name="no_pending_events_this_month">Ez dago zain dauden gertaerarik hilabete honetarako.</string>
     <string name="no_events_this_month">Ez dago gertaerarik hilabete honetarako.</string>
-    <string name="event_list">Gertaeren Zerrenda</string>
     <string name="monthly_calendar">Hileko Egutegia</string>
-    <string name="yearly_calendar">Urteko Egutegia</string>
     <string name="theme_exported_successfully">Gaia behar bezala esportatu da</string>
     <string name="error_exporting_theme">Errorea gaia esportatzean: %1$s</string>
     <string name="widget">Widgeta</string>

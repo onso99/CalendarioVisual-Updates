@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Conferma eliminazione</string>
     <string name="confirm_deletion_message">Sei sicuro di voler eliminare questo evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Ripeti evento</string>
+    <string name="repeat_until">Termina</string>
+    <string name="repeat_indefinite">Indefinitamente</string>
+    <string name="repeat_on_date">Fino a data</string>
+    <string name="repeat_after">Ripetizioni</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Periodo lungo</string>
+    <string name="date">Data</string>
+    <string name="end_time">Fine</string>
+    <string name="lanes_full_error">Il limite di 6 periodi lunghi simultanei per le date selezionate è stato superato. Prova a ridurre la durata o salvalo come evento normale.</string>
     <string name="select_calendar_title">Seleziona calendario</string>
     <string name="select_time_title">Seleziona l\'ora</string>
     <string name="does_not_repeat">Non si ripete</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Annulla modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle annullare?</string>
     <string name="discard">Annulla</string>
-    <string name="legacy_theme_detected_title">Tema legacy rilevato</string>
-    <string name="legacy_theme_detected_message">Il tema che stai importando proviene da una versione precedente. Alcuni colori potrebbero non essere applicati correttamente. Vuoi continuare?</string>
-    <string name="apply_anyway">Applica comunque</string>
     <string name="export_theme_title">Salva tema</string>
     <string name="theme_name">Nome del tema</string>
     <string name="export">Salva</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">Evento ripetuto</string>
     <string name="no_pending_events_this_month">Nessun evento in sospeso per questo mese.</string>
     <string name="no_events_this_month">Nessun evento per questo mese.</string>
-    <string name="event_list">Elenco eventi</string>
     <string name="monthly_calendar">Calendario mensile</string>
-    <string name="yearly_calendar">Calendario annuale</string>
     <string name="theme_exported_successfully">Tema esportato con successo</string>
     <string name="error_exporting_theme">Errore durante l\'esportazione del tema: %1$s</string>
     <string name="widget">Widget</string>

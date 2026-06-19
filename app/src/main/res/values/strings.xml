@@ -45,7 +45,6 @@
     <string name="long_period_switch">Periodo largo</string>
     <string name="date">Fecha</string>
     <string name="end_time">Fin</string>
-    <string name="select_color">Seleccionar color</string>
     <string name="lanes_full_error">Se ha sobrepasado el límite de 6 periodos largos concurrentes para las fechas seleccionadas. Intente reducir la duración o guardarlo como evento normal.</string>
     <string name="select_calendar_title">Seleccionar Calendario</string>
     <string name="select_time_title">Seleccionar hora</string>
@@ -99,9 +98,6 @@
     <string name="discard_changes_title">Descartar cambios</string>
     <string name="discard_changes_confirmation">Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?</string>
     <string name="discard">Descartar</string>
-    <string name="legacy_theme_detected_title">Tema Antiguo Detectado</string>
-    <string name="legacy_theme_detected_message">El tema que estás importando es de una versión anterior. Algunos colores pueden no aplicarse correctamente. ¿Deseas continuar?</string>
-    <string name="apply_anyway">Aplicar Igualmente</string>
     <string name="export_theme_title">Guardar Tema</string>
     <string name="theme_name">Nombre del tema</string>
     <string name="export">Guardar</string>
@@ -139,9 +135,7 @@
     <string name="no_pending_events_this_month">No hay eventos pendientes para este mes.</string>
     <string name="no_events_this_month">No hay eventos para este mes.</string>
     <string name="widget_no_events">No hay eventos</string>
-    <string name="event_list">Lista de Eventos</string>
     <string name="monthly_calendar">Calendario Mensual</string>
-    <string name="yearly_calendar">Calendario Anual</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="error_exporting_theme">Error al exportar el tema: %1$s</string>
     <string name="widget">Widget</string>

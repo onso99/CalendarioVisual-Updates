@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">确认删除</string>
     <string name="confirm_deletion_message">您确定要删除此活动：\"%1$s\"吗？</string>
     <string name="repeat_event_title">重复活动</string>
+    <string name="repeat_until">结束</string>
+    <string name="repeat_indefinite">无限期</string>
+    <string name="repeat_on_date">直到日期</string>
+    <string name="repeat_after">重复次数</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">长期</string>
+    <string name="date">日期</string>
+    <string name="end_time">结束</string>
+    <string name="lanes_full_error">已超过所选日期的 6 个并发长期时段限制。请尝试减少持续时间或将其保存为普通活动。</string>
     <string name="select_calendar_title">选择日历</string>
     <string name="select_time_title">选择时间</string>
     <string name="does_not_repeat">不重复</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">放弃更改</string>
     <string name="discard_changes_confirmation">您有未保存的更改。您确定要放弃它们吗？</string>
     <string name="discard">放弃</string>
-    <string name="legacy_theme_detected_title">检测到旧版主题</string>
-    <string name="legacy_theme_detected_message">您正在导入的主题来自先前版本。某些颜色可能无法正确应用。您要继续吗？</string>
-    <string name="apply_anyway">仍然应用</string>
     <string name="export_theme_title">保存主题</string>
     <string name="theme_name">主题名称</string>
     <string name="export">保存</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">重复活动</string>
     <string name="no_pending_events_this_month">本月没有待处理的活动。</string>
     <string name="no_events_this_month">本月没有活动。</string>
-    <string name="event_list">活动列表</string>
     <string name="monthly_calendar">月历</string>
-    <string name="yearly_calendar">年历</string>
     <string name="theme_exported_successfully">主题已成功导出</string>
     <string name="error_exporting_theme">导出主题时出错：%1$s</string>
     <string name="widget">小部件</string>

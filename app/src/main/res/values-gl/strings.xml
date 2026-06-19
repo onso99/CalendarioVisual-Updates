@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">Seguro que queres eliminar o evento \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
+    <string name="repeat_until">Finaliza</string>
+    <string name="repeat_indefinite">Indefinidamente</string>
+    <string name="repeat_on_date">Ata a data</string>
+    <string name="repeat_after">Repeticións</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">Período longo</string>
+    <string name="date">Data</string>
+    <string name="end_time">Fin</string>
+    <string name="lanes_full_error">Superouse o límite de 6 períodos longos concurrentes para as datas seleccionadas. Tente reducir a duración ou gárdeo como evento normal.</string>
     <string name="select_calendar_title">Seleccionar Calendario</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="does_not_repeat">Non se repite</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">Descartar cambios</string>
     <string name="discard_changes_confirmation">Tes cambios sen gardar. Estás seguro de que queres descartalos?</string>
     <string name="discard">Descartar</string>
-    <string name="legacy_theme_detected_title">Tema Antigo Detectado</string>
-    <string name="legacy_theme_detected_message">O tema que estás a importar é dunha versión anterior. Algunhas cores poden non aplicarse correctamente. Desexas continuar?</string>
-    <string name="apply_anyway">Aplicar Igualmente</string>
     <string name="export_theme_title">Gardar Tema</string>
     <string name="theme_name">Nome do tema</string>
     <string name="export">Gardar</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">Evento repetido</string>
     <string name="no_pending_events_this_month">Non hai eventos pendentes para este mes.</string>
     <string name="no_events_this_month">Non hai eventos para este mes.</string>
-    <string name="event_list">Lista de Eventos</string>
     <string name="monthly_calendar">Calendario Mensual</string>
-    <string name="yearly_calendar">Calendario Anual</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="error_exporting_theme">Erro ao exportar o tema: %1$s</string>
     <string name="widget">Widget</string>

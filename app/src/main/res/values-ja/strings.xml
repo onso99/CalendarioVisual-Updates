@@ -37,6 +37,15 @@
     <string name="confirm_deletion_title">削除の確認</string>
     <string name="confirm_deletion_message">イベント「%1$s」を削除してもよろしいですか？</string>
     <string name="repeat_event_title">イベントを繰り返す</string>
+    <string name="repeat_until">終了</string>
+    <string name="repeat_indefinite">無期限</string>
+    <string name="repeat_on_date">指定日まで</string>
+    <string name="repeat_after">繰り返し</string>
+    <string name="repeat_times"></string>
+    <string name="long_period_switch">長期</string>
+    <string name="date">日付</string>
+    <string name="end_time">終了</string>
+    <string name="lanes_full_error">選択した日付の同時期長期期間の制限（6つ）を超えました。期間を短くするか、通常のイベントとして保存してください。</string>
     <string name="select_calendar_title">カレンダーを選択</string>
     <string name="select_time_title">時間を選択</string>
     <string name="does_not_repeat">繰り返さない</string>
@@ -89,9 +98,6 @@
     <string name="discard_changes_title">変更を破棄</string>
     <string name="discard_changes_confirmation">保存されていない変更があります。破棄してもよろしいですか？</string>
     <string name="discard">破棄</string>
-    <string name="legacy_theme_detected_title">古いテーマが検出されました</string>
-    <string name="legacy_theme_detected_message">インポートしているテーマは以前のバージョンのものです。一部の色が正しく適用されない場合があります。続行しますか？</string>
-    <string name="apply_anyway">とにかく適用</string>
     <string name="export_theme_title">テーマを保存</string>
     <string name="theme_name">テーマ名</string>
     <string name="export">保存</string>
@@ -126,9 +132,7 @@
     <string name="repeated_event">繰り返されるイベント</string>
     <string name="no_pending_events_this_month">今月は保留中のイベントはありません。</string>
     <string name="no_events_this_month">今月はイベントはありません。</string>
-    <string name="event_list">イベントリスト</string>
     <string name="monthly_calendar">月間カレンダー</string>
-    <string name="yearly_calendar">年間カレンダー</string>
     <string name="theme_exported_successfully">テーマが正常にエクスポートされました</string>
     <string name="error_exporting_theme">テーマのエクスポート中にエラーが発生しました：%1$s</string>
     <string name="widget">ウィジェット</string>
