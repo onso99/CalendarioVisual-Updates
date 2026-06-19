@@ -140,7 +140,10 @@ class CalendarWidgetFactory(
         } else {
             actualEvent.title
         }
-        val fullDesc = if (actualEvent.age != null && actualEvent.age > 0) "$baseDesc (${actualEvent.age})" else baseDesc
+        val agePart = if (actualEvent.age != null && actualEvent.age > 0) " (${actualEvent.age})" else ""
+        val progressPart = if (actualEvent.isLongPeriod) " (${actualEvent.currentDay}/${actualEvent.totalDays})" else ""
+        
+        val fullDesc = "$baseDesc$agePart$progressPart"
         
         views.setTextViewText(R.id.widget_item_description, applyFontStyles(fullDesc))
 
