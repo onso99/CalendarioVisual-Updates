@@ -256,4 +256,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">aniversario,cumpre,onomástica</string>
     <string name="greeting_keywords">feliz,parabéns,felicidades</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">Hoxe</string>
+    <string name="preview_date_1">22/05</string>
+    <string name="preview_event_1">Reunión de planificación</string>
+    <string name="preview_jue">Xov</string>
+    <string name="preview_date_2">23/05</string>
+    <string name="preview_event_2">Xantar co cliente</string>
+    <string name="preview_vie">Ven</string>
+    <string name="preview_date_3">24/05</string>
+    <string name="preview_event_3">Entrega de proxecto</string>
 </resources>

@@ -256,4 +256,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">birthday,bday,anniversary</string>
     <string name="greeting_keywords">happy,congratulations,congrats</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">Today</string>
+    <string name="preview_date_1">22/05</string>
+    <string name="preview_event_1">Planning meeting</string>
+    <string name="preview_jue">Thu</string>
+    <string name="preview_date_2">23/05</string>
+    <string name="preview_event_2">Lunch with client</string>
+    <string name="preview_vie">Fri</string>
+    <string name="preview_date_3">24/05</string>
+    <string name="preview_event_3">Project delivery</string>
 </resources>

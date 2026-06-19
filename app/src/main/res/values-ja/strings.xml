@@ -255,4 +255,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">誕生日,記念日</string>
     <string name="greeting_keywords">おめでとう,祝</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">今日</string>
+    <string name="preview_date_1">05/22</string>
+    <string name="preview_event_1">企画会議</string>
+    <string name="preview_jue">木</string>
+    <string name="preview_date_2">05/23</string>
+    <string name="preview_event_2">クライアントとランチ</string>
+    <string name="preview_vie">金</string>
+    <string name="preview_date_3">05/24</string>
+    <string name="preview_event_3">プロジェクト納品</string>
 </resources>

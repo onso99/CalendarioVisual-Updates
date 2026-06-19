@@ -257,4 +257,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">urtebetetzea,urteurrena</string>
     <string name="greeting_keywords">zorionak,zoriontzen</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">Gaur</string>
+    <string name="preview_date_1">05/22</string>
+    <string name="preview_event_1">Plangintza bilera</string>
+    <string name="preview_jue">Ost</string>
+    <string name="preview_date_2">05/23</string>
+    <string name="preview_event_2">Bazkaria bezeroarekin</string>
+    <string name="preview_vie">Osi</string>
+    <string name="preview_date_3">05/24</string>
+    <string name="preview_event_3">Proiektu entrega</string>
 </resources>

@@ -257,4 +257,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">compleanno,anniversario,onomastico</string>
     <string name="greeting_keywords">felice,auguri,congratulazioni</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">Oggi</string>
+    <string name="preview_date_1">22/05</string>
+    <string name="preview_event_1">Riunione di pianificazione</string>
+    <string name="preview_jue">Gio</string>
+    <string name="preview_date_2">23/05</string>
+    <string name="preview_event_2">Pranzo con cliente</string>
+    <string name="preview_vie">Ven</string>
+    <string name="preview_date_3">24/05</string>
+    <string name="preview_event_3">Consegna progetto</string>
 </resources>

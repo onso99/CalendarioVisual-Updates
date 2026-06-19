@@ -257,4 +257,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">aniversari,cumple,aniversari,onomàstica</string>
     <string name="greeting_keywords">feliç,felicitats,felicitem</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">Avui</string>
+    <string name="preview_date_1">22/05</string>
+    <string name="preview_event_1">Reunió de planificació</string>
+    <string name="preview_jue">Dij</string>
+    <string name="preview_date_2">23/05</string>
+    <string name="preview_event_2">Dinar amb el client</string>
+    <string name="preview_vie">Div</string>
+    <string name="preview_date_3">24/05</string>
+    <string name="preview_event_3">Lliurament de projecte</string>
 </resources>

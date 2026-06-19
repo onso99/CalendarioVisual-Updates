@@ -256,4 +256,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">生日,周年,诞辰</string>
     <string name="greeting_keywords">生日快乐,恭喜,祝贺</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">今天</string>
+    <string name="preview_date_1">05/22</string>
+    <string name="preview_event_1">策划会议</string>
+    <string name="preview_jue">周四</string>
+    <string name="preview_date_2">05/23</string>
+    <string name="preview_event_2">与客户午餐</string>
+    <string name="preview_vie">周五</string>
+    <string name="preview_date_3">05/24</string>
+    <string name="preview_event_3">项目交付</string>
 </resources>

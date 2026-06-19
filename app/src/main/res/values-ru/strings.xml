@@ -256,4 +256,14 @@
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">день рождения,юбилей,именины</string>
     <string name="greeting_keywords">поздравляем,поздравляю,с днем рождения,с праздником</string>
+    <!-- Widget Preview Strings -->
+    <string name="preview_today">Сегодня</string>
+    <string name="preview_date_1">22/05</string>
+    <string name="preview_event_1">Планирование</string>
+    <string name="preview_jue">Чт</string>
+    <string name="preview_date_2">23/05</string>
+    <string name="preview_event_2">Обед с клиентом</string>
+    <string name="preview_vie">Пт</string>
+    <string name="preview_date_3">24/05</string>
+    <string name="preview_event_3">Сдача проекта</string>
 </resources>
