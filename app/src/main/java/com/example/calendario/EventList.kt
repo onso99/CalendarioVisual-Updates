@@ -162,28 +162,35 @@ fun MonthlyEventList(
                                             color = textColor,
                                             fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
                                             fontSize = 16.sp,
-                                            modifier = Modifier.width(28.dp)
+                                            modifier = Modifier.width(24.dp)
                                         )
 
-                                        if (festivo.isLongPeriod && festivo.lane != null) {
-                                            val cal = availableCalendars.find { it.id == festivo.calendarId }
-                                            val laneColor = if (festivo.customColor != null) {
-                                                Color(festivo.customColor)
-                                            } else if (cal != null) {
-                                                Color(cal.color ?: 0xFFFFFFFF.toInt())
-                                            } else {
-                                                themeColors.textSystem
+                                        // Espacio fijo para el indicador (reducido)
+                                        Box(
+                                            modifier = Modifier.width(10.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            if (festivo.isLongPeriod && festivo.lane != null) {
+                                                val cal = availableCalendars.find { it.id == festivo.calendarId }
+                                                val laneColor = if (festivo.customColor != null) {
+                                                    Color(festivo.customColor)
+                                                } else if (cal != null) {
+                                                    Color(cal.color ?: 0xFFFFFFFF.toInt())
+                                                } else {
+                                                    themeColors.textSystem
+                                                }
+
+                                                Box(
+                                                    Modifier
+                                                        .width(4.dp)
+                                                        .height(10.dp)
+                                                        .clip(RoundedCornerShape(1.dp))
+                                                        .background(laneColor)
+                                                )
                                             }
-                                            
-                                            Box(
-                                                Modifier
-                                                    .width(4.dp)
-                                                    .height(10.dp) // Reducido para ser aprox mitad de altura
-                                                    .clip(RoundedCornerShape(1.dp))
-                                                    .background(laneColor)
-                                            )
-                                            Spacer(Modifier.width(6.dp))
                                         }
+
+                                        Spacer(Modifier.width(2.dp))
 
                                         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                                             Text(
