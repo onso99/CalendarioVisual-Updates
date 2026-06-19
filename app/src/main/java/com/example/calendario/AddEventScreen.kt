@@ -181,7 +181,7 @@ fun AddEventScreen(
     )
 
     var title by remember { mutableStateOf("") }
-    var isAllDay by remember { mutableStateOf(true) }
+    var isAllDay by remember { mutableStateOf(false) }
     var selectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
     var showCalendarDialog by remember { mutableStateOf(false) }
     var startDate by remember { mutableStateOf(LocalDateTime.now()) }
@@ -279,9 +279,10 @@ fun AddEventScreen(
             isCopying = false
         } else {
             val now = LocalDateTime.now().withSecond(0).withNano(0)
-            val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
+            val nextHour = now.plusHours(1).withMinute(0)
+            val effectiveInitialDateTime = initialDate?.atTime(nextHour.toLocalTime()) ?: nextHour
             title = ""
-            isAllDay = true
+            isAllDay = false
             startDate = effectiveInitialDateTime
             endDate = effectiveInitialDateTime.plusHours(1)
             selectedCalendar = initialCalendar
@@ -291,8 +292,7 @@ fun AddEventScreen(
             alarmTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
 
             initialTitle = ""
-            initialIsAllDay = true
-            initialSelectedCalendar = selectedCalendar
+            initialIsAllDay = false
             initialStartDate = startDate
             initialEndDate = endDate
             initialRepetitionRule = repetitionRule

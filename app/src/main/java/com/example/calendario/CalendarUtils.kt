@@ -8,6 +8,7 @@ import android.provider.CalendarContract
 import android.widget.Toast
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.TimeZone
@@ -202,17 +203,24 @@ fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: 
 
 fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
     try {
-        val instanceStartDateTime = if (eventToCancel.isAllDay) {
-            eventToCancel.date.atStartOfDay()
-        } else {
-            LocalDateTime.of(eventToCancel.date, eventToCancel.startTime ?: LocalDateTime.now().toLocalTime())
-        }
-
         val timezone = if (eventToCancel.isAllDay) "UTC" else TimeZone.getDefault().id
-        val startMillis = if (eventToCancel.isAllDay) {
-            instanceStartDateTime.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+        
+        // Para cancelar una instancia, necesitamos el momento de inicio ORIGINAL de esa instancia exacta.
+        // En periodos largos, esto está guardado en fullStartMillis.
+        val startMillis = if (eventToCancel.fullStartMillis != null) {
+            eventToCancel.fullStartMillis
         } else {
-            instanceStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val instanceStartDateTime = if (eventToCancel.isAllDay) {
+                eventToCancel.date.atStartOfDay()
+            } else {
+                LocalDateTime.of(eventToCancel.date, eventToCancel.startTime ?: LocalTime.now())
+            }
+            
+            if (eventToCancel.isAllDay) {
+                instanceStartDateTime.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+            } else {
+                instanceStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            }
         }
 
         val values = ContentValues().apply {
@@ -220,6 +228,7 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
             put(CalendarContract.Events.ORIGINAL_ID, eventToCancel.id)
             put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startMillis)
             put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED)
+            // DTSTART y DTEND deben coincidir con ORIGINAL_INSTANCE_TIME para la cancelación técnica
             put(CalendarContract.Events.DTSTART, startMillis)
             put(CalendarContract.Events.DTEND, startMillis)
             put(CalendarContract.Events.EVENT_TIMEZONE, timezone)

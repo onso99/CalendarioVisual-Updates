@@ -147,7 +147,10 @@ fun AddEventForm(
                     onCheckedChange = onLongPeriodChange,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = CalendarioTheme.colors.cabecera,
-                        checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f)
+                        checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
+                        uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                        uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
                     )
                 )
             }
@@ -176,28 +179,86 @@ fun AddEventForm(
 
             val fontScale = LocalConfiguration.current.fontScale
             
-            // --- INICIO ---
-            AdaptiveDateTimeRow(
-                label = if (isLongPeriod) stringResource(id = R.string.start) else stringResource(id = R.string.date),
-                date = startDate,
-                isAllDay = isAllDay,
-                onDateClick = onStartDateClick,
-                onTimeClick = onStartTimeClick,
-                fontScale = fontScale
-            )
-
-            if (isLongPeriod || !isAllDay) {
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                // --- FIN ---
+            if (isLongPeriod) {
+                // --- VISTA PARA PERIODOS LARGOS: FILAS SEPARADAS ---
                 AdaptiveDateTimeRow(
-                    label = if (isLongPeriod) stringResource(id = R.string.end) else stringResource(id = R.string.end_time),
+                    label = stringResource(id = R.string.start),
+                    date = startDate,
+                    isAllDay = isAllDay,
+                    onDateClick = onStartDateClick,
+                    onTimeClick = onStartTimeClick,
+                    fontScale = fontScale
+                )
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                AdaptiveDateTimeRow(
+                    label = stringResource(id = R.string.end),
                     date = endDate,
                     isAllDay = isAllDay,
-                    onDateClick = if (isLongPeriod) onEndDateClick else ({}), // Solo clic en fecha si es largo
+                    onDateClick = onEndDateClick,
                     onTimeClick = onEndTimeClick,
-                    fontScale = fontScale,
-                    hideDate = !isLongPeriod // Ocultamos fecha si no es periodo largo
+                    fontScale = fontScale
                 )
+            } else {
+                // --- VISTA SOLICITADA PARA EVENTOS NORMALES: MODO COMPACTO ---
+                // Fila 1: Fecha
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onStartDateClick)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.date), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
+                    val dateText = remember(startDate, locale) {
+                        "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
+                    }
+                    Text(text = dateText, color = CalendarioTheme.colors.textSystem)
+                }
+
+                if (!isAllDay) {
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                    // Fila 2: Inicio y Fin compartidos
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Bloque Inicio
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable(onClick = onStartTimeClick)
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(stringResource(id = R.string.start), color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(end = 8.dp))
+                            Text(text = startDate.format(timeFormatter), color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
+                        }
+                        
+                        // Separador Vertical
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .width(1.dp)
+                                .height(20.dp)
+                                .background(CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                        )
+
+                        // Bloque Fin
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable(onClick = onEndTimeClick)
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Text(stringResource(id = R.string.end_time), color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(end = 8.dp))
+                            Text(text = endDate.format(timeFormatter), color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
+                        }
+                    }
+                }
             }
 
             if (!isLongPeriod) {
