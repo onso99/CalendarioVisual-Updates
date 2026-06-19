@@ -497,7 +497,9 @@ fun DayEventsDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             val calendarForEvent = availableCalendars.find { it.id == festivo.calendarId }
-                            val colorToUse = if (calendarForEvent != null) {
+                            val colorToUse = if (festivo.customColor != null) {
+                                Color(festivo.customColor)
+                            } else if (calendarForEvent != null) {
                                 Color(calendarForEvent.color ?: 0xFFFFFFFF.toInt())
                             } else if (festivo.calendarId == -2L || festivo.id == -2L) {
                                 Color.White
@@ -505,25 +507,45 @@ fun DayEventsDialog(
                                 Color.Transparent
                             }
 
-                            Box(
-                                Modifier
-                                    .size(10.dp)
-                                    .background(colorToUse, CircleShape)
-                                    .border(
-                                        0.5.dp,
-                                        CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                                        CircleShape
-                                    )
-                            )
-                            Spacer(Modifier.width(8.dp))
+                            if (festivo.isLongPeriod && festivo.lane != null) {
+                                Box(
+                                    Modifier
+                                        .size(6.dp)
+                                        .background(colorToUse, RoundedCornerShape(1.5.dp))
+                                )
+                            } else {
+                                Box(
+                                    Modifier
+                                        .size(6.dp)
+                                        .background(Color.Gray.copy(alpha = 0.6f), CircleShape)
+                                        .border(
+                                            0.5.dp,
+                                            CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                                            CircleShape
+                                        )
+                                )
+                            }
+                            
+                            Spacer(Modifier.width(10.dp))
 
-                            Text(
-                                displayTitle,
-                                color = itemColor,
-                                fontSize = 16.sp,
-                                maxLines = 3,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    displayTitle,
+                                    color = itemColor,
+                                    fontSize = 16.sp,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                )
+                                if (festivo.isLongPeriod) {
+                                    Text(
+                                        " (${festivo.currentDay}/${festivo.totalDays})",
+                                        color = itemColor.copy(alpha = 0.8f),
+                                        fontSize = 14.sp,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                     }

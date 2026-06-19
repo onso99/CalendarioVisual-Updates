@@ -5,10 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -47,7 +50,8 @@ fun MonthlyEventList(
     isCurrentMonthView: Boolean,
     showAllEvents: Boolean,
     today: LocalDate,
-    onEventClick: (Festivo) -> Unit
+    onEventClick: (Festivo) -> Unit,
+    availableCalendars: List<CalendarInfo>
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -157,16 +161,48 @@ fun MonthlyEventList(
                                             String.format(locale, "%02d", date.dayOfMonth),
                                             color = textColor,
                                             fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
-                                            fontSize = 16.sp
-                                        )
-                                        Text(
-                                            displayDesc,
-                                            color = textColor,
                                             fontSize = 16.sp,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.padding(start = 8.dp)
+                                            modifier = Modifier.width(28.dp)
                                         )
+
+                                        if (festivo.isLongPeriod && festivo.lane != null) {
+                                            val cal = availableCalendars.find { it.id == festivo.calendarId }
+                                            val laneColor = if (festivo.customColor != null) {
+                                                Color(festivo.customColor)
+                                            } else if (cal != null) {
+                                                Color(cal.color ?: 0xFFFFFFFF.toInt())
+                                            } else {
+                                                themeColors.textSystem
+                                            }
+                                            
+                                            Box(
+                                                Modifier
+                                                    .width(4.dp)
+                                                    .height(10.dp) // Reducido para ser aprox mitad de altura
+                                                    .clip(RoundedCornerShape(1.dp))
+                                                    .background(laneColor)
+                                            )
+                                            Spacer(Modifier.width(6.dp))
+                                        }
+
+                                        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                displayDesc,
+                                                color = textColor,
+                                                fontSize = 16.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                modifier = Modifier.weight(1f, fill = false)
+                                            )
+                                            if (festivo.isLongPeriod) {
+                                                Text(
+                                                    " (${festivo.currentDay}/${festivo.totalDays})",
+                                                    color = textColor,
+                                                    fontSize = 16.sp,
+                                                    maxLines = 1
+                                                )
+                                            }
+                                        }
                                     }
                                     val showAlarmIcon = remember(festivo.id, date) { 
                                         AlarmUtils.shouldShowAlarmIcon(context, festivo) 

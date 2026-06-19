@@ -36,7 +36,14 @@ fun saveEventsToPrefs(context: Context, eventsMap: Map<LocalDate, List<Festivo>>
                 rrule = festivo.rrule,
                 age = festivo.age,
                 isBirthday = festivo.isBirthday,
-                isFromHolidaySource = festivo.isFromHolidaySource
+                isFromHolidaySource = festivo.isFromHolidaySource,
+                isLongPeriod = festivo.isLongPeriod,
+                lane = festivo.lane,
+                totalDays = festivo.totalDays,
+                currentDay = festivo.currentDay,
+                customColor = festivo.customColor,
+                fullStartMillis = festivo.fullStartMillis,
+                fullEndMillis = festivo.fullEndMillis
             )
         }
     }
@@ -71,7 +78,14 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     rrule = dto.rrule,
                     age = dto.age,
                     isBirthday = dto.isBirthday ?: false,
-                    isFromHolidaySource = dto.isFromHolidaySource ?: false
+                    isFromHolidaySource = dto.isFromHolidaySource ?: false,
+                    isLongPeriod = dto.isLongPeriod ?: false,
+                    lane = dto.lane,
+                    totalDays = dto.totalDays ?: 1,
+                    currentDay = dto.currentDay ?: 1,
+                    customColor = dto.customColor,
+                    fullStartMillis = dto.fullStartMillis,
+                    fullEndMillis = dto.fullEndMillis
                 )
             }
         }
@@ -86,6 +100,21 @@ fun saveSelectedCalendarIds(context: Context, ids: Set<Long>) {
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
     val prefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
     return prefs.getStringSet("selected_ids", emptySet())?.map { it.toLong() }?.toSet() ?: emptySet()
+}
+
+// --- PERSISTENCIA DE COLORES DE PERIODOS ---
+
+fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?) {
+    val prefs = context.getSharedPreferences(AppConstants.PERIOD_COLOR_PREFS_NAME, Context.MODE_PRIVATE)
+    prefs.edit {
+        if (colorInt == null) remove(eventId.toString())
+        else putInt(eventId.toString(), colorInt)
+    }
+}
+
+fun getPeriodColor(context: Context, eventId: Long): Int? {
+    val prefs = context.getSharedPreferences(AppConstants.PERIOD_COLOR_PREFS_NAME, Context.MODE_PRIVATE)
+    return if (prefs.contains(eventId.toString())) prefs.getInt(eventId.toString(), 0) else null
 }
 
 // --- CALENDARIOS DISPONIBLES ---
@@ -322,6 +351,8 @@ fun readFestivosFromCalendarsSync(
             val birthYearMap = mutableMapOf<Long, Int>()
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
+            val customColorMap = mutableMapOf<Long, Int?>()
+            val internalColorsPrefs = context.getSharedPreferences(AppConstants.PERIOD_COLOR_PREFS_NAME, Context.MODE_PRIVATE)
 
             uniqueEventIds.chunked(400).forEach { chunk ->
                 val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
@@ -330,6 +361,7 @@ fun readFestivosFromCalendarsSync(
                     val rruleCol = cursor.getColumnIndex(CalendarContract.Events.RRULE)
                     val startCol = cursor.getColumnIndex(CalendarContract.Events.DTSTART)
                     val descCol = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION)
+                    val colorCol = cursor.getColumnIndex(CalendarContract.Events.EVENT_COLOR)
                     val s1Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA1)
                     val s2Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA2)
                     val pkgCol = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
@@ -340,6 +372,13 @@ fun readFestivosFromCalendarsSync(
 
                         if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
                         if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
+                        
+                        // Prioridad 1: Nuestra base de datos interna (SharedPreferences)
+                        // Prioridad 2: Color del sistema Android
+                        val internalColor = if (internalColorsPrefs.contains(id.toString())) internalColorsPrefs.getInt(id.toString(), 0) else null
+                        val systemColor = if (colorCol != -1 && !cursor.isNull(colorCol)) cursor.getInt(colorCol) else null
+                        
+                        customColorMap[id] = internalColor ?: systemColor
                         
                         val s1 = if (s1Col != -1) cursor.getStringOrNull(s1Col)?.lowercase() ?: "" else ""
                         val s2 = if (s2Col != -1) cursor.getStringOrNull(s2Col) ?: "" else ""
@@ -366,6 +405,73 @@ fun readFestivosFromCalendarsSync(
             val birthdayKeywords = context.getString(R.string.birthday_keywords).split(",").map { it.trim().lowercase() }
             val greetingKeywords = context.getString(R.string.greeting_keywords).split(",").map { it.trim().lowercase() }
 
+            // --- ASIGNACIÓN DE CARRILES PARA PERIODOS LARGOS ---
+            val laneAssignments = mutableMapOf<String, Int>() // Clave: eventId_beginMillis
+            val laneOccupancy = mutableMapOf<LocalDate, BooleanArray>()
+
+            // Primero identificamos todos los eventos que son periodos largos (> 1 día)
+            val multiDayInstances = tempInstancesData.mapNotNull { data ->
+                val beginMillis = data["begin"] as Long
+                val endMillis = data["end"] as Long
+                val isAllDay = data["isAllDay"] as Boolean
+                
+                // Para eventos "Todo el día", usamos UTC para evitar saltos de día por zona horaria
+                val startZdt = if (isAllDay) Instant.ofEpochMilli(beginMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId)
+                val endZdt = if (isAllDay) Instant.ofEpochMilli(endMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(endMillis).atZone(systemZoneId)
+                
+                val startDate = startZdt.toLocalDate()
+                var endDate = endZdt.toLocalDate()
+                if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) {
+                    endDate = endDate.minusDays(1)
+                }
+
+                // EXCLUSIÓN: Solo periodos que duren más de un día
+                if (endDate.isAfter(startDate)) {
+                    val eventId = data["eventId"] as Long
+                    val organizer = data["organizer"] as String
+                    val title = (data["title"] as String).lowercase()
+                    
+                    // Comprobación rápida de si es festivo o cumpleaños para no asignarle carril
+                    val isHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
+                    val isBirthday = (technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || 
+                                     (isAllDay && birthdayKeywords.any { title.contains(it) }))
+                    
+                    if (!isHoliday && !isBirthday) {
+                        val uniqueKey = "${eventId}_${beginMillis}"
+                        Triple(uniqueKey, startDate, endDate)
+                    } else null
+                } else null
+            }.sortedWith(compareBy({ it.second }, { it.third }, { it.first }))
+
+            // Asignamos carriles (0 a 5) siguiendo la regla: el primero que empieza, ocupa el primer carril libre
+            multiDayInstances.forEach { (uniqueKey, start, end) ->
+                var chosenLane = -1
+                for (l in 0..5) {
+                    var isFree = true
+                    var d = start
+                    while (!d.isAfter(end)) {
+                        if (laneOccupancy[d]?.get(l) == true) {
+                            isFree = false
+                            break
+                        }
+                        d = d.plusDays(1)
+                    }
+                    if (isFree) {
+                        chosenLane = l
+                        break
+                    }
+                }
+
+                if (chosenLane != -1) {
+                    laneAssignments[uniqueKey] = chosenLane
+                    var d = start
+                    while (!d.isAfter(end)) {
+                        laneOccupancy.getOrPut(d) { BooleanArray(6) }[chosenLane] = true
+                        d = d.plusDays(1)
+                    }
+                }
+            }
+
             // 3. Procesamos instancias y aplicamos lógica final
             tempInstancesData.forEach { data ->
                 val eventId = data["eventId"] as Long
@@ -377,9 +483,18 @@ fun readFestivosFromCalendarsSync(
                 val isAllDay = data["isAllDay"] as Boolean
                 val organizer = data["organizer"] as String
                 
-                val startDate = Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalDate()
-                val startTime = if (isAllDay) null else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId).toLocalTime()
-                val endTime = if (isAllDay) null else Instant.ofEpochMilli(endMillis).atZone(systemZoneId).toLocalTime()
+                val startZdt = if (isAllDay) Instant.ofEpochMilli(beginMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId)
+                val endZdt = if (isAllDay) Instant.ofEpochMilli(endMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(endMillis).atZone(systemZoneId)
+                val startDate = startZdt.toLocalDate()
+                var endDate = endZdt.toLocalDate()
+
+                // Ajuste para eventos que terminan a las 00:00 (se consideran del día anterior)
+                if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) {
+                    endDate = endDate.minusDays(1)
+                }
+
+                val startTime = if (isAllDay) null else startZdt.toLocalTime()
+                val endTime = if (isAllDay) null else endZdt.toLocalTime()
 
                 val isFromHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
@@ -387,37 +502,46 @@ fun readFestivosFromCalendarsSync(
                 val hasBirthdayWord = birthdayKeywords.any { titleLower.contains(it) }
                 val hasGreetingWord = greetingKeywords.any { titleLower.contains(it) }
                 
-                // Marcamos como azul si es técnico o contiene alguna palabra clave
                 val finalIsBirthday = (isTechnicalBirthday || (isAllDay && (hasBirthdayWord || hasGreetingWord))) && !isFromHoliday
-                
                 var birthYear = birthYearMap[eventId]
                 
                 if (finalIsBirthday) {
-                    // ESCUDO: Si es una felicitación genérica (ej: "Feliz") y NO es contacto oficial,
-                    // anulamos el año automático porque suele ser la fecha de creación del evento.
-                    if (hasGreetingWord && !isTechnicalBirthday) {
-                        birthYear = null
-                    }
-                    
-                    // Fallback: buscamos el año en el texto si no lo tenemos todavía
+                    if (hasGreetingWord && !isTechnicalBirthday) birthYear = null
                     if (birthYear == null) {
                         val yearInTitle = Regex("\\b(19|20)\\d{2}\\b").find(title)?.value?.toIntOrNull()
                         val yearInDesc = Regex("\\b(19|20)\\d{2}\\b").find(descMap[eventId] ?: "")?.value?.toIntOrNull()
                         birthYear = yearInTitle ?: yearInDesc
                     }
-                    
-                    // Validación final
                     if (birthYear != null && birthYear >= startDate.year) birthYear = null
                 }
-                
-                val age = if (finalIsBirthday && birthYear != null) (startDate.year - birthYear) else null
 
-                finalMap.getOrPut(startDate) { mutableListOf() }.add(Festivo(
-                    id = eventId, title = title, description = descMap[eventId],
-                    date = startDate, startTime = startTime, endTime = endTime,
-                    isAllDay = isAllDay, calendarId = calendarId, isFromHolidaySource = isFromHoliday,
-                    rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday
-                ))
+                val uniqueKey = "${eventId}_${beginMillis}"
+                val assignedLane = laneAssignments[uniqueKey]
+                // Un periodo largo real NO debe ser ni cumpleaños ni festivo
+                val isLongPeriod = endDate.isAfter(startDate) && !finalIsBirthday && !isFromHoliday
+                val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
+
+                var currentLoopDate = startDate
+                var dayIndex = 1
+                while (!currentLoopDate.isAfter(endDate)) {
+                    val currentStartTime = if (currentLoopDate == startDate) startTime else null
+                    val currentEndTime = if (currentLoopDate == endDate) endTime else null
+                    val currentIsAllDay = isAllDay || (currentLoopDate != startDate && currentLoopDate != endDate)
+                    val age = if (finalIsBirthday && birthYear != null) (currentLoopDate.year - birthYear) else null
+
+                    finalMap.getOrPut(currentLoopDate) { mutableListOf() }.add(Festivo(
+                        id = eventId, title = title, description = descMap[eventId],
+                        date = currentLoopDate, startTime = currentStartTime, endTime = currentEndTime,
+                        isAllDay = currentIsAllDay, calendarId = calendarId, isFromHolidaySource = isFromHoliday,
+                        rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday,
+                        isLongPeriod = isLongPeriod, lane = assignedLane, totalDays = totalDaysCount, currentDay = dayIndex,
+                        customColor = customColorMap[eventId],
+                        fullStartMillis = beginMillis,
+                        fullEndMillis = endMillis
+                    ))
+                    currentLoopDate = currentLoopDate.plusDays(1)
+                    dayIndex++
+                }
             }
         }
     }

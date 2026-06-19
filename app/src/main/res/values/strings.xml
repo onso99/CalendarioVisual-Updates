@@ -37,6 +37,13 @@
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">¿Seguro que quieres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
+    <string name="repeat_until">Repetir hasta</string>
+    <string name="repeat_indefinite">Indefinido</string>
+    <string name="long_period_switch">Periodo largo</string>
+    <string name="date">Fecha</string>
+    <string name="end_time">Fin</string>
+    <string name="select_color">Seleccionar color</string>
+    <string name="lanes_full_error">Se ha sobrepasado el límite de 6 periodos largos concurrentes para las fechas seleccionadas. Intente reducir la duración o guardarlo como evento normal.</string>
     <string name="select_calendar_title">Seleccionar Calendario</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="does_not_repeat">No se repite</string>

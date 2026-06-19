@@ -285,14 +285,17 @@ fun CalendarioScreen(
             onBackPress = { showAddEventScreen = false },
             onSave = {
                 showAddEventScreen = false
+                viewModel.refreshData()
             },
             onDelete = {
                 showAddEventScreen = false
+                viewModel.refreshData()
             },
             editableCalendars = editableCalendars,
             initialDate = dateForNewEvent,
             eventToEdit = eventToEdit,
-            initialCalendar = initialCalendar
+            initialCalendar = initialCalendar,
+            eventsByDate = uiState.eventsByDate
         )
         return
     }
@@ -535,7 +538,8 @@ fun CalendarioScreen(
                                 onEmptyDayClick = { date ->
                                     launchAddEditScreen(date, null)
                                 },
-                                startOfWeek = startOfWeek
+                                startOfWeek = startOfWeek,
+                                availableCalendars = uiState.availableCalendars
                             )
                         }
                         Spacer(Modifier.height(16.dp))
@@ -648,7 +652,8 @@ fun CalendarioScreen(
                                 isCurrentMonthView = isCurrentMonthView,
                                 showAllEvents = showAllEvents,
                                 today = today,
-                                onEventClick = onEventClickHandler
+                                onEventClick = onEventClickHandler,
+                                availableCalendars = uiState.availableCalendars
                             )
 
                             val showTopShadow by remember {

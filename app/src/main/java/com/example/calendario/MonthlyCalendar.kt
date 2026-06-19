@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -50,6 +53,7 @@ fun MonthlyCalendar(
     onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit,
     onEmptyDayClick: (date: LocalDate) -> Unit,
     startOfWeek: DayOfWeek,
+    availableCalendars: List<CalendarInfo>
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -288,6 +292,52 @@ fun MonthlyCalendar(
                                     }
                                 }
                         ) {
+                            // --- CARRILES DE PERIODOS LARGOS (Costuras) ---
+                            val longPeriods = dayEvents.filter { it.isLongPeriod && it.lane != null }
+                            if (isCurrentMonth && longPeriods.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    repeat(6) { laneIndex ->
+                                        val period = longPeriods.find { it.lane == laneIndex }
+                                        Box(modifier = Modifier.fillMaxWidth().height(2.5.dp)) {
+                                            if (period != null) {
+                                                val cal = availableCalendars.find { it.id == period.calendarId }
+                                                val color = if (period.customColor != null) {
+                                                    Color(period.customColor)
+                                                } else if (cal != null) {
+                                                    Color(cal.color ?: 0xFFFFFFFF.toInt())
+                                                } else {
+                                                    themeColors.textSystem
+                                                }
+
+                                                // Guion Izquierdo: viene de ayer
+                                                if (period.currentDay > 1) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterStart)
+                                                            .width(6.dp)
+                                                            .fillMaxHeight()
+                                                            .background(color, RoundedCornerShape(topEnd = 1.dp, bottomEnd = 1.dp))
+                                                    )
+                                                }
+                                                // Guion Derecho: sigue mañana
+                                                if (period.currentDay < period.totalDays) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterEnd)
+                                                            .width(6.dp)
+                                                            .fillMaxHeight()
+                                                            .background(color, RoundedCornerShape(topStart = 1.dp, bottomStart = 1.dp))
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             Text(
                                 text = date.dayOfMonth.toString(),
                                 fontWeight = if (!isCurrentMonth) FontWeight.Normal else if (isToday) FontWeight.Bold else FontWeight.Normal,

@@ -19,7 +19,9 @@ fun createEvent(
     startDate: LocalDateTime,
     endDate: LocalDateTime,
     isAllDay: Boolean,
-    repetitionRule: RepetitionRule
+    repetitionRule: RepetitionRule,
+    repeatUntil: LocalDate? = null,
+    customColor: Int? = null
 ): Long? {
     if (calendarId == null) {
         Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
@@ -32,7 +34,7 @@ fun createEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, customColor)
         
         val eventInsertOperation = ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI).withValues(values)
         operations.add(eventInsertOperation.build())
@@ -48,8 +50,12 @@ fun createEvent(
         val results = context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
 
         if (results.isNotEmpty() && results[0].uri != null) {
+            val eventId = ContentUris.parseId(results[0].uri!!)
+            if (customColor != null) {
+                savePeriodColor(context, eventId, customColor)
+            }
             Toast.makeText(context, R.string.event_saved_successfully, Toast.LENGTH_SHORT).show()
-            ContentUris.parseId(results[0].uri!!)
+            eventId
         } else {
             Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
             null
@@ -71,7 +77,9 @@ fun updateEvent(
     startDate: LocalDateTime,
     endDate: LocalDateTime,
     isAllDay: Boolean,
-    repetitionRule: RepetitionRule
+    repetitionRule: RepetitionRule,
+    repeatUntil: LocalDate? = null,
+    customColor: Int? = null
 ): Long? {
      if (calendarId == null) {
         Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
@@ -84,7 +92,7 @@ fun updateEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, customColor)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         operations.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build())
 
@@ -104,6 +112,10 @@ fun updateEvent(
         
         context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
         
+        if (customColor != null) {
+            savePeriodColor(context, eventId, customColor)
+        }
+
         // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
         CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         
@@ -172,6 +184,7 @@ fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: 
             // Cancelamos la alarma asociada si existe
             AlarmUtils.cancelAlarm(context, eventId)
             AlarmUtils.saveAlarmSetting(context, eventId, null)
+            savePeriodColor(context, eventId, null)
 
             val dateStr = eventDate.format(DateTimeFormatter.ofPattern("d/M/yy"))
             val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
@@ -242,7 +255,9 @@ private fun createEventValues(
     isAllDay: Boolean,
     title: String,
     calendarId: Long,
-    repetitionRule: RepetitionRule
+    repetitionRule: RepetitionRule,
+    repeatUntil: LocalDate? = null,
+    customColor: Int? = null
 ): ContentValues {
     val timezone = if (isAllDay) TimeZone.getTimeZone("UTC").id else TimeZone.getDefault().id
     val startMillis = if (isAllDay) {
@@ -257,10 +272,14 @@ private fun createEventValues(
         put(CalendarContract.Events.CALENDAR_ID, calendarId)
         put(CalendarContract.Events.ALL_DAY, if (isAllDay) 1 else 0)
         put(CalendarContract.Events.EVENT_TIMEZONE, timezone)
+        if (customColor != null) {
+            put(CalendarContract.Events.EVENT_COLOR, customColor)
+        }
 
         if (repetitionRule == RepetitionRule.NONE) {
             val endMillis = if (isAllDay) {
-                endDate.toLocalDate().atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+                // IMPORTANTE: Para eventos Todo el día, DTEND debe ser el día siguiente a las 00:00
+                endDate.toLocalDate().plusDays(1).atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
             } else {
                 endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             }
@@ -276,7 +295,14 @@ private fun createEventValues(
                 val durationInSeconds = java.time.Duration.between(startDate, endDate).seconds
                 put(CalendarContract.Events.DURATION, "PT${durationInSeconds}S")
             }
-            put(CalendarContract.Events.RRULE, repetitionRule.rrule)
+            
+            val finalRrule = if (repeatUntil != null) {
+                val untilStr = repeatUntil.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'235959'Z'"))
+                "${repetitionRule.rrule};UNTIL=$untilStr"
+            } else {
+                repetitionRule.rrule
+            }
+            put(CalendarContract.Events.RRULE, finalRrule)
             putNull(CalendarContract.Events.DTEND)
         }
     }

@@ -17,7 +17,14 @@ data class Festivo(
     val age: Int? = null,
     val isBirthday: Boolean = false,
     val originalBirthDate: LocalDate? = null,
-    val alarmTimeMillis: Long? = null
+    val alarmTimeMillis: Long? = null,
+    val isLongPeriod: Boolean = false,
+    val lane: Int? = null,
+    val totalDays: Int = 1,
+    val currentDay: Int = 1,
+    val customColor: Int? = null,
+    val fullStartMillis: Long? = null,
+    val fullEndMillis: Long? = null
 )
 
 data class FestivoDto(
@@ -31,7 +38,14 @@ data class FestivoDto(
     val age: Int?,
     val isBirthday: Boolean? = false,
     val isFromHolidaySource: Boolean? = false,
-    val alarmTimeMillis: Long? = null
+    val alarmTimeMillis: Long? = null,
+    val isLongPeriod: Boolean? = false,
+    val lane: Int? = null,
+    val totalDays: Int? = 1,
+    val currentDay: Int? = 1,
+    val customColor: Int? = null,
+    val fullStartMillis: Long? = null,
+    val fullEndMillis: Long? = null
 )
 
 
