@@ -43,7 +43,8 @@ fun saveEventsToPrefs(context: Context, eventsMap: Map<LocalDate, List<Festivo>>
                 currentDay = festivo.currentDay,
                 customColor = festivo.customColor,
                 fullStartMillis = festivo.fullStartMillis,
-                fullEndMillis = festivo.fullEndMillis
+                fullEndMillis = festivo.fullEndMillis,
+                repeatCount = festivo.repeatCount
             )
         }
     }
@@ -85,7 +86,8 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
                     currentDay = dto.currentDay ?: 1,
                     customColor = dto.customColor,
                     fullStartMillis = dto.fullStartMillis,
-                    fullEndMillis = dto.fullEndMillis
+                    fullEndMillis = dto.fullEndMillis,
+                    repeatCount = dto.repeatCount
                 )
             }
         }
@@ -517,6 +519,15 @@ fun readFestivosFromCalendarsSync(
 
                 val uniqueKey = "${eventId}_${beginMillis}"
                 val assignedLane = laneAssignments[uniqueKey]
+                val assignedRrule = rruleMap[eventId]
+                
+                // Extraer COUNT de la RRULE si existe
+                val extractedCount = assignedRrule?.let { rrule ->
+                    if (rrule.contains("COUNT=")) {
+                        rrule.substringAfter("COUNT=").substringBefore(";").toIntOrNull()
+                    } else null
+                }
+
                 // Un periodo largo real NO debe ser ni cumpleaños ni festivo
                 val isLongPeriod = endDate.isAfter(startDate) && !finalIsBirthday && !isFromHoliday
                 val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
@@ -537,7 +548,8 @@ fun readFestivosFromCalendarsSync(
                         isLongPeriod = isLongPeriod, lane = assignedLane, totalDays = totalDaysCount, currentDay = dayIndex,
                         customColor = customColorMap[eventId],
                         fullStartMillis = beginMillis,
-                        fullEndMillis = endMillis
+                        fullEndMillis = endMillis,
+                        repeatCount = extractedCount
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)
                     dayIndex++

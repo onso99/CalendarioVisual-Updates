@@ -24,7 +24,8 @@ data class Festivo(
     val currentDay: Int = 1,
     val customColor: Int? = null,
     val fullStartMillis: Long? = null,
-    val fullEndMillis: Long? = null
+    val fullEndMillis: Long? = null,
+    val repeatCount: Int? = null
 )
 
 data class FestivoDto(
@@ -45,7 +46,8 @@ data class FestivoDto(
     val currentDay: Int? = 1,
     val customColor: Int? = null,
     val fullStartMillis: Long? = null,
-    val fullEndMillis: Long? = null
+    val fullEndMillis: Long? = null,
+    val repeatCount: Int? = null
 )
 
 

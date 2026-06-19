@@ -67,7 +67,7 @@ fun AddEventForm(
     repetitionRule: RepetitionRule,
     onRepetitionClick: () -> Unit,
     repeatUntilDate: java.time.LocalDate?,
-    onRepeatUntilClick: () -> Unit,
+    repeatCount: Int?,
     isLongPeriod: Boolean,
     onLongPeriodChange: (Boolean) -> Unit,
     selectedColorInt: Int?,
@@ -277,27 +277,6 @@ fun AddEventForm(
                         tint = CalendarioTheme.colors.textSystem
                     )
                 }
-
-                if (repetitionRule != RepetitionRule.NONE) {
-                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onRepeatUntilClick)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            stringResource(id = R.string.repeat_until),
-                            modifier = Modifier.weight(1f),
-                            color = CalendarioTheme.colors.textSystem
-                        )
-                        Text(
-                            text = repeatUntilDate?.format(dateFormatter) ?: stringResource(id = R.string.repeat_indefinite),
-                            color = CalendarioTheme.colors.textSystem
-                        )
-                    }
-                }
             } else {
                 // --- COLOR SELECTOR (Solo para periodos largos) ---
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
@@ -419,8 +398,10 @@ fun AddEventForm(
                 }
                 if (repetitionRule != RepetitionRule.NONE) {
                     Text(stringResource(id = R.string.repeat_event_title) + ": " + stringResource(id = repetitionRule.displayNameRes))
-                    repeatUntilDate?.let {
-                        Text(stringResource(id = R.string.repeat_until) + ": " + it.format(summaryFormatter).replaceFirstChar { char -> char.titlecase(locale) })
+                    if (repeatUntilDate != null) {
+                        Text(stringResource(id = R.string.repeat_until) + ": " + repeatUntilDate.format(summaryFormatter).replaceFirstChar { char -> char.titlecase(locale) })
+                    } else if (repeatCount != null && repeatCount > 0) {
+                        Text(stringResource(id = R.string.repeat_until) + ": " + stringResource(id = R.string.repeat_after) + " " + repeatCount + " " + stringResource(id = R.string.repeat_times))
                     }
                 }
                 if (hasAlarm) {

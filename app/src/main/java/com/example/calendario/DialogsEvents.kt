@@ -31,8 +31,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -41,6 +46,9 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,17 +59,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Locale
 
 enum class DeleteRecurringOption {
@@ -591,10 +604,22 @@ fun DayEventsDialog(
 @Composable
 fun RepetitionSelectionDialog(
     currentRule: RepetitionRule,
-    onConfirm: (RepetitionRule) -> Unit,
+    currentUntil: LocalDate?,
+    currentCount: Int?,
+    onConfirm: (RepetitionRule, LocalDate?, Int?) -> Unit,
     onDismissRequest: () -> Unit
 ) {
+    val locale = LocalConfiguration.current.locales[0]
     var tempSelection by remember { mutableStateOf(currentRule) }
+    var tempUntil by remember { mutableStateOf(currentUntil) }
+    var tempCount by remember { mutableStateOf(currentCount?.toString() ?: "") }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    // Si entramos con fecha, el modo es fecha. Si entramos con count, el modo es count.
+    // 0: Indefinidamente, 1: En una fecha, 2: Tras X veces
+    var endMode by remember { 
+        mutableStateOf(if (currentUntil != null) 1 else if (currentCount != null) 2 else 0) 
+    }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -604,31 +629,197 @@ fun RepetitionSelectionDialog(
         title = { Text(stringResource(id = R.string.repeat_event_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
         text = {
             Column {
+                // --- SECCIÓN 1: REGLA DE REPETICIÓN ---
                 RepetitionRule.entries.forEach { rule ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { tempSelection = rule },
+                            .clickable { 
+                                tempSelection = rule 
+                                // Ajuste dinámico de dígitos si cambiamos de regla
+                                val limit = if (rule == RepetitionRule.DAILY) 3 else 2
+                                if (tempCount.length > limit) {
+                                    tempCount = tempCount.take(limit)
+                                }
+                            }
+                            .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = (rule == tempSelection),
-                            onClick = { tempSelection = rule },
+                            onClick = { 
+                                tempSelection = rule 
+                                val limit = if (rule == RepetitionRule.DAILY) 3 else 2
+                                if (tempCount.length > limit) {
+                                    tempCount = tempCount.take(limit)
+                                }
+                            },
                             colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem)
                         )
-                        Text(stringResource(id = rule.displayNameRes), modifier = Modifier.padding(start = 8.dp))
+                        Text(stringResource(id = rule.displayNameRes), modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp)
+                    }
+                }
+
+                // --- SECCIÓN 2: FINALIZACIÓN (Visible siempre, inactiva si NONE) ---
+                val isRepetitionActive = tempSelection != RepetitionRule.NONE
+                val activeAlpha = if (isRepetitionActive) 1f else 0.4f
+
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
+                Spacer(Modifier.height(8.dp))
+
+                // Opción 0: Indefinidamente
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { endMode = 0 }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (endMode == 0),
+                        onClick = { if (isRepetitionActive) endMode = 0 },
+                        enabled = isRepetitionActive,
+                        colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(id = R.string.repeat_indefinite), 
+                        fontSize = 16.sp,
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)
+                    )
+                }
+
+                // Opción 1: Hasta la fecha
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { 
+                            endMode = 1
+                            if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
+                            showDatePicker = true 
+                        }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (endMode == 1),
+                        onClick = { 
+                            if (isRepetitionActive) {
+                                endMode = 1
+                                if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
+                                showDatePicker = true 
+                            }
+                        },
+                        enabled = isRepetitionActive,
+                        colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    
+                    val textToShow = if (endMode == 1 && tempUntil != null) {
+                        val formatter = DateTimeFormatter.ofPattern("EEEE, d/MM/yyyy", locale)
+                        tempUntil!!.format(formatter).replaceFirstChar { it.titlecase(locale) }
+                    } else {
+                        stringResource(id = R.string.repeat_on_date)
+                    }
+
+                    Text(
+                        text = textToShow,
+                        fontSize = 16.sp,
+                        color = if (endMode == 1) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                // Opción 2: Repeticiones X
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { endMode = 2 }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (endMode == 2),
+                        onClick = { if (isRepetitionActive) endMode = 2 },
+                        enabled = isRepetitionActive,
+                        colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            stringResource(id = R.string.repeat_after), 
+                            fontSize = 16.sp,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        TextField(
+                            value = tempCount,
+                            onValueChange = { newValue ->
+                                if (newValue.all { char -> char.isDigit() }) {
+                                    val maxLength = if (tempSelection == RepetitionRule.DAILY) 3 else 2
+                                    if (newValue.length <= maxLength) {
+                                        tempCount = newValue
+                                    }
+                                }
+                            },
+                            modifier = Modifier.width(75.dp), // Ancho garantizado para 3 dígitos
+                            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            enabled = (endMode == 2 && isRepetitionActive),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                focusedIndicatorColor = CalendarioTheme.colors.cabecera,
+                                unfocusedIndicatorColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                                disabledIndicatorColor = Color.Transparent
+                            )
+                        )
                     }
                 }
             }
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(tempSelection) },
+                onClick = { 
+                    val finalUntil = if (endMode == 1) tempUntil else null
+                    val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null
+                    onConfirm(tempSelection, finalUntil, finalCount) 
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
             ) { Text(stringResource(id = R.string.accept)) }
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = (tempUntil ?: LocalDate.now()).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        tempUntil = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
+                    }
+                    showDatePicker = false
+                }) { Text(stringResource(id = R.string.apply)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel)) }
+            },
+            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 }
 
 @Composable

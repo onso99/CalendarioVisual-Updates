@@ -188,6 +188,7 @@ fun AddEventScreen(
     var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var repeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
+    var repeatCount by remember { mutableStateOf<Int?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
@@ -234,6 +235,7 @@ fun AddEventScreen(
             
             isLongPeriod = localEventToEdit!!.isLongPeriod
             selectedColorInt = localEventToEdit!!.customColor
+            repeatCount = localEventToEdit!!.repeatCount
                 
             repetitionRule = RepetitionRule.entries.find { it.rrule != null && localEventToEdit!!.rrule?.startsWith(it.rrule) == true } ?: RepetitionRule.NONE
             
@@ -288,6 +290,7 @@ fun AddEventScreen(
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
             repeatUntilDate = null
+            repeatCount = null
             hasAlarm = false
             alarmTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
 
@@ -300,7 +303,7 @@ fun AddEventScreen(
         }
     }
 
-    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, repeatUntilDate, isLongPeriod, selectedColorInt, hasAlarm, alarmTime) {
+    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, repeatUntilDate, repeatCount, isLongPeriod, selectedColorInt, hasAlarm, alarmTime) {
         derivedStateOf {
             title != initialTitle ||
             isAllDay != initialIsAllDay ||
@@ -309,6 +312,7 @@ fun AddEventScreen(
             endDate != initialEndDate ||
             repetitionRule != initialRepetitionRule ||
             repeatUntilDate != initialRepeatUntilDate ||
+            repeatCount != localEventToEdit?.repeatCount ||
             isLongPeriod != (localEventToEdit?.isLongPeriod ?: false) ||
             selectedColorInt != localEventToEdit?.customColor ||
             hasAlarm != (AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) != null) ||
@@ -329,9 +333,9 @@ fun AddEventScreen(
                 saveError = SaveEventError.LANES_FULL
             } else {
                 val createdEventId = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
-                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, selectedColorInt)
+                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt)
                 } else {
-                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, selectedColorInt)
+                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt)
                 }
 
                 if (createdEventId != null) {
@@ -396,7 +400,8 @@ fun AddEventScreen(
                 startDate = startDate, onStartDateClick = { showStartDatePickerDialog = true }, onStartTimeClick = { showStartTimePickerDialog = true },
                 endDate = endDate, onEndDateClick = { showEndDatePickerDialog = true }, onEndTimeClick = { showEndTimePickerDialog = true },
                 repetitionRule = repetitionRule, onRepetitionClick = { showRepetitionDialog = true },
-                repeatUntilDate = repeatUntilDate, onRepeatUntilClick = { showRepeatUntilDatePickerDialog = true },
+                repeatUntilDate = repeatUntilDate,
+                repeatCount = repeatCount,
                 isLongPeriod = isLongPeriod,
                 onLongPeriodChange = { 
                     isLongPeriod = it 
@@ -464,7 +469,7 @@ fun AddEventScreen(
                         }
                     }
                     EditRecurringOption.ALL_EVENTS -> {
-                        val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, selectedColorInt)
+                        val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt)
                         if (success != null) {
                             processAlarmForEvent(context, localEventToEdit!!.id, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule, repeatUntilDate)
                             onSave()
@@ -588,7 +593,18 @@ fun AddEventScreen(
     }
 
     if (showRepetitionDialog) {
-        RepetitionSelectionDialog(currentRule = repetitionRule, onConfirm = { repetitionRule = it; showRepetitionDialog = false }, onDismissRequest = { showRepetitionDialog = false })
+        RepetitionSelectionDialog(
+            currentRule = repetitionRule,
+            currentUntil = repeatUntilDate,
+            currentCount = repeatCount,
+            onConfirm = { rule, until, count ->
+                repetitionRule = rule
+                repeatUntilDate = until
+                repeatCount = count
+                showRepetitionDialog = false
+            },
+            onDismissRequest = { showRepetitionDialog = false }
+        )
     }
 
     if (showAlarmTimePickerDialog) {

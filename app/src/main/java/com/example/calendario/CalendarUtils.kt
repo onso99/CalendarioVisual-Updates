@@ -22,6 +22,7 @@ fun createEvent(
     isAllDay: Boolean,
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate? = null,
+    repeatCount: Int? = null,
     customColor: Int? = null
 ): Long? {
     if (calendarId == null) {
@@ -35,7 +36,7 @@ fun createEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, customColor)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor)
         
         val eventInsertOperation = ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI).withValues(values)
         operations.add(eventInsertOperation.build())
@@ -80,6 +81,7 @@ fun updateEvent(
     isAllDay: Boolean,
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate? = null,
+    repeatCount: Int? = null,
     customColor: Int? = null
 ): Long? {
      if (calendarId == null) {
@@ -93,7 +95,7 @@ fun updateEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, customColor)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         operations.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build())
 
@@ -266,6 +268,7 @@ private fun createEventValues(
     calendarId: Long,
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate? = null,
+    repeatCount: Int? = null,
     customColor: Int? = null
 ): ContentValues {
     val timezone = if (isAllDay) TimeZone.getTimeZone("UTC").id else TimeZone.getDefault().id
@@ -308,6 +311,8 @@ private fun createEventValues(
             val finalRrule = if (repeatUntil != null) {
                 val untilStr = repeatUntil.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'235959'Z'"))
                 "${repetitionRule.rrule};UNTIL=$untilStr"
+            } else if (repeatCount != null && repeatCount > 0) {
+                "${repetitionRule.rrule};COUNT=$repeatCount"
             } else {
                 repetitionRule.rrule
             }
