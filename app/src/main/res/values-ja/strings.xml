@@ -84,8 +84,6 @@
     <string name="start_of_week">週の開始</string>
     <string name="week_in_year_view">週番号</string>
     <string name="customize_theme">スタイル</string>
-    <string name="light_theme_prefix">ライト：</string>
-    <string name="dark_theme_prefix">ダーク：</string>
     <string name="customize_colors">色をカスタマイズ</string>
     <string name="import_theme">テーマを読み込む…</string>
     <string name="export_theme">テーマを保存…</string>
@@ -222,7 +220,6 @@
     <string name="share_multiple_message">📅 カレンダーから %1$d 個の予定を共有します</string>
     <string name="calendar_events_subject">カレンダーのイベント</string>
     <string name="debug_title">デバッグ</string>
-    <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">次回の更新: %1$s</string>
     <string name="next_refresh_pending">15分後</string>
     <string name="not_scheduled">未設定</string>

@@ -84,8 +84,6 @@
     <string name="start_of_week">Начало недели</string>
     <string name="week_in_year_view">Номер недели</string>
     <string name="customize_theme">Стиль</string>
-    <string name="light_theme_prefix">Светлая: </string>
-    <string name="dark_theme_prefix">Темная: </string>
     <string name="customize_colors">Настроить цвета</string>
     <string name="import_theme">Загрузить тему…</string>
     <string name="export_theme">Сохранить тему…</string>
@@ -223,7 +221,6 @@
     <string name="share_multiple_message">📅 Я делюсь с вами %1$d событиями из моего календаря</string>
     <string name="calendar_events_subject">События календаря</string>
     <string name="debug_title">Отладка</string>
-    <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Следующее обновление: %1$s</string>
     <string name="next_refresh_pending">через 15 мин.</string>
     <string name="not_scheduled">Не запланировано</string>

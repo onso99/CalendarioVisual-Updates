@@ -84,8 +84,6 @@
     <string name="start_of_week">Début semaine</string>
     <string name="week_in_year_view">Nº semaine</string>
     <string name="customize_theme">Style</string>
-    <string name="light_theme_prefix">Clair : </string>
-    <string name="dark_theme_prefix">Sombre : </string>
     <string name="customize_colors">Personnaliser les couleurs</string>
     <string name="import_theme">Charger thème…</string>
     <string name="export_theme">Enregistrer thème…</string>
@@ -222,7 +220,6 @@
     <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Je partage %1$d événements de mon calendrier avec vous</string>
     <string name="debug_title">Débogage</string>
-    <string name="debug_status_format">%1$s : %2$s</string>
     <string name="next_refresh_label">Prochain rafraîchissement : %1$s</string>
     <string name="next_refresh_pending">dans 15 min.</string>
     <string name="not_scheduled">Non programmé</string>

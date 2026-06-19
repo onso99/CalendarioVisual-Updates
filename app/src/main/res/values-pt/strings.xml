@@ -14,7 +14,7 @@
     <string name="events_of_month">Eventos %1$s</string>
     <string name="all">Todos</string>
     <string name="pending">Pendentes</string>
-    <string name="delete_recurring_event_title">Eliminar evento recurrente</string>
+    <string name="delete_recurring_event_title">Eliminar evento recorrente</string>
     <string name="delete_single_event_option">Eliminar apenas este evento</string>
     <string name="delete_all_events_option">Eliminar todos os eventos da série</string>
     <string name="delete">Eliminar</string>
@@ -37,11 +37,10 @@
     <string name="confirm_deletion_title">Confirmar eliminação</string>
     <string name="confirm_deletion_message">Tem a certeza de que pretende eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
-    <string name="repeat_until">Até a data</string>
+    <string name="repeat_until">Termina</string>
     <string name="repeat_indefinite">Indefinidamente</string>
     <string name="repeat_on_date">Até a data</string>
     <string name="repeat_after">Repetições</string>
-
     <string name="long_period_switch">Período longo</string>
     <string name="date">Data</string>
     <string name="end_time">Fim</string>
@@ -84,8 +83,6 @@
     <string name="start_of_week">Início da semana</string>
     <string name="week_in_year_view">Número da semana</string>
     <string name="customize_theme">Estilo</string>
-    <string name="light_theme_prefix">Claro: </string>
-    <string name="dark_theme_prefix">Escuro: </string>
     <string name="customize_colors">Personalizar cores</string>
     <string name="import_theme">Carregar tema…</string>
     <string name="export_theme">Salvar tema…</string>
@@ -102,7 +99,7 @@
     <string name="theme_name">Nome do tema</string>
     <string name="export">Salvar</string>
     <string name="help_section_calendar_views">Vista do calendário</string>
-    <string name="help_calendar_views_1">A aplicação tem duas vistas principales: Mensal e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
+    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensal e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
     <string name="help_calendar_views_2">Na vista mensal, deslize para a esquerda ou para a direita para mudar de mês. A seta superior esquerda no cabeçalho retornará ao mês atual.</string>
     <string name="help_section_event_management">Gestão de eventos</string>
     <string name="help_event_management_1">Toque num dia do calendário mensal para ver os seus eventos ou adicionar um novo. Os eventos também podem ser criados tocando no ícone (+) no cabeçalho.</string>
@@ -110,14 +107,14 @@
     <string name="help_section_event_list">Lista de eventos</string>
     <string name="help_event_list_1">Abaixo do calendário mensal, é apresentada a lista de eventos do mês. Para o mês atual, pode escolher ver os eventos Pendentes ou Todos tocando no botão Pendentes-Todos. Cada evento na lista pode ser editado e eliminado.</string>
     <string name="help_section_customization">Personalização</string>
-    <string name="help_customization_1">No menu Definições, pode escolher o modo Claro e Escuro. Também pode personalizar las cores da interface e Importar e Exportar temas de cores para partilhá-los.</string>
+    <string name="help_customization_1">No menu Definições, pode escolher o modo Claro e Escuro. Também pode personalizar as cores da interface e Importar e Exportar temas de cores para partilhá-los.</string>
     <string name="help_section_holiday_manager">Gestor de Feriados</string>
     <string name="help_holiday_manager_1">Esta função permite marcar dias específicos como feriados ou dias úteis de forma manual, independentemente do que indique o calendário do sistema ou os eventos importados. Ao marcar um dia como feriado, o seu número será realçado na cor correspondente nas vistas mensal e anual.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">A aplicação inclui um Widget para o ecrã de Início que exibe os próximos eventos. Pode personalizar a sua aparência escolhendo o número de eventos a exibir, alterando o tamanho da letra e modificando as suas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
     <string name="event_color_label">Cor do evento:</string>
-    <string name="keyword">Palabra-chave</string>
+    <string name="keyword">Palavra-chave</string>
     <string name="select_color_title">Selecionar Cor</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Limpar</string>
@@ -149,7 +146,7 @@
     <string name="header_background">Fundo do cabeçalho</string>
     <string name="screen_background">Fundo do ecrã</string>
     <string name="sundays_and_holidays">Domingos/Feriados</string>
-    <string name="today_highlight_list">Eventos de hoxe</string>
+    <string name="today_highlight_list">Eventos de hoje</string>
     <string name="birthdays">Aniversários</string>
     <string name="event_1">Evento-1</string>
     <string name="event_2">Evento-2</string>
@@ -165,12 +162,12 @@
     <string name="permission_denied_text">Não é possível guardar o evento porque a aplicação não tem permissão para escrever no calendário. Por favor, conceda a permissão nas definições da aplicação.</string>
     <string name="go_to_settings">Ir para Definições</string>
     <string name="error">Erro</string>
-    <string name="no_calendar_selected_error">Nenhum calendário foi selecionado. Por favor, escolha um calendário para guardar el evento.</string>
+    <string name="no_calendar_selected_error">Nenhum calendário foi selecionado. Por favor, escolha um calendário para guardar o evento.</string>
     <string name="title_empty_error">O título não pode estar vazio. Por favor, introduza um título para o evento.</string>
 
     <string name="event_saved_successfully">Evento guardado</string>
     <string name="error_saving_event">Erro ao guardar o evento. Verifique os calendários selecionados.</string>
-    <string name="event_updated_successfully">Evento atualizado</string>
+    <string name="event_updated_successfully">Evento actualizado</string>
     <string name="error_deleting_event">Erro ao eliminar o evento</string>
     <string name="error_canceling_event_instance">Erro ao cancelar a instância do evento</string>
     <string name="permission_denied_calendar">Erro: Permissão negada para escrever no calendário.</string>
@@ -222,19 +219,18 @@
     <string name="share_multiple_message">📅 Compartilho com você %1$d eventos do meu calendário</string>
     <string name="calendar_events_subject">Eventos do Calendário</string>
     <string name="debug_title">Depuração</string>
-    <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Próxima atualização: %1$s</string>
     <string name="next_refresh_pending">em 15 min.</string>
     <string name="not_scheduled">Não agendado</string>
     <string name="no_logs_found">Ainda não há registos.</string>
     <string name="copy_action">Copiar</string>
     <string name="selected_count">%1$d selecionados</string>
-    <string name="delete_multiple_confirmation">Deseja excluir estes %1$d eventos? Esta ação não puede ser desfeita.</string>
+    <string name="delete_multiple_confirmation">Deseja excluir estes %1$d eventos? Esta ação não pode ser desfeita.</string>
     <string name="events_deleted_count">%1$d eventos excluídos.</string>
 
     <!-- v1.8.80 (Holiday Import) -->
     <string name="import_holidays_confirm_title">Importar feriados</string>
-    <string name="import_holidays_confirm_message">Você já tem feriados configurados. Deseja adicioná-los à sua lista atual ou substituí-los completamente?</string>
+    <string name="import_holidays_confirm_message">Você ya tiene feriados configurados. Deseja adicioná-los à sua lista atual ou substituí-los completamente?</string>
     <string name="import_holidays_merge">Adicionar</string>
     <string name="import_holidays_replace">Substituir</string>
 

@@ -84,8 +84,6 @@
     <string name="start_of_week">周始</string>
     <string name="week_in_year_view">周数</string>
     <string name="customize_theme">风格</string>
-    <string name="light_theme_prefix">浅色：</string>
-    <string name="dark_theme_prefix">深色：</string>
     <string name="customize_colors">自定义颜色</string>
     <string name="import_theme">加载主题…</string>
     <string name="export_theme">保存主题…</string>
@@ -223,7 +221,6 @@
     <string name="share_multiple_message">📅 我与您分享日历中的 %1$d 个事件</string>
     <string name="calendar_events_subject">日历事件</string>
     <string name="debug_title">调试</string>
-    <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">下次刷新: %1$s</string>
     <string name="next_refresh_pending">15 分钟内</string>
     <string name="not_scheduled">未计划</string>

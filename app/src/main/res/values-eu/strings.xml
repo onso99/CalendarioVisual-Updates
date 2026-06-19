@@ -84,8 +84,6 @@
     <string name="start_of_week">Astearen hasiera</string>
     <string name="week_in_year_view">Asteko zenbakia</string>
     <string name="customize_theme">Estiloa</string>
-    <string name="light_theme_prefix">Argia: </string>
-    <string name="dark_theme_prefix">Iluna: </string>
     <string name="customize_colors">Pertsonalizatu koloreak</string>
     <string name="import_theme">Gaia kargatu…</string>
     <string name="export_theme">Gaia gorde…</string>
@@ -224,7 +222,6 @@
     <string name="share_multiple_message">📅 Nire egutegiko %1$d gertaera partekatzen dizkizut</string>
     <string name="calendar_events_subject">Egutegiko Gertaerak</string>
     <string name="debug_title">Arazketa</string>
-    <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Hurrengo freskatzea: %1$s</string>
     <string name="next_refresh_pending">15 min barru</string>
     <string name="not_scheduled">Programatu gabe</string>

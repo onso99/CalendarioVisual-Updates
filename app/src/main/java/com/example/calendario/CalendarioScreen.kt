@@ -69,6 +69,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.Normalizer
@@ -214,7 +215,7 @@ fun CalendarioScreen(
 
     LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate) {
         if (searchQuery.isNotBlank()) {
-            delay(300) // Debounce
+            delay(300.milliseconds) // Debounce
             val allEvents = uiState.eventsByDate.values.flatten()
             val scopeFilteredEvents = when (searchScope) {
                 SearchScope.MONTH -> allEvents.filter { it.date.year == currentMonth.year && it.date.month == currentMonth.month }

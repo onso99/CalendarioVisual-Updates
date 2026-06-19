@@ -149,7 +149,6 @@ fun SettingsScreen(
                                 onThemeImported()
                                 Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
                             }
-                            is ImportResult.LegacyThemeDetected -> { }
                             is ImportResult.Failure -> {
                                 Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
                             }

@@ -8,7 +8,6 @@ import org.json.JSONObject
 
 sealed class ImportResult {
     data class Success(val parsedTheme: ParsedTheme) : ImportResult()
-    data class LegacyThemeDetected(val parsedTheme: ParsedTheme) : ImportResult()
     data class Failure(val errorMessage: String) : ImportResult()
 }
 
@@ -31,13 +30,7 @@ object ThemeImportManager {
             
             when(val validationResult = validateAndParseTheme(context, jsonString)) {
                 is ValidationResult.Success -> {
-                    val manifest = validationResult.parsedTheme.manifest
-                    val themeVersion = manifest?.optInt("version", 1) ?: 1
-                    if (themeVersion < AppConstants.CURRENT_THEME_VERSION) {
-                        ImportResult.LegacyThemeDetected(validationResult.parsedTheme)
-                    } else {
-                        ImportResult.Success(validationResult.parsedTheme)
-                    }
+                    ImportResult.Success(validationResult.parsedTheme)
                 }
                 is ValidationResult.Failure -> ImportResult.Failure(validationResult.errorMessage)
             }

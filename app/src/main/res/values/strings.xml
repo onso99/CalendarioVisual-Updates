@@ -84,8 +84,6 @@
     <string name="start_of_week">Comienza semana</string>
     <string name="week_in_year_view">Número semana</string>
     <string name="customize_theme">Estilo</string>
-    <string name="light_theme_prefix">Claro: </string>
-    <string name="dark_theme_prefix">Oscuro: </string>
     <string name="customize_colors">Personalizar colores</string>
     <string name="import_theme">Cargar tema…</string>
     <string name="export_theme">Guardar tema…</string>
@@ -211,7 +209,6 @@
     <string name="share_multiple_message">📅 Te comparto %1$d eventos de mi calendario</string>
     <string name="calendar_events_subject">Eventos de Calendario</string>
     <string name="debug_title">Depuración</string>
-    <string name="debug_status_format">%1$s: %2$s</string>
     <string name="next_refresh_label">Próximo refresco: %1$s</string>
     <string name="next_refresh_pending">en 15 min.</string>
     <string name="not_scheduled">No programado</string>
