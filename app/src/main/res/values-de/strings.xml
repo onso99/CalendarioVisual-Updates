@@ -41,7 +41,7 @@
     <string name="repeat_indefinite">Unbegrenzt</string>
     <string name="repeat_on_date">Bis zum Datum</string>
     <string name="repeat_after">Wiederholungen</string>
-    <string name="repeat_times"></string>
+
     <string name="long_period_switch">Langer Zeitraum</string>
     <string name="date">Datum</string>
     <string name="end_time">Ende</string>

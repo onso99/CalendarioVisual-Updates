@@ -446,7 +446,7 @@ fun AddEventForm(
                     if (repeatUntilDate != null) {
                         Text(stringResource(id = R.string.repeat_until) + ": " + repeatUntilDate.format(summaryFormatter).replaceFirstChar { char -> char.titlecase(locale) })
                     } else if (repeatCount != null && repeatCount > 0) {
-                        Text(stringResource(id = R.string.repeat_until) + ": " + stringResource(id = R.string.repeat_after) + " " + repeatCount + " " + stringResource(id = R.string.repeat_times))
+                        Text(stringResource(id = R.string.repeat_until) + ": " + repeatCount + " " + stringResource(id = R.string.repeat_after).lowercase(locale))
                     }
                 }
                 if (hasAlarm) {

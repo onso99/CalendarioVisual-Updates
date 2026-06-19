@@ -41,7 +41,7 @@
     <string name="repeat_indefinite">无限期</string>
     <string name="repeat_on_date">直到日期</string>
     <string name="repeat_after">重复次数</string>
-    <string name="repeat_times"></string>
+
     <string name="long_period_switch">长期</string>
     <string name="date">日期</string>
     <string name="end_time">结束</string>

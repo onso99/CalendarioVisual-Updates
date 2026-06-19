@@ -41,7 +41,7 @@
     <string name="repeat_indefinite">無期限</string>
     <string name="repeat_on_date">指定日まで</string>
     <string name="repeat_after">繰り返し</string>
-    <string name="repeat_times"></string>
+
     <string name="long_period_switch">長期</string>
     <string name="date">日付</string>
     <string name="end_time">終了</string>

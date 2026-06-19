@@ -41,7 +41,7 @@
     <string name="repeat_indefinite">Indefinitely</string>
     <string name="repeat_on_date">Until date</string>
     <string name="repeat_after">Repetitions</string>
-    <string name="repeat_times"></string>
+
     <string name="long_period_switch">Long period</string>
     <string name="date">Date</string>
     <string name="end_time">End</string>
