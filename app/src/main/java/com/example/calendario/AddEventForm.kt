@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -335,7 +334,7 @@ fun AddEventForm(
                             modifier = Modifier
                                 .size(36.dp) // Un poco más grande para destacar
                                 .clip(CircleShape)
-                                .background(if (isCustomColor) Color(selectedColorInt!!) else Color.Transparent)
+                                .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
                                 .border(
                                     width = if (isCustomColor) 3.dp else 1.dp,
                                     color = if (isCustomColor) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
@@ -349,7 +348,7 @@ fun AddEventForm(
                                 contentDescription = null,
                                 modifier = Modifier.size(22.dp),
                                 tint = if (isCustomColor) {
-                                    if (isColorDark(Color(selectedColorInt!!), Color.White)) Color.White else Color.Black
+                                    if (isColorDark(Color(selectedColorInt), Color.White)) Color.White else Color.Black
                                 } else {
                                     CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                                 }

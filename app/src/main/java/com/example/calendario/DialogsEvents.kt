@@ -51,6 +51,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -74,7 +75,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
 import java.util.Locale
 
 enum class DeleteRecurringOption {
@@ -615,10 +615,9 @@ fun RepetitionSelectionDialog(
     var tempCount by remember { mutableStateOf(currentCount?.toString() ?: "") }
     var showDatePicker by remember { mutableStateOf(false) }
 
-    // Si entramos con fecha, el modo es fecha. Si entramos con count, el modo es count.
     // 0: Indefinidamente, 1: En una fecha, 2: Tras X veces
     var endMode by remember { 
-        mutableStateOf(if (currentUntil != null) 1 else if (currentCount != null) 2 else 0) 
+        mutableIntStateOf(if (currentUntil != null) 1 else if (currentCount != null) 2 else 0)
     }
 
     AlertDialog(

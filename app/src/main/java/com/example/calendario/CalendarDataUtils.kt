@@ -114,11 +114,6 @@ fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?) {
     }
 }
 
-fun getPeriodColor(context: Context, eventId: Long): Int? {
-    val prefs = context.getSharedPreferences(AppConstants.PERIOD_COLOR_PREFS_NAME, Context.MODE_PRIVATE)
-    return if (prefs.contains(eventId.toString())) prefs.getInt(eventId.toString(), 0) else null
-}
-
 // --- CALENDARIOS DISPONIBLES ---
 
 suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> = suspendCancellableCoroutine { continuation ->
