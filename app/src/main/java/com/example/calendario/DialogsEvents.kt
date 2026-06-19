@@ -542,7 +542,7 @@ fun DayEventsDialog(
                                 )
                             }
                             
-                            Spacer(Modifier.width(10.dp))
+                            Spacer(Modifier.width(6.dp))
 
                             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                                 if (timeText != null) {

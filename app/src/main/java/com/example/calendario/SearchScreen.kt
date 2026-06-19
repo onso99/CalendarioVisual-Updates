@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -42,7 +43,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -313,24 +316,41 @@ private fun EventRow(
     val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
     val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
 
-    val itemColor = when {
+    val neutralColor = CalendarioTheme.colors.textSystem
+    
+    val eventSpecificColor = when {
         esEvento1 -> CalendarioTheme.colors.textEvent1
         esEvento2 -> CalendarioTheme.colors.textEvent2
         esFestivo -> CalendarioTheme.colors.textSundayHoliday
         esCumpleanos -> CalendarioTheme.colors.textBirthday
-        else -> CalendarioTheme.colors.textSystem // Eventos normales adaptativos
+        else -> CalendarioTheme.colors.textSystem
+    }
+
+    // Si está seleccionado, aseguramos contraste
+    val titleColor = if (isSelected) {
+        val highlightColor = CalendarioTheme.colors.todayHighlightColor
+        val opaqueHighlightInt = ColorUtils.setAlphaComponent(highlightColor.toArgb(), 255)
+        val opaqueEventColorInt = ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255)
+        if (ColorUtils.calculateContrast(opaqueEventColorInt, opaqueHighlightInt) > 1.5) {
+            eventSpecificColor
+        } else {
+            if (isColorDark(highlightColor, Color.Black)) Color.White else Color.Black
+        }
+    } else {
+        eventSpecificColor
     }
 
     val noTitle = stringResource(id = R.string.no_title)
     val allDayEvent = stringResource(id = R.string.all_day_event)
-    val baseDesc = if (!festivo.isAllDay && (festivo.startTime != null)) {
-        "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { noTitle }}"
-    } else {
-        festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else "" }
-    }
 
-    val descWithAge = if (festivo.age != null && festivo.age > 0) "$baseDesc (${festivo.age})" else baseDesc
-    val displayDesc = if (searchScope == SearchScope.MONTH) descWithAge else "${festivo.date.dayOfMonth} - $descWithAge"
+    val timeText = if (!festivo.isAllDay && festivo.startTime != null) {
+        festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    } else null
+
+    val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
+    val ageText = if (festivo.age != null && festivo.age > 0) " (${festivo.age})" else ""
+
+    val locale = LocalConfiguration.current.locales[0]
 
     Row(
         modifier = Modifier
@@ -352,28 +372,86 @@ private fun EventRow(
             .padding(horizontal = 8.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        availableCalendars.find { it.id == festivo.calendarId }?.color?.let { colorInt ->
-            Box(
-                Modifier.size(10.dp).background(Color(colorInt), CircleShape)
-                    .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), CircleShape)
+        // 1. DÍA (Solo si no es vista de mes)
+        if (searchScope != SearchScope.MONTH) {
+            Text(
+                text = String.format(locale, "%02d", festivo.date.dayOfMonth),
+                color = neutralColor,
+                fontSize = 16.sp,
+                modifier = Modifier.width(26.dp)
             )
-            Spacer(Modifier.size(8.dp))
         }
-        
-        Text(
-            text = displayDesc, 
-            color = itemColor, 
-            maxLines = 1, 
-            overflow = TextOverflow.Ellipsis, 
-            modifier = Modifier.weight(1f),
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-        )
-        
+
+        // 2. INDICADOR DE FORMA (Alineado)
+        Box(
+            modifier = Modifier.width(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val cal = availableCalendars.find { it.id == festivo.calendarId }
+            val colorToUse = if (festivo.customColor != null) {
+                Color(festivo.customColor)
+            } else if (cal != null) {
+                Color(cal.color ?: 0xFFFFFFFF.toInt())
+            } else {
+                Color.Transparent
+            }
+
+            if (festivo.isLongPeriod && festivo.lane != null) {
+                Box(
+                    Modifier
+                        .width(4.dp)
+                        .height(10.dp)
+                        .clip(RoundedCornerShape(1.dp))
+                        .background(colorToUse)
+                )
+            } else if (colorToUse != Color.Transparent) {
+                Box(
+                    Modifier
+                        .size(6.dp)
+                        .background(colorToUse.copy(alpha = 0.6f), CircleShape)
+                        .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), CircleShape)
+                )
+            }
+        }
+
+        Spacer(Modifier.width(1.dp))
+
+        // 3. TEXTO (Hora + Título + Progreso)
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            if (timeText != null) {
+                Text(
+                    text = "$timeText ",
+                    color = neutralColor,
+                    fontSize = 16.sp,
+                    maxLines = 1
+                )
+            }
+            
+            Text(
+                text = titleText + ageText,
+                color = titleColor,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+
+            if (festivo.isLongPeriod) {
+                Text(
+                    " (${festivo.currentDay}/${festivo.totalDays})",
+                    color = titleColor.copy(alpha = 0.8f),
+                    fontSize = 14.sp,
+                    maxLines = 1
+                )
+            }
+        }
+
         if (festivo.rrule != null) {
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = null,
-                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
                 modifier = Modifier.padding(start = 8.dp).size(16.dp)
             )
         }

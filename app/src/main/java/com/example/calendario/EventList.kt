@@ -165,12 +165,12 @@ fun MonthlyEventList(
                                             color = neutralColor,
                                             fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
                                             fontSize = 16.sp,
-                                            modifier = Modifier.width(24.dp)
+                                            modifier = Modifier.width(26.dp)
                                         )
 
-                                        // Espacio fijo para el indicador (reducido)
+                                        // Espacio fijo para el indicador (más reducido)
                                         Box(
-                                            modifier = Modifier.width(10.dp),
+                                            modifier = Modifier.width(8.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             if (festivo.isLongPeriod && festivo.lane != null) {
@@ -193,7 +193,7 @@ fun MonthlyEventList(
                                             }
                                         }
 
-                                        Spacer(Modifier.width(2.dp))
+                                        Spacer(Modifier.width(1.dp))
 
                                         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                                             if (timePrefix != null) {
