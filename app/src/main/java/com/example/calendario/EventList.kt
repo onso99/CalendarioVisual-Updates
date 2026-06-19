@@ -98,9 +98,15 @@ fun MonthlyEventList(
                             else -> CalendarioTheme.colors.textSystem // Eventos normales ahora usan textSystem adaptativo
                         }
 
-                        // Si es HOY, intentamos mantener el color específico si es legible sobre el fondo de hoy, 
-                        // de lo contrario usamos el color de contraste del tema.
-                        val textColor = if (isTodayEvents) {
+                        // Color para el día y la hora (neutro)
+                        val neutralColor = if (isTodayEvents) {
+                            if (isColorDark(CalendarioTheme.colors.todayHighlightColor, MaterialTheme.colorScheme.background)) Color.White else Color.Black
+                        } else {
+                            CalendarioTheme.colors.textSystem
+                        }
+
+                        // Color para el título (específico del evento)
+                        val titleColor = if (isTodayEvents) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
                             val opaqueHighlightInt = ColorUtils.setAlphaComponent(highlightColor.toArgb(), 255)
                             val opaqueEventColorInt = ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255)
@@ -114,26 +120,23 @@ fun MonthlyEventList(
                             eventSpecificColor
                         }
                         
-                        val iconColor = if (isTodayEvents) textColor else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                        val iconColor = if (isTodayEvents) neutralColor else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
 
                         val noTitle = stringResource(id = R.string.no_title)
                         val allDayEvent = stringResource(id = R.string.all_day_event)
                         
-                        // Construcción de la descripción con soporte para edad
+                        // Separamos la hora del título para colorearlos de forma distinta
                         val timePrefix = if (!festivo.isAllDay && festivo.startTime != null) {
-                            festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm")) + " "
-                        } else ""
+                            festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                        } else null
                         
                         val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
-                        val baseDesc = "$timePrefix$titleText"
 
-                        val displayDesc = if (festivo.age != null && festivo.age > 0) {
-                            "$baseDesc (${festivo.age})"
-                        } else {
-                            baseDesc
-                        }
+                        val ageText = if (festivo.age != null && festivo.age > 0) {
+                            " (${festivo.age})"
+                        } else ""
 
-                        if (displayDesc.isNotBlank()) {
+                        if (titleText.isNotBlank()) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
@@ -159,7 +162,7 @@ fun MonthlyEventList(
                                     ) {
                                         Text(
                                             String.format(locale, "%02d", date.dayOfMonth),
-                                            color = textColor,
+                                            color = neutralColor,
                                             fontWeight = if (isTodayEvents) FontWeight.Bold else FontWeight.Normal,
                                             fontSize = 16.sp,
                                             modifier = Modifier.width(24.dp)
@@ -193,9 +196,17 @@ fun MonthlyEventList(
                                         Spacer(Modifier.width(2.dp))
 
                                         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                                            if (timePrefix != null) {
+                                                Text(
+                                                    text = "$timePrefix ",
+                                                    color = neutralColor,
+                                                    fontSize = 16.sp,
+                                                    maxLines = 1
+                                                )
+                                            }
                                             Text(
-                                                displayDesc,
-                                                color = textColor,
+                                                text = titleText + ageText,
+                                                color = titleColor,
                                                 fontSize = 16.sp,
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis,
@@ -204,7 +215,7 @@ fun MonthlyEventList(
                                             if (festivo.isLongPeriod) {
                                                 Text(
                                                     " (${festivo.currentDay}/${festivo.totalDays})",
-                                                    color = textColor,
+                                                    color = titleColor,
                                                     fontSize = 16.sp,
                                                     maxLines = 1
                                                 )

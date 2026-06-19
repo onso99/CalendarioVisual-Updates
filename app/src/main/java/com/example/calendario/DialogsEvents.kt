@@ -50,12 +50,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
@@ -454,38 +456,52 @@ fun DayEventsDialog(
         text = {
             val noTitle = stringResource(id = R.string.no_title)
             val allDay = stringResource(id = R.string.all_day)
-            val eventsToDisplay = events.mapNotNull { festivo ->
-                val baseTitle = if (!festivo.isAllDay && festivo.startTime != null) {
-                    "${festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} ${festivo.title.ifEmpty { noTitle }}"
-                } else {
-                    festivo.title.ifEmpty { if (festivo.isAllDay) allDay else "" }
-                }
-                val title = if (festivo.age != null) "$baseTitle (${festivo.age})" else baseTitle
-                if (title.isNotBlank()) festivo to title else null
-            }
-
-            if (eventsToDisplay.isEmpty()) {
+            
+            if (events.isEmpty()) {
                 Text(stringResource(id = R.string.no_detailed_events), fontSize = 16.sp)
             } else {
                 LazyColumn(Modifier.heightIn(max = 300.dp)) {
-                    items(eventsToDisplay, key = { (festivo, _) -> festivo.id.toString() + festivo.title + festivo.startTime.toString() }) { (festivo, displayTitle) ->
+                    items(events, key = { festivo -> festivo.id.toString() + festivo.title + festivo.startTime.toString() + festivo.date.toString() }) { festivo ->
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                         val esCumpleanos = festivo.isBirthday && !esFestivo
                         val normalizedTitle = festivo.title.unaccent().lowercase()
                         val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
                         val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
 
-                        val itemColor = if (isToday) {
+                        // Determinamos el color base según el tipo de evento
+                        val eventSpecificColor = when {
+                            esEvento1 -> CalendarioTheme.colors.textEvent1
+                            esEvento2 -> CalendarioTheme.colors.textEvent2
+                            esFestivo -> CalendarioTheme.colors.textSundayHoliday
+                            esCumpleanos -> CalendarioTheme.colors.textBirthday
+                            else -> CalendarioTheme.colors.textSystem
+                        }
+
+                        val neutralColor = if (isToday) {
                             if (isColorDark(CalendarioTheme.colors.todayHighlightColor, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black
                         } else {
-                            when {
-                                esEvento1 -> CalendarioTheme.colors.textEvent1
-                                esEvento2 -> CalendarioTheme.colors.textEvent2
-                                esFestivo -> CalendarioTheme.colors.textSundayHoliday
-                                esCumpleanos -> CalendarioTheme.colors.textBirthday
-                                else -> CalendarioTheme.colors.textSystem
-                            }
+                            CalendarioTheme.colors.textSystem
                         }
+
+                        val titleColor = if (isToday) {
+                            val highlightColor = CalendarioTheme.colors.todayHighlightColor
+                            val opaqueHighlightInt = ColorUtils.setAlphaComponent(highlightColor.toArgb(), 255)
+                            val opaqueEventColorInt = ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255)
+                            if (ColorUtils.calculateContrast(opaqueEventColorInt, opaqueHighlightInt) > 1.5) {
+                                eventSpecificColor
+                            } else {
+                                neutralColor
+                            }
+                        } else {
+                            eventSpecificColor
+                        }
+
+                        val timeText = if (!festivo.isAllDay && festivo.startTime != null) {
+                            festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                        } else null
+
+                        val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDay else noTitle }
+                        val ageText = if (festivo.age != null) " (${festivo.age})" else ""
 
                         Row(
                             Modifier
@@ -529,9 +545,17 @@ fun DayEventsDialog(
                             Spacer(Modifier.width(10.dp))
 
                             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                                if (timeText != null) {
+                                    Text(
+                                        text = "$timeText ",
+                                        color = neutralColor,
+                                        fontSize = 16.sp,
+                                        maxLines = 1
+                                    )
+                                }
                                 Text(
-                                    displayTitle,
-                                    color = itemColor,
+                                    text = titleText + ageText,
+                                    color = titleColor,
                                     fontSize = 16.sp,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis,
@@ -540,7 +564,7 @@ fun DayEventsDialog(
                                 if (festivo.isLongPeriod) {
                                     Text(
                                         " (${festivo.currentDay}/${festivo.totalDays})",
-                                        color = itemColor.copy(alpha = 0.8f),
+                                        color = titleColor.copy(alpha = 0.8f),
                                         fontSize = 14.sp,
                                         maxLines = 1
                                     )
