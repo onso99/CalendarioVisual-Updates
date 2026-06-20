@@ -135,6 +135,9 @@ fun MonthlyCalendar(
     val daysInPrevMonth = prevMonth.lengthOfMonth()
     val daysInCurrentMonth = currentMonth.lengthOfMonth()
 
+    // --- GROSOR DE CARRIL FIJO (Máximo para resaltar el efecto píldora) ---
+    val fixedLaneWidth = 6.5.dp
+
     val visibleDays = mutableListOf<Pair<LocalDate, Boolean>>()
 
     for (i in 0 until firstDayOfWeekIndex) {
@@ -292,45 +295,76 @@ fun MonthlyCalendar(
                                     }
                                 }
                         ) {
-                            // --- CARRILES DE PERIODOS LARGOS (Costuras) ---
+                            // --- CARRILES DE PERIODOS LARGOS (Grosor fijo con separación reducida) ---
                             val longPeriods = dayEvents.filter { it.isLongPeriod && it.lane != null }
                             if (isCurrentMonth && longPeriods.isNotEmpty()) {
                                 Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.SpaceEvenly
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .fillMaxHeight(0.85f) // Reducimos altura para acercar los carriles
+                                        .align(Alignment.Center)
                                 ) {
-                                    repeat(6) { laneIndex ->
+                                    repeat(5) { laneIndex ->
                                         val period = longPeriods.find { it.lane == laneIndex }
-                                        Box(modifier = Modifier.fillMaxWidth().height(2.5.dp)) {
+                                        
+                                        // Contenedor de slot fijo (1/6 de la celda) para mantener alineación
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth().weight(1f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
                                             if (period != null) {
                                                 val cal = availableCalendars.find { it.id == period.calendarId }
-                                                val color = if (period.customColor != null) {
-                                                    Color(period.customColor)
-                                                } else if (cal != null) {
-                                                    Color(cal.color ?: 0xFFFFFFFF.toInt())
-                                                } else {
-                                                    themeColors.textSystem
-                                                }
+                                                val color = if (period.customColor != null) Color(period.customColor)
+                                                           else if (cal != null) Color(cal.color ?: 0xFFFFFFFF.toInt())
+                                                           else themeColors.textSystem
 
-                                                // Guion Izquierdo: viene de ayer
-                                                if (period.currentDay > 1) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .align(Alignment.CenterStart)
-                                                            .width(6.dp)
-                                                            .fillMaxHeight()
-                                                            .background(color, RoundedCornerShape(topEnd = 1.dp, bottomEnd = 1.dp))
-                                                    )
-                                                }
-                                                // Guion Derecho: sigue mañana
-                                                if (period.currentDay < period.totalDays) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .align(Alignment.CenterEnd)
-                                                            .width(6.dp)
-                                                            .fillMaxHeight()
-                                                            .background(color, RoundedCornerShape(topStart = 1.dp, bottomStart = 1.dp))
-                                                    )
+                                                Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
+                                                    // Guion Izquierdo (Entrante)
+                                                    if (period.currentDay > 1) {
+                                                        // Si es el último día, el extremo derecho (interior) es redondo.
+                                                        // El extremo izquierdo (frontera) SIEMPRE es plano.
+                                                        val isLastDay = period.currentDay == period.totalDays
+                                                        val innerRadius = if (isLastDay) 10.dp else 0.dp
+                                                        
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .align(Alignment.CenterStart)
+                                                                .width(6.dp)
+                                                                .fillMaxHeight()
+                                                                .background(
+                                                                    color, 
+                                                                    RoundedCornerShape(
+                                                                        topEnd = innerRadius, 
+                                                                        bottomEnd = innerRadius,
+                                                                        topStart = 0.dp,
+                                                                        bottomStart = 0.dp
+                                                                    )
+                                                                )
+                                                        )
+                                                    }
+                                                    // Guion Derecho (Saliente)
+                                                    if (period.currentDay < period.totalDays) {
+                                                        // Si es el primer día, el extremo izquierdo (interior) es redondo.
+                                                        // El extremo derecho (frontera) SIEMPRE es plano.
+                                                        val isFirstDay = period.currentDay == 1
+                                                        val innerRadius = if (isFirstDay) 10.dp else 0.dp
+
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .align(Alignment.CenterEnd)
+                                                                .width(6.dp)
+                                                                .fillMaxHeight()
+                                                                .background(
+                                                                    color,
+                                                                    RoundedCornerShape(
+                                                                        topStart = innerRadius, 
+                                                                        bottomStart = innerRadius,
+                                                                        topEnd = 0.dp,
+                                                                        bottomEnd = 0.dp
+                                                                    )
+                                                                )
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }

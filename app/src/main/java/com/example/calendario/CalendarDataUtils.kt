@@ -440,10 +440,10 @@ fun readFestivosFromCalendarsSync(
                 } else null
             }.sortedWith(compareBy({ it.second }, { it.third }, { it.first }))
 
-            // Asignamos carriles (0 a 5) siguiendo la regla: el primero que empieza, ocupa el primer carril libre
+            // Asignamos carriles (0 a 4) siguiendo la regla: el primero que empieza, ocupa el primer carril libre
             multiDayInstances.forEach { (uniqueKey, start, end) ->
                 var chosenLane = -1
-                for (l in 0..5) {
+                for (l in 0..4) {
                     var isFree = true
                     var d = start
                     while (!d.isAfter(end)) {
@@ -463,7 +463,7 @@ fun readFestivosFromCalendarsSync(
                     laneAssignments[uniqueKey] = chosenLane
                     var d = start
                     while (!d.isAfter(end)) {
-                        laneOccupancy.getOrPut(d) { BooleanArray(6) }[chosenLane] = true
+                        laneOccupancy.getOrPut(d) { BooleanArray(5) }[chosenLane] = true
                         d = d.plusDays(1)
                     }
                 }

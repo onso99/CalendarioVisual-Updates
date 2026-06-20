@@ -44,7 +44,7 @@
     <string name="long_period_switch">Período longo</string>
     <string name="date">Data</string>
     <string name="end_time">Fim</string>
-    <string name="lanes_full_error">O limite de 6 períodos longos simultâneos para as datas selecionadas foi excedido. Tente reduzir a duração ou guarde-o como um evento normal.</string>
+    <string name="lanes_full_error">O limite de 5 períodos longos simultâneos para as datas selecionadas foi excedido. Tente reduzir a duração ou guarde-o como um evento normal.</string>
     <string name="select_calendar_title">Selecionar Calendário</string>
     <string name="select_time_title">Selecionar Hora</string>
     <string name="does_not_repeat">Não se repete</string>

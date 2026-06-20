@@ -45,7 +45,7 @@
     <string name="long_period_switch">Длительный период</string>
     <string name="date">Дата</string>
     <string name="end_time">Конец</string>
-    <string name="lanes_full_error">Превышен лимит из 6 одновременных длительных периодов для выбранных дат. Попробуйте сократить длительность или сохранить как обычное событие.</string>
+    <string name="lanes_full_error">Превышен лимит из 5 одновременных длительных периодов для выбранных дат. Попробуйте сократить длительность или сохранить как обычное событие.</string>
     <string name="select_calendar_title">Выбрать календарь</string>
     <string name="select_time_title">Выбрать время</string>
     <string name="does_not_repeat">Не повторяется</string>
