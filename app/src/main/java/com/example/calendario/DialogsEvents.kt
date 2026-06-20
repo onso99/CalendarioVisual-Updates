@@ -63,9 +63,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
@@ -523,7 +526,7 @@ fun DayEventsDialog(
                                 .then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier)
                                 .clickable { onEventClick(festivo) }
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.Top // Alineación superior para flujo continuo
                         ) {
                             val calendarForEvent = availableCalendars.find { it.id == festivo.calendarId }
                             val colorToUse = if (festivo.customColor != null) {
@@ -536,53 +539,57 @@ fun DayEventsDialog(
                                 Color.Transparent
                             }
 
-                            if (festivo.isLongPeriod && festivo.lane != null) {
-                                Box(
-                                    Modifier
-                                        .size(6.dp)
-                                        .background(colorToUse, RoundedCornerShape(1.5.dp))
-                                )
-                            } else {
-                                Box(
-                                    Modifier
-                                        .size(6.dp)
-                                        .background(Color.Gray.copy(alpha = 0.6f), CircleShape)
-                                        .border(
-                                            0.5.dp,
-                                            CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                                            CircleShape
-                                        )
-                                )
+                            // Icono alineado a la parte superior con un pequeño margen para que cuadre con la primera línea
+                            Box(modifier = Modifier.padding(top = 6.dp)) {
+                                if (festivo.isLongPeriod && festivo.lane != null) {
+                                    Box(
+                                        Modifier
+                                            .size(6.dp)
+                                            .background(colorToUse, RoundedCornerShape(1.5.dp))
+                                    )
+                                } else {
+                                    Box(
+                                        Modifier
+                                            .size(6.dp)
+                                            .background(Color.Gray.copy(alpha = 0.6f), CircleShape)
+                                            .border(
+                                                0.5.dp,
+                                                CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                                                CircleShape
+                                            )
+                                    )
+                                }
                             }
                             
-                            Spacer(Modifier.width(6.dp))
+                            Spacer(Modifier.width(8.dp))
 
-                            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                            // Texto unificado con AnnotatedString para flujo continuo
+                            val annotatedString = buildAnnotatedString {
+                                // 1. Hora (Color Neutro)
                                 if (timeText != null) {
-                                    Text(
-                                        text = "$timeText ",
-                                        color = neutralColor,
-                                        fontSize = 16.sp,
-                                        maxLines = 1
-                                    )
+                                    withStyle(SpanStyle(color = neutralColor)) {
+                                        append("$timeText ")
+                                    }
                                 }
-                                Text(
-                                    text = titleText + ageText,
-                                    color = titleColor,
-                                    fontSize = 16.sp,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f, fill = false)
-                                )
+                                // 2. Título + Edad (Color del Evento)
+                                withStyle(SpanStyle(color = titleColor)) {
+                                    append(titleText + ageText)
+                                }
+                                // 3. Progreso (Color del Evento atenuado)
                                 if (festivo.isLongPeriod) {
-                                    Text(
-                                        " (${festivo.currentDay}/${festivo.totalDays})",
-                                        color = titleColor.copy(alpha = 0.8f),
-                                        fontSize = 14.sp,
-                                        maxLines = 1
-                                    )
+                                    withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) {
+                                        append(" (${festivo.currentDay}/${festivo.totalDays})")
+                                    }
                                 }
                             }
+
+                            Text(
+                                text = annotatedString,
+                                fontSize = 16.sp,
+                                maxLines = 10, // Permitimos flujo libre si es extraordinariamente largo
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                     }
