@@ -45,7 +45,7 @@
     <string name="long_period_switch">Langer Zeitraum</string>
     <string name="date">Datum</string>
     <string name="end_time">Ende</string>
-    <string name="lanes_full_error">Das Limit von 5 gleichzeitigen langen Zeiträumen für die ausgewählten Termine wurde überschritten. Versuchen Sie, die Dauer zu verkürzen oder als normales Ereignis zu speichern.</string>
+    <string name="lanes_full_error">Der Tag %1 hat das Limit von 5 langen Ereignissen �berschritten. Versuchen Sie, normale Ereignisse mit Wiederholung zu erstellen.</string>
     <string name="select_calendar_title">Kalender auswählen</string>
     <string name="select_time_title">Zeit auswählen</string>
     <string name="does_not_repeat">Wiederholt sich nicht</string>

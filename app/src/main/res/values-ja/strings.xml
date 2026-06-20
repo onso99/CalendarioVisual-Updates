@@ -45,7 +45,7 @@
     <string name="long_period_switch">長期</string>
     <string name="date">日付</string>
     <string name="end_time">終了</string>
-    <string name="lanes_full_error">選択した日付の同時期長期期間の制限（6つ）を超えました。期間を短くするか、通常のイベントとして保存してください。</string>
+    <string name="lanes_full_error">%1 ??????????(5?)??????????????????????????????????</string>
     <string name="select_calendar_title">カレンダーを選択</string>
     <string name="select_time_title">時間を選択</string>
     <string name="does_not_repeat">繰り返さない</string>

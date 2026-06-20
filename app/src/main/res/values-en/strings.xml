@@ -45,7 +45,7 @@
     <string name="long_period_switch">Long period</string>
     <string name="date">Date</string>
     <string name="end_time">End</string>
-    <string name="lanes_full_error">The limit of 5 concurrent long periods for the selected dates has been exceeded. Try reducing the duration or saving it as a normal event.</string>
+    <string name="lanes_full_error">The day %1 has exceeded the limit of 5 long events. Try creating normal events with repetition.</string>
     <string name="select_calendar_title">Select Calendar</string>
     <string name="select_time_title">Select Time</string>
     <string name="does_not_repeat">Does not repeat</string>

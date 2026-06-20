@@ -45,7 +45,7 @@
     <string name="long_period_switch">长期</string>
     <string name="date">日期</string>
     <string name="end_time">结束</string>
-    <string name="lanes_full_error">已超过所选日期的 5 个并发长期时段限制。请尝试减少持续时间或将其保存为普通活动。</string>
+    <string name="lanes_full_error">%1 ??? 5 ?????????????????????????</string>
     <string name="select_calendar_title">选择日历</string>
     <string name="select_time_title">选择时间</string>
     <string name="does_not_repeat">不重复</string>

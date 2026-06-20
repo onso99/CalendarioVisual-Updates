@@ -45,7 +45,7 @@
     <string name="long_period_switch">PerÃ­ode llarg</string>
     <string name="date">Data</string>
     <string name="end_time">Fi</string>
-    <string name="lanes_full_error">S\'ha superat el lÃ­mit de 5 perÃ­odes llargs concurrents per a les dates seleccionades. Intenteu reduir la durada o deseu-lo com a esdeveniment normal.</string>
+    <string name="lanes_full_error">El dia %1 ha excedit el límit de 5 esdeveniments llargs. Intenti crear esdeveniments normals amb repetició.</string>
     <string name="select_calendar_title">Seleccionar Calendari</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="does_not_repeat">No es repeteix</string>

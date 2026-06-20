@@ -150,14 +150,14 @@ private fun isLaneAvailable(
     startDate: LocalDate,
     endDate: LocalDate,
     excludeEventId: Long?
-): Boolean {
+): LocalDate? {
     var current = startDate
     while (!current.isAfter(endDate)) {
         val count = eventsByDate[current]?.count { it.isLongPeriod && it.lane != null && it.id != excludeEventId } ?: 0
-        if (count >= 6) return false
+        if (count >= 5) return current
         current = current.plusDays(1)
     }
-    return true
+    return null
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -194,6 +194,7 @@ fun AddEventScreen(
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
     var saveError by remember { mutableStateOf<SaveEventError?>(null) }
+    var conflictingDate by remember { mutableStateOf<LocalDate?>(null) }
     var localEventToEdit by remember { mutableStateOf(eventToEdit) }
     var isCopying by remember { mutableStateOf(false) }
     var showEditRecurringDialog by remember { mutableStateOf(false) }
@@ -331,7 +332,7 @@ fun AddEventScreen(
             val error = validateEventData(context, title, selectedCalendar, startDate, endDate)
             if (error != null) {
                 saveError = error
-            } else if (isLongPeriod && !isLaneAvailable(eventsByDate, startDate.toLocalDate(), endDate.toLocalDate(), localEventToEdit?.id)) {
+            } else if (isLongPeriod && isLaneAvailable(eventsByDate, startDate.toLocalDate(), endDate.toLocalDate(), localEventToEdit?.id).also { conflictingDate = it } != null) {
                 saveError = SaveEventError.LANES_FULL
             } else {
                 val createdEventId = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
@@ -412,6 +413,10 @@ fun AddEventScreen(
                         if (endDate.toLocalDate() == startDate.toLocalDate()) {
                             endDate = endDate.plusDays(1)
                         }
+                        // Si no hay color elegido, ponemos el Azul Especial por defecto
+                        if (selectedColorInt == null) {
+                            selectedColorInt = 0xFF4C58D8.toInt()
+                        }
                     }
                 },
                 selectedColorInt = selectedColorInt,
@@ -489,7 +494,10 @@ fun AddEventScreen(
             SaveEventError.NO_CALENDAR_SELECTED -> Triple(stringResource(R.string.error), stringResource(R.string.no_calendar_selected_error), false)
             SaveEventError.TITLE_EMPTY -> Triple(stringResource(R.string.error), stringResource(R.string.title_empty_error), false)
             SaveEventError.END_BEFORE_START -> Triple(stringResource(R.string.error), stringResource(R.string.end_time_before_start_time_error), false)
-            SaveEventError.LANES_FULL -> Triple(stringResource(R.string.error), stringResource(R.string.lanes_full_error), false)
+            SaveEventError.LANES_FULL -> {
+                val dateStr = conflictingDate?.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy")) ?: ""
+                Triple(stringResource(R.string.error), stringResource(R.string.lanes_full_error, dateStr), false)
+            }
         }
         AlertDialog(onDismissRequest = { saveError = null }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(errorTitle, fontWeight = FontWeight.Bold) }, text = { Text(errorText) },
             confirmButton = { Button(onClick = { saveError = null }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(R.string.accept)) } },
