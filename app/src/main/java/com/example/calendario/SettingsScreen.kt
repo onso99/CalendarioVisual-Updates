@@ -58,15 +58,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,6 +81,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
@@ -121,6 +115,7 @@ fun SettingsScreen(
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
+    val scope = rememberCoroutineScope()
 
     var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano")) }
     var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano")) }
@@ -136,6 +131,7 @@ fun SettingsScreen(
     var pendingHolidaysUri by remember { mutableStateOf<Uri?>(null) }
     var showPermissionsDialog by remember { mutableStateOf(false) }
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
+    var showFrequencyDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -324,6 +320,9 @@ fun SettingsScreen(
 
     val originalAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) }
     val originalSnoozeInterval = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) }
+    val originalAutoBackup = remember { appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) }
+    val originalBackupFreq = remember { appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "daily") ?: "daily" }
+    val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
@@ -337,6 +336,8 @@ fun SettingsScreen(
     
     var pendingAlarmOffset by remember { mutableFloatStateOf(originalAlarmOffset.toFloat()) }
     var pendingSnoozeInterval by remember { mutableFloatStateOf(originalSnoozeInterval.toFloat()) }
+    var pendingAutoBackup by remember { mutableStateOf(originalAutoBackup) }
+    var pendingBackupFreq by remember { mutableStateOf(originalBackupFreq) }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
@@ -354,7 +355,9 @@ fun SettingsScreen(
                     pendingFontFamily != originalFontFamily ||
                     pendingFontBold != originalFontBold ||
                     pendingAlarmOffset.roundToInt() != originalAlarmOffset ||
-                    pendingSnoozeInterval.roundToInt() != originalSnoozeInterval
+                    pendingSnoozeInterval.roundToInt() != originalSnoozeInterval ||
+                    pendingAutoBackup != originalAutoBackup ||
+                    pendingBackupFreq != originalBackupFreq
         }
     }
 
@@ -402,7 +405,11 @@ fun SettingsScreen(
                                 putString(AppConstants.KEY_START_OF_WEEK, pendingStartOfWeekKey)
                                 putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, pendingAlarmOffset.roundToInt())
                                 putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, pendingSnoozeInterval.roundToInt())
+                                putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, pendingAutoBackup)
+                                putString(AppConstants.KEY_BACKUP_FREQUENCY, pendingBackupFreq)
                             }
+                            if (pendingAutoBackup) BackupScheduler.scheduleBackup(context, pendingBackupFreq)
+                            else BackupScheduler.cancelBackup(context)
                             widgetPrefs.edit {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
                                 putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, pendingTextBoost)
@@ -593,7 +600,6 @@ fun SettingsScreen(
             // --- 5. Backup Section ---
             SectionTitle(text = stringResource(id = R.string.backup_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                // Fila de Vinculación de Cuenta
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
                 
                 if (accountEmail == null) {
@@ -611,6 +617,57 @@ fun SettingsScreen(
                         detail = accountEmail
                     ) {
                         showUnlinkAccountDialog = true
+                    }
+                    
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                    
+                    val freqLabel = when(pendingBackupFreq) {
+                        "daily" -> stringResource(R.string.frequency_daily)
+                        "weekly" -> stringResource(R.string.frequency_weekly)
+                        "monthly" -> stringResource(R.string.frequency_monthly)
+                        else -> pendingBackupFreq
+                    }
+                    SettingsRow(stringResource(id = R.string.backup_frequency), freqLabel) {
+                        showFrequencyDialog = true
+                    }
+                    
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                    
+                    // Sincronizar Ahora con información de última copia integrada
+                    val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
+                                 else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                                    .withZone(java.time.ZoneId.systemDefault())
+                                    .format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
+                    
+                    ActionRow(
+                        text = stringResource(id = R.string.sync_now),
+                        detail = stringResource(R.string.last_backup, lastStr)
+                    ) {
+                        scope.launch {
+                            val account = GoogleSignIn.getLastSignedInAccount(context)
+                            if (account != null) {
+                                // 1. Poblar con datos frescos del sistema antes de subir
+                                val selectedIds = withContext(kotlinx.coroutines.Dispatchers.IO) { loadSelectedCalendarIds(context) }
+                                if (selectedIds.isNotEmpty()) {
+                                    val freshEvents = withContext(kotlinx.coroutines.Dispatchers.IO) { 
+                                        readFestivosFromCalendarsSync(context, selectedIds) 
+                                    }
+                                    withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                        saveHistoryToDisk(context, freshEvents.values.flatten())
+                                    }
+                                }
+
+                                // 2. Subir a Drive
+                                val success = GoogleDriveHelper(context, account).uploadHistoryFile()
+                                if (success) {
+                                    appPrefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) }
+                                    permissionsUpdateTrigger++
+                                    Toast.makeText(context, "Sincronizado con éxito", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Error de Drive. Verifica tu cuenta.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
                     }
                 }
                 
@@ -647,6 +704,13 @@ fun SettingsScreen(
     if (showStartDayOfWeekDialog) { StartDayOfWeekDialog(currentSelectionKey = pendingStartOfWeekKey, onOptionSelected = { pendingStartOfWeekKey = it; showStartDayOfWeekDialog = false }, onDismiss = { showStartDayOfWeekDialog = false }) }
     if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onOptionSelected = { pendingFontFamily = it; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
     if (showBundledThemesDialog) { BundledThemesDialog(currentThemeName = lightThemeName, onDismiss = { showBundledThemesDialog = false }, onThemeSelected = { theme -> showBundledThemesDialog = false; val manifest = JSONObject(theme["themeManifest"] as Map<*, *>); val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }; val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }; ThemePersistence.applyTheme(context, ParsedTheme(manifest, lightTheme, darkTheme), manifest.optString("name", "")); onThemeImported() }) }
+    if (showFrequencyDialog) {
+        BackupFrequencyDialog(
+            selection = pendingBackupFreq,
+            onSelected = { pendingBackupFreq = it; showFrequencyDialog = false },
+            onDismiss = { showFrequencyDialog = false }
+        )
+    }
     if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; showWidgetEventColorPalette = false }) }
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
@@ -846,6 +910,58 @@ private fun PermissionsDialog(
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(id = R.string.close), color = CalendarioTheme.colors.textSystem)
+            }
+        }
+    )
+}
+
+@Composable
+private fun SettingsRow(label: String, value: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
+        Text(value, color = CalendarioTheme.colors.textSystem.copy(0.7f), fontSize = 16.sp)
+    }
+}
+
+@Composable
+private fun BackupFrequencyDialog(
+    selection: String,
+    onSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val options = listOf("daily" to R.string.frequency_daily, "weekly" to R.string.frequency_weekly, "monthly" to R.string.frequency_monthly)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                options.forEach { (key, labelRes) ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelected(key) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                        if (key == selection) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
             }
         }
     )
