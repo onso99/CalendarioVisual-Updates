@@ -104,6 +104,7 @@ enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
 fun SettingsScreen(
     onBackPress: () -> Unit,
     themeManager: ThemeManager,
+    viewModel: CalendarioViewModel, // Cambiado para recibir el ViewModel
     onColorThemeClick: () -> Unit,
     onHolidayManagerClick: () -> Unit,
     onRefreshData: () -> Unit,
@@ -112,6 +113,7 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val typography = MaterialTheme.typography
+    val uiState by viewModel.uiState.collectAsState() // Observar estado del ViewModel
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
@@ -633,39 +635,23 @@ fun SettingsScreen(
                     
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                     
-                    // Sincronizar Ahora con información de última copia integrada
+                    // Sincronizar Ahora con información de carga
                     val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
                                  else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
                                     .withZone(java.time.ZoneId.systemDefault())
                                     .format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
                     
                     ActionRow(
-                        text = stringResource(id = R.string.sync_now),
-                        detail = stringResource(R.string.last_backup, lastStr)
+                        text = if (uiState.isSyncing) "Sincronizando..." else stringResource(id = R.string.sync_now),
+                        detail = stringResource(R.string.last_backup, lastStr),
+                        isLoading = uiState.isSyncing
                     ) {
-                        scope.launch {
-                            val account = GoogleSignIn.getLastSignedInAccount(context)
-                            if (account != null) {
-                                // 1. Poblar con datos frescos del sistema antes de subir
-                                val selectedIds = withContext(kotlinx.coroutines.Dispatchers.IO) { loadSelectedCalendarIds(context) }
-                                if (selectedIds.isNotEmpty()) {
-                                    val freshEvents = withContext(kotlinx.coroutines.Dispatchers.IO) { 
-                                        readFestivosFromCalendarsSync(context, selectedIds) 
-                                    }
-                                    withContext(kotlinx.coroutines.Dispatchers.IO) {
-                                        saveHistoryToDisk(context, freshEvents.values.flatten())
-                                    }
-                                }
-
-                                // 2. Subir a Drive
-                                val success = GoogleDriveHelper(context, account).uploadHistoryFile()
-                                if (success) {
-                                    appPrefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) }
-                                    permissionsUpdateTrigger++
-                                    Toast.makeText(context, "Sincronizado con éxito", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, "Error de Drive. Verifica tu cuenta.", Toast.LENGTH_SHORT).show()
-                                }
+                        viewModel.syncHistoryToDrive(context) { success ->
+                            if (success) {
+                                permissionsUpdateTrigger++
+                                Toast.makeText(context, "Sincronizado con éxito", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Error de Drive. Verifica tu cuenta.", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }

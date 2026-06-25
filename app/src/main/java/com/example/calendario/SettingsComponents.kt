@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,18 +66,27 @@ internal fun WidgetSectionTitle() {
 }
 
 @Composable
-internal fun ActionRow(text: String, detail: String? = null, onClick: () -> Unit) {
+internal fun ActionRow(
+    text: String, 
+    detail: String? = null, 
+    isLoading: Boolean = false, 
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 52.dp)
-            .clickable(onClick = onClick)
+            .clickable(enabled = !isLoading, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-            Text(text, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+            Text(
+                text = text, 
+                color = if (isLoading) CalendarioTheme.colors.textSystem.copy(alpha = 0.4f) else CalendarioTheme.colors.textSystem, 
+                fontSize = 16.sp
+            )
             if (detail != null) {
                 Text(
                     text = detail,
@@ -86,12 +97,21 @@ internal fun ActionRow(text: String, detail: String? = null, onClick: () -> Unit
                 )
             }
         }
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-            modifier = Modifier.size(24.dp)
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = CalendarioTheme.colors.cabecera,
+                strokeWidth = 2.5.dp,
+                strokeCap = StrokeCap.Round
+            )
+        } else {
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }
 

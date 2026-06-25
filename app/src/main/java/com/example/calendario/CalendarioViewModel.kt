@@ -24,7 +24,8 @@ data class CalendarioUiState(
     val selectedCalendarIds: Set<Long> = emptySet(),
     val hasCalendarPermission: Boolean = false,
     val favoriteCalendarId: Long? = null,
-    val importedEvent: Festivo? = null
+    val importedEvent: Festivo? = null,
+    val isSyncing: Boolean = false
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -214,5 +215,41 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     fun consumeImportedEvent() {
         _uiState.update { it.copy(importedEvent = null) }
+    }
+
+    fun syncHistoryToDrive(context: Context, onComplete: (Boolean) -> Unit) {
+        if (_uiState.value.isSyncing) return
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSyncing = true) }
+            
+            val success = withContext(Dispatchers.IO) {
+                try {
+                    val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
+                    if (account == null) return@withContext false
+
+                    // 1. Asegurar datos frescos
+                    val selectedIds = loadSelectedCalendarIds(context)
+                    if (selectedIds.isNotEmpty()) {
+                        val freshEvents = readFestivosFromCalendarsSync(context, selectedIds)
+                        saveHistoryToDisk(context, freshEvents.values.flatten())
+                    }
+
+                    // 2. Subida real
+                    GoogleDriveHelper(context, account).uploadHistoryFile()
+                } catch (e: Exception) {
+                    Log.e("ViewModel", "Sync error", e)
+                    false
+                }
+            }
+
+            if (success) {
+                val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                prefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) }
+            }
+
+            _uiState.update { it.copy(isSyncing = false) }
+            onComplete(success)
+        }
     }
 }

@@ -328,6 +328,7 @@ fun CalendarioScreen(
                 onThemeUpdated()
             },
             themeManager = themeManager,
+            viewModel = viewModel,
             onColorThemeClick = { showColorThemeScreen = true },
             onHolidayManagerClick = { 
                 holidayForManager = null
