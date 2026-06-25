@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.calendario
 
 import android.Manifest
@@ -7,6 +9,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.api.services.drive.DriveScopes
+import com.google.android.gms.common.api.Scope
 
 enum class PermissionStatus {
     GRANTED,
@@ -14,6 +19,12 @@ enum class PermissionStatus {
 }
 
 object PermissionChecker {
+
+    fun getGoogleDriveStatus(context: Context): PermissionStatus {
+        val account = GoogleSignIn.getLastSignedInAccount(context)
+        val hasScope = account != null && GoogleSignIn.hasPermissions(account, Scope(DriveScopes.DRIVE_APPDATA))
+        return if (hasScope) PermissionStatus.GRANTED else PermissionStatus.DENIED
+    }
 
     fun getCalendarStatus(context: Context): PermissionStatus {
         val hasRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED

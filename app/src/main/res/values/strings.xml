@@ -248,6 +248,24 @@
     <string name="fix_permission">AJUSTES</string>
     <string name="history">Historial</string>
 
+    <!-- Google Drive Backup -->
+    <string name="google_drive_permission_label">Google Drive: copia de seguridad en la nube</string>
+    <string name="link_google_account">Vincular cuenta de Google</string>
+    <string name="account_linked">Cuenta vinculada</string>
+    <string name="unlink_google_account">Desvincular cuenta</string>
+    <string name="unlink_account_confirmation">¿Desvincular cuenta de Google? Se detendrán las copias de seguridad automáticas en la nube.</string>
+    <string name="unlink_action">DESVINCULAR</string>
+    <string name="google_drive_status">Estado de Google Drive</string>
+    <string name="auto_backup">Autoguardado en Drive</string>
+    <string name="backup_frequency">Frecuencia de copia</string>
+    <string name="frequency_daily">Diaria</string>
+    <string name="frequency_weekly">Semanal</string>
+    <string name="frequency_monthly">Mensual</string>
+    <string name="sync_now">Sincronizar ahora</string>
+    <string name="last_backup">Última copia: %s</string>
+    <string name="never">Nunca</string>
+    <string name="connect_google_drive">CONECTAR</string>
+
     <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">cumpleaños,cumple,aniversario,onomástica</string>
     <string name="greeting_keywords">feliz,felicidades,felicitamos,felicitaciones</string>

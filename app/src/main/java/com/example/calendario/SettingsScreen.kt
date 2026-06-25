@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.calendario
 
 import android.app.Activity
@@ -83,6 +85,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.DriveScopes
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
@@ -114,6 +120,7 @@ fun SettingsScreen(
     val typography = MaterialTheme.typography
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
+    var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
 
     var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano")) }
     var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano")) }
@@ -128,6 +135,7 @@ fun SettingsScreen(
     var showImportHolidaysDialog by remember { mutableStateOf(false) }
     var pendingHolidaysUri by remember { mutableStateOf<Uri?>(null) }
     var showPermissionsDialog by remember { mutableStateOf(false) }
+    var showUnlinkAccountDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -250,6 +258,23 @@ fun SettingsScreen(
         }
     )
 
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                if (task.isSuccessful) {
+                    val account = task.result
+                    appPrefs.edit { putString("google_account_email", account?.email) }
+                    permissionsUpdateTrigger++
+                    Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Error al vincular cuenta", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    )
+
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
     val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
@@ -338,7 +363,6 @@ fun SettingsScreen(
     }
 
     // --- Lógica de Refresco de Permisos al volver de Ajustes ---
-    var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     
     androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
@@ -354,10 +378,11 @@ fun SettingsScreen(
     val calStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getCalendarStatus(context) }
     val notifStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getNotificationsStatus(context) }
     val alarmStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getAlarmsStatus(context) }
+    val driveStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getGoogleDriveStatus(context) }
 
     val permissionPointColor = when {
         calStatus == PermissionStatus.DENIED -> Color.Red
-        notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
+        notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED || driveStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
         else -> Color.Green
     }
 
@@ -568,6 +593,28 @@ fun SettingsScreen(
             // --- 5. Backup Section ---
             SectionTitle(text = stringResource(id = R.string.backup_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                // Fila de Vinculación de Cuenta
+                val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
+                
+                if (accountEmail == null) {
+                    ActionRow(text = stringResource(id = R.string.link_google_account)) {
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestEmail()
+                            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
+                            .build()
+                        val client = GoogleSignIn.getClient(context, gso)
+                        googleSignInLauncher.launch(client.signInIntent)
+                    }
+                } else {
+                    ActionRow(
+                        text = stringResource(id = R.string.account_linked),
+                        detail = accountEmail
+                    ) {
+                        showUnlinkAccountDialog = true
+                    }
+                }
+                
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ActionRow(text = stringResource(id = R.string.export_full_backup)) { val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json") }; exportFullBackupLauncher.launch(intent) }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ActionRow(text = stringResource(id = R.string.import_full_backup)) { val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }; importFullBackupLauncher.launch(intent) }
@@ -604,17 +651,58 @@ fun SettingsScreen(
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
     if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.discard)) } }, dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }) }
+    if (showUnlinkAccountDialog) {
+        AlertDialog(
+            onDismissRequest = { showUnlinkAccountDialog = false },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.unlink_account_confirmation)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+                        GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener {
+                            appPrefs.edit { remove("google_account_email") }
+                            permissionsUpdateTrigger++
+                            showUnlinkAccountDialog = false
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(stringResource(id = R.string.unlink_action), color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUnlinkAccountDialog = false }) {
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+                }
+            }
+        )
+    }
+
     if (showPermissionsDialog) {
         PermissionsDialog(
             calStatus = calStatus,
             notifStatus = notifStatus,
             alarmStatus = alarmStatus,
+            driveStatus = driveStatus,
             onDismiss = { showPermissionsDialog = false },
-            onFix = { _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", context.packageName, null)
+            onFix = { type ->
+                if (type == "drive") {
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail()
+                        .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
+                        .build()
+                    val client = GoogleSignIn.getClient(context, gso)
+                    googleSignInLauncher.launch(client.signInIntent)
+                } else {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
                 }
-                context.startActivity(intent)
             }
         )
     }
@@ -737,6 +825,7 @@ private fun PermissionsDialog(
     calStatus: PermissionStatus,
     notifStatus: PermissionStatus,
     alarmStatus: PermissionStatus,
+    driveStatus: PermissionStatus,
     onDismiss: () -> Unit,
     onFix: (String) -> Unit
 ) {
@@ -751,6 +840,7 @@ private fun PermissionsDialog(
                 PermissionRow(stringResource(id = R.string.calendar_permission_label), calStatus) { onFix("calendar") }
                 PermissionRow(stringResource(id = R.string.notifications_permission_label), notifStatus) { onFix("notifications") }
                 PermissionRow(stringResource(id = R.string.alarms_permission_label), alarmStatus) { onFix("alarms") }
+                PermissionRow(stringResource(id = R.string.google_drive_permission_label), driveStatus) { onFix("drive") }
             }
         },
         confirmButton = {
