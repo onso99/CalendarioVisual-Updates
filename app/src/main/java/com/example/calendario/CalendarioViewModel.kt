@@ -44,9 +44,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             viewModelScope.launch {
                 val context = getApplication<Application>()
                 _uiState.value = CalendarioUiState() // Clear all data
-                saveEventsToPrefs(context, emptyMap())
+                saveHistoryToDisk(context, emptyList())
                 saveSelectedCalendarIds(context, emptySet())
-                setFavoriteCalendar(null) // Clear favorite
+                setFavoriteCalendar(null)
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             }
         }
@@ -67,7 +67,26 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             try {
-                val initialEvents = loadEventsFromPrefs(context)
+                // --- PASO 0: CARGA ULTRA-INSTANTÁNEA (JSON + Migración) ---
+                var cachedHistory = withContext(Dispatchers.IO) { loadHistoryFromDisk(context) }
+                
+                // MIGRACIÓN: Si el histórico está vacío, rescatamos de Prefs antiguos
+                if (cachedHistory.isEmpty()) {
+                    val oldPrefsEvents = loadEventsFromPrefs(context)
+                    if (oldPrefsEvents.isNotEmpty()) {
+                        cachedHistory = oldPrefsEvents.values.flatten()
+                        viewModelScope.launch(Dispatchers.IO) { saveHistoryToDisk(context, cachedHistory) }
+                    }
+                }
+                
+                if (cachedHistory.isNotEmpty()) {
+                    _uiState.update { it.copy(
+                        eventsByDate = cachedHistory.groupBy { it.date },
+                        hasCalendarPermission = true
+                    ) }
+                }
+
+                // --- PASO 1: TAREAS DE SISTEMA (Calendarios disponibles) ---
                 var selectedIds = loadSelectedCalendarIds(context)
                 var favoriteId = getFavoriteCalendarId(context)
                 val availableCalendars = loadAvailableCalendarsSuspend(context)
@@ -87,14 +106,24 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
 
-                val finalEvents = if (validSelectedIds.isNotEmpty()) {
+                // --- PASO 2: SINCRONIZACIÓN CON EL SISTEMA ---
+                val systemEventsMap = if (validSelectedIds.isNotEmpty()) {
                     readFestivosFromCalendarsSuspend(context, validSelectedIds)
                 } else {
-                    initialEvents
+                    emptyMap()
+                }
+                val systemEvents = systemEventsMap.values.flatten()
+
+                // Fusionar y actualizar el histórico acumulativo
+                val finalEventsList = (systemEvents + cachedHistory)
+                    .distinctBy { "${it.id}_${it.date}_${it.title}" }
+                
+                viewModelScope.launch(Dispatchers.IO) {
+                    saveHistoryToDisk(context, finalEventsList)
                 }
 
                 _uiState.value = CalendarioUiState(
-                    eventsByDate = finalEvents,
+                    eventsByDate = finalEventsList.groupBy { it.date },
                     availableCalendars = availableCalendars,
                     selectedCalendarIds = validSelectedIds,
                     hasCalendarPermission = true,
@@ -104,10 +133,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 if (validSelectedIds != selectedIds) {
                     saveSelectedCalendarIds(context, validSelectedIds)
                 }
-                if (finalEvents != initialEvents) {
-                    saveEventsToPrefs(context, finalEvents)
-                }
-
+                
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
 
             } catch (e: Exception) {
@@ -123,7 +149,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             return
         }
         try {
-            withContext(Dispatchers.IO) { // Ensure suspend function is called from a coroutine
+            withContext(Dispatchers.IO) { 
                 val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
                 if (_uiState.value.availableCalendars != freshAvailableCalendars) {
                     _uiState.update { it.copy(availableCalendars = freshAvailableCalendars) }
@@ -144,7 +170,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     selectedCalendarIds = newSelectedIds
                 )
             }
-            saveEventsToPrefs(context, newEvents)
+            // Guardar en histórico JSON
+            withContext(Dispatchers.IO) {
+                saveHistoryToDisk(context, newEvents.values.flatten())
+            }
             saveSelectedCalendarIds(context, newSelectedIds)
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         }
@@ -171,7 +200,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val favoriteId = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
             if (favoriteId != -1L) favoriteId else null
         } catch (_: ClassCastException) {
-            // Resiliencia: si el tipo es incorrecto (ej. Integer), intentar conversión manual
             when (val value = prefs.all[AppConstants.KEY_FAVORITE_CALENDAR_ID]) {
                 is Number -> value.toLong().takeIf { it != -1L }
                 is String -> value.toLongOrNull()?.takeIf { it != -1L }

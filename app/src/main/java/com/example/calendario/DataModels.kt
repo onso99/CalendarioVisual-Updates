@@ -32,6 +32,7 @@ data class FestivoDto(
     val title: String?,
     val description: String?,
     val id: Long,
+    val calendarId: Long? = 0L,
     val startTimeStr: String?,
     val endTimeStr: String?,
     val isAllDay: Boolean,

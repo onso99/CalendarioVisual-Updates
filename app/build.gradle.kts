@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-// Configuración de Kotlin (Fuera del bloque android para evitar advertencias de scope)
+// Configuración de Kotlin
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
@@ -21,7 +21,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 37
         versionCode = 2
-        versionName = "1.970.17"
+        versionName = "1.98.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

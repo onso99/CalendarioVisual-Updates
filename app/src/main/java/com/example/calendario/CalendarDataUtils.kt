@@ -12,6 +12,7 @@ import androidx.core.database.getStringOrNull
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -19,37 +20,96 @@ import java.time.ZoneId
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-// --- PERSISTENCIA ---
+// --- PERSISTENCIA HISTÓRICA (JSON) ---
+
+private const val HISTORY_FILE_NAME = "calendar_history_v2.json"
+
+fun saveHistoryToDisk(context: Context, events: List<Festivo>) {
+    try {
+        val gson = Gson()
+        val json = gson.toJson(events.map { it.toDto() })
+        context.openFileOutput(HISTORY_FILE_NAME, Context.MODE_PRIVATE).use {
+            it.write(json.toByteArray())
+        }
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error saving history", e)
+    }
+}
+
+fun loadHistoryFromDisk(context: Context): List<Festivo> {
+    return try {
+        val file = context.getFileStreamPath(HISTORY_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        val json = context.openFileInput(HISTORY_FILE_NAME).bufferedReader().use { it.readText() }
+        val type = object : TypeToken<List<FestivoDto>>() {}.type
+        val dtos: List<FestivoDto> = Gson().fromJson(json, type) ?: emptyList()
+        dtos.map { it.toFestivo() }
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error loading history", e)
+        emptyList()
+    }
+}
+
+// --- CONVERSORES DTO ---
+
+fun Festivo.toDto() = FestivoDto(
+    id = this.id,
+    calendarId = this.calendarId,
+    title = this.title,
+    description = this.description,
+    startTimeStr = this.startTime?.toString(),
+    endTimeStr = this.endTime?.toString(),
+    isAllDay = this.isAllDay,
+    rrule = this.rrule,
+    age = this.age,
+    isBirthday = this.isBirthday,
+    isFromHolidaySource = this.isFromHolidaySource,
+    isLongPeriod = this.isLongPeriod,
+    lane = this.lane,
+    totalDays = this.totalDays,
+    currentDay = this.currentDay,
+    customColor = this.customColor,
+    fullStartMillis = this.fullStartMillis,
+    fullEndMillis = this.fullEndMillis,
+    repeatCount = this.repeatCount
+)
+
+fun FestivoDto.toFestivo() = Festivo(
+    id = this.id,
+    calendarId = this.calendarId ?: 0L,
+    title = this.title ?: "",
+    description = this.description,
+    date = LocalDate.now(),
+    startTime = this.startTimeStr?.let { LocalTime.parse(it) },
+    endTime = this.endTimeStr?.let { LocalTime.parse(it) },
+    isAllDay = this.isAllDay,
+    isFromHolidaySource = this.isFromHolidaySource ?: false,
+    rrule = this.rrule,
+    age = this.age,
+    isBirthday = this.isBirthday ?: false,
+    isLongPeriod = this.isLongPeriod ?: false,
+    lane = this.lane,
+    totalDays = this.totalDays ?: 1,
+    currentDay = this.currentDay ?: 1,
+    customColor = this.customColor,
+    fullStartMillis = this.fullStartMillis,
+    fullEndMillis = this.fullEndMillis,
+    repeatCount = this.repeatCount
+).let { 
+    if (this.fullStartMillis != null) {
+        it.copy(date = Instant.ofEpochMilli(this.fullStartMillis).atZone(ZoneId.systemDefault()).toLocalDate())
+    } else it
+}
+
+// --- PERSISTENCIA COMPATIBILIDAD (SharedPreferences) ---
 
 fun saveEventsToPrefs(context: Context, eventsMap: Map<LocalDate, List<Festivo>>) {
     val prefs = context.getSharedPreferences("events_prefs", Context.MODE_PRIVATE)
     val gson = Gson()
     val dtoMap = eventsMap.mapKeys { it.key.toString() }.mapValues { entry ->
-        entry.value.map { festivo ->
-            FestivoDto(
-                id = festivo.id,
-                title = festivo.title,
-                description = festivo.description,
-                startTimeStr = festivo.startTime?.toString(),
-                endTimeStr = festivo.endTime?.toString(),
-                isAllDay = festivo.isAllDay,
-                rrule = festivo.rrule,
-                age = festivo.age,
-                isBirthday = festivo.isBirthday,
-                isFromHolidaySource = festivo.isFromHolidaySource,
-                isLongPeriod = festivo.isLongPeriod,
-                lane = festivo.lane,
-                totalDays = festivo.totalDays,
-                currentDay = festivo.currentDay,
-                customColor = festivo.customColor,
-                fullStartMillis = festivo.fullStartMillis,
-                fullEndMillis = festivo.fullEndMillis,
-                repeatCount = festivo.repeatCount
-            )
-        }
+        entry.value.map { it.toDto() }
     }
-    val json = gson.toJson(dtoMap)
-    prefs.edit { putString("events", json) }
+    prefs.edit { putString("events", gson.toJson(dtoMap)) }
 }
 
 fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
@@ -66,30 +126,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     return dtoMap.mapNotNull { (dateStr, dtoList) ->
         val date = try { LocalDate.parse(dateStr) } catch (_: Exception) { null }
         date?.let { validDate ->
-            validDate to dtoList.map { dto ->
-                Festivo(
-                    id = dto.id,
-                    title = dto.title ?: "",
-                    description = dto.description,
-                    date = validDate,
-                    startTime = dto.startTimeStr?.let { LocalTime.parse(it) },
-                    endTime = dto.endTimeStr?.let { LocalTime.parse(it) },
-                    isAllDay = dto.isAllDay,
-                    calendarId = -1L,
-                    rrule = dto.rrule,
-                    age = dto.age,
-                    isBirthday = dto.isBirthday ?: false,
-                    isFromHolidaySource = dto.isFromHolidaySource ?: false,
-                    isLongPeriod = dto.isLongPeriod ?: false,
-                    lane = dto.lane,
-                    totalDays = dto.totalDays ?: 1,
-                    currentDay = dto.currentDay ?: 1,
-                    customColor = dto.customColor,
-                    fullStartMillis = dto.fullStartMillis,
-                    fullEndMillis = dto.fullEndMillis,
-                    repeatCount = dto.repeatCount
-                )
-            }
+            validDate to dtoList.map { it.toFestivo().copy(date = validDate) }
         }
     }.toMap()
 }
@@ -168,15 +205,10 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
     val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
     val gson = Gson()
-    
-    // Unicidad inteligente:
-    // 1. Si es manual (eventId null): La clave es Fecha + Título
-    // 2. Si es excepción (eventId != null): La clave es Fecha + ID Evento
     val uniqueAdjustments = adjustments.distinctBy { 
         if (it.originalEventId != null) "${it.date}_ID_${it.originalEventId}"
         else "${it.date}_TITLE_${it.title}"
     }
-
     val dtoList = uniqueAdjustments.map { adj ->
         HolidayAdjustmentDto(
             dateStr = adj.date.toString(),
@@ -225,10 +257,8 @@ fun importHolidaysFromJson(context: Context, uri: Uri, replace: Boolean): Boolea
             val json = inputStream.bufferedReader().use { it.readText() }
             val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
             val importedDtoList: List<HolidayAdjustmentDto> = Gson().fromJson(json, type)
-            
             val currentYear = LocalDate.now().year
             val currentAdjustments = loadHolidayAdjustments(context)
-            
             val importedAdjustments = importedDtoList.mapNotNull { dto ->
                 val date = LocalDate.parse(dto.dateStr)
                 if (date.year == currentYear) {
@@ -240,17 +270,10 @@ fun importHolidaysFromJson(context: Context, uri: Uri, replace: Boolean): Boolea
                     )
                 } else null
             }
-            
-            val finalList = if (replace) {
-                importedAdjustments
-            } else {
-                // Modo MEZCLAR: El usuario actual tiene preferencia.
+            val finalList = if (replace) importedAdjustments else {
                 val currentDates = currentAdjustments.map { it.date }.toSet()
-                val newOnly = importedAdjustments.filter { it.date !in currentDates }
-                currentAdjustments + newOnly
+                currentAdjustments + importedAdjustments.filter { it.date !in currentDates }
             }
-
-            // Guardamos
             saveHolidayAdjustments(context, finalList)
             true
         } ?: false
@@ -267,8 +290,6 @@ fun readFestivosFromCalendarsSync(
     selectedCalendarIds: Set<Long>
 ): Map<LocalDate, List<Festivo>> {
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
-    
-    // 0. Cargamos los ajustes de festivos (Manuales y Excepciones)
     val holidayAdjustments = loadHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
     val manualHolidays = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }
@@ -287,27 +308,19 @@ fun readFestivosFromCalendarsSync(
             CalendarContract.Instances.ORGANIZER
         )
         val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
-        
-        // Mapa temporal para evitar duplicados durante la fragmentación
-        // Clave: eventId + hora_inicio
         val tempInstancesMap = mutableMapOf<String, Map<String, Any>>()
-
-        // CONSULTA FRAGMENTADA: +- 2 años en bloques de 3 meses (16 peticiones)
         var windowStart = today.minusYears(2)
         val totalEnd = today.plusYears(2)
         
         while (windowStart.isBefore(totalEnd)) {
             val windowEnd = windowStart.plusMonths(3).run { if (isAfter(totalEnd)) totalEnd else this }
-            
             val startMillis = windowStart.atStartOfDay(systemZoneId).toInstant().toEpochMilli()
             val endMillis = windowEnd.atStartOfDay(systemZoneId).toInstant().toEpochMilli()
-            
             val instancesUri = CalendarContract.Instances.CONTENT_URI.buildUpon().run {
                 ContentUris.appendId(this, startMillis)
                 ContentUris.appendId(this, endMillis)
                 build()
             }
-            
             resolver.query(instancesUri, instancesProjection, selection, null, null)?.use { cursor ->
                 val evIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
                 val calIdCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.CALENDAR_ID)
@@ -320,10 +333,8 @@ fun readFestivosFromCalendarsSync(
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(evIdCol)
                     if (workingDayIds.contains(eventId)) continue
-
                     val startM = cursor.getLong(beginCol)
                     val uniqueKey = "${eventId}_${startM}"
-                    
                     if (!tempInstancesMap.containsKey(uniqueKey)) {
                         tempInstancesMap[uniqueKey] = mapOf(
                             "eventId" to eventId,
@@ -342,7 +353,6 @@ fun readFestivosFromCalendarsSync(
 
         if (tempInstancesMap.isNotEmpty()) {
             val tempInstancesData = tempInstancesMap.values
-            // 2. Cargamos metadatos en BLOQUES (Mantenemos tu lógica de chunking de 400)
             val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
             val rruleMap = mutableMapOf<Long, String>()
             val birthYearMap = mutableMapOf<Long, Int>()
@@ -366,29 +376,18 @@ fun readFestivosFromCalendarsSync(
 
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(idCol)
-
                         if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
                         if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
-                        
-                        // Prioridad 1: Nuestra base de datos interna (SharedPreferences)
-                        // Prioridad 2: Color del sistema Android
                         val internalColor = if (internalColorsPrefs.contains(id.toString())) internalColorsPrefs.getInt(id.toString(), 0) else null
                         val systemColor = if (colorCol != -1 && !cursor.isNull(colorCol)) cursor.getInt(colorCol) else null
-                        
                         customColorMap[id] = internalColor ?: systemColor
-                        
                         val s1 = if (s1Col != -1) cursor.getStringOrNull(s1Col)?.lowercase() ?: "" else ""
                         val s2 = if (s2Col != -1) cursor.getStringOrNull(s2Col) ?: "" else ""
                         val pkg = if (pkgCol != -1) cursor.getStringOrNull(pkgCol)?.lowercase() ?: "" else ""
                         val org = if (orgCol != -1) cursor.getStringOrNull(orgCol)?.lowercase() ?: "" else ""
-
-                        if (pkg.contains("contacts") || org.contains("contacts") || s1.contains("birthday") || pkg.contains("gms") || org.contains("contacts@google.com")) {
-                            technicalBirthdayIds.add(id)
-                        }
-
+                        if (pkg.contains("contacts") || org.contains("contacts") || s1.contains("birthday") || pkg.contains("gms") || org.contains("contacts@google.com")) technicalBirthdayIds.add(id)
                         var bYear: Int? = null
                         if (s2.length >= 4) bYear = Regex("\\b(19|20)\\d{2}\\b").find(s2)?.value?.toIntOrNull()
-                        
                         if ((bYear == null || bYear < 1850) && startCol != -1) {
                             val dtStartValue = cursor.getLong(startCol)
                             val year = Instant.ofEpochMilli(dtStartValue).atZone(ZoneId.of("UTC")).toLocalDate().year
@@ -401,38 +400,24 @@ fun readFestivosFromCalendarsSync(
 
             val birthdayKeywords = context.getString(R.string.birthday_keywords).split(",").map { it.trim().lowercase() }
             val greetingKeywords = context.getString(R.string.greeting_keywords).split(",").map { it.trim().lowercase() }
-
-            // --- ASIGNACIÓN DE CARRILES PARA PERIODOS LARGOS ---
-            val laneAssignments = mutableMapOf<String, Int>() // Clave: eventId_beginMillis
+            val laneAssignments = mutableMapOf<String, Int>()
             val laneOccupancy = mutableMapOf<LocalDate, BooleanArray>()
 
-            // Primero identificamos todos los eventos que son periodos largos (> 1 día)
             val multiDayInstances = tempInstancesData.mapNotNull { data ->
                 val beginMillis = data["begin"] as Long
                 val endMillis = data["end"] as Long
                 val isAllDay = data["isAllDay"] as Boolean
-                
-                // Para eventos "Todo el día", usamos UTC para evitar saltos de día por zona horaria
                 val startZdt = if (isAllDay) Instant.ofEpochMilli(beginMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId)
                 val endZdt = if (isAllDay) Instant.ofEpochMilli(endMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(endMillis).atZone(systemZoneId)
-                
                 val startDate = startZdt.toLocalDate()
                 var endDate = endZdt.toLocalDate()
-                if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) {
-                    endDate = endDate.minusDays(1)
-                }
-
-                // EXCLUSIÓN: Solo periodos que duren más de un día
+                if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) endDate = endDate.minusDays(1)
                 if (endDate.isAfter(startDate)) {
                     val eventId = data["eventId"] as Long
                     val organizer = data["organizer"] as String
                     val title = (data["title"] as String).lowercase()
-                    
-                    // Comprobación rápida de si es festivo o cumpleaños para no asignarle carril
                     val isHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
-                    val isBirthday = (technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || 
-                                     (isAllDay && birthdayKeywords.any { title.contains(it) }))
-                    
+                    val isBirthday = (technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || (isAllDay && birthdayKeywords.any { title.contains(it) }))
                     if (!isHoliday && !isBirthday) {
                         val uniqueKey = "${eventId}_${beginMillis}"
                         Triple(uniqueKey, startDate, endDate)
@@ -440,25 +425,17 @@ fun readFestivosFromCalendarsSync(
                 } else null
             }.sortedWith(compareBy({ it.second }, { it.third }, { it.first }))
 
-            // Asignamos carriles (0 a 4) siguiendo la regla: el primero que empieza, ocupa el primer carril libre
             multiDayInstances.forEach { (uniqueKey, start, end) ->
                 var chosenLane = -1
                 for (l in 0..4) {
                     var isFree = true
                     var d = start
                     while (!d.isAfter(end)) {
-                        if (laneOccupancy[d]?.get(l) == true) {
-                            isFree = false
-                            break
-                        }
+                        if (laneOccupancy[d]?.get(l) == true) { isFree = false; break }
                         d = d.plusDays(1)
                     }
-                    if (isFree) {
-                        chosenLane = l
-                        break
-                    }
+                    if (isFree) { chosenLane = l; break }
                 }
-
                 if (chosenLane != -1) {
                     laneAssignments[uniqueKey] = chosenLane
                     var d = start
@@ -469,39 +446,27 @@ fun readFestivosFromCalendarsSync(
                 }
             }
 
-            // 3. Procesamos instancias y aplicamos lógica final
             tempInstancesData.forEach { data ->
                 val eventId = data["eventId"] as Long
                 val calendarId = data["calendarId"] as Long
                 val title = data["title"] as String
-                val titleLower = title.lowercase()
                 val beginMillis = data["begin"] as Long
                 val endMillis = data["end"] as Long
                 val isAllDay = data["isAllDay"] as Boolean
                 val organizer = data["organizer"] as String
-                
                 val startZdt = if (isAllDay) Instant.ofEpochMilli(beginMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(beginMillis).atZone(systemZoneId)
                 val endZdt = if (isAllDay) Instant.ofEpochMilli(endMillis).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(endMillis).atZone(systemZoneId)
                 val startDate = startZdt.toLocalDate()
                 var endDate = endZdt.toLocalDate()
-
-                // Ajuste para eventos que terminan a las 00:00 (se consideran del día anterior)
-                if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) {
-                    endDate = endDate.minusDays(1)
-                }
-
+                if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) endDate = endDate.minusDays(1)
                 val startTime = if (isAllDay) null else startZdt.toLocalTime()
                 val endTime = if (isAllDay) null else endZdt.toLocalTime()
-
                 val isFromHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
-                
-                val hasBirthdayWord = birthdayKeywords.any { titleLower.contains(it) }
-                val hasGreetingWord = greetingKeywords.any { titleLower.contains(it) }
-                
+                val hasBirthdayWord = birthdayKeywords.any { title.lowercase().contains(it) }
+                val hasGreetingWord = greetingKeywords.any { title.lowercase().contains(it) }
                 val finalIsBirthday = (isTechnicalBirthday || (isAllDay && (hasBirthdayWord || hasGreetingWord))) && !isFromHoliday
                 var birthYear = birthYearMap[eventId]
-                
                 if (finalIsBirthday) {
                     if (hasGreetingWord && !isTechnicalBirthday) birthYear = null
                     if (birthYear == null) {
@@ -511,40 +476,25 @@ fun readFestivosFromCalendarsSync(
                     }
                     if (birthYear != null && birthYear >= startDate.year) birthYear = null
                 }
-
                 val uniqueKey = "${eventId}_${beginMillis}"
                 val assignedLane = laneAssignments[uniqueKey]
                 val assignedRrule = rruleMap[eventId]
-                
-                // Extraer COUNT de la RRULE si existe
-                val extractedCount = assignedRrule?.let { rrule ->
-                    if (rrule.contains("COUNT=")) {
-                        rrule.substringAfter("COUNT=").substringBefore(";").toIntOrNull()
-                    } else null
-                }
-
-                // Un periodo largo real NO debe ser ni cumpleaños ni festivo
+                val extractedCount = assignedRrule?.let { if (it.contains("COUNT=")) it.substringAfter("COUNT=").substringBefore(";").toIntOrNull() else null }
                 val isLongPeriod = endDate.isAfter(startDate) && !finalIsBirthday && !isFromHoliday
                 val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
-
                 var currentLoopDate = startDate
                 var dayIndex = 1
                 while (!currentLoopDate.isAfter(endDate)) {
-                    val currentStartTime = if (currentLoopDate == startDate) startTime else null
-                    val currentEndTime = if (currentLoopDate == endDate) endTime else null
-                    val currentIsAllDay = isAllDay || (currentLoopDate != startDate && currentLoopDate != endDate)
                     val age = if (finalIsBirthday && birthYear != null) (currentLoopDate.year - birthYear) else null
-
                     finalMap.getOrPut(currentLoopDate) { mutableListOf() }.add(Festivo(
                         id = eventId, title = title, description = descMap[eventId],
-                        date = currentLoopDate, startTime = currentStartTime, endTime = currentEndTime,
-                        isAllDay = currentIsAllDay, calendarId = calendarId, isFromHolidaySource = isFromHoliday,
+                        date = currentLoopDate, startTime = if (currentLoopDate == startDate) startTime else null, 
+                        endTime = if (currentLoopDate == endDate) endTime else null,
+                        isAllDay = isAllDay || (currentLoopDate != startDate && currentLoopDate != endDate),
+                        calendarId = calendarId, isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday,
                         isLongPeriod = isLongPeriod, lane = assignedLane, totalDays = totalDaysCount, currentDay = dayIndex,
-                        customColor = customColorMap[eventId],
-                        fullStartMillis = beginMillis,
-                        fullEndMillis = endMillis,
-                        repeatCount = extractedCount
+                        customColor = customColorMap[eventId], fullStartMillis = beginMillis, fullEndMillis = endMillis, repeatCount = extractedCount
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)
                     dayIndex++
@@ -553,37 +503,20 @@ fun readFestivosFromCalendarsSync(
         }
     }
 
-    // 4. Inyectamos los Festivos Manuales del Gestor (Solo para el año en curso)
-    val currentYear = today.year
     manualHolidays.forEach { manual ->
-        if (manual.date.year == currentYear) {
+        if (manual.date.year == today.year) {
             finalMap.getOrPut(manual.date) { mutableListOf() }.add(Festivo(
                 id = -100L - manual.date.toEpochDay() - manual.title.hashCode().toLong(),
-                title = manual.title,
-                description = "Festivo manual",
-                date = manual.date,
-                startTime = null,
-                endTime = null,
-                isAllDay = true,
-                calendarId = -1L,
-                isFromHolidaySource = true,
-                rrule = null,
-                age = null,
-                isBirthday = false
+                title = manual.title, description = "Festivo manual", date = manual.date,
+                startTime = null, endTime = null, isAllDay = true, calendarId = -1L,
+                isFromHolidaySource = true, rrule = null, age = null, isBirthday = false
             ))
         }
     }
     
-    // 5. Ordenación Final: Eventos de día completo > Hora inicio > Título
     finalMap.values.forEach { list ->
-        list.sortWith(
-            compareBy<Festivo> { !it.isAllDay }
-                .thenBy { it.startTime }
-                .thenBy { it.title }
-        )
+        list.sortWith(compareBy<Festivo> { !it.isAllDay }.thenBy { it.startTime }.thenBy { it.title })
     }
-    
-    LogCollector.addLog("MOTOR: Carga finalizada con ${finalMap.values.flatten().size} eventos (+- 2 años)")
     return finalMap
 }
 
