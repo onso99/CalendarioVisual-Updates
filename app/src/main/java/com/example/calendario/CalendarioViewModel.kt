@@ -25,7 +25,8 @@ data class CalendarioUiState(
     val hasCalendarPermission: Boolean = false,
     val favoriteCalendarId: Long? = null,
     val importedEvent: Festivo? = null,
-    val isSyncing: Boolean = false
+    val isSyncing: Boolean = false,
+    val isRestoring: Boolean = false
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -115,9 +116,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
                 val systemEvents = systemEventsMap.values.flatten()
 
-                // Fusionar y actualizar el histórico acumulativo
-                val finalEventsList = (systemEvents + cachedHistory)
-                    .distinctBy { "${it.id}_${it.date}_${it.title}" }
+                // Aplicar Ventana de Coherencia (-1 año a +5 años)
+                val finalEventsList = mergeHistoryWithSystem(cachedHistory, systemEvents)
                 
                 viewModelScope.launch(Dispatchers.IO) {
                     saveHistoryToDisk(context, finalEventsList)
@@ -164,16 +164,21 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     fun updateCalendarData(newEvents: Map<LocalDate, List<Festivo>>, newAvailable: List<CalendarInfo>, newSelectedIds: Set<Long>) {
         viewModelScope.launch {
             val context = getApplication<Application>()
+            
+            // Cargar histórico actual para no perder el pasado remoto
+            val cachedHistory = withContext(Dispatchers.IO) { loadHistoryFromDisk(context) }
+            val mergedEvents = mergeHistoryWithSystem(cachedHistory, newEvents.values.flatten())
+
             _uiState.update {
                 it.copy(
-                    eventsByDate = newEvents,
+                    eventsByDate = mergedEvents.groupBy { it.date },
                     availableCalendars = newAvailable,
                     selectedCalendarIds = newSelectedIds
                 )
             }
-            // Guardar en histórico JSON
+            // Guardar en histórico JSON respetando coherencia
             withContext(Dispatchers.IO) {
-                saveHistoryToDisk(context, newEvents.values.flatten())
+                saveHistoryToDisk(context, mergedEvents)
             }
             saveSelectedCalendarIds(context, newSelectedIds)
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
@@ -228,11 +233,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
                     if (account == null) return@withContext false
 
-                    // 1. Asegurar datos frescos
+                    // 1. Asegurar datos frescos respetando coherencia
                     val selectedIds = loadSelectedCalendarIds(context)
                     if (selectedIds.isNotEmpty()) {
                         val freshEvents = readFestivosFromCalendarsSync(context, selectedIds)
-                        saveHistoryToDisk(context, freshEvents.values.flatten())
+                        val cachedHistory = loadHistoryFromDisk(context)
+                        val merged = mergeHistoryWithSystem(cachedHistory, freshEvents.values.flatten())
+                        saveHistoryToDisk(context, merged)
                     }
 
                     // 2. Subida real
@@ -251,5 +258,56 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             _uiState.update { it.copy(isSyncing = false) }
             onComplete(success)
         }
+    }
+
+    fun restoreHistoryFromDrive(context: Context, onComplete: (Boolean) -> Unit) {
+        if (_uiState.value.isRestoring) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRestoring = true) }
+
+            val success = withContext(Dispatchers.IO) {
+                try {
+                    val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
+                    if (account == null) return@withContext false
+
+                    // 1. Descargar y sobrescribir el JSON local
+                    val downloaded = GoogleDriveHelper(context, account).downloadHistoryFile()
+                    
+                    if (downloaded) {
+                        // 2. Forzar refresco de datos para que el motor "Caché First" lea el nuevo JSON
+                        // y lo fusione con el sistema.
+                        true
+                    } else {
+                        false
+                    }
+                } catch (e: Exception) {
+                    Log.e("ViewModel", "Restore error", e)
+                    false
+                }
+            }
+
+            if (success) {
+                refreshData() // Recargar la UI con los nuevos datos
+            }
+
+            _uiState.update { it.copy(isRestoring = false) }
+            onComplete(success)
+        }
+    }
+
+    private fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> {
+        val today = LocalDate.now()
+        val windowStart = today.minusYears(1)
+        val windowEnd = today.plusYears(5)
+
+        // Conservar solo lo que está fuera de la ventana de Google (-1 año a +5 años)
+        val historyOutsideWindow = cachedHistory.filter { 
+            it.date.isBefore(windowStart) || it.date.isAfter(windowEnd) 
+        }
+
+        // Fusionar con lo que Google dice hoy (Verdad absoluta en el rango de ventana)
+        return (systemEvents + historyOutsideWindow)
+            .distinctBy { "${it.id}_${it.date}_${it.title}" }
     }
 }

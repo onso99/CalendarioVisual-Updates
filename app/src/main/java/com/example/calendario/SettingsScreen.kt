@@ -134,6 +134,7 @@ fun SettingsScreen(
     var showPermissionsDialog by remember { mutableStateOf(false) }
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
+    var showRestoreDriveDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -655,6 +656,17 @@ fun SettingsScreen(
                             }
                         }
                     }
+
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                    // Restaurar desde Drive con información de carga
+                    ActionRow(
+                        text = if (uiState.isRestoring) "Restaurando..." else stringResource(id = R.string.restore_from_drive),
+                        detail = stringResource(id = R.string.restore_from_drive_detail),
+                        isLoading = uiState.isRestoring
+                    ) {
+                        showRestoreDriveDialog = true
+                    }
                 }
                 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
@@ -701,6 +713,39 @@ fun SettingsScreen(
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
     if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.discard)) } }, dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }) }
+    if (showRestoreDriveDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestoreDriveDialog = false },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.restore_confirm_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.restore_confirm_message)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showRestoreDriveDialog = false
+                        viewModel.restoreHistoryFromDrive(context) { success ->
+                            if (success) {
+                                Toast.makeText(context, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                ) {
+                    Text(stringResource(id = R.string.restore_from_drive))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRestoreDriveDialog = false }) {
+                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+                }
+            }
+        )
+    }
+
     if (showUnlinkAccountDialog) {
         AlertDialog(
             onDismissRequest = { showUnlinkAccountDialog = false },

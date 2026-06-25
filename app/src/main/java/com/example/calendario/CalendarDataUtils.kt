@@ -309,8 +309,8 @@ fun readFestivosFromCalendarsSync(
         )
         val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
         val tempInstancesMap = mutableMapOf<String, Map<String, Any>>()
-        var windowStart = today.minusYears(2)
-        val totalEnd = today.plusYears(2)
+        var windowStart = today.minusYears(1)
+        val totalEnd = today.plusYears(5)
         
         while (windowStart.isBefore(totalEnd)) {
             val windowEnd = windowStart.plusMonths(3).run { if (isAfter(totalEnd)) totalEnd else this }

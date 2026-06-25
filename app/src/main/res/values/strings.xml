@@ -262,6 +262,12 @@
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensual</string>
     <string name="sync_now">Sincronizar ahora</string>
+    <string name="restore_from_drive">Restaurar desde Drive</string>
+    <string name="restore_from_drive_detail">Recupera tu historial desde la nube</string>
+    <string name="restore_confirm_title">¿Restaurar historial?</string>
+    <string name="restore_confirm_message">Se reemplazarán los eventos guardados localmente por la copia de Google Drive. Los eventos actuales del sistema no se verán afectados.</string>
+    <string name="restore_success">Historial restaurado con éxito</string>
+    <string name="restore_error">No se encontró una copia válida en Drive</string>
     <string name="last_backup">Última copia: %s</string>
     <string name="never">Nunca</string>
     <string name="connect_google_drive">CONECTAR</string>
