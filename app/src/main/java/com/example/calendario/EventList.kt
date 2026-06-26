@@ -222,18 +222,26 @@ fun MonthlyEventList(
                                             }
                                         }
                                     }
-                                    val showAlarmIcon = remember(festivo.id, date) { 
-                                        AlarmUtils.shouldShowAlarmIcon(context, festivo) 
+                                    val alarmTime = remember(festivo.id, date) { 
+                                        AlarmUtils.getAlarmTimeString(context, festivo) 
                                     }
-                                    if (showAlarmIcon) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Notifications,
-                                            contentDescription = stringResource(id = R.string.alarm),
-                                            tint = iconColor,
-                                            modifier = Modifier
-                                                .padding(start = 8.dp)
-                                                .size(16.dp)
-                                        )
+                                    if (alarmTime != null) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Notifications,
+                                                contentDescription = stringResource(id = R.string.alarm),
+                                                tint = iconColor,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Text(
+                                                text = " $alarmTime",
+                                                color = iconColor,
+                                                fontSize = 12.sp
+                                            )
+                                        }
                                     }
                                     if (festivo.rrule != null) {
                                         Icon(

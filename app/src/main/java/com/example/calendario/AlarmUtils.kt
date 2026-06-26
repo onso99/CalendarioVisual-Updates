@@ -248,4 +248,17 @@ object AlarmUtils {
         // Solo mostramos si la alarma está en el futuro
         return alarmDateTime.isAfter(LocalDateTime.now())
     }
+
+    fun getAlarmTimeString(context: Context, event: Festivo): String? {
+        val offset = getAlarmOffset(context, event.id) ?: return null
+        
+        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+            event.date.atStartOfDay()
+        } else {
+            LocalDateTime.of(event.date, event.startTime)
+        }.withSecond(0).withNano(0)
+
+        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+        return alarmDateTime.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+    }
 }

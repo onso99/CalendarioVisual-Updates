@@ -160,9 +160,20 @@ class CalendarWidgetFactory(
         if (showAlarmIcon) {
             views.setViewVisibility(R.id.widget_item_alarm_icon, View.VISIBLE)
             views.setInt(R.id.widget_item_alarm_icon, "setColorFilter", currentTextColor)
+            
+            val alarmTime = AlarmUtils.getAlarmTimeString(context, actualEvent)
+            if (alarmTime != null) {
+                views.setViewVisibility(R.id.widget_item_alarm_time, View.VISIBLE)
+                views.setTextViewText(R.id.widget_item_alarm_time, applyFontStyles(alarmTime))
+                views.setTextColor(R.id.widget_item_alarm_time, currentTextColor)
+            } else {
+                views.setViewVisibility(R.id.widget_item_alarm_time, View.GONE)
+            }
         } else {
-            // Usamos INVISIBLE en lugar de GONE para que la columna de descripción mantenga su ancho fijo
+            // Usamos INVISIBLE para el icono y GONE para el texto
+            // Esto reserva el espacio de la campana y mantiene el título alineado
             views.setViewVisibility(R.id.widget_item_alarm_icon, View.INVISIBLE)
+            views.setViewVisibility(R.id.widget_item_alarm_time, View.GONE)
         }
 
         val fillInIntent = Intent()
