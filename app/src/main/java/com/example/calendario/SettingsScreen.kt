@@ -468,10 +468,29 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 4. NÚMERO DE SEMANA (Switch al final)
+                // 4. NÚMERO DE SEMANA
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Switch(checked = pendingShowWeekNumber, onCheckedChange = { pendingShowWeekNumber = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
+                }
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // 5. GUARDAR / CARGAR AJUSTES
+                ActionRow(text = stringResource(id = R.string.save_settings_aspect)) { 
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
+                    }
+                    exportFullBackupLauncher.launch(intent) 
+                }
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                ActionRow(text = stringResource(id = R.string.load_settings_aspect)) { 
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json" 
+                    }
+                    importFullBackupLauncher.launch(intent) 
                 }
             }
 
@@ -662,17 +681,11 @@ fun SettingsScreen(
                     // Restaurar desde Drive con información de carga
                     ActionRow(
                         text = if (uiState.isRestoring) "Restaurando..." else stringResource(id = R.string.restore_from_drive),
-                        detail = stringResource(id = R.string.restore_from_drive_detail),
                         isLoading = uiState.isRestoring
                     ) {
                         showRestoreDriveDialog = true
                     }
                 }
-                
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(text = stringResource(id = R.string.export_full_backup)) { val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "copia_seguridad_calendario.json") }; exportFullBackupLauncher.launch(intent) }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(text = stringResource(id = R.string.import_full_backup)) { val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }; importFullBackupLauncher.launch(intent) }
             }
 
             // --- About Section ---
