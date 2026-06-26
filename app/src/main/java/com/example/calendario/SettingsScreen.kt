@@ -81,8 +81,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
@@ -117,10 +115,8 @@ fun SettingsScreen(
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
-    val scope = rememberCoroutineScope()
 
     var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano")) }
-    var darkThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano")) }
 
     // --- Dialog States ---
     var showThemeDialog by remember { mutableStateOf(false) }
@@ -139,7 +135,6 @@ fun SettingsScreen(
     // --- Launchers ---
     val onThemeImported = {
         lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
-        darkThemeName = appPrefs.getString(AppConstants.KEY_DARK_THEME_NAME, null)
         onThemeUpdated()
     }
 
