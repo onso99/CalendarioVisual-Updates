@@ -469,7 +469,17 @@ fun SettingsScreen(
                 // 4. NÚMERO DE SEMANA
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Switch(checked = pendingShowWeekNumber, onCheckedChange = { pendingShowWeekNumber = it }, colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)))
+                    Switch(
+                        checked = pendingShowWeekNumber,
+                        onCheckedChange = { pendingShowWeekNumber = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = CalendarioTheme.colors.cabecera,
+                            checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
+                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+                        )
+                    )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
@@ -515,7 +525,18 @@ fun SettingsScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
                     Text(text = stringResource(id = R.string.alarm_offset_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(value = pendingAlarmOffset, onValueChange = { pendingAlarmOffset = it }, valueRange = 0f..60f, steps = 11, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                        Slider(
+                            value = pendingAlarmOffset,
+                            onValueChange = { pendingAlarmOffset = it },
+                            valueRange = 0f..60f,
+                            steps = 11,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                            )
+                        )
                         Text(text = pendingAlarmOffset.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
@@ -523,7 +544,18 @@ fun SettingsScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp)) {
                     Text(text = stringResource(id = R.string.snooze_interval_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(value = pendingSnoozeInterval, onValueChange = { pendingSnoozeInterval = it }, valueRange = 5f..30f, steps = 4, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                        Slider(
+                            value = pendingSnoozeInterval,
+                            onValueChange = { pendingSnoozeInterval = it },
+                            valueRange = 5f..30f,
+                            steps = 4,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                            )
+                        )
                         Text(text = pendingSnoozeInterval.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
@@ -544,7 +576,18 @@ fun SettingsScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
                     Text(text = stringResource(id = R.string.widget_event_count), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it }, valueRange = 1f..12f, steps = 10, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                        Slider(
+                            value = pendingEventCount,
+                            onValueChange = { pendingEventCount = it },
+                            valueRange = 1f..12f,
+                            steps = 10,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                            )
+                        )
                         Text(text = pendingEventCount.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
@@ -553,7 +596,18 @@ fun SettingsScreen(
                     val textBoostLabel = if (pendingTextBoost.roundToInt() > 0) "+${pendingTextBoost.roundToInt()}" else pendingTextBoost.roundToInt().toString()
                     Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it }, valueRange = -4f..4f, steps = 7, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)))
+                        Slider(
+                            value = pendingTextBoost,
+                            onValueChange = { pendingTextBoost = it },
+                            valueRange = -4f..4f,
+                            steps = 7,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                            )
+                        )
                         Text(text = textBoostLabel, modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }

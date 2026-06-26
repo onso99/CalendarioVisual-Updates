@@ -235,8 +235,11 @@ fun HolidayManagerScreen(
                         checked = isHoliday,
                         onCheckedChange = { isHoliday = it },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = if (isHoliday) festivoColor else CalendarioTheme.colors.cabecera,
-                            checkedTrackColor = (if (isHoliday) festivoColor else CalendarioTheme.colors.cabecera).copy(alpha = 0.54f)
+                            checkedThumbColor = festivoColor,
+                            checkedTrackColor = festivoColor.copy(alpha = 0.54f),
+                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
                         )
                     )
                 }
