@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.calendario
 
 import android.app.Application
@@ -26,7 +28,7 @@ data class CalendarioUiState(
     val favoriteCalendarId: Long? = null,
     val importedEvent: Festivo? = null,
     val isSyncing: Boolean = false,
-    val isRestoring: Boolean = false
+    val isRestoring: Boolean = false,
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -96,19 +98,21 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 val availableCalendars = loadAvailableCalendarsSuspend(context)
 
                 val favoriteExists = availableCalendars.any { it.id == favoriteId }
-                if ((favoriteId == null || !favoriteExists) && availableCalendars.any { it.canModify }) {
+                if (((favoriteId == null) || !favoriteExists) && availableCalendars.any { it.canModify }) {
                     findBestCalendarCandidate(availableCalendars)?.id?.let {
                         favoriteId = it
                         setFavoriteCalendar(it)
                     }
                 }
 
-                if (favoriteId != null && !selectedIds.contains(favoriteId)) {
+                if ((favoriteId != null) && !selectedIds.contains(favoriteId)) {
                     selectedIds = selectedIds.toMutableSet().apply { add(favoriteId) }
                     saveSelectedCalendarIds(context, selectedIds)
                 }
 
-                val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
+                val validSelectedIds = selectedIds.asSequence()
+                    .filter { sid -> availableCalendars.any { cal -> cal.id == sid } }
+                    .toSet()
 
                 // --- PASO 2: SINCRONIZACIÓN CON EL SISTEMA ---
                 val systemEventsMap = if (validSelectedIds.isNotEmpty()) {
@@ -171,11 +175,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val cachedHistory = withContext(Dispatchers.IO) { loadHistoryFromDisk(context) }
             val mergedEvents = mergeHistoryWithSystem(cachedHistory, newEvents.values.flatten())
 
-            _uiState.update {
-                it.copy(
+            _uiState.update { state ->
+                state.copy(
                     eventsByDate = mergedEvents.groupBy { it.date },
                     availableCalendars = newAvailable,
-                    selectedCalendarIds = newSelectedIds
+                    selectedCalendarIds = newSelectedIds,
                 )
             }
             // Guardar en histórico JSON respetando coherencia
