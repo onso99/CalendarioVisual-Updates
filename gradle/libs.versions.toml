@@ -14,6 +14,10 @@ activityKtx = "1.13.0"
 gson = "2.14.0"
 workRuntimeKtx = "2.11.2"
 viewModel = "2.10.0"
+playServicesAuth = "21.6.0"
+googleApiClientAndroid = "2.9.0"
+googleApiServicesDrive = "v3-rev20260428-2.0.0"
+googleHttpClientGson = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +44,10 @@ androidx-material-icons-core = { group = "androidx.compose.material", name = "ma
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "viewModel" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewModel" }
+playServicesAuth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+googleApiClient = { group = "com.google.api-client", name = "google-api-client-android", version.ref = "googleApiClientAndroid" }
+googleDriveApi = { group = "com.google.apis", name = "google-api-services-drive", version.ref = "googleApiServicesDrive" }
+googleHttpClient = { group = "com.google.http-client", name = "google-http-client-gson", version.ref = "googleHttpClientGson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

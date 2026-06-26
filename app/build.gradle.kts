@@ -21,7 +21,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 37
         versionCode = 2
-        versionName = "1.98.9"
+        versionName = "1.98.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,8 +91,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     // Google Drive & Auth
-    implementation("com.google.android.gms:play-services-auth:21.3.0")
-    implementation("com.google.api-client:google-api-client-android:1.35.0")
-    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
-    implementation("com.google.http-client:google-http-client-gson:1.42.3")
+    implementation(libs.playServicesAuth)
+    implementation(libs.googleApiClient)
+    implementation(libs.googleDriveApi)
+    implementation(libs.googleHttpClient)
 }
