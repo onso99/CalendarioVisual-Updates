@@ -82,10 +82,12 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
                 
                 if (cachedHistory.isNotEmpty()) {
-                    _uiState.update { it.copy(
-                        eventsByDate = cachedHistory.groupBy { it.date },
-                        hasCalendarPermission = true
-                    ) }
+                    _uiState.update { state -> 
+                        state.copy(
+                            eventsByDate = cachedHistory.groupBy { it.date },
+                            hasCalendarPermission = true
+                        ) 
+                    }
                 }
 
                 // --- PASO 1: TAREAS DE SISTEMA (Calendarios disponibles) ---
@@ -231,7 +233,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val success = withContext(Dispatchers.IO) {
                 try {
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
-                    if (account == null) return@withContext false
+                        ?: return@withContext false
 
                     // 1. Asegurar datos frescos respetando coherencia
                     val selectedIds = loadSelectedCalendarIds(context)
@@ -269,18 +271,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val success = withContext(Dispatchers.IO) {
                 try {
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
-                    if (account == null) return@withContext false
+                        ?: return@withContext false
 
                     // 1. Descargar y sobrescribir el JSON local
-                    val downloaded = GoogleDriveHelper(context, account).downloadHistoryFile()
-                    
-                    if (downloaded) {
-                        // 2. Forzar refresco de datos para que el motor "Caché First" lea el nuevo JSON
-                        // y lo fusione con el sistema.
-                        true
-                    } else {
-                        false
-                    }
+                    GoogleDriveHelper(context, account).downloadHistoryFile()
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Restore error", e)
                     false

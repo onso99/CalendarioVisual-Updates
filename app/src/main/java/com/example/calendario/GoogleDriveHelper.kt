@@ -12,7 +12,6 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
-import java.io.FileOutputStream
 import java.util.Collections
 
 class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccount) {
@@ -77,7 +76,6 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             if (files.isNullOrEmpty()) return@withContext false
 
             val driveFileId = files[0].id
-            val historyFile = context.getFileStreamPath("calendar_history_v2.json")
 
             context.openFileOutput("calendar_history_v2.json", Context.MODE_PRIVATE).use { outputStream ->
                 driveService.files().get(driveFileId).executeMediaAndDownloadTo(outputStream)
