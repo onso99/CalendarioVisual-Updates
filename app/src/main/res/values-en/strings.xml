@@ -3,9 +3,9 @@
     <string name="calendar_widget_description">Displays your upcoming calendar events</string>
     <string name="permission_calendar_select">Calendar permission is required to select calendars.</string>
     <string name="permission_calendar_write">Permission to write to the calendar is required to create events.</string>
-    <string name="back_to_monthly_view">Back to Monthly View</string>
-    <string name="back_to_current_month">Back to Current Month</string>
-    <string name="create_event">Create Event</string>
+    <string name="back_to_monthly_view">Back to monthly view</string>
+    <string name="back_to_current_month">Back to current month</string>
+    <string name="create_event">Create event</string>
     <string name="search">Search</string>
     <string name="menu">Menu</string>
     <string name="calendars">Calendars</string>
@@ -14,8 +14,8 @@
     <string name="events_of_month">Events %1$s</string>
     <string name="all">All</string>
     <string name="pending">Pending</string>
-    <string name="delete_recurring_event_title">Delete Recurring Event</string>
-    <string name="delete_single_event_option">Delete this event only</string>
+    <string name="delete_recurring_event_title">Delete recurring event</string>
+    <string name="delete_single_event_option">Delete only this event</string>
     <string name="delete_all_events_option">Delete all events in the series</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
@@ -23,7 +23,7 @@
     <string name="no_calendars_found">No available calendars found.</string>
     <string name="read_only">(Read-only)</string>
     <string name="apply">Apply</string>
-    <string name="add_event">Add Event</string>
+    <string name="add_event">Add event</string>
     <string name="no_title">(No title)</string>
     <string name="all_day">(All day)</string>
     <string name="no_detailed_events">No events with details.</string>
@@ -34,9 +34,9 @@
     <string name="accept">Accept</string>
     <string name="select_mode_title">Select Mode</string>
     <string name="custom_selected">Selected</string>
-    <string name="confirm_deletion_title">Confirm Deletion</string>
+    <string name="confirm_deletion_title">Confirm deletion</string>
     <string name="confirm_deletion_message">Are you sure you want to delete this event: \"%1$s\"?</string>
-    <string name="repeat_event_title">Repeat Event</string>
+    <string name="repeat_event_title">Repeat event</string>
     <string name="repeat_until">Ends</string>
     <string name="repeat_indefinite">Indefinitely</string>
     <string name="repeat_on_date">Until date</string>
@@ -45,18 +45,18 @@
     <string name="long_period_switch">Long period</string>
     <string name="date">Date</string>
     <string name="end_time">End</string>
-    <string name="lanes_full_error">The day %1 has exceeded the limit of 5 long events. Try creating normal events with repetition.</string>
+    <string name="lanes_full_error">Day %1$s has exceeded the limit of 5 long events. Try creating normal events with repetition.</string>
     <string name="select_calendar_title">Select Calendar</string>
-    <string name="select_time_title">Select Time</string>
+    <string name="select_time_title">Select time</string>
     <string name="does_not_repeat">Does not repeat</string>
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
     <string name="every_month">Every month</string>
     <string name="every_year">Every year</string>
-    <string name="edit_event">Edit Event</string>
-    <string name="new_event">New Event</string>
+    <string name="edit_event">Edit event</string>
+    <string name="new_event">New event</string>
     <string name="back">Back</string>
-    <string name="delete_event">Delete Event</string>
+    <string name="delete_event">Delete event</string>
     <string name="title">Title</string>
     <string name="no_editable_calendars">No editable calendars</string>
     <string name="select_calendar">Select calendar</string>
@@ -70,18 +70,18 @@
     <string name="from">From:</string>
     <string name="to">To:</string>
     <string name="save">Save</string>
-    <string name="end_time_before_start_time_error">End time cannot be earlier than start time</string>
+    <string name="end_time_before_start_time_error">End time cannot be before start time</string>
     <string name="system_default">System</string>
     <string name="monday">Monday</string>
     <string name="sunday">Sunday</string>
     <string name="saturday">Saturday</string>
     <string name="theme_imported_successfully">Theme imported successfully.</string>
-    <string name="error_reading_theme_file">Error reading the theme file.</string>
-    <string name="error_saving_theme_file">Error saving the theme file.</string>
+    <string name="error_reading_theme_file">Error reading theme file.</string>
+    <string name="error_saving_theme_file">Error saving theme file.</string>
     <string name="apply_changes">Apply changes</string>
     <string name="general">General</string>
     <string name="mode">Mode</string>
-    <string name="start_of_week">Week start</string>
+    <string name="start_of_week">Start of week</string>
     <string name="week_in_year_view">Week number</string>
     <string name="customize_theme">Style</string>
     <string name="customize_colors">Customize colors</string>
@@ -91,7 +91,7 @@
     <string name="widget_text_adjustment">Text adjustment</string>
     <string name="background_color">Background color</string>
     <string name="event_color">Event color</string>
-    <string name="today_event_color">Today events</string>
+    <string name="today_event_color">Today\'s events</string>
     <string name="about">About</string>
     <string name="discard_changes_title">Discard changes</string>
     <string name="discard_changes_confirmation">You have unsaved changes. Are you sure you want to discard them?</string>
@@ -99,20 +99,20 @@
     <string name="export_theme_title">Save Theme</string>
     <string name="theme_name">Theme name</string>
     <string name="export">Save</string>
-    <string name="help_section_calendar_views">Calendar View</string>
-    <string name="help_calendar_views_1">The application has two main views: Monthly and Annual. You can switch between them by tapping on the year in the header.</string>
-    <string name="help_calendar_views_2">In the monthly view, swipe left or right to change months. The top-left arrow in the header will return to the current month.</string>
-    <string name="help_section_event_management">Event Management</string>
-    <string name="help_event_management_1">Tap on a day in the monthly calendar to see its events or add a new one. Events can also be created by tapping the (+) icon in the header.</string>
+    <string name="help_section_calendar_views">Calendar view</string>
+    <string name="help_calendar_views_1">The application has two main views: Monthly and Yearly. You can switch between them by tapping on the year in the header.</string>
+    <string name="help_calendar_views_2">In the monthly view, swipe left or right to change the month. The upper left arrow in the header will return to the current month.</string>
+    <string name="help_section_event_management">Event management</string>
+    <string name="help_event_management_1">Tap on a day in the monthly calendar to see its events or add a new one. Events can also be created by tapping on the (+) icon in the header.</string>
     <string name="help_event_management_2">Events (single or repeated) can be edited and deleted in any calendar that is editable.</string>
-    <string name="help_section_event_list">Event List</string>
-    <string name="help_event_list_1">Below the monthly calendar, the list of events for the month is displayed. For the current month, you can choose to view Pending or All events by tapping the Pending-All button. Each event in the list can be edited and deleted.</string>
-    <string name="help_section_customization">Personalization</string>
-    <string name="help_customization_1">From the Settings menu, you can choose Light and Dark mode. You can also customize the interface colors and Import and Export color themes to share them.</string>
+    <string name="help_section_event_list">Event list</string>
+    <string name="help_event_list_1">Below the monthly calendar, the list of events for the month is displayed. For the current month, you can choose between seeing Pending or All events by tapping on the Pending-All button. Each event in the list can be edited and deleted.</string>
+    <string name="help_section_customization">Customization</string>
+    <string name="help_customization_1">From the Settings menu you can choose Light and Dark mode. You can also customize the interface colors and Import and Export color themes to share them.</string>
     <string name="help_section_holiday_manager">Holiday Manager</string>
-    <string name="help_holiday_manager_1">This feature allows you to manually mark specific days as holidays or working days, regardless of the system calendar or imported events. When a day is marked as a holiday, its number will be highlighted in the corresponding color in the monthly and yearly views.</string>
+    <string name="help_holiday_manager_1">This feature allows you to manually mark specific days as holidays or working days, regardless of what the system calendar or imported events indicate. When marking a day as a holiday, its number will be highlighted in the corresponding color in the monthly and yearly views.</string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">The application includes a Widget for the Home screen that displays upcoming events. You can customize its appearance by choosing the number of events to display, changing the font size, and modifying its colors.</string>
+    <string name="help_widget_1">The application includes a Widget for the Home screen that shows upcoming events. You can customize its appearance by choosing the number of events to show, changing the font size and modifying its colors.</string>
     <string name="copied_to_clipboard">Copied: %1$s</string>
     <string name="event_color_label">Event color:</string>
     <string name="keyword">Keyword</string>
@@ -132,46 +132,46 @@
     <string name="repeated_event">Repeated event</string>
     <string name="no_pending_events_this_month">No pending events for this month.</string>
     <string name="no_events_this_month">No events for this month.</string>
+    <string name="widget_no_events">No events</string>
     <string name="monthly_calendar">Monthly Calendar</string>
     <string name="theme_exported_successfully">Theme exported successfully</string>
     <string name="error_exporting_theme">Error exporting theme: %1$s</string>
     <string name="widget">Widget</string>
-    <string name="could_not_read_file">Could not read the file.</string>
+    <string name="could_not_read_file">Could not read file.</string>
     <string name="error_processing_theme">Error processing theme: %1$s</string>
     <string name="incompatible_theme_file">Incompatible theme file.</string>
-    <string name="file_contains_no_theme">The file contains neither a light nor a dark theme.</string>
+    <string name="file_contains_no_theme">The file contains neither light nor dark theme.</string>
     <string name="invalid_json_file">The file is not a valid JSON.</string>
     <string name="invalid_color_in_theme">The theme contains an invalid color in \"%1$s\".</string>
     <string name="light_theme">Light</string>
     <string name="dark_theme">Dark</string>
-    <string name="header_background">Header Background</string>
-    <string name="screen_background">Screen Background</string>
+    <string name="header_background">Header background</string>
+    <string name="screen_background">Screen background</string>
     <string name="sundays_and_holidays">Sundays/Holidays</string>
     <string name="today_highlight_list">Today\'s events</string>
     <string name="birthdays">Birthdays</string>
     <string name="event_1">Event-1</string>
     <string name="event_2">Event-2</string>
-    <string name="calendar_background">Calendar Background</string>
+    <string name="calendar_background">Calendar background</string>
     <string name="effect">Effect</string>
-    <string name="current_month_cell">Month Cell</string>
+    <string name="current_month_cell">Current month cell</string>
     <string name="calendar_source">Calendar: %1$s</string>
-    <string name="widget_no_events">No events</string>
     <string name="predefined_themes">Themes</string>
     <string name="themes_v6">Themes</string>
 
     <string name="permission_denied_title">Permission Denied</string>
-    <string name="permission_denied_text">Cannot save event because the application does not have permission to write to the calendar. Please grant the permission from the application settings.</string>
+    <string name="permission_denied_text">Cannot save event because the application does not have permission to write to the calendar. Please grant permission from application settings.</string>
     <string name="go_to_settings">Go to Settings</string>
     <string name="error">Error</string>
-    <string name="no_calendar_selected_error">No calendar has been selected. Please choose a calendar to save the event.</string>
-    <string name="title_empty_error">The title cannot be empty. Please enter a title for the event.</string>
+    <string name="no_calendar_selected_error">No calendar selected. Please choose a calendar to save the event.</string>
+    <string name="title_empty_error">Title cannot be empty. Please enter a title for the event.</string>
 
     <string name="event_saved_successfully">Event saved</string>
-    <string name="error_saving_event">Error saving event. Check the selected calendars.</string>
+    <string name="error_saving_event">Error saving event. Check selected calendars.</string>
     <string name="event_updated_successfully">Event updated</string>
     <string name="error_deleting_event">Error deleting event</string>
     <string name="error_canceling_event_instance">Error canceling event instance</string>
-    <string name="permission_denied_calendar">Error: Permission denied to write to the calendar.</string>
+    <string name="permission_denied_calendar">Error: Permission denied to write to calendar.</string>
     <string name="unexpected_error_create">Unexpected error creating event: %1$s</string>
     <string name="unexpected_error_update">Unexpected error updating event: %1$s</string>
     <string name="unexpected_error_delete">Unexpected error deleting event: %1$s</string>
@@ -194,8 +194,8 @@
     <string name="import_holidays">Import holidays…</string>
     <string name="export_holidays">Export holidays…</string>
     <string name="holidays_imported_successfully">Holidays imported successfully.</string>
-    <string name="error_reading_holidays_file">Error reading the holidays file.</string>
-    <string name="error_saving_holidays_file">Error saving the holidays file.</string>
+    <string name="error_reading_holidays_file">Error reading holidays file.</string>
+    <string name="error_saving_holidays_file">Error saving holidays file.</string>
     <string name="holiday_deleted_message">Deleted %1$s %2$s</string>
     <string name="event_deleted_message">Deleted %1$s %2$s</string>
 
@@ -206,18 +206,6 @@
     <string name="font_monospace">Monospace (Fixed width)</string>
     <string name="font_condensed">Condensed (Narrow)</string>
     <string name="share_event">Share event</string>
-
-    <!-- Backup -->
-    <string name="backup_section_title">Full Backup</string>
-    <string name="export_full_backup">Create backup</string>
-    <string name="import_full_backup">Restore backup</string>
-    <string name="backup_exported_successfully">Backup created successfully</string>
-    <string name="backup_imported_successfully">Backup restored successfully</string>
-    <string name="error_exporting_backup">Error creating backup: %1$s</string>
-    <string name="error_importing_backup">Error restoring backup: %1$s</string>
-    <string name="invalid_backup_file">Invalid backup file</string>
-
-    <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 I share %1$d events from my calendar with you</string>
     <string name="calendar_events_subject">Calendar Events</string>
     <string name="debug_title">Debugging</string>
@@ -230,7 +218,12 @@
     <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
     <string name="events_deleted_count">%1$d events deleted.</string>
 
-    <!-- v1.8.80 (Holiday Import) -->
+    <string name="backup_exported_successfully">Backup created successfully</string>
+    <string name="backup_imported_successfully">Backup restored successfully</string>
+    <string name="error_exporting_backup">Error creating backup: %1$s</string>
+    <string name="error_importing_backup">Error restoring backup: %1$s</string>
+    <string name="invalid_backup_file">Invalid backup file</string>
+
     <string name="import_holidays_confirm_title">Import holidays</string>
     <string name="import_holidays_confirm_message">You already have holidays configured. Do you want to add them to your current list or replace them completely?</string>
     <string name="import_holidays_merge">Add</string>
@@ -245,13 +238,35 @@
     <string name="system_permissions">System permissions</string>
     <string name="permissions_dialog_title">Permission Status</string>
     <string name="calendar_permission_label">Calendar: event management</string>
-    <string name="notifications_permission_label">Notifications: status bar alerts</string>
-    <string name="alarms_permission_label">Alarms: precise and full-screen alerts</string>
+    <string name="notifications_permission_label">Notifications: status bar warnings</string>
+    <string name="alarms_permission_label">Alarms: precise and full screen warnings</string>
     <string name="fix_permission">SETTINGS</string>
     <string name="history">History</string>
 
-    <!-- Birthday keywords for detection -->
-    <string name="birthday_keywords">birthday,bday,anniversary</string>
+    <!-- Event backup -->
+    <string name="save_settings_aspect">Save settings and appearance</string>
+    <string name="load_settings_aspect">Load settings and appearance</string>
+    <string name="backup_section_title">Event backup</string>
+    <string name="google_drive_permission_label">Google Drive: cloud backup</string>
+    <string name="link_google_account">Link Google account</string>
+    <string name="account_linked">Account linked</string>
+    <string name="unlink_google_account">Unlink Google account</string>
+    <string name="unlink_account_confirmation">Unlink Google account? Automatic cloud backups will stop.</string>
+    <string name="unlink_action">UNLINK</string>
+    <string name="backup_frequency">Backup frequency</string>
+    <string name="frequency_daily">Daily</string>
+    <string name="frequency_weekly">Weekly</string>
+    <string name="frequency_monthly">Monthly</string>
+    <string name="sync_now">Sync now</string>
+    <string name="restore_from_drive">Restore from Drive</string>
+    <string name="restore_confirm_title">Restore events?</string>
+    <string name="restore_confirm_message">Saved events will be replaced by the Google Drive copy. Current system events will not be affected.</string>
+    <string name="restore_success">Events restored successfully</string>
+    <string name="restore_error">No valid backup found in Drive</string>
+    <string name="last_backup">Last backup: %s</string>
+    <string name="never">Never</string>
+
+    <string name="birthday_keywords">birthday,anniversary</string>
     <string name="greeting_keywords">happy,congratulations,congrats</string>
     <!-- Widget Preview Strings -->
     <string name="preview_today">Today</string>

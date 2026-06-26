@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">Calendari Visual</string>
     <string name="calendar_widget_description">Mostra els teus propers esdeveniments del calendari</string>
-    <string name="permission_calendar_select">Ès necessari el permís de calendari per seleccionar calendaris.</string>
-    <string name="permission_calendar_write">Ès necessari el permís per escriure al calendari per crear esdeveniments.</string>
-    <string name="back_to_monthly_view">Tornar a la vista mensual</string>
+    <string name="permission_calendar_select">Permís de calendari necessari per seleccionar calendaris.</string>
+    <string name="permission_calendar_write">Permís per escriure al calendari és necessari per crear esdeveniments.</string>
+    <string name="back_to_monthly_view">Tornar a vista mensual</string>
     <string name="back_to_current_month">Tornar al mes actual</string>
     <string name="create_event">Crear esdeveniment</string>
     <string name="search">Cercar</string>
     <string name="menu">Menú</string>
     <string name="calendars">Calendaris</string>
-    <string name="settings">Configuració</string>
+    <string name="settings">Ajustos</string>
     <string name="help">Ajuda</string>
     <string name="events_of_month">Esdeveniments %1$s</string>
     <string name="all">Tots</string>
@@ -35,7 +35,7 @@
     <string name="select_mode_title">Seleccionar Mode</string>
     <string name="custom_selected">Seleccionat</string>
     <string name="confirm_deletion_title">Confirmar eliminació</string>
-    <string name="confirm_deletion_message">Segur que vols eliminar aquest esdeveniment: "%1$s"?</string>
+    <string name="confirm_deletion_message">Segur que vols eliminar aquest esdeveniment: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir esdeveniment</string>
     <string name="repeat_until">Finalitza</string>
     <string name="repeat_indefinite">Indefinidament</string>
@@ -45,7 +45,7 @@
     <string name="long_period_switch">Període llarg</string>
     <string name="date">Data</string>
     <string name="end_time">Fi</string>
-    <string name="lanes_full_error">El dia %1 ha excedit el l�mit de 5 esdeveniments llargs. Intenti crear esdeveniments normals amb repetici�.</string>
+    <string name="lanes_full_error">El dia %1$s ha excedit el límit de 5 esdeveniments llargs. Intenti crear esdeveniments normals amb repetició.</string>
     <string name="select_calendar_title">Seleccionar Calendari</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="does_not_repeat">No es repeteix</string>
@@ -67,8 +67,8 @@
     <string name="summary">Resum:</string>
     <string name="summary_title">Títol: %1$s</string>
     <string name="summary_calendar">Calendari: %1$s</string>
-    <string name="from">De:</string>
-    <string name="to">A:</string>
+    <string name="from">Del:</string>
+    <string name="to">Al:</string>
     <string name="save">Desar</string>
     <string name="end_time_before_start_time_error">L\'hora de fi no pot ser anterior a la d\'inici</string>
     <string name="system_default">Sistema</string>
@@ -86,31 +86,33 @@
     <string name="customize_theme">Estil</string>
     <string name="customize_colors">Personalitzar colors</string>
     <string name="import_theme">Carregar tema…</string>
-    <string name="export_theme">Guardar tema…</string>
-    <string name="widget_event_count">Nombre d\'esdeveniments</string>
+    <string name="export_theme">Desar tema…</string>
+    <string name="widget_event_count">Número d\'esdeveniments</string>
     <string name="widget_text_adjustment">Ajust de text</string>
     <string name="background_color">Color de fons</string>
     <string name="event_color">Color esdeveniments</string>
     <string name="today_event_color">Esdeveniments d\'avui</string>
-    <string name="about">Sobre</string>
+    <string name="about">Acerca de</string>
     <string name="discard_changes_title">Descartar canvis</string>
-    <string name="discard_changes_confirmation">Tens canvis sense desar. Estàs segur que vols descartar-los?</string>
+    <string name="discard_changes_confirmation">Tens canvis sense desar. Segur que vols descartar-los?</string>
     <string name="discard">Descartar</string>
-    <string name="export_theme_title">Guardar Tema</string>
+    <string name="export_theme_title">Desar Tema</string>
     <string name="theme_name">Nom del tema</string>
-    <string name="export">Guardar</string>
+    <string name="export">Desar</string>
     <string name="help_section_calendar_views">Vista de calendari</string>
-    <string name="help_calendar_views_1">L\'aplicació té dues vistes principals: Mensual i Anual. Pots canviar entre elles prement l\'any de la capçalera.</string>
-    <string name="help_calendar_views_2">A la vista mensual, llisca a esquerra o dreta per canviar de mes. La fletxa superior esquerra de la capçalera tornarà al mes actual.</string>
+    <string name="help_calendar_views_1">L\'aplicació té dues vistes principals: Mensual i Anual. Pots canviar entre elles polsant en l\'any de la capçalera.</string>
+    <string name="help_calendar_views_2">En la vista mensual, llisca a esquerra o dreta per canviar de mes. La fletxa superior esquerra de la capçalera tornarà al mes actual.</string>
     <string name="help_section_event_management">Gestió d\'esdeveniments</string>
-    <string name="help_event_management_1">Prem en un dia del calendari mensual per veure\'n els esdeveniments o afegir-ne un de nou. També es poden crear esdeveniments prement la icona (+) de la capçalera.</string>
-    <string name="help_event_management_2">Els esdeveniments (únics o repetits) es poden editar i esborrar a qualezvol calendari que sigui editable.</string>
+    <string name="help_event_management_1">Pulsa en un dia del calendari mensual per veure els seus esdeveniments o afegir-ne un de nou. També es poden crear esdeveniments polsant en la icona (+) de la capçalera.</string>
+    <string name="help_event_management_2">Els esdeveniments (únics o repetits) es poden editar i esborrar en qualsevol calendari que sigui editable.</string>
     <string name="help_section_event_list">Llista d\'esdeveniments</string>
-    <string name="help_event_list_1">A sota del calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendents o Tots prement el botó Pendents-Tots. Cada esdeveniment de la llista es pot editar i esborrar.</string>
+    <string name="help_event_list_1">Sota el calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendents o Tots polsant en el botó Pendents-Tots. Cada esdeveniment de la llista pot ser editat i esborrat.</string>
     <string name="help_section_customization">Personalització</string>
-    <string name="help_customization_1">Des del menú Configuració es pot triar el mode Clar i Fosc. També es poden personalitzar els colors de la interfície i Importar i Exportar els temes de color per compartir-los.</string>
+    <string name="help_customization_1">Des del menú Ajustos es pot triar el mode Clar i Oscur. També es poden personalitzar els colors de la interfície i Importar i Exportar els temes de color per compartir-los.</string>
+    <string name="help_section_holiday_manager">Gestor de Festius</string>
+    <string name="help_holiday_manager_1">Aquesta funció permet marcar dies específics com a festius o laborables de forma manual, independentment del que indiqui el calendari del sistema o els esdeveniments importats. En marcar un dia com a festiu, el seu número es ressaltarà en el color corresponent en les vistes mensual i anual.</string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">L\'aplicació inclou un Widget per a la pantalla d\'inici que mostra els propers esdeveniments. Es pot personalitzar la seva aparença triant el nombre d\'esdeveniments a mostrar, canviant la mida de la lletra i modificant els seus colors.</string>
+    <string name="help_widget_1">L\'aplicació inclou un Widget per a la pantalla d\'Inici que mostra els propers esdeveniments. Es pot personalitzar la seva aparença triant el número d\'esdeveniments a mostrar, canviant la mida de la lletra i modificat els seus colors.</string>
     <string name="copied_to_clipboard">Copiat: %1$s</string>
     <string name="event_color_label">Color de l\'esdeveniment:</string>
     <string name="keyword">Paraula clau</string>
@@ -126,10 +128,11 @@
     <string name="current_year">Any actual</string>
     <string name="no_results_found">No s\'han trobat resultats</string>
     <string name="type_to_search">Escriu per cercar…</string>
-    <string name="all_day_event">(Esdeveniment de tot el dia)</string>
+    <string name="all_day_event">(Esdeveniment tot el dia)</string>
     <string name="repeated_event">Esdeveniment repetit</string>
     <string name="no_pending_events_this_month">No hi ha esdeveniments pendents per a aquest mes.</string>
     <string name="no_events_this_month">No hi ha esdeveniments per a aquest mes.</string>
+    <string name="widget_no_events">No hi ha esdeveniments</string>
     <string name="monthly_calendar">Calendari Mensual</string>
     <string name="theme_exported_successfully">Tema exportat amb èxit</string>
     <string name="error_exporting_theme">Error en exportar el tema: %1$s</string>
@@ -139,7 +142,7 @@
     <string name="incompatible_theme_file">Fitxer de tema no compatible.</string>
     <string name="file_contains_no_theme">El fitxer no conté ni tema clar ni fosc.</string>
     <string name="invalid_json_file">El fitxer no és un JSON vàlid.</string>
-    <string name="invalid_color_in_theme">El tema conté un color no vàlid a \"%1$s\".</string>
+    <string name="invalid_color_in_theme">El tema conté un color no vàlid en \"%1$s\".</string>
     <string name="light_theme">Clar</string>
     <string name="dark_theme">Fosc</string>
     <string name="header_background">Fons capçalera</string>
@@ -153,16 +156,15 @@
     <string name="effect">Efecte</string>
     <string name="current_month_cell">Cel·la del mes</string>
     <string name="calendar_source">Calendari: %1$s</string>
-    <string name="widget_no_events">No hi ha esdeveniments</string>
     <string name="predefined_themes">Temes</string>
     <string name="themes_v6">Temes</string>
 
     <string name="permission_denied_title">Permís Denegat</string>
-    <string name="permission_denied_text">No es pot desar l\'esdeveniment perquè l\'aplicació no té permís per escriure al calendari. Si us plau, concedeix el permís des de la configuració de l\'aplicació.</string>
-    <string name="go_to_settings">Anar a Configuració</string>
+    <string name="permission_denied_text">No es pot desar l\'esdeveniment perquè l\'aplicació no té permís per escriure al calendari. Per favor, concedeix el permís des dels ajustos de l\'aplicació.</string>
+    <string name="go_to_settings">Anar a Ajustos</string>
     <string name="error">Error</string>
-    <string name="no_calendar_selected_error">No s\'ha seleccionat cap calendari. Si us plau, tria un calendari per desar l\'esdeveniment.</string>
-    <string name="title_empty_error">El títol no pot estar buit. Si us plau, introdueix un títol per a l\'esdeveniment.</string>
+    <string name="no_calendar_selected_error">No s\'ha seleccionat cap calendari. Per favor, tria un calendari per desar l\'esdeveniment.</string>
+    <string name="title_empty_error">El títol no pot estar buit. Per favor, introdueix un títol per a l\'esdeveniment.</string>
 
     <string name="event_saved_successfully">Esdeveniment desat</string>
     <string name="error_saving_event">Error en desar l\'esdeveniment. Comprova els calendaris seleccionats.</string>
@@ -179,7 +181,7 @@
     <string name="edit_recurring_event_dialog_single_event">Només aquest esdeveniment</string>
     <string name="edit_recurring_event_dialog_all_events">Tots els esdeveniments</string>
     <string name="copy_event">Copiar esdeveniment</string>
-    <string name="mark_as_favorite_calendar">Marcar como a calendari favorit</string>
+    <string name="mark_as_favorite_calendar">Marcar com a calendari favorit</string>
     <string name="favorite_calendar_marked">Calendari favorit (marcat)</string>
 
     <string name="holiday_manager">Gestor</string>
@@ -189,14 +191,11 @@
     <string name="holiday_updated_successfully">Ajust de festiu actualitzat</string>
 
     <string name="holidays_section">Festius</string>
-    <string name="import_holidays">Importar festius…</string>
+    <string name="import_holidays">Importar festivos…</string>
     <string name="export_holidays">Exportar festivos…</string>
     <string name="holidays_imported_successfully">Festius importats amb èxit.</string>
     <string name="error_reading_holidays_file">Error en llegir el fitxer de festius.</string>
     <string name="error_saving_holidays_file">Error en desar el fitxer de festius.</string>
-
-    <string name="help_section_holiday_manager">Gestor de Festius</string>
-    <string name="help_holiday_manager_1">Aquesta funció permet marcar dies específics com a festius o laborables de forma manual, independentment del que indiqui el calendari del sistema o els esdeveniments importats. En marcar un dia com a festiu, el seu número es ressaltarà en el color corresponent a les vistes mensual i anual.</string>
     <string name="holiday_deleted_message">Eliminat %1$s %2$s</string>
     <string name="event_deleted_message">Eliminat %1$s %2$s</string>
 
@@ -207,35 +206,28 @@
     <string name="font_monospace">Monospace (Ample fix)</string>
     <string name="font_condensed">Condensada (Estreta)</string>
     <string name="share_event">Compartir esdeveniment</string>
+    <string name="share_multiple_message">📅 Et comparteixo %1$d esdeveniments del meu calendari</string>
+    <string name="calendar_events_subject">Esdeveniments de Calendari</string>
+    <string name="debug_title">Depuració</string>
+    <string name="next_refresh_label">Proper refresc: %1$s</string>
+    <string name="next_refresh_pending">en 15 min.</string>
+    <string name="not_scheduled">No programat</string>
+    <string name="no_logs_found">No hi ha logs registrats encara.</string>
+    <string name="copy_action">Copiar</string>
+    <string name="selected_count">%1$d seleccionats</string>
+    <string name="delete_multiple_confirmation">Vols eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
+    <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
 
-    <!-- Backup -->
-    <string name="backup_section_title">Còpia de seguretat completa</string>
-    <string name="export_full_backup">Crear còpia de seguretat</string>
-    <string name="import_full_backup">Restaurar còpia de seguretat</string>
     <string name="backup_exported_successfully">Còpia de seguretat creada amb èxit</string>
     <string name="backup_imported_successfully">Còpia de seguretat restaurada amb èxit</string>
     <string name="error_exporting_backup">Error en crear la còpia: %1$s</string>
     <string name="error_importing_backup">Error en restaurar la còpia: %1$s</string>
     <string name="invalid_backup_file">Fitxer de còpia de seguretat no vàlid</string>
 
-    <!-- v1.8.80 -->
-    <string name="share_multiple_message">📅 Et comparteixo %1$d esdeveniments del meu calendari</string>
-    <string name="calendar_events_subject">Esdeveniments del Calendari</string>
-    <string name="debug_title">Depuració</string>
-    <string name="next_refresh_label">Proper refresc: %1$s</string>
-    <string name="next_refresh_pending">en 15 min.</string>
-    <string name="not_scheduled">No programat</string>
-    <string name="no_logs_found">Encara no hi ha registres.</string>
-    <string name="copy_action">Copiar</string>
-    <string name="selected_count">%1$d seleccionats</string>
-    <string name="delete_multiple_confirmation">Voleu eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
-    <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
-
-    <!-- v1.8.80 (Holiday Import) -->
     <string name="import_holidays_confirm_title">Importar festius</string>
-    <string name="import_holidays_confirm_message">Ja teniu festius configurats. Voleu afegir-los a la llista actual o substituir-los del tot?</string>
+    <string name="import_holidays_confirm_message">Ja tens festius configurats. Vols afegir-los a la teva llista actual o reemplaçar-los per complet?</string>
     <string name="import_holidays_merge">Afegir</string>
-    <string name="import_holidays_replace">Substituir</string>
+    <string name="import_holidays_replace">Reemplaçar</string>
 
     <string name="alarm">Alarma</string>
     <string name="alarm_time">Hora de l\'alarma</string>
@@ -244,16 +236,38 @@
     <string name="alarm_offset_label">Anticipació (minuts)</string>
     <string name="snooze_interval_label">Postposar (minuts)</string>
     <string name="system_permissions">Permisos del sistema</string>
-    <string name="permissions_dialog_title">Estat dels Permisos</string>
+    <string name="permissions_dialog_title">Estat de Permisos</string>
     <string name="calendar_permission_label">Calendari: gestió d\'esdeveniments</string>
-    <string name="notifications_permission_label">Notificacions: avisos a la barra superior</string>
+    <string name="notifications_permission_label">Notificacions: avisos en barra superior</string>
     <string name="alarms_permission_label">Alarmes: avisos en hora i a pantalla completa</string>
-    <string name="fix_permission">CONFIGURACIÓ</string>
+    <string name="fix_permission">AJUSTOS</string>
     <string name="history">Historial</string>
 
-    <!-- Birthday keywords for detection -->
-    <string name="birthday_keywords">aniversari,cumple,aniversari,onomàstica</string>
-    <string name="greeting_keywords">feliç,felicitats,felicitem</string>
+    <!-- Respatller d'esdeveniments -->
+    <string name="save_settings_aspect">Desar ajustos i aspecte</string>
+    <string name="load_settings_aspect">Carregar ajustos i aspecte</string>
+    <string name="backup_section_title">Respatller d\'esdeveniments</string>
+    <string name="google_drive_permission_label">Google Drive: còpia de seguretat al núvol</string>
+    <string name="link_google_account">Vincular compte de Google</string>
+    <string name="account_linked">Compte vinculat</string>
+    <string name="unlink_google_account">Desvincular compte de Google</string>
+    <string name="unlink_account_confirmation">Desvincular compte de Google? Es detindran les còpies de seguretat automàtiques al núvol.</string>
+    <string name="unlink_action">DESVINCULAR</string>
+    <string name="backup_frequency">Freqüència de còpia</string>
+    <string name="frequency_daily">Diària</string>
+    <string name="frequency_weekly">Setmanal</string>
+    <string name="frequency_monthly">Mensual</string>
+    <string name="sync_now">Sincronitzar ara</string>
+    <string name="restore_from_drive">Restaurar des de Drive</string>
+    <string name="restore_confirm_title">Restaurar esdeveniments?</string>
+    <string name="restore_confirm_message">Es reemplaçaran els esdeveniments desats per la còpia de Google Drive. Els esdeveniments actuals del sistema no se\'n veuran afectats.</string>
+    <string name="restore_success">Esdeveniments restaurats amb èxit</string>
+    <string name="restore_error">No s\'ha trobat una còpia vàlida a Drive</string>
+    <string name="last_backup">Última còpia: %s</string>
+    <string name="never">Mai</string>
+
+    <string name="birthday_keywords">aniversari</string>
+    <string name="greeting_keywords">felicitats,felicitats,felicitem,felicitacions</string>
     <!-- Widget Preview Strings -->
     <string name="preview_today">Avui</string>
     <string name="preview_date_1">22/05</string>

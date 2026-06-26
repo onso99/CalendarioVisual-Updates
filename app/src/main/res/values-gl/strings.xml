@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Calendario Visual</string>
-    <string name="calendar_widget_description">Mostra os teus próximos eventos do calendario</string>
-    <string name="permission_calendar_select">É necesario o permiso de calendario para seleccionar calendarios.</string>
-    <string name="permission_calendar_write">É necesario o permiso para escribir no calendario para crear eventos.</string>
+    <string name="calendar_widget_description">Amosa os teus vindeiros eventos do calendario</string>
+    <string name="permission_calendar_select">Permiso de calendario necesario para seleccionar calendarios.</string>
+    <string name="permission_calendar_write">Permiso para escribir no calendario é necesario para crear eventos.</string>
     <string name="back_to_monthly_view">Volver á vista mensual</string>
     <string name="back_to_current_month">Volver ao mes actual</string>
     <string name="create_event">Crear evento</string>
@@ -32,20 +32,20 @@
     <string name="previous_year">Ano anterior</string>
     <string name="next_year">Ano seguinte</string>
     <string name="accept">Aceptar</string>
-    <string name="select_mode_title">Seleccionar Tema</string>
+    <string name="select_mode_title">Seleccionar Modo</string>
     <string name="custom_selected">Seleccionado</string>
     <string name="confirm_deletion_title">Confirmar eliminación</string>
-    <string name="confirm_deletion_message">Seguro que queres eliminar o evento \"%1$s\"?</string>
+    <string name="confirm_deletion_message">Seguro que queres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
-    <string name="repeat_until">Finaliza</string>
+    <string name="repeat_until">Remata</string>
     <string name="repeat_indefinite">Indefinidamente</string>
     <string name="repeat_on_date">Ata a data</string>
     <string name="repeat_after">Repeticións</string>
 
-    <string name="long_period_switch">Período longo</string>
+    <string name="long_period_switch">Periodo longo</string>
     <string name="date">Data</string>
     <string name="end_time">Fin</string>
-    <string name="lanes_full_error">O d�a %1 excediu o l�mite de 5 eventos longos. Tente crear eventos normais con repetici�n.</string>
+    <string name="lanes_full_error">O día %1$s excedeu o límite de 5 eventos longos. Tente crear eventos normais con repetición.</string>
     <string name="select_calendar_title">Seleccionar Calendario</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="does_not_repeat">Non se repite</string>
@@ -67,8 +67,8 @@
     <string name="summary">Resumo:</string>
     <string name="summary_title">Título: %1$s</string>
     <string name="summary_calendar">Calendario: %1$s</string>
-    <string name="from">De:</string>
-    <string name="to">A:</string>
+    <string name="from">Do:</string>
+    <string name="to">Ao:</string>
     <string name="save">Gardar</string>
     <string name="end_time_before_start_time_error">A hora de fin non pode ser anterior á de inicio</string>
     <string name="system_default">Sistema</string>
@@ -94,23 +94,25 @@
     <string name="today_event_color">Eventos de hoxe</string>
     <string name="about">Acerca de</string>
     <string name="discard_changes_title">Descartar cambios</string>
-    <string name="discard_changes_confirmation">Tes cambios sen gardar. Estás seguro de que queres descartalos?</string>
+    <string name="discard_changes_confirmation">Tes cambios sen gardar. Seguro que queres descartalos?</string>
     <string name="discard">Descartar</string>
     <string name="export_theme_title">Gardar Tema</string>
     <string name="theme_name">Nome do tema</string>
     <string name="export">Gardar</string>
     <string name="help_section_calendar_views">Vista de calendario</string>
-    <string name="help_calendar_views_1">A aplicación ten dúas vistas principais: Mensual e Anual. Podes cambiar entre elas pulsando no ano da cabeceira.</string>
-    <string name="help_calendar_views_2">Na vista mensual, desliza á esquerda ou á dereita para cambiar de mes. A frecha superior esquerda da cabeceira volverá ao mes actual.</string>
+    <string name="help_calendar_views_1">A aplicación ten dúas vistas principais: Mensual e Anual. Podes cambiar entre elas premendo no ano da cabeceira.</string>
+    <string name="help_calendar_views_2">Na vista mensual, desliza á esquerda ou dereita para cambiar de mes. A frecha superior esquerda da cabeceira volverá ao mes actual.</string>
     <string name="help_section_event_management">Xestión de eventos</string>
-    <string name="help_event_management_1">Pulsa nun día do calendario mensual para ver os seus eventos ou engadir un novo. Tamén se poden crear eventos pulsando na icona (+) da cabeceira.</string>
+    <string name="help_event_management_1">Preme nun día do calendario mensual para ver os seus eventos ou engadir un novo. Tamén se poden crear eventos premendo na icona (+) da cabeceira.</string>
     <string name="help_event_management_2">Os eventos (únicos ou repetidos) pódense editar e borrar en calquera calendario que sexa editable.</string>
     <string name="help_section_event_list">Lista de eventos</string>
-    <string name="help_event_list_1">Debaixo do calendario mensual amósase a lista dos eventos do mes. Para o mes actual, podes elixir entre ver os eventos Pendentes ou Todos pulsando no botón Pendentes-Todos. Cada evento da lista pode ser editado e borrado.</string>
+    <string name="help_event_list_1">Debaixo do calendario mensual móstrase a lista dos eventos do mes. Para o mes actual, podes elixir entre ver os eventos Pendentes o Todos premendo no botón Pendentes-Todos. Cada evento da lista pode ser editado e borrado.</string>
     <string name="help_section_customization">Personalización</string>
-    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de color para compartirlos.</string>
+    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de cor para compartilos.</string>
+    <string name="help_section_holiday_manager">Xestor de Festivos</string>
+    <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos ou laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os próximos eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño de la letra e modificando as súas cores.</string>
+    <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os vindeiros eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño da letra e modificado as súas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
     <string name="event_color_label">Cor do evento:</string>
     <string name="keyword">Palabra clave</string>
@@ -121,15 +123,16 @@
     <string name="paste_color">Pegar cor</string>
     <string name="search_events_placeholder">Buscar eventos…</string>
     <string name="close_search">Pechar busca</string>
-    <string name="clear_search">Limpar busca</string>
+    <string name="clear_search">Limpiar busca</string>
     <string name="current_month">Mes actual</string>
     <string name="current_year">Ano actual</string>
     <string name="no_results_found">Non se atoparon resultados</string>
     <string name="type_to_search">Escribe para buscar…</string>
-    <string name="all_day_event">(Evento de todo o día)</string>
+    <string name="all_day_event">(Evento todo o día)</string>
     <string name="repeated_event">Evento repetido</string>
     <string name="no_pending_events_this_month">Non hai eventos pendentes para este mes.</string>
     <string name="no_events_this_month">Non hai eventos para este mes.</string>
+    <string name="widget_no_events">Non hai eventos</string>
     <string name="monthly_calendar">Calendario Mensual</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="error_exporting_theme">Erro ao exportar o tema: %1$s</string>
@@ -153,7 +156,6 @@
     <string name="effect">Efecto</string>
     <string name="current_month_cell">Cela do mes</string>
     <string name="calendar_source">Calendario: %1$s</string>
-    <string name="widget_no_events">Non hai eventos</string>
     <string name="predefined_themes">Temas</string>
     <string name="themes_v6">Temas</string>
 
@@ -162,7 +164,7 @@
     <string name="go_to_settings">Ir a Axustes</string>
     <string name="error">Erro</string>
     <string name="no_calendar_selected_error">Non se seleccionou ningún calendario. Por favor, elixe un calendario para gardar o evento.</string>
-    <string name="title_empty_error">O título non pode estar baleiro. Por favor, introduce un título para el evento.</string>
+    <string name="title_empty_error">O título no pode estar baleiro. Por favor, introduce un título para o evento.</string>
 
     <string name="event_saved_successfully">Evento gardado</string>
     <string name="error_saving_event">Erro ao gardar o evento. Comproba os calendarios seleccionados.</string>
@@ -177,7 +179,7 @@
 
     <string name="edit_recurring_event_dialog_title">Editar evento recorrente</string>
     <string name="edit_recurring_event_dialog_single_event">Só este evento</string>
-    <string name="edit_recurring_event_dialog_all_events">Tódolos eventos</string>
+    <string name="edit_recurring_event_dialog_all_events">Todos os eventos</string>
     <string name="copy_event">Copiar evento</string>
     <string name="mark_as_favorite_calendar">Marcar como calendario favorito</string>
     <string name="favorite_calendar_marked">Calendario favorito (marcado)</string>
@@ -194,8 +196,6 @@
     <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
     <string name="error_reading_holidays_file">Erro ao ler o ficheiro de festivos.</string>
     <string name="error_saving_holidays_file">Erro ao gardar o ficheiro de festivos.</string>
-    <string name="help_section_holiday_manager">Xestor de Festivos</string>
-    <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos ou laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
     <string name="holiday_deleted_message">Eliminado %1$s %2$s</string>
     <string name="event_deleted_message">Eliminado %1$s %2$s</string>
 
@@ -206,60 +206,75 @@
     <string name="font_monospace">Monospace (Ancho fixo)</string>
     <string name="font_condensed">Condensada (Estreita)</string>
     <string name="share_event">Compartir evento</string>
+    <string name="share_multiple_message">📅 Compártoche %1$d eventos do meu calendario</string>
+    <string name="calendar_events_subject">Eventos de Calendario</string>
+    <string name="debug_title">Depuración</string>
+    <string name="next_refresh_label">Próximo refresco: %1$s</string>
+    <string name="next_refresh_pending">en 15 min.</string>
+    <string name="not_scheduled">Non programado</string>
+    <string name="no_logs_found">Non hai logs rexistrados aínda.</string>
+    <string name="copy_action">Copiar</string>
+    <string name="selected_count">%1$d seleccionados</string>
+    <string name="delete_multiple_confirmation">Desexas eliminar estes %1$d eventos? Esta acción non se pode desfacre.</string>
+    <string name="events_deleted_count">%1$d eventos eliminados.</string>
 
-    <!-- Backup -->
-    <string name="backup_section_title">Copia de seguridade completa</string>
-    <string name="export_full_backup">Crear copia de seguridade</string>
-    <string name="import_full_backup">Restaurar copia de seguridade</string>
     <string name="backup_exported_successfully">Copia de seguridade creada con éxito</string>
     <string name="backup_imported_successfully">Copia de seguridade restaurada con éxito</string>
     <string name="error_exporting_backup">Erro ao crear a copia: %1$s</string>
     <string name="error_importing_backup">Erro ao restaurar a copia: %1$s</string>
     <string name="invalid_backup_file">Ficheiro de copia de seguridade non válido</string>
 
-    <!-- v1.8.80 -->
-    <string name="share_multiple_message">📅 Compártoche %1$d eventos do meu calendario</string>
-    <string name="calendar_events_subject">Eventos do Calendario</string>
-    <string name="debug_title">Depuración</string>
-    <string name="next_refresh_label">Próximo refresco: %1$s</string>
-    <string name="next_refresh_pending">en 15 min.</string>
-    <string name="not_scheduled">Non programado</string>
-    <string name="no_logs_found">Aínda no hai rexistros.</string>
-    <string name="copy_action">Copiar</string>
-    <string name="selected_count">%1$d seleccionados</string>
-    <string name="delete_multiple_confirmation">Queres eliminar estes %1$d eventos? Esta acción non se pode desfacer.</string>
-    <string name="events_deleted_count">%1$d eventos eliminados.</string>
-
-    <!-- v1.8.80 (Holiday Import) -->
     <string name="import_holidays_confirm_title">Importar festivos</string>
-    <string name="import_holidays_confirm_message">Xa tes festivos configurados. Queres engadilos á túa lista actual o substituílos por completo?</string>
+    <string name="import_holidays_confirm_message">Xa tes festivos configurados. Desexas engadilos á túa lista actual ou substituílos por completo?</string>
     <string name="import_holidays_merge">Engadir</string>
     <string name="import_holidays_replace">Substituír</string>
 
     <string name="alarm">Alarma</string>
     <string name="alarm_time">Hora da alarma</string>
-    <string name="stop_alarm">DETER</string>
-    <string name="snooze_alarm">POSTPOÑER</string>
+    <string name="stop_alarm">DETEÑER</string>
+    <string name="snooze_alarm">POSPOÑER</string>
     <string name="alarm_offset_label">Anticipación (minutos)</string>
-    <string name="snooze_interval_label">Postpoñer (minutos)</string>
+    <string name="snooze_interval_label">Pospoñer (minutos)</string>
     <string name="system_permissions">Permisos do sistema</string>
-    <string name="permissions_dialog_title">Estado dos Permisos</string>
+    <string name="permissions_dialog_title">Estado de Permisos</string>
     <string name="calendar_permission_label">Calendario: xestión de eventos</string>
     <string name="notifications_permission_label">Notificacións: avisos na barra superior</string>
     <string name="alarms_permission_label">Alarmas: avisos en hora e a pantalla completa</string>
     <string name="fix_permission">AXUSTES</string>
     <string name="history">Historial</string>
 
-    <!-- Birthday keywords for detection -->
-    <string name="birthday_keywords">aniversario,cumpre,onomástica</string>
-    <string name="greeting_keywords">feliz,parabéns,felicidades</string>
+    <!-- Respaldo de eventos -->
+    <string name="save_settings_aspect">Gardar axustes e aspecto</string>
+    <string name="load_settings_aspect">Cargar axustes e aspecto</string>
+    <string name="backup_section_title">Respaldo de eventos</string>
+    <string name="google_drive_permission_label">Google Drive: copia de seguridade na nube</string>
+    <string name="link_google_account">Vincular conta de Google</string>
+    <string name="account_linked">Conta vinculada</string>
+    <string name="unlink_google_account">Desvincular conta de Google</string>
+    <string name="unlink_account_confirmation">Desvincular conta de Google? Deteranse as copias de seguridade automáticas na nube.</string>
+    <string name="unlink_action">DESVINCULAR</string>
+    <string name="backup_frequency">Frecuencia de copia</string>
+    <string name="frequency_daily">Diaria</string>
+    <string name="frequency_weekly">Semanal</string>
+    <string name="frequency_monthly">Mensual</string>
+    <string name="sync_now">Sincronizar agora</string>
+    <string name="restore_from_drive">Restaurar desde Drive</string>
+    <string name="restore_confirm_title">Restaurar eventos?</string>
+    <string name="restore_confirm_message">Substituiranse os eventos gardados pola copia de Google Drive. Os eventos actuais do sistema non se verán afectados.</string>
+    <string name="restore_success">Eventos restaurados con éxito</string>
+    <string name="restore_error">Non se atopou unha copia válida en Drive</string>
+    <string name="last_backup">Última copia: %s</string>
+    <string name="never">Nunca</string>
+
+    <string name="birthday_keywords">cumpreaños,cumpre,aniversario</string>
+    <string name="greeting_keywords">parabéns,felicidades</string>
     <!-- Widget Preview Strings -->
     <string name="preview_today">Hoxe</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Reunión de planificación</string>
     <string name="preview_jue">Xov</string>
     <string name="preview_date_2">23/05</string>
-    <string name="preview_event_2">Xantar co cliente</string>
+    <string name="preview_event_2">Comida co cliente</string>
     <string name="preview_vie">Ven</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de proxecto</string>

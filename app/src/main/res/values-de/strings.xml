@@ -45,7 +45,7 @@
     <string name="long_period_switch">Langer Zeitraum</string>
     <string name="date">Datum</string>
     <string name="end_time">Ende</string>
-    <string name="lanes_full_error">Der Tag %1 hat das Limit von 5 langen Ereignissen �berschritten. Versuchen Sie, normale Ereignisse mit Wiederholung zu erstellen.</string>
+    <string name="lanes_full_error">Der Tag %1$s hat das Limit von 5 langen Ereignissen überschritten. Versuchen Sie, normale Ereignisse mit Wiederholung zu erstellen.</string>
     <string name="select_calendar_title">Kalender auswählen</string>
     <string name="select_time_title">Zeit auswählen</string>
     <string name="does_not_repeat">Wiederholt sich nicht</string>
@@ -132,6 +132,7 @@
     <string name="repeated_event">Wiederholtes Ereignis</string>
     <string name="no_pending_events_this_month">Keine anstehenden Ereignisse für diesen Monat.</string>
     <string name="no_events_this_month">Keine Ereignisse für diesen Monat.</string>
+    <string name="widget_no_events">Keine Ereignisse</string>
     <string name="monthly_calendar">Monatskalender</string>
     <string name="theme_exported_successfully">Thema erfolgreich exportiert</string>
     <string name="error_exporting_theme">Fehler beim Exportieren des Themas: %1$s</string>
@@ -155,7 +156,6 @@
     <string name="effect">Effekt</string>
     <string name="current_month_cell">Zelle des aktuellen Monats</string>
     <string name="calendar_source">Kalender: %1$s</string>
-    <string name="widget_no_events">Keine Ereignisse</string>
     <string name="predefined_themes">Themen</string>
     <string name="themes_v6">Themen</string>
 
@@ -198,6 +198,7 @@
     <string name="error_saving_holidays_file">Fehler beim Speichern der Feiertagsdatei.</string>
     <string name="holiday_deleted_message">Gelöscht %1$s %2$s</string>
     <string name="event_deleted_message">Gelöscht %1$s %2$s</string>
+
     <string name="font">Schriftart</string>
     <string name="font_system">System</string>
     <string name="font_sans_serif">Sans Serif (Normal)</string>
@@ -205,18 +206,6 @@
     <string name="font_monospace">Monospace (Feste Breite)</string>
     <string name="font_condensed">Kondensiert (Schmal)</string>
     <string name="share_event">Ereignis teilen</string>
-
-    <!-- Backup -->
-    <string name="backup_section_title">Vollständiges Backup</string>
-    <string name="export_full_backup">Backup erstellen</string>
-    <string name="import_full_backup">Backup wiederherstellen</string>
-    <string name="backup_exported_successfully">Backup erfolgreich erstellt</string>
-    <string name="backup_imported_successfully">Backup erfolgreich wiederhergestellt</string>
-    <string name="error_exporting_backup">Fehler beim Erstellen des Backups: %1$s</string>
-    <string name="error_importing_backup">Fehler beim Wiederherstellen des Backups: %1$s</string>
-    <string name="invalid_backup_file">Ungültige Backup-Datei</string>
-
-    <!-- v1.8.80 -->
     <string name="share_multiple_message">📅 Ich teile %1$d Termine aus meinem Kalender mit dir</string>
     <string name="calendar_events_subject">Kalenderereignisse</string>
     <string name="debug_title">Fehlersuche</string>
@@ -229,7 +218,12 @@
     <string name="delete_multiple_confirmation">Möchten Sie diese %1$d Termine löschen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="events_deleted_count">%1$d Termine gelöscht.</string>
 
-    <!-- v1.8.80 (Holiday Import) -->
+    <string name="backup_exported_successfully">Backup erfolgreich erstellt</string>
+    <string name="backup_imported_successfully">Backup erfolgreich wiederhergestellt</string>
+    <string name="error_exporting_backup">Fehler beim Erstellen des Backups: %1$s</string>
+    <string name="error_importing_backup">Fehler beim Wiederherstellen des Backups: %1$s</string>
+    <string name="invalid_backup_file">Ungültige Backup-Datei</string>
+
     <string name="import_holidays_confirm_title">Feiertage importieren</string>
     <string name="import_holidays_confirm_message">Sie haben bereits Feiertage konfiguriert. Möchten Sie diese zu Ihrer aktuellen Liste hinzufügen oder vollständig ersetzen?</string>
     <string name="import_holidays_merge">Hinzufügen</string>
@@ -249,10 +243,31 @@
     <string name="fix_permission">EINSTELLUNGEN</string>
     <string name="history">Verlauf</string>
 
-    <!-- Birthday keywords for detection -->
+    <!-- Ereignis-Backup -->
+    <string name="save_settings_aspect">Einstellungen und Design speichern</string>
+    <string name="load_settings_aspect">Einstellungen und Design laden</string>
+    <string name="backup_section_title">Ereignis-Backup</string>
+    <string name="google_drive_permission_label">Google Drive: Cloud-Backup</string>
+    <string name="link_google_account">Google-Konto verknüpfen</string>
+    <string name="account_linked">Konto verknüpft</string>
+    <string name="unlink_google_account">Google-Konto trennen</string>
+    <string name="unlink_account_confirmation">Google-Konto trennen? Automatische Backups werden gestoppt.</string>
+    <string name="unlink_action">TRENNEN</string>
+    <string name="backup_frequency">Backup-Häufigkeit</string>
+    <string name="frequency_daily">Täglich</string>
+    <string name="frequency_weekly">Wöchentlich</string>
+    <string name="frequency_monthly">Monatlich</string>
+    <string name="sync_now">Jetzt synchronisieren</string>
+    <string name="restore_from_drive">Von Drive wiederherstellen</string>
+    <string name="restore_confirm_title">Ereignisse wiederherstellen?</string>
+    <string name="restore_confirm_message">Gespeicherte Ereignisse werden durch die Google Drive-Kopie ersetzt. Aktuelle Systemereignisse sind nicht betroffen.</string>
+    <string name="restore_success">Ereignisse erfolgreich wiederhergestellt</string>
+    <string name="restore_error">Keine gültige Kopie auf Drive gefunden</string>
+    <string name="last_backup">Letztes Backup: %s</string>
+    <string name="never">Nie</string>
+
     <string name="birthday_keywords">geburtstag,geburi,jubiläum,namenstag</string>
     <string name="greeting_keywords">herzlichen,glückwunsch,gratuliere,gratulation,alles gute</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Heute</string>
     <string name="preview_date_1">22.05.</string>
     <string name="preview_event_1">Planungstreffen</string>

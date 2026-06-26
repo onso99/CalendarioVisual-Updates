@@ -218,17 +218,12 @@
     <string name="delete_multiple_confirmation">¿Deseas eliminar estos %1$d eventos? Esta acción no se puede deshacer.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
 
-    <!-- Backup -->
-    <string name="backup_section_title">Respaldo de eventos</string>
-    <string name="save_settings_aspect">Guardar ajustes y aspecto</string>
-    <string name="load_settings_aspect">Cargar ajustes y aspecto</string>
     <string name="backup_exported_successfully">Copia de seguridad creada con éxito</string>
     <string name="backup_imported_successfully">Copia de seguridad restaurada con éxito</string>
     <string name="error_exporting_backup">Error al crear la copia: %1$s</string>
     <string name="error_importing_backup">Error al restaurar la copia: %1$s</string>
     <string name="invalid_backup_file">Archivo de copia de seguridad no válido</string>
 
-    <!-- v1.8.80 (Holiday Import) -->
     <string name="import_holidays_confirm_title">Importar festivos</string>
     <string name="import_holidays_confirm_message">Ya tienes festivos configurados. ¿Deseas añadirlos a tu lista actual o reemplazarlos por completo?</string>
     <string name="import_holidays_merge">Añadir</string>
@@ -248,34 +243,31 @@
     <string name="fix_permission">AJUSTES</string>
     <string name="history">Historial</string>
 
-    <!-- Google Drive Backup -->
+    <!-- Respaldo de eventos -->
+    <string name="save_settings_aspect">Guardar ajustes y aspecto</string>
+    <string name="load_settings_aspect">Cargar ajustes y aspecto</string>
+    <string name="backup_section_title">Respaldo de eventos</string>
     <string name="google_drive_permission_label">Google Drive: copia de seguridad en la nube</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
     <string name="account_linked">Cuenta vinculada</string>
-    <string name="unlink_google_account">Desvincular cuenta</string>
+    <string name="unlink_google_account">Desvincular cuenta de Google</string>
     <string name="unlink_account_confirmation">¿Desvincular cuenta de Google? Se detendrán las copias de seguridad automáticas en la nube.</string>
     <string name="unlink_action">DESVINCULAR</string>
-    <string name="google_drive_status">Estado de Google Drive</string>
-    <string name="auto_backup">Autoguardado en Drive</string>
     <string name="backup_frequency">Frecuencia de copia</string>
     <string name="frequency_daily">Diaria</string>
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensual</string>
     <string name="sync_now">Sincronizar ahora</string>
     <string name="restore_from_drive">Restaurar desde Drive</string>
-    <string name="restore_from_drive_detail">Recupera tu historial desde la nube</string>
     <string name="restore_confirm_title">¿Restaurar eventos?</string>
     <string name="restore_confirm_message">Se reemplazarán los eventos guardados por la copia de Google Drive. Los eventos actuales del sistema no se verán afectados.</string>
     <string name="restore_success">Eventos restaurados con éxito</string>
     <string name="restore_error">No se encontró una copia válida en Drive</string>
     <string name="last_backup">Última copia: %s</string>
     <string name="never">Nunca</string>
-    <string name="connect_google_drive">CONECTAR</string>
 
-    <!-- Birthday keywords for detection -->
     <string name="birthday_keywords">cumpleaños,cumple,aniversario,onomástica</string>
     <string name="greeting_keywords">feliz,felicidades,felicitamos,felicitaciones</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Hoy</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Reunión de planificación</string>
