@@ -94,7 +94,7 @@ enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
 
     companion object {
         fun fromKey(key: String): StartOfWeekOption {
-            return entries.find { it.key == key } ?: SYSTEM
+            return entries.find { it.key.equals(key, ignoreCase = true) } ?: SYSTEM
         }
     }
 }
@@ -277,7 +277,10 @@ fun SettingsScreen(
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
     val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
-    val originalStartOfWeekKey = remember { appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key }
+    val originalStartOfWeekKey = remember { 
+        val raw = appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
+        StartOfWeekOption.fromKey(raw).key
+    }
     val originalEventCount = remember {
         try {
             widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
