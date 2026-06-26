@@ -316,7 +316,7 @@ fun HolidayManagerScreen(
         AlertDialog(
             onDismissRequest = { adjustmentToDelete = null },
             title = { Text(stringResource(id = R.string.confirm_deletion_title)) },
-            text = { Text("¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.") },
+            text = { Text(stringResource(id = R.string.confirm_delete_adjustment)) },
             confirmButton = {
                 Button(
                     onClick = {

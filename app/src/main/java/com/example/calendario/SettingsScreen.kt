@@ -261,9 +261,9 @@ fun SettingsScreen(
                     val account = task.result
                     appPrefs.edit { putString("google_account_email", account?.email) }
                     permissionsUpdateTrigger++
-                    Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.account_linked_success, Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Error al vincular cuenta", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.account_linked_error, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -660,16 +660,16 @@ fun SettingsScreen(
                                     .format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
                     
                     ActionRow(
-                        text = if (uiState.isSyncing) "Sincronizando..." else stringResource(id = R.string.sync_now),
+                        text = if (uiState.isSyncing) stringResource(R.string.syncing) else stringResource(id = R.string.sync_now),
                         detail = stringResource(R.string.last_backup, lastStr),
                         isLoading = uiState.isSyncing
                     ) {
                         viewModel.syncHistoryToDrive(context) { success ->
                             if (success) {
                                 permissionsUpdateTrigger++
-                                Toast.makeText(context, "Sincronizado con éxito", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.sync_success, Toast.LENGTH_SHORT).show()
                             } else {
-                                Toast.makeText(context, "Error de Drive. Verifica tu cuenta.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -678,7 +678,7 @@ fun SettingsScreen(
 
                     // Restaurar desde Drive con información de carga
                     ActionRow(
-                        text = if (uiState.isRestoring) "Restaurando..." else stringResource(id = R.string.restore_from_drive),
+                        text = if (uiState.isRestoring) stringResource(R.string.restoring) else stringResource(id = R.string.restore_from_drive),
                         isLoading = uiState.isRestoring
                     ) {
                         showRestoreDriveDialog = true

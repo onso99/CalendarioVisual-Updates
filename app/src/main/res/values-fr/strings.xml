@@ -243,13 +243,15 @@
     <string name="fix_permission">PARAMÈTRES</string>
     <string name="history">Historique</string>
 
-    <!-- Respaldo de eventos -->
+    <!-- Sauvegarde des événements -->
     <string name="save_settings_aspect">Enregistrer paramètres et aspect</string>
     <string name="load_settings_aspect">Charger paramètres et aspect</string>
     <string name="backup_section_title">Sauvegarde des événements</string>
     <string name="google_drive_permission_label">Google Drive : sauvegarde dans le cloud</string>
     <string name="link_google_account">Associer un compte Google</string>
     <string name="account_linked">Compte associé</string>
+    <string name="account_linked_success">Compte associé avec succès</string>
+    <string name="account_linked_error">Erreur lors de l\'association du compte</string>
     <string name="unlink_google_account">Dissocier le compte Google</string>
     <string name="unlink_account_confirmation">Dissocier le compte Google ? Les sauvegardes automatiques s\'arrêteront.</string>
     <string name="unlink_action">DISSOCIER</string>
@@ -258,13 +260,20 @@
     <string name="frequency_weekly">Hebdomadaire</string>
     <string name="frequency_monthly">Mensuelle</string>
     <string name="sync_now">Synchroniser maintenant</string>
+    <string name="syncing">Synchronisation…</string>
+    <string name="sync_success">Synchronisé avec succès</string>
+    <string name="sync_error_drive">Erreur de Drive. Vérifiez votre compte.</string>
     <string name="restore_from_drive">Restaurer depuis Drive</string>
+    <string name="restoring">Restauration…</string>
     <string name="restore_confirm_title">Restaurer les événements ?</string>
     <string name="restore_confirm_message">Les événements enregistrés seront remplacés par la copie Google Drive. Les événements système actuels ne seront pas affectés.</string>
     <string name="restore_success">Événements restaurés avec succès</string>
     <string name="restore_error">Aucune copie valide trouvée sur Drive</string>
     <string name="last_backup">Dernière copie : %s</string>
     <string name="never">Jamais</string>
+    <string name="error_updating_data">Erreur lors de la mise à jour des données.</string>
+    <string name="confirm_delete_adjustment">Voulez-vous supprimer ce réglage ? L\'état original du calendrier sera restauré.</string>
+    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">anniversaire</string>
     <string name="greeting_keywords">bon,heureux,félicitations,joyeux</string>

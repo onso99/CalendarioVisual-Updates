@@ -250,6 +250,8 @@
     <string name="google_drive_permission_label">Google Drive: copia de seguridad en la nube</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
     <string name="account_linked">Cuenta vinculada</string>
+    <string name="account_linked_success">Cuenta vinculada con éxito</string>
+    <string name="account_linked_error">Error al vincular la cuenta</string>
     <string name="unlink_google_account">Desvincular cuenta de Google</string>
     <string name="unlink_account_confirmation">¿Desvincular cuenta de Google? Se detendrán las copias de seguridad automáticas en la nube.</string>
     <string name="unlink_action">DESVINCULAR</string>
@@ -258,13 +260,20 @@
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensual</string>
     <string name="sync_now">Sincronizar ahora</string>
+    <string name="syncing">Sincronizando…</string>
+    <string name="sync_success">Sincronizado con éxito</string>
+    <string name="sync_error_drive">Error de Drive. Verifica tu cuenta.</string>
     <string name="restore_from_drive">Restaurar desde Drive</string>
+    <string name="restoring">Restaurando…</string>
     <string name="restore_confirm_title">¿Restaurar eventos?</string>
     <string name="restore_confirm_message">Se reemplazarán los eventos guardados por la copia de Google Drive. Los eventos actuales del sistema no se verán afectados.</string>
     <string name="restore_success">Eventos restaurados con éxito</string>
     <string name="restore_error">No se encontró una copia válida en Drive</string>
     <string name="last_backup">Última copia: %s</string>
     <string name="never">Nunca</string>
+    <string name="error_updating_data">Error al actualizar datos.</string>
+    <string name="confirm_delete_adjustment">¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.</string>
+    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">cumpleaños,cumple,aniversario,onomástica</string>
     <string name="greeting_keywords">feliz,felicidades,felicitamos,felicitaciones</string>

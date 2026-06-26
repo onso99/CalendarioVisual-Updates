@@ -145,7 +145,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
             } catch (e: Exception) {
                 Log.e("CalendarioViewModel", "Error loading all data", e)
-                Toast.makeText(context, "Error al actualizar datos.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.error_updating_data, Toast.LENGTH_SHORT).show()
             }
         }
     }

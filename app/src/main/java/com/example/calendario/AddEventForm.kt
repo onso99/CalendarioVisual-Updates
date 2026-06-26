@@ -416,7 +416,8 @@ fun AddEventForm(
                 Text(stringResource(id = R.string.summary), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(stringResource(id = R.string.summary_title, title.ifBlank { stringResource(id = R.string.no_title) }))
-                Text(stringResource(id = R.string.summary_calendar, selectedCalendar?.displayName ?: "N/A"))
+                val calendarName = selectedCalendar?.displayName ?: stringResource(id = R.string.not_applicable)
+                Text(stringResource(id = R.string.summary_calendar, calendarName))
 
                 val summaryFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy", locale) }
 

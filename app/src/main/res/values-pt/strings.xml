@@ -100,7 +100,7 @@
     <string name="theme_name">Nome do tema</string>
     <string name="export">Salvar</string>
     <string name="help_section_calendar_views">Vista de calendário</string>
-    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensal e Anual. Pode alternar entre elas tocando no ano do cabeçalho.</string>
+    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensual e Anual. Pode alternar entre elas tocando no ano do cabeçalho.</string>
     <string name="help_calendar_views_2">Na vista mensal, deslize para a esquerda ou direita para mudar de mês. A seta superior esquerda do cabeçalho voltará ao mês atual.</string>
     <string name="help_section_event_management">Gestão de eventos</string>
     <string name="help_event_management_1">Toque num dia do calendário mensal para ver os seus eventos ou adicionar um novo. Também se podem criar eventos tocando no ícone (+) do cabeçalho.</string>
@@ -108,7 +108,7 @@
     <string name="help_section_event_list">Lista de eventos</string>
     <string name="help_event_list_1">Abaixo do calendário mensal é mostrada a lista dos eventos do mês. Para o mês atual, pode escolher entre ver os eventos Pendentes ou Todos tocando no botão Pendentes-Todos. Cada evento da lista pode ser editado e eliminado.</string>
     <string name="help_section_customization">Personalização</string>
-    <string name="help_customization_1">A partir do menu Ajustes pode escolher o modo Claro e Escuro. Também se podem personalizar as cores da interface e Importar e Exportar os temas de cor para os partilhar.</string>
+    <string name="help_customization_1">A partir do menu Ajustes pode escolher o modo Claro e Escuro. Também se podem personalizar as cores da interface e Importar e Exportar os temas de color para os partilhar.</string>
     <string name="help_section_holiday_manager">Gestor de Feriados</string>
     <string name="help_holiday_manager_1">Esta função permite marcar dias específicos como feriados ou dias úteis de forma manual, independentemente do que indicar o calendário do sistema ou os eventos importados. Ao marcar um dia como feriado, o seu número será realçado na cor correspondente nas vistas mensal e anual.</string>
     <string name="help_section_widget">Widget</string>
@@ -221,7 +221,7 @@
     <string name="backup_exported_successfully">Cópia de segurança criada com sucesso</string>
     <string name="backup_imported_successfully">Cópia de segurança restaurada com sucesso</string>
     <string name="error_exporting_backup">Erro ao criar a cópia: %1$s</string>
-    <string name="error_importing_backup">Erro ao restaurar a cópia: %1$s</string>
+    <string name="error_importing_backup">Erro ao restaurar la cópia: %1$s</string>
     <string name="invalid_backup_file">Ficheiro de cópia de segurança inválido</string>
 
     <string name="import_holidays_confirm_title">Importar feriados</string>
@@ -233,7 +233,7 @@
     <string name="alarm_time">Hora da alarma</string>
     <string name="stop_alarm">PARAR</string>
     <string name="snooze_alarm">ADIAR</string>
-    <string name="alarm_offset_label">Antecipação (minutos)</string>
+    <string name="alarm_offset_label">Anticipação (minutos)</string>
     <string name="snooze_interval_label">Adiar (minutos)</string>
     <string name="system_permissions">Permissões do sistema</string>
     <string name="permissions_dialog_title">Estado de Permissões</string>
@@ -250,6 +250,8 @@
     <string name="google_drive_permission_label">Google Drive: cópia de segurança na nuvem</string>
     <string name="link_google_account">Vincular conta Google</string>
     <string name="account_linked">Conta vinculada</string>
+    <string name="account_linked_success">Conta vinculada com sucesso</string>
+    <string name="account_linked_error">Erro ao vincular a conta</string>
     <string name="unlink_google_account">Desvincular conta Google</string>
     <string name="unlink_account_confirmation">Desvincular conta Google? Os backups automáticos serão interrompidos.</string>
     <string name="unlink_action">DESVINCULAR</string>
@@ -258,13 +260,20 @@
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensal</string>
     <string name="sync_now">Sincronizar agora</string>
+    <string name="syncing">Sincronizando…</string>
+    <string name="sync_success">Sincronizado com sucesso</string>
+    <string name="sync_error_drive">Erro do Drive. Verifique a sua conta.</string>
     <string name="restore_from_drive">Restaurar do Drive</string>
+    <string name="restoring">Restaurando…</string>
     <string name="restore_confirm_title">Restaurar eventos?</string>
     <string name="restore_confirm_message">Os eventos guardados serão substituídos pela cópia do Google Drive. Os eventos atuais do sistema não serão afetados.</string>
     <string name="restore_success">Eventos restaurados com sucesso</string>
     <string name="restore_error">Nenhuma cópia válida encontrada no Drive</string>
     <string name="last_backup">Última cópia: %s</string>
     <string name="never">Nunca</string>
+    <string name="error_updating_data">Erro ao atualizar os dados.</string>
+    <string name="confirm_delete_adjustment">Deseja eliminar este ajuste? O estado original do calendário será restaurado.</string>
+    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">aniversário,parabéns</string>
     <string name="greeting_keywords">feliz,felicitações,parabéns</string>

@@ -250,6 +250,8 @@
     <string name="google_drive_permission_label">Google 云端硬盘：云端备份</string>
     <string name="link_google_account">关联 Google 帐号</string>
     <string name="account_linked">帐号已关联</string>
+    <string name="account_linked_success">帐号关联成功</string>
+    <string name="account_linked_error">帐号关联失败</string>
     <string name="unlink_google_account">取消关联 Google 帐号</string>
     <string name="unlink_account_confirmation">取消关联 Google 帐号？自动云端备份将停止。</string>
     <string name="unlink_action">取消关联</string>
@@ -258,13 +260,20 @@
     <string name="frequency_weekly">每周</string>
     <string name="frequency_monthly">每月</string>
     <string name="sync_now">立即同步</string>
+    <string name="syncing">同步中…</string>
+    <string name="sync_success">同步成功</string>
+    <string name="sync_error_drive">云端硬盘错误。请检查您的帐号。</string>
     <string name="restore_from_drive">从云端硬盘还原</string>
+    <string name="restoring">还原中…</string>
     <string name="restore_confirm_title">还原事件？</string>
     <string name="restore_confirm_message">已保存的事件将被 Google 云端硬盘副本替换。当前系统事件不会受到影响。</string>
     <string name="restore_success">事件还原成功</string>
     <string name="restore_error">在云端硬盘中未找到有效的副本</string>
     <string name="last_backup">上次备份：%s</string>
     <string name="never">从未</string>
+    <string name="error_updating_data">更新数据时出错。</string>
+    <string name="confirm_delete_adjustment">您要删除此调整吗？日历将恢复到原始状态。</string>
+    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">生日,纪念日</string>
     <string name="greeting_keywords">生日快乐,恭喜,祝贺</string>

@@ -250,6 +250,8 @@
     <string name="google_drive_permission_label">Google Диск: облачное резервное копирование</string>
     <string name="link_google_account">Связать аккаунт Google</string>
     <string name="account_linked">Аккаунт связан</string>
+    <string name="account_linked_success">Аккаунт успешно привязан</string>
+    <string name="account_linked_error">Ошибка при привязке аккаунта</string>
     <string name="unlink_google_account">Отключить аккаунт Google</string>
     <string name="unlink_account_confirmation">Отключить аккаунт Google? Автоматическое резервное копирование в облако будет прекращено.</string>
     <string name="unlink_action">ОТКЛЮЧИТЬ</string>
@@ -258,13 +260,20 @@
     <string name="frequency_weekly">Еженедельно</string>
     <string name="frequency_monthly">Ежемесячно</string>
     <string name="sync_now">Синхронизировать сейчас</string>
+    <string name="syncing">Синхронизация…</string>
+    <string name="sync_success">Синхронизация завершена успешно</string>
+    <string name="sync_error_drive">Ошибка Диска. Проверьте свой аккаунт.</string>
     <string name="restore_from_drive">Восстановить из Диска</string>
+    <string name="restoring">Восстановление…</string>
     <string name="restore_confirm_title">Восстановить события?</string>
     <string name="restore_confirm_message">Сохраненные события будут заменены копией из Google Диска. Текущие системные события не будут затронуты.</string>
     <string name="restore_success">События успешно восстановлены</string>
     <string name="restore_error">Действительная копия на Диске не найдена</string>
     <string name="last_backup">Последняя копия: %s</string>
     <string name="never">Никогда</string>
+    <string name="error_updating_data">Ошибка при обновлении данных.</string>
+    <string name="confirm_delete_adjustment">Вы хотите удалить эту настройку? Будет восстановлено исходное состояние календаря.</string>
+    <string name="not_applicable">Н/А</string>
 
     <string name="birthday_keywords">день рождения,юбилей</string>
     <string name="greeting_keywords">поздравляю,поздравляем,с днем рождения</string>
