@@ -18,7 +18,7 @@ playServicesAuth = "21.6.0"
 googleApiClientAndroid = "2.9.0"
 googleApiServicesDrive = "v3-rev20260428-2.0.0"
 googleHttpClientGson = "2.1.0"
-kotlinxCoroutinesPlayServices = "1.10.1"
+kotlinxCoroutinesPlayServices = "1.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
