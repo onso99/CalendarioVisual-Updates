@@ -63,7 +63,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     private fun loadAllData() {
         viewModelScope.launch {
             val context = getApplication<Application>()
-            val hasPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+            val hasRead = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+            val hasWrite = ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+            val hasPermission = hasRead && hasWrite
 
             if (!hasPermission) {
                 _uiState.value = CalendarioUiState(hasCalendarPermission = false)

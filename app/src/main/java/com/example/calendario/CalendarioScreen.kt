@@ -153,11 +153,12 @@ fun CalendarioScreen(
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
     var showWidgetLogScreen by remember { mutableStateOf(false) }
 
-    val readPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        viewModel.onPermissionResult(isGranted)
-        if (isGranted) {
+    val calendarPermissionsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        viewModel.onPermissionResult(allGranted)
+        if (allGranted) {
             scope.launch {
                 viewModel.refreshAvailableCalendars()
                 showSelectCalendarsDialog = true
@@ -167,26 +168,16 @@ fun CalendarioScreen(
         }
     }
 
-    val writePermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            showAddEventScreen = true
-        } else {
-            Toast.makeText(context, R.string.permission_calendar_write, Toast.LENGTH_LONG).show()
-        }
-    }
-
     val launchAddEditScreen = { date: LocalDate?, event: Festivo? ->
         dateForNewEvent = date
         eventToEdit = event
-        when (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)) {
-            PackageManager.PERMISSION_GRANTED -> {
-                showAddEventScreen = true
-            }
-            else -> {
-                writePermissionLauncher.launch(Manifest.permission.WRITE_CALENDAR)
-            }
+        val hasRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+        val hasWrite = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+        
+        if (hasRead && hasWrite) {
+            showAddEventScreen = true
+        } else {
+            calendarPermissionsLauncher.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
         }
     }
 
@@ -464,11 +455,13 @@ fun CalendarioScreen(
                                             onClick = {
                                                 menuExpanded = false
                                                 scope.launch {
-                                                    if (uiState.hasCalendarPermission) {
+                                                    val hasRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                                                    val hasWrite = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                                                    if (hasRead && hasWrite) {
                                                         viewModel.refreshAvailableCalendars()
                                                         showSelectCalendarsDialog = true
                                                     } else {
-                                                        readPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+                                                        calendarPermissionsLauncher.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
                                                     }
                                                 }
                                             },
