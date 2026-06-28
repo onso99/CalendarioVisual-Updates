@@ -222,13 +222,34 @@ fun MonthlyEventList(
                                             }
                                         }
                                     }
+                                    if (festivo.rrule != null) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Refresh,
+                                                contentDescription = stringResource(id = R.string.repeated_event),
+                                                tint = iconColor,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            if (festivo.repeatCount != null && festivo.repeatCount > 0) {
+                                                Text(
+                                                    text = festivo.repeatCount.toString(),
+                                                    color = iconColor,
+                                                    fontSize = 12.sp,
+                                                    modifier = Modifier.padding(start = 1.dp)
+                                                )
+                                            }
+                                        }
+                                    }
                                     val alarmTime = remember(festivo.id, date) { 
                                         AlarmUtils.getAlarmTimeString(context, festivo) 
                                     }
                                     if (alarmTime != null) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.padding(start = 8.dp)
+                                            modifier = Modifier.padding(start = 4.dp)
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Outlined.Notifications,
@@ -237,21 +258,12 @@ fun MonthlyEventList(
                                                 modifier = Modifier.size(14.dp)
                                             )
                                             Text(
-                                                text = " $alarmTime",
+                                                text = alarmTime,
                                                 color = iconColor,
-                                                fontSize = 12.sp
+                                                fontSize = 12.sp,
+                                                modifier = Modifier.padding(start = 1.dp)
                                             )
                                         }
-                                    }
-                                    if (festivo.rrule != null) {
-                                        Icon(
-                                            imageVector = Icons.Default.Refresh,
-                                            contentDescription = stringResource(id = R.string.repeated_event),
-                                            tint = iconColor,
-                                            modifier = Modifier
-                                                .padding(start = 8.dp)
-                                                .size(16.dp)
-                                        )
                                     }
                                 }
                             }
