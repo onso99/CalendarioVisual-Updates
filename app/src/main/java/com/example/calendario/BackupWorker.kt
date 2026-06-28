@@ -8,6 +8,10 @@ import androidx.core.content.edit
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.tasks.await
 
 class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -19,10 +23,23 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
         if (!isAutoBackupEnabled) return Result.success()
 
-        // 2. Obtener la cuenta de Google
-        val account = GoogleSignIn.getLastSignedInAccount(context)
+        // 2. Intentar inicio de sesión silencioso para refrescar el token
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
+            .build()
+        
+        val googleSignInClient = GoogleSignIn.getClient(context, gso)
+        
+        val account = try {
+            googleSignInClient.silentSignIn().await()
+        } catch (e: Exception) {
+            Log.e("BackupWorker", "Error en silentSignIn: ${e.message}")
+            null
+        }
+
         if (account == null) {
-            Log.e("BackupWorker", "No hay cuenta de Google vinculada")
+            Log.e("BackupWorker", "No se pudo obtener una cuenta válida (token caducado)")
             return Result.failure()
         }
 

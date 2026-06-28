@@ -21,7 +21,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 37
         versionCode = 2
-        versionName = "1.98.20"
+        versionName = "1.98.21"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -95,4 +95,5 @@ dependencies {
     implementation(libs.googleApiClient)
     implementation(libs.googleDriveApi)
     implementation(libs.googleHttpClient)
+    implementation(libs.kotlinx.coroutines.play.services)
 }

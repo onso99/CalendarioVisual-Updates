@@ -73,6 +73,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             try {
+                // Asegurar que el respaldo automático esté programado en el sistema
+                BackupScheduler.ensureBackupScheduled(context)
+
                 // --- PASO 0: CARGA ULTRA-INSTANTÁNEA (JSON + Migración) ---
                 var cachedHistory = withContext(Dispatchers.IO) { loadHistoryFromDisk(context) }
                 

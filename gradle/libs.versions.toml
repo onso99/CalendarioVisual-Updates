@@ -18,6 +18,7 @@ playServicesAuth = "21.6.0"
 googleApiClientAndroid = "2.9.0"
 googleApiServicesDrive = "v3-rev20260428-2.0.0"
 googleHttpClientGson = "2.1.0"
+kotlinxCoroutinesPlayServices = "1.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +49,7 @@ playServicesAuth = { group = "com.google.android.gms", name = "play-services-aut
 googleApiClient = { group = "com.google.api-client", name = "google-api-client-android", version.ref = "googleApiClientAndroid" }
 googleDriveApi = { group = "com.google.apis", name = "google-api-services-drive", version.ref = "googleApiServicesDrive" }
 googleHttpClient = { group = "com.google.http-client", name = "google-http-client-gson", version.ref = "googleHttpClientGson" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
