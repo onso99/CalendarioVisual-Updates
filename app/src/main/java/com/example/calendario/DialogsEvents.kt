@@ -68,10 +68,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -83,7 +85,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 enum class DeleteRecurringOption {
     SINGLE_EVENT,
@@ -438,8 +439,9 @@ fun DayEventsDialog(
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
     val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val locale = LocalConfiguration.current.locales[0]
 
-    val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", Locale.getDefault()) }
+    val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", locale) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
     val isToday = date == LocalDate.now()
 
@@ -627,7 +629,7 @@ fun RepetitionSelectionDialog(
     var tempCount by remember { mutableStateOf(currentCount?.toString() ?: "") }
     var showDatePicker by remember { mutableStateOf(false) }
 
-    val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
 
     // 0: Indefinidamente, 1: En una fecha, 2: Tras X veces
     var endMode by remember { 
@@ -789,7 +791,7 @@ fun RepetitionSelectionDialog(
                             modifier = Modifier
                                 .width(75.dp)
                                 .focusRequester(focusRequester), 
-                            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)),
+                            textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(onDone = {
                                 val finalUntil = if (endMode == 1) tempUntil else null
