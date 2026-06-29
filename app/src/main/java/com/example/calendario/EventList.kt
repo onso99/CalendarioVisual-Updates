@@ -237,8 +237,7 @@ fun MonthlyEventList(
                                                 Text(
                                                     text = festivo.repeatCount.toString(),
                                                     color = iconColor,
-                                                    fontSize = 12.sp,
-                                                    modifier = Modifier.padding(start = 1.dp)
+                                                    fontSize = 12.sp
                                                 )
                                             }
                                         }
@@ -260,8 +259,7 @@ fun MonthlyEventList(
                                             Text(
                                                 text = alarmTime,
                                                 color = iconColor,
-                                                fontSize = 12.sp,
-                                                modifier = Modifier.padding(start = 1.dp)
+                                                fontSize = 12.sp
                                             )
                                         }
                                     }
