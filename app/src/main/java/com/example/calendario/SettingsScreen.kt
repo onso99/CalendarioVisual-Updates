@@ -843,6 +843,13 @@ fun SettingsScreen(
     }
 
     if (showPermissionsDialog) {
+        // Forzamos un refresco inmediato al abrir y tras un pequeño delay
+        LaunchedEffect(Unit) {
+            permissionsUpdateTrigger++
+            kotlinx.coroutines.delay(500)
+            permissionsUpdateTrigger++
+        }
+
         PermissionsDialog(
             calStatus = calStatus,
             notifStatus = notifStatus,

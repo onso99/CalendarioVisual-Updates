@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.services.drive.DriveScopes
@@ -46,23 +47,28 @@ object PermissionChecker {
     }
 
     fun getAlarmsStatus(context: Context): PermissionStatus {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        
-        // 1. Check Exact Alarms (Android 12+)
-        val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            alarmManager.canScheduleExactAlarms()
-        } else {
-            true
-        }
+        return try {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+            
+            // 1. Check Exact Alarms (Android 12+)
+            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                alarmManager?.canScheduleExactAlarms() ?: false
+            } else {
+                true
+            }
 
-        // 2. Check Full Screen Intent (Android 14+)
-        val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            nm.canUseFullScreenIntent()
-        } else {
-            true
-        }
+            // 2. Check Full Screen Intent (Android 14+)
+            val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                nm?.canUseFullScreenIntent() ?: false
+            } else {
+                true
+            }
 
-        return if (canScheduleExact && canUseFullScreen) PermissionStatus.GRANTED else PermissionStatus.DENIED
+            if (canScheduleExact && canUseFullScreen) PermissionStatus.GRANTED else PermissionStatus.DENIED
+        } catch (e: Exception) {
+            Log.e("PermissionChecker", "Error checking alarm status", e)
+            PermissionStatus.DENIED
+        }
     }
 }
