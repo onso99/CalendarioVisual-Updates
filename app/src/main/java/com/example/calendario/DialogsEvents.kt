@@ -32,6 +32,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -50,6 +51,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +60,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
@@ -66,6 +70,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -622,9 +627,17 @@ fun RepetitionSelectionDialog(
     var tempCount by remember { mutableStateOf(currentCount?.toString() ?: "") }
     var showDatePicker by remember { mutableStateOf(false) }
 
+    val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
+
     // 0: Indefinidamente, 1: En una fecha, 2: Tras X veces
     var endMode by remember { 
         mutableIntStateOf(if (currentUntil != null) 1 else if (currentCount != null) 2 else 0)
+    }
+
+    LaunchedEffect(endMode) {
+        if (endMode == 2) {
+            focusRequester.requestFocus()
+        }
     }
 
     AlertDialog(
@@ -773,9 +786,16 @@ fun RepetitionSelectionDialog(
                                     }
                                 }
                             },
-                            modifier = Modifier.width(75.dp), // Ancho garantizado para 3 dígitos
+                            modifier = Modifier
+                                .width(75.dp)
+                                .focusRequester(focusRequester), 
                             textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onDone = {
+                                val finalUntil = if (endMode == 1) tempUntil else null
+                                val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null
+                                onConfirm(tempSelection, finalUntil, finalCount)
+                            }),
                             singleLine = true,
                             enabled = (endMode == 2 && isRepetitionActive),
                             colors = TextFieldDefaults.colors(

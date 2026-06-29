@@ -272,7 +272,14 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(id = repetitionRule.displayNameRes), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
+                    val repetitionText = stringResource(id = repetitionRule.displayNameRes)
+                    val countSuffix = if (repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
+                    
+                    Text(
+                        text = "$repetitionText$countSuffix",
+                        modifier = Modifier.weight(1f),
+                        color = CalendarioTheme.colors.textSystem
+                    )
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = stringResource(id = R.string.select_repetition),
