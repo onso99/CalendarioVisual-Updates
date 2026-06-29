@@ -83,6 +83,7 @@ import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import org.json.JSONObject
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
     SYSTEM("SYSTEM", R.string.system_default),
@@ -846,7 +847,7 @@ fun SettingsScreen(
         // Forzamos un refresco inmediato al abrir y tras un pequeño delay
         LaunchedEffect(Unit) {
             permissionsUpdateTrigger++
-            kotlinx.coroutines.delay(500)
+            kotlinx.coroutines.delay(500.milliseconds)
             permissionsUpdateTrigger++
         }
 
