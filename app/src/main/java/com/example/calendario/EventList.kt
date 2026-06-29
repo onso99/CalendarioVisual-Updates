@@ -222,7 +222,7 @@ fun MonthlyEventList(
                                             }
                                         }
                                     }
-                                    if (festivo.rrule != null) {
+                                    if (festivo.rrule != null && !festivo.isBirthday) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier.padding(start = 8.dp)
