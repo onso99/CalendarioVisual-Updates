@@ -322,8 +322,13 @@ fun SettingsScreen(
 
     val originalAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) }
     val originalSnoozeInterval = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) }
+    
+    // Si no está habilitado el backup, forzamos a que la frecuencia original se lea como "manual"
     val originalAutoBackup = remember { appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) }
-    val originalBackupFreq = remember { appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "daily") ?: "daily" }
+    val originalBackupFreq = remember { 
+        if (!originalAutoBackup) "manual" 
+        else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
+    }
     val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
@@ -408,10 +413,12 @@ fun SettingsScreen(
                                 putString(AppConstants.KEY_START_OF_WEEK, pendingStartOfWeekKey)
                                 putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, pendingAlarmOffset.roundToInt())
                                 putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, pendingSnoozeInterval.roundToInt())
-                                putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, pendingAutoBackup)
-                                putString(AppConstants.KEY_BACKUP_FREQUENCY, pendingBackupFreq)
+                                
+                                val isNowEnabled = pendingBackupFreq != "manual"
+                                putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, isNowEnabled)
+                                putString(AppConstants.KEY_BACKUP_FREQUENCY, if (isNowEnabled) pendingBackupFreq else "manual")
                             }
-                            if (pendingAutoBackup) BackupScheduler.scheduleBackup(context, pendingBackupFreq)
+                            if (pendingBackupFreq != "manual") BackupScheduler.scheduleBackup(context, pendingBackupFreq)
                             else BackupScheduler.cancelBackup(context)
                             widgetPrefs.edit {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
@@ -698,6 +705,7 @@ fun SettingsScreen(
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                     
                     val freqLabel = when(pendingBackupFreq) {
+                        "manual" -> stringResource(R.string.frequency_manual)
                         "daily" -> stringResource(R.string.frequency_daily)
                         "weekly" -> stringResource(R.string.frequency_weekly)
                         "monthly" -> stringResource(R.string.frequency_monthly)
@@ -1085,7 +1093,12 @@ private fun BackupFrequencyDialog(
     onSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val options = listOf("daily" to R.string.frequency_daily, "weekly" to R.string.frequency_weekly, "monthly" to R.string.frequency_monthly)
+    val options = listOf(
+        "manual" to R.string.frequency_manual,
+        "daily" to R.string.frequency_daily, 
+        "weekly" to R.string.frequency_weekly, 
+        "monthly" to R.string.frequency_monthly
+    )
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,

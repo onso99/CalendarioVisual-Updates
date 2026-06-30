@@ -8,6 +8,11 @@ object BackupScheduler {
     private const val BACKUP_WORK_NAME = "google_drive_backup_work"
 
     fun scheduleBackup(context: Context, frequency: String) {
+        if (frequency == "manual") {
+            cancelBackup(context)
+            return
+        }
+
         val repeatInterval = getInterval(frequency)
 
         val constraints = Constraints.Builder()
@@ -19,10 +24,9 @@ object BackupScheduler {
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
             .build()
 
-        // REPLACE se usa cuando el usuario cambia explícitamente la configuración
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             BACKUP_WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE, // Android 12+: Actualiza la lógica sin reiniciar el cronómetro
+            ExistingPeriodicWorkPolicy.UPDATE,
             backupRequest
         )
     }
@@ -33,7 +37,8 @@ object BackupScheduler {
      */
     fun ensureBackupScheduled(context: Context) {
         val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        val frequency = appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
+        val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) && (frequency != "manual")
         
         if (!isAutoBackupEnabled) return
 
@@ -45,7 +50,6 @@ object BackupScheduler {
         }
 
         val lastBackup = appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
-        val frequency = appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "daily") ?: "daily"
         val intervalMillis = TimeUnit.DAYS.toMillis(getInterval(frequency))
         
         // INSPECTOR: Detectar retrasos
@@ -91,7 +95,6 @@ object BackupScheduler {
             LogCollector.addLog(">>> DIAGNÓSTICO: Tarea Drive: $state | Intentos: $runAttemptCount")
             
             if (state == WorkInfo.State.ENQUEUED) {
-                // En Android 12+ (WorkManager 2.7+) podemos ver si hay retrasos por restricciones
                 LogCollector.addLog(">>> DIAGNÓSTICO: Esperando condiciones (Red/Batería)...")
             }
         }
