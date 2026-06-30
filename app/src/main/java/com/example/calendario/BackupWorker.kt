@@ -3,7 +3,6 @@
 package com.example.calendario
 
 import android.content.Context
-import android.util.Log
 import androidx.core.content.edit
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -17,13 +16,18 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
 
     override suspend fun doWork(): Result {
         val context = applicationContext
+        LogCollector.addLog(">>> TRABAJADOR: Iniciando respaldo automático...")
         val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         
         // 1. Verificar si el autoguardado está activo
         val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
-        if (!isAutoBackupEnabled) return Result.success()
+        if (!isAutoBackupEnabled) {
+            LogCollector.addLog(">>> TRABAJADOR: Respaldo desactivado en ajustes. Abortando.")
+            return Result.success()
+        }
 
         // 2. Intentar inicio de sesión silencioso para refrescar el token
+        LogCollector.addLog(">>> TRABAJADOR: Refrescando sesión de Google...")
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
@@ -34,25 +38,27 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         val account = try {
             googleSignInClient.silentSignIn().await()
         } catch (e: Exception) {
-            Log.e("BackupWorker", "Error en silentSignIn: ${e.message}")
+            LogCollector.addLog(">>> TRABAJADOR: Error en silentSignIn: ${e.message}")
             null
         }
 
         if (account == null) {
-            Log.e("BackupWorker", "No se pudo obtener una cuenta válida (token caducado)")
+            LogCollector.addLog(">>> TRABAJADOR: No se pudo obtener cuenta válida (token caducado o vínculo roto).")
             return Result.failure()
         }
 
         // 3. Subir archivo
+        LogCollector.addLog(">>> TRABAJADOR: Subiendo archivo a Drive...")
         val driveHelper = GoogleDriveHelper(context, account)
         val success = driveHelper.uploadHistoryFile()
 
         return if (success) {
-            appPrefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) }
-            Log.d("BackupWorker", "Copia automática completada con éxito")
+            val now = System.currentTimeMillis()
+            appPrefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, now) }
+            LogCollector.addLog(">>> TRABAJADOR: ¡ÉXITO! Copia completada.")
             Result.success()
         } else {
-            Log.e("BackupWorker", "Error en la copia automática")
+            LogCollector.addLog(">>> TRABAJADOR: ERROR en la subida a Drive. Reintentando luego...")
             Result.retry()
         }
     }

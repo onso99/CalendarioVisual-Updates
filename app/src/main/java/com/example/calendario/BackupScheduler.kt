@@ -22,36 +22,47 @@ object BackupScheduler {
         // REPLACE se usa cuando el usuario cambia explícitamente la configuración
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             BACKUP_WORK_NAME,
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE, // Android 12+: Actualiza la lógica sin reiniciar el cronómetro
             backupRequest
         )
     }
 
     /**
      * Asegura que el trabajo esté programado sin reiniciar el contador de tiempo.
-     * Ideal para llamar en el inicio de la app.
+     * Incluye inspección de salud del respaldo.
      */
     fun ensureBackupScheduled(context: Context) {
         val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        
         if (!isAutoBackupEnabled) return
 
+        val lastBackup = appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
         val frequency = appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "daily") ?: "daily"
-        val repeatInterval = getInterval(frequency)
+        val intervalMillis = TimeUnit.DAYS.toMillis(getInterval(frequency))
+        
+        // INSPECTOR: Detectar retrasos (Nivel 3)
+        if (lastBackup != 0L) {
+            val diff = System.currentTimeMillis() - lastBackup
+            if (diff > (intervalMillis + TimeUnit.HOURS.toMillis(6))) { // Margen de 6h de gracia
+                LogCollector.addLog(">>> ALERTA INSPECTOR: El respaldo lleva ${diff/3600000}h de retraso. Posible bloqueo de batería.")
+            }
+        }
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(repeatInterval, TimeUnit.DAYS)
+        val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(getInterval(frequency), TimeUnit.DAYS)
             .setConstraints(constraints)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
             .build()
 
         // KEEP asegura que si ya existe un trabajo con este nombre, NO lo toque (no reinicia las 24h)
+        // Pero usamos UPDATE para que si ha cambiado la versión de la app, se apliquen las nuevas mejoras de código del Worker
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             BACKUP_WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             backupRequest
         )
     }

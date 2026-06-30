@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -68,6 +69,15 @@ object PermissionChecker {
             if (canScheduleExact && canUseFullScreen) PermissionStatus.GRANTED else PermissionStatus.DENIED
         } catch (e: Exception) {
             Log.e("PermissionChecker", "Error checking alarm status", e)
+            PermissionStatus.DENIED
+        }
+    }
+
+    fun getBatteryOptimizationStatus(context: Context): PermissionStatus {
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        return if (powerManager?.isIgnoringBatteryOptimizations(context.packageName) == true) {
+            PermissionStatus.GRANTED
+        } else {
             PermissionStatus.DENIED
         }
     }

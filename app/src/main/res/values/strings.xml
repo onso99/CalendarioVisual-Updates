@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">Posponer (minutos)</string>
     <string name="system_permissions">Permisos del sistema</string>
     <string name="permissions_dialog_title">Estado de Permisos</string>
-    <string name="calendar_permission_label">Calendario: gestión de eventos</string>
-    <string name="notifications_permission_label">Notificaciones: avisos en barra superior</string>
-    <string name="alarms_permission_label">Alarmas: avisos en hora y a pantalla completa</string>
+    <string name="calendar_permission_label">Calendario</string>
+    <string name="notifications_permission_label">Notificaciones</string>
+    <string name="alarms_permission_label">Alarmas</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Batería</string>
+
+    <string name="status_granted">PERMITIDO</string>
+    <string name="status_granted_f">PERMITIDAS</string>
+    <string name="status_denied">SIN PERMISO</string>
+    <string name="status_full_screen">PANTALLA COMPLETA</string>
+    <string name="status_no_full_screen">SIN PANTALLA COMPLETA</string>
+    <string name="status_restricted">RESTRINGIDA</string>
+    <string name="status_linked">VINCULADA</string>
+    <string name="status_unlinked">SIN VINCULAR</string>
+    <string name="status_unrestricted">SIN RESTRICCIONES</string>
+    <string name="status_optimized">OPTIMIZADA (RESTRINGIDO)</string>
     <string name="fix_permission">AJUSTES</string>
     <string name="history">Historial</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">Guardar ajustes y aspecto</string>
     <string name="load_settings_aspect">Cargar ajustes y aspecto</string>
     <string name="backup_section_title">Respaldo de eventos</string>
-    <string name="google_drive_permission_label">Google Drive: copia de seguridad en la nube</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
     <string name="account_linked">Cuenta vinculada</string>
     <string name="account_linked_success">Cuenta vinculada con éxito</string>

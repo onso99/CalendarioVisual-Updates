@@ -384,10 +384,11 @@ fun SettingsScreen(
     val notifStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getNotificationsStatus(context) }
     val alarmStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getAlarmsStatus(context) }
     val driveStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getGoogleDriveStatus(context) }
+    val batteryStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getBatteryOptimizationStatus(context) }
 
     val permissionPointColor = when {
         calStatus == PermissionStatus.DENIED -> Color.Red
-        notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED || driveStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
+        notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED || driveStatus == PermissionStatus.DENIED || batteryStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
         else -> Color.Green
     }
 
@@ -856,20 +857,28 @@ fun SettingsScreen(
             notifStatus = notifStatus,
             alarmStatus = alarmStatus,
             driveStatus = driveStatus,
+            batteryStatus = batteryStatus,
             onDismiss = { showPermissionsDialog = false },
             onFix = { type ->
-                if (type == "drive") {
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestEmail()
-                        .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
-                        .build()
-                    val client = GoogleSignIn.getClient(context, gso)
-                    googleSignInLauncher.launch(client.signInIntent)
-                } else {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", context.packageName, null)
+                when (type) {
+                    "drive" -> {
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestEmail()
+                            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
+                            .build()
+                        val client = GoogleSignIn.getClient(context, gso)
+                        googleSignInLauncher.launch(client.signInIntent)
                     }
-                    context.startActivity(intent)
+                    "battery" -> {
+                        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                        context.startActivity(intent)
+                    }
+                    else -> {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                        context.startActivity(intent)
+                    }
                 }
             }
         )
@@ -994,6 +1003,7 @@ private fun PermissionsDialog(
     notifStatus: PermissionStatus,
     alarmStatus: PermissionStatus,
     driveStatus: PermissionStatus,
+    batteryStatus: PermissionStatus,
     onDismiss: () -> Unit,
     onFix: (String) -> Unit
 ) {
@@ -1004,11 +1014,46 @@ private fun PermissionsDialog(
         textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                PermissionRow(stringResource(id = R.string.calendar_permission_label), calStatus) { onFix("calendar") }
-                PermissionRow(stringResource(id = R.string.notifications_permission_label), notifStatus) { onFix("notifications") }
-                PermissionRow(stringResource(id = R.string.alarms_permission_label), alarmStatus) { onFix("alarms") }
-                PermissionRow(stringResource(id = R.string.google_drive_permission_label), driveStatus) { onFix("drive") }
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // 1. CALENDARIO
+                PermissionRow(
+                    label = stringResource(id = R.string.calendar_permission_label),
+                    status = calStatus,
+                    fixLabel = if (calStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted) else stringResource(R.string.status_denied),
+                    onFix = { onFix("calendar") }
+                )
+
+                // 2. NOTIFICACIONES
+                PermissionRow(
+                    label = stringResource(id = R.string.notifications_permission_label),
+                    status = notifStatus,
+                    fixLabel = if (notifStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted_f) else stringResource(R.string.status_denied),
+                    onFix = { onFix("notifications") }
+                )
+
+                // 3. ALARMAS (Específico: Pantalla Completa)
+                PermissionRow(
+                    label = stringResource(id = R.string.alarms_permission_label),
+                    status = alarmStatus,
+                    fixLabel = if (alarmStatus == PermissionStatus.GRANTED) stringResource(R.string.status_full_screen) else stringResource(R.string.status_no_full_screen),
+                    onFix = { onFix("alarms") }
+                )
+
+                // 4. DRIVE
+                PermissionRow(
+                    label = stringResource(id = R.string.google_drive_permission_label),
+                    status = driveStatus,
+                    fixLabel = if (driveStatus == PermissionStatus.GRANTED) stringResource(R.string.status_linked) else stringResource(R.string.status_unlinked),
+                    onFix = { onFix("drive") }
+                )
+                
+                // 5. BATERÍA
+                PermissionRow(
+                    label = stringResource(id = R.string.battery_optimization_label),
+                    status = batteryStatus,
+                    fixLabel = if (batteryStatus == PermissionStatus.GRANTED) stringResource(R.string.status_unrestricted) else stringResource(R.string.status_optimized),
+                    onFix = { onFix("battery") }
+                )
             }
         },
         confirmButton = {
@@ -1072,15 +1117,20 @@ private fun BackupFrequencyDialog(
 }
 
 @Composable
-private fun PermissionRow(label: String, status: PermissionStatus, onFix: () -> Unit) {
+private fun PermissionRow(
+    label: String, 
+    status: PermissionStatus, 
+    fixLabel: String,
+    onFix: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 2.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // El punto de color se mantiene arriba junto a la primera línea de texto
+        // El punto de color (Verde = OK, Rojo = Acción requerida)
         Box(
             modifier = Modifier
                 .padding(top = 6.dp)
@@ -1096,18 +1146,15 @@ private fun PermissionRow(label: String, status: PermissionStatus, onFix: () -> 
                 lineHeight = 20.sp
             )
             
-            if (status == PermissionStatus.DENIED) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = stringResource(id = R.string.fix_permission),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
-                    modifier = Modifier
-                        .clickable { onFix() }
-                        .padding(vertical = 4.dp)
-                )
-            }
+            Text(
+                text = fixLabel,
+                color = if (status == PermissionStatus.DENIED) MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                fontWeight = if (status == PermissionStatus.DENIED) FontWeight.Bold else FontWeight.Normal,
+                fontSize = 13.sp,
+                modifier = Modifier
+                    .clickable { onFix() }
+                    .padding(vertical = 2.dp)
+            )
         }
     }
 }
