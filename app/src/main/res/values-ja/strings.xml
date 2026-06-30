@@ -257,8 +257,8 @@
     <string name="history">履歴</string>
 
     <!-- イベントバックアップ -->
-    <string name="save_settings_aspect">設定と外観を保存</string>
-    <string name="load_settings_aspect">設定と外観を読み込む</string>
+    <string name="save_settings_aspect">設定を保存</string>
+    <string name="load_settings_aspect">設定を読み込む</string>
     <string name="backup_section_title">イベントのバックアップ</string>
     <string name="link_google_account">Google アカウントを連携</string>
     <string name="account_linked">連携済みアカウント</string>
@@ -268,6 +268,7 @@
     <string name="unlink_account_confirmation">Google アカウントの連携を解除しますか？ 自動クラウドバックアップが停止します。</string>
     <string name="unlink_action">連携解除</string>
     <string name="backup_frequency">バックアップ頻度</string>
+    <string name="frequency_manual">手動</string>
     <string name="frequency_daily">毎日</string>
     <string name="frequency_weekly">毎週</string>
     <string name="frequency_monthly">毎月</string>

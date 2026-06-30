@@ -257,8 +257,8 @@
     <string name="history">History</string>
 
     <!-- Event backup -->
-    <string name="save_settings_aspect">Save settings and appearance</string>
-    <string name="load_settings_aspect">Load settings and appearance</string>
+    <string name="save_settings_aspect">Save preferences</string>
+    <string name="load_settings_aspect">Load preferences</string>
     <string name="backup_section_title">Event backup</string>
     <string name="link_google_account">Link Google account</string>
     <string name="account_linked">Account linked</string>

@@ -257,8 +257,8 @@
     <string name="history">Cronologia</string>
 
     <!-- Backup degli eventi -->
-    <string name="save_settings_aspect">Salva impostazioni e aspetto</string>
-    <string name="load_settings_aspect">Carica impostazioni e aspetto</string>
+    <string name="save_settings_aspect">Salva preferenze</string>
+    <string name="load_settings_aspect">Carica preferenze</string>
     <string name="backup_section_title">Backup degli eventi</string>
     <string name="link_google_account">Collega account Google</string>
     <string name="account_linked">Account collegato</string>
@@ -268,6 +268,7 @@
     <string name="unlink_account_confirmation">Scollegare l\'account Google? I backup automatici verranno interrotti.</string>
     <string name="unlink_action">SCOLLEGA</string>
     <string name="backup_frequency">Frequenza di backup</string>
+    <string name="frequency_manual">Manuale</string>
     <string name="frequency_daily">Giornaliera</string>
     <string name="frequency_weekly">Settimanale</string>
     <string name="frequency_monthly">Mensile</string>

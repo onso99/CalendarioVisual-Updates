@@ -257,8 +257,8 @@
     <string name="history">Historia</string>
 
     <!-- Gertaeren babeskopia -->
-    <string name="save_settings_aspect">Gorde ezarpenak eta itxura</string>
-    <string name="load_settings_aspect">Kargatu ezarpenak eta itxura</string>
+    <string name="save_settings_aspect">Gorde hobespenak</string>
+    <string name="load_settings_aspect">Kargatu hobespenak</string>
     <string name="backup_section_title">Gertaeren babeskopia</string>
     <string name="link_google_account">Lotu Google kontua</string>
     <string name="account_linked">Kontua lotuta</string>
@@ -268,6 +268,7 @@
     <string name="unlink_account_confirmation">Google kontua askatu nahi duzu? Babeskopia automatikoak gelditu egingo dira.</string>
     <string name="unlink_action">ASKATU</string>
     <string name="backup_frequency">Kopia maiztasuna</string>
+    <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Egunero</string>
     <string name="frequency_weekly">Astero</string>
     <string name="frequency_monthly">Hilero</string>

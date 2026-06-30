@@ -257,8 +257,8 @@
     <string name="history">Verlauf</string>
 
     <!-- Backup de eventos -->
-    <string name="save_settings_aspect">Einstellungen und Design speichern</string>
-    <string name="load_settings_aspect">Einstellungen und Design laden</string>
+    <string name="save_settings_aspect">Einstellungen speichern</string>
+    <string name="load_settings_aspect">Einstellungen laden</string>
     <string name="backup_section_title">Ereignis-Backup</string>
     <string name="link_google_account">Google-Konto verknüpfen</string>
     <string name="account_linked">Konto verknüpft</string>
@@ -268,6 +268,7 @@
     <string name="unlink_account_confirmation">Google-Konto trennen? Automatische Backups werden gestoppt.</string>
     <string name="unlink_action">TRENNEN</string>
     <string name="backup_frequency">Backup-Häufigkeit</string>
+    <string name="frequency_manual">Manuell</string>
     <string name="frequency_daily">Täglich</string>
     <string name="frequency_weekly">Wöchentlich</string>
     <string name="frequency_monthly">Monatlich</string>

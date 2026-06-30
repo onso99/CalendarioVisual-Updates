@@ -257,8 +257,8 @@
     <string name="history">История</string>
 
     <!-- Резервное копирование событий -->
-    <string name="save_settings_aspect">Сохранить настройки и внешний вид</string>
-    <string name="load_settings_aspect">Загрузить настройки и внешний вид</string>
+    <string name="save_settings_aspect">Сохранить настройки</string>
+    <string name="load_settings_aspect">Загрузить настройки</string>
     <string name="backup_section_title">Резервное копирование событий</string>
     <string name="link_google_account">Связать аккаунт Google</string>
     <string name="account_linked">Аккаунт связан</string>
@@ -268,6 +268,7 @@
     <string name="unlink_account_confirmation">Отключить аккаунт Google? Автоматическое резервное копирование в облако будет прекращено.</string>
     <string name="unlink_action">ОТКЛЮЧИТЬ</string>
     <string name="backup_frequency">Частота копирования</string>
+    <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Ежедневно</string>
     <string name="frequency_weekly">Еженедельно</string>
     <string name="frequency_monthly">Ежемесячно</string>

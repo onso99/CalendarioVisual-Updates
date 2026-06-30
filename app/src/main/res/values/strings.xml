@@ -257,8 +257,8 @@
     <string name="history">Historial</string>
 
     <!-- Respaldo de eventos -->
-    <string name="save_settings_aspect">Guardar ajustes y aspecto</string>
-    <string name="load_settings_aspect">Cargar ajustes y aspecto</string>
+    <string name="save_settings_aspect">Guardar preferencias</string>
+    <string name="load_settings_aspect">Cargar preferencias</string>
     <string name="backup_section_title">Respaldo de eventos</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
     <string name="account_linked">Cuenta vinculada</string>

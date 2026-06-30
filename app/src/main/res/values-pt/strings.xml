@@ -257,8 +257,8 @@
     <string name="history">Histórico</string>
 
     <!-- Backup de eventos -->
-    <string name="save_settings_aspect">Salvar ajustes e aspeto</string>
-    <string name="load_settings_aspect">Carregar ajustes e aspeto</string>
+    <string name="save_settings_aspect">Salvar preferências</string>
+    <string name="load_settings_aspect">Carregar preferências</string>
     <string name="backup_section_title">Backup de eventos</string>
     <string name="link_google_account">Vincular conta Google</string>
     <string name="account_linked">Conta vinculada</string>
@@ -268,6 +268,7 @@
     <string name="unlink_account_confirmation">Desvincular conta Google? Os backups automáticos serão interrompidos.</string>
     <string name="unlink_action">DESVINCULAR</string>
     <string name="backup_frequency">Frequência de backup</string>
+    <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diária</string>
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensal</string>
