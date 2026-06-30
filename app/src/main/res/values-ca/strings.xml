@@ -214,6 +214,8 @@
     <string name="not_scheduled">No programat</string>
     <string name="no_logs_found">No hi ha logs registrats encara.</string>
     <string name="copy_action">Copiar</string>
+    <string name="sync_alarms">Sincronitzar alarmes</string>
+    <string name="sync_alarms_success">Neteja finalitzada: %1$d alarmes òrfenes eliminades.</string>
     <string name="selected_count">%1$d seleccionats</string>
     <string name="delete_multiple_confirmation">Vols eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
     <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>

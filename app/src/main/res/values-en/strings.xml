@@ -214,6 +214,8 @@
     <string name="not_scheduled">Not scheduled</string>
     <string name="no_logs_found">No logs recorded yet.</string>
     <string name="copy_action">Copy</string>
+    <string name="sync_alarms">Sync alarms</string>
+    <string name="sync_alarms_success">Cleanup finished: %1$d orphan alarms removed.</string>
     <string name="selected_count">%1$d selected</string>
     <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
     <string name="events_deleted_count">%1$d events deleted.</string>

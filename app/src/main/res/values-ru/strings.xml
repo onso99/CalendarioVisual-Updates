@@ -214,6 +214,8 @@
     <string name="not_scheduled">Не запланировано</string>
     <string name="no_logs_found">Журналы пока не записаны.</string>
     <string name="copy_action">Копировать</string>
+    <string name="sync_alarms">Синхронизировать будильники</string>
+    <string name="sync_alarms_success">Очистка завершена: удалено %1$d бесхозных будильников.</string>
     <string name="selected_count">Выбрано: %1$d</string>
     <string name="delete_multiple_confirmation">Вы хотите удалить эти %1$d события? Это действие необратимо.</string>
     <string name="events_deleted_count">Удалено событий: %1$d.</string>

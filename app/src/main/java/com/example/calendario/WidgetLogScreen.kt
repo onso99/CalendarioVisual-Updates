@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -48,6 +50,15 @@ fun LogScreen(onBack: () -> Unit) {
                     }
                 },
                 actions = {
+                    IconButton(onClick = { 
+                        LogCollector.addLog(">>> MANUAL: Sincronización de alarmas forzada por el usuario.")
+                        val purged = AlarmUtils.rescheduleAllAlarms(context)
+                        logText = LogCollector.getLogs() // Refrescar pantalla
+                        val msg = context.resources.getString(R.string.sync_alarms_success, purged)
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                    }) {
+                        Icon(Icons.Default.NotificationsActive, contentDescription = stringResource(id = R.string.sync_alarms))
+                    }
                     IconButton(onClick = { 
                         clipboardManager.setText(AnnotatedString(logText))
                     }) {

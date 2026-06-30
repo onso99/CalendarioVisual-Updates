@@ -179,28 +179,43 @@ object AlarmUtils {
         } catch (_: Exception) {}
     }
 
-    fun rescheduleAllAlarms(context: Context) {
+    fun rescheduleAllAlarms(context: Context): Int {
         val eventsMap = loadEventsFromPrefs(context)
         val allEvents = eventsMap.values.flatten()
+        val allEventIds = allEvents.map { it.id.toString() }.toSet()
         
-        // 1. LIMPIEZA DE HISTORIAL: Quitar registros de eventos que ya no existen o son muy antiguos
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
         val now = LocalDateTime.now()
+        var purgedCount = 0
 
+        // 1. LIMPIEZA DE HUÉRFANOS Y HISTORIAL
+        LogCollector.addLog("ALARMA: Limpiando alarmas huérfanas...")
         prefs.edit(commit = true) {
-            allEvents.forEach { event ->
-                val offset = getAlarmOffset(context, event.id)
-                if (offset != null) {
-                    val referenceDateTime = if (event.isAllDay || event.startTime == null) {
-                        event.date.atStartOfDay()
-                    } else {
-                        LocalDateTime.of(event.date, event.startTime)
-                    }
-                    val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
-
-                    // Si la alarma ya pasó y NO es recurrente, apagamos el switch (Auto-apagado)
-                    if (alarmDateTime.isBefore(now) && event.rrule == null) {
-                        remove(event.id.toString())
+            // Buscamos IDs en las preferencias que ya no existan en el calendario real
+            val keysInPrefs = prefs.all.keys.toList()
+            keysInPrefs.forEach { eventIdStr ->
+                val eventId = eventIdStr.toLongOrNull() ?: return@forEach
+                
+                if (!allEventIds.contains(eventIdStr)) {
+                    // El evento ya no existe: Cancelamos en el sistema y borramos rastro
+                    cancelAlarm(context, eventId) 
+                    remove(eventIdStr)
+                    purgedCount++
+                    LogCollector.addLog("ALARMA: Purgado ID huérfano $eventId (Probablemente 'Prueba')")
+                } else {
+                    // El evento existe: Verificamos si ya pasó para auto-apagar el switch
+                    val event = allEvents.find { it.id == eventId }
+                    if (event != null && event.rrule == null) {
+                        val offset = getAlarmOffset(context, eventId) ?: 20
+                        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+                            event.date.atStartOfDay()
+                        } else {
+                            LocalDateTime.of(event.date, event.startTime)
+                        }
+                        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+                        if (alarmDateTime.isBefore(now)) {
+                            remove(eventIdStr)
+                        }
                     }
                 }
             }
@@ -228,6 +243,7 @@ object AlarmUtils {
             }
         }
         LogCollector.addLog("ALARMA: Fin sincronización ($count activas)")
+        return purgedCount
     }
 
     /**

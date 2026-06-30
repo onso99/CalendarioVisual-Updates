@@ -214,6 +214,8 @@
     <string name="not_scheduled">Programatu gabe</string>
     <string name="no_logs_found">Ez dago log-ik erregistratuta oraindik.</string>
     <string name="copy_action">Kopiatu</string>
+    <string name="sync_alarms">Sinkronizatu alarmak</string>
+    <string name="sync_alarms_success">Garbiketa amaituta: %1$d alarman umezurtz ezabatu dira.</string>
     <string name="selected_count">%1$d hautatuta</string>
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
