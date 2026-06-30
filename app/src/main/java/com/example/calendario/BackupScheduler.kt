@@ -29,7 +29,7 @@ object BackupScheduler {
 
     /**
      * Asegura que el trabajo esté programado sin reiniciar el contador de tiempo.
-     * Incluye inspección de salud del respaldo.
+     * Incluye auto-sanación si la tarea ha desaparecido del sistema.
      */
     fun ensureBackupScheduled(context: Context) {
         val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
@@ -37,15 +37,22 @@ object BackupScheduler {
         
         if (!isAutoBackupEnabled) return
 
+        val workManager = WorkManager.getInstance(context)
+        val workInfos = workManager.getWorkInfosForUniqueWork(BACKUP_WORK_NAME).get()
+        
+        if (workInfos.isNullOrEmpty()) {
+            LogCollector.addLog(">>> AUTO-SANACIÓN: La tarea había desaparecido. Recreándola...")
+        }
+
         val lastBackup = appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
         val frequency = appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "daily") ?: "daily"
         val intervalMillis = TimeUnit.DAYS.toMillis(getInterval(frequency))
         
-        // INSPECTOR: Detectar retrasos (Nivel 3)
+        // INSPECTOR: Detectar retrasos
         if (lastBackup != 0L) {
             val diff = System.currentTimeMillis() - lastBackup
             if (diff > (intervalMillis + TimeUnit.HOURS.toMillis(6))) { // Margen de 6h de gracia
-                LogCollector.addLog(">>> ALERTA INSPECTOR: El respaldo lleva ${diff/3600000}h de retraso. Posible bloqueo de batería.")
+                LogCollector.addLog(">>> ALERTA INSPECTOR: Respaldo con ${diff/3600000}h de retraso.")
             }
         }
 
@@ -59,10 +66,9 @@ object BackupScheduler {
             .build()
 
         // KEEP asegura que si ya existe un trabajo con este nombre, NO lo toque (no reinicia las 24h)
-        // Pero usamos UPDATE para que si ha cambiado la versión de la app, se apliquen las nuevas mejoras de código del Worker
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        workManager.enqueueUniquePeriodicWork(
             BACKUP_WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE,
+            ExistingPeriodicWorkPolicy.KEEP,
             backupRequest
         )
     }

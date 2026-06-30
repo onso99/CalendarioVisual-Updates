@@ -77,8 +77,9 @@ class UpdateCalendarDataWorker(
             // Reprogramamos todas las alarmas para asegurar que coinciden con los nuevos datos sincronizados
             AlarmUtils.rescheduleAllAlarms(context)
             
-            // SONDA DE DIAGNÓSTICO: Comprobar qué pasa con Drive sin forzar nada
+            // SISTEMA DE AUTO-SANACIÓN: Diagnóstico y reparación de la tarea de Drive
             BackupScheduler.debugBackupStatus(context)
+            BackupScheduler.ensureBackupScheduled(context)
             
             // Notificamos al widget de forma directa
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
