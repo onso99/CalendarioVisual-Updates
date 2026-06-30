@@ -77,29 +77,6 @@ object BackupScheduler {
         )
     }
 
-    /**
-     * Sonda de diagnóstico: Consulta el estado real de la tarea en WorkManager
-     * y lo reporta al LogCollector sin alterar la ejecución.
-     */
-    fun debugBackupStatus(context: Context) {
-        val workManager = WorkManager.getInstance(context)
-        val workInfos = workManager.getWorkInfosForUniqueWork(BACKUP_WORK_NAME).get()
-        
-        if (workInfos.isNullOrEmpty()) {
-            LogCollector.addLog(">>> DIAGNÓSTICO: La tarea '$BACKUP_WORK_NAME' NO existe en el sistema.")
-        } else {
-            val info = workInfos[0]
-            val state = info.state
-            val runAttemptCount = info.runAttemptCount
-            
-            LogCollector.addLog(">>> DIAGNÓSTICO: Tarea Drive: $state | Intentos: $runAttemptCount")
-            
-            if (state == WorkInfo.State.ENQUEUED) {
-                LogCollector.addLog(">>> DIAGNÓSTICO: Esperando condiciones (Red/Batería)...")
-            }
-        }
-    }
-
     private fun getInterval(frequency: String): Long {
         return when (frequency) {
             "daily" -> 1L
