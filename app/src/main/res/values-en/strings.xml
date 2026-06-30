@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">Snooze (minutes)</string>
     <string name="system_permissions">System permissions</string>
     <string name="permissions_dialog_title">Permission Status</string>
-    <string name="calendar_permission_label">Calendar: event management</string>
-    <string name="notifications_permission_label">Notifications: status bar warnings</string>
-    <string name="alarms_permission_label">Alarms: precise and full screen warnings</string>
+    <string name="calendar_permission_label">Calendar</string>
+    <string name="notifications_permission_label">Notifications</string>
+    <string name="alarms_permission_label">Alarms</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Battery</string>
+
+    <string name="status_granted">ALLOWED</string>
+    <string name="status_granted_f">ALLOWED</string>
+    <string name="status_denied">NO PERMISSION</string>
+    <string name="status_full_screen">FULL SCREEN</string>
+    <string name="status_no_full_screen">NO FULL SCREEN</string>
+    <string name="status_restricted">RESTRICTED</string>
+    <string name="status_linked">LINKED</string>
+    <string name="status_unlinked">NOT LINKED</string>
+    <string name="status_unrestricted">UNRESTRICTED</string>
+    <string name="status_optimized">OPTIMIZED (RESTRICTED)</string>
     <string name="fix_permission">SETTINGS</string>
     <string name="history">History</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">Save settings and appearance</string>
     <string name="load_settings_aspect">Load settings and appearance</string>
     <string name="backup_section_title">Event backup</string>
-    <string name="google_drive_permission_label">Google Drive: cloud backup</string>
     <string name="link_google_account">Link Google account</string>
     <string name="account_linked">Account linked</string>
     <string name="account_linked_success">Account linked successfully</string>

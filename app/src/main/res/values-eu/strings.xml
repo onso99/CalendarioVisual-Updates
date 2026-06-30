@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">Atzeratu (minutuak)</string>
     <string name="system_permissions">Sistemaren baimenak</string>
     <string name="permissions_dialog_title">Baimenen Egoera</string>
-    <string name="calendar_permission_label">Egutegia: gertaeren kudeaketa</string>
-    <string name="notifications_permission_label">Jakinarazpenak: oharrak goiko barran</string>
-    <string name="alarms_permission_label">Alarmak: oharrak orduan eta pantaila osoan</string>
+    <string name="calendar_permission_label">Egutegia</string>
+    <string name="notifications_permission_label">Jakinarazpenak</string>
+    <string name="alarms_permission_label">Alarmak</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Bateria</string>
+
+    <string name="status_granted">BAIMENDUA</string>
+    <string name="status_granted_f">BAIMENDUAK</string>
+    <string name="status_denied">BAIMENIK GABE</string>
+    <string name="status_full_screen">PANTAILA OSOA</string>
+    <string name="status_no_full_screen">PANTAILA OSORIK GABE</string>
+    <string name="status_restricted">MUGATUA</string>
+    <string name="status_linked">LOTUTA</string>
+    <string name="status_unlinked">LOTU GABE</string>
+    <string name="status_unrestricted">MUGARIK GABE</string>
+    <string name="status_optimized">OPTIMIZATUA (MUGATUA)</string>
     <string name="fix_permission">EZARPENAK</string>
     <string name="history">Historia</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">Gorde ezarpenak eta itxura</string>
     <string name="load_settings_aspect">Kargatu ezarpenak eta itxura</string>
     <string name="backup_section_title">Gertaeren babeskopia</string>
-    <string name="google_drive_permission_label">Google Drive: segurtasun-kopia hodeian</string>
     <string name="link_google_account">Lotu Google kontua</string>
     <string name="account_linked">Kontua lotuta</string>
     <string name="account_linked_success">Kontua ongi lotu da</string>
@@ -277,14 +289,13 @@
 
     <string name="birthday_keywords">urtebetetze,urtebetetzeak</string>
     <string name="greeting_keywords">zorionak</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Gaur</string>
-    <string name="preview_date_1">05/22</string>
+    <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Plangintza bilera</string>
     <string name="preview_jue">Ost</string>
-    <string name="preview_date_2">05/23</string>
+    <string name="preview_date_2">23/05</string>
     <string name="preview_event_2">Bazkaria bezeroarekin</string>
     <string name="preview_vie">Osl</string>
-    <string name="preview_date_3">05/24</string>
+    <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Proiektu entrega</string>
 </resources>

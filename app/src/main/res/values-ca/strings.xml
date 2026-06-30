@@ -106,7 +106,7 @@
     <string name="help_event_management_1">Prem un dia del calendari mensual per veure els seus esdeveniments o afegir-ne un de nou. També es poden crear esdeveniments prement la icona (+) de la capçalera.</string>
     <string name="help_event_management_2">Els esdeveniments (únics o repetits) es poden editar i esborrar en qualsevol calendari que sigui editable.</string>
     <string name="help_section_event_list">Llista d\'esdeveniments</string>
-    <string name="help_event_list_1">Sota el calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendents o Tots prement el botó Pendents-Tots. Cada esdeveniment de la llista pot ser editat i esborrat.</string>
+    <string name="help_event_list_1">Sota el calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendentes o Tots prement el botó Pendentes-Tots. Cada esdeveniment de la llista pot ser editat i esborrat.</string>
     <string name="help_section_customization">Personalització</string>
     <string name="help_customization_1">Des del menú Ajustos es pot triar el mode Clar i Fosc. També es poden personalitzar els colors de la interfície i Importar i Exportar els temes de color per compartir-los.</string>
     <string name="help_section_holiday_manager">Gestor de Festius</string>
@@ -157,7 +157,7 @@
     <string name="current_month_cell">Cel·la del mes</string>
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="predefined_themes">Temes</string>
-    <string name="themes_v6">Temes</string>
+    <string name="themes_v6">Temas</string>
 
     <string name="permission_denied_title">Permís Denegat</string>
     <string name="permission_denied_text">No es pot desar l\'esdeveniment perquè l\'aplicació no té permís per escriure al calendari. Si us plau, concedeix el permís des dels ajustos de l\'aplicació.</string>
@@ -172,10 +172,10 @@
     <string name="error_deleting_event">Error en eliminar l\'esdeveniment</string>
     <string name="error_canceling_event_instance">Error en cancel·lar la instància de l\'esdeveniment</string>
     <string name="permission_denied_calendar">Error: Permís denegat per escriure al calendari.</string>
-    <string name="unexpected_error_create">Error inesperat en crear l\'esdeveniment: %1$s</string>
-    <string name="unexpected_error_update">Error inesperat en actualitzar l\'esdeveniment: %1$s</string>
-    <string name="unexpected_error_delete">Error inesperat en eliminar l\'esdeveniment: %1$s</string>
-    <string name="unexpected_error_cancel">Error inesperat en cancel·lar l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_create">Error inesperado en crear l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_update">Error inesperado en actualitzar l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_delete">Error inesperado en eliminar l\'esdeveniment: %1$s</string>
+    <string name="unexpected_error_cancel">Error inesperado en cancel·lar l\'esdeveniment: %1$s</string>
 
     <string name="edit_recurring_event_dialog_title">Editar esdeveniment recurrent</string>
     <string name="edit_recurring_event_dialog_single_event">Només aquest esdeveniment</string>
@@ -224,7 +224,7 @@
     <string name="error_importing_backup">Error en restaurar la còpia: %1$s</string>
     <string name="invalid_backup_file">Fitxer de còpia de seguretat no vàlid</string>
 
-    <string name="import_holidays_confirm_title">Importar festius</string>
+    <string name="import_holidays_confirm_title">Importar festivos</string>
     <string name="import_holidays_confirm_message">Ja tens festius configurats. Vols afegir-los a la teva llista actual o reemplaçar-los per complet?</string>
     <string name="import_holidays_merge">Afegir</string>
     <string name="import_holidays_replace">Reemplaçar</string>
@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">Postposar (minuts)</string>
     <string name="system_permissions">Permisos del sistema</string>
     <string name="permissions_dialog_title">Estat de Permisos</string>
-    <string name="calendar_permission_label">Calendari: gestió d\'esdeveniments</string>
-    <string name="notifications_permission_label">Notificacions: avisos a la barra superior</string>
-    <string name="alarms_permission_label">Alarmes: avisos en hora i a pantalla completa</string>
+    <string name="calendar_permission_label">Calendari</string>
+    <string name="notifications_permission_label">Notificacions</string>
+    <string name="alarms_permission_label">Alarmas</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Bateria</string>
+
+    <string name="status_granted">PERMÈS</string>
+    <string name="status_granted_f">PERMESES</string>
+    <string name="status_denied">SENSE PERMÍS</string>
+    <string name="status_full_screen">PANTALLA COMPLETA</string>
+    <string name="status_no_full_screen">SENSE PANTALLA COMPLETA</string>
+    <string name="status_restricted">RESTRINGIDA</string>
+    <string name="status_linked">VINCULADA</string>
+    <string name="status_unlinked">SENSE VINCULAR</string>
+    <string name="status_unrestricted">SENSE RESTRICCIONS</string>
+    <string name="status_optimized">OPTIMITZADA (RESTRINGIDA)</string>
     <string name="fix_permission">AJUSTOS</string>
     <string name="history">Historial</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">Desar ajustos i aspecte</string>
     <string name="load_settings_aspect">Carregar ajustos i aspecte</string>
     <string name="backup_section_title">Respatller d\'esdeveniments</string>
-    <string name="google_drive_permission_label">Google Drive: còpia de seguretat al núvol</string>
     <string name="link_google_account">Vincular compte de Google</string>
     <string name="account_linked">Compte vinculat</string>
     <string name="account_linked_success">Compte vinculat amb èxit</string>
@@ -277,7 +289,6 @@
 
     <string name="birthday_keywords">aniversari,aniversaris</string>
     <string name="greeting_keywords">feliç,felicitats,felicitem</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Avui</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Reunió de planificació</string>

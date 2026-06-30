@@ -133,7 +133,7 @@
     <string name="no_pending_events_this_month">Não existem eventos pendentes para este mês.</string>
     <string name="no_events_this_month">Não existem eventos para este mês.</string>
     <string name="widget_no_events">Não existem eventos</string>
-    <string name="monthly_calendar">Calendário Mensal</string>
+    <string name="monthly_calendar">Calendário Mensual</string>
     <string name="theme_exported_successfully">Tema exportado com sucesso</string>
     <string name="error_exporting_theme">Erro ao exportar o tema: %1$s</string>
     <string name="widget">Widget</string>
@@ -167,13 +167,13 @@
     <string name="title_empty_error">O título não pode estar vazio. Por favor, introduza um título para o evento.</string>
 
     <string name="event_saved_successfully">Evento salvo</string>
-    <string name="error_saving_event">Erro ao salvar o evento. Verifique os calendários selecionados.</string>
-    <string name="event_updated_successfully">Evento atualizado</string>
+    <string name="error_saving_event">Erro ao salvar o evento. Verifique os calendarios selecionados.</string>
+    <string name="event_updated_successfully">Evento actualizado</string>
     <string name="error_deleting_event">Erro ao eliminar o evento</string>
-    <string name="error_canceling_event_instance">Erro ao cancelar a instância do evento</string>
+    <string name="error_canceling_event_instance">Erro ao cancelar a instancia do evento</string>
     <string name="permission_denied_calendar">Erro: Permissão negada para escrever no calendário.</string>
     <string name="unexpected_error_create">Erro inesperado ao criar o evento: %1$s</string>
-    <string name="unexpected_error_update">Erro inesperado ao atualizar o evento: %1$s</string>
+    <string name="unexpected_error_update">Erro inesperado ao actualizar o evento: %1$s</string>
     <string name="unexpected_error_delete">Erro inesperado ao eliminar o evento: %1$s</string>
     <string name="unexpected_error_cancel">Erro inesperado ao cancelar o evento: %1$s</string>
 
@@ -188,7 +188,7 @@
     <string name="holiday_manager_title">Gestor de Feriados</string>
     <string name="festivo">Feriado</string>
     <string name="laborable">Dia útil</string>
-    <string name="holiday_updated_successfully">Ajuste de feriado atualizado</string>
+    <string name="holiday_updated_successfully">Ajuste de feriado actualizado</string>
 
     <string name="holidays_section">Feriados</string>
     <string name="import_holidays">Importar feriados…</string>
@@ -209,45 +209,57 @@
     <string name="share_multiple_message">📅 Partilho contigo %1$d eventos do meu calendário</string>
     <string name="calendar_events_subject">Eventos de Calendário</string>
     <string name="debug_title">Depuração</string>
-    <string name="next_refresh_label">Próxima atualização: %1$s</string>
+    <string name="next_refresh_label">Próxima actualização: %1$s</string>
     <string name="next_refresh_pending">em 15 min.</string>
     <string name="not_scheduled">Não agendado</string>
     <string name="no_logs_found">Ainda não existem registos de log.</string>
     <string name="copy_action">Copiar</string>
-    <string name="selected_count">%1$d selecionados</string>
-    <string name="delete_multiple_confirmation">Deseja eliminar estes %1$d eventos? Esta ação não pode ser desfeita.</string>
+    <string name="selected_count">%1$d seleccionados</string>
+    <string name="delete_multiple_confirmation">Deseja eliminar estes %1$d eventos? Esta acção não pode ser desfeita.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
 
     <string name="backup_exported_successfully">Cópia de segurança criada com sucesso</string>
     <string name="backup_imported_successfully">Cópia de segurança restaurada com sucesso</string>
     <string name="error_exporting_backup">Erro ao criar a cópia: %1$s</string>
-    <string name="error_importing_backup">Erro ao restaurar la cópia: %1$s</string>
+    <string name="error_importing_backup">Erro ao restaurar a cópia: %1$s</string>
     <string name="invalid_backup_file">Ficheiro de cópia de segurança inválido</string>
 
     <string name="import_holidays_confirm_title">Importar feriados</string>
-    <string name="import_holidays_confirm_message">Já tem feriados configurados. Deseja adicioná-los à sua lista atual ou substituí-los completamente?</string>
+    <string name="import_holidays_confirm_message">Já tem feriados configurados. Deseja adicioná-los à sua lista actual ou substituí-los completamente?</string>
     <string name="import_holidays_merge">Adicionar</string>
     <string name="import_holidays_replace">Substituir</string>
 
-    <string name="alarm">Alarma</string>
-    <string name="alarm_time">Hora da alarma</string>
+    <string name="alarm">Alarme</string>
+    <string name="alarm_time">Hora do alarme</string>
     <string name="stop_alarm">PARAR</string>
     <string name="snooze_alarm">ADIAR</string>
     <string name="alarm_offset_label">Anticipação (minutos)</string>
     <string name="snooze_interval_label">Adiar (minutos)</string>
     <string name="system_permissions">Permissões do sistema</string>
     <string name="permissions_dialog_title">Estado de Permissões</string>
-    <string name="calendar_permission_label">Calendário: gestão de eventos</string>
-    <string name="notifications_permission_label">Notificações: avisos na barra superior</string>
-    <string name="alarms_permission_label">Alarmes: avisos na hora e em ecrã total</string>
+    <string name="calendar_permission_label">Calendário</string>
+    <string name="notifications_permission_label">Notificações</string>
+    <string name="alarms_permission_label">Alarmes</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Bateria</string>
+
+    <string name="status_granted">PERMITIDO</string>
+    <string name="status_granted_f">PERMITIDAS</string>
+    <string name="status_denied">SEM PERMISSÃO</string>
+    <string name="status_full_screen">ECRÃ TOTAL</string>
+    <string name="status_no_full_screen">SEM ECRÃ TOTAL</string>
+    <string name="status_restricted">RESTRITA</string>
+    <string name="status_linked">COLLEGADA</string>
+    <string name="status_unlinked">SEM COLLEGAMENTO</string>
+    <string name="status_unrestricted">SEM RESTRICÇÕES</string>
+    <string name="status_optimized">OPTIMIZADA (RESTRITA)</string>
     <string name="fix_permission">AJUSTES</string>
     <string name="history">Histórico</string>
 
-    <!-- Respaldo de eventos -->
+    <!-- Backup de eventos -->
     <string name="save_settings_aspect">Salvar ajustes e aspeto</string>
     <string name="load_settings_aspect">Carregar ajustes e aspeto</string>
-    <string name="backup_section_title">Respaldo de eventos</string>
-    <string name="google_drive_permission_label">Google Drive: cópia de segurança na nuvem</string>
+    <string name="backup_section_title">Backup de eventos</string>
     <string name="link_google_account">Vincular conta Google</string>
     <string name="account_linked">Conta vinculada</string>
     <string name="account_linked_success">Conta vinculada com sucesso</string>
@@ -266,18 +278,17 @@
     <string name="restore_from_drive">Restaurar do Drive</string>
     <string name="restoring">Restaurando…</string>
     <string name="restore_confirm_title">Restaurar eventos?</string>
-    <string name="restore_confirm_message">Os eventos guardados serão substituídos pela cópia do Google Drive. Os eventos atuais do sistema não serão afetados.</string>
+    <string name="restore_confirm_message">Os eventos guardados serão substituídos pela cópia do Google Drive. Os eventos actuais do sistema não serão afectados.</string>
     <string name="restore_success">Eventos restaurados com sucesso</string>
     <string name="restore_error">Nenhuma cópia válida encontrada no Drive</string>
     <string name="last_backup">Última cópia: %s</string>
     <string name="never">Nunca</string>
-    <string name="error_updating_data">Erro ao atualizar os dados.</string>
+    <string name="error_updating_data">Erro ao actualizar os dados.</string>
     <string name="confirm_delete_adjustment">Deseja eliminar este ajuste? O estado original do calendário será restaurado.</string>
     <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">aniversário,parabéns</string>
     <string name="greeting_keywords">feliz,felicitações,parabéns</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Hoje</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Reunião de planeamento</string>
@@ -286,5 +297,5 @@
     <string name="preview_event_2">Almoço com cliente</string>
     <string name="preview_vie">Sex</string>
     <string name="preview_date_3">24/05</string>
-    <string name="preview_event_3">Entrega de projeto</string>
+    <string name="preview_event_3">Entrega de projecto</string>
 </resources>

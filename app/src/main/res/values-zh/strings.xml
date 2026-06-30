@@ -110,7 +110,7 @@
     <string name="help_section_customization">个性化</string>
     <string name="help_customization_1">从“设置”菜单中可以选择明亮和黑暗模式。还可以自定义界面颜色，并导入和导出颜色主题以进行共享。</string>
     <string name="help_section_holiday_manager">节假日管理</string>
-    <string name="help_holiday_manager_1">此功能允许您手动将特定日期标记为节假日或工作日，而不受系统日历或导入事件的影响。将日期标记为节假日时，其数字将在月视图和年视图中以相应的颜色突出显示。</string>
+    <string name="help_holiday_manager_1">此功能允许您手动将特定日期标记为节假日 or 工作日，而不受系统日历或导入事件的影响。将日期标记为节假日时，其数字将在月视图和年视图中以相应的颜色突出显示。</string>
     <string name="help_section_widget">小部件</string>
     <string name="help_widget_1">该应用程序包含一个用于主屏幕的小部件，显示即将到来的事件。您可以通过选择要显示的事件数量、更改字体大小和修改其颜色来对其外观进行自定义。</string>
     <string name="copied_to_clipboard">已复制：%1$s</string>
@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">稍后提醒间隔 (分钟)</string>
     <string name="system_permissions">系统权限</string>
     <string name="permissions_dialog_title">权限状态</string>
-    <string name="calendar_permission_label">日历：事件管理</string>
-    <string name="notifications_permission_label">通知：状态栏警报</string>
-    <string name="alarms_permission_label">闹钟：准时及全屏警报</string>
+    <string name="calendar_permission_label">日历</string>
+    <string name="notifications_permission_label">通知</string>
+    <string name="alarms_permission_label">闹钟</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">电池</string>
+
+    <string name="status_granted">允许</string>
+    <string name="status_granted_f">允许</string>
+    <string name="status_denied">无权限</string>
+    <string name="status_full_screen">全屏显示</string>
+    <string name="status_no_full_screen">无全屏显示</string>
+    <string name="status_restricted">已受限</string>
+    <string name="status_linked">已关联</string>
+    <string name="status_unlinked">未关联</string>
+    <string name="status_unrestricted">不限制</string>
+    <string name="status_optimized">已优化 (受限)</string>
     <string name="fix_permission">设置</string>
     <string name="history">历史记录</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">保存设置和外观</string>
     <string name="load_settings_aspect">加载设置和外观</string>
     <string name="backup_section_title">事件备份</string>
-    <string name="google_drive_permission_label">Google 云端硬盘：云端备份</string>
     <string name="link_google_account">关联 Google 帐号</string>
     <string name="account_linked">帐号已关联</string>
     <string name="account_linked_success">帐号关联成功</string>
@@ -262,13 +274,13 @@
     <string name="sync_now">立即同步</string>
     <string name="syncing">同步中…</string>
     <string name="sync_success">同步成功</string>
-    <string name="sync_error_drive">云端硬盘错误。请检查您的帐号。</string>
-    <string name="restore_from_drive">从云端硬盘还原</string>
+    <string name="sync_error_drive">Google Drive 错误。请检查您的帐号。</string>
+    <string name="restore_from_drive">从 Google Drive 还原</string>
     <string name="restoring">还原中…</string>
     <string name="restore_confirm_title">还原事件？</string>
-    <string name="restore_confirm_message">已保存的事件将被 Google 云端硬盘副本替换。当前系统事件不会受到影响。</string>
+    <string name="restore_confirm_message">已保存的事件将被 Google Drive 副本替换。当前系统事件不会受到影响。</string>
     <string name="restore_success">事件还原成功</string>
-    <string name="restore_error">在云端硬盘中未找到有效的副本</string>
+    <string name="restore_error">在 Google Drive 中未找到有效的副本</string>
     <string name="last_backup">上次备份：%s</string>
     <string name="never">从未</string>
     <string name="error_updating_data">更新数据时出错。</string>
@@ -277,7 +289,6 @@
 
     <string name="birthday_keywords">生日,纪念日</string>
     <string name="greeting_keywords">生日快乐,恭喜,祝贺</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">今天</string>
     <string name="preview_date_1">05/22</string>
     <string name="preview_event_1">规划会议</string>

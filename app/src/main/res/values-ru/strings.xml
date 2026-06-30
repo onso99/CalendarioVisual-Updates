@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">Отложить (минуты)</string>
     <string name="system_permissions">Разрешения системы</string>
     <string name="permissions_dialog_title">Статус разрешений</string>
-    <string name="calendar_permission_label">Календарь: управление событиями</string>
-    <string name="notifications_permission_label">Уведомления: предупреждения в строке состояния</string>
-    <string name="alarms_permission_label">Будильники: точное время и полноэкранные предупреждения</string>
+    <string name="calendar_permission_label">Календарь</string>
+    <string name="notifications_permission_label">Уведомления</string>
+    <string name="alarms_permission_label">Будильники</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Батарея</string>
+
+    <string name="status_granted">РАЗРЕШЕНО</string>
+    <string name="status_granted_f">РАЗРЕШЕНО</string>
+    <string name="status_denied">НЕТ РАЗРЕШЕНИЯ</string>
+    <string name="status_full_screen">ПОЛНЫЙ ЭКРАН</string>
+    <string name="status_no_full_screen">БЕЗ ПОЛНОГО ЭКРАНА</string>
+    <string name="status_restricted">ОГРАНИЧЕНО</string>
+    <string name="status_linked">СВЯЗАНО</string>
+    <string name="status_unlinked">НЕ СВЯЗАНО</string>
+    <string name="status_unrestricted">БЕЗ ОГРАНИЧЕНИЙ</string>
+    <string name="status_optimized">ОПТИМИЗИРОВАНО (ОГРАНИЧЕНО)</string>
     <string name="fix_permission">НАСТРОЙКИ</string>
     <string name="history">История</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">Сохранить настройки и внешний вид</string>
     <string name="load_settings_aspect">Загрузить настройки и внешний вид</string>
     <string name="backup_section_title">Резервное копирование событий</string>
-    <string name="google_drive_permission_label">Google Диск: облачное резервное копирование</string>
     <string name="link_google_account">Связать аккаунт Google</string>
     <string name="account_linked">Аккаунт связан</string>
     <string name="account_linked_success">Аккаунт успешно привязан</string>
@@ -273,11 +285,10 @@
     <string name="never">Никогда</string>
     <string name="error_updating_data">Ошибка при обновлении данных.</string>
     <string name="confirm_delete_adjustment">Вы хотите удалить эту настройку? Будет восстановлено исходное состояние календаря.</string>
-    <string name="not_applicable">Н/А</string>
+    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">день рождения,юбилей</string>
     <string name="greeting_keywords">поздравляю,поздравляем,с днем рождения</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Сегодня</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Планерка</string>

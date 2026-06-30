@@ -91,7 +91,7 @@
     <string name="widget_text_adjustment">Regolazione testo</string>
     <string name="background_color">Colore di sfondo</string>
     <string name="event_color">Colore eventi</string>
-    <string name="today_event_color">Eventi di oggi</string>
+    <string name="today_event_color">Eventos de hoy</string>
     <string name="about">Informazioni</string>
     <string name="discard_changes_title">Abbandona modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle abbandonare?</string>
@@ -101,14 +101,14 @@
     <string name="export">Salva</string>
     <string name="help_section_calendar_views">Viste del calendario</string>
     <string name="help_calendar_views_1">L\'applicazione ha due viste principali: Mensile e Annuale. Puoi passare dall\'una all\'altra toccando l\'anno nell\'intestazione.</string>
-    <string name="help_calendar_views_2">Nella vista mensile, scorri a sinistra o a destra per cambiare mese. La freccia in alto a sinistra nell\'intestazione tornerà al mese corrente.</string>
+    <string name="help_calendar_views_2">Nella vista mensile, scorri a sinistra o a destra per cambiare mese. La frecha in alto a sinistra nell\'intestazione tornerà al mese corrente.</string>
     <string name="help_section_event_management">Gestione eventi</string>
     <string name="help_event_management_1">Tocca un giorno del calendario mensile per vedere i suoi eventi o aggiungerne uno nuovo. Gli eventi possono anche essere creati toccando l\'icona (+) nell\'intestazione.</string>
     <string name="help_event_management_2">Gli eventi (singoli o ripetuti) possono essere modificati ed eliminati in qualsiasi calendario che sia modificabile.</string>
     <string name="help_section_event_list">Lista eventi</string>
     <string name="help_event_list_1">Sotto il calendario mensile viene visualizzata la lista degli eventi del mese. Per il mese corrente, puoi scegliere tra vedere gli eventi In sospeso o Tutti toccando il pulsante In sospeso-Tutti. Ogni evento della lista può essere modificato ed eliminato.</string>
     <string name="help_section_customization">Personalizzazione</string>
-    <string name="help_customization_1">Dal menu Impostazioni puoi scegliere le modalità Chiaro e Scuro. Puoi anche personalizzare i colori dell\'interfaccia e Importar ed Esportare i temi di colore per condividerli.</string>
+    <string name="help_customization_1">Dal menu Impostazioni puoi scegliere le modalità Chiaro e Scuro. Puoi anche personalizzare i colori dell\'interfaccia e Importar ed Esportare i temi de colore per condividerli.</string>
     <string name="help_section_holiday_manager">Gestore festività</string>
     <string name="help_holiday_manager_1">Questa funzione permette di contrassegnare manualmente giorni specifici come festivi o lavorativi, indipendentemente da quanto indicato dal calendario di sistema o dagli eventi importati. Contrassegnando un giorno come festivo, il suo numero sarà evidenziato nel colore corrispondente nelle viste mensile e annuale.</string>
     <string name="help_section_widget">Widget</string>
@@ -237,17 +237,29 @@
     <string name="snooze_interval_label">Posticipa (minuti)</string>
     <string name="system_permissions">Permessi di sistema</string>
     <string name="permissions_dialog_title">Stato dei permessi</string>
-    <string name="calendar_permission_label">Calendario: gestione eventi</string>
-    <string name="notifications_permission_label">Notifiche: avvisi nella barra di stato</string>
-    <string name="alarms_permission_label">Allarmi: avvisi precisi e a schermo intero</string>
+    <string name="calendar_permission_label">Calendario</string>
+    <string name="notifications_permission_label">Notifiche</string>
+    <string name="alarms_permission_label">Alarmas</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Batteria</string>
+
+    <string name="status_granted">AUTORIZZATO</string>
+    <string name="status_granted_f">AUTORIZZATE</string>
+    <string name="status_denied">SENZA PERMESSO</string>
+    <string name="status_full_screen">A SCHERMO INTERO</string>
+    <string name="status_no_full_screen">SENZA SCHERMO INTERO</string>
+    <string name="status_restricted">LIMITATA</string>
+    <string name="status_linked">COLLEGATA</string>
+    <string name="status_unlinked">NON COLLEGATA</string>
+    <string name="status_unrestricted">SENZA LIMITAZIONI</string>
+    <string name="status_optimized">OTTIMIZZATA (LIMITATA)</string>
     <string name="fix_permission">IMPOSTAZIONI</string>
     <string name="history">Cronologia</string>
 
     <!-- Backup degli eventi -->
     <string name="save_settings_aspect">Salva impostazioni e aspetto</string>
     <string name="load_settings_aspect">Carica impostazioni e aspetto</string>
-    <string name="backup_section_title">Respatto degli eventi</string>
-    <string name="google_drive_permission_label">Google Drive: backup nel cloud</string>
+    <string name="backup_section_title">Backup degli eventi</string>
     <string name="link_google_account">Collega account Google</string>
     <string name="account_linked">Account collegato</string>
     <string name="account_linked_success">Account collegato con successo</string>
@@ -277,7 +289,6 @@
 
     <string name="birthday_keywords">compleanno,anniversario</string>
     <string name="greeting_keywords">felice,auguri,felicitazioni,congratulazioni</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Oggi</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Riunione di pianificazione</string>

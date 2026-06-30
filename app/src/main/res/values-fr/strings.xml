@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">Reporter (minutes)</string>
     <string name="system_permissions">Autorisations système</string>
     <string name="permissions_dialog_title">État des autorisations</string>
-    <string name="calendar_permission_label">Calendrier : gestion des événements</string>
-    <string name="notifications_permission_label">Notifications : alertes dans la barre supérieure</string>
-    <string name="alarms_permission_label">Alarmes : alertes à l\'heure et en plein écran</string>
+    <string name="calendar_permission_label">Calendrier</string>
+    <string name="notifications_permission_label">Notifications</string>
+    <string name="alarms_permission_label">Alarmes</string>
+    <string name="google_drive_permission_label">Google Drive</string>
+    <string name="battery_optimization_label">Batterie</string>
+
+    <string name="status_granted">AUTORISÉ</string>
+    <string name="status_granted_f">AUTORISÉES</string>
+    <string name="status_denied">SANS AUTORISATION</string>
+    <string name="status_full_screen">PLEIN ÉCRAN</string>
+    <string name="status_no_full_screen">SANS PLEIN ÉCRAN</string>
+    <string name="status_restricted">RESTREINTE</string>
+    <string name="status_linked">ASSOCIÉ</string>
+    <string name="status_unlinked">NON ASSOCIÉ</string>
+    <string name="status_unrestricted">SANS RESTRICTION</string>
+    <string name="status_optimized">OPTIMISÉE (RESTREINTE)</string>
     <string name="fix_permission">PARAMÈTRES</string>
     <string name="history">Historique</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">Enregistrer paramètres et aspect</string>
     <string name="load_settings_aspect">Charger paramètres et aspect</string>
     <string name="backup_section_title">Sauvegarde des événements</string>
-    <string name="google_drive_permission_label">Google Drive : sauvegarde dans le cloud</string>
     <string name="link_google_account">Associer un compte Google</string>
     <string name="account_linked">Compte associé</string>
     <string name="account_linked_success">Compte associé avec succès</string>
@@ -263,7 +275,7 @@
     <string name="syncing">Synchronisation…</string>
     <string name="sync_success">Synchronisé avec succès</string>
     <string name="sync_error_drive">Erreur de Drive. Vérifiez votre compte.</string>
-    <string name="restore_from_drive">Restaurer depuis Drive</string>
+    <string name="restore_from_drive">Restaurar depuis Drive</string>
     <string name="restoring">Restauration…</string>
     <string name="restore_confirm_title">Restaurer les événements ?</string>
     <string name="restore_confirm_message">Les événements enregistrés seront remplacés par la copie Google Drive. Les événements système actuels ne seront pas affectés.</string>
@@ -277,7 +289,6 @@
 
     <string name="birthday_keywords">anniversaire</string>
     <string name="greeting_keywords">bon,heureux,félicitations,joyeux</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Aujourd\'hui</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Réunion de planification</string>

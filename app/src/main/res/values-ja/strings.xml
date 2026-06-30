@@ -237,9 +237,22 @@
     <string name="snooze_interval_label">スヌーズ間隔 (分)</string>
     <string name="system_permissions">システムの権限</string>
     <string name="permissions_dialog_title">権限の状態</string>
-    <string name="calendar_permission_label">カレンダー: イベント管理</string>
-    <string name="notifications_permission_label">通知: ステータスバー通知</string>
-    <string name="alarms_permission_label">アラーム: 正確な時刻と全画面通知</string>
+    <string name="calendar_permission_label">カレンダー</string>
+    <string name="notifications_permission_label">通知</string>
+    <string name="alarms_permission_label">アラーム</string>
+    <string name="google_drive_permission_label">Google ドライブ</string>
+    <string name="battery_optimization_label">電池</string>
+
+    <string name="status_granted">許可済み</string>
+    <string name="status_granted_f">許可済み</string>
+    <string name="status_denied">権限なし</string>
+    <string name="status_full_screen">全画面表示</string>
+    <string name="status_no_full_screen">全画面表示なし</string>
+    <string name="status_restricted">制限あり</string>
+    <string name="status_linked">連携済み</string>
+    <string name="status_unlinked">連携なし</string>
+    <string name="status_unrestricted">制限なし</string>
+    <string name="status_optimized">最適化済み (制限あり)</string>
     <string name="fix_permission">設定へ</string>
     <string name="history">履歴</string>
 
@@ -247,7 +260,6 @@
     <string name="save_settings_aspect">設定と外観を保存</string>
     <string name="load_settings_aspect">設定と外観を読み込む</string>
     <string name="backup_section_title">イベントのバックアップ</string>
-    <string name="google_drive_permission_label">Google ドライブ: クラウドバックアップ</string>
     <string name="link_google_account">Google アカウントを連携</string>
     <string name="account_linked">連携済みアカウント</string>
     <string name="account_linked_success">アカウントが正常に連携されました</string>
@@ -277,7 +289,6 @@
 
     <string name="birthday_keywords">誕生日,記念日</string>
     <string name="greeting_keywords">おめでとう,お祝い</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">今日</string>
     <string name="preview_date_1">05/22</string>
     <string name="preview_event_1">企画会議</string>
