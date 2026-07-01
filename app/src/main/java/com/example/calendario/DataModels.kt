@@ -25,7 +25,22 @@ data class Festivo(
     val customColor: Int? = null,
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
-    val repeatCount: Int? = null
+    val repeatCount: Int? = null,
+    // --- Campos para Sincronización Segura ---
+    val lastModified: Long = System.currentTimeMillis(),
+    val isDeleted: Boolean = false
+)
+
+data class CalendarInfo(
+    val id: Long,
+    val displayName: String,
+    val accountName: String,
+    val ownerAccount: String,
+    val isPrimary: Boolean,
+    val color: Int,
+    val canModify: Boolean,
+    val accessLevel: Int,
+    val isDeleted: Boolean
 )
 
 data class FestivoDto(
@@ -48,20 +63,17 @@ data class FestivoDto(
     val customColor: Int? = null,
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
-    val repeatCount: Int? = null
+    val repeatCount: Int? = null,
+    // --- Campos para Sincronización Segura ---
+    val lastModified: Long? = null,
+    val isDeleted: Boolean? = false
 )
 
-
-data class CalendarInfo(
-    val id: Long,
-    val displayName: String,
-    val accountName: String,
-    val ownerAccount: String?,
-    val color: Int?,
-    val isPrimary: Boolean,
-    val canModify: Boolean,
-    val accessLevel: Int,
-    val isDeleted: Boolean
+data class HolidayAdjustment(
+    val date: LocalDate,
+    val title: String,
+    val type: HolidayAdjustmentType,
+    val originalEventId: Long? = null
 )
 
 enum class HolidayAdjustmentType {
@@ -69,16 +81,9 @@ enum class HolidayAdjustmentType {
     WORKING_DAY
 }
 
-data class HolidayAdjustment(
-    val date: LocalDate,
-    val type: HolidayAdjustmentType,
-    val title: String,
-    val originalEventId: Long? = null
-)
-
 data class HolidayAdjustmentDto(
     val dateStr: String,
-    val type: String,
     val title: String,
+    val type: String,
     val originalEventId: Long? = null
 )

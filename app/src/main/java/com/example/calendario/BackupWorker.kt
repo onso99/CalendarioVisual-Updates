@@ -47,10 +47,10 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
             return Result.failure()
         }
 
-        // 3. Subir archivo
-        LogCollector.addLog(">>> TRABAJADOR: Subiendo archivo a Drive...")
+        // 3. Sincronización Incremental (Bajar + Mezclar + Subir)
+        LogCollector.addLog(">>> TRABAJADOR: Sincronizando con Drive...")
         val driveHelper = GoogleDriveHelper(context, account)
-        val success = driveHelper.uploadHistoryFile()
+        val success = driveHelper.syncHistoryWithDrive()
 
         return if (success) {
             val now = System.currentTimeMillis()

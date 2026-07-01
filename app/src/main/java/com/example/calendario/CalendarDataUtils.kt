@@ -70,7 +70,9 @@ fun Festivo.toDto() = FestivoDto(
     customColor = this.customColor,
     fullStartMillis = this.fullStartMillis,
     fullEndMillis = this.fullEndMillis,
-    repeatCount = this.repeatCount
+    repeatCount = this.repeatCount,
+    lastModified = this.lastModified,
+    isDeleted = this.isDeleted
 )
 
 fun FestivoDto.toFestivo() = Festivo(
@@ -93,11 +95,53 @@ fun FestivoDto.toFestivo() = Festivo(
     customColor = this.customColor,
     fullStartMillis = this.fullStartMillis,
     fullEndMillis = this.fullEndMillis,
-    repeatCount = this.repeatCount
+    repeatCount = this.repeatCount,
+    lastModified = this.lastModified ?: System.currentTimeMillis(),
+    isDeleted = this.isDeleted ?: false
 ).let { 
     if (this.fullStartMillis != null) {
         it.copy(date = Instant.ofEpochMilli(this.fullStartMillis).atZone(ZoneId.systemDefault()).toLocalDate())
     } else it
+}
+
+// --- GESTIÓN DE BORRADOS (Tombstones) ---
+
+private const val DELETED_EVENTS_PREFS = "deleted_events_prefs"
+
+fun markEventAsDeleted(context: Context, eventId: Long) {
+    val prefs = context.getSharedPreferences(DELETED_EVENTS_PREFS, Context.MODE_PRIVATE)
+    prefs.edit { putBoolean(eventId.toString(), true) }
+}
+
+fun getDeletedEventIds(context: Context): Set<Long> {
+    val prefs = context.getSharedPreferences(DELETED_EVENTS_PREFS, Context.MODE_PRIVATE)
+    return prefs.all.keys.mapNotNull { it.toLongOrNull() }.toSet()
+}
+
+fun clearDeletedEventIds(context: Context) {
+    context.getSharedPreferences(DELETED_EVENTS_PREFS, Context.MODE_PRIVATE).edit { clear() }
+}
+
+/**
+ * Fusión Inteligente (Incremental): Combina local y remoto.
+ * - Si ID duplicado: gana el más reciente (lastModified).
+ * - Si el ID está en la lista de borrados del móvil, se elimina.
+ */
+fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festivo>): List<Festivo> {
+    val deletedIds = getDeletedEventIds(context)
+    val allEvents = (local + remote)
+        .filter { it.id !in deletedIds }
+        .groupBy { it.id }
+    
+    val result = mutableListOf<Festivo>()
+
+    allEvents.forEach { (_, versions) ->
+        val newest = versions.maxByOrNull { it.lastModified }
+        if (newest != null && !newest.isDeleted) {
+            result.add(newest)
+        }
+    }
+    return result
 }
 
 // --- PERSISTENCIA COMPATIBILIDAD (SharedPreferences) ---

@@ -253,8 +253,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         saveHistoryToDisk(context, merged)
                     }
 
-                    // 2. Subida real
-                    GoogleDriveHelper(context, account).uploadHistoryFile()
+                    // 2. Sincronización Incremental (Shield)
+                    GoogleDriveHelper(context, account).syncHistoryWithDrive()
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Sync error", e)
                     false
@@ -303,14 +303,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val today = LocalDate.now()
         val windowStart = today.minusYears(1)
         val windowEnd = today.plusYears(5)
+        val deletedIds = getDeletedEventIds(getApplication())
 
-        // Conservar solo lo que está fuera de la ventana de Google (-1 año a +5 años)
+        // 1. Conservar eventos fuera de la ventana
         val historyOutsideWindow = cachedHistory.filter { 
             it.date.isBefore(windowStart) || it.date.isAfter(windowEnd) 
         }
 
-        // Fusionar con lo que Google dice hoy (Verdad absoluta en el rango de ventana)
+        // 2. Unir con eventos del sistema (limpiando borrados)
         return (systemEvents + historyOutsideWindow)
+            .filter { it.id !in deletedIds }
             .distinctBy { "${it.id}_${it.date}_${it.title}" }
     }
 }

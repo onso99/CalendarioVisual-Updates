@@ -181,6 +181,9 @@ fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: 
         val rows = context.contentResolver.delete(deleteUri, null, null)
 
         if (rows > 0) {
+            // Registrar borrado para sincronización futura
+            markEventAsDeleted(context, eventId)
+
             // Forzar actualización del widget tras eliminar un evento
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             

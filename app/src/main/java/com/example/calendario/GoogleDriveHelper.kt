@@ -12,6 +12,10 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Collections
 
 class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccount) {
@@ -28,14 +32,34 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
     }
 
     /**
-     * Sube el archivo JSON del histórico a Google Drive (Carpeta AppData)
+     * Motor de Sincronización Incremental (Download-Merge-Upload)
      */
-    suspend fun uploadHistoryFile(): Boolean = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+    suspend fun syncHistoryWithDrive(): Boolean = withContext(Dispatchers.IO) {
         try {
+            // 1. Descargar copia actual de Drive
+            Log.d("DriveHelper", "Descargando copia de Drive para fusionar...")
+            val remoteContent = downloadHistoryContent()
+            val remoteEvents = if (remoteContent != null) {
+                val type = object : TypeToken<List<FestivoDto>>() {}.type
+                val dtos: List<FestivoDto> = Gson().fromJson(remoteContent, type) ?: emptyList()
+                dtos.map { it.toFestivo() }
+            } else {
+                emptyList()
+            }
+
+            // 2. Cargar copia local
+            val localEvents = loadHistoryFromDisk(context)
+
+            // 3. Fusión Maestra (Incremental)
+            val mergedEvents = mergeHistoryLists(context, localEvents, remoteEvents)
+
+            // 4. Guardar resultado localmente
+            saveHistoryToDisk(context, mergedEvents)
+
+            // 5. Subir resultado final a Drive
             val historyFile = context.getFileStreamPath("calendar_history_v2.json")
             if (!historyFile.exists()) return@withContext false
 
-            // Buscar si ya existe una copia anterior para sobrescribirla
             val result = driveService.files().list()
                 .setSpaces("appDataFolder")
                 .setQ("name = 'calendar_history_backup.json'")
@@ -53,19 +77,21 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             } else {
                 driveService.files().update(existingFiles[0].id, null, mediaContent).execute()
             }
-            
-            Log.d("DriveHelper", "Histórico subido con éxito")
+
+            // Limpiar lista de borrados tras subida exitosa
+            clearDeletedEventIds(context)
+            Log.d("DriveHelper", "Sincronización incremental completada con éxito")
             true
         } catch (e: Exception) {
-            Log.e("DriveHelper", "Error subiendo a Drive", e)
+            Log.e("DriveHelper", "Error en la sincronización incremental", e)
             false
         }
     }
 
     /**
-     * Descarga el histórico de Google Drive y reemplaza la local
+     * Descarga el histórico de Google Drive y lo devuelve como String
      */
-    suspend fun downloadHistoryFile(): Boolean = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+    private suspend fun downloadHistoryContent(): String? = withContext(Dispatchers.IO) {
         try {
             val result = driveService.files().list()
                 .setSpaces("appDataFolder")
@@ -73,18 +99,31 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
                 .execute()
             val files = result.files
 
-            if (files.isNullOrEmpty()) return@withContext false
+            if (files.isNullOrEmpty()) return@withContext null
 
             val driveFileId = files[0].id
+            val outputStream = java.io.ByteArrayOutputStream()
+            driveService.files().get(driveFileId).executeMediaAndDownloadTo(outputStream)
+            outputStream.toString("UTF-8")
+        } catch (e: Exception) {
+            Log.e("DriveHelper", "Error descargando contenido de Drive", e)
+            null
+        }
+    }
 
+    /**
+     * Descarga el histórico de Google Drive y reemplaza la local (Restauración clásica)
+     */
+    suspend fun downloadHistoryFile(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val content = downloadHistoryContent() ?: return@withContext false
             context.openFileOutput("calendar_history_v2.json", Context.MODE_PRIVATE).use { outputStream ->
-                driveService.files().get(driveFileId).executeMediaAndDownloadTo(outputStream)
+                outputStream.write(content.toByteArray())
             }
-            
-            Log.d("DriveHelper", "Histórico descargado con éxito")
+            Log.d("DriveHelper", "Archivo histórico reemplazado por copia de Drive")
             true
         } catch (e: Exception) {
-            Log.e("DriveHelper", "Error descargando de Drive", e)
+            Log.e("DriveHelper", "Error reemplazando histórico local", e)
             false
         }
     }
