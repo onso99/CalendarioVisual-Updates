@@ -124,24 +124,26 @@ fun clearDeletedEventIds(context: Context) {
 
 /**
  * Fusión Inteligente (Incremental): Combina local y remoto.
- * - Si ID duplicado: gana el más reciente (lastModified).
- * - Si el ID está en la lista de borrados del móvil, se elimina.
+ * Devuelve un par con la lista final y el número de borrados detectados.
  */
-fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festivo>): List<Festivo> {
+fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festivo>): Pair<List<Festivo>, Int> {
     val deletedIds = getDeletedEventIds(context)
-    val allEvents = (local + remote)
-        .filter { it.id !in deletedIds }
-        .groupBy { it.id }
+    val allEvents = (local + remote).groupBy { it.id }
     
     val result = mutableListOf<Festivo>()
+    var purgedCount = 0
 
-    allEvents.forEach { (_, versions) ->
+    allEvents.forEach { (id, versions) ->
         val newest = versions.maxByOrNull { it.lastModified }
-        if (newest != null && !newest.isDeleted) {
-            result.add(newest)
+        if (newest != null) {
+            if (newest.isDeleted || id in deletedIds) {
+                purgedCount++
+            } else {
+                result.add(newest)
+            }
         }
     }
-    return result
+    return Pair(result, purgedCount)
 }
 
 // --- PERSISTENCIA COMPATIBILIDAD (SharedPreferences) ---

@@ -34,7 +34,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
     /**
      * Motor de Sincronización Incremental (Download-Merge-Upload)
      */
-    suspend fun syncHistoryWithDrive(): Boolean = withContext(Dispatchers.IO) {
+    suspend fun syncHistoryWithDrive(): SyncResult = withContext(Dispatchers.IO) {
         try {
             // 1. Descargar copia actual de Drive
             Log.d("DriveHelper", "Descargando copia de Drive para fusionar...")
@@ -51,14 +51,14 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             val localEvents = loadHistoryFromDisk(context)
 
             // 3. Fusión Maestra (Incremental)
-            val mergedEvents = mergeHistoryLists(context, localEvents, remoteEvents)
+            val (mergedEvents, purgedCount) = mergeHistoryLists(context, localEvents, remoteEvents)
 
             // 4. Guardar resultado localmente
             saveHistoryToDisk(context, mergedEvents)
 
             // 5. Subir resultado final a Drive
             val historyFile = context.getFileStreamPath("calendar_history_v2.json")
-            if (!historyFile.exists()) return@withContext false
+            if (!historyFile.exists()) return@withContext SyncResult(0, 0, false)
 
             val result = driveService.files().list()
                 .setSpaces("appDataFolder")
@@ -81,10 +81,10 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             // Limpiar lista de borrados tras subida exitosa
             clearDeletedEventIds(context)
             Log.d("DriveHelper", "Sincronización incremental completada con éxito")
-            true
+            SyncResult(mergedEvents.size, purgedCount, true)
         } catch (e: Exception) {
             Log.e("DriveHelper", "Error en la sincronización incremental", e)
-            false
+            SyncResult(0, 0, false)
         }
     }
 

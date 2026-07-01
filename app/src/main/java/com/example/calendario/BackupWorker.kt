@@ -50,12 +50,15 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         // 3. Sincronización Incremental (Bajar + Mezclar + Subir)
         LogCollector.addLog(">>> TRABAJADOR: Sincronizando con Drive...")
         val driveHelper = GoogleDriveHelper(context, account)
-        val success = driveHelper.syncHistoryWithDrive()
+        val result = driveHelper.syncHistoryWithDrive()
 
-        return if (success) {
+        return if (result.success) {
             val now = System.currentTimeMillis()
-            appPrefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, now) }
-            LogCollector.addLog(">>> TRABAJADOR: ¡ÉXITO! Copia completada.")
+            appPrefs.edit { 
+                putLong(AppConstants.KEY_LAST_BACKUP_TIME, now) 
+                putInt(AppConstants.KEY_LAST_BACKUP_COUNT, result.totalEvents)
+            }
+            LogCollector.addLog(">>> TRABAJADOR: ¡ÉXITO! (${result.totalEvents} eventos sincronizados).")
             Result.success()
         } else {
             LogCollector.addLog(">>> TRABAJADOR: ERROR en la subida a Drive. Reintentando luego...")

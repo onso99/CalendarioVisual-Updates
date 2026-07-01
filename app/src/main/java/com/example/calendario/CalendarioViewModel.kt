@@ -233,16 +233,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update { it.copy(importedEvent = null) }
     }
 
-    fun syncHistoryToDrive(context: Context, onComplete: (Boolean) -> Unit) {
+    fun syncHistoryToDrive(context: Context, onComplete: (SyncResult) -> Unit) {
         if (_uiState.value.isSyncing) return
         
         viewModelScope.launch {
             _uiState.update { it.copy(isSyncing = true) }
             
-            val success = withContext(Dispatchers.IO) {
+            val result = withContext(Dispatchers.IO) {
                 try {
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
-                        ?: return@withContext false
+                        ?: return@withContext SyncResult(0, 0, false)
 
                     // 1. Asegurar datos frescos respetando coherencia
                     val selectedIds = loadSelectedCalendarIds(context)
@@ -257,17 +257,20 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     GoogleDriveHelper(context, account).syncHistoryWithDrive()
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Sync error", e)
-                    false
+                    SyncResult(0, 0, false)
                 }
             }
 
-            if (success) {
+            if (result.success) {
                 val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                prefs.edit { putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) }
+                prefs.edit { 
+                    putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) 
+                    putInt(AppConstants.KEY_LAST_BACKUP_COUNT, result.totalEvents)
+                }
             }
 
             _uiState.update { it.copy(isSyncing = false) }
-            onComplete(success)
+            onComplete(result)
         }
     }
 

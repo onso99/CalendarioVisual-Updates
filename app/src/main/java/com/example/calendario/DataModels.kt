@@ -81,6 +81,12 @@ enum class HolidayAdjustmentType {
     WORKING_DAY
 }
 
+data class SyncResult(
+    val totalEvents: Int,
+    val deletedCount: Int,
+    val success: Boolean
+)
+
 data class HolidayAdjustmentDto(
     val dateStr: String,
     val title: String,

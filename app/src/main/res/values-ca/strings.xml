@@ -276,7 +276,7 @@
     <string name="frequency_monthly">Mensual</string>
     <string name="sync_now">Sincronitzar ara</string>
     <string name="syncing">Sincronitzant…</string>
-    <string name="sync_success">Sincronitzat amb èxit</string>
+    <string name="sync_success_detailed">Sincronització completa: %1$d esdeveniments (%2$d eliminats)</string>
     <string name="sync_error_drive">Error de Drive. Verifica el teu compte.</string>
     <string name="restore_from_drive">Restaurar des de Drive</string>
     <string name="restoring">Restaurant…</string>
@@ -285,6 +285,7 @@
     <string name="restore_success">Esdeveniments restaurats amb èxit</string>
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
     <string name="last_backup">Última còpia: %s</string>
+    <string name="last_backup_with_count">Última: %1$s · %2$d esdeveniments</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Error en actualitzar les dades.</string>
     <string name="confirm_delete_adjustment">Vols eliminar aquest ajust? Es restaurarà l\'estat original del calendari.</string>

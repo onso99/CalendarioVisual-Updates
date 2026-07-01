@@ -276,7 +276,7 @@
     <string name="frequency_monthly">Monthly</string>
     <string name="sync_now">Sync now</string>
     <string name="syncing">Syncing…</string>
-    <string name="sync_success">Synced successfully</string>
+    <string name="sync_success_detailed">Sync complete: %1$d events (%2$d deleted)</string>
     <string name="sync_error_drive">Drive error. Check your account.</string>
     <string name="restore_from_drive">Restore from Drive</string>
     <string name="restoring">Restoring…</string>
@@ -285,6 +285,7 @@
     <string name="restore_success">Events restored successfully</string>
     <string name="restore_error">No valid backup found in Drive</string>
     <string name="last_backup">Last backup: %s</string>
+    <string name="last_backup_with_count">Last: %1$s · %2$d events</string>
     <string name="never">Never</string>
     <string name="error_updating_data">Error updating data.</string>
     <string name="confirm_delete_adjustment">Do you want to delete this adjustment? The original state of the calendar will be restored.</string>

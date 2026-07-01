@@ -276,7 +276,7 @@
     <string name="frequency_monthly">Mensal</string>
     <string name="sync_now">Sincronizar agora</string>
     <string name="syncing">Sincronizando…</string>
-    <string name="sync_success">Sincronizado com sucesso</string>
+    <string name="sync_success_detailed">Sincronização completa: %1$d eventos (%2$d removidos)</string>
     <string name="sync_error_drive">Erro do Drive. Verifique a sua conta.</string>
     <string name="restore_from_drive">Restaurar do Drive</string>
     <string name="restoring">Restaurando…</string>
@@ -285,6 +285,7 @@
     <string name="restore_success">Eventos restaurados com sucesso</string>
     <string name="restore_error">Nenhuma cópia válida encontrada no Drive</string>
     <string name="last_backup">Última cópia: %s</string>
+    <string name="last_backup_with_count">Última: %1$s · %2$d eventos</string>
     <string name="never">Nunca</string>
     <string name="error_updating_data">Erro ao actualizar os dados.</string>
     <string name="confirm_delete_adjustment">Deseja eliminar este ajuste? O estado original do calendário será restaurado.</string>

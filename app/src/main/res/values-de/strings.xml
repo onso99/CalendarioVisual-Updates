@@ -275,8 +275,8 @@
     <string name="frequency_weekly">Wöchentlich</string>
     <string name="frequency_monthly">Monatlich</string>
     <string name="sync_now">Jetzt synchronisieren</string>
-    <string name="syncing">Synchronisierung läuft…</string>
-    <string name="sync_success">Erfolgreich synchronisiert</string>
+    <string name="syncing">Synchronisierung…</string>
+    <string name="sync_success_detailed">Synchronisierung abgeschlossen: %1$d Ereignisse (%2$d gelöscht)</string>
     <string name="sync_error_drive">Drive-Fehler. Überprüfen Sie Ihr Konto.</string>
     <string name="restore_from_drive">Von Drive wiederherstellen</string>
     <string name="restoring">Wiederherstellung läuft…</string>
@@ -285,6 +285,7 @@
     <string name="restore_success">Ereignisse erfolgreich wiederhergestellt</string>
     <string name="restore_error">Keine gültige Kopie auf Drive gefunden</string>
     <string name="last_backup">Letztes Backup: %s</string>
+    <string name="last_backup_with_count">Letzte: %1$s · %2$d Ereignisse</string>
     <string name="never">Nie</string>
     <string name="error_updating_data">Fehler beim Aktualisieren der Daten.</string>
     <string name="confirm_delete_adjustment">Möchten Sie diese Anpassung löschen? Der ursprüngliche Zustand des Kalenders wird wiederhergestellt.</string>

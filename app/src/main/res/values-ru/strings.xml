@@ -276,7 +276,7 @@
     <string name="frequency_monthly">Ежемесячно</string>
     <string name="sync_now">Синхронизировать сейчас</string>
     <string name="syncing">Синхронизация…</string>
-    <string name="sync_success">Синхронизация завершена успешно</string>
+    <string name="sync_success_detailed">Синхронизация завершена: %1$d событий (%2$d удалено)</string>
     <string name="sync_error_drive">Ошибка Диска. Проверьте свой аккаунт.</string>
     <string name="restore_from_drive">Восстановить из Диска</string>
     <string name="restoring">Восстановление…</string>
@@ -285,6 +285,7 @@
     <string name="restore_success">События успешно восстановлены</string>
     <string name="restore_error">Действительная копия на Диске не найдена</string>
     <string name="last_backup">Последняя копия: %s</string>
+    <string name="last_backup_with_count">Последняя: %1$s · %2$d событий</string>
     <string name="never">Никогда</string>
     <string name="error_updating_data">Ошибка при обновлении данных.</string>
     <string name="confirm_delete_adjustment">Вы хотите удалить эту настройку? Будет восстановлено исходное состояние календаря.</string>

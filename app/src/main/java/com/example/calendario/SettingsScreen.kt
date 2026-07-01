@@ -330,6 +330,7 @@ fun SettingsScreen(
         else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
     }
     val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
+    val lastBackupCount = remember(permissionsUpdateTrigger) { appPrefs.getInt(AppConstants.KEY_LAST_BACKUP_COUNT, 0) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
@@ -719,19 +720,23 @@ fun SettingsScreen(
                     
                     // Sincronizar Ahora con información de carga
                     val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
-                                 else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                                 else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")
                                     .withZone(java.time.ZoneId.systemDefault())
                                     .format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
                     
+                    val detailText = if (lastBackupTimestamp == 0L) lastStr 
+                                    else stringResource(R.string.last_backup_with_count, lastStr, lastBackupCount)
+
                     ActionRow(
                         text = if (uiState.isSyncing) stringResource(R.string.syncing) else stringResource(id = R.string.sync_now),
-                        detail = stringResource(R.string.last_backup, lastStr),
+                        detail = detailText,
                         isLoading = uiState.isSyncing
                     ) {
-                        viewModel.syncHistoryToDrive(context) { success ->
-                            if (success) {
+                        viewModel.syncHistoryToDrive(context) { result ->
+                            if (result.success) {
                                 permissionsUpdateTrigger++
-                                Toast.makeText(context, R.string.sync_success, Toast.LENGTH_SHORT).show()
+                                val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
+                                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                             } else {
                                 Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
                             }

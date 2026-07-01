@@ -276,7 +276,7 @@
     <string name="frequency_monthly">毎月</string>
     <string name="sync_now">今すぐ同期</string>
     <string name="syncing">同期中…</string>
-    <string name="sync_success">同期が完了しました</string>
+    <string name="sync_success_detailed">同期完了: %1$d 個のイベント (%2$d 個を削除)</string>
     <string name="sync_error_drive">ドライブエラー。アカウントを確認してください。</string>
     <string name="restore_from_drive">ドライブから復元</string>
     <string name="restoring">復元中…</string>
@@ -285,6 +285,7 @@
     <string name="restore_success">イベントを正常に復元しました</string>
     <string name="restore_error">ドライブに有効なコピーが見つかりませんでした</string>
     <string name="last_backup">最終バックアップ: %s</string>
+    <string name="last_backup_with_count">最終同期: %1$s · %2$d 個のイベント</string>
     <string name="never">なし</string>
     <string name="error_updating_data">データの更新中にエラーが発生しました。</string>
     <string name="confirm_delete_adjustment">この調整を削除しますか？カレンダーの元の状態が復元されます。</string>
