@@ -284,12 +284,11 @@ fun AddEventScreen(
             isCopying = false
         } else {
             val now = LocalDateTime.now().withSecond(0).withNano(0)
-            val nextHour = now.plusHours(1).withMinute(0)
-            val effectiveInitialDateTime = initialDate?.atTime(nextHour.toLocalTime()) ?: nextHour
+            val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             title = ""
             isAllDay = false
             startDate = effectiveInitialDateTime
-            endDate = effectiveInitialDateTime.plusHours(1)
+            endDate = effectiveInitialDateTime
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
             repeatUntilDate = null

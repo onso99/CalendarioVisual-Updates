@@ -525,7 +525,11 @@ fun readFestivosFromCalendarsSync(
                 val assignedLane = laneAssignments[uniqueKey]
                 val assignedRrule = rruleMap[eventId]
                 val extractedCount = assignedRrule?.let { if (it.contains("COUNT=")) it.substringAfter("COUNT=").substringBefore(";").toIntOrNull() else null }
-                val isLongPeriod = endDate.isAfter(startDate) && !finalIsBirthday && !isFromHoliday
+                
+                // REGLA DE ORO: Un evento solo es periodo largo si dura mÃ¡s de 24 horas y no es cumpleaÃ±os ni festivo
+                val duration = java.time.Duration.between(startZdt, endZdt)
+                val isLongPeriod = duration.toHours() > 24 && !finalIsBirthday && !isFromHoliday
+
                 val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
                 var currentLoopDate = startDate
                 var dayIndex = 1
