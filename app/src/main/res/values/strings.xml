@@ -302,4 +302,12 @@
     <string name="preview_vie">Vie</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de proyecto</string>
+    <string name="bundled_theme_1_name">Océano</string>
+    <string name="bundled_theme_2_name">Bosque</string>
+    <string name="bundled_theme_3_name">Volcán</string>
+    <string name="bundled_theme_4_name">Amanecer</string>
+    <string name="bundled_theme_5_name">Verde Oliva</string>
+    <string name="bundled_theme_6_name">Grafito</string>
+    <string name="bundled_theme_7_name">Tierra</string>
+    <string name="bundled_theme_8_name">Lavanda</string>
 </resources>

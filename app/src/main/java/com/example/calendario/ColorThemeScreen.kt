@@ -143,13 +143,13 @@ fun ColorThemeScreen(
                                 } || monthlyCalendarEffect != prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "none")
 
                                 if (hasThemeBoundChanges) {
-                                    val lightName = prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano") ?: "Océano"
+                                    val lightName = prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "theme_1") ?: "theme_1"
                                     if (!lightName.endsWith("***")) {
-                                        putString(AppConstants.KEY_LIGHT_THEME_NAME, lightName.take(10) + "***")
+                                        putString(AppConstants.KEY_LIGHT_THEME_NAME, lightName + "***")
                                     }
-                                    val darkName = prefs.getString(AppConstants.KEY_DARK_THEME_NAME, "Océano") ?: "Océano"
+                                    val darkName = prefs.getString(AppConstants.KEY_DARK_THEME_NAME, "theme_1") ?: "theme_1"
                                     if (!darkName.endsWith("***")) {
-                                        putString(AppConstants.KEY_DARK_THEME_NAME, darkName.take(10) + "***")
+                                        putString(AppConstants.KEY_DARK_THEME_NAME, darkName + "***")
                                     }
                                 }
                             }

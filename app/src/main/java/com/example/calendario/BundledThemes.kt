@@ -2,12 +2,13 @@ package com.example.calendario
 
 object BundledThemes {
     val themes = listOf(
-        // Océano Theme
+        // 1. Océano
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Océano",
+                "id" to "theme_1",
+                "nameRes" to R.string.bundled_theme_1_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep",
             ),
             "lightTheme" to mapOf(
@@ -29,12 +30,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF003341"
             )
         ),
-        // Bosque Theme
+        // 2. Bosque
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Bosque",
+                "id" to "theme_2",
+                "nameRes" to R.string.bundled_theme_2_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep"
             ),
             "lightTheme" to mapOf(
@@ -56,12 +58,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF1A3A1A"
             )
         ),
-        // Volcán Theme
+        // 3. Volcán
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Volcán",
+                "id" to "theme_3",
+                "nameRes" to R.string.bundled_theme_3_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
@@ -83,12 +86,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF4E342E"
             )
         ),
-        // Amanecer Theme
+        // 4. Amanecer
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Amanecer",
+                "id" to "theme_4",
+                "nameRes" to R.string.bundled_theme_4_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient",
             ),
             "lightTheme" to mapOf(
@@ -110,12 +114,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF403000"
             )
         ),
-        // Verde Oliva Theme
+        // 5. Verde Oliva
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Verde Oliva",
+                "id" to "theme_5",
+                "nameRes" to R.string.bundled_theme_5_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient",
             ),
             "lightTheme" to mapOf(
@@ -137,12 +142,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF2E352E"
             )
         ),
-        // Grafito Theme
+        // 6. Grafito
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Grafito",
+                "id" to "theme_6",
+                "nameRes" to R.string.bundled_theme_6_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
@@ -164,12 +170,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF37474F"
             )
         ),
-        // Tierra Theme
+        // 7. Tierra
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Tierra",
+                "id" to "theme_7",
+                "nameRes" to R.string.bundled_theme_7_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "gradient"
             ),
             "lightTheme" to mapOf(
@@ -191,12 +198,13 @@ object BundledThemes {
                 AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND to "#FF4E342E"
             )
         ),
-        // Lavanda Theme
+        // 8. Lavanda
         mapOf(
             "themeManifest" to mapOf(
                 "version" to AppConstants.CURRENT_THEME_VERSION.toString(),
                 "appName" to AppConstants.APP_SIGNATURE,
-                "name" to "Lavanda",
+                "id" to "theme_8",
+                "nameRes" to R.string.bundled_theme_8_name,
                 AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE to "sweep",
             ),
             "lightTheme" to mapOf(

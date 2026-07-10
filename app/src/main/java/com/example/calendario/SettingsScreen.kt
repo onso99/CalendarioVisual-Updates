@@ -117,7 +117,7 @@ fun SettingsScreen(
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
 
-    var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "Océano")) }
+    var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "theme_1")) }
 
     // --- Dialog States ---
     var showThemeDialog by remember { mutableStateOf(false) }
@@ -171,7 +171,14 @@ fun SettingsScreen(
                 result.data?.data?.let { uri ->
                     try {
                         val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
-                        ThemePersistence.exportThemeToJson(context, uri, newName)
+                        if (ThemePersistence.exportThemeToJson(context, uri, newName)) {
+                            // Al guardar con éxito, el tema "oficial" pasa a ser el nuevo nombre (sin asteriscos)
+                            appPrefs.edit {
+                                putString(AppConstants.KEY_LIGHT_THEME_NAME, newName)
+                                putString(AppConstants.KEY_DARK_THEME_NAME, newName)
+                            }
+                            onThemeImported()
+                        }
                     } catch (e: Exception) {
                         Log.e("SettingsScreen", "Error exporting theme", e)
                         Toast.makeText(context, R.string.error_saving_theme_file, Toast.LENGTH_LONG).show()
@@ -515,11 +522,37 @@ fun SettingsScreen(
             // --- 2. Estilo Section ---
             SectionTitle(text = stringResource(id = R.string.customize_theme))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBundledThemesDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { showBundledThemesDialog = true }
+                        .padding(horizontal = 16.dp), 
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     val titleColor = lerp(start = CalendarioTheme.colors.cabecera, stop = CalendarioTheme.colors.textSystem, fraction = 0.4f)
-                    Text(text = truncateThemeName(lightThemeName!!, 20), color = titleColor, fontSize = 14.sp, textAlign = TextAlign.End)
+                    
+                    val currentThemeId = lightThemeName ?: "theme_1"
+                    val isModified = currentThemeId.endsWith("***")
+                    val cleanId = if (isModified) currentThemeId.removeSuffix("***") else currentThemeId
+                    
+                    val bundledTheme = BundledThemes.themes.find { theme ->
+                        val manifest = theme["themeManifest"] as Map<*, *>
+                        val id = manifest["id"] as? String
+                        val legacyName = manifest["name"] as? String
+                        id == cleanId || legacyName == cleanId
+                    }
+                    
+                    val finalName = if (bundledTheme != null) {
+                        val resId = (bundledTheme["themeManifest"] as Map<*, *>)["nameRes"] as Int
+                        stringResource(id = resId) + (if (isModified) "***" else "")
+                    } else {
+                        currentThemeId
+                    }
+
+                    Text(text = truncateThemeName(finalName, 20), color = titleColor, fontSize = 14.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
@@ -781,7 +814,21 @@ fun SettingsScreen(
     if (showThemeDialog) { ThemeSelectionDialog(currentTheme = themeSetting, onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false }, onDismiss = { showThemeDialog = false }) }
     if (showStartDayOfWeekDialog) { StartDayOfWeekDialog(currentSelectionKey = pendingStartOfWeekKey, onOptionSelected = { pendingStartOfWeekKey = it; showStartDayOfWeekDialog = false }, onDismiss = { showStartDayOfWeekDialog = false }) }
     if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onOptionSelected = { pendingFontFamily = it; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
-    if (showBundledThemesDialog) { BundledThemesDialog(currentThemeName = lightThemeName, onDismiss = { showBundledThemesDialog = false }, onThemeSelected = { theme -> showBundledThemesDialog = false; val manifest = JSONObject(theme["themeManifest"] as Map<*, *>); val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }; val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }; ThemePersistence.applyTheme(context, ParsedTheme(manifest, lightTheme, darkTheme), manifest.optString("name", "")); onThemeImported() }) }
+    if (showBundledThemesDialog) { 
+        BundledThemesDialog(
+            currentThemeId = lightThemeName, 
+            onDismiss = { showBundledThemesDialog = false }, 
+            onThemeSelected = { theme -> 
+                showBundledThemesDialog = false
+                val themeManifest = theme["themeManifest"] as Map<*, *>
+                val manifest = JSONObject(themeManifest)
+                val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
+                val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
+                ThemePersistence.applyTheme(context, ParsedTheme(manifest, lightTheme, darkTheme), themeManifest["name"] as String)
+                onThemeImported()
+            }
+        ) 
+    }
     if (showFrequencyDialog) {
         BackupFrequencyDialog(
             selection = pendingBackupFreq,
@@ -995,11 +1042,49 @@ private fun StartDayOfWeekDialog(
 @Suppress("UNCHECKED_CAST")
 @Composable
 private fun BundledThemesDialog(
-    currentThemeName: String?,
+    currentThemeId: String?,
     onDismiss: () -> Unit,
     onThemeSelected: (Map<String, Any>) -> Unit
 ) {
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold) }, text = { LazyColumn { items(BundledThemes.themes) { theme: Map<String, Any> -> val themeManifest = theme["themeManifest"] as Map<String, Any>; val themeName = themeManifest["name"] as String; Row(Modifier.fillMaxWidth().clickable { onThemeSelected(theme) }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { Text(themeName, modifier = Modifier.weight(1f), fontSize = 18.sp); if (themeName == currentThemeName) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.textSystem) } } } }, confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } })
+    val cleanCurrentId = remember(currentThemeId) { currentThemeId?.removeSuffix("***") ?: "theme_1" }
+
+    AlertDialog(
+        onDismissRequest = onDismiss, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem, 
+        title = { Text(stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold) }, 
+        text = { 
+            LazyColumn { 
+                items(BundledThemes.themes) { theme: Map<String, Any> -> 
+                    val themeManifest = theme["themeManifest"] as Map<*, *>
+                    val themeId = themeManifest["id"] as String
+                    val legacyName = themeManifest["name"] as? String
+                    val themeResId = themeManifest["nameRes"] as Int
+                    
+                    val isSelected = themeId == cleanCurrentId || (legacyName != null && legacyName == cleanCurrentId)
+
+                    Row(
+                        Modifier.fillMaxWidth().clickable { onThemeSelected(theme) }.padding(vertical = 12.dp), 
+                        verticalAlignment = Alignment.CenterVertically
+                    ) { 
+                        Text(
+                            text = stringResource(id = themeResId), 
+                            modifier = Modifier.weight(1f), 
+                            fontSize = 18.sp,
+                            color = CalendarioTheme.colors.textSystem
+                        ) 
+                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.textSystem)
+                    } 
+                } 
+            } 
+        }, 
+        confirmButton = { 
+            TextButton(onClick = onDismiss) { 
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) 
+            } 
+        }
+    )
 }
 
 private fun getFileName(context: Context, uri: Uri): String {

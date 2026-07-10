@@ -18,12 +18,15 @@ object ThemePersistence {
             remove(AppConstants.KEY_DARK_THEME_NAME)
 
             val themeVersion = parsedTheme.manifest?.optInt("version", 1) ?: 1
-            val themeName = parsedTheme.manifest?.optString("name")?.takeIf { it.isNotBlank() } ?: fileName
+            // Priorizamos el ID para temas predefinidos (solo si no es nulo ni vacío)
+            val themeId = parsedTheme.manifest?.optString("id", null)?.takeIf { it.isNotBlank() }
+            val themeName = parsedTheme.manifest?.optString("name", null)?.takeIf { it.isNotBlank() } ?: fileName
 
+            val baseName = themeId ?: themeName
             val finalName = if (themeVersion < AppConstants.CURRENT_THEME_VERSION) {
-                "$themeName (v$themeVersion)"
+                "$baseName (v$themeVersion)"
             } else {
-                themeName
+                baseName
             }
             putString(AppConstants.KEY_LIGHT_THEME_NAME, finalName)
             putString(AppConstants.KEY_DARK_THEME_NAME, finalName)
@@ -64,7 +67,7 @@ object ThemePersistence {
         }
     }
 
-    fun exportThemeToJson(context: Context, uri: Uri, newName: String) {
+    fun exportThemeToJson(context: Context, uri: Uri, newName: String): Boolean {
         try {
             val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
             val themeJson = JSONObject()
@@ -107,8 +110,10 @@ object ThemePersistence {
                 it.write(themeJson.toString(4).toByteArray())
             }
             Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
+            return true
         } catch (e: Exception) {
             Toast.makeText(context, context.getString(R.string.error_exporting_theme, e.message), Toast.LENGTH_LONG).show()
+            return false
         }
     }
 }

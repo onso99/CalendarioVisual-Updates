@@ -157,9 +157,13 @@ object BackupManager {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun applyBundledThemeColors(context: Context, themeName: String, isDark: Boolean) {
-        val themeMap = (BundledThemes.themes as List<Map<String, Any>>).find { 
-            (it["themeManifest"] as? Map<String, Any>)?.get("name") == themeName 
+    private fun applyBundledThemeColors(context: Context, themeIdOrName: String, isDark: Boolean) {
+        val cleanId = themeIdOrName.removeSuffix("***")
+        val themeMap = BundledThemes.themes.find { theme ->
+            val manifest = theme["themeManifest"] as Map<*, *>
+            val id = manifest["id"] as? String
+            val legacyName = manifest["name"] as? String
+            id == cleanId || legacyName == cleanId
         } ?: return
 
         val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<String, String> ?: return
