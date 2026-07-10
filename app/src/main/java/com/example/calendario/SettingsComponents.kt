@@ -1,5 +1,10 @@
 package com.example.calendario
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -153,33 +159,42 @@ internal fun SettingsActionChip(
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed = interactionSource.collectIsPressedAsState().value
+    val isPressed by interactionSource.collectIsPressedAsState()
     
-    // Flash mÃ¡s intenso (35% alpha) para mayor dinamismo al toque
-    val flashColor = if (isPressed) {
-        CalendarioTheme.colors.cabecera.copy(alpha = 0.35f)
-    } else {
-        Color.Transparent
-    }
+    // Flash dinÃ¡mico 'parpadeante':
+    // Al presionar, parpadea rÃ¡pidamente. Al soltar, se desvanece.
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isPressed) CalendarioTheme.colors.cabecera.copy(alpha = 0.28f) else Color.Transparent,
+        animationSpec = if (isPressed) {
+            repeatable(
+                iterations = 3,
+                animation = tween(durationMillis = 60),
+                repeatMode = RepeatMode.Reverse
+            )
+        } else {
+            tween(durationMillis = 500)
+        },
+        label = "parpadeo"
+    )
 
     Box(
         modifier = Modifier
-            .padding(horizontal = 8.dp) // Un poco mÃ¡s de separaciÃ³n entre botones
+            .padding(horizontal = 4.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(flashColor)
+            .background(backgroundColor)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             color = CalendarioTheme.colors.textSystem,
             fontSize = 15.sp,
-            fontWeight = FontWeight.Normal // Texto normal, sin negrita
+            fontWeight = FontWeight.Normal
         )
     }
 }
