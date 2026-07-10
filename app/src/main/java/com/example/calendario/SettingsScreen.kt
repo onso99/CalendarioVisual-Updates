@@ -602,115 +602,12 @@ fun SettingsScreen(
                     }
                     
                     SettingsActionChip(text = stringResource(id = R.string.guardar_label)) {
-                        showExportDialog = true 
+                        showExportDialog = true
                     }
                 }
             }
 
-            // --- 3. Alarm Section ---
-            SectionTitle(text = stringResource(id = R.string.alarm))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
-                    Text(text = stringResource(id = R.string.alarm_offset_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(
-                            value = pendingAlarmOffset,
-                            onValueChange = { pendingAlarmOffset = it },
-                            valueRange = 0f..60f,
-                            steps = 11,
-                            modifier = Modifier.weight(1f),
-                            colors = SliderDefaults.colors(
-                                thumbColor = CalendarioTheme.colors.cabecera,
-                                activeTrackColor = CalendarioTheme.colors.cabecera,
-                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
-                            )
-                        )
-                        Text(text = pendingAlarmOffset.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
-                    }
-                }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp)) {
-                    Text(text = stringResource(id = R.string.snooze_interval_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(
-                            value = pendingSnoozeInterval,
-                            onValueChange = { pendingSnoozeInterval = it },
-                            valueRange = 5f..30f,
-                            steps = 4,
-                            modifier = Modifier.weight(1f),
-                            colors = SliderDefaults.colors(
-                                thumbColor = CalendarioTheme.colors.cabecera,
-                                activeTrackColor = CalendarioTheme.colors.cabecera,
-                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
-                            )
-                        )
-                        Text(text = pendingSnoozeInterval.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
-                    }
-                }
-            }
-
-            // --- 4. Holidays Section ---
-            SectionTitle(text = stringResource(id = R.string.holidays_section))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                // LÃ­nea 1: Gestor (AcciÃ³n de navegaciÃ³n)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable(onClick = onHolidayManagerClick)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.holiday_manager),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontSize = 16.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-
-                // LÃ­nea 2: Icono + Chips Cargar/Guardar
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_holiday_folder_24),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.size(30.dp)
-                    )
-                    
-                    Spacer(modifier = Modifier.weight(1f))
-                    
-                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
-                        importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json" 
-                        })
-                    }
-                    
-                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) { 
-                        exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json"
-                            putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
-                        })
-                    }
-                }
-            }
-
+            // --- 3. Widget Section ---
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
@@ -811,7 +708,111 @@ fun SettingsScreen(
                 ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
             }
 
-            // --- 5. Backup Section ---
+            // --- 4. Holidays Section ---
+            SectionTitle(text = stringResource(id = R.string.holidays_section))
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                // LÃ­nea 1: Gestor (AcciÃ³n de navegaciÃ³n)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable(onClick = onHolidayManagerClick)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.holiday_manager),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // LÃ­nea 2: Icono + Chips Cargar/Guardar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_holiday_folder_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                        modifier = Modifier.size(30.dp)
+                    )
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
+                        importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json" 
+                        })
+                    }
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) { 
+                        exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json"
+                            putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
+                        })
+                    }
+                }
+            }
+
+            // --- 5. Alarm Section ---
+            SectionTitle(text = stringResource(id = R.string.alarm))
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
+                    Text(text = stringResource(id = R.string.alarm_offset_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Slider(
+                            value = pendingAlarmOffset,
+                            onValueChange = { pendingAlarmOffset = it },
+                            valueRange = 0f..60f,
+                            steps = 11,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                            )
+                        )
+                        Text(text = pendingAlarmOffset.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
+                    }
+                }
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp)) {
+                    Text(text = stringResource(id = R.string.snooze_interval_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Slider(
+                            value = pendingSnoozeInterval,
+                            onValueChange = { pendingSnoozeInterval = it },
+                            valueRange = 5f..30f,
+                            steps = 4,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
+                            )
+                        )
+                        Text(text = pendingSnoozeInterval.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
+                    }
+                }
+            }
+
+            // --- 6. Backup Section ---
             SectionTitle(text = stringResource(id = R.string.backup_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
