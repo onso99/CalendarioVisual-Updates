@@ -37,6 +37,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FormatBold
@@ -501,22 +502,39 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 5. GUARDAR / CARGAR AJUSTES
-                ActionRow(text = stringResource(id = R.string.save_settings_aspect)) { 
-                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
+                // Nueva fila consolidada de Ajustes (Icono Grande + Chips)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_settings_backup_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                        modifier = Modifier.size(30.dp)
+                    )
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json" 
+                        }
+                        importFullBackupLauncher.launch(intent) 
                     }
-                    exportFullBackupLauncher.launch(intent) 
-                }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(text = stringResource(id = R.string.load_settings_aspect)) { 
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json" 
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) { 
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json"
+                            putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
+                        }
+                        exportFullBackupLauncher.launch(intent) 
                     }
-                    importFullBackupLauncher.launch(intent) 
                 }
             }
 
@@ -634,11 +652,63 @@ fun SettingsScreen(
             // --- 4. Holidays Section ---
             SectionTitle(text = stringResource(id = R.string.holidays_section))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                ActionRow(text = stringResource(id = R.string.holiday_manager_title), onClick = onHolidayManagerClick)
+                // LÃ­nea 1: Gestor (AcciÃ³n de navegaciÃ³n)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable(onClick = onHolidayManagerClick)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.holiday_manager),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(text = stringResource(id = R.string.import_holidays)) { importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(text = stringResource(id = R.string.export_holidays)) { exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") }) }
+
+                // LÃ­nea 2: Icono + Chips Cargar/Guardar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_holiday_folder_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                        modifier = Modifier.size(30.dp)
+                    )
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
+                        importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json" 
+                        })
+                    }
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) { 
+                        exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json"
+                            putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
+                        })
+                    }
+                }
             }
 
             WidgetSectionTitle()
