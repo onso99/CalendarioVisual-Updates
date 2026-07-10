@@ -66,6 +66,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -555,11 +556,37 @@ fun SettingsScreen(
                     Text(text = truncateThemeName(finalName, 20), color = titleColor, fontSize = 14.sp, textAlign = TextAlign.End)
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(stringResource(id = R.string.export_theme)) { showExportDialog = true }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(stringResource(id = R.string.import_theme)) { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                
+                // Nueva fila consolidada de Respaldo (Icono Grande + Chips sin fondo)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_folder_eye_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                        modifier = Modifier.size(30.dp) // Icono mÃ¡s grande
+                    )
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
+                        importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json" 
+                        })
+                    }
+                    
+                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) {
+                        showExportDialog = true 
+                    }
+                }
             }
 
             // --- 3. Alarm Section ---
