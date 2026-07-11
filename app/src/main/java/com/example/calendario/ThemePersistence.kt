@@ -19,8 +19,8 @@ object ThemePersistence {
 
             val themeVersion = parsedTheme.manifest?.optInt("version", 1) ?: 1
             // Priorizamos el ID para temas predefinidos (solo si no es nulo ni vacío)
-            val themeId = parsedTheme.manifest?.optString("id", null)?.takeIf { it.isNotBlank() }
-            val themeName = parsedTheme.manifest?.optString("name", null)?.takeIf { it.isNotBlank() } ?: fileName
+            val themeId = parsedTheme.manifest?.optString("id")?.takeIf { it.isNotBlank() }
+            val themeName = parsedTheme.manifest?.optString("name")?.takeIf { it.isNotBlank() } ?: fileName
 
             val baseName = themeId ?: themeName
             val finalName = if (themeVersion < AppConstants.CURRENT_THEME_VERSION) {
