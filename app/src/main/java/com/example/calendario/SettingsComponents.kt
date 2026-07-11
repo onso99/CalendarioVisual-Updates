@@ -153,13 +153,12 @@ internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
 @Composable
 internal fun SettingsActionChip(
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     
-    // Flash dinÃ¡mico 'parpadeante':
-    // Al presionar, parpadea rÃ¡pidamente. Al soltar, se desvanece.
     val backgroundColor by animateColorAsState(
         targetValue = if (isPressed) CalendarioTheme.colors.cabecera.copy(alpha = 0.28f) else Color.Transparent,
         animationSpec = if (isPressed) {
@@ -174,23 +173,26 @@ internal fun SettingsActionChip(
         label = "parpadeo"
     )
 
+    val borderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 4.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .height(40.dp) // Altura exacta de los chips de la pantalla de eventos
+            .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(10.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
-            )
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            ),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             color = CalendarioTheme.colors.textSystem,
-            fontSize = 15.sp,
+            fontSize = 14.sp, // Mismo tamaÃ±o que en Nuevo evento
             fontWeight = FontWeight.Normal
         )
     }

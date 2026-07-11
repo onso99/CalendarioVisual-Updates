@@ -502,7 +502,7 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // Nueva fila consolidada de Ajustes (Icono Grande + Chips)
+                // Nueva fila integrada de Ajustes (Icono + Botones adaptados)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -517,23 +517,34 @@ fun SettingsScreen(
                         modifier = Modifier.size(30.dp)
                     )
                     
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(12.dp))
                     
-                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json" 
-                        }
-                        importFullBackupLauncher.launch(intent) 
-                    }
-                    
-                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) { 
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json"
-                            putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
-                        }
-                        exportFullBackupLauncher.launch(intent) 
+                    // Contenedor que ocupa el espacio restante
+                    Row(modifier = Modifier.weight(1f)) {
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.cargar_label),
+                            modifier = Modifier.weight(1f),
+                            onClick = { 
+                                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/json" 
+                                }
+                                importFullBackupLauncher.launch(intent) 
+                            }
+                        )
+                        
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.guardar_label),
+                            modifier = Modifier.weight(1f),
+                            onClick = { 
+                                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/json"
+                                    putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
+                                }
+                                exportFullBackupLauncher.launch(intent) 
+                            }
+                        )
                     }
                 }
             }
@@ -577,7 +588,7 @@ fun SettingsScreen(
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 
-                // Nueva fila consolidada de Respaldo (Icono Grande + Chips sin fondo)
+                // Nueva fila consolidada de Respaldo (Icono Grande + Chips adaptados)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -592,17 +603,27 @@ fun SettingsScreen(
                         modifier = Modifier.size(30.dp) // Icono mÃ¡s grande
                     )
                     
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(12.dp))
                     
-                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
-                        importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json" 
-                        })
-                    }
-                    
-                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) {
-                        showExportDialog = true
+                    Row(modifier = Modifier.weight(1f)) {
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.cargar_label),
+                            modifier = Modifier.weight(1f),
+                            onClick = { 
+                                importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/json" 
+                                })
+                            }
+                        )
+                        
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.guardar_label),
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                showExportDialog = true
+                            }
+                        )
                     }
                 }
             }
@@ -736,7 +757,7 @@ fun SettingsScreen(
                 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // LÃ­nea 2: Icono + Chips Cargar/Guardar
+                // LÃ­nea 2: Icono + Chips Cargar/Guardar (Adaptado)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -751,21 +772,31 @@ fun SettingsScreen(
                         modifier = Modifier.size(30.dp)
                     )
                     
-                    Spacer(modifier = Modifier.weight(1f))
-                    
-                    SettingsActionChip(text = stringResource(id = R.string.cargar_label)) { 
-                        importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json" 
-                        })
-                    }
-                    
-                    SettingsActionChip(text = stringResource(id = R.string.guardar_label)) { 
-                        exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/json"
-                            putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
-                        })
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Row(modifier = Modifier.weight(1f)) {
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.cargar_label),
+                            modifier = Modifier.weight(1f),
+                            onClick = { 
+                                importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/json" 
+                                })
+                            }
+                        )
+                        
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.guardar_label),
+                            modifier = Modifier.weight(1f),
+                            onClick = { 
+                                exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/json"
+                                    putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
+                                })
+                            }
+                        )
                     }
                 }
             }
