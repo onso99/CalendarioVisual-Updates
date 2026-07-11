@@ -1,5 +1,17 @@
 package com.example.calendario
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +35,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,18 +43,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDateTime
@@ -137,46 +145,32 @@ fun AddEventForm(
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
         ) {
+            // Fila de Chips: Periodo Largo y Todo el dÃ­a
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(stringResource(id = R.string.long_period_switch), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
-                Switch(
-                    checked = isLongPeriod,
-                    onCheckedChange = onLongPeriodChange,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = CalendarioTheme.colors.cabecera,
-                        checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
-                        uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
-                        uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-                    )
+                // Chip: Periodo Largo
+                EventModeChip(
+                    text = stringResource(id = R.string.long_period_switch),
+                    iconResId = R.drawable.ic_long_period_24,
+                    isSelected = isLongPeriod,
+                    onClick = { onLongPeriodChange(!isLongPeriod) },
+                    modifier = Modifier.weight(1f)
                 )
-            }
-            HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(id = R.string.all_day_switch), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
-                Switch(
-                    checked = isAllDay,
-                    onCheckedChange = onAllDayChange,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = CalendarioTheme.colors.cabecera,
-                        checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
-                        uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
-                        uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-                    )
+                // Chip: Todo el dÃ­a
+                EventModeChip(
+                    text = stringResource(id = R.string.all_day_switch),
+                    iconResId = R.drawable.ic_all_day_24,
+                    isSelected = isAllDay,
+                    onClick = { onAllDayChange(!isAllDay) },
+                    modifier = Modifier.weight(1f)
                 )
             }
+
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
 
             val fontScale = LocalConfiguration.current.fontScale
@@ -296,22 +290,18 @@ fun AddEventForm(
                         0xFFFF9800.toInt(), // Naranja
                         0xFF4CAF50.toInt(), // Verde
                         0xFF9C27B0.toInt(), // Morado
-                        0xFF795548.toInt(), // Marrón
+                        0xFF795548.toInt(), // MarrÃ³n
                         0xFF607D8B.toInt(), // Gris
-                        0xFF4C58D8.toInt()  // Azul Especial
+                        0xFF009688.toInt()  // Cyan
                     )
-                    
                     Row(
                         modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Bloque de 4 columnas de 2 colores
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            for (i in 0..3) {
-                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column {
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                for (i in 0..3) {
                                     ColorCircle(
                                         colorInt = periodColors[i],
                                         isSelected = selectedColorInt == periodColors[i],
@@ -339,7 +329,7 @@ fun AddEventForm(
                         val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
                         Box(
                             modifier = Modifier
-                                .size(36.dp) // Un poco más grande para destacar
+                                .size(36.dp) // Un poco mÃ¡s grande para destacar
                                 .clip(CircleShape)
                                 .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
                                 .border(
@@ -466,6 +456,66 @@ fun AddEventForm(
 }
 
 @Composable
+private fun EventModeChip(
+    text: String,
+    iconResId: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    // AnimaciÃ³n de color para el flash parpadeante
+    val backgroundColor by animateColorAsState(
+        targetValue = when {
+            isPressed -> CalendarioTheme.colors.cabecera.copy(alpha = 0.28f)
+            isSelected -> CalendarioTheme.colors.cabecera.copy(alpha = 0.12f)
+            else -> Color.Transparent
+        },
+        animationSpec = if (isPressed) snap() else tween(durationMillis = 400),
+        label = "chipFlash"
+    )
+
+    val contentColor = if (isSelected) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem
+    val borderColor = if (isSelected) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+
+    Box(
+        modifier = modifier
+            .height(40.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(10.dp))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = iconResId),
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = text,
+                color = contentColor,
+                fontSize = 14.sp,
+                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+            )
+        }
+    }
+}
+
+@Composable
 private fun ColorCircle(
     colorInt: Int,
     isSelected: Boolean,
@@ -497,7 +547,6 @@ private fun AdaptiveDateTimeRow(
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
     val showTwoLines = fontScale > 1.1f
-
     val dateText = remember(date, locale) {
         "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${date.format(dateFormatter)}"
     }
