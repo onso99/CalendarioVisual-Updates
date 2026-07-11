@@ -511,7 +511,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_settings_backup_24),
+                        painter = painterResource(id = R.drawable.ic_settings_custom_24),
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                         modifier = Modifier.size(30.dp)
@@ -597,7 +597,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_folder_eye_24),
+                        painter = painterResource(id = R.drawable.ic_palette_custom_24),
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                         modifier = Modifier.size(30.dp) // Icono mÃ¡s grande
@@ -766,7 +766,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_holiday_folder_24),
+                        painter = painterResource(id = R.drawable.ic_star_custom_24),
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                         modifier = Modifier.size(30.dp)
