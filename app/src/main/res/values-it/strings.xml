@@ -302,6 +302,7 @@
     <string name="preview_vie">Ven</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Consegna progetto</string>
+    <string name="local_holidays_label">Festività locali</string>
     <string name="cargar_label">Carica</string>
     <string name="guardar_label">Salva</string>
     <string name="bundled_theme_1_name">Oceano</string>

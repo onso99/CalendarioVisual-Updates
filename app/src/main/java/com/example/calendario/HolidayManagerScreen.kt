@@ -248,12 +248,7 @@ fun HolidayManagerScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // --- List Section ---
-            Text(
-                "Festivos locales",
-                style = MaterialTheme.typography.titleMedium,
-                color = CalendarioTheme.colors.eventListTitleColor,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            SectionTitle(text = stringResource(id = R.string.local_holidays_label))
             
             LazyColumn(
                 modifier = Modifier

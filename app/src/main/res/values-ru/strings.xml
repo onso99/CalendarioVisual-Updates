@@ -302,6 +302,7 @@
     <string name="preview_vie">Пт</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Сдача проекта</string>
+    <string name="local_holidays_label">Местные праздники</string>
     <string name="cargar_label">Загрузить</string>
     <string name="guardar_label">Сохранить</string>
     <string name="bundled_theme_1_name">Океан</string>

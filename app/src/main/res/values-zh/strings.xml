@@ -302,6 +302,7 @@
     <string name="preview_vie">周五</string>
     <string name="preview_date_3">05/24</string>
     <string name="preview_event_3">项目交付</string>
+    <string name="local_holidays_label">当地节假日</string>
     <string name="cargar_label">加载</string>
     <string name="guardar_label">保存</string>
     <string name="bundled_theme_1_name">海洋</string>

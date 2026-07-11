@@ -302,6 +302,7 @@
     <string name="preview_vie">Sex</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de projecto</string>
+    <string name="local_holidays_label">Feriados locais</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Salvar</string>
     <string name="bundled_theme_1_name">Oceano</string>

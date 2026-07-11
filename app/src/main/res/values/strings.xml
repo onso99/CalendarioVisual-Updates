@@ -302,6 +302,7 @@
     <string name="preview_vie">Vie</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de proyecto</string>
+    <string name="local_holidays_label">Festivos locales</string>
     <string name="cargar_label">Cargar</string>
     <string name="guardar_label">Guardar</string>
     <string name="bundled_theme_1_name">Océano</string>
