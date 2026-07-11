@@ -918,12 +918,18 @@ fun SettingsScreen(
             onDismiss = { showBundledThemesDialog = false }, 
             onThemeSelected = { theme -> 
                 showBundledThemesDialog = false
-                val themeManifest = theme["themeManifest"] as Map<*, *>
-                val manifest = JSONObject(themeManifest)
-                val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
-                val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
-                ThemePersistence.applyTheme(context, ParsedTheme(manifest, lightTheme, darkTheme), themeManifest["name"] as String)
-                onThemeImported()
+                try {
+                    val themeManifest = theme["themeManifest"] as? Map<*, *> ?: return@BundledThemesDialog
+                    val manifest = JSONObject(themeManifest)
+                    val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
+                    val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
+                    // Priorizamos el ID para evitar el cierre por NullPointerException
+                    val themeId = themeManifest["id"] as? String ?: "theme_1"
+                    ThemePersistence.applyTheme(context, ParsedTheme(manifest, lightTheme, darkTheme), themeId)
+                    onThemeImported()
+                } catch (e: Exception) {
+                    Log.e("SettingsScreen", "Error applying bundled theme", e)
+                }
             }
         ) 
     }

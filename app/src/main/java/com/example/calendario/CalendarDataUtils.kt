@@ -252,7 +252,7 @@ fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment
     val gson = Gson()
     val uniqueAdjustments = adjustments.distinctBy { 
         if (it.originalEventId != null) "${it.date}_ID_${it.originalEventId}"
-        else "${it.date}_TITLE_${it.title}"
+        else "${it.date}" // UN AJUSTE POR DÃA: La fecha es la clave de unicidad para festivos manuales
     }
     val dtoList = uniqueAdjustments.map { adj ->
         HolidayAdjustmentDto(

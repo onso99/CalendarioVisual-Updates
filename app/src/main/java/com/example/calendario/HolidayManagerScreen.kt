@@ -111,13 +111,13 @@ fun HolidayManagerScreen(
     val saveAction = {
         val currentAdjustments = loadHolidayAdjustments(context).toMutableList()
         
-        if (editingAdjustment != null) {
-            currentAdjustments.removeAll { it.date == editingAdjustment!!.date && it.originalEventId == editingAdjustment!!.originalEventId && it.title == editingAdjustment!!.title }
-        } else if (initialFestivo != null) {
-            currentAdjustments.removeAll { 
-                (initialFestivo.id >= 0 && it.originalEventId == initialFestivo.id) ||
-                (initialFestivo.id < 0 && it.originalEventId == null && it.date == initialFestivo.date && it.title == initialFestivo.title)
-            }
+        // LIMPIEZA DE DUPLICADOS: Antes de guardar, eliminamos cualquier registro previo para esta fecha
+        if (isFromExistingGoogleEvent) {
+            // Si es un evento de Google, eliminamos cualquier ajuste previo vinculado a este ID exacto
+            currentAdjustments.removeAll { it.originalEventId == currentOriginalEventId }
+        } else {
+            // Si es manual, eliminamos cualquier ajuste manual previo en la misma fecha
+            currentAdjustments.removeAll { it.date == date && it.originalEventId == null }
         }
         
         val shouldAdd = if (isFromExistingGoogleEvent) !isHoliday else true
