@@ -302,4 +302,14 @@
     <string name="preview_vie">Osl</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Proiektu entrega</string>
+    <string name="cargar_label">Kargatu</string>
+    <string name="guardar_label">Gorde</string>
+    <string name="bundled_theme_1_name">Ozeanoa</string>
+    <string name="bundled_theme_2_name">Basoa</string>
+    <string name="bundled_theme_3_name">Sumendia</string>
+    <string name="bundled_theme_4_name">Egunsentia</string>
+    <string name="bundled_theme_5_name">Oliba Berdea</string>
+    <string name="bundled_theme_6_name">Grafitoa</string>
+    <string name="bundled_theme_7_name">Lurra</string>
+    <string name="bundled_theme_8_name">Labanda</string>
 </resources>

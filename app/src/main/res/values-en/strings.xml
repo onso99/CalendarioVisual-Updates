@@ -303,4 +303,14 @@
     <string name="preview_vie">Fri</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Project delivery</string>
+    <string name="cargar_label">Load</string>
+    <string name="guardar_label">Save</string>
+    <string name="bundled_theme_1_name">Ocean</string>
+    <string name="bundled_theme_2_name">Forest</string>
+    <string name="bundled_theme_3_name">Volcano</string>
+    <string name="bundled_theme_4_name">Sunrise</string>
+    <string name="bundled_theme_5_name">Olive Green</string>
+    <string name="bundled_theme_6_name">Graphite</string>
+    <string name="bundled_theme_7_name">Earth</string>
+    <string name="bundled_theme_8_name">Lavender</string>
 </resources>

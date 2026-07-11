@@ -302,4 +302,14 @@
     <string name="preview_vie">金</string>
     <string name="preview_date_3">05/24</string>
     <string name="preview_event_3">プロジェクト提出</string>
+    <string name="cargar_label">読み込む</string>
+    <string name="guardar_label">保存する</string>
+    <string name="bundled_theme_1_name">オーシャン</string>
+    <string name="bundled_theme_2_name">フォレスト</string>
+    <string name="bundled_theme_3_name">ボルケーノ</string>
+    <string name="bundled_theme_4_name">サンライズ</string>
+    <string name="bundled_theme_5_name">オリーブグリーン</string>
+    <string name="bundled_theme_6_name">グラファイト</string>
+    <string name="bundled_theme_7_name">アース</string>
+    <string name="bundled_theme_8_name">ラベンダー</string>
 </resources>

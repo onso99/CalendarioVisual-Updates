@@ -302,4 +302,14 @@
     <string name="preview_vie">Ven</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Remise de projet</string>
+    <string name="cargar_label">Charger</string>
+    <string name="guardar_label">Enregistrer</string>
+    <string name="bundled_theme_1_name">Océan</string>
+    <string name="bundled_theme_2_name">Forêt</string>
+    <string name="bundled_theme_3_name">Volcan</string>
+    <string name="bundled_theme_4_name">Aurore</string>
+    <string name="bundled_theme_5_name">Vert Olive</string>
+    <string name="bundled_theme_6_name">Graphite</string>
+    <string name="bundled_theme_7_name">Terre</string>
+    <string name="bundled_theme_8_name">Lavande</string>
 </resources>

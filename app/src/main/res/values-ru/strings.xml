@@ -302,4 +302,14 @@
     <string name="preview_vie">Пт</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Сдача проекта</string>
+    <string name="cargar_label">Загрузить</string>
+    <string name="guardar_label">Сохранить</string>
+    <string name="bundled_theme_1_name">Океан</string>
+    <string name="bundled_theme_2_name">Лес</string>
+    <string name="bundled_theme_3_name">Вулкан</string>
+    <string name="bundled_theme_4_name">Рассвет</string>
+    <string name="bundled_theme_5_name">Оливковый</string>
+    <string name="bundled_theme_6_name">Графит</string>
+    <string name="bundled_theme_7_name">Земля</string>
+    <string name="bundled_theme_8_name">Лаванда</string>
 </resources>

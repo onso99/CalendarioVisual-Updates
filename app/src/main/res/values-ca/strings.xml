@@ -302,4 +302,14 @@
     <string name="preview_vie">Div</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de projecte</string>
+    <string name="cargar_label">Carregar</string>
+    <string name="guardar_label">Desar</string>
+    <string name="bundled_theme_1_name">Oceà</string>
+    <string name="bundled_theme_2_name">Bosc</string>
+    <string name="bundled_theme_3_name">Volcà</string>
+    <string name="bundled_theme_4_name">Alba</string>
+    <string name="bundled_theme_5_name">Verd Oliva</string>
+    <string name="bundled_theme_6_name">Grafit</string>
+    <string name="bundled_theme_7_name">Terra</string>
+    <string name="bundled_theme_8_name">Lavanda</string>
 </resources>
