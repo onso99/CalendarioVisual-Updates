@@ -22,7 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -130,9 +130,9 @@ fun AddEventForm(
                     color = CalendarioTheme.colors.textSystem
                 )
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = stringResource(id = R.string.select_calendar),
-                    tint = CalendarioTheme.colors.textSystem
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
                 )
             }
         }
@@ -208,7 +208,7 @@ fun AddEventForm(
                     val dateText = remember(startDate, locale) {
                         "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
                     }
-                    Text(text = dateText, color = CalendarioTheme.colors.textSystem)
+                    Text(text = dateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
                 }
 
                 if (!isAllDay) {
@@ -228,8 +228,14 @@ fun AddEventForm(
                                 .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(stringResource(id = R.string.start), color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(end = 8.dp))
-                            Text(text = startDate.format(timeFormatter), color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
+                            Text(stringResource(id = R.string.start), color = CalendarioTheme.colors.textSystem)
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = startDate.format(timeFormatter), 
+                                color = CalendarioTheme.colors.textSystem, 
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(end = 12.dp)
+                            )
                         }
                         
                         // Separador Vertical
@@ -247,10 +253,14 @@ fun AddEventForm(
                                 .weight(1f)
                                 .clickable(onClick = onEndTimeClick)
                                 .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.End
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(stringResource(id = R.string.end_time), color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(end = 8.dp))
+                            Text(
+                                text = stringResource(id = R.string.end_time), 
+                                color = CalendarioTheme.colors.textSystem,
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(text = endDate.format(timeFormatter), color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
                         }
                     }
@@ -272,12 +282,13 @@ fun AddEventForm(
                     Text(
                         text = "$repetitionText$countSuffix",
                         modifier = Modifier.weight(1f),
-                        color = CalendarioTheme.colors.textSystem
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = if (repetitionRule != RepetitionRule.NONE) FontWeight.Medium else FontWeight.Normal
                     )
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = stringResource(id = R.string.select_repetition),
-                        tint = CalendarioTheme.colors.textSystem
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
                     )
                 }
             } else {
@@ -393,7 +404,8 @@ fun AddEventForm(
                     )
                     Text(
                         text = alarmTime.format(timeFormatter),
-                        color = CalendarioTheme.colors.textSystem
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
@@ -569,6 +581,7 @@ private fun AdaptiveDateTimeRow(
                         text = dateText,
                         modifier = Modifier.clickable(onClick = onDateClick),
                         color = CalendarioTheme.colors.textSystem,
+                        fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -579,6 +592,7 @@ private fun AdaptiveDateTimeRow(
                         .alpha(if (isAllDay) 0.5f else 1f)
                         .clickable(!isAllDay, onClick = onTimeClick),
                     color = CalendarioTheme.colors.textSystem,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -598,6 +612,7 @@ private fun AdaptiveDateTimeRow(
                         text = dateText,
                         modifier = Modifier.clickable(onClick = onDateClick),
                         color = CalendarioTheme.colors.textSystem,
+                        fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -609,6 +624,7 @@ private fun AdaptiveDateTimeRow(
                         .alpha(if (isAllDay) 0.5f else 1f)
                         .clickable(!isAllDay, onClick = onTimeClick),
                     color = CalendarioTheme.colors.textSystem,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
