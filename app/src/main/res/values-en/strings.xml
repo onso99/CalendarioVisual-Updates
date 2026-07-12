@@ -264,6 +264,7 @@
     <string name="fix_permission">SETTINGS</string>
     <string name="history">History</string>
 
+    <string name="backup_label">Backup</string>
     <string name="backup_section_title">Event backup</string>
     <string name="link_google_account">Link Google account</string>
     <string name="account_linked">Account linked</string>

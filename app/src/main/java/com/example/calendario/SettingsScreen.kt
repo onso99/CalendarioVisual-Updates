@@ -129,8 +129,6 @@ fun SettingsScreen(
     var showAlarmConfigDialog by remember { mutableStateOf(false) }
     var showBundledThemesDialog by remember { mutableStateOf(false) }
     var showFontFamilyDialog by remember { mutableStateOf(false) }
-    var showImportHolidaysDialog by remember { mutableStateOf(false) }
-    var pendingHolidaysUri by remember { mutableStateOf<Uri?>(null) }
     var showPermissionsDialog by remember { mutableStateOf(false) }
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
@@ -191,49 +189,6 @@ fun SettingsScreen(
         }
     )
 
-    val importHolidaysLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    val currentAdjustments = loadHolidayAdjustments(context)
-                    if (currentAdjustments.isNotEmpty()) {
-                        pendingHolidaysUri = uri
-                        showImportHolidaysDialog = true
-                    } else {
-                        try {
-                            if (importHolidaysFromJson(context, uri, replace = true)) {
-                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-                                onRefreshData()
-                            } else {
-                                Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
-                            }
-                        } catch (e: Exception) {
-                            Log.e("SettingsScreen", "Error importing holidays", e)
-                            Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            }
-        }
-    )
-
-    val exportHolidaysLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                try {
-                    result.data?.data?.let { uri ->
-                        exportHolidaysToJson(context, uri)
-                        Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Log.e("SettingsScreen", "Error exporting holidays", e)
-                    Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    )
 
     val exportFullBackupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -575,6 +530,27 @@ fun SettingsScreen(
                 }
                 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // 5. FESTIVOS (Navegación al gestor)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable(onClick = onHolidayManagerClick)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.holidays_section), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -804,79 +780,6 @@ fun SettingsScreen(
                 ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
             }
 
-            // --- 4. Holidays Section ---
-            SectionTitle(text = stringResource(id = R.string.holidays_section))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                // LÃ­nea 1: Gestor (AcciÃ³n de navegaciÃ³n)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable(onClick = onHolidayManagerClick)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.holiday_manager),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontSize = 16.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-
-                // LÃ­nea 2: Icono + Chips Cargar/Guardar (DiseÃ±o Puzzle con Icono Central)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    // BotÃ³n Cargar (Izquierda)
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.cargar_label),
-                        modifier = Modifier.weight(1f),
-                        shape = LeftConcaveShape,
-                        onClick = { 
-                            importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "application/json" 
-                            })
-                        }
-                    )
-
-                    // Icono Central (Estrella)
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_star_custom_24),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
-                    )
-
-                    // BotÃ³n Guardar (Derecha)
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.guardar_label),
-                        modifier = Modifier.weight(1f),
-                        shape = RightConcaveShape,
-                        onClick = { 
-                            exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "application/json"
-                                putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
-                            })
-                        }
-                    )
-                }
-            }
 
             // --- 6. Backup Section ---
             SectionTitle(text = stringResource(id = R.string.backup_section_title))
@@ -1147,56 +1050,6 @@ fun SettingsScreen(
         )
     }
 
-    if (showImportHolidaysDialog && pendingHolidaysUri != null) {
-        AlertDialog(
-            onDismissRequest = { showImportHolidaysDialog = false; pendingHolidaysUri = null },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            titleContentColor = CalendarioTheme.colors.textSystem,
-            textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(id = R.string.import_holidays_confirm_title), fontWeight = FontWeight.Bold) },
-            text = { Text(stringResource(id = R.string.import_holidays_confirm_message)) },
-            confirmButton = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Button(
-                        onClick = {
-                            if (importHolidaysFromJson(context, pendingHolidaysUri!!, replace = false)) {
-                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-                                onRefreshData()
-                            }
-                            showImportHolidaysDialog = false
-                            pendingHolidaysUri = null
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-                    ) {
-                        Text(stringResource(id = R.string.import_holidays_merge))
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            if (importHolidaysFromJson(context, pendingHolidaysUri!!, replace = true)) {
-                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-                                onRefreshData()
-                            }
-                            showImportHolidaysDialog = false
-                            pendingHolidaysUri = null
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                    ) {
-                        Text(stringResource(id = R.string.import_holidays_replace), color = Color.White)
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    TextButton(
-                        onClick = { showImportHolidaysDialog = false; pendingHolidaysUri = null },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-                    }
-                }
-            }
-        )
-    }
 }
 
 @Composable

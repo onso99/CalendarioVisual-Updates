@@ -263,6 +263,7 @@
     <string name="fix_permission">EZARPENAK</string>
     <string name="history">Historia</string>
 
+    <string name="backup_label">Babeskopia</string>
     <string name="backup_section_title">Gertaeren babeskopia</string>
     <string name="link_google_account">Lotu Google kontua</string>
     <string name="account_linked">Kontua lotuta</string>

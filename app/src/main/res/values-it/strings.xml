@@ -262,6 +262,7 @@
     <string name="fix_permission">IMPOSTAZIONI</string>
     <string name="history">Cronologia</string>
 
+    <string name="backup_label">Backup</string>
     <string name="backup_section_title">Backup degli eventi</string>
     <string name="link_google_account">Collega account Google</string>
     <string name="account_linked">Account collegato</string>

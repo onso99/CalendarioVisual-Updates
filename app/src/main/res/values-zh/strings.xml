@@ -263,6 +263,7 @@
     <string name="fix_permission">设置</string>
     <string name="history">历史记录</string>
 
+    <string name="backup_label">备份</string>
     <string name="backup_section_title">事件备份</string>
     <string name="link_google_account">关联 Google 账号</string>
     <string name="account_linked">账号已关联</string>

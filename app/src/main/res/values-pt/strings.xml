@@ -264,6 +264,7 @@
     <string name="fix_permission">DEFINIÇÕES</string>
     <string name="history">Histórico</string>
 
+    <string name="backup_label">Respaldo</string>
     <string name="backup_section_title">Respaldo de eventos</string>
     <string name="link_google_account">Vincular conta Google</string>
     <string name="account_linked">Conta vinculada</string>

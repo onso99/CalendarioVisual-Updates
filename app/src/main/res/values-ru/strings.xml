@@ -263,6 +263,7 @@
     <string name="fix_permission">НАСТРОИТЬ</string>
     <string name="history">История</string>
 
+    <string name="backup_label">Резерв</string>
     <string name="backup_section_title">Резервное копирование</string>
     <string name="link_google_account">Связать с аккаунтом Google</string>
     <string name="account_linked">Аккаунт связан</string>

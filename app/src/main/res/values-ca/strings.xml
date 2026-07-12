@@ -262,6 +262,7 @@
     <string name="fix_permission">AJUSTOS</string>
     <string name="history">Historial</string>
 
+    <string name="backup_label">Respaldo</string>
     <string name="backup_section_title">Respaldo d\'esdeveniments</string>
     <string name="link_google_account">Vincular compte de Google</string>
     <string name="account_linked">Compte vinculat</string>

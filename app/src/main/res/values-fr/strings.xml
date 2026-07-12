@@ -264,6 +264,7 @@
     <string name="history">Historique</string>
 
     <!-- Sauvegarde des événements -->
+    <string name="backup_label">Sauvegarde</string>
     <string name="backup_section_title">Sauvegarde des événements</string>
     <string name="link_google_account">Associer un compte Google</string>
     <string name="account_linked">Compte associé</string>

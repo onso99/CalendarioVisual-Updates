@@ -199,7 +199,6 @@ internal fun SettingsActionChip(
 
     Box(
         modifier = modifier
-            .height(40.dp)
             .clip(shape)
             .background(backgroundColor)
             .border(1.dp, borderColor, shape)
@@ -214,7 +213,8 @@ internal fun SettingsActionChip(
             text = text,
             color = CalendarioTheme.colors.textSystem,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
     }
 }

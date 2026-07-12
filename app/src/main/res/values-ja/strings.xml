@@ -263,6 +263,7 @@
     <string name="fix_permission">設定</string>
     <string name="history">履歴</string>
 
+    <string name="backup_label">バックアップ</string>
     <string name="backup_section_title">イベントのバックアップ</string>
     <string name="link_google_account">Googleアカウントを連携</string>
     <string name="account_linked">アカウント連携済み</string>

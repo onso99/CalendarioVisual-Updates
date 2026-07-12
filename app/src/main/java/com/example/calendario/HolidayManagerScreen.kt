@@ -1,8 +1,14 @@
 package com.example.calendario
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,12 +49,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -85,6 +88,54 @@ fun HolidayManagerScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var adjustmentToDelete by remember { mutableStateOf<HolidayAdjustment?>(null) }
+    
+    // --- Backup States ---
+    var showImportHolidaysDialog by remember { mutableStateOf(false) }
+    var pendingHolidaysUri by remember { mutableStateOf<Uri?>(null) }
+
+    // --- Launchers ---
+    val importHolidaysLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    val currentAdjustments = loadHolidayAdjustments(context)
+                    if (currentAdjustments.isNotEmpty()) {
+                        pendingHolidaysUri = uri
+                        showImportHolidaysDialog = true
+                    } else {
+                        try {
+                            if (importHolidaysFromJson(context, uri, replace = true)) {
+                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                                adjustments = loadHolidayAdjustments(context)
+                                onRefresh()
+                            } else {
+                                Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        }
+    )
+
+    val exportHolidaysLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                try {
+                    result.data?.data?.let { uri ->
+                        exportHolidaysToJson(context, uri)
+                        Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    )
 
     // Logic to store reference values to detect changes
     var refTitle by remember { mutableStateOf(initialFestivo?.title ?: "") }
@@ -111,12 +162,9 @@ fun HolidayManagerScreen(
     val saveAction = {
         val currentAdjustments = loadHolidayAdjustments(context).toMutableList()
         
-        // LIMPIEZA DE DUPLICADOS: Antes de guardar, eliminamos cualquier registro previo para esta fecha
         if (isFromExistingGoogleEvent) {
-            // Si es un evento de Google, eliminamos cualquier ajuste previo vinculado a este ID exacto
             currentAdjustments.removeAll { it.originalEventId == currentOriginalEventId }
         } else {
-            // Si es manual, eliminamos cualquier ajuste manual previo en la misma fecha
             currentAdjustments.removeAll { it.date == date && it.originalEventId == null }
         }
         
@@ -141,7 +189,6 @@ fun HolidayManagerScreen(
         onRefresh() 
     }
 
-    // Atenuamos el rojo solo para esta pantalla si es el rojo puro del modo claro
     val festivoColor = if (CalendarioTheme.colors.textSundayHoliday == Color(0xFFFF0000)) Color(0xFFD32F2F) else CalendarioTheme.colors.textSundayHoliday
 
     Scaffold(
@@ -247,6 +294,52 @@ fun HolidayManagerScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // --- Backup Chips Row ---
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center // Todo el bloque centrado
+            ) {
+                Text(
+                    text = stringResource(id = R.string.backup_label), // "Respaldo"
+                    color = CalendarioTheme.colors.textSystem,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.padding(end = 12.dp)
+                )
+                
+                SettingsActionChip(
+                    text = stringResource(id = R.string.cargar_label),
+                    modifier = Modifier
+                        .height(32.dp)
+                        .widthIn(min = 90.dp), // Ligeramente más anchos
+                    onClick = {
+                        importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json" 
+                        })
+                    }
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                SettingsActionChip(
+                    text = stringResource(id = R.string.guardar_label),
+                    modifier = Modifier
+                        .height(32.dp)
+                        .widthIn(min = 90.dp), // Ligeramente más anchos
+                    onClick = {
+                        exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/json"
+                            putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
+                        })
+                    }
+                )
+            }
+
             // --- List Section ---
             SectionTitle(text = stringResource(id = R.string.local_holidays_label))
             
@@ -266,14 +359,12 @@ fun HolidayManagerScreen(
                             title = adj.title
                             val isPastYear = adj.date.year < LocalDate.now().year
                             if (isPastYear && !isGoogleAdjustment) {
-                                // Template mode (only for manual holidays)
                                 date = adj.date.withYear(LocalDate.now().year)
                                 isHoliday = true
                                 currentOriginalEventId = null
                                 editingAdjustment = null
                                 showDatePicker = true
                             } else {
-                                // Edit mode (for current year or Google events)
                                 date = adj.date
                                 isHoliday = adj.type == HolidayAdjustmentType.HOLIDAY
                                 currentOriginalEventId = adj.originalEventId
@@ -322,9 +413,7 @@ fun HolidayManagerScreen(
                         newList.remove(toDelete)
                         saveHolidayAdjustments(context, newList)
                         adjustments = newList
-                        
                         Toast.makeText(context, holidayDeletedMsg, Toast.LENGTH_SHORT).show()
-
                         onRefresh()
                         resetForm()
                         adjustmentToDelete = null
@@ -336,6 +425,59 @@ fun HolidayManagerScreen(
                 TextButton(onClick = { adjustmentToDelete = null }) { Text(stringResource(id = R.string.cancel)) }
             },
             containerColor = CalendarioTheme.colors.fondoDialogos
+        )
+    }
+
+    if (showImportHolidaysDialog && pendingHolidaysUri != null) {
+        AlertDialog(
+            onDismissRequest = { showImportHolidaysDialog = false; pendingHolidaysUri = null },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.import_holidays_confirm_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.import_holidays_confirm_message)) },
+            confirmButton = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = {
+                            if (importHolidaysFromJson(context, pendingHolidaysUri!!, replace = false)) {
+                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                                adjustments = loadHolidayAdjustments(context)
+                                onRefresh()
+                            }
+                            showImportHolidaysDialog = false
+                            pendingHolidaysUri = null
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+                    ) {
+                        Text(stringResource(id = R.string.import_holidays_merge))
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            if (importHolidaysFromJson(context, pendingHolidaysUri!!, replace = true)) {
+                                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+                                adjustments = loadHolidayAdjustments(context)
+                                onRefresh()
+                            }
+                            showImportHolidaysDialog = false
+                            pendingHolidaysUri = null
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text(stringResource(id = R.string.import_holidays_replace), color = Color.White)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { showImportHolidaysDialog = false; pendingHolidaysUri = null },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+                    }
+                }
+            }
         )
     }
 }

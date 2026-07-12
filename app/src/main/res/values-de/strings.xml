@@ -263,6 +263,7 @@
     <string name="fix_permission">EINSTELLUNGEN</string>
     <string name="history">Verlauf</string>
 
+    <string name="backup_label">Sicherung</string>
     <string name="backup_section_title">Ereignis-Sicherung</string>
     <string name="link_google_account">Google-Konto verknüpfen</string>
     <string name="account_linked">Konto verknüpft</string>
