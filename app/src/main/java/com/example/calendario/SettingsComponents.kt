@@ -12,21 +12,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,6 +46,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,11 +56,9 @@ import com.example.calendario.ui.theme.CalendarioTheme
 // FORMA: BotÃ³n Izquierda (Mordisco en la derecha)
 val LeftConcaveShape = GenericShape { size, _ ->
     val corner = size.height * 0.25f
-    val depth = size.height * 0.25f // Profundidad del mordisco
-    
+    val depth = size.height * 0.25f
     moveTo(corner, 0f)
     lineTo(size.width, 0f)
-    // Mordisco hacia adentro (CÃ³ncavo)
     quadraticTo(size.width - depth, size.height / 2f, size.width, size.height)
     lineTo(corner, size.height)
     quadraticTo(0f, size.height, 0f, size.height - corner)
@@ -65,14 +71,12 @@ val LeftConcaveShape = GenericShape { size, _ ->
 val RightConcaveShape = GenericShape { size, _ ->
     val corner = size.height * 0.25f
     val depth = size.height * 0.25f
-    
     moveTo(0f, 0f)
     lineTo(size.width - corner, 0f)
     quadraticTo(size.width, 0f, size.width, corner)
     lineTo(size.width, size.height - corner)
     quadraticTo(size.width, size.height, size.width - corner, size.height)
     lineTo(0f, size.height)
-    // Mordisco hacia adentro (CÃ³ncavo) en la izquierda
     quadraticTo(depth, size.height / 2f, 0f, 0f)
     close()
 }
@@ -227,38 +231,39 @@ internal fun SettingsActionChip(
 
 @Preview(showBackground = true, backgroundColor = 0xFFF0F2F5)
 @Composable
-fun CorrectedPuzzlePreview() {
+fun WeekDialogSimulation() {
     MaterialTheme {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            // BotÃ³n Izquierda con mordisco suave
-            SettingsActionChip(
-                text = "Cargar",
-                onClick = {},
-                modifier = Modifier.weight(1f),
-                shape = LeftConcaveShape
-            )
-
-            // Icono Central (Engranaje)
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = null,
-                tint = Color.DarkGray,
-                modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
-            )
-
-            // BotÃ³n Derecha con mordisco suave
-            SettingsActionChip(
-                text = "Guardar",
-                onClick = {},
-                modifier = Modifier.weight(1f),
-                shape = RightConcaveShape
-            )
+        Box(modifier = Modifier.padding(24.dp).fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(Color.White).padding(24.dp)) {
+            Column {
+                Text(text = "Semana", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color(0xFF404040))
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                val days = listOf("Sistema", "Lunes", "SÃ¡bado", "Domingo")
+                days.forEach { day ->
+                    Row(modifier = Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = day, modifier = Modifier.weight(1f), fontSize = 16.sp, color = Color(0xFF404040))
+                        if (day == "Lunes") Icon(Icons.Default.Check, null, tint = Color(0xFF4C58D8))
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(modifier = Modifier.fillMaxWidth().height(56.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(text = "NÃºmero de semana", fontSize = 16.sp, color = Color(0xFF404040))
+                    Switch(
+                        checked = true, 
+                        onCheckedChange = {},
+                        colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF4C58D8), checkedTrackColor = Color(0xFF4C58D8).copy(alpha = 0.5f))
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                TextButton(onClick = {}, modifier = Modifier.align(Alignment.End)) {
+                    Text("CANCELAR", color = Color(0xFF4C58D8))
+                }
+            }
         }
     }
 }

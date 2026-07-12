@@ -303,6 +303,7 @@
     <string name="preview_vie">Fri</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Project delivery</string>
+    <string name="semana_label">Week</string>
     <string name="local_holidays_label">Local holidays</string>
     <string name="cargar_label">Load</string>
     <string name="guardar_label">Save</string>

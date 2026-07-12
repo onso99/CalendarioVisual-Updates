@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
@@ -43,6 +44,7 @@ import com.example.calendario.ui.theme.isColorDark
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.temporal.WeekFields
 import java.time.format.TextStyle
 
 @Composable
@@ -62,21 +64,24 @@ fun MonthlyCalendar(
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
     val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
     val effectType = remember(themeColors) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
+    
+    val showWeekNumber = remember(prefs) { prefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
+    val weekFields = remember(locale) { WeekFields.of(locale) }
 
     val intelligentTodayBorderColor = remember(themeColors.monthlyCalendarTodayCellBorder, themeColors.settingsBackground) {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(themeColors.monthlyCalendarTodayCellBorder.toArgb(), hsl)
         val originalHue = hsl[0]
 
-        // Ajustar color según la luminancia del fondo de ajustes (modo app)
+        // Ajustar color segÃºn la luminancia del fondo de ajustes (modo app)
         val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
         
         if (isAppDark) {
-            // Modo Oscuro: Ecualización Cromática por Tramos de Percepción
+            // Modo Oscuro: EcualizaciÃ³n CromÃ¡tica por Tramos de PercepciÃ³n
             hsl[0] = (originalHue + 25f) % 360
             
             when (originalHue) {
-                // Océano y Grafito: Ajustado para no deslumbrar
+                // OcÃ©ano y Grafito: Ajustado para no deslumbrar
                 in 190f..225f -> {
                     hsl[1] = 0.90f 
                     hsl[2] = 0.70f 
@@ -86,19 +91,19 @@ fun MonthlyCalendar(
                     hsl[1] = 0.50f 
                     hsl[2] = 0.40f
                 }
-                // Volcán, Lavanda, Amanecer
+                // VolcÃ¡n, Lavanda, Amanecer
                 else -> {
                     hsl[1] = 0.70f 
                     hsl[2] = 0.55f
                 }
             }
         } else {
-            // Modo Claro: Lógica unificada con refuerzo para Lavanda
+            // Modo Claro: LÃ³gica unificada con refuerzo para Lavanda
             val isLavandaTramo = originalHue in 230f..290f
             
             hsl[0] = (originalHue + 140f) % 360
             
-            // Refuerzo de saturación para el tramo Lavanda
+            // Refuerzo de saturaciÃ³n para el tramo Lavanda
             hsl[1] = if (isLavandaTramo) 0.80f else 0.40f
             hsl[2] = 0.55f
         }
@@ -106,7 +111,7 @@ fun MonthlyCalendar(
         Color(ColorUtils.HSLToColor(hsl))
     }
 
-    // Calculamos el alpha final: si es Lavanda lo hacemos más compacto (menos transparente)
+    // Calculamos el alpha final: si es Lavanda lo hacemos mÃ¡s compacto (menos transparente)
     val finalTodayAlpha = remember(themeColors.monthlyCalendarTodayCellBorder, themeColors.settingsBackground) {
         val hsl = FloatArray(3)
         ColorUtils.colorToHSL(themeColors.monthlyCalendarTodayCellBorder.toArgb(), hsl)
@@ -135,7 +140,7 @@ fun MonthlyCalendar(
     val daysInPrevMonth = prevMonth.lengthOfMonth()
     val daysInCurrentMonth = currentMonth.lengthOfMonth()
 
-    // --- GROSOR DE CARRIL FIJO (Máximo para resaltar el efecto píldora) ---
+    // --- GROSOR DE CARRIL FIJO (MÃ¡ximo para resaltar el efecto pÃ­ldora) ---
     val fixedLaneWidth = 6.5.dp
 
     val visibleDays = mutableListOf<Pair<LocalDate, Boolean>>()
@@ -160,7 +165,7 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        // MUESTREO POR POSICIÓN + SINCRONIZACIÓN MODO APP
+        // MUESTREO POR POSICIÃ“N + SINCRONIZACIÃ“N MODO APP
         val headerBg = run {
             val startColor = themeColors.monthlyCalendarGridBackground
             val midColor = themeColors.monthlyCalendarGridEffect
@@ -172,21 +177,21 @@ fun MonthlyCalendar(
                 else -> startColor
             }
             
-            // Decisión basada en el Modo de la App (no en la luminancia local)
+            // DecisiÃ³n basada en el Modo de la App (no en la luminancia local)
             val isMainBgDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(colorBehind.toArgb(), hsl)
             
             if (isMainBgDark) {
-                // Modo Oscuro: aclaramos cromáticamente (+10% luz, +5% saturación)
+                // Modo Oscuro: aclaramos cromÃ¡ticamente (+10% luz, +5% saturaciÃ³n)
                 hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
                 hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
             } else {
                 // Curva de Contraste Adaptativa v2 para Modo Claro
                 val darkenFactor = when {
-                    hsl[2] > 0.60f -> 0.20f // Atrapamos Volcán, Amanecer, Verde Oliva, Grafito...
+                    hsl[2] > 0.60f -> 0.20f // Atrapamos VolcÃ¡n, Amanecer, Verde Oliva, Grafito...
                     hsl[2] > 0.45f -> 0.10f // Lavanda y similares
-                    else -> 0.05f          // Océano y temas ya intensos
+                    else -> 0.05f          // OcÃ©ano y temas ya intensos
                 }
                 hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
                 hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
@@ -246,7 +251,7 @@ fun MonthlyCalendar(
                     .fillMaxWidth()
                     .zIndex(if (weekContainsToday) 2f else 0f)
             ) {
-                week.forEach { (date, isCurrentMonth) ->
+                week.forEachIndexed { indexInWeek, (date, isCurrentMonth) ->
                     val isToday = date == today && isCurrentMonth
                     val isPastDay = isCurrentMonth && date.isBefore(today)
                     val isInactive = !isCurrentMonth || isPastDay
@@ -295,7 +300,7 @@ fun MonthlyCalendar(
                                     }
                                 }
                         ) {
-                            // --- CARRILES DE PERIODOS LARGOS (Grosor fijo con separación reducida) ---
+                            // --- CARRILES DE PERIODOS LARGOS (Grosor fijo con separaciÃ³n reducida) ---
                             val longPeriods = dayEvents.filter { it.isLongPeriod && it.lane != null }
                             if (isCurrentMonth && longPeriods.isNotEmpty()) {
                                 Column(
@@ -307,7 +312,7 @@ fun MonthlyCalendar(
                                     repeat(5) { laneIndex ->
                                         val period = longPeriods.find { it.lane == laneIndex }
                                         
-                                        // Contenedor de slot fijo (1/6 de la celda) para mantener alineación
+                                        // Contenedor de slot fijo (1/6 de la celda) para mantener alineaciÃ³n
                                         Box(
                                             modifier = Modifier.fillMaxWidth().weight(1f),
                                             contentAlignment = Alignment.Center
@@ -321,7 +326,7 @@ fun MonthlyCalendar(
                                                 Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
                                                     // Guion Izquierdo (Entrante)
                                                     if (period.currentDay > 1) {
-                                                        // Si es el último día, el extremo derecho (interior) es redondo.
+                                                        // Si es el Ãºltimo dÃ­a, el extremo derecho (interior) es redondo.
                                                         // El extremo izquierdo (frontera) SIEMPRE es plano.
                                                         val isLastDay = period.currentDay == period.totalDays
                                                         val innerRadius = if (isLastDay) 10.dp else 0.dp
@@ -344,7 +349,7 @@ fun MonthlyCalendar(
                                                     }
                                                     // Guion Derecho (Saliente)
                                                     if (period.currentDay < period.totalDays) {
-                                                        // Si es el primer día, el extremo izquierdo (interior) es redondo.
+                                                        // Si es el primer dÃ­a, el extremo izquierdo (interior) es redondo.
                                                         // El extremo derecho (frontera) SIEMPRE es plano.
                                                         val isFirstDay = period.currentDay == 1
                                                         val innerRadius = if (isFirstDay) 10.dp else 0.dp
@@ -370,6 +375,19 @@ fun MonthlyCalendar(
                                         }
                                     }
                                 }
+                            }
+
+                            // NÃšMERO DE SEMANA (Subutil, esquina superior izquierda)
+                            if (showWeekNumber && indexInWeek == 0) {
+                                val weekNumber = date.get(weekFields.weekOfWeekBasedYear())
+                                Text(
+                                    text = weekNumber.toString(),
+                                    fontSize = 11.sp,
+                                    color = themeColors.textSystem.copy(alpha = 0.5f),
+                                    modifier = Modifier
+                                        .align(Alignment.TopStart)
+                                        .padding(start = 4.dp, top = 2.dp)
+                                )
                             }
 
                             Text(
@@ -400,53 +418,57 @@ fun MonthlyCalendar(
                                     !(normalizedEvent1Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent1Keyword)) &&
                                     !(normalizedEvent2Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent2Keyword))
                                 }
+
+                                if (hasNormalEvent) {
+                                    indicatorColors.add(themeColors.cabecera)
+                                }
+
                                 val hasBirthday = eventsForIndicators.any { it.isBirthday }
+                                if (hasBirthday) {
+                                    indicatorColors.add(themeColors.textBirthday)
+                                }
+
                                 val hasEvent1 = normalizedEvent1Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent1Keyword) }
+                                if (hasEvent1) {
+                                    indicatorColors.add(themeColors.textEvent1)
+                                }
+
                                 val hasEvent2 = normalizedEvent2Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent2Keyword) }
+                                if (hasEvent2) {
+                                    indicatorColors.add(themeColors.textEvent2)
+                                }
 
-                                if (hasNormalEvent) indicatorColors.add(themeColors.textSystem)
-                                if (hasBirthday) indicatorColors.add(themeColors.textBirthday)
-                                if (hasEvent1) indicatorColors.add(themeColors.textEvent1)
-                                if (hasEvent2) indicatorColors.add(themeColors.textEvent2)
-
-                                val finalIndicators = if (indicatorColors.size > 3 && hasNormalEvent) {
-                                    indicatorColors.filter { it != themeColors.textSystem }
-                                } else {
-                                    indicatorColors
-                                }.take(3)
-
-                                if (finalIndicators.isNotEmpty()) {
-                                    Row(
-                                        modifier = Modifier
-                                            .align(Alignment.BottomCenter)
-                                            .padding(bottom = 4.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        finalIndicators.forEach { color ->
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(5.dp)
-                                                    .background(color.copy(alpha = 0.6f), CircleShape)
-                                            )
-                                        }
+                                Row(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .padding(bottom = 6.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                ) {
+                                    indicatorColors.forEach { color ->
+                                        Box(
+                                            modifier = Modifier
+                                                .size(5.dp)
+                                                .clip(CircleShape)
+                                                .background(color)
+                                        )
                                     }
                                 }
                             }
-                        }
 
-                        if (isToday) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .drawBehind {
-                                        val strokeWidth = 4.dp.toPx()
-                                        drawRoundRect(
-                                            color = intelligentTodayBorderColor.copy(alpha = finalTodayAlpha),
-                                            style = Stroke(width = strokeWidth),
-                                            cornerRadius = CornerRadius(4.dp.toPx())
-                                        )
-                                    }
-                            )
+                            if (isToday) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .drawBehind {
+                                            drawRoundRect(
+                                                color = intelligentTodayBorderColor,
+                                                cornerRadius = CornerRadius(4.dp.toPx()),
+                                                style = Stroke(width = 2.dp.toPx()),
+                                                alpha = finalTodayAlpha
+                                            )
+                                        }
+                                )
+                            }
                         }
                     }
                 }

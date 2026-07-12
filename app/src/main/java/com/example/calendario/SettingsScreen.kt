@@ -125,7 +125,7 @@ fun SettingsScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
-    var showStartDayOfWeekDialog by remember { mutableStateOf(false) }
+    var showWeekConfigDialog by remember { mutableStateOf(false) }
     var showBundledThemesDialog by remember { mutableStateOf(false) }
     var showFontFamilyDialog by remember { mutableStateOf(false) }
     var showImportHolidaysDialog by remember { mutableStateOf(false) }
@@ -477,27 +477,33 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 3. COMIENZA SEMANA
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showStartDayOfWeekDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(id = R.string.start_of_week), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                // 3. SEMANA (Fila unificada)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { showWeekConfigDialog = true }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.semana_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, textAlign = TextAlign.End)
-                }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-
-                // 4. NÚMERO DE SEMANA
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { pendingShowWeekNumber = !pendingShowWeekNumber }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(stringResource(id = R.string.week_in_year_view), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Switch(
-                        checked = pendingShowWeekNumber,
-                        onCheckedChange = { pendingShowWeekNumber = it },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = CalendarioTheme.colors.cabecera,
-                            checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
-                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
-                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-                        )
+                    
+                    val startDayName = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes)
+                    val weekNumberInfo = if (pendingShowWeekNumber) " (123)" else ""
+                    
+                    Text(
+                        text = "$startDayName$weekNumberInfo", 
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), 
+                        fontSize = 15.sp, 
+                        textAlign = TextAlign.End
+                    )
+                    
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.padding(start = 8.dp).size(20.dp)
                     )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
@@ -946,7 +952,15 @@ fun SettingsScreen(
     }
 
     if (showThemeDialog) { ThemeSelectionDialog(currentTheme = themeSetting, onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false }, onDismiss = { showThemeDialog = false }) }
-    if (showStartDayOfWeekDialog) { StartDayOfWeekDialog(currentSelectionKey = pendingStartOfWeekKey, onOptionSelected = { pendingStartOfWeekKey = it; showStartDayOfWeekDialog = false }, onDismiss = { showStartDayOfWeekDialog = false }) }
+    if (showWeekConfigDialog) {
+        WeekConfigDialog(
+            currentSelectionKey = pendingStartOfWeekKey,
+            onOptionSelected = { pendingStartOfWeekKey = it },
+            showWeekNumber = pendingShowWeekNumber,
+            onWeekNumberChange = { pendingShowWeekNumber = it },
+            onDismiss = { showWeekConfigDialog = false }
+        )
+    }
     if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onOptionSelected = { pendingFontFamily = it; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
     if (showBundledThemesDialog) { 
         BundledThemesDialog(
@@ -1171,12 +1185,82 @@ private fun FontFamilySelectionDialog(
 }
 
 @Composable
-private fun StartDayOfWeekDialog(
+private fun WeekConfigDialog(
     currentSelectionKey: String,
     onOptionSelected: (String) -> Unit,
+    showWeekNumber: Boolean,
+    onWeekNumberChange: (Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.start_of_week), fontWeight = FontWeight.Bold) }, text = { Column { StartOfWeekOption.entries.forEach { option -> Row(Modifier.fillMaxWidth().clickable { onOptionSelected(option.key) }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { Text(stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp); if (option.key == currentSelectionKey) Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) } } } }, confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } })
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                // Selector de dÃ­a
+                StartOfWeekOption.entries.forEach { option ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOptionSelected(option.key) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            stringResource(id = option.displayNameRes),
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp
+                        )
+                        if (option.key == currentSelectionKey) {
+                            Icon(
+                                Icons.Default.Check,
+                                null,
+                                tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background))
+                                    CalendarioTheme.colors.textSystem
+                                else
+                                    CalendarioTheme.colors.cabecera
+                            )
+                        }
+                    }
+                }
+
+                HorizontalDivider(
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                // Ajuste de nÃºmero de semana
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp)
+                    Switch(
+                        checked = showWeekNumber,
+                        onCheckedChange = onWeekNumberChange,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = CalendarioTheme.colors.cabecera,
+                            checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
+                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+                        )
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.accept), color = CalendarioTheme.colors.cabecera)
+            }
+        }
+    )
 }
 
 @Suppress("UNCHECKED_CAST")
