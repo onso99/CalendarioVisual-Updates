@@ -326,9 +326,6 @@ fun CalendarioScreen(
                 showHolidayManagerScreen = true 
             },
             onLogClick = { showWidgetLogScreen = true },
-            onRefreshData = {
-                viewModel.refreshData()
-            },
             onThemeUpdated = onThemeUpdated
         )
         return

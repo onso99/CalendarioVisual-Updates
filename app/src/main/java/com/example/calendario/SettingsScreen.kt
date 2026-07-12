@@ -108,7 +108,6 @@ fun SettingsScreen(
     viewModel: CalendarioViewModel, // Cambiado para recibir el ViewModel
     onColorThemeClick: () -> Unit,
     onHolidayManagerClick: () -> Unit,
-    onRefreshData: () -> Unit,
     onThemeUpdated: () -> Unit,
     onLogClick: () -> Unit = {}
 ) {
@@ -1366,7 +1365,19 @@ private fun SettingsRow(label: String, value: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
-        Text(value, color = CalendarioTheme.colors.textSystem.copy(0.7f), fontSize = 16.sp)
+        Text(
+            text = value,
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.End
+        )
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+            modifier = Modifier.padding(start = 8.dp).size(20.dp)
+        )
     }
 }
 

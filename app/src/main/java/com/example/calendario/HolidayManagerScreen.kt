@@ -112,7 +112,7 @@ fun HolidayManagerScreen(
                             } else {
                                 Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
                             }
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
                         }
                     }
@@ -130,7 +130,7 @@ fun HolidayManagerScreen(
                         exportHolidaysToJson(context, uri)
                         Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_LONG).show()
                 }
             }
