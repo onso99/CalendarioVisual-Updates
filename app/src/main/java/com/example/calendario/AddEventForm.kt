@@ -234,17 +234,16 @@ fun AddEventForm(
                                 text = startDate.format(timeFormatter), 
                                 color = CalendarioTheme.colors.textSystem, 
                                 fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(end = 12.dp)
+                                modifier = Modifier.padding(end = 20.dp)
                             )
                         }
                         
-                        // Separador Vertical
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                                .width(1.dp)
-                                .height(20.dp)
-                                .background(CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                        // Icono Reloj Separador
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_clock_custom_24),
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                            modifier = Modifier.size(26.dp)
                         )
 
                         // Bloque Fin
@@ -258,7 +257,7 @@ fun AddEventForm(
                             Text(
                                 text = stringResource(id = R.string.end_time), 
                                 color = CalendarioTheme.colors.textSystem,
-                                modifier = Modifier.padding(start = 12.dp)
+                                modifier = Modifier.padding(start = 20.dp)
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(text = endDate.format(timeFormatter), color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
