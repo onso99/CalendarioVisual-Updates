@@ -12,28 +12,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -46,14 +38,12 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendario.ui.theme.CalendarioTheme
 
-// FORMA: BotÃ³n Izquierda (Mordisco en la derecha)
+// FORMA: Botón Izquierda (Mordisco en la derecha)
 val LeftConcaveShape = GenericShape { size, _ ->
     val corner = size.height * 0.25f
     val depth = size.height * 0.25f
@@ -67,7 +57,7 @@ val LeftConcaveShape = GenericShape { size, _ ->
     close()
 }
 
-// FORMA: BotÃ³n Derecha (Mordisco en la izquierda)
+// FORMA: Botón Derecha (Mordisco en la izquierda)
 val RightConcaveShape = GenericShape { size, _ ->
     val corner = size.height * 0.25f
     val depth = size.height * 0.25f
@@ -228,5 +218,3 @@ internal fun SettingsActionChip(
         )
     }
 }
-
-
