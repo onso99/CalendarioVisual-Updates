@@ -37,7 +37,7 @@
     <string name="confirm_deletion_title">Baieztatu ezabatzea</string>
     <string name="confirm_deletion_message">Ziur al zaude gertaera hau ezabatu nahi duzula: \"%1$s\"?</string>
     <string name="repeat_event_title">Errepikatu gertaera</string>
-    <string name="repeat_until">Amaiera</string>
+    <string name="repeat_until">Finaliza</string>
     <string name="repeat_indefinite">Mugagabe</string>
     <string name="repeat_on_date">Data arte</string>
     <string name="repeat_after">Errepikapenak</string>
@@ -235,8 +235,12 @@
     <string name="alarm_time">Alarma ordua</string>
     <string name="stop_alarm">GELDITU</string>
     <string name="snooze_alarm">ATZERATU</string>
-    <string name="alarm_offset_label">Aurrerapena (minutuak)</string>
-    <string name="snooze_interval_label">Atzeratu (minutuak)</string>
+    <string name="alarm_anticipation_label">Aurrerapena</string>
+    <string name="alarm_snooze_label">Atzeratu</string>
+    <string name="semana_label">Astea</string>
+    <string name="local_holidays_label">Tokiko jai-egunak</string>
+    <string name="cargar_label">Kargatu</string>
+    <string name="guardar_label">Gorde</string>
     <string name="system_permissions">Sistemaren baimenak</string>
     <string name="permissions_dialog_title">Baimenen Egoera</string>
     <string name="calendar_permission_label">Egutegia</string>
@@ -258,9 +262,6 @@
     <string name="fix_permission">EZARPENAK</string>
     <string name="history">Historia</string>
 
-    <!-- Gertaeren babeskopia -->
-    <string name="save_settings_aspect">Gorde hobespenak</string>
-    <string name="load_settings_aspect">Kargatu hobespenak</string>
     <string name="backup_section_title">Gertaeren babeskopia</string>
     <string name="link_google_account">Lotu Google kontua</string>
     <string name="account_linked">Kontua lotuta</string>
@@ -302,9 +303,6 @@
     <string name="preview_vie">Osl</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Proiektu entrega</string>
-    <string name="local_holidays_label">Tokiko jai-egunak</string>
-    <string name="cargar_label">Kargatu</string>
-    <string name="guardar_label">Gorde</string>
     <string name="bundled_theme_1_name">Ozeanoa</string>
     <string name="bundled_theme_2_name">Basoa</string>
     <string name="bundled_theme_3_name">Sumendia</string>

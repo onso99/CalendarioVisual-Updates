@@ -235,8 +235,12 @@
     <string name="alarm_time">Alarm time</string>
     <string name="stop_alarm">STOP</string>
     <string name="snooze_alarm">SNOOZE</string>
-    <string name="alarm_offset_label">Anticipation (minutes)</string>
-    <string name="snooze_interval_label">Snooze (minutes)</string>
+    <string name="alarm_anticipation_label">Anticipation</string>
+    <string name="alarm_snooze_label">Snooze</string>
+    <string name="semana_label">Week</string>
+    <string name="local_holidays_label">Local holidays</string>
+    <string name="cargar_label">Load</string>
+    <string name="guardar_label">Save</string>
     <string name="system_permissions">System permissions</string>
     <string name="permissions_dialog_title">Permission Status</string>
     <string name="calendar_permission_label">Calendar</string>
@@ -258,9 +262,6 @@
     <string name="fix_permission">SETTINGS</string>
     <string name="history">History</string>
 
-    <!-- Event backup -->
-    <string name="save_settings_aspect">Save preferences</string>
-    <string name="load_settings_aspect">Load preferences</string>
     <string name="backup_section_title">Event backup</string>
     <string name="link_google_account">Link Google account</string>
     <string name="account_linked">Account linked</string>
@@ -293,7 +294,6 @@
 
     <string name="birthday_keywords">birthday,anniversary</string>
     <string name="greeting_keywords">happy,congratulations,congrats</string>
-    <!-- Widget Preview Strings -->
     <string name="preview_today">Today</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Planning meeting</string>
@@ -303,10 +303,6 @@
     <string name="preview_vie">Fri</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Project delivery</string>
-    <string name="semana_label">Week</string>
-    <string name="local_holidays_label">Local holidays</string>
-    <string name="cargar_label">Load</string>
-    <string name="guardar_label">Save</string>
     <string name="bundled_theme_1_name">Ocean</string>
     <string name="bundled_theme_2_name">Forest</string>
     <string name="bundled_theme_3_name">Volcano</string>

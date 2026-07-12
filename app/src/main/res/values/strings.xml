@@ -237,8 +237,10 @@
     <string name="snooze_alarm">POSPONER</string>
     <string name="alarm_anticipation_label">Anticipación</string>
     <string name="alarm_snooze_label">Posponer</string>
-    <string name="alarm_offset_label">Anticipación (minutos)</string>
-    <string name="snooze_interval_label">Posponer (minutos)</string>
+    <string name="semana_label">Semana</string>
+    <string name="local_holidays_label">Festivos locales</string>
+    <string name="cargar_label">Cargar</string>
+    <string name="guardar_label">Guardar</string>
     <string name="system_permissions">Permisos del sistema</string>
     <string name="permissions_dialog_title">Estado de Permisos</string>
     <string name="calendar_permission_label">Calendario</string>
@@ -260,9 +262,6 @@
     <string name="fix_permission">AJUSTES</string>
     <string name="history">Historial</string>
 
-    <!-- Respaldo de eventos -->
-    <string name="save_settings_aspect">Guardar preferencias</string>
-    <string name="load_settings_aspect">Cargar preferencias</string>
     <string name="backup_section_title">Respaldo de eventos</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
     <string name="account_linked">Cuenta vinculada</string>
@@ -304,10 +303,6 @@
     <string name="preview_vie">Vie</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de proyecto</string>
-    <string name="semana_label">Semana</string>
-    <string name="local_holidays_label">Festivos locales</string>
-    <string name="cargar_label">Cargar</string>
-    <string name="guardar_label">Guardar</string>
     <string name="bundled_theme_1_name">Océano</string>
     <string name="bundled_theme_2_name">Bosque</string>
     <string name="bundled_theme_3_name">Volcán</string>

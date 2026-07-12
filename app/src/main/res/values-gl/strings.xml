@@ -103,16 +103,16 @@
     <string name="help_calendar_views_1">A aplicación ten dúas vistas principais: Mensual e Anual. Podes cambiar entre ellas premendo no ano da cabeceira.</string>
     <string name="help_calendar_views_2">Na vista mensual, desliza á esquerda ou dereita para cambiar de mes. A frecha superior esquerda da cabeceira volverá ao mes actual.</string>
     <string name="help_section_event_management">Xestión de eventos</string>
-    <string name="help_event_management_1">Preme nun día do calendario mensual para ver os seus eventos ou engadir un novo. Tamén se poden crear eventos premendo na icona (+) da cabeceira.</string>
+    <string name="help_event_management_1">Preme nun día do calendario mensual para ver os seus eventos ou engadir un novo. Tamén se poden crear eventos premendo na icona (+) de la cabeceira.</string>
     <string name="help_event_management_2">Os eventos (únicos ou repetidos) pódense editar e borrar en calquera calendario que sexa editable.</string>
     <string name="help_section_event_list">Lista de eventos</string>
     <string name="help_event_list_1">Debaixo do calendario mensual móstrase a lista dos eventos do mes. Para o mes actual, podes elixir entre ver os eventos Pendentes ou Todos premendo no botón Pendentes-Todos. Cada evento da lista pode ser editado e borrado.</string>
     <string name="help_section_customization">Personalización</string>
-    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de cor para compartilos.</string>
+    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de color para compartilos.</string>
     <string name="help_section_holiday_manager">Xestor de Festivos</string>
     <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos o laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os próximos eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño da letra e modificado as súas cores.</string>
+    <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os próximos eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño de la letra e modificado as súas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
     <string name="event_color_label">Color do evento:</string>
     <string name="keyword">Palabra clave</string>
@@ -235,8 +235,12 @@
     <string name="alarm_time">Hora da alarma</string>
     <string name="stop_alarm">DETER</string>
     <string name="snooze_alarm">POSTPOR</string>
-    <string name="alarm_offset_label">Anticipación (minutos)</string>
-    <string name="snooze_interval_label">Postpor (minutos)</string>
+    <string name="alarm_anticipation_label">Anticipación</string>
+    <string name="alarm_snooze_label">Postpor</string>
+    <string name="semana_label">Semana</string>
+    <string name="local_holidays_label">Festivos locais</string>
+    <string name="cargar_label">Cargar</string>
+    <string name="guardar_label">Gardar</string>
     <string name="system_permissions">Permisos do sistema</string>
     <string name="permissions_dialog_title">Estado de Permisos</string>
     <string name="calendar_permission_label">Calendario</string>
@@ -259,8 +263,6 @@
     <string name="history">Historial</string>
 
     <!-- Respaldo de eventos -->
-    <string name="save_settings_aspect">Gardar preferencias</string>
-    <string name="load_settings_aspect">Cargar preferencias</string>
     <string name="backup_section_title">Respaldo de eventos</string>
     <string name="link_google_account">Vincular conta de Google</string>
     <string name="account_linked">Conta vinculada</string>
@@ -302,9 +304,6 @@
     <string name="preview_vie">Ven</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de proxecto</string>
-    <string name="local_holidays_label">Festivos locais</string>
-    <string name="cargar_label">Cargar</string>
-    <string name="guardar_label">Gardar</string>
     <string name="bundled_theme_1_name">Océano</string>
     <string name="bundled_theme_2_name">Bosque</string>
     <string name="bundled_theme_3_name">Volcán</string>

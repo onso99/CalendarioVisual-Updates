@@ -91,7 +91,7 @@
     <string name="widget_text_adjustment">Regolazione testo</string>
     <string name="background_color">Colore di sfondo</string>
     <string name="event_color">Colore eventi</string>
-    <string name="today_event_color">Eventos de hoy</string>
+    <string name="today_event_color">Esdevenimenti d\'avui</string>
     <string name="about">Informazioni</string>
     <string name="discard_changes_title">Abbandona modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle abbandonare?</string>
@@ -101,18 +101,18 @@
     <string name="export">Salva</string>
     <string name="help_section_calendar_views">Viste del calendario</string>
     <string name="help_calendar_views_1">L\'applicazione ha due viste principali: Mensile e Annuale. Puoi passare dall\'una all\'altra toccando l\'anno nell\'intestazione.</string>
-    <string name="help_calendar_views_2">Nella vista mensile, scorri a sinistra o a destra per cambiare mese. La frecha in alto a sinistra nell\'intestazione tornerà al mese corrente.</string>
+    <string name="help_calendar_views_2">Nella vista mensile, scorri a sinistra o a destra per cambiare mese. La freccia in alto a sinistra nell\'intestazione tornerà al mese corrente.</string>
     <string name="help_section_event_management">Gestione eventi</string>
     <string name="help_event_management_1">Tocca un giorno del calendario mensile per vedere i suoi eventi o aggiungerne uno nuovo. Gli eventi possono anche essere creati toccando l\'icona (+) nell\'intestazione.</string>
     <string name="help_event_management_2">Gli eventi (singoli o ripetuti) possono essere modificati ed eliminati in qualsiasi calendario che sia modificabile.</string>
     <string name="help_section_event_list">Lista eventi</string>
     <string name="help_event_list_1">Sotto il calendario mensile viene visualizzata la lista degli eventi del mese. Per il mese corrente, puoi scegliere tra vedere gli eventi In sospeso o Tutti toccando il pulsante In sospeso-Tutti. Ogni evento della lista può essere modificato ed eliminato.</string>
     <string name="help_section_customization">Personalizzazione</string>
-    <string name="help_customization_1">Dal menu Impostazioni puoi scegliere le modalità Chiaro e Scuro. Puoi anche personalizzare i colori dell\'interfaccia e Importar ed Esportare i temi de colore per condividerli.</string>
+    <string name="help_customization_1">Dal menu Impostazioni puoi scegliere le modalità Chiaro e Scuro. Puoi anche personalizzare i colori dell\'interfaccia e Importare ed Esportare i temi di colore per condividerli.</string>
     <string name="help_section_holiday_manager">Gestore festività</string>
     <string name="help_holiday_manager_1">Questa funzione permette di contrassegnare manualmente giorni specifici come festivi o lavorativi, indipendentemente da quanto indicato dal calendario di sistema o dagli eventi importati. Contrassegnando un giorno come festivo, il suo numero sarà evidenziato nel colore corrispondente nelle viste mensile e annuale.</string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzare il suo aspetto scegliendo il numero di eventi da mostrare, cambiando la dimensione del carattere e modificando i suoi colori.</string>
+    <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzare il suo aspetto scegliendo il numero de eventi da mostrare, cambiando la dimensione del carattere e modificando i suoi colori.</string>
     <string name="copied_to_clipboard">Copiato: %1$s</string>
     <string name="event_color_label">Colore dell\'evento:</string>
     <string name="keyword">Parola chiave</string>
@@ -140,11 +140,11 @@
     <string name="could_not_read_file">Impossibile leggere il file.</string>
     <string name="error_processing_theme">Errore durante l\'elaborazione del tema: %1$s</string>
     <string name="incompatible_theme_file">File del tema non compatibile.</string>
-    <string name="file_contains_no_theme">Il file non contiene né il tema chiaro né quello fosc.</string>
+    <string name="file_contains_no_theme">Il file non contiene né il tema chiaro né quello scuro.</string>
     <string name="invalid_json_file">Il file non è un JSON valido.</string>
     <string name="invalid_color_in_theme">Il tema contiene un colore non valido in \"%1$s\".</string>
     <string name="light_theme">Chiaro</string>
-    <string name="dark_theme">Fosc</string>
+    <string name="dark_theme">Scuro</string>
     <string name="header_background">Sfondo intestazione</string>
     <string name="screen_background">Sfondo schermate</string>
     <string name="sundays_and_holidays">Domeniche/Festivi</string>
@@ -235,13 +235,17 @@
     <string name="alarm_time">Ora dell\'allarme</string>
     <string name="stop_alarm">STOP</string>
     <string name="snooze_alarm">POSTICIPA</string>
-    <string name="alarm_offset_label">Anticipo (minuti)</string>
-    <string name="snooze_interval_label">Posticipa (minuti)</string>
+    <string name="alarm_anticipation_label">Anticipo</string>
+    <string name="alarm_snooze_label">Posticipa</string>
+    <string name="semana_label">Settimana</string>
+    <string name="local_holidays_label">Festività locali</string>
+    <string name="cargar_label">Carica</string>
+    <string name="guardar_label">Salva</string>
     <string name="system_permissions">Permessi di sistema</string>
     <string name="permissions_dialog_title">Stato dei permessi</string>
     <string name="calendar_permission_label">Calendario</string>
     <string name="notifications_permission_label">Notifiche</string>
-    <string name="alarms_permission_label">Alarmas</string>
+    <string name="alarms_permission_label">Allarmi</string>
     <string name="google_drive_permission_label">Google Drive</string>
     <string name="battery_optimization_label">Batteria</string>
 
@@ -258,9 +262,6 @@
     <string name="fix_permission">IMPOSTAZIONI</string>
     <string name="history">Cronologia</string>
 
-    <!-- Backup degli eventi -->
-    <string name="save_settings_aspect">Salva preferenze</string>
-    <string name="load_settings_aspect">Carica preferenze</string>
     <string name="backup_section_title">Backup degli eventi</string>
     <string name="link_google_account">Collega account Google</string>
     <string name="account_linked">Account collegato</string>
@@ -280,7 +281,7 @@
     <string name="sync_error_drive">Errore di Drive. Verifica il tuo account.</string>
     <string name="restore_from_drive">Ripristina da Drive</string>
     <string name="restoring">Ripristino…</string>
-    <string name="restore_confirm_title">Ripristinare gli eventos?</string>
+    <string name="restore_confirm_title">Ripristinare gli eventi?</string>
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
     <string name="restore_success">Eventi ripristinati con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
@@ -302,9 +303,6 @@
     <string name="preview_vie">Ven</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Consegna progetto</string>
-    <string name="local_holidays_label">Festività locali</string>
-    <string name="cargar_label">Carica</string>
-    <string name="guardar_label">Salva</string>
     <string name="bundled_theme_1_name">Oceano</string>
     <string name="bundled_theme_2_name">Foresta</string>
     <string name="bundled_theme_3_name">Vulcano</string>
