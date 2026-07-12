@@ -502,50 +502,51 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // Nueva fila integrada de Ajustes (Icono + Botones adaptados)
+                // Nueva fila integrada de Ajustes (DiseÃ±o Puzzle con Icono Central)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
                         .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
+                    // BotÃ³n Cargar (Izquierda - Mordisco a la derecha)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.cargar_label),
+                        modifier = Modifier.weight(1f),
+                        shape = LeftConcaveShape,
+                        onClick = { 
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/json" 
+                            }
+                            importFullBackupLauncher.launch(intent) 
+                        }
+                    )
+
+                    // Icono Central (Engranaje)
                     Icon(
                         painter = painterResource(id = R.drawable.ic_settings_custom_24),
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
                     )
                     
-                    Spacer(modifier = Modifier.width(12.dp))
-                    
-                    // Contenedor que ocupa el espacio restante
-                    Row(modifier = Modifier.weight(1f)) {
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.cargar_label),
-                            modifier = Modifier.weight(1f),
-                            onClick = { 
-                                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                    addCategory(Intent.CATEGORY_OPENABLE)
-                                    type = "application/json" 
-                                }
-                                importFullBackupLauncher.launch(intent) 
+                    // BotÃ³n Guardar (Derecha - Mordisco a la izquierda)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.guardar_label),
+                        modifier = Modifier.weight(1f),
+                        shape = RightConcaveShape,
+                        onClick = { 
+                            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/json"
+                                putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
                             }
-                        )
-                        
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.guardar_label),
-                            modifier = Modifier.weight(1f),
-                            onClick = { 
-                                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                                    addCategory(Intent.CATEGORY_OPENABLE)
-                                    type = "application/json"
-                                    putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
-                                }
-                                exportFullBackupLauncher.launch(intent) 
-                            }
-                        )
-                    }
+                            exportFullBackupLauncher.launch(intent) 
+                        }
+                    )
                 }
             }
 
@@ -588,43 +589,45 @@ fun SettingsScreen(
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 
-                // Nueva fila consolidada de Respaldo (Icono Grande + Chips adaptados)
+                // Nueva fila integrada de Respaldo (DiseÃ±o Puzzle con Icono Central)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
                         .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
+                    // BotÃ³n Cargar (Izquierda - Mordisco a la derecha)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.cargar_label),
+                        modifier = Modifier.weight(1f),
+                        shape = LeftConcaveShape,
+                        onClick = { 
+                            importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/json" 
+                            })
+                        }
+                    )
+
+                    // Icono Central (Paleta)
                     Icon(
                         painter = painterResource(id = R.drawable.ic_palette_custom_24),
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.size(30.dp) // Icono mÃ¡s grande
+                        modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
                     )
                     
-                    Spacer(modifier = Modifier.width(12.dp))
-                    
-                    Row(modifier = Modifier.weight(1f)) {
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.cargar_label),
-                            modifier = Modifier.weight(1f),
-                            onClick = { 
-                                importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                    addCategory(Intent.CATEGORY_OPENABLE)
-                                    type = "application/json" 
-                                })
-                            }
-                        )
-                        
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.guardar_label),
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                showExportDialog = true
-                            }
-                        )
-                    }
+                    // BotÃ³n Guardar (Derecha - Mordisco a la izquierda)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.guardar_label),
+                        modifier = Modifier.weight(1f),
+                        shape = RightConcaveShape,
+                        onClick = {
+                            showExportDialog = true
+                        }
+                    )
                 }
             }
 
@@ -757,47 +760,49 @@ fun SettingsScreen(
                 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // LÃ­nea 2: Icono + Chips Cargar/Guardar (Adaptado)
+                // LÃ­nea 2: Icono + Chips Cargar/Guardar (DiseÃ±o Puzzle con Icono Central)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
                         .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
+                    // BotÃ³n Cargar (Izquierda)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.cargar_label),
+                        modifier = Modifier.weight(1f),
+                        shape = LeftConcaveShape,
+                        onClick = { 
+                            importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/json" 
+                            })
+                        }
+                    )
+
+                    // Icono Central (Estrella)
                     Icon(
                         painter = painterResource(id = R.drawable.ic_star_custom_24),
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
                     )
-                    
-                    Spacer(modifier = Modifier.width(12.dp))
 
-                    Row(modifier = Modifier.weight(1f)) {
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.cargar_label),
-                            modifier = Modifier.weight(1f),
-                            onClick = { 
-                                importHolidaysLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                    addCategory(Intent.CATEGORY_OPENABLE)
-                                    type = "application/json" 
-                                })
-                            }
-                        )
-                        
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.guardar_label),
-                            modifier = Modifier.weight(1f),
-                            onClick = { 
-                                exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                                    addCategory(Intent.CATEGORY_OPENABLE)
-                                    type = "application/json"
-                                    putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
-                                })
-                            }
-                        )
-                    }
+                    // BotÃ³n Guardar (Derecha)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.guardar_label),
+                        modifier = Modifier.weight(1f),
+                        shape = RightConcaveShape,
+                        onClick = { 
+                            exportHolidaysLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/json"
+                                putExtra(Intent.EXTRA_TITLE, "festivos_locales.json") 
+                            })
+                        }
+                    )
                 }
             }
 

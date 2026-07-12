@@ -13,15 +13,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
@@ -40,7 +45,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendario.ui.theme.CalendarioTheme
+
+// FORMA: BotÃ³n Izquierda (Mordisco en la derecha)
+val LeftConcaveShape = GenericShape { size, _ ->
+    val corner = size.height * 0.25f
+    val depth = size.height * 0.25f // Profundidad del mordisco
+    
+    moveTo(corner, 0f)
+    lineTo(size.width, 0f)
+    // Mordisco hacia adentro (CÃ³ncavo)
+    quadraticBezierTo(size.width - depth, size.height / 2f, size.width, size.height)
+    lineTo(corner, size.height)
+    quadraticBezierTo(0f, size.height, 0f, size.height - corner)
+    lineTo(0f, corner)
+    quadraticBezierTo(0f, 0f, corner, 0f)
+    close()
+}
+
+// FORMA: BotÃ³n Derecha (Mordisco en la izquierda)
+val RightConcaveShape = GenericShape { size, _ ->
+    val corner = size.height * 0.25f
+    val depth = size.height * 0.25f
+    
+    moveTo(0f, 0f)
+    lineTo(size.width - corner, 0f)
+    quadraticBezierTo(size.width, 0f, size.width, corner)
+    lineTo(size.width, size.height - corner)
+    quadraticBezierTo(size.width, size.height, size.width - corner, size.height)
+    lineTo(0f, size.height)
+    // Mordisco hacia adentro (CÃ³ncavo) en la izquierda
+    quadraticBezierTo(depth, size.height / 2f, 0f, 0f)
+    close()
+}
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
@@ -154,7 +192,8 @@ internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
 internal fun SettingsActionChip(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(10.dp)
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -177,11 +216,10 @@ internal fun SettingsActionChip(
 
     Box(
         modifier = modifier
-            .padding(horizontal = 4.dp)
-            .height(40.dp) // Altura exacta de los chips de la pantalla de eventos
-            .clip(RoundedCornerShape(10.dp))
+            .height(40.dp)
+            .clip(shape)
             .background(backgroundColor)
-            .border(1.dp, borderColor, RoundedCornerShape(10.dp))
+            .border(1.dp, borderColor, shape)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -192,8 +230,46 @@ internal fun SettingsActionChip(
         Text(
             text = text,
             color = CalendarioTheme.colors.textSystem,
-            fontSize = 14.sp, // Mismo tamaÃ±o que en Nuevo evento
+            fontSize = 14.sp,
             fontWeight = FontWeight.Normal
         )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF0F2F5)
+@Composable
+fun CorrectedPuzzlePreview() {
+    MaterialTheme {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // BotÃ³n Izquierda con mordisco suave
+            SettingsActionChip(
+                text = "Cargar",
+                onClick = {},
+                modifier = Modifier.weight(1f),
+                shape = LeftConcaveShape
+            )
+
+            // Icono Central (Engranaje)
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = null,
+                tint = Color.DarkGray,
+                modifier = Modifier.padding(horizontal = 4.dp).size(26.dp)
+            )
+
+            // BotÃ³n Derecha con mordisco suave
+            SettingsActionChip(
+                text = "Guardar",
+                onClick = {},
+                modifier = Modifier.weight(1f),
+                shape = RightConcaveShape
+            )
+        }
     }
 }
