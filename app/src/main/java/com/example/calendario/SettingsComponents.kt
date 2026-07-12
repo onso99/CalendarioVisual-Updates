@@ -229,41 +229,4 @@ internal fun SettingsActionChip(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF0F2F5)
-@Composable
-fun WeekDialogSimulation() {
-    MaterialTheme {
-        Box(modifier = Modifier.padding(24.dp).fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(Color.White).padding(24.dp)) {
-            Column {
-                Text(text = "Semana", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color(0xFF404040))
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                val days = listOf("Sistema", "Lunes", "SÃ¡bado", "Domingo")
-                days.forEach { day ->
-                    Row(modifier = Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = day, modifier = Modifier.weight(1f), fontSize = 16.sp, color = Color(0xFF404040))
-                        if (day == "Lunes") Icon(Icons.Default.Check, null, tint = Color(0xFF4C58D8))
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(modifier = Modifier.fillMaxWidth().height(56.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "NÃºmero de semana", fontSize = 16.sp, color = Color(0xFF404040))
-                    Switch(
-                        checked = true, 
-                        onCheckedChange = {},
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF4C58D8), checkedTrackColor = Color(0xFF4C58D8).copy(alpha = 0.5f))
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                TextButton(onClick = {}, modifier = Modifier.align(Alignment.End)) {
-                    Text("CANCELAR", color = Color(0xFF4C58D8))
-                }
-            }
-        }
-    }
-}
+
