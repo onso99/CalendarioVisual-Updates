@@ -270,7 +270,8 @@ fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
     val json = prefs.getString(AppConstants.KEY_HOLIDAY_ADJUSTMENTS, null) ?: return emptyList()
     val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
     val dtoList: List<HolidayAdjustmentDto> = try { Gson().fromJson(json, type) } catch (_: Exception) { emptyList() }
-    return dtoList.map { dto ->
+    
+    val adjustments = dtoList.map { dto ->
         HolidayAdjustment(
             date = LocalDate.parse(dto.dateStr),
             title = dto.title,
@@ -278,6 +279,20 @@ fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
             originalEventId = dto.originalEventId
         )
     }
+
+    // AUTOLIMPIEZA: La Ãºltima entrada para una fecha/ID gana.
+    // Invertimos, limpiamos (se queda con la primera que encuentre, que era la Ãºltima) y volvemos a invertir.
+    val cleaned = adjustments.asReversed().distinctBy { 
+        if (it.originalEventId != null) "${it.date}_ID_${it.originalEventId}"
+        else "${it.date}"
+    }.reversed()
+
+    // Si hubo limpieza, guardamos la versiÃ³n curada para sanar el disco permanentemente
+    if (cleaned.size < adjustments.size) {
+        saveHolidayAdjustments(context, cleaned)
+    }
+
+    return cleaned
 }
 
 fun exportHolidaysToJson(context: Context, uri: Uri) {
