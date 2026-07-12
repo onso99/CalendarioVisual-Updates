@@ -1,7 +1,6 @@
 package com.example.calendario
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -13,13 +12,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,11 +53,11 @@ val LeftConcaveShape = GenericShape { size, _ ->
     moveTo(corner, 0f)
     lineTo(size.width, 0f)
     // Mordisco hacia adentro (CÃ³ncavo)
-    quadraticBezierTo(size.width - depth, size.height / 2f, size.width, size.height)
+    quadraticTo(size.width - depth, size.height / 2f, size.width, size.height)
     lineTo(corner, size.height)
-    quadraticBezierTo(0f, size.height, 0f, size.height - corner)
+    quadraticTo(0f, size.height, 0f, size.height - corner)
     lineTo(0f, corner)
-    quadraticBezierTo(0f, 0f, corner, 0f)
+    quadraticTo(0f, 0f, corner, 0f)
     close()
 }
 
@@ -71,12 +68,12 @@ val RightConcaveShape = GenericShape { size, _ ->
     
     moveTo(0f, 0f)
     lineTo(size.width - corner, 0f)
-    quadraticBezierTo(size.width, 0f, size.width, corner)
+    quadraticTo(size.width, 0f, size.width, corner)
     lineTo(size.width, size.height - corner)
-    quadraticBezierTo(size.width, size.height, size.width - corner, size.height)
+    quadraticTo(size.width, size.height, size.width - corner, size.height)
     lineTo(0f, size.height)
     // Mordisco hacia adentro (CÃ³ncavo) en la izquierda
-    quadraticBezierTo(depth, size.height / 2f, 0f, 0f)
+    quadraticTo(depth, size.height / 2f, 0f, 0f)
     close()
 }
 
@@ -200,16 +197,8 @@ internal fun SettingsActionChip(
     
     val backgroundColor by animateColorAsState(
         targetValue = if (isPressed) CalendarioTheme.colors.cabecera.copy(alpha = 0.28f) else Color.Transparent,
-        animationSpec = if (isPressed) {
-            repeatable(
-                iterations = 3,
-                animation = tween(durationMillis = 60),
-                repeatMode = RepeatMode.Reverse
-            )
-        } else {
-            tween(durationMillis = 500)
-        },
-        label = "parpadeo"
+        animationSpec = if (isPressed) repeatable(3, tween(60)) else tween(500),
+        label = "flash"
     )
 
     val borderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
@@ -260,7 +249,7 @@ fun CorrectedPuzzlePreview() {
                 imageVector = Icons.Default.Settings,
                 contentDescription = null,
                 tint = Color.DarkGray,
-                modifier = Modifier.padding(horizontal = 4.dp).size(26.dp)
+                modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
             )
 
             // BotÃ³n Derecha con mordisco suave
