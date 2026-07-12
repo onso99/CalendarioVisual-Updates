@@ -100,7 +100,7 @@
     <string name="theme_name">Nome do tema</string>
     <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vistas do calendário</string>
-    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensal e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
+    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensual e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
     <string name="help_calendar_views_2">Na vista mensal, deslize para a esquerda ou direita para mudar de mês. A seta superior esquerda no cabeçalho voltará ao mês atual.</string>
     <string name="help_section_event_management">Gestão de eventos</string>
     <string name="help_event_management_1">Toque num dia do calendário mensal para ver os seus eventos ou adicionar um novo. Também se podem criar eventos tocando no ícone (+) no cabeçalho.</string>
@@ -234,13 +234,15 @@
     <string name="alarm">Alarme</string>
     <string name="alarm_time">Hora do alarme</string>
     <string name="stop_alarm">PARAR</string>
-    <string name="snooze_alarm">ADIAR</string>
+    <string name="snooze_alarm">POSTICIPAR</string>
     <string name="alarm_anticipation_label">Antecipação</string>
     <string name="alarm_snooze_label">Adiar</string>
+
     <string name="semana_label">Semana</string>
     <string name="local_holidays_label">Feriados locais</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Guardar</string>
+
     <string name="system_permissions">Permissões do sistema</string>
     <string name="permissions_dialog_title">Estado das Permissões</string>
     <string name="calendar_permission_label">Calendário</string>

@@ -241,6 +241,7 @@
     <string name="local_holidays_label">Местные праздники</string>
     <string name="cargar_label">Загрузить</string>
     <string name="guardar_label">Сохранить</string>
+
     <string name="system_permissions">Системные разрешения</string>
     <string name="permissions_dialog_title">Статус разрешений</string>
     <string name="calendar_permission_label">Календарь</string>
@@ -295,13 +296,13 @@
     <string name="birthday_keywords">день рождения,юбилей</string>
     <string name="greeting_keywords">поздравляю,поздравляем,с днем рождения</string>
     <string name="preview_today">Сегодня</string>
-    <string name="preview_date_1">22/05</string>
+    <string name="preview_date_1">22.05.</string>
     <string name="preview_event_1">Планерка</string>
     <string name="preview_jue">Чт</string>
-    <string name="preview_date_2">23/05</string>
+    <string name="preview_date_2">23.05.</string>
     <string name="preview_event_2">Обед с клиентом</string>
     <string name="preview_vie">Пт</string>
-    <string name="preview_date_3">24/05</string>
+    <string name="preview_date_3">24.05.</string>
     <string name="preview_event_3">Сдача проекта</string>
     <string name="bundled_theme_1_name">Океан</string>
     <string name="bundled_theme_2_name">Лес</string>

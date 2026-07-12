@@ -241,6 +241,7 @@
     <string name="local_holidays_label">本地节假日</string>
     <string name="cargar_label">加载</string>
     <string name="guardar_label">保存</string>
+
     <string name="system_permissions">系统权限</string>
     <string name="permissions_dialog_title">权限状态</string>
     <string name="calendar_permission_label">日历</string>

@@ -110,7 +110,7 @@
     <string name="help_section_customization">Personnalisation</string>
     <string name="help_customization_1">Depuis le menu Paramètres, vous pouvez choisir les modes Clair et Sombre. Vous pouvez également personnaliser les couleurs de l\'interface et Importer/Exporter les thèmes de couleur pour les partager.</string>
     <string name="help_section_holiday_manager">Gestionnaire de jours fériés</string>
-    <string name="help_holiday_manager_1">Cette fonction permet de marquer manuellement des jours spécifiques comme fériés ou ouvrés, indépendamment de ce qu\'indique le calendrier système ou les événements importés. En marquant un jour como férié, son numéro sera mis en évidence dans la couleur correspondante sur les vues mensuelle et annuelle.</string>
+    <string name="help_holiday_manager_1">Cette fonction permet de marquer manuellement des jours spécifiques comme fériés ou ouvrés, indépendamment de ce qu\'indique le calendrier système ou les événements importés. En marquant un jour comme férié, son numéro sera mis en évidence dans la couleur correspondante sur les vues mensuelle et annuelle.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'application comprend un Widget pour l\'écran d\'accueil qui affiche les prochains événements. Vous pouvez personnaliser son apparence en choisissant le nombre d\'événements à afficher, en changeant la taille de la police et en modifiant ses couleurs.</string>
     <string name="copied_to_clipboard">Copié : %1$s</string>
@@ -134,7 +134,7 @@
     <string name="no_events_this_month">Il n\'y a aucun événement pour ce mois.</string>
     <string name="widget_no_events">Aucun événement</string>
     <string name="monthly_calendar">Calendrier mensuel</string>
-    <string name="theme_exported_successfully">Thème exportat avec succès</string>
+    <string name="theme_exported_successfully">Thème exporté avec succès</string>
     <string name="error_exporting_theme">Erreur lors de l\'exportation du thème : %1$s</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">Impossible de lire le fichier.</string>
@@ -213,7 +213,7 @@
     <string name="next_refresh_pending">dans 15 min.</string>
     <string name="not_scheduled">Non programmé</string>
     <string name="no_logs_found">Aucun log enregistré pour le moment.</string>
-    <string name="copy_action">Copiar</string>
+    <string name="copy_action">Copier</string>
     <string name="sync_alarms">Synchroniser les alarmes</string>
     <string name="sync_alarms_success">Nettoyage terminé : %1$d alarmes orphelines supprimées.</string>
     <string name="selected_count">%1$d sélectionnés</string>
@@ -241,6 +241,7 @@
     <string name="local_holidays_label">Jours fériés locaux</string>
     <string name="cargar_label">Charger</string>
     <string name="guardar_label">Enregistrer</string>
+
     <string name="system_permissions">Autorisations système</string>
     <string name="permissions_dialog_title">État des autorisations</string>
     <string name="calendar_permission_label">Calendrier</string>
@@ -262,6 +263,7 @@
     <string name="fix_permission">PARAMÈTRES</string>
     <string name="history">Historique</string>
 
+    <!-- Sauvegarde des événements -->
     <string name="backup_section_title">Sauvegarde des événements</string>
     <string name="link_google_account">Associer un compte Google</string>
     <string name="account_linked">Compte associé</string>

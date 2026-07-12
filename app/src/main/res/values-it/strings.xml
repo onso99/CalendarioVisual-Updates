@@ -91,7 +91,7 @@
     <string name="widget_text_adjustment">Regolazione testo</string>
     <string name="background_color">Colore di sfondo</string>
     <string name="event_color">Colore eventi</string>
-    <string name="today_event_color">Esdevenimenti d\'avui</string>
+    <string name="today_event_color">Eventi di oggi</string>
     <string name="about">Informazioni</string>
     <string name="discard_changes_title">Abbandona modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle abbandonare?</string>
@@ -112,7 +112,7 @@
     <string name="help_section_holiday_manager">Gestore festività</string>
     <string name="help_holiday_manager_1">Questa funzione permette di contrassegnare manualmente giorni specifici come festivi o lavorativi, indipendentemente da quanto indicato dal calendario di sistema o dagli eventi importati. Contrassegnando un giorno come festivo, il suo numero sarà evidenziato nel colore corrispondente nelle viste mensile e annuale.</string>
     <string name="help_section_widget">Widget</string>
-    <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzare il suo aspetto scegliendo il numero de eventi da mostrare, cambiando la dimensione del carattere e modificando i suoi colori.</string>
+    <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzare il suo aspetto scegliendo il numero di eventi da mostrare, cambiando la dimensione del carattere e modificando i suoi colori.</string>
     <string name="copied_to_clipboard">Copiato: %1$s</string>
     <string name="event_color_label">Colore dell\'evento:</string>
     <string name="keyword">Parola chiave</string>
@@ -231,7 +231,7 @@
     <string name="import_holidays_merge">Aggiungi</string>
     <string name="import_holidays_replace">Sostituisci</string>
 
-    <string name="alarm">Allarme</string>
+    <string name="alarm">Alarme</string>
     <string name="alarm_time">Ora dell\'allarme</string>
     <string name="stop_alarm">STOP</string>
     <string name="snooze_alarm">POSTICIPA</string>
@@ -245,7 +245,7 @@
     <string name="permissions_dialog_title">Stato dei permessi</string>
     <string name="calendar_permission_label">Calendario</string>
     <string name="notifications_permission_label">Notifiche</string>
-    <string name="alarms_permission_label">Allarmi</string>
+    <string name="alarms_permission_label">Alarmas</string>
     <string name="google_drive_permission_label">Google Drive</string>
     <string name="battery_optimization_label">Batteria</string>
 
@@ -283,7 +283,7 @@
     <string name="restoring">Ripristino…</string>
     <string name="restore_confirm_title">Ripristinare gli eventi?</string>
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
-    <string name="restore_success">Eventi ripristinati con successo</string>
+    <string name="restore_success">Eventos ripristinati con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
     <string name="last_backup">Ultima copia: %s</string>
     <string name="last_backup_with_count">Ultima: %1$s · %2$d eventi</string>

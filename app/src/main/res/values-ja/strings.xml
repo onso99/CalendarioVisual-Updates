@@ -241,6 +241,7 @@
     <string name="local_holidays_label">地域の祝日</string>
     <string name="cargar_label">読み込み</string>
     <string name="guardar_label">保存</string>
+
     <string name="system_permissions">システム権限</string>
     <string name="permissions_dialog_title">権限の状態</string>
     <string name="calendar_permission_label">カレンダー</string>
@@ -283,7 +284,7 @@
     <string name="restoring">復元中…</string>
     <string name="restore_confirm_title">イベントを復元しますか？</string>
     <string name="restore_confirm_message">保存されたイベントがGoogleドライブのコピーで上書きされます。現在のシステムイベントには影響しません。</string>
-    <string name="restore_success">復元が完了しました</string>
+    <string name="restore_success">イベントが復元されました</string>
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="last_backup">最終バックアップ: %s</string>
     <string name="last_backup_with_count">最終: %1$s · %2$d件</string>

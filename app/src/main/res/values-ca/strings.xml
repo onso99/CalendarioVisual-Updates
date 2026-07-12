@@ -110,7 +110,7 @@
     <string name="help_section_customization">Personalització</string>
     <string name="help_customization_1">Des del menú Ajustos es pot triar el mode Clar i Fosc. També es poden personalitzar els colors de la interfície i Importar i Exportar els temes de color per compartir-los.</string>
     <string name="help_section_holiday_manager">Gestor de Festius</string>
-    <string name="help_holiday_manager_1">Aquesta funció permet marcar dies específics com a festius o laborables de forma manual, independentment del que indiqui el calendari del sistema o els esdeveniments importats. En marcar un dia com a festiu, el seu número es ressaltarà en el color corresponent en les vistes mensual i anual.</string>
+    <string name="help_holiday_manager_1">Aquesta funció permet marcar dies específicos com a festivos o laborables de forma manual, independentment del que indiqui el calendari del sistema o els esdeveniments importats. En marcar un dia com a festiu, el seu número es ressaltarà en el color corresponent en les vistes mensual i anual.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'aplicació inclou un Widget per a la pantalla d\'Inici que mostra els propers esdeveniments. Es pot personalitzar la seva aparença triant el nombre d\'esdeveniments a mostrar, canviant la mida de la lletra i modificat els seus colors.</string>
     <string name="copied_to_clipboard">Copiat: %1$s</string>
@@ -192,7 +192,7 @@
 
     <string name="holidays_section">Festius</string>
     <string name="import_holidays">Importar festius…</string>
-    <string name="export_holidays">Exportar festivos…</string>
+    <string name="export_holidays">Exportar festius…</string>
     <string name="holidays_imported_successfully">Festius importats amb èxit.</string>
     <string name="error_reading_holidays_file">Error en llegir el fitxer de festius.</string>
     <string name="error_saving_holidays_file">Error en desar el fitxer de festius.</string>
@@ -215,7 +215,7 @@
     <string name="no_logs_found">No hi ha logs registrats encara.</string>
     <string name="copy_action">Copiar</string>
     <string name="sync_alarms">Sincronitzar alarmes</string>
-    <string name="sync_alarms_success">Neteja finalitzada: %1$d alarmes òrfenes eliminades.</string>
+    <string name="sync_alarms_success">Neteja finalitzada: %1$d alarmes òrfenes eliminadas.</string>
     <string name="selected_count">%1$d seleccionats</string>
     <string name="delete_multiple_confirmation">Vols eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
     <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
@@ -237,8 +237,6 @@
     <string name="snooze_alarm">POSTPOSAR</string>
     <string name="alarm_anticipation_label">Anticipació</string>
     <string name="alarm_snooze_label">Postposar</string>
-    <string name="alarm_offset_label">Anticipació (minuts)</string>
-    <string name="snooze_interval_label">Postposar (minuts)</string>
     <string name="semana_label">Setmana</string>
     <string name="local_holidays_label">Festius locals</string>
     <string name="cargar_label">Carregar</string>
@@ -264,10 +262,7 @@
     <string name="fix_permission">AJUSTOS</string>
     <string name="history">Historial</string>
 
-    <!-- Respaldo de eventos -->
-    <string name="save_settings_aspect">Desar preferències</string>
-    <string name="load_settings_aspect">Carregar preferències</string>
-    <string name="backup_section_title">Còpia de seguretat d\'esdeveniments</string>
+    <string name="backup_section_title">Respaldo d\'esdeveniments</string>
     <string name="link_google_account">Vincular compte de Google</string>
     <string name="account_linked">Compte vinculat</string>
     <string name="account_linked_success">Compte vinculat amb èxit</string>

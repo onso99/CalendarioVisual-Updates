@@ -241,6 +241,7 @@
     <string name="local_holidays_label">Tokiko jai-egunak</string>
     <string name="cargar_label">Kargatu</string>
     <string name="guardar_label">Gorde</string>
+
     <string name="system_permissions">Sistemaren baimenak</string>
     <string name="permissions_dialog_title">Baimenen Egoera</string>
     <string name="calendar_permission_label">Egutegia</string>
