@@ -235,6 +235,8 @@
     <string name="alarm_time">Hora de la alarma</string>
     <string name="stop_alarm">DETENER</string>
     <string name="snooze_alarm">POSPONER</string>
+    <string name="alarm_anticipation_label">Anticipación</string>
+    <string name="alarm_snooze_label">Posponer</string>
     <string name="alarm_offset_label">Anticipación (minutos)</string>
     <string name="snooze_interval_label">Posponer (minutos)</string>
     <string name="system_permissions">Permisos del sistema</string>
