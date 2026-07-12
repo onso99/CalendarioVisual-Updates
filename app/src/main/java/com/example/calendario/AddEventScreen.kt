@@ -428,16 +428,37 @@ fun AddEventScreen(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                        alarmTime = if (isAllDay) {
-                            LocalTime.now().withSecond(0).withNano(0)
+                        
+                        val now = LocalTime.now()
+                        val calculatedTime = if (isAllDay) now else startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                        
+                        // Sugerir siempre una hora posterior a la actual
+                        alarmTime = if (calculatedTime.isBefore(now)) {
+                            now.plusMinutes(10).withSecond(0).withNano(0)
                         } else {
-                            startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                            calculatedTime.withSecond(0).withNano(0)
                         }
+                        
                         showAlarmTimePickerDialog = true
                     }
                 },
                 alarmTime = alarmTime,
-                onAlarmTimeClick = { showAlarmTimePickerDialog = true }
+                onAlarmTimeClick = { 
+                    if (!hasAlarm) {
+                        // Si no tenÃ­a alarma, pedimos permiso y sugerimos hora futura
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                        val now = LocalTime.now()
+                        val calculatedTime = if (isAllDay) now else startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                        alarmTime = if (calculatedTime.isBefore(now)) {
+                            now.plusMinutes(10).withSecond(0).withNano(0)
+                        } else {
+                            calculatedTime.withSecond(0).withNano(0)
+                        }
+                    }
+                    showAlarmTimePickerDialog = true 
+                }
             )
         }
     }
@@ -620,6 +641,7 @@ fun AddEventScreen(
     if (showAlarmTimePickerDialog) {
         TimePickerDialog(onDismissRequest = { showAlarmTimePickerDialog = false }, onConfirm = { hour, minute ->
             alarmTime = LocalTime.of(hour, minute)
+            hasAlarm = true // Aseguramos que la alarma se active al confirmar la hora
             showAlarmTimePickerDialog = false
         }, initialHour = alarmTime.hour, initialMinute = alarmTime.minute)
     }

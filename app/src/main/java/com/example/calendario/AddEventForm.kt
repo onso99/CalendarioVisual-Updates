@@ -23,13 +23,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -365,48 +366,55 @@ fun AddEventForm(
                 }
             }
 
-            // --- Alarm Section ---
+            // --- Alarm Section (Nuevo diseÃ±o compacto) ---
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .clickable(onClick = onAlarmTimeClick)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(id = R.string.alarm), modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
-                Switch(
-                    checked = hasAlarm,
-                    onCheckedChange = onHasAlarmChange,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = CalendarioTheme.colors.cabecera,
-                        checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
-                        uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
-                        uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-                    )
+                Text(
+                    text = stringResource(id = R.string.alarm), 
+                    modifier = Modifier.weight(1f), 
+                    color = CalendarioTheme.colors.textSystem
                 )
-            }
-
-            if (hasAlarm) {
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onAlarmTimeClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.alarm_time),
-                        modifier = Modifier.weight(1f),
-                        color = CalendarioTheme.colors.textSystem
-                    )
+                
+                if (hasAlarm) {
+                    // BotÃ³n X para eliminar (Solo si hay alarma)
+                    IconButton(
+                        onClick = { onHasAlarmChange(false) },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp)) // Aumentado de 8.dp a 16.dp para evitar toques accidentales
+                    
+                    // Valor de la hora
                     Text(
                         text = alarmTime.format(timeFormatter),
                         color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
                     )
+                    
+                    Spacer(modifier = Modifier.width(12.dp)) // Aumentado de 4.dp a 12.dp para separar del sÃ­mbolo '>'
                 }
+
+                // Flecha indicadora >
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
 
