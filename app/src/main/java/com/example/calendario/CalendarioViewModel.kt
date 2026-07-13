@@ -138,12 +138,19 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     mergeHistoryWithSystem(cachedHistory, systemEvents)
                 }
                 
+                // GUARDADO SANEADO: Aseguramos que lo que va al disco y a Drive estÃ© deduplicado por ADN
+                val cleanListToSave = withContext(Dispatchers.Default) {
+                    finalEventsList.distinctBy { 
+                        "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}"
+                    }
+                }
+
                 withContext(Dispatchers.IO) {
-                    saveHistoryToDisk(context, finalEventsList)
+                    saveHistoryToDisk(context, cleanListToSave)
                 }
 
                 _uiState.value = CalendarioUiState(
-                    eventsByDate = finalEventsList.groupBy { it.date },
+                    eventsByDate = cleanListToSave.groupBy { it.date },
                     availableCalendars = availableCalendars,
                     selectedCalendarIds = validSelectedIds,
                     hasCalendarPermission = true,
