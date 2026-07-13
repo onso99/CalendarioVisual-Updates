@@ -320,7 +320,7 @@ fun MonthlyCalendar(
                                             if (period != null) {
                                                 val cal = availableCalendars.find { it.id == period.calendarId }
                                                 val color = if (period.customColor != null) Color(period.customColor)
-                                                           else if (cal != null) Color(cal.color ?: 0xFFFFFFFF.toInt())
+                                                           else if (cal != null) Color(cal.color)
                                                            else themeColors.textSystem
 
                                                 Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
@@ -377,16 +377,21 @@ fun MonthlyCalendar(
                                 }
                             }
 
-                            // NÃšMERO DE SEMANA (Subutil, esquina superior izquierda)
+                            // NÚMERO DE SEMANA (Sutil, esquina superior izquierda)
                             if (showWeekNumber && indexInWeek == 0) {
                                 val weekNumber = date.get(weekFields.weekOfWeekBasedYear())
                                 Text(
                                     text = weekNumber.toString(),
                                     fontSize = 11.sp,
-                                    color = themeColors.textSystem.copy(alpha = 0.5f),
+                                    color = themeColors.textSystem.copy(alpha = 0.4f),
+                                    style = ComposeTextStyle(
+                                        platformStyle = PlatformTextStyle(
+                                            includeFontPadding = false
+                                        )
+                                    ),
                                     modifier = Modifier
                                         .align(Alignment.TopStart)
-                                        .padding(start = 4.dp, top = 2.dp)
+                                        .padding(start = 3.dp, top = 2.dp)
                                 )
                             }
 
