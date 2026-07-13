@@ -59,6 +59,8 @@ fun MonthlyEventList(
     val themeColors = CalendarioTheme.colors
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
     val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val normEvent1 = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
+    val normEvent2 = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
 
     Box(modifier = modifier) {
         if (finalEventsToList.isEmpty()) {
@@ -79,13 +81,12 @@ fun MonthlyEventList(
                     .fillMaxSize()
                     .padding(top = 8.dp, start = 12.dp, end = 12.dp)
             ) {
-                itemsIndexed(finalEventsToList, key = { _, (date, festivos) -> date.toString() + festivos.firstOrNull()?.id }) { _, (date, festivos) ->
+                itemsIndexed(finalEventsToList, key = { _, (date, _) -> date.toString() }) { _, (date, festivos) ->
                     val isTodayEvents = isCurrentMonthView && date == today
                     festivos.forEach { festivo ->
-
-                        val normalizedTitle = festivo.title.unaccent().lowercase()
-                        val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
-                        val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
+                        val normalizedTitle = remember(festivo.title) { festivo.title.unaccent().lowercase() }
+                        val esEvento1 = normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)
+                        val esEvento2 = normEvent2.isNotBlank() && normalizedTitle.contains(normEvent2)
                         val esCumpleanos = festivo.isBirthday
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
 
@@ -178,7 +179,7 @@ fun MonthlyEventList(
                                                 val laneColor = if (festivo.customColor != null) {
                                                     Color(festivo.customColor)
                                                 } else if (cal != null) {
-                                                    Color(cal.color ?: 0xFFFFFFFF.toInt())
+                                                    Color(cal.color)
                                                 } else {
                                                     themeColors.textSystem
                                                 }

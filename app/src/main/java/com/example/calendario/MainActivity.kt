@@ -26,6 +26,7 @@ import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.YearMonth
 
 class MainActivity : ComponentActivity() {
 
@@ -128,37 +129,39 @@ fun processEventsForDisplay(
     showAll: Boolean
 ): List<Pair<LocalDate, List<Festivo>>> {
     val now = LocalDateTime.now()
+    val result = mutableListOf<Pair<LocalDate, List<Festivo>>>()
 
-    // 1. Obtener todos los eventos del mes que estamos viendo.
-    var monthEvents = allEvents.values.flatten().filter {
-        it.date.year == currentMonth.year && it.date.month == currentMonth.month
-    }
-
-    // 2. Si 'showAll' es false, filtramos para mostrar solo los eventos futuros.
-    if (!showAll) {
-        monthEvents = monthEvents.filter { event ->
-            val eventEndDateTime = if (event.isAllDay) {
-                event.date.plusDays(1).atStartOfDay()
-            } else {
-                val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
-                LocalDateTime.of(event.date, endTime)
+    // OPTIMIZACIÓN: En lugar de flatten() y filtrar miles de eventos, 
+    // recorremos solo los días del mes (31 max) y los buscamos en el mapa.
+    val yearMonth = YearMonth.from(currentMonth)
+    for (day in 1..yearMonth.lengthOfMonth()) {
+        val date = yearMonth.atDay(day)
+        val dayEvents = allEvents[date] ?: continue
+        
+        var filteredEvents = dayEvents
+        if (!showAll) {
+            filteredEvents = dayEvents.filter { event ->
+                val eventEndDateTime = if (event.isAllDay) {
+                    event.date.plusDays(1).atStartOfDay()
+                } else {
+                    val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: LocalTime.MAX
+                    LocalDateTime.of(event.date, endTime)
+                }
+                eventEndDateTime.isAfter(now)
             }
-            eventEndDateTime.isAfter(now)
         }
-    }
 
-    // 3. Agrupar por fecha y aplicar ordenación estándar
-    return monthEvents
-        .groupBy { it.date }
-        .mapValues { (_, events) ->
-            events.sortedWith(
+        if (filteredEvents.isNotEmpty()) {
+            val sortedEvents = filteredEvents.sortedWith(
                 compareBy<Festivo> { !it.isAllDay }
                     .thenBy { it.startTime }
                     .thenBy { it.title }
             )
+            result.add(date to sortedEvents)
         }
-        .toList()
-        .sortedBy { it.first }
+    }
+
+    return result.sortedBy { it.first }
 }
 
 fun processEventsForWidget(allEvents: Map<LocalDate, List<Festivo>>, limit: Int): List<Festivo> {

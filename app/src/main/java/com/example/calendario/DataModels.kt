@@ -46,11 +46,11 @@ data class CalendarInfo(
 data class FestivoDto(
     val title: String?,
     val description: String?,
-    val id: Long,
+    val id: Long?,
     val calendarId: Long? = 0L,
     val startTimeStr: String?,
     val endTimeStr: String?,
-    val isAllDay: Boolean,
+    val isAllDay: Boolean? = true,
     val rrule: String?,
     val age: Int?,
     val isBirthday: Boolean? = false,
@@ -64,7 +64,7 @@ data class FestivoDto(
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
-    // --- Campos para Sincronización Segura ---
+    // --- Campos para SincronizaciÃ³n Segura ---
     val lastModified: Long? = null,
     val isDeleted: Boolean? = false
 )

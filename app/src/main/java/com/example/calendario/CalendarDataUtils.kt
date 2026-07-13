@@ -10,13 +10,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.database.getStringOrNull
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 // --- PERSISTENCIA HISTÓRICA (JSON) ---
 
@@ -41,9 +40,20 @@ fun loadHistoryFromDisk(context: Context): List<Festivo> {
         val json = context.openFileInput(HISTORY_FILE_NAME).bufferedReader().use { it.readText() }
         val type = object : TypeToken<List<FestivoDto>>() {}.type
         val dtos: List<FestivoDto> = Gson().fromJson(json, type) ?: emptyList()
-        dtos.map { it.toFestivo() }
+        
+        // --- BLINDAJE DE CARGA ---
+        // Usamos mapNotNull y un try-catch interno para que si un solo evento 
+        // del JSON antiguo está corrupto, la App lo ignore y siga cargando el resto.
+        dtos.mapNotNull { dto ->
+            try {
+                dto.toFestivo()
+            } catch (e: Exception) {
+                Log.e("CalendarDataUtils", "Saltando evento corrupto: ${dto.title}", e)
+                null
+            }
+        }
     } catch (e: Exception) {
-        Log.e("CalendarDataUtils", "Error loading history", e)
+        Log.e("CalendarDataUtils", "Error crítico cargando historial", e)
         emptyList()
     }
 }
@@ -75,14 +85,14 @@ fun Festivo.toDto() = FestivoDto(
 )
 
 fun FestivoDto.toFestivo() = Festivo(
-    id = this.id,
+    id = this.id ?: 0L,
     calendarId = this.calendarId ?: 0L,
     title = this.title ?: "",
     description = this.description,
     date = LocalDate.now(),
-    startTime = this.startTimeStr?.let { LocalTime.parse(it) },
-    endTime = this.endTimeStr?.let { LocalTime.parse(it) },
-    isAllDay = this.isAllDay,
+    startTime = this.startTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
+    endTime = this.endTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
+    isAllDay = this.isAllDay ?: true,
     isFromHolidaySource = this.isFromHolidaySource ?: false,
     rrule = this.rrule,
     age = this.age,
@@ -99,7 +109,9 @@ fun FestivoDto.toFestivo() = Festivo(
     isDeleted = this.isDeleted ?: false
 ).let { 
     if (this.fullStartMillis != null) {
-        it.copy(date = Instant.ofEpochMilli(this.fullStartMillis).atZone(ZoneId.systemDefault()).toLocalDate())
+        try {
+            it.copy(date = Instant.ofEpochMilli(this.fullStartMillis).atZone(ZoneId.systemDefault()).toLocalDate())
+        } catch(_: Exception) { it }
     } else it
 }
 
@@ -197,10 +209,9 @@ fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?) {
 
 // --- CALENDARIOS DISPONIBLES ---
 
-suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> = suspendCancellableCoroutine { continuation ->
+suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> = withContext(Dispatchers.IO) {
     if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-        continuation.resume(emptyList())
-        return@suspendCancellableCoroutine
+        return@withContext emptyList()
     }
 
     val list = mutableListOf<CalendarInfo>()
@@ -241,7 +252,7 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
             )
         }
     }
-    continuation.resume(list)
+    list
 }
 
 // --- AJUSTES Y FESTIVOS ---
@@ -535,11 +546,6 @@ fun readFestivosFromCalendarsSync(
 suspend fun readFestivosFromCalendarsSuspend(
     context: Context,
     selectedCalendarIds: Set<Long>
-): Map<LocalDate, List<Festivo>> = suspendCancellableCoroutine { continuation ->
-    try {
-        val result = readFestivosFromCalendarsSync(context, selectedCalendarIds)
-        if (continuation.isActive) continuation.resume(result)
-    } catch (e: Exception) {
-        if (continuation.isActive) continuation.resumeWithException(e)
-    }
+): Map<LocalDate, List<Festivo>> = withContext(Dispatchers.IO) {
+    readFestivosFromCalendarsSync(context, selectedCalendarIds)
 }

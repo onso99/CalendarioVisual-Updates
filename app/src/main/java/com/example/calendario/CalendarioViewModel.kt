@@ -77,7 +77,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 BackupScheduler.ensureBackupScheduled(context)
 
                 // --- PASO 0: CARGA ULTRA-INSTANTÁNEA (JSON + Migración) ---
-                var cachedHistory = withContext(Dispatchers.IO) { loadHistoryFromDisk(context) }
+                var cachedHistory = withContext(Dispatchers.IO) { 
+                    runCatching { loadHistoryFromDisk(context) }.getOrDefault(emptyList())
+                }
                 
                 // MIGRACIÓN: Si el histórico está vacío, rescatamos de Prefs antiguos
                 if (cachedHistory.isEmpty()) {
@@ -127,10 +129,12 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
                 val systemEvents = systemEventsMap.values.flatten()
 
-                // Aplicar Ventana de Coherencia (-1 año a +5 años)
-                val finalEventsList = mergeHistoryWithSystem(cachedHistory, systemEvents)
+                // PROCESAMIENTO PESADO EN HILO DE CÓMPUTO (No bloquea la UI)
+                val finalEventsList = withContext(Dispatchers.Default) {
+                    mergeHistoryWithSystem(cachedHistory, systemEvents)
+                }
                 
-                viewModelScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
                     saveHistoryToDisk(context, finalEventsList)
                 }
 
@@ -302,19 +306,20 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    private fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> {
+    private suspend fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> = withContext(Dispatchers.Default) {
         val deletedIds = getDeletedEventIds(getApplication())
 
-        // --- LÓGICA DE FUSIÓN PROTECTORA ---
-        // 1. Ponemos primero los eventos del sistema (los más frescos).
-        // 2. Añadimos el historial que ya teníamos guardado.
-        // 3. Al aplicar 'distinctBy', si un evento existe en ambos, se quedará con el del sistema 
-        //    (porque está primero), actualizando así cualquier cambio de título o hora.
-        // 4. Los eventos que estaban en el historial pero que el sistema NO ha devuelto esta vez, 
-        //    SE MANTIENEN intactos (protección contra fallos de sincronización).
-        
-        return (systemEvents + cachedHistory)
+        // --- LÓGICA DE FUSIÓN PROTECTORA SANEADA ---
+        // 1. Fusionamos
+        val combined = (systemEvents + cachedHistory)
             .filter { it.id !in deletedIds }
             .distinctBy { "${it.id}_${it.date}" }
+
+        // 2. SANEAMIENTO: Evitar explosión del archivo JSON
+        // Solo mantenemos eventos desde 2 años atrás hasta 6 años adelante
+        val cutoffStart = LocalDate.now().minusYears(2)
+        val cutoffEnd = LocalDate.now().plusYears(6)
+        
+        combined.filter { it.date.isAfter(cutoffStart) && it.date.isBefore(cutoffEnd) }
     }
 }

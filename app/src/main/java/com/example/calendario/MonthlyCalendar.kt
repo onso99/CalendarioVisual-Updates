@@ -63,6 +63,8 @@ fun MonthlyCalendar(
     val themeColors = CalendarioTheme.colors
     val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
     val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val normEvent1 = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
+    val normEvent2 = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
     val effectType = remember(themeColors) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
     
     val showWeekNumber = remember(prefs) { prefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
@@ -379,20 +381,26 @@ fun MonthlyCalendar(
 
                             // NÚMERO DE SEMANA (Sutil, esquina superior izquierda)
                             if (showWeekNumber && indexInWeek == 0) {
-                                val weekNumber = date.get(weekFields.weekOfWeekBasedYear())
-                                Text(
-                                    text = weekNumber.toString(),
-                                    fontSize = 11.sp,
-                                    color = themeColors.textSystem.copy(alpha = 0.4f),
-                                    style = ComposeTextStyle(
-                                        platformStyle = PlatformTextStyle(
-                                            includeFontPadding = false
-                                        )
-                                    ),
-                                    modifier = Modifier
-                                        .align(Alignment.TopStart)
-                                        .padding(start = 3.dp, top = 2.dp)
-                                )
+                                val weekNumber = try {
+                                    date.get(weekFields.weekOfWeekBasedYear()).toString()
+                                } catch (_: Exception) {
+                                    ""
+                                }
+                                if (weekNumber.isNotEmpty()) {
+                                    Text(
+                                        text = weekNumber,
+                                        fontSize = 11.sp,
+                                        color = themeColors.textSystem.copy(alpha = 0.4f),
+                                        style = ComposeTextStyle(
+                                            platformStyle = PlatformTextStyle(
+                                                includeFontPadding = false
+                                            )
+                                        ),
+                                        modifier = Modifier
+                                            .align(Alignment.TopStart)
+                                            .padding(start = 3.dp, top = 2.dp)
+                                    )
+                                }
                             }
 
                             Text(
@@ -412,16 +420,13 @@ fun MonthlyCalendar(
 
                             val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
                             if (isCurrentMonth && eventsForIndicators.isNotEmpty()) {
-                                val normalizedEvent1Keyword = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
-                                val normalizedEvent2Keyword = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
-
                                 val indicatorColors = mutableListOf<Color>()
 
                                 val hasNormalEvent = eventsForIndicators.any { event ->
                                     val normalizedTitle = event.title.unaccent().lowercase()
                                     !event.isBirthday &&
-                                    !(normalizedEvent1Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent1Keyword)) &&
-                                    !(normalizedEvent2Keyword.isNotBlank() && normalizedTitle.contains(normalizedEvent2Keyword))
+                                    !(normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)) &&
+                                    !(normEvent2.isNotBlank() && normalizedTitle.contains(normEvent2))
                                 }
 
                                 if (hasNormalEvent) {
@@ -433,12 +438,12 @@ fun MonthlyCalendar(
                                     indicatorColors.add(themeColors.textBirthday)
                                 }
 
-                                val hasEvent1 = normalizedEvent1Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent1Keyword) }
+                                val hasEvent1 = normEvent1.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normEvent1) }
                                 if (hasEvent1) {
                                     indicatorColors.add(themeColors.textEvent1)
                                 }
 
-                                val hasEvent2 = normalizedEvent2Keyword.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normalizedEvent2Keyword) }
+                                val hasEvent2 = normEvent2.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normEvent2) }
                                 if (hasEvent2) {
                                     indicatorColors.add(themeColors.textEvent2)
                                 }

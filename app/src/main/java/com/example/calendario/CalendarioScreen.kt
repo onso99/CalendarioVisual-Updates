@@ -235,7 +235,9 @@ fun CalendarioScreen(
     }
 
     val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
-    val finalEventsToList = processEventsForDisplay(uiState.eventsByDate, currentMonth.atDay(1), showAll = if (isCurrentMonthView) showAllEvents else true)
+    val finalEventsToList = remember(uiState.eventsByDate, currentMonth, showAllEvents) {
+        processEventsForDisplay(uiState.eventsByDate, currentMonth.atDay(1), showAll = if (isCurrentMonthView) showAllEvents else true)
+    }
 
     LaunchedEffect(finalEventsToList, showAllEvents, viewMode, isCurrentMonthView) {
         if (viewMode != CalendarViewMode.MONTHLY || finalEventsToList.isEmpty()) return@LaunchedEffect
