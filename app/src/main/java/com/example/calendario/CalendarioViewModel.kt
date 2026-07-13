@@ -86,11 +86,15 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val oldPrefsEvents = loadEventsFromPrefs(context)
                     if (oldPrefsEvents.isNotEmpty()) {
                         cachedHistory = oldPrefsEvents.values.flatten()
-                        viewModelScope.launch(Dispatchers.IO) { saveHistoryToDisk(context, cachedHistory) }
                     }
                 }
                 
+                // BLINDAJE DE ARRANQUE: Limpiamos la caché antes de mostrarla por primera vez
                 if (cachedHistory.isNotEmpty()) {
+                    cachedHistory = withContext(Dispatchers.Default) {
+                        // Aplicamos la misma lógica de fusión pero sin eventos de sistema nuevos aún
+                        mergeHistoryWithSystem(cachedHistory, emptyList())
+                    }
                     _uiState.update { state -> 
                         state.copy(
                             eventsByDate = cachedHistory.groupBy { it.date },
