@@ -635,48 +635,6 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                
-                // Nueva fila integrada de Respaldo (DiseÃ±o Puzzle con Icono Central)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    // BotÃ³n Cargar (Izquierda - Mordisco a la derecha)
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.cargar_label),
-                        modifier = Modifier.weight(1f),
-                        shape = LeftConcaveShape,
-                        onClick = { 
-                            importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "application/json" 
-                            })
-                        }
-                    )
-
-                    // Icono Central (Paleta)
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_palette_custom_24),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
-                    )
-                    
-                    // BotÃ³n Guardar (Derecha - Mordisco a la izquierda)
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.guardar_label),
-                        modifier = Modifier.weight(1f),
-                        shape = RightConcaveShape,
-                        onClick = {
-                            showExportDialog = true
-                        }
-                    )
-                }
             }
 
             // --- 3. Widget Section ---
@@ -917,6 +875,15 @@ fun SettingsScreen(
                 } catch (e: Exception) {
                     Log.e("SettingsScreen", "Error applying bundled theme", e)
                 }
+            },
+            onLoadClick = {
+                importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json" 
+                })
+            },
+            onSaveClick = {
+                showExportDialog = true
             }
         ) 
     }
@@ -1237,7 +1204,9 @@ private fun WeekConfigDialog(
 private fun BundledThemesDialog(
     currentThemeId: String?,
     onDismiss: () -> Unit,
-    onThemeSelected: (Map<String, Any>) -> Unit
+    onThemeSelected: (Map<String, Any>) -> Unit,
+    onLoadClick: () -> Unit,
+    onSaveClick: () -> Unit
 ) {
     val effectiveId = currentThemeId ?: "theme_1"
 
@@ -1255,26 +1224,60 @@ private fun BundledThemesDialog(
             ) 
         }, 
         text = { 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.height(230.dp) // Altura compacta para 4 filas
-            ) { 
-                items(BundledThemes.themes) { theme: Map<String, Any> -> 
-                    val themeManifest = theme["themeManifest"] as Map<*, *>
-                    val themeId = themeManifest["id"] as String
-                    val themeResId = themeManifest["nameRes"] as Int
-                    
-                    val isSelected = themeId == effectiveId
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.height(210.dp) // Reducimos un poco para dar aire al respaldo
+                ) { 
+                    items(BundledThemes.themes) { theme: Map<String, Any> -> 
+                        val themeManifest = theme["themeManifest"] as Map<*, *>
+                        val themeId = themeManifest["id"] as String
+                        val themeResId = themeManifest["nameRes"] as Int
+                        
+                        val isSelected = themeId == effectiveId
 
-                    ThemeChip(
-                        name = stringResource(id = themeResId),
-                        isSelected = isSelected,
-                        onClick = { onThemeSelected(theme) }
+                        ThemeChip(
+                            name = stringResource(id = themeResId),
+                            isSelected = isSelected,
+                            onClick = { onThemeSelected(theme) }
+                        )
+                    } 
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Fila integrada de Respaldo dentro del diálogo
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.cargar_label),
+                        modifier = Modifier.weight(1f).height(44.dp),
+                        shape = LeftConcaveShape,
+                        onClick = onLoadClick
                     )
-                } 
-            } 
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_palette_custom_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(horizontal = 12.dp).size(22.dp)
+                    )
+                    
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.guardar_label),
+                        modifier = Modifier.weight(1f).height(44.dp),
+                        shape = RightConcaveShape,
+                        onClick = onSaveClick
+                    )
+                }
+            }
         }, 
         confirmButton = { 
             TextButton(onClick = onDismiss) { 
