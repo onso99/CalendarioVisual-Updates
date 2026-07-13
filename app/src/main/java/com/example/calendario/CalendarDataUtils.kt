@@ -529,8 +529,12 @@ fun readFestivosFromCalendarsSync(
     }
 
     manualHolidays.forEach { manual ->
+        // ESTÁNDAR NUEVO: ID basado exclusivamente en la fecha
+        // Usamos un offset de -2.000.000 para alejarnos de IDs de sistema y asegurar unicidad
+        val stableId = -2000000L - manual.date.toEpochDay()
+        
         finalMap.getOrPut(manual.date) { mutableListOf() }.add(Festivo(
-            id = -100L - manual.date.toEpochDay() - manual.title.hashCode().toLong(),
+            id = stableId,
             title = manual.title, description = "Festivo manual", date = manual.date,
             startTime = null, endTime = null, isAllDay = true, calendarId = -1L,
             isFromHolidaySource = true, rrule = null, age = null, isBirthday = false
