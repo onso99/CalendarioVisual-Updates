@@ -307,19 +307,51 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private suspend fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> = withContext(Dispatchers.Default) {
-        val deletedIds = getDeletedEventIds(getApplication())
-
-        // --- LÓGICA DE FUSIÓN PROTECTORA SANEADA ---
-        // 1. Fusionamos
-        val combined = (systemEvents + cachedHistory)
-            .filter { it.id !in deletedIds }
-            .distinctBy { "${it.id}_${it.date}" }
-
-        // 2. SANEAMIENTO: Evitar explosión del archivo JSON
-        // Solo mantenemos eventos desde 2 años atrás hasta 6 años adelante
-        val cutoffStart = LocalDate.now().minusYears(2)
-        val cutoffEnd = LocalDate.now().plusYears(6)
+        val context = getApplication<Application>()
+        val deletedIds = getDeletedEventIds(context)
+        val today = LocalDate.now()
         
-        combined.filter { it.date.isAfter(cutoffStart) && it.date.isBefore(cutoffEnd) }
+        // Cargar ajustes para filtrado de laborables
+        val adjustments = loadHolidayAdjustments(context)
+        val workingDayIds = adjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
+
+        // 1. DEDUPLICACIÃ“N AGRESIVA POR CONTENIDO
+        // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicaciÃ³n.
+        val combined = systemEvents + cachedHistory
+        val deduped = combined.distinctBy { 
+            "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}"
+        }
+
+        // 2. PURGA DE EVENTOS BORRADOS (Saneamiento de "Fantasmas")
+        // Creamos un Set de claves de lo que Google Calendar dice que existe HOY
+        val systemKeys = systemEvents.map { "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}" }.toSet()
+
+        val finalEvents = deduped.filter { event ->
+            val eventKey = "${event.date}_${event.title.trim().lowercase().unaccent()}_${event.startTime}"
+            
+            // A) Filtro de Seguridad: No recuperar si estÃ¡ marcado como borrado o laborable
+            if (event.id in deletedIds || workingDayIds.contains(event.id)) return@filter false
+
+            // B) LÃ³gica de ResurrecciÃ³n Inteligente:
+            // Si el evento NO estÃ¡ en el sistema pero SI en el historial...
+            if (!systemKeys.contains(eventKey)) {
+                // Si es un festivo manual (ID < 0), solo lo mantenemos si es FRESCO (systemEvents lo trae)
+                // Al no estar en systemKeys, significa que es un manual viejo del JSON -> Borrar.
+                if (event.id < 0) return@filter false
+                
+                // Si es un evento de Google (ID >= 0) y es FUTURO o muy reciente, 
+                // confiamos en que si Google no lo trae es porque se ha BORRADO.
+                // Usamos un margen de 7 dÃ­as para proteger contra fallos temporales de red.
+                if (event.date.isAfter(today.minusDays(7))) return@filter false
+            }
+            
+            true
+        }
+
+        // 3. RECORTAR VENTANA (JSON Ligero)
+        val cutoffStart = today.minusYears(2)
+        val cutoffEnd = today.plusYears(6)
+        
+        finalEvents.filter { it.date.isAfter(cutoffStart) && it.date.isBefore(cutoffEnd) }
     }
 }
