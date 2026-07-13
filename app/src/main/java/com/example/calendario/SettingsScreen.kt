@@ -1250,30 +1250,27 @@ private fun BundledThemesDialog(
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Fila integrada de Respaldo dentro del diálogo
+                // Fila integrada de Respaldo dentro del diálogo con diferenciación visual
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                    
                     SettingsActionChip(
                         text = stringResource(id = R.string.cargar_label),
                         modifier = Modifier.weight(1f).height(44.dp),
-                        shape = LeftConcaveShape,
+                        shape = RoundedCornerShape(12.dp),
+                        containerColor = backupButtonBg,
                         onClick = onLoadClick
-                    )
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_palette_custom_24),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        modifier = Modifier.padding(horizontal = 12.dp).size(22.dp)
                     )
                     
                     SettingsActionChip(
                         text = stringResource(id = R.string.guardar_label),
                         modifier = Modifier.weight(1f).height(44.dp),
-                        shape = RightConcaveShape,
+                        shape = RoundedCornerShape(12.dp),
+                        containerColor = backupButtonBg,
                         onClick = onSaveClick
                     )
                 }

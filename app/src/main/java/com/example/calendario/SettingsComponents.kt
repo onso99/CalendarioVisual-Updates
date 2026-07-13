@@ -184,13 +184,14 @@ internal fun SettingsActionChip(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(10.dp)
+    shape: Shape = RoundedCornerShape(10.dp),
+    containerColor: Color = Color.Transparent
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     
     val backgroundColor by animateColorAsState(
-        targetValue = if (isPressed) CalendarioTheme.colors.cabecera.copy(alpha = 0.28f) else Color.Transparent,
+        targetValue = if (isPressed) CalendarioTheme.colors.cabecera.copy(alpha = 0.28f) else containerColor,
         animationSpec = if (isPressed) repeatable(3, tween(60)) else tween(500),
         label = "flash"
     )
