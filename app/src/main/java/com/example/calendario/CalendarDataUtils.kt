@@ -275,7 +275,7 @@ fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
         try {
             HolidayAdjustment(
                 date = LocalDate.parse(dto.dateStr),
-                title = dto.title ?: "",
+                title = dto.title,
                 type = HolidayAdjustmentType.valueOf(dto.type),
                 originalEventId = dto.originalEventId
             )
