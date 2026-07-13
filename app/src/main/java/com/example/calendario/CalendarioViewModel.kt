@@ -359,8 +359,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             true
         }
 
-        // 3. RECORTAR VENTANA (JSON Ligero)
-        val cutoffStart = today.minusYears(2)
+        // 3. RECORTAR VENTANA (JSON Ligero pero inclusivo: 20 aÃ±os atrÃ¡s, 6 adelante)
+        val cutoffStart = today.minusYears(20)
         val cutoffEnd = today.plusYears(6)
         
         finalEvents.filter { it.date.isAfter(cutoffStart) && it.date.isBefore(cutoffEnd) }
