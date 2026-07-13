@@ -158,6 +158,10 @@
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temas</string>
     <string name="themes_v6">Temas</string>
+    <string name="widget_colors_label">Colores</string>
+    <string name="widget_color_fondo">Fondo</string>
+    <string name="widget_color_evento">Evento</string>
+    <string name="widget_color_hoy">Hoxe</string>
 
     <string name="permission_denied_title">Permiso Denegado</string>
     <string name="permission_denied_text">Non se pode gardar o evento porque a aplicación non ten permiso para escribir no calendario. Por favor, concede o permiso desde os axustes da aplicación.</string>

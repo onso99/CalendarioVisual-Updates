@@ -158,6 +158,10 @@
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temi</string>
     <string name="themes_v6">Temi</string>
+    <string name="widget_colors_label">Colori</string>
+    <string name="widget_color_fondo">Sfondo</string>
+    <string name="widget_color_evento">Evento</string>
+    <string name="widget_color_hoy">Oggi</string>
 
     <string name="permission_denied_title">Permesso Negato</string>
     <string name="permission_denied_text">Impossibile salvare l\'evento perché l\'applicazione non ha il permesso di scrittura nel calendario. Si prega di concedere il permesso dalle impostazioni dell\'applicazione.</string>

@@ -158,6 +158,10 @@
     <string name="calendar_source">Kalender: %1$s</string>
     <string name="predefined_themes">Designs</string>
     <string name="themes_v6">Designs</string>
+    <string name="widget_colors_label">Farben</string>
+    <string name="widget_color_fondo">Hintergrund</string>
+    <string name="widget_color_evento">Ereignis</string>
+    <string name="widget_color_hoy">Heute</string>
 
     <string name="permission_denied_title">Berechtigung verweigert</string>
     <string name="permission_denied_text">Ereignis kann nicht gespeichert werden, da die Anwendung keine Berechtigung zum Schreiben in den Kalender hat. Bitte erteilen Sie die Berechtigung in den Anwendungseinstellungen.</string>

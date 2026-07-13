@@ -158,6 +158,10 @@
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="predefined_themes">Temes</string>
     <string name="themes_v6">Temes</string>
+    <string name="widget_colors_label">Colors</string>
+    <string name="widget_color_fondo">Fons</string>
+    <string name="widget_color_evento">Esdeveniment</string>
+    <string name="widget_color_hoy">Avui</string>
 
     <string name="permission_denied_title">Permís Denegat</string>
     <string name="permission_denied_text">No es pot desar l\'esdeveniment perquè l\'aplicació no té permís per escriure al calendari. Si us plau, concedeix el permís des dels ajustos de l\'aplicació.</string>

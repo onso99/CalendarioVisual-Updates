@@ -158,6 +158,10 @@
     <string name="calendar_source">カレンダー: %1$s</string>
     <string name="predefined_themes">テーマ</string>
     <string name="themes_v6">テーマ</string>
+    <string name="widget_colors_label">カラー</string>
+    <string name="widget_color_fondo">背景</string>
+    <string name="widget_color_evento">イベント</string>
+    <string name="widget_color_hoy">今日</string>
 
     <string name="permission_denied_title">権限が拒否されました</string>
     <string name="permission_denied_text">カレンダーへの書き込み権限がないため、イベントを保存できません。アプリの設定から権限を許可してください。</string>

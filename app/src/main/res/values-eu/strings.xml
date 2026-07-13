@@ -158,6 +158,10 @@
     <string name="calendar_source">Egutegia: %1$s</string>
     <string name="predefined_themes">Gaiak</string>
     <string name="themes_v6">Gaiak</string>
+    <string name="widget_colors_label">Koloreak</string>
+    <string name="widget_color_fondo">Atzeko planoa</string>
+    <string name="widget_color_evento">Gertaera</string>
+    <string name="widget_color_hoy">Gaur</string>
 
     <string name="permission_denied_title">Baimena Ukatua</string>
     <string name="permission_denied_text">Ezin da gertaera gorde aplikazioak ez duelako egutegian idazteko baimenik. Mesedez, eman baimena aplikazioaren ezarpenetatik.</string>

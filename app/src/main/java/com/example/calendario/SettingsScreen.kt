@@ -42,6 +42,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FormatBold
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -134,6 +135,7 @@ fun SettingsScreen(
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showRestoreDriveDialog by remember { mutableStateOf(false) }
     var showPreferencesBackupDialog by remember { mutableStateOf(false) }
+    var showWidgetColorExpand by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -693,11 +695,73 @@ fun SettingsScreen(
                     )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ColorPickerRow(stringResource(id = R.string.background_color), pendingWidgetBackgroundColor) { showWidgetBackgroundColorPalette = true }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ColorPickerRow(stringResource(id = R.string.event_color), pendingEventColor) { showWidgetEventColorPalette = true }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ColorPickerRow(stringResource(id = R.string.today_event_color), pendingTodayEventColor) { showWidgetTodayEventColorPalette = true }
+                
+                // Nueva Fila Unificada de Colores del Widget
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable { showWidgetColorExpand = !showWidgetColorExpand }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.widget_colors_label),
+                            fontSize = 16.sp,
+                            modifier = Modifier.weight(1f),
+                            color = CalendarioTheme.colors.textSystem
+                        )
+                        
+                        // Previsualización de los 3 colores (puntos separados para claridad total)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), CircleShape))
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingEventColor).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), CircleShape))
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingTodayEventColor).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), CircleShape))
+                        }
+
+                        Icon(
+                            imageVector = if (showWidgetColorExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                            modifier = Modifier.padding(start = 8.dp).size(20.dp)
+                        )
+                    }
+
+                    if (showWidgetColorExpand) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // BOTÃ“N FONDO
+                            WidgetColorChip(
+                                label = stringResource(id = R.string.widget_color_fondo),
+                                color = pendingWidgetBackgroundColor,
+                                modifier = Modifier.weight(1f),
+                                onClick = { showWidgetBackgroundColorPalette = true }
+                            )
+                            // BOTÃ“N EVENTO
+                            WidgetColorChip(
+                                label = stringResource(id = R.string.widget_color_evento),
+                                color = pendingEventColor,
+                                modifier = Modifier.weight(1f),
+                                onClick = { showWidgetEventColorPalette = true }
+                            )
+                            // BOTÃ“N HOY
+                            WidgetColorChip(
+                                label = stringResource(id = R.string.widget_color_hoy),
+                                color = pendingTodayEventColor,
+                                modifier = Modifier.weight(1f),
+                                onClick = { showWidgetTodayEventColorPalette = true }
+                            )
+                        }
+                    }
+                }
             }
 
 
@@ -1373,6 +1437,37 @@ private fun getFileName(context: Context, uri: Uri): String {
 }
 
 fun truncateThemeName(name: String, limit: Int): String = if (name.length > limit) name.take(limit - 3) + "..." else name
+
+@Composable
+private fun WidgetColorChip(
+    label: String,
+    color: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    // Calculamos color de texto (Blanco o Negro) segÃºn oscuridad del fondo
+    val textColor = if (isColorDark(color, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black
+
+    Box(
+        modifier = modifier
+            .height(44.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(color)
+            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), RoundedCornerShape(10.dp))
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            color = textColor,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+    }
+}
 
 @Composable
 private fun PermissionsDialog(
