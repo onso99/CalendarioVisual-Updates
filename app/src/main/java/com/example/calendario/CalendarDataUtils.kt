@@ -292,53 +292,7 @@ fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
     return cleaned
 }
 
-fun exportHolidaysToJson(context: Context, uri: Uri) {
-    val adjustments = loadHolidayAdjustments(context)
-    val gson = Gson()
-    val json = gson.toJson(adjustments.map { adj ->
-        HolidayAdjustmentDto(
-            dateStr = adj.date.toString(),
-            title = adj.title,
-            type = adj.type.name,
-            originalEventId = adj.originalEventId
-        )
-    })
-    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-        outputStream.write(json.toByteArray())
-    }
-}
 
-fun importHolidaysFromJson(context: Context, uri: Uri, replace: Boolean): Boolean {
-    return try {
-        context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            val json = inputStream.bufferedReader().use { it.readText() }
-            val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
-            val importedDtoList: List<HolidayAdjustmentDto> = Gson().fromJson(json, type)
-            val currentYear = LocalDate.now().year
-            val currentAdjustments = loadHolidayAdjustments(context)
-            val importedAdjustments = importedDtoList.mapNotNull { dto ->
-                val date = LocalDate.parse(dto.dateStr)
-                if (date.year == currentYear) {
-                    HolidayAdjustment(
-                        date = date,
-                        title = dto.title,
-                        type = HolidayAdjustmentType.valueOf(dto.type),
-                        originalEventId = dto.originalEventId
-                    )
-                } else null
-            }
-            val finalList = if (replace) importedAdjustments else {
-                val currentDates = currentAdjustments.map { it.date }.toSet()
-                currentAdjustments + importedAdjustments.filter { it.date !in currentDates }
-            }
-            saveHolidayAdjustments(context, finalList)
-            true
-        } ?: false
-    } catch (e: Exception) {
-        Log.e("CalendarDataUtils", "Error importing holidays", e)
-        false
-    }
-}
 
 // --- LECTURA DE EVENTOS (MÉTODO MAESTRO) ---
 
