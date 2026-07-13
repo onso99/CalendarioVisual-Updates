@@ -28,8 +28,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -1238,36 +1239,40 @@ private fun BundledThemesDialog(
     onDismiss: () -> Unit,
     onThemeSelected: (Map<String, Any>) -> Unit
 ) {
-    val cleanCurrentId = remember(currentThemeId) { currentThemeId?.removeSuffix("***") ?: "theme_1" }
+    val effectiveId = currentThemeId ?: "theme_1"
 
     AlertDialog(
         onDismissRequest = onDismiss, 
         containerColor = CalendarioTheme.colors.fondoDialogos, 
         titleContentColor = CalendarioTheme.colors.textSystem, 
         textContentColor = CalendarioTheme.colors.textSystem, 
-        title = { Text(stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold) }, 
+        title = { 
+            Text(
+                text = stringResource(id = R.string.themes_v6), 
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            ) 
+        }, 
         text = { 
-            LazyColumn { 
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.height(230.dp) // Altura compacta para 4 filas
+            ) { 
                 items(BundledThemes.themes) { theme: Map<String, Any> -> 
                     val themeManifest = theme["themeManifest"] as Map<*, *>
                     val themeId = themeManifest["id"] as String
-                    val legacyName = themeManifest["name"] as? String
                     val themeResId = themeManifest["nameRes"] as Int
                     
-                    val isSelected = themeId == cleanCurrentId || (legacyName != null && legacyName == cleanCurrentId)
+                    val isSelected = themeId == effectiveId
 
-                    Row(
-                        Modifier.fillMaxWidth().clickable { onThemeSelected(theme) }.padding(vertical = 12.dp), 
-                        verticalAlignment = Alignment.CenterVertically
-                    ) { 
-                        Text(
-                            text = stringResource(id = themeResId), 
-                            modifier = Modifier.weight(1f), 
-                            fontSize = 18.sp,
-                            color = CalendarioTheme.colors.textSystem
-                        ) 
-                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.textSystem)
-                    } 
+                    ThemeChip(
+                        name = stringResource(id = themeResId),
+                        isSelected = isSelected,
+                        onClick = { onThemeSelected(theme) }
+                    )
                 } 
             } 
         }, 
@@ -1277,6 +1282,51 @@ private fun BundledThemesDialog(
             } 
         }
     )
+}
+
+@Composable
+private fun ThemeChip(
+    name: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val borderColor = if (isSelected) {
+        CalendarioTheme.colors.cabecera
+    } else {
+        CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+    }
+    
+    val bgColor = if (isSelected) {
+        CalendarioTheme.colors.cabecera.copy(alpha = 0.08f)
+    } else {
+        Color.Transparent
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(bgColor)
+            .border(
+                width = if (isSelected) 2.dp else 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = name,
+            fontSize = 14.sp,
+            color = CalendarioTheme.colors.textSystem,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+    }
 }
 
 private fun getFileName(context: Context, uri: Uri): String {
