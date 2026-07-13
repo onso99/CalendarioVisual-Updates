@@ -303,19 +303,18 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> {
-        val today = LocalDate.now()
-        val windowStart = today.minusYears(1)
-        val windowEnd = today.plusYears(5)
         val deletedIds = getDeletedEventIds(getApplication())
 
-        // 1. Conservar eventos fuera de la ventana
-        val historyOutsideWindow = cachedHistory.filter { 
-            it.date.isBefore(windowStart) || it.date.isAfter(windowEnd) 
-        }
-
-        // 2. Unir con eventos del sistema (limpiando borrados)
-        return (systemEvents + historyOutsideWindow)
+        // --- LÓGICA DE FUSIÓN PROTECTORA ---
+        // 1. Ponemos primero los eventos del sistema (los más frescos).
+        // 2. Añadimos el historial que ya teníamos guardado.
+        // 3. Al aplicar 'distinctBy', si un evento existe en ambos, se quedará con el del sistema 
+        //    (porque está primero), actualizando así cualquier cambio de título o hora.
+        // 4. Los eventos que estaban en el historial pero que el sistema NO ha devuelto esta vez, 
+        //    SE MANTIENEN intactos (protección contra fallos de sincronización).
+        
+        return (systemEvents + cachedHistory)
             .filter { it.id !in deletedIds }
-            .distinctBy { "${it.id}_${it.date}_${it.title}" }
+            .distinctBy { "${it.id}_${it.date}" }
     }
 }

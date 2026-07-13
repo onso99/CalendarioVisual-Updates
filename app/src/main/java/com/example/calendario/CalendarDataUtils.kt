@@ -250,10 +250,10 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
     val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
     val gson = Gson()
-    val uniqueAdjustments = adjustments.distinctBy { 
-        if (it.originalEventId != null) "${it.date}_ID_${it.originalEventId}"
-        else "${it.date}" // UN AJUSTE POR DÃA: La fecha es la clave de unicidad para festivos manuales
-    }
+
+    // UNICIDAD ABSOLUTA POR FECHA: Un solo ajuste por día. El último gana.
+    val uniqueAdjustments = adjustments.asReversed().distinctBy { it.date }.reversed()
+
     val dtoList = uniqueAdjustments.map { adj ->
         HolidayAdjustmentDto(
             dateStr = adj.date.toString(),
@@ -271,23 +271,20 @@ fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
     val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
     val dtoList: List<HolidayAdjustmentDto> = try { Gson().fromJson(json, type) } catch (_: Exception) { emptyList() }
     
-    val adjustments = dtoList.map { dto ->
-        HolidayAdjustment(
-            date = LocalDate.parse(dto.dateStr),
-            title = dto.title,
-            type = HolidayAdjustmentType.valueOf(dto.type),
-            originalEventId = dto.originalEventId
-        )
+    val adjustments = dtoList.mapNotNull { dto ->
+        try {
+            HolidayAdjustment(
+                date = LocalDate.parse(dto.dateStr),
+                title = dto.title ?: "",
+                type = HolidayAdjustmentType.valueOf(dto.type),
+                originalEventId = dto.originalEventId
+            )
+        } catch (_: Exception) { null }
     }
 
-    // AUTOLIMPIEZA: La Ãºltima entrada para una fecha/ID gana.
-    // Invertimos, limpiamos (se queda con la primera que encuentre, que era la Ãºltima) y volvemos a invertir.
-    val cleaned = adjustments.asReversed().distinctBy { 
-        if (it.originalEventId != null) "${it.date}_ID_${it.originalEventId}"
-        else "${it.date}"
-    }.reversed()
+    // AUTOLIMPIEZA: Asegurar que el disco esté sano al cargar
+    val cleaned = adjustments.asReversed().distinctBy { it.date }.reversed()
 
-    // Si hubo limpieza, guardamos la versiÃ³n curada para sanar el disco permanentemente
     if (cleaned.size < adjustments.size) {
         saveHolidayAdjustments(context, cleaned)
     }
@@ -568,14 +565,12 @@ fun readFestivosFromCalendarsSync(
     }
 
     manualHolidays.forEach { manual ->
-        if (manual.date.year == today.year) {
-            finalMap.getOrPut(manual.date) { mutableListOf() }.add(Festivo(
-                id = -100L - manual.date.toEpochDay() - manual.title.hashCode().toLong(),
-                title = manual.title, description = "Festivo manual", date = manual.date,
-                startTime = null, endTime = null, isAllDay = true, calendarId = -1L,
-                isFromHolidaySource = true, rrule = null, age = null, isBirthday = false
-            ))
-        }
+        finalMap.getOrPut(manual.date) { mutableListOf() }.add(Festivo(
+            id = -100L - manual.date.toEpochDay() - manual.title.hashCode().toLong(),
+            title = manual.title, description = "Festivo manual", date = manual.date,
+            startTime = null, endTime = null, isAllDay = true, calendarId = -1L,
+            isFromHolidaySource = true, rrule = null, age = null, isBirthday = false
+        ))
     }
     
     finalMap.values.forEach { list ->
