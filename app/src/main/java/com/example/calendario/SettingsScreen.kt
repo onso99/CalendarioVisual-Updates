@@ -133,6 +133,7 @@ fun SettingsScreen(
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showRestoreDriveDialog by remember { mutableStateOf(false) }
+    var showPreferencesBackupDialog by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -551,51 +552,12 @@ fun SettingsScreen(
                 }
 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    // BotÃ³n Cargar (Izquierda - Mordisco a la derecha)
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.cargar_label),
-                        modifier = Modifier.weight(1f),
-                        shape = LeftConcaveShape,
-                        onClick = { 
-                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "application/json" 
-                            }
-                            importFullBackupLauncher.launch(intent) 
-                        }
-                    )
 
-                    // Icono Central (Engranaje)
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_settings_custom_24),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(horizontal = 8.dp).size(26.dp)
-                    )
-                    
-                    // BotÃ³n Guardar (Derecha - Mordisco a la izquierda)
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.guardar_label),
-                        modifier = Modifier.weight(1f),
-                        shape = RightConcaveShape,
-                        onClick = { 
-                            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "application/json"
-                                putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
-                            }
-                            exportFullBackupLauncher.launch(intent) 
-                        }
-                    )
-                }
+                // 6. COPIA DE PREFERENCIAS (Navegación al diálogo)
+                ActionRow(
+                    text = stringResource(id = R.string.preferences_backup_label),
+                    onClick = { showPreferencesBackupDialog = true }
+                )
             }
 
             // --- 2. Estilo Section ---
@@ -927,6 +889,29 @@ fun SettingsScreen(
                 TextButton(onClick = { showRestoreDriveDialog = false }) {
                     Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
                 }
+            }
+        )
+    }
+
+    if (showPreferencesBackupDialog) {
+        PreferencesBackupDialog(
+            onDismiss = { showPreferencesBackupDialog = false },
+            onLoadClick = {
+                showPreferencesBackupDialog = false
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json" 
+                }
+                importFullBackupLauncher.launch(intent)
+            },
+            onSaveClick = {
+                showPreferencesBackupDialog = false
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
+                }
+                exportFullBackupLauncher.launch(intent)
             }
         )
     }
@@ -1327,6 +1312,58 @@ private fun ThemeChip(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
     }
+}
+
+@Composable
+private fun PreferencesBackupDialog(
+    onDismiss: () -> Unit,
+    onLoadClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem, 
+        title = { 
+            Text(
+                text = stringResource(id = R.string.preferences_title), 
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            ) 
+        }, 
+        text = { 
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                
+                SettingsActionChip(
+                    text = stringResource(id = R.string.cargar_label),
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = backupButtonBg,
+                    onClick = onLoadClick
+                )
+                
+                SettingsActionChip(
+                    text = stringResource(id = R.string.guardar_label),
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = backupButtonBg,
+                    onClick = onSaveClick
+                )
+            }
+        }, 
+        confirmButton = { 
+            TextButton(onClick = onDismiss) { 
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) 
+            } 
+        }
+    )
 }
 
 private fun getFileName(context: Context, uri: Uri): String {

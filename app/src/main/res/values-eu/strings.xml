@@ -239,6 +239,8 @@
     <string name="alarm_snooze_label">Atzeratu</string>
     <string name="semana_label">Astea</string>
     <string name="local_holidays_label">Tokiko jai-egunak</string>
+    <string name="preferences_backup_label">Hobespenen kopia</string>
+    <string name="preferences_title">Hobespenak</string>
     <string name="cargar_label">Kargatu</string>
     <string name="guardar_label">Gorde</string>
 

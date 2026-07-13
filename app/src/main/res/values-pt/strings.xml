@@ -240,6 +240,8 @@
 
     <string name="semana_label">Semana</string>
     <string name="local_holidays_label">Feriados locais</string>
+    <string name="preferences_backup_label">Cópia de preferências</string>
+    <string name="preferences_title">Preferências</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Guardar</string>
 

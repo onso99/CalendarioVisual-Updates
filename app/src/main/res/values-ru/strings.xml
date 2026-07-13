@@ -239,6 +239,8 @@
     <string name="alarm_snooze_label">Позже</string>
     <string name="semana_label">Неделя</string>
     <string name="local_holidays_label">Местные праздники</string>
+    <string name="preferences_backup_label">Резервное копирование настроек</string>
+    <string name="preferences_title">Настройки</string>
     <string name="cargar_label">Загрузить</string>
     <string name="guardar_label">Сохранить</string>
 

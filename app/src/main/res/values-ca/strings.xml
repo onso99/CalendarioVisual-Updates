@@ -239,6 +239,8 @@
     <string name="alarm_snooze_label">Postposar</string>
     <string name="semana_label">Setmana</string>
     <string name="local_holidays_label">Festius locals</string>
+    <string name="preferences_backup_label">Còpia de preferències</string>
+    <string name="preferences_title">Preferències</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Desar</string>
     <string name="system_permissions">Permisos del sistema</string>
