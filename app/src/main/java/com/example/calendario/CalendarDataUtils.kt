@@ -4,7 +4,6 @@ import android.content.ContentUris
 import android.content.Context
 import androidx.core.content.edit
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.core.content.ContextCompat
