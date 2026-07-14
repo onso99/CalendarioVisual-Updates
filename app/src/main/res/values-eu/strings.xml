@@ -59,11 +59,12 @@
     <string name="delete_event">Ezabatu gertaera</string>
     <string name="title">Izenburua</string>
     <string name="no_editable_calendars">Ez dago egutegi editagarririk</string>
+    <string name="calendar_label">Egutegia</string>
     <string name="select_calendar">Hautatu egutegia</string>
     <string name="all_day_switch">Egun osoa</string>
     <string name="start">Hasiera</string>
     <string name="end">Amaiera</string>
-    <string name="select_repetition">Hautatu errepikapena</string>
+    <string name="select_repetition">Errepikapena</string>
     <string name="summary">Laburpena:</string>
     <string name="summary_title">Izenburua: %1$s</string>
     <string name="summary_calendar">Egutegia: %1$s</string>
@@ -271,6 +272,10 @@
 
     <string name="backup_label">Babeskopia</string>
     <string name="backup_section_title">Gertaeren babeskopia</string>
+    <string name="backup_section_title_drive">Gertaeren kopia Driven</string>
+    <string name="account_label">Kontua</string>
+    <string name="restaurar_label">Berrezarri</string>
+    <string name="sincronizar_label">Sinkronizatu</string>
     <string name="link_google_account">Lotu Google kontua</string>
     <string name="account_linked">Kontua lotuta</string>
     <string name="account_linked_success">Kontua ongi lotu da</string>

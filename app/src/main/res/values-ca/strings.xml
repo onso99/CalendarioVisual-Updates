@@ -59,11 +59,12 @@
     <string name="delete_event">Esborrar esdeveniment</string>
     <string name="title">Títol</string>
     <string name="no_editable_calendars">No hi ha calendaris editables</string>
+    <string name="calendar_label">Calendari</string>
     <string name="select_calendar">Seleccionar calendari</string>
     <string name="all_day_switch">Tot el dia</string>
     <string name="start">Inici</string>
     <string name="end">Fi</string>
-    <string name="select_repetition">Seleccionar repetició</string>
+    <string name="select_repetition">Repetició</string>
     <string name="summary">Resum:</string>
     <string name="summary_title">Títol: %1$s</string>
     <string name="summary_calendar">Calendari: %1$s</string>
@@ -270,6 +271,10 @@
 
     <string name="backup_label">Respaldo</string>
     <string name="backup_section_title">Respaldo d\'esdeveniments</string>
+    <string name="backup_section_title_drive">Còpia d\'esdeveniments a Drive</string>
+    <string name="account_label">Compte</string>
+    <string name="restaurar_label">Restaurar</string>
+    <string name="sincronizar_label">Sincronitzar</string>
     <string name="link_google_account">Vincular compte de Google</string>
     <string name="account_linked">Compte vinculat</string>
     <string name="account_linked_success">Compte vinculat amb èxit</string>

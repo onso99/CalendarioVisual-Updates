@@ -59,11 +59,12 @@
     <string name="delete_event">Delete event</string>
     <string name="title">Title</string>
     <string name="no_editable_calendars">No editable calendars</string>
+    <string name="calendar_label">Calendar</string>
     <string name="select_calendar">Select calendar</string>
     <string name="all_day_switch">All day</string>
     <string name="start">Start</string>
     <string name="end">End</string>
-    <string name="select_repetition">Select repetition</string>
+    <string name="select_repetition">Repetition</string>
     <string name="summary">Summary:</string>
     <string name="summary_title">Title: %1$s</string>
     <string name="summary_calendar">Calendar: %1$s</string>
@@ -272,6 +273,10 @@
 
     <string name="backup_label">Backup</string>
     <string name="backup_section_title">Event backup</string>
+    <string name="backup_section_title_drive">Event backup on Drive</string>
+    <string name="account_label">Account</string>
+    <string name="restaurar_label">Restore</string>
+    <string name="sincronizar_label">Sync</string>
     <string name="link_google_account">Link Google account</string>
     <string name="account_linked">Account linked</string>
     <string name="account_linked_success">Account linked successfully</string>

@@ -59,11 +59,12 @@
     <string name="delete_event">イベントを削除</string>
     <string name="title">タイトル</string>
     <string name="no_editable_calendars">編集可能なカレンダーはありません</string>
+    <string name="calendar_label">カレンダー</string>
     <string name="select_calendar">カレンダーを選択</string>
     <string name="all_day_switch">終日</string>
     <string name="start">開始</string>
     <string name="end">終了</string>
-    <string name="select_repetition">繰り返しを選択</string>
+    <string name="select_repetition">繰り返し</string>
     <string name="summary">概要：</string>
     <string name="summary_title">タイトル：%1$s</string>
     <string name="summary_calendar">カレンダー：%1$s</string>
@@ -271,6 +272,10 @@
 
     <string name="backup_label">バックアップ</string>
     <string name="backup_section_title">イベントのバックアップ</string>
+    <string name="backup_section_title_drive">Drive上のイベントコピー</string>
+    <string name="account_label">アカウント</string>
+    <string name="restaurar_label">復元</string>
+    <string name="sincronizar_label">同期</string>
     <string name="link_google_account">Googleアカウントを連携</string>
     <string name="account_linked">アカウント連携済み</string>
     <string name="account_linked_success">連携に成功しました</string>

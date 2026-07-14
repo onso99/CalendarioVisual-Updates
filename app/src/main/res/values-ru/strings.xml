@@ -59,11 +59,12 @@
     <string name="delete_event">Удалить событие</string>
     <string name="title">Название</string>
     <string name="no_editable_calendars">Нет редактируемых календарей</string>
+    <string name="calendar_label">Календарь</string>
     <string name="select_calendar">Выберите календарь</string>
     <string name="all_day_switch">Весь день</string>
     <string name="start">Начало</string>
     <string name="end">Конец</string>
-    <string name="select_repetition">Выбрать повторение</string>
+    <string name="select_repetition">Повторение</string>
     <string name="summary">Сводка:</string>
     <string name="summary_title">Название: %1$s</string>
     <string name="summary_calendar">Календарь: %1$s</string>
@@ -271,6 +272,10 @@
 
     <string name="backup_label">Резерв</string>
     <string name="backup_section_title">Резервное копирование</string>
+    <string name="backup_section_title_drive">Копия событий на Диске</string>
+    <string name="account_label">Аккаунт</string>
+    <string name="restaurar_label">Восстановить</string>
+    <string name="sincronizar_label">Синхронизировать</string>
     <string name="link_google_account">Связать с аккаунтом Google</string>
     <string name="account_linked">Аккаунт связан</string>
     <string name="account_linked_success">Аккаунт успешно связан</string>

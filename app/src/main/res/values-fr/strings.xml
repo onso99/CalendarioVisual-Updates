@@ -59,11 +59,12 @@
     <string name="delete_event">Supprimer l\'événement</string>
     <string name="title">Titre</string>
     <string name="no_editable_calendars">Aucun calendrier modifiable</string>
+    <string name="calendar_label">Calendrier</string>
     <string name="select_calendar">Sélectionner un calendrier</string>
     <string name="all_day_switch">Toute la journée</string>
     <string name="start">Début</string>
     <string name="end">Fin</string>
-    <string name="select_repetition">Sélectionner la répétition</string>
+    <string name="select_repetition">Répétition</string>
     <string name="summary">Résumé :</string>
     <string name="summary_title">Titre : %1$s</string>
     <string name="summary_calendar">Calendrier : %1$s</string>
@@ -272,6 +273,10 @@
     <!-- Sauvegarde des événements -->
     <string name="backup_label">Sauvegarde</string>
     <string name="backup_section_title">Sauvegarde des événements</string>
+    <string name="backup_section_title_drive">Copie d\'événements sur Drive</string>
+    <string name="account_label">Compte</string>
+    <string name="restaurar_label">Restaurer</string>
+    <string name="sincronizar_label">Synchroniser</string>
     <string name="link_google_account">Associer un compte Google</string>
     <string name="account_linked">Compte associé</string>
     <string name="account_linked_success">Compte associé avec succès</string>
