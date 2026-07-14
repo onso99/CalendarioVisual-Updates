@@ -760,7 +760,7 @@ fun SettingsScreen(
 
 
             // --- 6. Backup Section ---
-            SectionTitle(text = stringResource(id = R.string.backup_section_title))
+            SectionTitle(text = stringResource(id = R.string.backup_section_title_drive))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
                 
@@ -774,11 +774,31 @@ fun SettingsScreen(
                         googleSignInLauncher.launch(client.signInIntent)
                     }
                 } else {
-                    ActionRow(
-                        text = stringResource(id = R.string.account_linked),
-                        detail = accountEmail
+                    // 1. CUENTA (Fila con valor truncado)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable { showUnlinkAccountDialog = true }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        showUnlinkAccountDialog = true
+                        Text(
+                            text = stringResource(id = R.string.account_label), 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = accountEmail,
+                            color = CalendarioTheme.colors.textSystem,
+                            fontSize = 14.sp, // Tamaño ligeramente menor
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.End,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                     
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
@@ -791,60 +811,86 @@ fun SettingsScreen(
                         else -> pendingBackupFreq
                     }
                     
-                    // Fila con valor (Sin flecha)
-                    Row(
+                    // 2. FRECUENCIA + INFO (Última copia debajo)
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp)
                             .clickable { showFrequencyDialog = true }
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Text(stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.backup_frequency), 
+                                color = CalendarioTheme.colors.textSystem, 
+                                modifier = Modifier.weight(1f), 
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                text = freqLabel,
+                                color = CalendarioTheme.colors.textSystem,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Medium,
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        
+                        // Información de la última copia ubicada aquí
+                        val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
+                                     else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")
+                                        .withZone(java.time.ZoneId.systemDefault())
+                                        .format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
+                        
+                        val detailText = if (lastBackupTimestamp == 0L) lastStr 
+                                        else stringResource(R.string.last_backup_with_count, lastStr, lastBackupCount)
+                        
                         Text(
-                            text = freqLabel,
-                            color = CalendarioTheme.colors.textSystem,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.End
+                            text = detailText,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(top = 2.dp)
                         )
                     }
                     
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                    
-                    // Sincronizar Ahora con información de carga
-                    val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
-                                 else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")
-                                    .withZone(java.time.ZoneId.systemDefault())
-                                    .format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
-                    
-                    val detailText = if (lastBackupTimestamp == 0L) lastStr 
-                                    else stringResource(R.string.last_backup_with_count, lastStr, lastBackupCount)
 
-                    ActionRow(
-                        text = if (uiState.isSyncing) stringResource(R.string.syncing) else stringResource(id = R.string.sync_now),
-                        detail = detailText,
-                        isLoading = uiState.isSyncing
+                    // 3. BOTONES CHIP (Restaurar y Sincronizar)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        viewModel.syncHistoryToDrive(context) { result ->
-                            if (result.success) {
-                                permissionsUpdateTrigger++
-                                val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
-                                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                            } else {
-                                Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
+                        val buttonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+
+                        // BOTÓN RESTAURAR
+                        SettingsActionChip(
+                            text = stringResource(id = R.string.restaurar_label),
+                            modifier = Modifier.weight(1f).height(36.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            containerColor = buttonBg,
+                            onClick = { showRestoreDriveDialog = true }
+                        )
+
+                        // BOTÓN SINCRONIZAR
+                        SettingsActionChip(
+                            text = if (uiState.isSyncing) stringResource(R.string.syncing) else stringResource(id = R.string.sincronizar_label),
+                            modifier = Modifier.weight(1f).height(36.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            containerColor = buttonBg,
+                            onClick = {
+                                viewModel.syncHistoryToDrive(context) { result ->
+                                    if (result.success) {
+                                        permissionsUpdateTrigger++
+                                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
+                                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                                    } else {
+                                        Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             }
-                        }
-                    }
-
-                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-
-                    // Restaurar desde Drive con información de carga
-                    ActionRow(
-                        text = if (uiState.isRestoring) stringResource(R.string.restoring) else stringResource(id = R.string.restore_from_drive),
-                        isLoading = uiState.isRestoring
-                    ) {
-                        showRestoreDriveDialog = true
+                        )
                     }
                 }
             }
