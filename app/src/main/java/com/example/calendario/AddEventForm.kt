@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -125,14 +126,20 @@ fun AddEventForm(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selectedCalendar?.displayName ?: stringResource(id = R.string.no_editable_calendars),
-                    modifier = Modifier.weight(1f),
-                    color = CalendarioTheme.colors.textSystem
+                    text = stringResource(id = R.string.calendar_label),
+                    color = CalendarioTheme.colors.textSystem,
                 )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = stringResource(id = R.string.select_calendar),
-                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+                
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = selectedCalendar?.displayName ?: stringResource(id = R.string.no_editable_calendars),
+                    color = CalendarioTheme.colors.textSystem,
+                    fontWeight = if (selectedCalendar != null) FontWeight.Medium else FontWeight.Normal,
+                    textAlign = TextAlign.End,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -279,15 +286,15 @@ fun AddEventForm(
                     val countSuffix = if (repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
                     
                     Text(
-                        text = "$repetitionText$countSuffix",
-                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.select_repetition),
                         color = CalendarioTheme.colors.textSystem,
-                        fontWeight = if (repetitionRule != RepetitionRule.NONE) FontWeight.Medium else FontWeight.Normal
+                        modifier = Modifier.weight(1f)
                     )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = stringResource(id = R.string.select_repetition),
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+                    Text(
+                        text = "$repetitionText$countSuffix",
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = if (repetitionRule != RepetitionRule.NONE) FontWeight.Medium else FontWeight.Normal,
+                        textAlign = TextAlign.End
                     )
                 }
             } else {
@@ -381,7 +388,7 @@ fun AddEventForm(
                 )
                 
                 if (hasAlarm) {
-                    // BotÃ³n X para eliminar (Solo si hay alarma)
+                    // Botón X para eliminar
                     IconButton(
                         onClick = { onHasAlarmChange(false) },
                         modifier = Modifier.size(28.dp)
@@ -394,7 +401,7 @@ fun AddEventForm(
                         )
                     }
                     
-                    Spacer(modifier = Modifier.width(16.dp)) // Aumentado de 8.dp a 16.dp para evitar toques accidentales
+                    Spacer(modifier = Modifier.width(16.dp))
                     
                     // Valor de la hora
                     Text(
@@ -403,17 +410,15 @@ fun AddEventForm(
                         fontWeight = FontWeight.Medium,
                         fontSize = 16.sp
                     )
-                    
-                    Spacer(modifier = Modifier.width(12.dp)) // Aumentado de 4.dp a 12.dp para separar del sÃ­mbolo '>'
+                } else {
+                    // Solo flecha si no hay valor
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
-
-                // Flecha indicadora >
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                    modifier = Modifier.size(24.dp)
-                )
             }
         }
 

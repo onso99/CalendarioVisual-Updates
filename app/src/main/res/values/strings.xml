@@ -59,11 +59,12 @@
     <string name="delete_event">Borrar evento</string>
     <string name="title">Título</string>
     <string name="no_editable_calendars">No hay calendarios editables</string>
+    <string name="calendar_label">Calendario</string>
     <string name="select_calendar">Seleccionar calendario</string>
     <string name="all_day_switch">Todo el día</string>
     <string name="start">Inicio</string>
     <string name="end">Fin</string>
-    <string name="select_repetition">Seleccionar repetición</string>
+    <string name="select_repetition">Repetición</string>
     <string name="summary">Resumen:</string>
     <string name="summary_title">Título: %1$s</string>
     <string name="summary_calendar">Calendario: %1$s</string>

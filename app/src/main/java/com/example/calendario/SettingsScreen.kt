@@ -442,7 +442,7 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 3. SEMANA (Fila unificada)
+                // 3. SEMANA (Fila unificada - Sin flecha porque tiene valor)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -464,17 +464,10 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.End
                     )
-                    
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.padding(start = 8.dp).size(20.dp)
-                    )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 4. ALARMA (Fila unificada)
+                // 4. ALARMA (Fila unificada - Sin flecha porque tiene valor)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -486,7 +479,7 @@ fun SettingsScreen(
                     Text(stringResource(id = R.string.alarm), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     
-                    // AnticipaciÃ³n: Icono pegado al nÃºmero
+                    // Anticipación
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_alarm_anticipation),
@@ -505,9 +498,9 @@ fun SettingsScreen(
                         )
                     }
                     
-                    Spacer(modifier = Modifier.width(12.dp)) // SeparaciÃ³n entre bloques
+                    Spacer(modifier = Modifier.width(12.dp))
                     
-                    // Posponer: Icono pegado al nÃºmero
+                    // Posponer
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_alarm_snooze),
@@ -523,13 +516,6 @@ fun SettingsScreen(
                             fontWeight = FontWeight.Medium
                         )
                     }
-                    
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.padding(start = 8.dp).size(20.dp)
-                    )
                 }
                 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
@@ -575,7 +561,6 @@ fun SettingsScreen(
                 ) {
                     Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    val titleColor = lerp(start = CalendarioTheme.colors.cabecera, stop = CalendarioTheme.colors.textSystem, fraction = 0.4f)
                     
                     val currentThemeId = lightThemeName ?: "theme_1"
                     val isModified = currentThemeId.endsWith("***")
@@ -595,7 +580,13 @@ fun SettingsScreen(
                         currentThemeId
                     }
 
-                    Text(text = truncateThemeName(finalName, 20), color = titleColor, fontSize = 14.sp, textAlign = TextAlign.End)
+                    Text(
+                        text = truncateThemeName(finalName, 20), 
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontSize = 15.sp, 
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End
+                    )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
@@ -643,7 +634,10 @@ fun SettingsScreen(
                     }
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), 
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(12.dp))
                     Box(
@@ -685,9 +679,9 @@ fun SettingsScreen(
                     Text(
                         text = fontFamilyDisplay,
                         color = CalendarioTheme.colors.textSystem,
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.End,
-                        fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal,
                         fontFamily = currentFontFamily,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -796,8 +790,24 @@ fun SettingsScreen(
                         "monthly" -> stringResource(R.string.frequency_monthly)
                         else -> pendingBackupFreq
                     }
-                    SettingsRow(stringResource(id = R.string.backup_frequency), freqLabel) {
-                        showFrequencyDialog = true
+                    
+                    // Fila con valor (Sin flecha)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable { showFrequencyDialog = true }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
+                        Text(
+                            text = freqLabel,
+                            color = CalendarioTheme.colors.textSystem,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.End
+                        )
                     }
                     
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
@@ -1536,32 +1546,6 @@ private fun PermissionsDialog(
     )
 }
 
-@Composable
-private fun SettingsRow(label: String, value: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
-        Text(
-            text = value,
-            color = CalendarioTheme.colors.textSystem,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.End
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-            modifier = Modifier.padding(start = 8.dp).size(20.dp)
-        )
-    }
-}
 
 @Composable
 private fun BackupFrequencyDialog(
