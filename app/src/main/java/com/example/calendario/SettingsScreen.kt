@@ -115,7 +115,6 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val typography = MaterialTheme.typography
-    val uiState by viewModel.uiState.collectAsState() // Observar estado del ViewModel
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
