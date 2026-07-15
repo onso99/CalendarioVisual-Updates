@@ -60,10 +60,6 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // El título de la lista de eventos se unifica con el color de etiquetas cromáticas
-    val eventListTitleColor: Color
-        get() = textLabel
-
     // Cálculo automático del borde del día actual (Tintado sutil basado en el color principal)
     val monthlyCalendarTodayCellBorder: Color
         get() {

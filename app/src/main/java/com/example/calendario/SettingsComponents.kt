@@ -13,12 +13,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -42,34 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-
-// FORMA: Botón Izquierda (Mordisco en la derecha)
-val LeftConcaveShape = GenericShape { size, _ ->
-    val corner = size.height * 0.25f
-    val depth = size.height * 0.25f
-    moveTo(corner, 0f)
-    lineTo(size.width, 0f)
-    quadraticTo(size.width - depth, size.height / 2f, size.width, size.height)
-    lineTo(corner, size.height)
-    quadraticTo(0f, size.height, 0f, size.height - corner)
-    lineTo(0f, corner)
-    quadraticTo(0f, 0f, corner, 0f)
-    close()
-}
-
-// FORMA: Botón Derecha (Mordisco en la izquierda)
-val RightConcaveShape = GenericShape { size, _ ->
-    val corner = size.height * 0.25f
-    val depth = size.height * 0.25f
-    moveTo(0f, 0f)
-    lineTo(size.width - corner, 0f)
-    quadraticTo(size.width, 0f, size.width, corner)
-    lineTo(size.width, size.height - corner)
-    quadraticTo(size.width, size.height, size.width - corner, size.height)
-    lineTo(0f, size.height)
-    quadraticTo(depth, size.height / 2f, 0f, 0f)
-    close()
-}
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
@@ -150,32 +119,6 @@ internal fun ActionRow(
                 modifier = Modifier.size(24.dp)
             )
         }
-    }
-}
-
-@Composable
-internal fun ColorPickerRow(label: String, color: Color, onClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp)
-    ) {
-        Text(
-            text = label, 
-            fontSize = 16.sp, 
-            modifier = Modifier.weight(1f), 
-            color = CalendarioTheme.colors.textSystem
-        )
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), CircleShape)
-                .clip(CircleShape)
-                .background(color)
-        )
     }
 }
 
