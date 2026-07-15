@@ -2,7 +2,6 @@
     <string name="app_name">ビジュアルカレンダー</string>
     <string name="calendar_widget_description">今後のカレンダーイベントを表示します</string>
     <string name="permission_calendar_select">カレンダーを選択するにはカレンダーの権限が必要です。</string>
-    <string name="permission_calendar_write">イベントを作成するにはカレンダーへの書き込み権限が必要です。</string>
     <string name="back_to_monthly_view">月間表示に戻る</string>
     <string name="back_to_current_month">今月に戻る</string>
     <string name="create_event">イベントを作成</string>
@@ -60,7 +59,6 @@
     <string name="title">タイトル</string>
     <string name="no_editable_calendars">編集可能なカレンダーはありません</string>
     <string name="calendar_label">カレンダー</string>
-    <string name="select_calendar">カレンダーを選択</string>
     <string name="all_day_switch">終日</string>
     <string name="start">開始</string>
     <string name="end">終了</string>
@@ -82,20 +80,14 @@
     <string name="apply_changes">変更を適用</string>
     <string name="general">一般</string>
     <string name="mode">モード</string>
-    <string name="start_of_week">週の開始日</string>
     <string name="week_in_year_view">週番号</string>
     <string name="customize_theme">スタイル</string>
     <string name="customize_colors">カラーのカスタマイズ</string>
-    <string name="import_theme">テーマを読み込む…</string>
-    <string name="export_theme">テーマを保存…</string>
     <string name="widget_event_count">表示イベント数</string>
     <string name="widget_text_adjustment">テキスト調整</string>
-    <string name="background_color">背景色</string>
-    <string name="event_color">イベントの色</string>
-    <string name="today_event_color">今日のイベント</string>
     <string name="about">このアプリについて</string>
     <string name="discard_changes_title">変更を破棄</string>
-    <string name="discard_changes_confirmation">未保存の変更があります。破棄してもよろしいですか？</string>
+    <string name="discard_changes_confirmation">未保存 de 変更があります。破棄してもよろしいですか？</string>
     <string name="discard">破棄</string>
     <string name="export_theme_title">テーマを保存</string>
     <string name="theme_name">テーマ名</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">祝日の設定を更新しました</string>
 
     <string name="holidays_section">祝日</string>
-    <string name="import_holidays">祝日をインポート…</string>
-    <string name="export_holidays">祝日をエクスポート…</string>
-    <string name="holidays_imported_successfully">祝日のインポートが完了しました。</string>
-    <string name="error_reading_holidays_file">祝日ファイルの読み込み中にエラーが発生しました。</string>
-    <string name="error_saving_holidays_file">祝日ファイルの保存中にエラーが発生しました。</string>
     <string name="holiday_deleted_message">削除しました %1$s %2$s</string>
     <string name="event_deleted_message">削除しました %1$s %2$s</string>
 
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">復元エラー: %1$s</string>
     <string name="invalid_backup_file">無効なバックアップファイルです</string>
 
-    <string name="import_holidays_confirm_title">祝日のインポート</string>
-    <string name="import_holidays_confirm_message">既に祝日が設定されています。現在のリストに追加しますか、それともすべて上書きしますか？</string>
-    <string name="import_holidays_merge">追加</string>
-    <string name="import_holidays_replace">上書き</string>
-
     <string name="alarm">アラーム</string>
-    <string name="alarm_time">アラーム時刻</string>
     <string name="stop_alarm">停止</string>
     <string name="snooze_alarm">スヌーズ</string>
     <string name="alarm_anticipation_label">事前通知</string>
@@ -262,24 +243,20 @@
     <string name="status_denied">未許可</string>
     <string name="status_full_screen">全画面表示</string>
     <string name="status_no_full_screen">全画面表示なし</string>
-    <string name="status_restricted">制限あり</string>
     <string name="status_linked">連携済み</string>
     <string name="status_unlinked">未連携</string>
     <string name="status_unrestricted">制限なし</string>
     <string name="status_optimized">最適化済み (制限あり)</string>
-    <string name="fix_permission">設定</string>
     <string name="history">履歴</string>
 
-    <string name="backup_label">バックアップ</string>
     <string name="backup_section_title">イベントのバックアップ</string>
     <string name="account_label">アカウント</string>
     <string name="backup_frequency">頻度</string>
     <string name="manage_backup_label">バックアップの管理</string>
-    <string name="event_backup_dialog_title">イベントのバックアップ</string>
+    <string name="event_backup_dialog_title">イベントのコピー</string>
     <string name="restaurar_label">復元</string>
     <string name="sincronizar_label">同期</string>
     <string name="link_google_account">Googleアカウントを連携</string>
-    <string name="account_linked">アカウント連携済み</string>
     <string name="account_linked_success">連携に成功しました</string>
     <string name="account_linked_error">連携エラーが発生しました</string>
     <string name="unlink_google_account">Googleアカウントを解除</string>
@@ -289,17 +266,13 @@
     <string name="frequency_daily">毎日</string>
     <string name="frequency_weekly">毎週</string>
     <string name="frequency_monthly">毎月</string>
-    <string name="sync_now">今すぐ同期</string>
-    <string name="syncing">同期中…</string>
     <string name="sync_success_detailed">同期完了: %1$d件（%2$d件削除）</string>
     <string name="sync_error_drive">ドライブエラー。アカウントを確認してください。</string>
     <string name="restore_from_drive">ドライブから復元</string>
-    <string name="restoring">復元中…</string>
     <string name="restore_confirm_title">イベントを復元しますか？</string>
     <string name="restore_confirm_message">保存されたイベントがGoogleドライブのコピーで上書きされます。現在のシステムイベントには影響しません。</string>
     <string name="restore_success">イベントが復元されました</string>
     <string name="restore_error">有効なバックアップが見つかりません</string>
-    <string name="last_backup">最終バックアップ: %s</string>
     <string name="last_backup_with_count">最終: %1$s · %2$d件</string>
     <string name="never">未実行</string>
     <string name="error_updating_data">データ更新エラー。</string>

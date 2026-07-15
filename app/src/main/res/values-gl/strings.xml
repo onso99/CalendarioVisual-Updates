@@ -2,7 +2,6 @@
     <string name="app_name">Calendario Visual</string>
     <string name="calendar_widget_description">Amosa os teus próximos eventos do calendario</string>
     <string name="permission_calendar_select">Precísase permiso de calendario para seleccionar calendarios.</string>
-    <string name="permission_calendar_write">Precísase permiso de escritura no calendario para crear eventos.</string>
     <string name="back_to_monthly_view">Volver á vista mensual</string>
     <string name="back_to_current_month">Volver ao mes actual</string>
     <string name="create_event">Crear evento</string>
@@ -60,7 +59,6 @@
     <string name="title">Título</string>
     <string name="no_editable_calendars">Non hai calendarios editables</string>
     <string name="calendar_label">Calendario</string>
-    <string name="select_calendar">Seleccionar calendario</string>
     <string name="all_day_switch">Todo o día</string>
     <string name="start">Inicio</string>
     <string name="end">Fin</string>
@@ -82,17 +80,11 @@
     <string name="apply_changes">Aplicar cambios</string>
     <string name="general">Xeral</string>
     <string name="mode">Modo</string>
-    <string name="start_of_week">Comeza semana</string>
     <string name="week_in_year_view">Número semana</string>
     <string name="customize_theme">Estilo</string>
     <string name="customize_colors">Personalizar cores</string>
-    <string name="import_theme">Cargar tema…</string>
-    <string name="export_theme">Gardar tema…</string>
     <string name="widget_event_count">Número de eventos</string>
     <string name="widget_text_adjustment">Axuste de texto</string>
-    <string name="background_color">Color de fondo</string>
-    <string name="event_color">Color eventos</string>
-    <string name="today_event_color">Eventos de hoxe</string>
     <string name="about">Acerca de</string>
     <string name="discard_changes_title">Descartar cambios</string>
     <string name="discard_changes_confirmation">Tes cambios sen gardar. Estás seguro de que queres descartalos?</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">Axuste de festivo actualizado</string>
 
     <string name="holidays_section">Festivos</string>
-    <string name="import_holidays">Importar festivos…</string>
-    <string name="export_holidays">Exportar festivos…</string>
-    <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
-    <string name="error_reading_holidays_file">Erro ao ler o ficheiro de festivos.</string>
-    <string name="error_saving_holidays_file">Erro ao gardar o ficheiro de festivos.</string>
     <string name="holiday_deleted_message">Eliminado %1$s %2$s</string>
     <string name="event_deleted_message">Eliminado %1$s %2$s</string>
 
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">Erro ao restaurar a copia: %1$s</string>
     <string name="invalid_backup_file">Ficheiro de copia de seguridade non válido</string>
 
-    <string name="import_holidays_confirm_title">Importar festivos</string>
-    <string name="import_holidays_confirm_message">Xa tes festivos configurados. Desexas engadilos á túa lista actual o reemplazalos por completo?</string>
-    <string name="import_holidays_merge">Engadir</string>
-    <string name="import_holidays_replace">Reemplazar</string>
-
     <string name="alarm">Alarma</string>
-    <string name="alarm_time">Hora da alarma</string>
     <string name="stop_alarm">DETER</string>
     <string name="snooze_alarm">POSTPOR</string>
     <string name="alarm_anticipation_label">Anticipación</string>
@@ -260,17 +241,14 @@
     <string name="status_granted_f">PERMITIDAS</string>
     <string name="status_denied">SIN PERMISO</string>
     <string name="status_full_screen">PANTALLA COMPLETA</string>
-    <string name="status_no_full_screen">SEN PANTALLA COMPLETA</string>
-    <string name="status_restricted">RESTRINXIDA</string>
+    <string name="status_no_full_screen">SEN PANTAILLA COMPLETA</string>
     <string name="status_linked">VINCULADA</string>
     <string name="status_unlinked">SEN VINCULAR</string>
     <string name="status_unrestricted">SEN RESTRICCIÓNS</string>
     <string name="status_optimized">OPTIMIZADA (RESTRINXIDO)</string>
-    <string name="fix_permission">AXUSTES</string>
     <string name="history">Historial</string>
 
-    <string name="backup_label">Copia de seguridade</string>
-    <string name="backup_section_title">Copia de seguridade de eventos</string>
+    <string name="backup_section_title">Respaldo de eventos</string>
     <string name="account_label">Conta</string>
     <string name="backup_frequency">Frecuencia</string>
     <string name="manage_backup_label">Xestión de copia</string>
@@ -278,7 +256,6 @@
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronizar</string>
     <string name="link_google_account">Vincular conta de Google</string>
-    <string name="account_linked">Conta vinculada</string>
     <string name="account_linked_success">Conta vinculada con éxito</string>
     <string name="account_linked_error">Erro ao vincular a conta</string>
     <string name="unlink_google_account">Desvincular conta de Google</string>
@@ -288,17 +265,13 @@
     <string name="frequency_daily">Diaria</string>
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensual</string>
-    <string name="sync_now">Sincronizar agora</string>
-    <string name="syncing">Sincronizando…</string>
     <string name="sync_success_detailed">Sincronización completa: %1$d eventos (%2$d eliminados)</string>
     <string name="sync_error_drive">Erro de Drive. Verifica a túa conta.</string>
     <string name="restore_from_drive">Restaurar desde Drive</string>
-    <string name="restoring">Restaurando…</string>
     <string name="restore_confirm_title">¿Restaurar eventos?</string>
     <string name="restore_confirm_message">Substituiranse os eventos gardados pola copia de Google Drive. Os eventos actuais del sistema non se verán afectados.</string>
     <string name="restore_success">Eventos restaurados con éxito</string>
     <string name="restore_error">Non se atopou unha copia válida en Drive</string>
-    <string name="last_backup">Última copia: %s</string>
     <string name="last_backup_with_count">Última: %1$s · %2$d eventos</string>
     <string name="never">Nunca</string>
     <string name="error_updating_data">Erro ao actualizar datos.</string>

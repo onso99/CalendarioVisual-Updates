@@ -2,7 +2,6 @@
     <string name="app_name">Calendari Visual</string>
     <string name="calendar_widget_description">Mostra els teus propers esdeveniments del calendari</string>
     <string name="permission_calendar_select">Es requereix permís de calendari per seleccionar calendaris.</string>
-    <string name="permission_calendar_write">Es requereix permís d\'escriptura al calendari per crear esdeveniments.</string>
     <string name="back_to_monthly_view">Tornar a la vista mensual</string>
     <string name="back_to_current_month">Tornar al mes actual</string>
     <string name="create_event">Crear esdeveniment</string>
@@ -60,7 +59,6 @@
     <string name="title">Títol</string>
     <string name="no_editable_calendars">No hi ha calendaris editables</string>
     <string name="calendar_label">Calendari</string>
-    <string name="select_calendar">Seleccionar calendari</string>
     <string name="all_day_switch">Tot el dia</string>
     <string name="start">Inici</string>
     <string name="end">Fi</string>
@@ -82,17 +80,11 @@
     <string name="apply_changes">Aplicar canvis</string>
     <string name="general">General</string>
     <string name="mode">Mode</string>
-    <string name="start_of_week">Comença la setmana</string>
     <string name="week_in_year_view">Número de setmana</string>
     <string name="customize_theme">Estil</string>
     <string name="customize_colors">Personalitzar colors</string>
-    <string name="import_theme">Carregar tema…</string>
-    <string name="export_theme">Desar tema…</string>
     <string name="widget_event_count">Nombre d\'esdeveniments</string>
     <string name="widget_text_adjustment">Ajust de text</string>
-    <string name="background_color">Color de fons</string>
-    <string name="event_color">Color esdeveniments</string>
-    <string name="today_event_color">Esdeveniments d\'avui</string>
     <string name="about">Quant a</string>
     <string name="discard_changes_title">Descartar canvis</string>
     <string name="discard_changes_confirmation">Tens canvis sense desar. Estàs segur que vols descartar-los?</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">Ajust de festiu actualitzat</string>
 
     <string name="holidays_section">Festius</string>
-    <string name="import_holidays">Importar festius…</string>
-    <string name="export_holidays">Exportar festius…</string>
-    <string name="holidays_imported_successfully">Festius importats amb èxit.</string>
-    <string name="error_reading_holidays_file">Error en llegir el fitxer de festius.</string>
-    <string name="error_saving_holidays_file">Error en desar el fitxer de festius.</string>
     <string name="holiday_deleted_message">Eliminat %1$s %2$s</string>
     <string name="event_deleted_message">Eliminat %1$s %2$s</string>
 
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">Error en restaurar la còpia: %1$s</string>
     <string name="invalid_backup_file">Fitxer de còpia de seguretat no vàlid</string>
 
-    <string name="import_holidays_confirm_title">Importar festius</string>
-    <string name="import_holidays_confirm_message">Ja tens festius configurats. Vols afegir-los a la teva llista actual o substituir-los completament?</string>
-    <string name="import_holidays_merge">Afegir</string>
-    <string name="import_holidays_replace">Substituir</string>
-
     <string name="alarm">Alarma</string>
-    <string name="alarm_time">Hora de l\'alarma</string>
     <string name="stop_alarm">ATURAR</string>
     <string name="snooze_alarm">POSTPOSAR</string>
     <string name="alarm_anticipation_label">Anticipació</string>
@@ -261,16 +242,13 @@
     <string name="status_denied">SENSE PERMÍS</string>
     <string name="status_full_screen">PANTALLA COMPLETA</string>
     <string name="status_no_full_screen">SENSE PANTALLA COMPLETA</string>
-    <string name="status_restricted">RESTRINGIDA</string>
     <string name="status_linked">VINCULADA</string>
     <string name="status_unlinked">SENSE VINCULAR</string>
     <string name="status_unrestricted">SENSE RESTRICCIONS</string>
     <string name="status_optimized">OPTIMITZADA (RESTRINGIT)</string>
-    <string name="fix_permission">AJUSTOS</string>
     <string name="history">Historial</string>
 
-    <string name="backup_label">Còpia de seguretat</string>
-    <string name="backup_section_title">Còpia de seguretat d\'esdeveniments</string>
+    <string name="backup_section_title">Respaldo d\'esdeveniments</string>
     <string name="account_label">Compte</string>
     <string name="backup_frequency">Freqüència</string>
     <string name="manage_backup_label">Gestió de còpia</string>
@@ -278,7 +256,6 @@
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronitzar</string>
     <string name="link_google_account">Vincular compte de Google</string>
-    <string name="account_linked">Compte vinculat</string>
     <string name="account_linked_success">Compte vinculat amb èxit</string>
     <string name="account_linked_error">Error en vincular el compte</string>
     <string name="unlink_google_account">Desvincular compte de Google</string>
@@ -288,17 +265,13 @@
     <string name="frequency_daily">Diària</string>
     <string name="frequency_weekly">Setmanal</string>
     <string name="frequency_monthly">Mensual</string>
-    <string name="sync_now">Sincronitzar ara</string>
-    <string name="syncing">Sincronitzant…</string>
     <string name="sync_success_detailed">Sincronització completa: %1$d esdeveniments (%2$d eliminats)</string>
     <string name="sync_error_drive">Error de Drive. Verifica el teu compte.</string>
     <string name="restore_from_drive">Restaurar des de Drive</string>
-    <string name="restoring">Restaurant…</string>
     <string name="restore_confirm_title">Restaurar esdeveniments?</string>
     <string name="restore_confirm_message">Se substituiran els esdeveniments desats per la còpia de Google Drive. Els esdeveniments actuals del sistema no es veuran afectats.</string>
     <string name="restore_success">Esdeveniments restaurats amb èxit</string>
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
-    <string name="last_backup">Última còpia: %s</string>
     <string name="last_backup_with_count">Última: %1$s · %2$d esdeveniments</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Error en actualitzar les dades.</string>

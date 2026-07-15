@@ -2,7 +2,6 @@
     <string name="app_name">视觉日历</string>
     <string name="calendar_widget_description">显示您即将到来的日历事件</string>
     <string name="permission_calendar_select">选择日历需要日历权限。</string>
-    <string name="permission_calendar_write">创建事件需要日历写入权限。</string>
     <string name="back_to_monthly_view">返回月视图</string>
     <string name="back_to_current_month">返回本月</string>
     <string name="create_event">创建事件</string>
@@ -60,7 +59,6 @@
     <string name="title">标题</string>
     <string name="no_editable_calendars">无待编辑日历</string>
     <string name="calendar_label">日历</string>
-    <string name="select_calendar">选择日历</string>
     <string name="all_day_switch">全天</string>
     <string name="start">开始</string>
     <string name="end">结束</string>
@@ -82,17 +80,11 @@
     <string name="apply_changes">应用更改</string>
     <string name="general">常规</string>
     <string name="mode">模式</string>
-    <string name="start_of_week">一周开始</string>
     <string name="week_in_year_view">周数</string>
     <string name="customize_theme">风格</string>
     <string name="customize_colors">自定义颜色</string>
-    <string name="import_theme">加载主题…</string>
-    <string name="export_theme">保存主题…</string>
     <string name="widget_event_count">事件数量</string>
     <string name="widget_text_adjustment">文字调整</string>
-    <string name="background_color">背景颜色</string>
-    <string name="event_color">事件颜色</string>
-    <string name="today_event_color">今日事件</string>
     <string name="about">关于</string>
     <string name="discard_changes_title">放弃更改</string>
     <string name="discard_changes_confirmation">您有未保存的更改。确定要放弃吗？</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">节假日设置已更新</string>
 
     <string name="holidays_section">节假日</string>
-    <string name="import_holidays">导入节假日…</string>
-    <string name="export_holidays">导出节假日…</string>
-    <string name="holidays_imported_successfully">节假日导入成功。</string>
-    <string name="error_reading_holidays_file">读取节假日文件出错。</string>
-    <string name="error_saving_holidays_file">保存节假日文件出错。</string>
     <string name="holiday_deleted_message">已删除 %1$s %2$s</string>
     <string name="event_deleted_message">已删除 %1$s %2$s</string>
 
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">恢复备份出错：%1$s</string>
     <string name="invalid_backup_file">备份文件无效</string>
 
-    <string name="import_holidays_confirm_title">导入节假日</string>
-    <string name="import_holidays_confirm_message">您已配置节假日。要将其添加到当前列表还是完全替换？</string>
-    <string name="import_holidays_merge">添加</string>
-    <string name="import_holidays_replace">替换</string>
-
     <string name="alarm">闹钟</string>
-    <string name="alarm_time">闹钟时间</string>
     <string name="stop_alarm">停止</string>
     <string name="snooze_alarm">稍后提醒</string>
     <string name="alarm_anticipation_label">提前提醒</string>
@@ -262,15 +243,12 @@
     <string name="status_denied">无权限</string>
     <string name="status_full_screen">全屏</string>
     <string name="status_no_full_screen">非全屏</string>
-    <string name="status_restricted">已限制</string>
     <string name="status_linked">已连接</string>
     <string name="status_unlinked">未连接</string>
     <string name="status_unrestricted">无限制</string>
     <string name="status_optimized">已优化 (受限)</string>
-    <string name="fix_permission">设置</string>
     <string name="history">历史记录</string>
 
-    <string name="backup_label">备份</string>
     <string name="backup_section_title">事件备份</string>
     <string name="account_label">账号</string>
     <string name="backup_frequency">频率</string>
@@ -279,7 +257,6 @@
     <string name="restaurar_label">恢复</string>
     <string name="sincronizar_label">同步</string>
     <string name="link_google_account">关联 Google 账号</string>
-    <string name="account_linked">账号已关联</string>
     <string name="account_linked_success">账号关联成功</string>
     <string name="account_linked_error">关联账号出错</string>
     <string name="unlink_google_account">取消关联 Google 账号</string>
@@ -289,17 +266,13 @@
     <string name="frequency_daily">每天</string>
     <string name="frequency_weekly">每周</string>
     <string name="frequency_monthly">每月</string>
-    <string name="sync_now">立即同步</string>
-    <string name="syncing">同步中…</string>
     <string name="sync_success_detailed">同步完成：%1$d 个事件 (已删除 %2$d 个)</string>
     <string name="sync_error_drive">云端硬盘错误。请检查您的账号。</string>
     <string name="restore_from_drive">从云端硬盘恢复</string>
-    <string name="restoring">恢复中…</string>
     <string name="restore_confirm_title">恢复事件？</string>
     <string name="restore_confirm_message">保存的事件将被 Google 云端硬盘中的副本替换。当前系统事件不会受到影响。</string>
     <string name="restore_success">事件恢复成功</string>
     <string name="restore_error">在云端硬盘中未找到有效备份</string>
-    <string name="last_backup">上次备份：%s</string>
     <string name="last_backup_with_count">上次：%1$s · %2$d 个事件</string>
     <string name="never">从未</string>
     <string name="error_updating_data">更新数据出错。</string>

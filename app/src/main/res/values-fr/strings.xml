@@ -2,7 +2,6 @@
     <string name="app_name">Calendrier Visuel</string>
     <string name="calendar_widget_description">Affiche vos prochains événements du calendrier</string>
     <string name="permission_calendar_select">L\'autorisation du calendrier est requise pour sélectionner des calendriers.</string>
-    <string name="permission_calendar_write">L\'autorisation d\'écriture dans le calendrier est requise pour créer des événements.</string>
     <string name="back_to_monthly_view">Retour à la vue mensuelle</string>
     <string name="back_to_current_month">Retour au mois en cours</string>
     <string name="create_event">Créer un événement</string>
@@ -60,7 +59,6 @@
     <string name="title">Titre</string>
     <string name="no_editable_calendars">Aucun calendrier modifiable</string>
     <string name="calendar_label">Calendrier</string>
-    <string name="select_calendar">Sélectionner un calendrier</string>
     <string name="all_day_switch">Toute la journée</string>
     <string name="start">Début</string>
     <string name="end">Fin</string>
@@ -82,17 +80,11 @@
     <string name="apply_changes">Appliquer les changements</string>
     <string name="general">Général</string>
     <string name="mode">Mode</string>
-    <string name="start_of_week">Début de la semaine</string>
     <string name="week_in_year_view">Numéro de semaine</string>
     <string name="customize_theme">Style</string>
     <string name="customize_colors">Personnaliser les couleurs</string>
-    <string name="import_theme">Charger un thème…</string>
-    <string name="export_theme">Enregistrer le thème…</string>
     <string name="widget_event_count">Nombre d\'événements</string>
     <string name="widget_text_adjustment">Ajustement du texte</string>
-    <string name="background_color">Couleur de fond</string>
-    <string name="event_color">Couleur des événements</string>
-    <string name="today_event_color">Événements d\'aujourd\'hui</string>
     <string name="about">À propos de</string>
     <string name="discard_changes_title">Abandonner les modifications</string>
     <string name="discard_changes_confirmation">Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les abandonner ?</string>
@@ -111,7 +103,7 @@
     <string name="help_section_customization">Personnalisation</string>
     <string name="help_customization_1">Depuis le menu Paramètres, vous pouvez choisir les modes Clair et Sombre. Vous pouvez également personnaliser les couleurs de l\'interface et Importer/Exporter les thèmes de couleur pour les partager.</string>
     <string name="help_section_holiday_manager">Gestionnaire de jours fériés</string>
-    <string name="help_holiday_manager_1">Cette fonction permet de marquer manuellement des jours spécifiques comme fériés ou ouvrés, indépendamment de ce qu\'indique le calendrier système ou les événements importés. En marquant un jour comme férié, son numéro sera mis en évidence dans la couleur correspondante sur les vues mensuelle et annuelle.</string>
+    <string name="help_holiday_manager_1">Cette fonction permet de marquer manuellement des jours spécifiques comme fériés ou ouvrés, indépendamment de ce qu\'indique le calendrier système ou les événements importados. En marquant un jour comme férié, son numéro sera mis en évidence dans la couleur correspondante sur les vues mensuelle et annuelle.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'application comprend un Widget pour l\'écran d\'accueil qui affiche les prochains événements. Vous pouvez personnaliser son apparence en choisissant le nombre d\'événements à afficher, en changeant la taille de la police et en modifiant ses couleurs.</string>
     <string name="copied_to_clipboard">Copié : %1$s</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">Ajustement de jour férié mis à jour</string>
 
     <string name="holidays_section">Jours fériés</string>
-    <string name="import_holidays">Importer jours fériés…</string>
-    <string name="export_holidays">Exporter jours fériés…</string>
-    <string name="holidays_imported_successfully">Jours fériés importés avec succès.</string>
-    <string name="error_reading_holidays_file">Erreur lors de la lecture du fichier de jours fériés.</string>
-    <string name="error_saving_holidays_file">Erreur lors de l\'enregistrement du fichier de jours fériés.</string>
     <string name="holiday_deleted_message">Supprimé %1$s %2$s</string>
     <string name="event_deleted_message">Supprimé %1$s %2$s</string>
 
@@ -218,7 +205,7 @@
     <string name="next_refresh_pending">dans 15 min.</string>
     <string name="not_scheduled">Non programmé</string>
     <string name="no_logs_found">Aucun log enregistré pour le moment.</string>
-    <string name="copy_action">Copier</string>
+    <string name="copy_action">Copiar</string>
     <string name="sync_alarms">Synchroniser les alarmes</string>
     <string name="sync_alarms_success">Nettoyage terminé : %1$d alarmes orphelines supprimées.</string>
     <string name="selected_count">%1$d sélectionnés</string>
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">Erreur lors de la restauration de la sauvegarde : %1$s</string>
     <string name="invalid_backup_file">Fichier de sauvegarde non valide</string>
 
-    <string name="import_holidays_confirm_title">Importer jours fériés</string>
-    <string name="import_holidays_confirm_message">Vous avez déjà des jours fériés configurés. Voulez-vous les ajouter à votre liste actuelle ou les remplacer complètement ?</string>
-    <string name="import_holidays_merge">Ajouter</string>
-    <string name="import_holidays_replace">Remplacer</string>
-
     <string name="alarm">Alarme</string>
-    <string name="alarm_time">Heure de l\'alarme</string>
     <string name="stop_alarm">ARRÊTER</string>
     <string name="snooze_alarm">REPORTER</string>
     <string name="alarm_anticipation_label">Anticipation</string>
@@ -262,16 +243,12 @@
     <string name="status_denied">SANS AUTORISATION</string>
     <string name="status_full_screen">PLEIN ÉCRAN</string>
     <string name="status_no_full_screen">SANS PLEIN ÉCRAN</string>
-    <string name="status_restricted">RESTREINTE</string>
     <string name="status_linked">ASSOCIÉ</string>
     <string name="status_unlinked">NON ASSOCIÉ</string>
     <string name="status_unrestricted">SANS RESTRICTION</string>
     <string name="status_optimized">OPTIMISÉE (RESTREINTE)</string>
-    <string name="fix_permission">PARAMÈTRES</string>
     <string name="history">Historique</string>
 
-    <!-- Sauvegarde des événements -->
-    <string name="backup_label">Sauvegarde</string>
     <string name="backup_section_title">Sauvegarde des événements</string>
     <string name="account_label">Compte</string>
     <string name="backup_frequency">Fréquence</string>
@@ -280,7 +257,6 @@
     <string name="restaurar_label">Restaurer</string>
     <string name="sincronizar_label">Synchroniser</string>
     <string name="link_google_account">Associer un compte Google</string>
-    <string name="account_linked">Compte associé</string>
     <string name="account_linked_success">Compte associé avec succès</string>
     <string name="account_linked_error">Erreur lors de l\'association du compte</string>
     <string name="unlink_google_account">Dissocier le compte Google</string>
@@ -290,17 +266,13 @@
     <string name="frequency_daily">Quotidienne</string>
     <string name="frequency_weekly">Hebdomadaire</string>
     <string name="frequency_monthly">Mensuelle</string>
-    <string name="sync_now">Synchroniser maintenant</string>
-    <string name="syncing">Synchronisation…</string>
     <string name="sync_success_detailed">Synchronisation terminée : %1$d événements (%2$d supprimés)</string>
     <string name="sync_error_drive">Erreur de Drive. Vérifiez votre compte.</string>
     <string name="restore_from_drive">Restaurer depuis Drive</string>
-    <string name="restoring">Restauration…</string>
     <string name="restore_confirm_title">Restaurer les événements ?</string>
     <string name="restore_confirm_message">Les événements enregistrés seront remplacés par la copie Google Drive. Les événements système actuels ne seront pas affectés.</string>
     <string name="restore_success">Événements restaurés avec succès</string>
     <string name="restore_error">Aucune copie valide trouvée sur Drive</string>
-    <string name="last_backup">Dernière copie : %s</string>
     <string name="last_backup_with_count">Dernière : %1$s · %2$d événements</string>
     <string name="never">Jamais</string>
     <string name="error_updating_data">Erreur lors de la mise à jour des données.</string>

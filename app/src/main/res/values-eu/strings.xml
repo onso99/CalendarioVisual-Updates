@@ -2,7 +2,6 @@
     <string name="app_name">Egutegi Bisuala</string>
     <string name="calendar_widget_description">Zure hurrengo egutegi-gertaerak erakusten ditu</string>
     <string name="permission_calendar_select">Egutegiaren baimena behar da egutegiak hautatzeko.</string>
-    <string name="permission_calendar_write">Egutegian idazteko baimena behar da gertaerak sortzeko.</string>
     <string name="back_to_monthly_view">Itzuli hileko ikuspegira</string>
     <string name="back_to_current_month">Itzuli uneko hilabetera</string>
     <string name="create_event">Sortu gertaera</string>
@@ -60,7 +59,6 @@
     <string name="title">Izenburua</string>
     <string name="no_editable_calendars">Ez dago egutegi editagarririk</string>
     <string name="calendar_label">Egutegia</string>
-    <string name="select_calendar">Hautatu egutegia</string>
     <string name="all_day_switch">Egun osoa</string>
     <string name="start">Hasiera</string>
     <string name="end">Amaiera</string>
@@ -82,17 +80,11 @@
     <string name="apply_changes">Aplikatu aldaketak</string>
     <string name="general">Orokorra</string>
     <string name="mode">Modua</string>
-    <string name="start_of_week">Astearen hasiera</string>
     <string name="week_in_year_view">Aste zenbakia</string>
     <string name="customize_theme">Estiloa</string>
     <string name="customize_colors">Pertsonalizatu koloreak</string>
-    <string name="import_theme">Kargatu gaia…</string>
-    <string name="export_theme">Gorde gaia…</string>
     <string name="widget_event_count">Gertaera kopurua</string>
     <string name="widget_text_adjustment">Testuaren doitzea</string>
-    <string name="background_color">Atzeko kolorea</string>
-    <string name="event_color">Gertaeren kolorea</string>
-    <string name="today_event_color">Gaurko gertaerak</string>
     <string name="about">Honi buruz</string>
     <string name="discard_changes_title">Baztertu aldaketak</string>
     <string name="discard_changes_confirmation">Gorde gabeko aldaketak dituzu. Ziur zaude baztertu nahi dituzula?</string>
@@ -113,7 +105,7 @@
     <string name="help_section_holiday_manager">Jai-egun kudeatzailea</string>
     <string name="help_holiday_manager_1">Funtzio honek egun zehatzak jaiegun edo lanegun gisa eskuz markatzeko aukera ematen du, sistemaren egutegiak edo inportatutako gertaerek diotena kontuan hartu gabe. Egun bat jaiegun gisa markatzean, bere zenbakia dagokion kolorean nabarmenduko da hileko eta urteko ikuspegietan.</string>
     <string name="help_section_widget">Widget-a</string>
-    <string name="help_widget_1">Aplikazioak Widget bat du Hasiera pantailarako, hurrengo gertaerak erakusten dituena. Itxura pertsonalizatu daiteke erakutsiko den gertaera kopurua aukeratuz, letraren tamaina aldatuz eta koloreak doituz.</string>
+    <string name="help_widget_1">Aplikazioak Widget bat du Hasiera pantailarako, hurrengo gertaerak erakusten dituena. Itxura pertsonalizatu daiteke erakutsiko den gertaera kopurua aukera dezakezu, letraren tamaina aldatuz eta koloreak doituz.</string>
     <string name="copied_to_clipboard">Kopiatua: %1$s</string>
     <string name="event_color_label">Gertaeraren kolorea:</string>
     <string name="keyword">Gako-hitza</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">Jaiegun doitzea eguneratu da</string>
 
     <string name="holidays_section">Jaiegunak</string>
-    <string name="import_holidays">Inportatu jaiegunak…</string>
-    <string name="export_holidays">Esportatu jaiegunak…</string>
-    <string name="holidays_imported_successfully">Jaiegunak ongi inportatu dira.</string>
-    <string name="error_reading_holidays_file">Errorea jaiegunen fitxategia irakurtzean.</string>
-    <string name="error_saving_holidays_file">Errorea jaiegunen fitxategia gordetzean.</string>
     <string name="holiday_deleted_message">Ezabatua %1$s %2$s</string>
     <string name="event_deleted_message">Ezabatua %1$s %2$s</string>
 
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">Errorea kopia berrezartzean: %1$s</string>
     <string name="invalid_backup_file">Segurtasun-kopiaren fitxategi baliogabea</string>
 
-    <string name="import_holidays_confirm_title">Inportatu jaiegunak</string>
-    <string name="import_holidays_confirm_message">Dagoeneko jaiegunak konfiguratuta dituzu. Zure zerrendari gehitu nahi dizkiozu ala guztiak ordezkatu?</string>
-    <string name="import_holidays_merge">Gehitu</string>
-    <string name="import_holidays_replace">Ordezkatu</string>
-
     <string name="alarm">Alarma</string>
-    <string name="alarm_time">Alarma ordua</string>
     <string name="stop_alarm">GELDITU</string>
     <string name="snooze_alarm">ATZERATU</string>
     <string name="alarm_anticipation_label">Aurrerapena</string>
@@ -248,7 +229,6 @@
     <string name="preferences_title">Hobespenak</string>
     <string name="cargar_label">Kargatu</string>
     <string name="guardar_label">Gorde</string>
-
     <string name="system_permissions">Sistemaren baimenak</string>
     <string name="permissions_dialog_title">Baimenen Egoera</string>
     <string name="calendar_permission_label">Egutegia</string>
@@ -262,15 +242,12 @@
     <string name="status_denied">BAIMENIK GABE</string>
     <string name="status_full_screen">PANTAILA OSOA</string>
     <string name="status_no_full_screen">PANTAILA OSORIK GABE</string>
-    <string name="status_restricted">MUGATUA</string>
     <string name="status_linked">LOTUTA</string>
     <string name="status_unlinked">LOTU GABE</string>
     <string name="status_unrestricted">MUGARIK GABE</string>
     <string name="status_optimized">OPTIMIZATUA (MUGATUA)</string>
-    <string name="fix_permission">EZARPENAK</string>
     <string name="history">Historia</string>
 
-    <string name="backup_label">Babeskopia</string>
     <string name="backup_section_title">Gertaeren babeskopia</string>
     <string name="account_label">Kontua</string>
     <string name="backup_frequency">Maiztasuna</string>
@@ -279,7 +256,6 @@
     <string name="restaurar_label">Berrezarri</string>
     <string name="sincronizar_label">Sinkronizatu</string>
     <string name="link_google_account">Lotu Google kontua</string>
-    <string name="account_linked">Kontua lotuta</string>
     <string name="account_linked_success">Kontua ongi lotu da</string>
     <string name="account_linked_error">Errorea kontua lotzean</string>
     <string name="unlink_google_account">Askatu Google kontua</string>
@@ -289,17 +265,13 @@
     <string name="frequency_daily">Egunero</string>
     <string name="frequency_weekly">Astero</string>
     <string name="frequency_monthly">Hilero</string>
-    <string name="sync_now">Sinkronizatu orain</string>
-    <string name="syncing">Sinkronizatzen…</string>
     <string name="sync_success_detailed">Sinkronizazio osoa: %1$d gertaera (%2$d ezabatuta)</string>
     <string name="sync_error_drive">Drive errorea. Egiaztatu zure kontua.</string>
     <string name="restore_from_drive">Berrezarri Drivetik</string>
-    <string name="restoring">Berrezartzen…</string>
     <string name="restore_confirm_title">Berrezarri gertaerak?</string>
     <string name="restore_confirm_message">Gordetako gertaerak Google Driveko kopiarekin ordeztuko dira. Sistemako uneko gertaerei ez die eragingo.</string>
     <string name="restore_success">Gertaerak ongi berrezarri dira</string>
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
-    <string name="last_backup">Azken kopia: %s</string>
     <string name="last_backup_with_count">Azkena: %1$s · %2$d gertaera</string>
     <string name="never">Inoiz ez</string>
     <string name="error_updating_data">Errorea datuak eguneratzean.</string>

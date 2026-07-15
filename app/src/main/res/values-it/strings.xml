@@ -2,7 +2,6 @@
     <string name="app_name">Calendario Visuale</string>
     <string name="calendar_widget_description">Mostra i tuoi prossimi eventi del calendario</string>
     <string name="permission_calendar_select">Il permesso del calendario è richiesto per selezionare i calendari.</string>
-    <string name="permission_calendar_write">Il permesso di scrittura nel calendario è richiesto per creare eventi.</string>
     <string name="back_to_monthly_view">Torna alla vista mensile</string>
     <string name="back_to_current_month">Torna al mese corrente</string>
     <string name="create_event">Crea evento</string>
@@ -60,7 +59,6 @@
     <string name="title">Titolo</string>
     <string name="no_editable_calendars">Nessun calendario modificabile</string>
     <string name="calendar_label">Calendario</string>
-    <string name="select_calendar">Seleziona calendario</string>
     <string name="all_day_switch">Tutto il giorno</string>
     <string name="start">Inizio</string>
     <string name="end">Fine</string>
@@ -82,17 +80,11 @@
     <string name="apply_changes">Applica modifiche</string>
     <string name="general">Generale</string>
     <string name="mode">Modalità</string>
-    <string name="start_of_week">Inizio settimana</string>
     <string name="week_in_year_view">Numero settimana</string>
     <string name="customize_theme">Stile</string>
     <string name="customize_colors">Personalizza colori</string>
-    <string name="import_theme">Carica tema…</string>
-    <string name="export_theme">Salva tema…</string>
     <string name="widget_event_count">Numero di eventi</string>
     <string name="widget_text_adjustment">Regolazione testo</string>
-    <string name="background_color">Colore di sfondo</string>
-    <string name="event_color">Colore eventi</string>
-    <string name="today_event_color">Eventi di oggi</string>
     <string name="about">Informazioni</string>
     <string name="discard_changes_title">Abbandona modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle abbandonare?</string>
@@ -196,11 +188,6 @@
     <string name="holiday_updated_successfully">Regolazione festività aggiornata</string>
 
     <string name="holidays_section">Festività</string>
-    <string name="import_holidays">Importa festività…</string>
-    <string name="export_holidays">Esporta festività…</string>
-    <string name="holidays_imported_successfully">Festività importate con successo.</string>
-    <string name="error_reading_holidays_file">Errore durante la lettura del file delle festività.</string>
-    <string name="error_saving_holidays_file">Errore durante il salvataggio del file delle festività.</string>
     <string name="holiday_deleted_message">Eliminato %1$s %2$s</string>
     <string name="event_deleted_message">Eliminato %1$s %2$s</string>
 
@@ -212,7 +199,7 @@
     <string name="font_condensed">Condensed (Stretto)</string>
     <string name="share_event">Condividi evento</string>
     <string name="share_multiple_message">📅 Ti condivido %1$d eventi dal mio calendario</string>
-    <string name="calendar_events_subject">Eventi del calendario</string>
+    <string name="calendar_events_subject">Eventos del calendario</string>
     <string name="debug_title">Debug</string>
     <string name="next_refresh_label">Prossimo aggiornamento: %1$s</string>
     <string name="next_refresh_pending">tra 15 min.</string>
@@ -231,13 +218,7 @@
     <string name="error_importing_backup">Errore durante il ripristino del backup: %1$s</string>
     <string name="invalid_backup_file">File di backup non valido</string>
 
-    <string name="import_holidays_confirm_title">Importa festività</string>
-    <string name="import_holidays_confirm_message">Hai già delle festività configurate. Vuoi aggiungerle alla tua lista attuale o sostituirle completamente?</string>
-    <string name="import_holidays_merge">Aggiungi</string>
-    <string name="import_holidays_replace">Sostituisci</string>
-
     <string name="alarm">Alarme</string>
-    <string name="alarm_time">Ora dell\'allarme</string>
     <string name="stop_alarm">STOP</string>
     <string name="snooze_alarm">POSTICIPA</string>
     <string name="alarm_anticipation_label">Anticipo</string>
@@ -261,24 +242,20 @@
     <string name="status_denied">SENZA PERMESSO</string>
     <string name="status_full_screen">A SCHERMO INTERO</string>
     <string name="status_no_full_screen">SENZA SCHERMO INTERO</string>
-    <string name="status_restricted">LIMITATA</string>
     <string name="status_linked">COLLEGATA</string>
     <string name="status_unlinked">NON COLLEGATA</string>
     <string name="status_unrestricted">SENZA LIMITAZIONI</string>
     <string name="status_optimized">OTTIMIZZATA (LIMITATA)</string>
-    <string name="fix_permission">IMPOSTAZIONI</string>
     <string name="history">Cronologia</string>
 
-    <string name="backup_label">Backup</string>
-    <string name="backup_section_title">Backup degli eventi</string>
+    <string name="backup_section_title">Respaldo degli eventi</string>
     <string name="account_label">Account</string>
     <string name="backup_frequency">Frequenza</string>
-    <string name="manage_backup_label">Gestione backup</string>
-    <string name="event_backup_dialog_title">Backup degli eventi</string>
+    <string name="manage_backup_label">Gestione copia</string>
+    <string name="event_backup_dialog_title">Copia degli eventi</string>
     <string name="restaurar_label">Ripristina</string>
     <string name="sincronizar_label">Sincronizza</string>
     <string name="link_google_account">Collega account Google</string>
-    <string name="account_linked">Account collegato</string>
     <string name="account_linked_success">Account collegato con successo</string>
     <string name="account_linked_error">Errore durante il collegamento dell\'account</string>
     <string name="unlink_google_account">Scollega account Google</string>
@@ -288,17 +265,13 @@
     <string name="frequency_daily">Giornaliera</string>
     <string name="frequency_weekly">Settimanale</string>
     <string name="frequency_monthly">Mensile</string>
-    <string name="sync_now">Sincronizza ora</string>
-    <string name="syncing">Sincronizzazione…</string>
     <string name="sync_success_detailed">Sincronizzazione completata: %1$d eventi (%2$d eliminati)</string>
     <string name="sync_error_drive">Errore di Drive. Verifica il tuo account.</string>
     <string name="restore_from_drive">Ripristina da Drive</string>
-    <string name="restoring">Ripristino…</string>
     <string name="restore_confirm_title">Ripristinare gli eventi?</string>
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
     <string name="restore_success">Eventos ripristinati con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
-    <string name="last_backup">Ultima copia: %s</string>
     <string name="last_backup_with_count">Ultima: %1$s · %2$d eventi</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Errore durante l\'aggiornamento dei dati.</string>
