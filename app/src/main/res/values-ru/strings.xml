@@ -270,10 +270,12 @@
     <string name="fix_permission">НАСТРОИТЬ</string>
     <string name="history">История</string>
 
-    <string name="backup_label">Резерв</string>
+    <string name="backup_label">Резервное копирование</string>
     <string name="backup_section_title">Резервное копирование</string>
-    <string name="backup_section_title_drive">Копия событий на Диске</string>
     <string name="account_label">Аккаунт</string>
+    <string name="backup_frequency">Частота</string>
+    <string name="manage_backup_label">Управление копиями</string>
+    <string name="event_backup_dialog_title">Резервное копирование</string>
     <string name="restaurar_label">Восстановить</string>
     <string name="sincronizar_label">Синхронизировать</string>
     <string name="link_google_account">Связать с аккаунтом Google</string>
@@ -283,7 +285,6 @@
     <string name="unlink_google_account">Отвязать аккаунт Google</string>
     <string name="unlink_account_confirmation">Отвязать аккаунт Google? Автоматическое копирование в облако прекратится.</string>
     <string name="unlink_action">ОТВЯЗАТЬ</string>
-    <string name="backup_frequency">Частота копирования</string>
     <string name="frequency_manual">Вручную</string>
     <string name="frequency_daily">Ежедневно</string>
     <string name="frequency_weekly">Еженедельно</string>

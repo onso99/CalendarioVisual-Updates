@@ -272,8 +272,10 @@
 
     <string name="backup_label">バックアップ</string>
     <string name="backup_section_title">イベントのバックアップ</string>
-    <string name="backup_section_title_drive">Drive上のイベントコピー</string>
     <string name="account_label">アカウント</string>
+    <string name="backup_frequency">頻度</string>
+    <string name="manage_backup_label">バックアップの管理</string>
+    <string name="event_backup_dialog_title">イベントのバックアップ</string>
     <string name="restaurar_label">復元</string>
     <string name="sincronizar_label">同期</string>
     <string name="link_google_account">Googleアカウントを連携</string>
@@ -283,7 +285,6 @@
     <string name="unlink_google_account">Googleアカウントを解除</string>
     <string name="unlink_account_confirmation">Googleアカウントを解除しますか？自動バックアップが停止します。</string>
     <string name="unlink_action">解除</string>
-    <string name="backup_frequency">バックアップ頻度</string>
     <string name="frequency_manual">手動</string>
     <string name="frequency_daily">毎日</string>
     <string name="frequency_weekly">毎週</string>

@@ -252,7 +252,7 @@
     <string name="permissions_dialog_title">Stato dei permessi</string>
     <string name="calendar_permission_label">Calendario</string>
     <string name="notifications_permission_label">Notifiche</string>
-    <string name="alarms_permission_label">Alarmas</string>
+    <string name="alarms_permission_label">Allarmi</string>
     <string name="google_drive_permission_label">Google Drive</string>
     <string name="battery_optimization_label">Batteria</string>
 
@@ -271,8 +271,10 @@
 
     <string name="backup_label">Backup</string>
     <string name="backup_section_title">Backup degli eventi</string>
-    <string name="backup_section_title_drive">Copia degli eventi su Drive</string>
     <string name="account_label">Account</string>
+    <string name="backup_frequency">Frequenza</string>
+    <string name="manage_backup_label">Gestione backup</string>
+    <string name="event_backup_dialog_title">Backup degli eventi</string>
     <string name="restaurar_label">Ripristina</string>
     <string name="sincronizar_label">Sincronizza</string>
     <string name="link_google_account">Collega account Google</string>
@@ -282,7 +284,6 @@
     <string name="unlink_google_account">Scollega account Google</string>
     <string name="unlink_account_confirmation">Scollegare l\'account Google? I backup automatici verranno interrotti.</string>
     <string name="unlink_action">SCOLLEGA</string>
-    <string name="backup_frequency">Frequenza di backup</string>
     <string name="frequency_manual">Manuale</string>
     <string name="frequency_daily">Giornaliera</string>
     <string name="frequency_weekly">Settimanale</string>

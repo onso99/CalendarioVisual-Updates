@@ -135,6 +135,7 @@ fun SettingsScreen(
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showRestoreDriveDialog by remember { mutableStateOf(false) }
     var showPreferencesBackupDialog by remember { mutableStateOf(false) }
+    var showEventBackupDialog by remember { mutableStateOf(false) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
 
     // --- Launchers ---
@@ -760,7 +761,7 @@ fun SettingsScreen(
 
 
             // --- 6. Backup Section ---
-            SectionTitle(text = stringResource(id = R.string.backup_section_title_drive))
+            SectionTitle(text = stringResource(id = R.string.backup_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
                 
@@ -853,45 +854,11 @@ fun SettingsScreen(
                     
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                    // 3. BOTONES CHIP (Restaurar y Sincronizar)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        val buttonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-
-                        // BOTÓN RESTAURAR
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.restaurar_label),
-                            modifier = Modifier.weight(1f).height(36.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            containerColor = buttonBg,
-                            onClick = { showRestoreDriveDialog = true }
-                        )
-
-                        // BOTÓN SINCRONIZAR
-                        SettingsActionChip(
-                            text = if (uiState.isSyncing) stringResource(R.string.syncing) else stringResource(id = R.string.sincronizar_label),
-                            modifier = Modifier.weight(1f).height(36.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            containerColor = buttonBg,
-                            onClick = {
-                                viewModel.syncHistoryToDrive(context) { result ->
-                                    if (result.success) {
-                                        permissionsUpdateTrigger++
-                                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
-                                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                                    } else {
-                                        Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        )
-                    }
+                    // 3. GESTIÓN DE COPIA (Abre diálogo)
+                    ActionRow(
+                        text = stringResource(id = R.string.manage_backup_label),
+                        onClick = { showEventBackupDialog = true }
+                    )
                 }
             }
 
@@ -1032,6 +999,28 @@ fun SettingsScreen(
                     putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
                 }
                 exportFullBackupLauncher.launch(intent)
+            }
+        )
+    }
+
+    if (showEventBackupDialog) {
+        EventBackupDialog(
+            onDismiss = { showEventBackupDialog = false },
+            onRestoreClick = {
+                showEventBackupDialog = false
+                showRestoreDriveDialog = true
+            },
+            onSyncClick = {
+                showEventBackupDialog = false
+                viewModel.syncHistoryToDrive(context) { result ->
+                    if (result.success) {
+                        permissionsUpdateTrigger++
+                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         )
     }
@@ -1432,6 +1421,58 @@ private fun ThemeChip(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
     }
+}
+
+@Composable
+private fun EventBackupDialog(
+    onDismiss: () -> Unit,
+    onRestoreClick: () -> Unit,
+    onSyncClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem, 
+        title = { 
+            Text(
+                text = stringResource(id = R.string.event_backup_dialog_title), 
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            ) 
+        }, 
+        text = { 
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                
+                SettingsActionChip(
+                    text = stringResource(id = R.string.restaurar_label),
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = backupButtonBg,
+                    onClick = onRestoreClick
+                )
+                
+                SettingsActionChip(
+                    text = stringResource(id = R.string.sincronizar_label),
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = backupButtonBg,
+                    onClick = onSyncClick
+                )
+            }
+        }, 
+        confirmButton = { 
+            TextButton(onClick = onDismiss) { 
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) 
+            } 
+        }
+    )
 }
 
 @Composable

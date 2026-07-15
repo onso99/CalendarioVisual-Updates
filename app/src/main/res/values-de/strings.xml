@@ -272,8 +272,10 @@
 
     <string name="backup_label">Sicherung</string>
     <string name="backup_section_title">Ereignis-Sicherung</string>
-    <string name="backup_section_title_drive">Ereigniskopie auf Drive</string>
     <string name="account_label">Konto</string>
+    <string name="backup_frequency">Häufigkeit</string>
+    <string name="manage_backup_label">Backup-Verwaltung</string>
+    <string name="event_backup_dialog_title">Ereignis-Backup</string>
     <string name="restaurar_label">Wiederherstellen</string>
     <string name="sincronizar_label">Synchronisieren</string>
     <string name="link_google_account">Google-Konto verknüpfen</string>
@@ -283,7 +285,6 @@
     <string name="unlink_google_account">Google-Konto trennen</string>
     <string name="unlink_account_confirmation">Google-Konto trennen? Automatische Cloud-Backups werden gestoppt.</string>
     <string name="unlink_action">TRENNEN</string>
-    <string name="backup_frequency">Sicherungshäufigkeit</string>
     <string name="frequency_manual">Manuell</string>
     <string name="frequency_daily">Täglich</string>
     <string name="frequency_weekly">Wöchentlich</string>

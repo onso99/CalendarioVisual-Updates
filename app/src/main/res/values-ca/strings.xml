@@ -269,10 +269,12 @@
     <string name="fix_permission">AJUSTOS</string>
     <string name="history">Historial</string>
 
-    <string name="backup_label">Respaldo</string>
-    <string name="backup_section_title">Respaldo d\'esdeveniments</string>
-    <string name="backup_section_title_drive">Còpia d\'esdeveniments a Drive</string>
+    <string name="backup_label">Còpia de seguretat</string>
+    <string name="backup_section_title">Còpia de seguretat d\'esdeveniments</string>
     <string name="account_label">Compte</string>
+    <string name="backup_frequency">Freqüència</string>
+    <string name="manage_backup_label">Gestió de còpia</string>
+    <string name="event_backup_dialog_title">Còpia d\'esdeveniments</string>
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronitzar</string>
     <string name="link_google_account">Vincular compte de Google</string>
@@ -282,7 +284,6 @@
     <string name="unlink_google_account">Desvincular compte de Google</string>
     <string name="unlink_account_confirmation">Desvincular compte de Google? S\'aturaran les còpies de seguretat automàtiques al núvol.</string>
     <string name="unlink_action">DESVINCULAR</string>
-    <string name="backup_frequency">Freqüència de còpia</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diària</string>
     <string name="frequency_weekly">Setmanal</string>

@@ -271,8 +271,10 @@
 
     <string name="backup_label">Respaldo</string>
     <string name="backup_section_title">Respaldo de eventos</string>
-    <string name="backup_section_title_drive">Copia de eventos en Drive</string>
     <string name="account_label">Cuenta</string>
+    <string name="backup_frequency">Frecuencia</string>
+    <string name="manage_backup_label">Gestión de copia</string>
+    <string name="event_backup_dialog_title">Copia de eventos</string>
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronizar</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
@@ -282,7 +284,6 @@
     <string name="unlink_google_account">Desvincular cuenta de Google</string>
     <string name="unlink_account_confirmation">¿Desvincular cuenta de Google? Se detendrán las copias de seguridad automáticas en la nube.</string>
     <string name="unlink_action">DESVINCULAR</string>
-    <string name="backup_frequency">Frecuencia de copia</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diaria</string>
     <string name="frequency_weekly">Semanal</string>

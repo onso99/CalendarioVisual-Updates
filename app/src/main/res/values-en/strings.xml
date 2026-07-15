@@ -273,8 +273,10 @@
 
     <string name="backup_label">Backup</string>
     <string name="backup_section_title">Event backup</string>
-    <string name="backup_section_title_drive">Event backup on Drive</string>
     <string name="account_label">Account</string>
+    <string name="backup_frequency">Frequency</string>
+    <string name="manage_backup_label">Backup management</string>
+    <string name="event_backup_dialog_title">Event backup</string>
     <string name="restaurar_label">Restore</string>
     <string name="sincronizar_label">Sync</string>
     <string name="link_google_account">Link Google account</string>
@@ -284,7 +286,6 @@
     <string name="unlink_google_account">Unlink Google account</string>
     <string name="unlink_account_confirmation">Unlink Google account? Automatic cloud backups will stop.</string>
     <string name="unlink_action">UNLINK</string>
-    <string name="backup_frequency">Backup frequency</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Daily</string>
     <string name="frequency_weekly">Weekly</string>

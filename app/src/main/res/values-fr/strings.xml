@@ -273,8 +273,10 @@
     <!-- Sauvegarde des événements -->
     <string name="backup_label">Sauvegarde</string>
     <string name="backup_section_title">Sauvegarde des événements</string>
-    <string name="backup_section_title_drive">Copie d\'événements sur Drive</string>
     <string name="account_label">Compte</string>
+    <string name="backup_frequency">Fréquence</string>
+    <string name="manage_backup_label">Gestion de copie</string>
+    <string name="event_backup_dialog_title">Copie d\'événements</string>
     <string name="restaurar_label">Restaurer</string>
     <string name="sincronizar_label">Synchroniser</string>
     <string name="link_google_account">Associer un compte Google</string>
@@ -284,7 +286,6 @@
     <string name="unlink_google_account">Dissocier le compte Google</string>
     <string name="unlink_account_confirmation">Dissocier le compte Google ? Les sauvegardes automatiques s\'arrêteront.</string>
     <string name="unlink_action">DISSOCIER</string>
-    <string name="backup_frequency">Fréquence de sauvegarde</string>
     <string name="frequency_manual">Manuel</string>
     <string name="frequency_daily">Quotidienne</string>
     <string name="frequency_weekly">Hebdomadaire</string>

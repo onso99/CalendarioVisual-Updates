@@ -217,12 +217,12 @@
     <string name="next_refresh_label">Próximo refresco: %1$s</string>
     <string name="next_refresh_pending">en 15 min.</string>
     <string name="not_scheduled">Non programado</string>
-    <string name="no_logs_found">Non hai logs rexistrados todavía.</string>
+    <string name="no_logs_found">Non hai logs rexistrados aínda.</string>
     <string name="copy_action">Copiar</string>
     <string name="sync_alarms">Sincronizar alarmas</string>
     <string name="sync_alarms_success">Limpeza finalizada: %1$d alarmas orfas eliminadas.</string>
     <string name="selected_count">%1$d seleccionados</string>
-    <string name="delete_multiple_confirmation">Desexas eliminar estes %1$d eventos? Esta acción non se pode deshacer.</string>
+    <string name="delete_multiple_confirmation">Desexas eliminar estes %1$d eventos? Esta acción non se pode desfacer.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
 
     <string name="backup_exported_successfully">Copia de seguridade creada con éxito</string>
@@ -259,8 +259,8 @@
     <string name="status_granted">PERMITIDO</string>
     <string name="status_granted_f">PERMITIDAS</string>
     <string name="status_denied">SIN PERMISO</string>
-    <string name="status_full_screen">PANTAILLA COMPLETA</string>
-    <string name="status_no_full_screen">SEN PANTAILLA COMPLETA</string>
+    <string name="status_full_screen">PANTALLA COMPLETA</string>
+    <string name="status_no_full_screen">SEN PANTALLA COMPLETA</string>
     <string name="status_restricted">RESTRINXIDA</string>
     <string name="status_linked">VINCULADA</string>
     <string name="status_unlinked">SEN VINCULAR</string>
@@ -269,10 +269,12 @@
     <string name="fix_permission">AXUSTES</string>
     <string name="history">Historial</string>
 
-    <string name="backup_label">Respaldo</string>
-    <string name="backup_section_title">Respaldo de eventos</string>
-    <string name="backup_section_title_drive">Copia de eventos en Drive</string>
+    <string name="backup_label">Copia de seguridade</string>
+    <string name="backup_section_title">Copia de seguridade de eventos</string>
     <string name="account_label">Conta</string>
+    <string name="backup_frequency">Frecuencia</string>
+    <string name="manage_backup_label">Xestión de copia</string>
+    <string name="event_backup_dialog_title">Copia de eventos</string>
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronizar</string>
     <string name="link_google_account">Vincular conta de Google</string>
@@ -282,7 +284,6 @@
     <string name="unlink_google_account">Desvincular conta de Google</string>
     <string name="unlink_account_confirmation">¿Desvincular conta de Google? Deteranse as copias de seguridade automáticas na nube.</string>
     <string name="unlink_action">DESVINCULAR</string>
-    <string name="backup_frequency">Frecuencia de copia</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diaria</string>
     <string name="frequency_weekly">Semanal</string>
