@@ -11,7 +11,7 @@ object AboutInfo {
     const val LINE_3_AUTHOR = "Onso"
     const val URL_HISTORIAL = "http://calendario.onso.es"
     
-    private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 6, 1)
+    private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 7, 1)
 
     fun getFormattedDate(): String {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())

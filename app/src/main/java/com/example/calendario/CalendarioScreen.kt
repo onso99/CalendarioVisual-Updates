@@ -152,6 +152,7 @@ fun CalendarioScreen(
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
     var showWidgetLogScreen by remember { mutableStateOf(false) }
+    var showHistoryScreen by remember { mutableStateOf(false) }
 
     val calendarPermissionsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -314,6 +315,11 @@ fun CalendarioScreen(
         return
     }
 
+    if (showHistoryScreen) {
+        HistoryScreen(onBack = { showHistoryScreen = false })
+        return
+    }
+
     if (showSettingsScreen) {
         SettingsScreen(
             onBackPress = {
@@ -327,6 +333,7 @@ fun CalendarioScreen(
                 holidayForManager = null
                 showHolidayManagerScreen = true 
             },
+            onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
             onThemeUpdated = onThemeUpdated
         )

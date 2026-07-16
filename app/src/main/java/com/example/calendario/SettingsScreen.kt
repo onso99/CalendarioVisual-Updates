@@ -111,6 +111,7 @@ fun SettingsScreen(
     onColorThemeClick: () -> Unit,
     onHolidayManagerClick: () -> Unit,
     onThemeUpdated: () -> Unit,
+    onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -873,12 +874,15 @@ fun SettingsScreen(
                 }
             }
             Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
-                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
                 Text("${stringResource(id = R.string.app_name)} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Text("${AboutInfo.LINE_2} > ${AboutInfo.getFormattedDate()}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${AboutInfo.LINE_3_AUTHOR} > ", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                    Text(stringResource(id = R.string.history), fontSize = 16.sp, color = Color(0xFF2196F3), modifier = Modifier.clickable { uriHandler.openUri(AboutInfo.URL_HISTORIAL) })
+                    Text("${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()} > ", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                    Text(
+                        text = stringResource(id = R.string.history),
+                        fontSize = 16.sp,
+                        color = Color(0xFF2196F3),
+                        modifier = Modifier.clickable { onHistoryClick() }
+                    )
                 }
             }
         }

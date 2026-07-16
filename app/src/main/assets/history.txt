@@ -1,0 +1,580 @@
+2026-07-15 - v1.98.93 Actualizaciones: librerías, Gradle plugin, Gradle Dependency
+2026-07-15 - v1.98.92 Corrección de warnings-3
+2026-07-15 - v1.98.91 Limpieza de cadenas huérfanas en strings
+2026-07-15 - v1.98.90 Corrección de warnings-2
+2026-07-15 - v1.98.89 Corrección de warnings-1
+2026-07-15 - v1.98.88 Respaldo de eventos. Strings propagados
+2026-07-14 - v1.98.87 Strings propagados
+2026-07-14 - v1.98.86 Respaldar copia en Drive: organizada la sección
+2026-07-14 - v1.98.85 Ajustes/Nuevo evento: signo > sólo si no hay valor para mostrar. Otros cambios en etiquetas
+2026-07-14 - v1.98.84 Corrección de warnings
+2026-07-14 - v1.98.83 Ajustes Widget: Colores despliega fila con 3 botones chips con fondo de color utilizado
+2026-07-13 - v1.98.82 Registro de eventos 20 años antes/6 años después
+2026-07-13 - v1.98.81 Backup puro: deduplicación de eventos antes de sincronizar en Drive
+2026-07-13 - v1.98.80 Deduplicación preventiva y sincronización silenciosa
+2026-07-13 - v1.98.79 Cambio al Estándar Nuevo de ID por fecha. Deduplicación por ADN del evento. Purga de registros inexistentes en Google Calendar
+2026-07-13 - v1.98.78 Copia de preferencias. Strings propagados
+2026-07-13 - v1.98.77 Nuevo estándar de identidad para festivos manuales: ID basado en fecha
+2026-07-13 - v1.98.76 Temas: Cargar/Guardar mejorados
+2026-07-13 - v1.98.75 Temas: Cargar/Guardar en dialogo
+2026-07-13 - v1.98.74 Temas: diálogo de botones chip en forma de tabla 2x4
+2026-07-13 - v1.98.73 Optimización de arranque: embudo en mainactivity y caché de texto en eventlist
+2026-07-13 - v1.98.72 Semana: ajuste de número de semana en el calendario mensual
+2026-07-13 - v1.98.71 Festivos: eliminado Importación/exportación
+2026-07-13 - v1.98.71 Festivos: eliminado Importación/exportación
+2026-07-13 - v1.98.70 Corrección de warnings
+2026-07-13 - v1.98.69 Blindaje y fusión de datos en la carga de eventos inicial. Integridad de festivos manuales
+2026-07-13 - v1.98.68 Corrección de warnings
+2026-07-13 - v1.98.67 Festivos en la sección General. Strings propagados
+2026-07-12 - v1.98.66 Corrección de warnings
+2026-07-12 - v1.98.65 Ficheros y código de previsualización eliminados
+2026-07-12 - v1.98.64 Strings propagados-2 (errores anteriores)
+2026-07-12 - v1.98.63 Strings propagados
+2026-07-12 - v1.98.62 Alarma: integrado en sección General
+2026-07-12 - v1.98.61 Semana: día de semana y número de semana se aplican a ambos calendarios (Mensual y anual)
+2026-07-12 - v1.98.60 Corrección de warnings
+2026-07-12 - v1.98.59 Ajustes: Cargar/Copiar con icono central el el resto de secciones
+2026-07-12 - v1.98.58 Nuevo/Editar evento: Alarma: switch suprimido
+2026-07-12 - v1.98.57 Nuevo/Editar evento: icono reloj separador hora inicio/fin
+2026-07-12 - v1.98.56 Nuevo/Editar evento: datos en negrita y ajustes de Inicio/Fin
+2026-07-12 - v1.98.55 Gestor de festivos: corrección de festivos duplicados al iniciar la app
+2026-07-11 - v1.98.54 Cambio de iconos en Cargar/Guardar de General, Temas y Gestor
+2026-07-11 - v1.98.53 Ajustes: botones Cargar y Guardar con borde y estilo igual a Nuevo evento
+2026-07-11 - v1.98.52 Corrección de warnings
+2026-07-11 - v1.98.51 Temas: corrección de bug al cambiar de tema (ahora strings)
+2026-07-11 - v1.98.50 Gestor festivos: etiqueta Festivos locales normalizada/propagada al resto de idiomas
+2026-07-11 - v1.98.49 Nuevo/Editar Evento: botones chips Periodo largo y Todo el día
+2026-07-11 - v1.98.48 Idiomas propagados
+2026-07-10 - v1.98.47 Nuevo orden en Ajustes
+2026-07-10 - v1.98.46 General y Festivos: Icono, Cargar y Guardar
+2026-07-10 - v1.98.45 Temas: botones chips con flash en pulsación
+2026-07-10 - v1.98.44 Temas: Icono SVG, Cargar/Guardar en misma línea
+2026-07-10 - v1.98.43 Temas: nombres en strings. Nombre aplicado al cargar/guardar tema.
+2026-07-10 - v1.98.42 Creación eventos: por defecto día y hora actual. Corregida aproximación que creaba eventos largos
+2026-07-01 - v1.98.41 Strings propagados
+2026-07-01 - v1.98.40 Respaldo incremental de eventos: fusión inteligente, sellos de tiempo (último modificado), marcas de borrado, Flujo incremental
+2026-07-01 - v1.98.39 Corrección de warnings WidgetLogScreen.kt
+2026-07-01 - v1.98.38 Botón limpiador de alarmas en pantalla depuración. Nuevas etiquetas propagadas al resto de idiomas
+2026-06-30 - v1.98.37 Corrección de warnings
+2026-06-30 - v1.98.36 Se mantiene auto-sanación y se mejora el log sólo si hay que recrear la tarea
+2026-06-30 - v1.98.35 Guardar/Cargar preferencias
+2026-06-30 - v1.98.34 Sincronización automática: Frecuencia de copia -> Manual por defecto. Las demás activan el motor de sincronización
+2026-06-30 - v1.98.33 Sincronización automática: auto-sanación de tarea y log
+2026-06-30 - v1.98.32 Sincronización automática: logs depuración
+2026-06-30 - v1.98.31 Strings propagados al resto de idiomas
+2026-06-30 - v1.98.30 Sincronización automática mejorada y registro en logs. Permiso de Batería añadido
+2026-06-29 - v1.98.29 Cumpleaños sin icono recurrente
+2026-06-29 - v1.98.28 Corrección de warnings
+2026-06-29 - v1.98.27 Diálogo Repetir evento: Repeticiones con foco y el valor se muestra en pantalla de edición
+2026-06-29 - v1.98.26 Corrección de warnings
+2026-06-29 - v1.98.25 Capa de robustez al diálogo Permisos
+2026-06-29 - v1.98.24 Lista de eventos principal: sin separación entre iconos y texto
+2026-06-28 - v1.98.23 Lista de eventos principal: icono repeticiones + nro. de repeticiones
+2026-06-28 - v1.98.22  kotlinx-coroutines-play-services actualizado 1.11.0
+2026-06-28 - v1.98.21 Respaldo de eventos automático solucionado
+2026-06-28 - v1.98.20 Solicitud completa de permisos de lectura/escritura sobre Calendar de google
+2026-06-26 - v1.98.19 Controles (switchs, sliders) unificados con el tema actual
+2026-06-26 - v1.98.18 Cadenas hardcoded recuperadas para strings. Propagadas al resto de idiomas. Orden de cadenas en todos.
+2026-06-26 - v1.98.17 Warnings corregidos: gradle-wrapper.properties
+2026-06-26 - v1.98.16 Warnings corregidos: CalendarioViewModel.kt
+2026-06-26 - v1.98.15 Warnings corregidos: CalendarioViewModel.kt, CalendarDataUtils.kt, CalendarDataUtils.kt
+2026-06-26 - v1.98.14 Archivos temporales eliminados: temp_libs.toml y temp_settings.kt
+2026-06-26 - v1.98.13 Warnings corregidos: SettingsScreen.kt
+2026-06-26 - v1.98.12 Corrección: Comienza semana aparece con check al iniciar programa
+2026-06-26 - v1.98.11 Warnings corregidos: libs.versions.toml
+2026-06-26 - v1.98.10 Warnings corregidos: build.gradle.kts
+2026-06-26 - v1.98.9 Strings propagados al resto de idiomas
+2026-06-26 - v1.98.8 Hora de alarma en Lista de eventos y Widget
+2026-06-26 - v1.98.7 Respaldo de eventos sustituye a Copia de seguridad del Historial
+2026-06-26 - v1.98.6 Reubicación de Guardar/Cargar ajustes y aspecto, pasan a General
+2026-06-26 - v1.98.5 Histórico/Autoguardado Drive: Rango de lectura de datos -1 año hasta +5 años. Restaurar desde Drive
+2026-06-26 - v1.98.4 Histórico/Autoguardado Drive: Sincronizar ahora con círculo de actividad
+2026-06-26 - v1.98.3 Histórico y autoguardado en Drive: Sincronizar ahora/Ultima copia: OK
+2026-06-25 - v1.98.2 Histórico y autoguardado en Drive: Json. Vinculación Google Drive
+2026-06-25 - v1.98.1 Histórico y autoguardado en Drive: Fase-1
+2026-06-20 - v1.970.17 Diálogo de error corregido para más de 5 eventos largos en un día
+2026-06-20 - v1.970.16 Carriles máximos 5 gruesos y con forma de píldora
+2026-06-20 - v1.970.15 Mejorada la información multilínea en los diálogos
+2026-06-19 - v1.970.14 corrección de warnings 4
+2026-06-19 - v1.970.13 corrección de warnings 3
+2026-06-19 - v1.970.12 corrección de warnings 2
+2026-06-19 - v1.970.11 corrección de warnings 1
+2026-06-19 - v1.970.10 strings español depurado y propagado a otros idiomas
+2026-06-19 - v1.970.9 Nuevo evento: selección de color ampliada
+2026-06-19 - v1.970.8 Nuevo evento: Ajustadas opciones de Repetir evento
+2026-06-19 - v1.970.7 Nuevo evento: todo el día (off) por defecto. Inicio y fin en la misma línea
+2026-06-19 - v1.970.6 Eventos largos: widget adaptado para mostrar (x/y)
+2026-06-19 - v1.970.5 Eventos largos: Ajuste lista de eventos separación dia raya título
+2026-06-19 - v1.970.4 Eventos largos Fase-1: lista eventos normales sólo color en el título de evento
+2026-06-19 - v1.970.3 Eventos largos Fase-1: Ajustados espacios de elemtos en Listado principal
+2026-06-19 - v1.970.2 Eventos largos Fase-1: Borrados ficheros de simulación
+2026-06-19 - v1.970.1 Eventos largos Fase-1. Sugerencia Nuria
+2026-06-11 - v1.969 Personalizar colores: suprimida sección Lista de eventos. Strings propagadas en todos los idiomas
+2026-06-11 - v1.968 Orden en Personalizar colores: General, Calendario Mensual, Lista de Eventos. Retoque tema Océano
+2026-06-09 - v1.967 Ajustes Widget/Fuente: Truncado nombre de fuente (1 línea) y Condensada también responde al botón B
+2026-06-09 - v1.966.2 Ajustes Widget/Fuente: el icono B se aplica al título de la fuente
+2026-06-09 - v1.966.1 Ajustes Widget/Fuente: el icono B permanece es posición
+2026-06-07 - v1.966 Acerca de actualizado
+2026-06-07 - v1.965 Nombre Calendario Visual propagado a resto de idiomas y a preview del widget
+2026-06-07 - v1.964.4 Warnings corregidos
+2026-06-07 - v1.964.3 Nuevo layout de previsualización del Widget
+2026-06-07 - v1.964.2 Nuevo icono
+2026-06-07 - v1.964.1 Corrección de warnings
+2026-06-07 - v1.964 Icono alarma desaparece en eventos pasados y permanece en recurrentes
+2026-06-07 - v1.963.28 Organizados Ajustes Generales: Modo, Permisos, Comienza semana, Número semana
+2026-06-07 - v1.963.27 Ajustes y Personalizar colores unificados: 52 dp altura, 24 dp separación
+2026-06-06 - v1.963.26 Personalizar colores con altura unificada
+2026-06-06 - v1.963.25 Opciones de Ajustes con altura unificada
+2026-06-05 - v1.963.24 Diálogo Estado de permisos: actualizado en tiempo real
+2026-06-05 - v1.963.23 Uniformidad en los ajustes: padding y líneas
+2026-06-05 - v1.963.22 Strings propagadas a resto de idiomas
+2026-06-05 - v1.963.21 Corrección de warnings-2
+2026-06-05 - v1.963.20 Corrección de warnings
+2026-06-05 - v1.963.19 Saneamiento de Etiquetas, Limpieza de Divisores
+2026-06-05 - v1.963.18 Persistencia de Ajustes de Alarma. Motor de Chequeo de Permisos. Indicador Visual de "Semáforo". Diálogo de Permisos Detallado. Limpieza y Estabilidad
+2026-06-05 - v1.963.17 Eventos todo el día con Alarma: corregida la hora de inicio
+2026-06-05 - v1.963.16a Alarma sobre pantalla de bloqueo a pantalla completa ok. Necesita permiso Notificaciones Pantalla completa
+2026-06-05 - v1.963.16 Alarma sobre pantalla de bloqueo a pantalla completa
+2026-06-04 - v1.963.15 CalendarWidgetFactory.kt y CalendarWidgetService.kt Warnings corregidos
+2026-06-04 - v1.963.14 Copia completa incluye también las alarmas
+2026-06-04 - v1.963.13 Cumpleaños, evento-1 y 2: colores independientes del tema
+2026-06-04 - v1.963.12 Alarma: Widget con icono de alarma
+2026-06-04 - v1.963.11 Alarma: Corrección de warnings
+2026-06-04 - v1.963.10 Alarma: Idiomas completados
+2026-06-04 - v1.963.9 Alarma: Corrección de warnings
+2026-06-04 - v1.963.8 Alarma: Ajustes > Minutos anticipación y Posponer
+2026-06-03 - v1.963.7 Alarma: 4.Sincronización de borrado: Borrado Instantáneo, Limpieza Profunda (Barrido Negativo), Higiene de Datos
+2026-06-03 - v1.963.6 Alarma: 1.Alarmas fantasma: limpieza por barrido (sistema y base de datos de preferencias)
+2026-06-03 - v1.963.5 Alarma: Aviso/notificación con botones Posponer y Detener
+2026-06-03 - v1.963.4 Alarma: Sincronización total ante cualquier cambio en google calendar
+2026-06-03 - v1.963.3 Alarma: Fase 3
+2026-06-03 - v1.963.2 Alarma: botones Detener y Posponer ok (incluso con dispositivo bloqueado)
+2026-06-02 - v1.963.1 Alarma: esqueleto, toast de aviso y sonido. Icono campana en lista de eventos
+2026-06-02 - v1.963 Borde día actual mejorado en modo claro y oscuro
+2026-05-31 - v1.962.6 Correcciones Analizador de código: 0 warnings. Strings-todos
+2026-05-31 - v1.962.5 Correcciones Analizador de código: 13 warnings. Strings-1
+2026-05-31 - v1.962.4 Correcciones Analizador de código: 14 warnings
+2026-05-31 - v1.962.3 Correcciones Analizador de código: 130 warnings
+2026-05-30 - v1.962.2 Correcciones Analizador de código: 145 warnings
+2026-05-29 - v1.962.1 Correcciones Analizador de código: 136 warnings. Android
+2026-05-29 - v1.962 MonthlyCalendar depurado
+2026-05-29 - v1.961 build.gradle.kts Warnings corregidos
+2026-05-28 - v1.960 Temas claros corregidos
+2026-05-28 - v1.959 Temas oscuros corregidos. Efecto 2
+2026-05-28 - v1.958 Curva de Contraste Adaptativa en la cabecera días de semana. Tema verde oliva corregido
+2026-05-28 - v1.957 Pendientes: clareado/oscurecimiento 10%-Saturación 5%
+2026-05-28 - v1.956 Corrección de warnings
+2026-05-28 - v1.955 Botón Pendientes con Lógica de muestreo + Overlay
+2026-05-28 - v1.954 Etiqueta Eventos con umbral al 65% para texto oscuro
+2026-05-27 - v1.953 Celda día de semana con ajuste dinámico de oscurecimiento
+2026-05-27 - v1.952 Mejora en fondo de días de la semana (incluso con degradado): capas de transparencia y contraste dinámico
+2026-05-27 - v1.951 Color etiquetas Día de semana y Título eventos: unificado
+2026-05-27 - v1.950 Warning TODO corregido
+2026-05-27 - v1.949 Warnings corregidos
+2026-05-27 - v1.8.948 Strings corregidos en resto de idiomas
+2026-05-27 - v1.8.947 Reglas de ordenación: 1.Eventos todo el día. 2.Cronológico. 3. Alfabético
+2026-05-27 - v1.8.946 Recuperada la opción Lista de eventos/Resaltado día actual
+2026-05-27 - v1.8.945 Correcciones: Sincronización total de gris neutro y consistencia de datos
+2026-05-27 - v1.8.944 Lista de eventos: color de eventos igual a color de días del mes. Celdas día de la semana corregidas
+2026-05-26 - v1.8.943 Fondo calendario: Eliminado Efecto 3 (Radial)
+2026-05-26 - v1.8.942 Lista eventos: resaltado día actual automatizado
+2026-05-26 - v1.8.941 Calendario anual: Resaltado del día actual con borde adaptativo,mismas reglas del cal. mensual
+2026-05-26 - v1.8.940 Borde de día actual en calendario mensual: luminosidad dependiente de color de celda
+2026-05-26 - v1.8.93.9 Evento normal comparte lógica con Días, texto de sistema
+2026-05-26 - v1.8.93.8 Mes cabecera, Días semana y Título lista eventos: Tintado inteligente. Botones Año y Pendientes: contraste puro
+2026-05-26 - v1.8.93.7 2-Titulo de la lista automatizado
+2026-05-25 - v1.8.93.6 1-Cabecera de días dinámica. 3-Texto de sistema adaptativo
+2026-05-25 - v1.8.93.5 Fondo celda mes corregida: números siguen criterio legibilidad
+2026-05-24 - v1.8.93.4 Correcciones AppConstants y warnings
+2026-05-24 - v1.8.93.3 Strings de idiomas propagados y corregidos
+2026-05-24 - v1.8.93.2 Tema Océano: ajuste de colores
+2026-05-24 - v1.8.93.1 Corregido padding en secciones de ajustes
+2026-05-24 - v1.8.93 Tema por defecto Océano. Modificado=Tema***.Eliminado Restaurar colores.
+2026-05-22 - v1.8.92.6 Strings errores corregidos
+2026-05-22 - v1.8.92.5 Strings de idiomas propagados con los cambios
+2026-05-22 - v1.8.92.4 Fondo secciones 10%. Eliminado título temas v6>Temas
+2026-05-22 - v1.8.92.3 Fondo secciones recalculado 15% contraste en modos claro/oscuro
+2026-05-22 - v1.8.92.2 Fondo diálogos eliminado: aclarado 10% respecto fondo pantallas
+2026-05-22 - v1.8.92.1 correcciones: bundledthemes y backupmanager
+2026-05-21 - v1.8.92 Calendario mensual: ajustados colores modo oscuro
+2026-05-21 - v1.8.91 Calendario mensual: suprimido color fondo días pasados y otros meses. Afectados: theme, appconstants, bundledthemes, backupmanager, strings
+2026-05-21 - v1.8.90 Calendario mensual: fondo de días pasados unificado
+2026-05-21 - v1.8.89 Cumpleaños: se usan strings para identificarlos y quitar edad en felicitación. Idiomas ok
+2026-05-21 - v1.8.88 Cumpleaños: corregido (0)
+2026-05-16 - v1.8.87 Calendario mensual: días pasados con fondo y número más oscuro
+2026-05-16 - v1.8.86 Cumpleaños calculados al año en curso. Historial: FontWeight.Normal
+2026-05-16 - v1.8.85 Acerca de: enlace a historial de commits
+2026-05-14 - v1.8.84 Importar festivos: todos los idiomas ok
+2026-05-14 - v1.8.83 Importar festivos impide duplicado de festivos y da prioridad a los que ya existan en el gestor
+2026-05-12 - v1.8.82 Evento-1 y 2: elimina espacios antes y después, también mayúsculas y minúsculas
+2026-05-12 - v1.8.81 Next_refresh_pending=en 15 min. Todos los idiomas ok.
+2026-05-10 - v1.8.80
+2026-05-10 - v1.8.78.38 Warnings: DialogsEvents, HolidayManagerScreen, IcsHelper, UpdateCalendarDataWorker ok.
+2026-05-10 - v1.8.78.37 Warnings: BackupManager, CalendarioViewModel, CalendarWidgetFactory ok.
+2026-05-10 - v1.8.78.36 Warnings: AddEventScreen y SettingsScreen ok.
+2026-05-10 - v1.8.78.35 Warnings: CalendarAppWidgetProvider ok.
+2026-05-10 - v1.8.78.34 Warnings: CalendarDataUtils y MainActivity ok.
+2026-05-10 - v1.8.78.33 AppConstants: se usan constantes en vez de nombres directos: holiday_adjustmens y adjustments
+2026-05-10 - v1.8.78.32 Warnings: searchscreen ok
+2026-05-10 - v1.8.78.31 Warnings: logcollector ok
+2026-05-10 - v1.8.78.30 Cadenas vacías eliminadas en todos los idiomas
+2026-05-10 - v1.8.78.29 Cadenas que faltaban añadidas al resto de idiomas
+2026-05-10 - v1.8.78.28 Cadenas que faltaban añadidas a español
+2026-05-10 - v1.8.78.27 Cadenas traducidas al resto de idiomas
+2026-05-09 - v1.8.78.26 Todos los textos del programa pasados a strings.xml
+2026-05-09 - v1.8.78.25 Búsqueda: Compartir varios items en un fichero .ics
+2026-05-09 - v1.8.78.24 Búsqueda: multiselección. Borrar varios eventos
+2026-05-09 - v1.8.78.23 Depuración 7 clicks ON, click largo OFF
+2026-05-09 - v1.8.78.22 Muestra eventos +-2 años. No festivos manuales (gestor) porque varían cada año
+2026-05-09 - v1.8.78.21 Corregido Copia de seguridad (incluye calendarios y festivos)
+2026-05-09 - v1.8.78.20 Corregido Gestor de festivos/Importación
+2026-05-09 - v1.8.78.19 Restaurados iconos redondos para el color en ajustes/widget
+2026-05-09 - v1.8.78.18 título pantalla logs: Logs de depuración
+2026-05-09 - v1.8.78.17 Icono Bug-log pulsación larga/corta ON/OFF persistente
+2026-05-09 - v1.8.78.16 Icono Bug-log derecha Acerca de
+2026-05-08 - v1.8.78.15 Cumpleaños edades corregido. Super-log
+2026-05-07 - v1.8.78.14 Widget: comprobando logs-14 + próximo refresco
+2026-05-06 - v1.8.78.13 Widget: comprobando logs-13
+2026-05-06 - v1.8.78.12 Widget: comprobando logs-3
+2026-05-06 - v1.8.78.11 Widget: comprobando logs-2
+2026-05-06 - v1.8.78.10 Widget: comprobando logs
+2026-05-06 - v1.8.88 Widget: super-log:lo que sistema android entrega, lo que app procesa, decisión del widget
+2026-05-06 - v1.8.86 Widget: monitor y log: logcollector, widgetlogscreen, settingsscreen
+2026-05-06 - v1.8.84 Widget: 1.Sello de tiempo en el adaptador (intent.setdata). 2.Refuerzo en el desbloqueo (user_present). 3.Prevención bucles
+2026-05-06 - v1.8.83 Widget: 1.Lógica auto-correctiva (getviewAt) consciencia horaria. 2.Refresco forzado en onupdate. 3.Lectura directa y síncrona. 4.Eliminación dependencia externa
+2026-05-05 - v1.8.82 Widget: nuevas correcciones en la lectura
+2026-05-05 - v1.8.81 Widget: lectura directa de calendario google
+2026-05-05 - v1.8.80 Widget: corregida actualización (no se actualizaba)???
+2026-05-04 - v1.8.79 Widget: corregido bug de actualización infinita
+2026-05-04 - v1.8.78 Widget: actualización 1-refresco forzado, 2-actualización activa, 3-identificadores únicos
+2026-04-29 - v1.8.77 Cumpleaños: Reforzado
+2026-04-29 - v1.8.76 Cumpleaños: Utiliza la cadena de strings.xml <string name="birthdays">Cumpleaños</string> para identificarlos
+2026-04-29 - v1.8.75 Cumpleaños: Ya no se utiliza cadena de título pero afecta a eventos anuales que no son cumpleaños
+2026-04-28 - v1.8.74 Cumpleaños: se utilizan identificadores de cumpleaños y cadenas del título
+2026-04-28 - v1.8.73 Recuperada edad en eventos cumpleaños (se tratan fechas anteriores a 1970)
+2026-04-26 - v1.8.72 Copia de seguridad completa incluye también colores
+2026-04-26 - v1.8.71 Corregido color de cumpleaños y evento-1/2 en la lista de eventos
+2026-04-24 - v1.8.70 Corregido Warning Parameter "e" is never used
+2026-04-24 - v1.8.69 corregido AndroidManifest.xml
+2026-04-24 - v1.8.68 Backup completo Fase-3 Traducciones
+2026-04-24 - v1.8.67 Backup completo Fase-2
+2026-04-24 - v1.8.66 Backup completo Fase-1
+2026-04-18 - v1.8.65 Gestor de festivos: si OFF no aparecen en el calendario
+2026-04-10 - v1.8.64 Compartir: Traducido al resto de idiomas: <string name="share_event">Compartir evento</string>
+2026-04-10 - v1.8.63 Compartir: además de compartir se puede importar un fichero .ics
+2026-04-10 - v1.8.62: Compartir fichero .ics en ventana edición
+2026-04-10 - v1.8.61 Widget: el nombre de la fuente cambia con la selección de fuente y el icono bold
+2026-04-09 - v1.8.60 Widget: El icono Bold cambia también el título de la fuente a Bold
+2026-04-09 - v1.8.58 Widget: Eliminados en los layouts android:fontFamily="sans-serif-condensed"
+2026-04-09 - v1.8.57 Widget: Fuente por defecto: Condensada. Ajuste texto: +-4
+2026-04-09 - v1.8.56 Widget: Cadenas de Fuente traducias al resto de idiomas
+2026-04-09 - v1.8.55 Widget: Selección de Fuente
+2026-03-13 - v1.8.54 Widget: forzar actualziación para otros dispositivos
+2026-03-09 - v1.8.53 Corregida actualización Widget en dispositivos Xioami
+2026-03-06 - v1.8.52 Toast propagados al resto de idiomas
+2026-03-06 - v1.8.51 Toast al eliminar festivo y al eliminar eventos. Icono papelera más intenso
+2026-03-06 - v1.8.50 Gestor de Festivos: actualizar después de importar
+2026-03-05 - v1.8.49 Correcciones Gestor de Festivos
+2026-03-05 - v1.8.48 Retoques de color: Borde día actual, tamaño texto en Seleccionar color
+2026-03-05 - v1.8.47 Ayuda: Gestor de Festivos en todos los idiomas
+2026-03-05 - v1.8.46 Ayuda: incluido Gestor de Festivos (sólo español)
+2026-03-05 - v1.8.45 Idiomas: 17 cadenas incorporadas
+2026-03-04 - v1.8.44 Reorganizado Ajustes: Modo, Apariencia, etc
+2026-03-04 - v1.8.43 Acerca de dinámico
+2026-03-04 - v1.8.42 Gestor de Festivos: Importación y Exportación ok
+2026-03-03 - v1.8.41 Gestor de Festivos (sin importación/exportación) Warnings corregidos
+2026-03-03 - v1.8.41 Gestor de Festivos (sin importación/exportación)
+2026-03-02 - v1.8.40 Muestra festivos en calendario mensual y anual
+2026-03-02 - v1.8.39 Color borde día actual cal. mensual: Naranja
+2026-03-02 - v1.8.38 Teclado capitaliza en todo
+2026-03-02 - v1.8.37 Teclado capitaliza en Crear/Editar evento
+2026-02-12 - v1.8.36 strings propagadas a todos los idiomas
+2026-02-12 - v1.8.35 strings español completas (incluyendo definición de iconos)
+2026-02-12 - v1.8.34 Eventos recurrentes: tratamiento estándar icalendar en borrado y modificación
+2026-02-11 - v1.8.33 Copiar evento: copiar eventos futuros aplican la fecha actual
+2026-02-11 - v1.8.32 Copiar evento: aparece check al copiar evento antiguo
+2026-02-10 - v1.8.31 Copiar eventos ok
+2026-02-10 - v1.8.30 Apartado Resumen mejorado
+2026-02-10 - v1.8.29 Corregido Mostrar repeticiones al mostrar evento
+2026-01-28 - v1.8.28 Fin corrección de warnings
+2026-01-28 - v1.8.28 Corrección de warnings-2
+2026-01-28 - v1.8.27 Corrección de warnings-1
+2026-01-28 - v1.8.26 Cambiado color Otros Meses de Calendario Mensual. Reordenadas opciones de Personalizar Tema
+2026-01-28 - v1.8.25 Widget: muestra eventos del mes y futuros hasta llenar el límite de Ajustes
+2026-01-28 - v1.8.24 Calendarios-8: Se conserva el orden de los calendarios aunque se cambie de favorito
+2026-01-28 - v1.8.23 Calendarios-7: Suprimida cadena set_as_favorite en strings y en Dialogs.kt
+2026-01-28 - v1.8.22 Calendarios-6: Arranque en frío ordena bien calendarios y selecciona el pricipal de google como favorito
+2026-01-28 - v1.8.21 Calendarios-5: haciendo pruebas sin cache ni almacenamiento
+2026-01-28 - v1.8.20 Calendarios-4: el favorito debe ser siempre visible
+2026-01-28 - v1.8.19 Calendarios-3: orden correcto y estrella obliga a selección
+2026-01-28 - v1.8.18 Calendarios-2: calendario favorito. Todavia deja seleccionar calenarios solo lectura
+2026-01-28 - v1.8.17 Calendarios-1: calendario favorito + estrella. Ordenados +-
+2026-01-27 - v1.8.16 Mensajes toast propagados a idiomas
+2026-01-27 - v1.8.15 Solucionado el posible error silencioso. Si error al crear evento, la pantalla permanece y muestra toast
+2026-01-26 - v1.8.14 Mensajes de error propagados al resto de idiomas
+2026-01-26 - v1.8.13 Verificación de errores. Avisos
+2026-01-17 - v1.8.12 ContentObserver en MainActivity. Eventos se refrescan al instante en lista de eventos
+2026-01-16 - v1.8.11 lista de eventos y eventos de widget corregido
+2026-01-16 - v1.8.10 Texto: Temas predefinidos y Temas v6 propagados al resto de idiomas
+2026-01-16 - v1.8.9 Nueva función de filtrado de eventos (bug que hace desaparecer eventos)
+2026-01-16 - v1.8.8 correcciones: nombre de tema, check dialogo Temas v6, 8 Temas predefinidos
+2026-01-15 - v1.8.7 Creada la estructura Temas predefinidos
+2026-01-15 - v1.8.5 "Ajuste de texto" en todos los idiomas
+2026-01-15 - v1.8.4 Widget: Slider Multiplr:1.20f textBoost:0.10f. Eliminado código de depuración
+2026-01-15 - v1.8.3 Depuración: Widget: Slider Multiplicador: 1.20f textBoost 0.08f
+2026-01-15 - v1.8.2 Depuración: Widget: Slider Tamaño Fuente (-2, -1, 0, 1, 2)
+2026-01-15 - v1.8.1 Suprimido padding vertical en layouts S y M
+2026-01-15 - v1.8 Esquinas redondeadas invertidas. Cambiados colores por defecto, degradado 1
+2026-01-14 - v1.7.97 Suprimida la cadena <string name="large_font">Letra grande en todos los idiomas
+2026-01-14 - v1.7.96 Interruptor Letra grande eliminado en Ajustes
+2026-01-14 - v1.7.95 Desarrollo: S, M, L ajustados
+2026-01-14 - v1.7.94 Desarrollo: S: SF<=3.45f, M: SF<=4.01f, L: SF>4.01f
+2026-01-14 - v1.7.93 Desarrollo: S: SF<=3.0f, M: 3.0f<SF<=4.5f, L: SF>4.5f
+2026-01-14 - v1.7.92 Desarrollo: layouts S, M, L creados. Factor estrés (SF) implementado
+2026-01-14 - v1.7.91 Gradle 1.7.91
+2026-01-14 - v1.7.91 Limitado tamaño máximo de fuente y visualización de sistema para conservar interface
+2026-01-11 - v1.7.90 Corrección warnings-2. Widget: celdas wrap text
+2026-01-11 - v1.7.89 Idiomas completos: No hay eventos (widget)
+2026-01-11 - v1.7.88 Corrección warnings-1
+2026-01-11 - v1.7.87 corregido numero de mes centrado: con y sin punto
+2026-01-11 - v1.7.86 Seleccionar color: Se aplica fuente grande de sistema: val useVerticalLayout = fontScale > 1.4f
+2026-01-11 - v1.7.85 Widget: corregido espacio vertical
+2026-01-11 - v1.7.84 Borde día actual corregido
+2026-01-11 - v1.7.83 Borde día actual mejorado: celda más grande superpuesta con borde
+2026-01-11 - v1.7.82 -gl -it -ja -pt -ru -zh
+2026-01-11 - v1.7.81 -fr
+2026-01-11 - v1.7.80 -en -eu
+2026-01-11 - v1.7.79 -de
+2026-01-11 - v1.7.78 -ca
+2026-01-11 - v1.7.77 Texto Grande: Dialogo Seleccionar color adaptado
+2026-01-10 - v1.7.76 Texto Grande: Título Pantalla Personalizar colores corregido a 1 línea
+2026-01-10 - v1.7.75 Texto Grande: Efecto: 0 1 2 3 centrados
+2026-01-10 - v1.7.74 Texto Grande: Widget adaptado
+2026-01-10 - v1.7.73 Nuevo/Editar evento: corregida etiqueta Del cuando el evento no tiene fecha de repetición
+2026-01-10 - v1.7.72 Texto Grande: corregido resumen Nuevo/Editar evento
+2026-01-10 - v1.7.71 Nuevo/Editar evento corregido: muestra fecha y hora de inicio y fin
+2026-01-10 - v1.7.70 Texto Grande: corregido Nuevo evento y Editar evento
+2026-01-10 - v1.7.69 Texto Grande: corregido cuadro de texto en Selección de Año
+2026-01-10 - v1.7.68 Texto Grande: corregido error en calendario Anual
+2026-01-10 - v1.7.67 Texto Grande: corregido calendario Anual
+2026-01-10 - v1.7.67 Texto Grande: arreglado botón Pendientes
+2026-01-10 - v1.7.66 Texto sistema Grande: corregidos Ajustes y Personalizar Tema para que ocupen una sóla línea
+2026-01-10 - v1.7.65 Borradas claves obsoletas de AppConstants.kt y Theme.kt
+2026-01-10 - v1.7.64 Restaurar colores establece Efecto 1
+2026-01-10 - v1.7.63 Reducidos textos de Ajustes y Personalizar colores (strings.xml idioma principal)
+2026-01-10 - v1.7.62 Acercade.kt. No puede alojar el Nº de versión por reglas de PlayStore y Android
+2026-01-10 - v1.7.61 Efecto 4 (Radial). Corregida Importación/Exportación para guardar el efecto
+2026-01-09 - v1.7.60 Efecto: sustituidos los iconos por 0, 1, 2
+2026-01-09 - v1.7.59 Fondo botón Pendientes calculado correctamente (10% claro/oscuro) del fondo del calendario que le afecta
+2026-01-09 - v1.7.58 Eventos de... Botón Pendientes dentro del fondo del calendario
+2026-01-09 - v1.7.57 Restaurar colores: limpiadas claves obsoletas
+2026-01-09 - v1.7.56 Personalizar colores: Fondo de pantallas = Fondo lista de eventos. Suprimido este último
+2026-01-07 - v1.7.55 Suprimidos botones Guardar/Cancelar en Editar/añadir eventos. Sustituye el check superior
+2026-01-07 - v1.7.54 Personalizar colores: Fondo del menú desplegable suprimido, ahora es Fondo de los diálogos
+2026-01-07 - v1.7.53 Personalizar colores: Fondo botón Pendientes suprimido. Falta propagarlo a idiomas
+2025-12-30 - v1.7.52 Botón Destructivo siempre en Rojo
+2025-12-30 - v1.7.51 Arreglados elementos para usar CalendarioTheme.colors.textSystem y títulos y Búsqueda Total con regla 60/40%
+2025-12-30 - Eliminados Temas de los recursos
+2025-12-30 - v1.7.49 Ayuda: texto cabecera: 60% color cabecera 40% color sistema
+2025-12-30 - v1.7.48 Ayuda: texto cabecera CalendarioTheme.colors.textSystem
+2025-12-30 - v1.7.47 Calendarios: lectura forzada
+2025-12-29 - v1.7.46 Botón Pendientes: corregido color de fondo
+2025-12-29 - v1.7.45 Pantalla Buscar: fondo de botones solucionado
+2025-12-29 - v1.7.44 Arreglados colores-1
+2025-12-29 - v1.7.43 Checks corregidos Modo y Comienzo de semana, Seleccionar color y Evento-1 y 2
+2025-12-29 - v1.7.42 Dialogs.kt corregido. Botón Cancelar unificado
+2025-12-27 - v1.7.41 Warnings corregidos
+2025-12-27 - Eliminados recursos de idiomas no utilizados
+2025-12-27 - v1.7.40 Corregida Importación de temas antiguos (Efecto y Degradado)
+2025-12-27 - v1.7.39 corregido idiomas que vuelven al sincronizar build.gradle.kts
+2025-12-27 - v1.7.38 Establecidos colores por defecto e icono de Efecto Degradado
+2025-12-26 - v1.7.37 Texto Efecto añadido a los idiomas
+2025-12-26 - v1.7.36 Efectos Degradado y Mezcla. Fase 2
+2025-12-26 - v1.7.35 Efectos Degradado y Mezcla. Fase 1
+2025-12-26 - v1.7.34 Ayuda corregida en los 11 idiomas
+2025-12-26 - v1.7.33 Idiomas reducidos a 12. Ayuda corregida, sin comillas.
+2025-12-25 - v1.7.32 Idiomas: sustituidos ... por caracter elipsis
+2025-12-25 - v1.7.31 Idiomas: custom_selected en todos los idiomas
+2025-12-25 - v1.7.30 Idiomas: cambiado selected por custom_selected. Modificados Dialogs.kt y SettingsScrenn. Falta propagar a idiomas
+2025-12-25 - v1.7.29 Correcciones idiomas-1
+2025-12-25 - v1.7.28 Eventos de solo lectura corregido
+2025-12-21 - v1.7.26 Warnings corregidos
+2025-12-21 - v1.7.25 Calendario Anual: fondo corregido
+2025-12-20 - v1.7.24 Días de semana corregidos (2 letras capitalizadas) en todos los idiomas
+2025-12-20 - v1.7.23 Nro de versión > build.gradle.kts. Texto Acerca en SettingsScreen.kt
+2025-12-20 - v1.7.22 Idiomas
+2025-12-18 - v1.7.22 Cambio a ViewModel
+2025-12-18 - v1.7.20 Comienzo día de la semana: Sistema/Lunes/Domingo/Sábado
+2025-12-18 - v1.7.19 Seleccion Calendarios: añade etiqueta a Calendarios de solo lectura
+2025-12-18 - v1.7.18 Botón check inteligente y diálogo sobre cambios no aplicados
+2025-12-18 - v1.7.17 Corrección warnings 3: todos menos DialogsAdvanced.kt
+2025-12-18 - v1.7.17 Corrección warnings 2: Dialogs.kt
+2025-12-18 - v1.7.17 Corrección warnings 1 (hasta Datamodels)
+2025-12-18 - v1.7.16 Modo Claro/Oscuro/Sistema movido a General
+2025-12-18 - v1.7.15 Otras correcciones
+2025-12-17 - v1.7.15 Botón Año con isColorDark
+2025-12-17 - v1.7.14 DialogsAdvanced.kt corregidos isColorDark
+2025-12-17 - v1.7.14 Siguen correcciones isColorDark en resto de archivos
+2025-12-17 - v1.7.14 Botón Pendientes/Todos. Corregida la función isColorDark para que calcule color+fondo
+2025-12-17 - v1.7.13 Exportación de Temas: se puede poner nombre al tema
+2025-12-17 - v1.7.12 Búsqueda Anual pone año en curso en medio de pantalla
+2025-12-17 - v1.7.11 Ayuda: márgenes corregidos
+2025-12-17 - v1.7.10 Corregido Texto de secciones (usan color del tema). Corregida Ayuda (Ajustes por Opciones)
+2025-12-17 - v1.7.9 Corregidos Datepicker y Timepicker
+2025-12-17 - v1.7.8 Acerca de trasladado a Ajustes
+2025-12-17 - v1.7.7 Auditadas pantallas y diálogos para que apliquen bien el tema
+2025-12-17 - v1.7.6 arreglando aplicación de temas
+2025-12-17 - v1.7.6 Búsqueda de eventos restaurada
+2025-12-17 - v1.7.5 Cabecera: texto e iconos arreglado  (material3 se encarga). Eliminado color "En Advertencia" (texto dialogos advertencia)
+2025-12-16 - v1.7.4 Diálogos unificados
+2025-12-16 - v1.7.4 Dialogs.kt/DialogsAdvanced.kt. Diálogo de Hora en Edit/Add muestra hora actual
+2025-12-16 - v1.7.4 Diálogos unificados en Dialogs.kt
+2025-12-16 - v1.7.3 Diálogo Seleccionar Modo traducido
+2025-12-16 - v1.7.2 Eliminado Mezclador de temas
+2025-12-15 - v1.7.1 Modo claro/oscuro/sistema. Temas de color funcionando +-
+2025-12-15 - v1.6.6 Opciones -> Ajustes en menu 3 puntos
+2025-12-15 - v1.6.6 Opciones Generales. Switch Semana en vista anual
+2025-12-15 - v1.6.5 Calendario Anual: espacio vertical mejorado
+2025-12-14 - v1.6.4 warnings: corregidos todos
+2025-12-14 - v1.6.4 warnings: build.gradle.kts Fase-2 completada
+2025-12-14 - v1.6.4 warnings: build.gradle.kts Fase-1
+2025-12-14 - v1.6.4 warnings: Carpeta java corregidos
+2025-12-14 - v1.6.4 Botón Pendientes auto claro/oscuro
+2025-12-14 - v1.6.2 Eventos todo el día: corregida notificación a 9:00
+2025-12-14 - v1.6.1 Cumpleaños reconocidos por festivo.isBirthday
+2025-12-11 - v1.6 corregido botón Pendientes/todos. Ahora muestra todos los eventos
+2025-12-11 - v1.6 corregido nombre de tema en pantalla Opciones
+2025-12-11 - v1.6 Avisos corregidos en importación de temas antiguos
+2025-12-11 - v1.6 Temas Importación/Exportación corregidos
+2025-12-11 - v1.5.40 Restaurar colores corregido
+2025-12-11 - v1.5.40 finalizado puntos color. Diálogos actualizados con color de texto
+2025-12-11 - v1.5.40 trabajando puntos de color
+2025-12-11 - v1.5.40 Reorganizado Personalizar colores, 3 puntos
+2025-12-09 - v1.5.36 Añadida edad a los eventos, diálogos y búsqueda
+2025-12-05 - v1.5.35 Reparada pila de navegación: Personalizar colores vuelve a opciones
+2025-12-05 - v1.5.35 Búsqueda: flecha izda vuelve a la búsqueda
+2025-12-05 - v1.5.35 Búsqueda: resultados agrupados
+2025-12-04 - v1.5.35 Búsqueda: arreglados botones
+2025-12-04 - v1.5.35 Diálogo ThemeMixerDialog modificado
+2025-12-04 - v1.5.35 warnings corregidos (3)
+2025-12-04 - v1.5.35 warnings corregidos (2)
+2025-12-04 - v1.5.35 warnings corregidos (SearchScreen)
+2025-12-04 - v1.5.35 búsqueda: 2a dep. Lógica de búsqueda en SearchScreen.kt
+2025-12-04 - v1.5.35 búsqueda: 1ª depuración
+2025-12-03 - v1.5.31 Desvanecimiento eventos en lista eventos
+2025-12-03 - v1.5.31 Titulo Eventos de mes en lista de eventos. Margen cal.mensual 16.dp
+2025-11-28 - v1.5.30 corregida alineación nombre de mes y solapamiento con botón Anual
+2025-11-28 - v1.5.28 corregido fondo Nuevo y Edit evento
+2025-11-27 - v1.5 Fijados colores por defecto
+2025-11-27 - v1.5 Calendario anual: corregido fondo del día actual. Iconos en menu 3 puntos
+2025-11-27 - v1.5 Calendario anual: corregido fondo y días de semana sin fondo
+2025-11-27 - v1.5 Colores de widget fijados
+2025-11-27 - v1.5 Contraste compuesto inteligente para eventos del día
+2025-11-27 - v1.5 Diálogos unificados
+2025-11-26 - v1.5 Color (claro/oscuro) para fondo eventos del día, titulo lista eventos, fondo botón Pendientes
+2025-11-25 - v1.5 Seguridad en importación de temas
+2025-11-25 - v1.5 Mezclador de temas
+2025-11-25 - v1.5 Nombre de tema aplicado
+2025-11-25 - v1.5 bug corregido al pulsar Personalizar colores
+2025-11-24 - v1.5 Cuadro de texto en diálogo color con prevención de error
+2025-11-24 - v1.5 Exportación de temas corregido
+2025-11-24 - v1.5 Corrección warnings 3
+2025-11-24 - v1.5 Corrección warnings 2
+2025-11-24 - v1.5 inicio corrección warnings
+2025-11-24 - v1.5 previo a division de calendarioscreen
+2025-11-24 - v1.5 flecha izda retorno a mes actual. Texto de ayuda corregido
+2025-11-24 - v1.5 Retoques: titulo mes y botón año
+2025-11-23 - v1.5 Temas-5 slider luminosidad
+2025-11-23 - v1.5 Temas-3 Separados fondos Secciones y Diálogos
+2025-11-23 - v1.5 Temas-2 Una columna de colores
+2025-11-22 - v1.5 Temas-1 ajustando bloques
+2025-11-21 - v1.45 botón check operativo
+2025-11-21 - v1.45 Cambios de color reactivos
+2025-11-21 - v1.45 Unificados Selectores de color
+2025-11-20 - v1.45 Seleccionar color corregido
+2025-11-20 - v1.45 Temas de color
+2025-11-19 - v1.43 colores corregidos
+2025-11-19 - v1.43 Pantalla preferencias, eventos del día separados vert.
+2025-11-12 - v1.42 Buscar eventos. Diálogo eliminación unificado. Editar y cambiar 'No recurrentes/Recurrentes' ok
+2025-11-11 - v1.41b Al volver al mes actual la lista de eventos muestra el 1er evento pendiente
+2025-11-11 - v1.41a colores corregidos modo claro/oscuro
+2025-11-11 - v1.41 cuadros diálogo unificados y ayuda corregida
+2025-11-11 - v1.40a Retoques de color modo oscuro
+2025-11-11 - v1.40 eventos del día sin negrita, icono repetición siempre negro
+2025-11-11 - v1.38s lista de eventos, eventos del día con numero remarcado
+2025-11-10 - v1.38r correcciones: diálogo eliminar eventos, color fondo Editar evento
+2025-11-10 - v1.38q borrado de eventos repetidos, uno o toda la serie
+2025-11-10 - v1.38p lista de eventos con icono de repetición
+2025-11-10 - v1.38o Eventos repetidos, eliminación de serie completa
+2025-11-09 - v1.38n Warnings corregidos
+2025-11-08 - v1.38m Ayuda extendida
+2025-11-08 - v1.38l corregido rojo de festivos en lista eventos modo oscuro
+2025-11-08 - v1.38k botón Pendientes/Todos
+2025-11-08 - v1.38j borrado de eventos
+2025-11-08 - v1.38i Permisos de escritura desde cualquier situación
+2025-11-08 - v1.38h Eventos desde día del calendario con y sin eventos
+2025-11-08 - v1.38 Guardar nuevo evento en google cal. OK
+2025-11-07 - v1.38 pantalla "Nuevo evento" completada. Falta activar Guardar
+2025-11-07 - v1.38 pruebas crear evento ok
+2025-11-06 - v1.37 Cal. Anual, selección de año
+2025-11-06 - v1.37 Desplazamiento Scroll en cal. mensual y anual. Botón Home
+2025-11-06 - v1.37 retoques: color, bordes...
+2025-11-06 - v1.37 mainactivity en partes
+2025-11-06 - v1.37 Huecos de cal. mensual cubiertos
+2025-11-06 - v1.37 Mejoras de color en cal. mensual
+2025-11-06 - v1.37 Widget actualizado en formato
+2025-09-25 - v1.36 Ayuda corregida 2
+2025-09-25 - v1.36 Ayuda corregida
+2025-09-25 - v1.36 Ajuste colores titulo eventos y celdas vacías del mes
+2025-09-25 - v1.36 colores "Eventos de"
+2025-09-25 - v1.36 prefs widget colores por defecto y circulo rojo
+2025-09-24 - v1.35 eventos con hora de fin se eliminarán del widget y listado de eventos una vez finalizada su hora
+2025-09-24 - v1.35 Calendario permisos y abre diálogo selección
+2025-09-24 - v1.35 Optimizado inicio y widget
+2025-09-18 - v1.34 corrigiendo warnings-1
+2025-09-16 - V1.34 calendario festivos redundante para otros dispositivos
+2025-09-16 - V1.33 modo oscuro corregido azul Cancelar
+2025-09-16 - V1.33 selección calendarios sólo muestra con eventos
+2025-09-16 - V1.33 selección calendarios sólo muestra con eventos
+2025-09-15 - V1.32b recolocado punto de evento
+2025-09-15 - V1.32 Tema oscuro colores retocados
+2025-09-15 - V1.32 Tema oscuro automático = 1.31 anterior
+2025-09-15 - V1.31 Tema oscuro inicios
+2025-09-15 - V1.31 Colores del widget
+2025-09-15 - V1.30 APK generada
+2025-09-14 - V1.30 titulo eventos pendientes con fondo
+2025-09-14 - V1.30 mini imagen preview del widget
+2025-09-14 - V1.30 cambios en colores
+2025-09-14 - V1.30 Seleccionar calendarios sin colores
+2025-09-14 - V1.30 cal anual siempre empieza en el actual
+2025-09-14 - V1.30 cal anual mejorado
+2025-09-14 - V1.30 app se actualiza al volver a pantalla de inicio, con o sin widget
+2025-09-14 - V1.30 widget con worker 15'
+2025-09-13 - V1.2.56 widget con datos al crearlo
+2025-09-13 - V1.2.55.1 final02
+2025-09-13 - V1.2.55 final02
+2025-09-13 - V1.2.55 colores nuevos
+2025-09-13 - V1.2.55 cal mensual dia actual corregido
+2025-09-13 - V1.2.55 festivos +-1año y ayuda corregida
+2025-09-13 - V1.2.55 festivos +-1 año
+2025-09-13 - V1.2.55 calendario anual ok
+2025-09-13 - V1.2.55 Retoques
+2025-09-13 - V1.2.55 Retoques
+2025-09-12 - v2.54 V1.2.54 Release
+2025-09-12 - v2.54 final02 V1.2.54
+2025-09-12 - v2.54 widget final 01
+2025-09-12 - v2.54 widget ok dia semana alig izda
+2025-09-12 - v2.54 fuentes estandar
+2025-09-12 - v2.54 pruebas con tamaño fuente widget
+2025-09-12 - v2.54 estable: widget clicable
+2025-09-12 - v2.54 estable: persistencia y 1 linea por evento
+2025-09-12 - v2.53.1 widget nuevo03 corregido minWidth weekday
+2025-09-12 - v2.53.1 widget nuevo03 tamaño fuente
+2025-09-12 - v2.53.1 widget nuevo 02 hoy en amarillo
+2025-09-12 - v2.53.1 widget nuevo 01
+2025-09-10 - v2.53 inicio menu widget
+2025-09-10 - v2.52import corregido
+2025-09-10 - v2.52
+2025-09-10 - v2.52
+2025-09-10 - v1.02
+2025-09-10 - v1.01
