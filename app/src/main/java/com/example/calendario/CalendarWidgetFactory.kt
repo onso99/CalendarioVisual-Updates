@@ -161,6 +161,10 @@ class CalendarWidgetFactory(
             views.setViewVisibility(R.id.widget_item_alarm_icon, View.VISIBLE)
             views.setInt(R.id.widget_item_alarm_icon, "setColorFilter", currentTextColor)
             
+            // Sincronización de opacidad: Extraemos el Alpha del color del texto para aplicarlo al icono
+            val colorAlpha = (currentTextColor shr 24) and 0xFF
+            views.setInt(R.id.widget_item_alarm_icon, "setAlpha", colorAlpha)
+            
             val alarmTime = AlarmUtils.getAlarmTimeString(context, actualEvent)
             if (alarmTime != null) {
                 views.setViewVisibility(R.id.widget_item_alarm_time, View.VISIBLE)
