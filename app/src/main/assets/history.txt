@@ -1,3 +1,4 @@
+2026-07-16 - v1.98.99 Historial.txt automatizado con tarea en buildgradle.kts
 2026-07-16 - v1.98.98 Idiomas corregidos
 2026-07-16 - v1.98.97 Widget: icono de alarma con corrección de opacidad
 2026-07-16 - v1.98.96 Icono Nube en sección Respaldo de eventos
