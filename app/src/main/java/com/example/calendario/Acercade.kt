@@ -7,9 +7,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object AboutInfo {
-    const val LINE_2 = "Android Studio"
     const val LINE_3_AUTHOR = "Onso"
-    const val URL_HISTORIAL = "http://calendario.onso.es"
     
     private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 7, 1)
 
