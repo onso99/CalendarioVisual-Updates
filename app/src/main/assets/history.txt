@@ -1,3 +1,8 @@
+2026-07-16 - v1.98.98 Idiomas corregidos
+2026-07-16 - v1.98.97 Widget: icono de alarma con corrección de opacidad
+2026-07-16 - v1.98.96 Icono Nube en sección Respaldo de eventos
+2026-07-16 - v1.98.95 Corrección de warnings
+2026-07-16 - v1.98.94 Historial: pantalla con barra de deslizamiento
 2026-07-15 - v1.98.93 Actualizaciones: librerías, Gradle plugin, Gradle Dependency
 2026-07-15 - v1.98.92 Corrección de warnings-3
 2026-07-15 - v1.98.91 Limpieza de cadenas huérfanas en strings

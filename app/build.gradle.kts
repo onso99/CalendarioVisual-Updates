@@ -21,7 +21,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 37
         versionCode = 2
-        versionName = "1.98.98"
+        versionName = "1.98.99"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -96,4 +96,28 @@ dependencies {
     implementation(libs.googleDriveApi)
     implementation(libs.googleHttpClient)
     implementation(libs.kotlinx.coroutines.play.services)
+}
+
+// Tarea para automatizar la generación del historial de commits
+tasks.register("updateGitHistory") {
+    group = "documentation"
+    description = "Genera el archivo history.txt desde los commits de Git"
+    
+    doLast {
+        val historyFile = file("src/main/assets/history.txt")
+        val process = ProcessBuilder(
+            "git", "log", "--pretty=format:%ad - %s", "--date=short"
+        ).start()
+        
+        val output = process.inputStream.bufferedReader().readText()
+        if (output.isNotEmpty()) {
+            historyFile.writeText(output)
+            println("Historial actualizado correctamente en assets/history.txt")
+        }
+    }
+}
+
+// Opcional: Hacer que se ejecute automáticamente antes de cada compilación
+tasks.named("preBuild") {
+    dependsOn("updateGitHistory")
 }
