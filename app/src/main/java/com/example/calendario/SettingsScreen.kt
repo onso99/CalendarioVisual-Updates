@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -788,6 +789,15 @@ fun SettingsScreen(
                             text = stringResource(id = R.string.account_label), 
                             color = CalendarioTheme.colors.textSystem, 
                             fontSize = 16.sp
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cloud_backup),
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            modifier = Modifier
+                                .padding(start = 14.dp)
+                                .size(24.dp)
+                                .offset(y = (-1).dp) // Sube el icono sutilmente para alinearlo visualmente
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
