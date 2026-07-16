@@ -153,7 +153,7 @@
     <string name="themes_v6">Темы</string>
     <string name="widget_colors_label">Цвета</string>
     <string name="widget_color_fondo">Фон</string>
-    <string name="widget_color_evento">Мероприятие</string>
+    <string name="widget_color_evento">Событие</string>
     <string name="widget_color_hoy">Сегодня</string>
 
     <string name="permission_denied_title">В доступе отказано</string>

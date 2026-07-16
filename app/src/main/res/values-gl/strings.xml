@@ -36,7 +36,7 @@
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">Seguro que queres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
-    <string name="repeat_until">Finaliza</string>
+    <string name="repeat_until">Remata</string>
     <string name="repeat_indefinite">Indefinidamente</string>
     <string name="repeat_on_date">Ata a data</string>
     <string name="repeat_after">Repeticións</string>
@@ -103,7 +103,7 @@
     <string name="help_section_customization">Personalización</string>
     <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de color para compartilos.</string>
     <string name="help_section_holiday_manager">Xestor de Festivos</string>
-    <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos o laborables de forma manual, independentemente do que indique o calendario del sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
+    <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos ou laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">A aplicación inclúe un Widget para a pantalla de Inicio que amosa os próximos eventos. Pódese personalizar a súa aparencia elixindo o número de eventos a amosar, cambiando o tamaño da letra e modificado as súas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
@@ -133,7 +133,7 @@
     <string name="could_not_read_file">Non se puido ler o ficheiro.</string>
     <string name="error_processing_theme">Erro ao procesar o tema: %1$s</string>
     <string name="incompatible_theme_file">Ficheiro de tema non compatible.</string>
-    <string name="file_contains_no_theme">O ficheiro non contén ni tema claro nin escuro.</string>
+    <string name="file_contains_no_theme">O ficheiro non contén nin tema claro nin escuro.</string>
     <string name="invalid_json_file">O ficheiro non é un JSON válido.</string>
     <string name="invalid_color_in_theme">O tema contén un color non válido en \"%1$s\".</string>
     <string name="light_theme">Claro</string>
@@ -161,7 +161,7 @@
     <string name="go_to_settings">Ir a Axustes</string>
     <string name="error">Erro</string>
     <string name="no_calendar_selected_error">Non se seleccionou ningún calendario. Por favor, elixe un calendario para gardar o evento.</string>
-    <string name="title_empty_error">O título non pode estar baleiro. Por favor, introduce un título para el evento.</string>
+    <string name="title_empty_error">O título non pode estar baleiro. Por favor, introduce un título para o evento.</string>
 
     <string name="event_saved_successfully">Evento gardado</string>
     <string name="error_saving_event">Erro ao gardar o evento. Comproba os calendarios seleccionados.</string>
@@ -223,12 +223,14 @@
     <string name="snooze_alarm">POSTPOR</string>
     <string name="alarm_anticipation_label">Anticipación</string>
     <string name="alarm_snooze_label">Postpor</string>
+
     <string name="semana_label">Semana</string>
     <string name="local_holidays_label">Festivos locais</string>
     <string name="preferences_backup_label">Copia de preferencias</string>
     <string name="preferences_title">Preferencias</string>
     <string name="cargar_label">Cargar</string>
     <string name="guardar_label">Gardar</string>
+
     <string name="system_permissions">Permisos do sistema</string>
     <string name="permissions_dialog_title">Estado de Permisos</string>
     <string name="calendar_permission_label">Calendario</string>
@@ -239,9 +241,9 @@
 
     <string name="status_granted">PERMITIDO</string>
     <string name="status_granted_f">PERMITIDAS</string>
-    <string name="status_denied">SIN PERMISO</string>
+    <string name="status_denied">SEN PERMISO</string>
     <string name="status_full_screen">PANTALLA COMPLETA</string>
-    <string name="status_no_full_screen">SEN PANTAILLA COMPLETA</string>
+    <string name="status_no_full_screen">SEN PANTALLA COMPLETA</string>
     <string name="status_linked">VINCULADA</string>
     <string name="status_unlinked">SEN VINCULAR</string>
     <string name="status_unrestricted">SEN RESTRICCIÓNS</string>
@@ -259,7 +261,7 @@
     <string name="account_linked_success">Conta vinculada con éxito</string>
     <string name="account_linked_error">Erro ao vincular a conta</string>
     <string name="unlink_google_account">Desvincular conta de Google</string>
-    <string name="unlink_account_confirmation">¿Desvincular conta de Google? Deteranse as copias de seguridade automáticas na nube.</string>
+    <string name="unlink_account_confirmation">Desvincular conta de Google? Deteranse as copias de seguridade automáticas na nube.</string>
     <string name="unlink_action">DESVINCULAR</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diaria</string>
@@ -268,14 +270,14 @@
     <string name="sync_success_detailed">Sincronización completa: %1$d eventos (%2$d eliminados)</string>
     <string name="sync_error_drive">Erro de Drive. Verifica a túa conta.</string>
     <string name="restore_from_drive">Restaurar desde Drive</string>
-    <string name="restore_confirm_title">¿Restaurar eventos?</string>
-    <string name="restore_confirm_message">Substituiranse os eventos gardados pola copia de Google Drive. Os eventos actuais del sistema non se verán afectados.</string>
+    <string name="restore_confirm_title">Restaurar eventos?</string>
+    <string name="restore_confirm_message">Substituiranse os eventos gardados pola copia de Google Drive. Os eventos actuais do sistema non se verán afectados.</string>
     <string name="restore_success">Eventos restaurados con éxito</string>
     <string name="restore_error">Non se atopou unha copia válida en Drive</string>
     <string name="last_backup_with_count">Última: %1$s · %2$d eventos</string>
     <string name="never">Nunca</string>
     <string name="error_updating_data">Erro ao actualizar datos.</string>
-    <string name="confirm_delete_adjustment">¿Desexas eliminar este axuste? Restaurarase o estado orixinal do calendario.</string>
+    <string name="confirm_delete_adjustment">Desexas eliminar este axuste? Restaurarase o estado orixinal do calendario.</string>
     <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">cumpreanos,cumpre,aniversario</string>
@@ -289,7 +291,7 @@
     <string name="preview_vie">Ven</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Entrega de proxecto</string>
-    <string name="bundled_theme_1_name">Océano</string>
+    <string name="bundled_theme_1_name">Oceáno</string>
     <string name="bundled_theme_2_name">Bosque</string>
     <string name="bundled_theme_3_name">Volcán</string>
     <string name="bundled_theme_4_name">Amencer</string>

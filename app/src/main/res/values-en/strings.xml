@@ -92,7 +92,7 @@
     <string name="export_theme_title">Save Theme</string>
     <string name="theme_name">Theme name</string>
     <string name="export">Save</string>
-    <string name="help_section_calendar_views">Calendar view</string>
+    <string name="help_section_calendar_views">Calendar views</string>
     <string name="help_calendar_views_1">The application has two main views: Monthly and Yearly. You can switch between them by tapping on the year in the header.</string>
     <string name="help_calendar_views_2">In the monthly view, swipe left or right to change the month. The upper left arrow in the header will return to the current month.</string>
     <string name="help_section_event_management">Event management</string>

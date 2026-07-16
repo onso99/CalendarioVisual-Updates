@@ -103,7 +103,7 @@
     <string name="help_section_customization">Personalizzazione</string>
     <string name="help_customization_1">Dal menu Impostazioni puoi scegliere le modalità Chiaro e Scuro. Puoi anche personalizzare i colori dell\'interfaccia e Importare ed Esportare i temi di colore per condividerli.</string>
     <string name="help_section_holiday_manager">Gestore festività</string>
-    <string name="help_holiday_manager_1">Questa funzione permette di contrassegnare manualmente giorni specifici come festivi o lavorativi, indipendentemente da quanto indicato dal calendario di sistema o dagli eventi importati. Contrassegnando un giorno come festivo, il suo numero sarà evidenziato nel colore corrispondente nelle viste mensile e annuale.</string>
+    <string name="help_holiday_manager_1">Questa funzione permette di contrassegnare manualmente giorni specifici como festivi o lavorativi, indipendentemente da quanto indicato dal calendario di sistema o dagli eventi importati. Contrassegnando un giorno come festivo, il suo numero sarà evidenziato nel colore corrispondente nelle viste mensile e annuale.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzare il suo aspetto scegliendo il numero di eventi da mostrare, cambiando la dimensione del carattere e modificando i suoi colori.</string>
     <string name="copied_to_clipboard">Copiato: %1$s</string>
@@ -199,7 +199,7 @@
     <string name="font_condensed">Condensed (Stretto)</string>
     <string name="share_event">Condividi evento</string>
     <string name="share_multiple_message">📅 Ti condivido %1$d eventi dal mio calendario</string>
-    <string name="calendar_events_subject">Eventos del calendario</string>
+    <string name="calendar_events_subject">Eventi del calendario</string>
     <string name="debug_title">Debug</string>
     <string name="next_refresh_label">Prossimo aggiornamento: %1$s</string>
     <string name="next_refresh_pending">tra 15 min.</string>
@@ -218,17 +218,19 @@
     <string name="error_importing_backup">Errore durante il ripristino del backup: %1$s</string>
     <string name="invalid_backup_file">File di backup non valido</string>
 
-    <string name="alarm">Alarme</string>
+    <string name="alarm">Allarme</string>
     <string name="stop_alarm">STOP</string>
     <string name="snooze_alarm">POSTICIPA</string>
     <string name="alarm_anticipation_label">Anticipo</string>
     <string name="alarm_snooze_label">Posticipa</string>
+
     <string name="semana_label">Settimana</string>
     <string name="local_holidays_label">Festività locali</string>
     <string name="preferences_backup_label">Copia delle preferenze</string>
     <string name="preferences_title">Preferenze</string>
     <string name="cargar_label">Carica</string>
     <string name="guardar_label">Salva</string>
+
     <string name="system_permissions">Permessi di sistema</string>
     <string name="permissions_dialog_title">Stato dei permessi</string>
     <string name="calendar_permission_label">Calendario</string>
@@ -248,7 +250,7 @@
     <string name="status_optimized">OTTIMIZZATA (LIMITATA)</string>
     <string name="history">Cronologia</string>
 
-    <string name="backup_section_title">Respaldo degli eventi</string>
+    <string name="backup_section_title">Backup degli eventi</string>
     <string name="account_label">Account</string>
     <string name="backup_frequency">Frequenza</string>
     <string name="manage_backup_label">Gestione copia</string>
@@ -270,7 +272,7 @@
     <string name="restore_from_drive">Ripristina da Drive</string>
     <string name="restore_confirm_title">Ripristinare gli eventi?</string>
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
-    <string name="restore_success">Eventos ripristinati con successo</string>
+    <string name="restore_success">Eventi ripristinati con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
     <string name="last_backup_with_count">Ultima: %1$s · %2$d eventi</string>
     <string name="never">Mai</string>

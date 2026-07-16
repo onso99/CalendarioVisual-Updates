@@ -36,7 +36,7 @@
     <string name="confirm_deletion_title">Baieztatu ezabatzea</string>
     <string name="confirm_deletion_message">Ziur al zaude gertaera hau ezabatu nahi duzula: \"%1$s\"?</string>
     <string name="repeat_event_title">Errepikatu gertaera</string>
-    <string name="repeat_until">Finaliza</string>
+    <string name="repeat_until">Noiz amaitu</string>
     <string name="repeat_indefinite">Mugagabe</string>
     <string name="repeat_on_date">Data arte</string>
     <string name="repeat_after">Errepikapenak</string>
@@ -207,7 +207,7 @@
     <string name="no_logs_found">Ez dago log-ik erregistratuta oraindik.</string>
     <string name="copy_action">Kopiatu</string>
     <string name="sync_alarms">Sinkronizatu alarmak</string>
-    <string name="sync_alarms_success">Garbiketa amaituta: %1$d alarman umezurtz ezabatu dira.</string>
+    <string name="sync_alarms_success">Garbiketa amaituta: %1$d alarma umezurtz ezabatu dira.</string>
     <string name="selected_count">%1$d hautatuta</string>
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
@@ -261,7 +261,7 @@
     <string name="unlink_google_account">Askatu Google kontua</string>
     <string name="unlink_account_confirmation">Google kontua askatu nahi duzu? Babeskopia automatikoak gelditu egingo dira.</string>
     <string name="unlink_action">ASKATU</string>
-    <string name="frequency_manual">Manual</string>
+    <string name="frequency_manual">Eskuz</string>
     <string name="frequency_daily">Egunero</string>
     <string name="frequency_weekly">Astero</string>
     <string name="frequency_monthly">Hilero</string>
@@ -283,10 +283,10 @@
     <string name="preview_today">Gaur</string>
     <string name="preview_date_1">22/05</string>
     <string name="preview_event_1">Plangintza bilera</string>
-    <string name="preview_jue">Ost</string>
+    <string name="preview_jue">Og.</string>
     <string name="preview_date_2">23/05</string>
     <string name="preview_event_2">Bazkaria bezeroarekin</string>
-    <string name="preview_vie">Osl</string>
+    <string name="preview_vie">Or.</string>
     <string name="preview_date_3">24/05</string>
     <string name="preview_event_3">Proiektu entrega</string>
     <string name="bundled_theme_1_name">Ozeanoa</string>

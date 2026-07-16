@@ -87,7 +87,7 @@
     <string name="widget_text_adjustment">テキスト調整</string>
     <string name="about">このアプリについて</string>
     <string name="discard_changes_title">変更を破棄</string>
-    <string name="discard_changes_confirmation">未保存 de 変更があります。破棄してもよろしいですか？</string>
+    <string name="discard_changes_confirmation">未保存の変更があります。破棄してもよろしいですか？</string>
     <string name="discard">破棄</string>
     <string name="export_theme_title">テーマを保存</string>
     <string name="theme_name">テーマ名</string>

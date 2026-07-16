@@ -90,7 +90,7 @@
     <string name="discard_changes_confirmation">Tem alterações não guardadas. Tem a certeza que deseja descartá-las?</string>
     <string name="discard">Descartar</string>
     <string name="export_theme_title">Guardar Tema</string>
-    <string name="theme_name">Nome del tema</string>
+    <string name="theme_name">Nome do tema</string>
     <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vistas do calendário</string>
     <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensual e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
@@ -145,7 +145,7 @@
     <string name="birthdays">Aniversários</string>
     <string name="event_1">Evento-1</string>
     <string name="event_2">Evento-2</string>
-    <string name="calendar_background">Fundo calendario</string>
+    <string name="calendar_background">Fundo calendário</string>
     <string name="effect">Efeito</string>
     <string name="current_month_cell">Célula do mês</string>
     <string name="calendar_source">Calendário: %1$s</string>
@@ -206,8 +206,8 @@
     <string name="not_scheduled">Não agendado</string>
     <string name="no_logs_found">Ainda não existem logs registados.</string>
     <string name="copy_action">Copiar</string>
-    <string name="sync_alarms">Sincronizar alarmas</string>
-    <string name="sync_alarms_success">Limpeza terminada: %1$d alarmas órfãos eliminados.</string>
+    <string name="sync_alarms">Sincronizar alarmes</string>
+    <string name="sync_alarms_success">Limpeza terminada: %1$d alarmes órfãos eliminados.</string>
     <string name="selected_count">%1$d selecionados</string>
     <string name="delete_multiple_confirmation">Deseja eliminar estes %1$d eventos? Esta ação não pode ser desfeita.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
@@ -250,7 +250,7 @@
     <string name="status_optimized">OPTIMIZADA (RESTRITA)</string>
     <string name="history">Histórico</string>
 
-    <string name="backup_section_title">Respaldo de eventos</string>
+    <string name="backup_section_title">Cópia de eventos</string>
     <string name="account_label">Conta</string>
     <string name="backup_frequency">Frequência</string>
     <string name="manage_backup_label">Gestão de cópia</string>
