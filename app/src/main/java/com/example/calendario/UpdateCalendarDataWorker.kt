@@ -82,6 +82,7 @@ class UpdateCalendarDataWorker(
             
             // Notificamos al widget de forma directa
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            WidgetStateManager.refreshWithCurrentEvents(context)
 
             LogCollector.addLog("WORKER: Completado con éxito")
             Result.success()

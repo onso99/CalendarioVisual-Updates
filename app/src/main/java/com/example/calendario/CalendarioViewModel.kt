@@ -162,6 +162,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
                 
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+                WidgetStateManager.updateWidgetState(context, cleanListToSave)
 
             } catch (e: Exception) {
                 Log.e("CalendarioViewModel", "Error loading all data", e)
@@ -208,6 +209,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
             saveSelectedCalendarIds(context, newSelectedIds)
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            WidgetStateManager.updateWidgetState(context, mergedEvents)
         }
     }
 

@@ -401,6 +401,7 @@ fun SettingsScreen(
                                 putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold)
                             }
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+                            WidgetStateManager.refreshWithCurrentEvents(context)
                             onBackPress()
                         }) {
                             Icon(Icons.Default.Check, stringResource(id = R.string.apply_changes), tint = MaterialTheme.colorScheme.onPrimary)

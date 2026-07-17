@@ -21,7 +21,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 37
         versionCode = 2
-        versionName = "1.98.99"
+        versionName = "1.99.00"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -96,6 +96,11 @@ dependencies {
     implementation(libs.googleDriveApi)
     implementation(libs.googleHttpClient)
     implementation(libs.kotlinx.coroutines.play.services)
+
+    // Glance (Modern Widgets)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+    implementation(libs.androidx.datastore.preferences)
 }
 
 // Tarea para automatizar la generación del historial de commits

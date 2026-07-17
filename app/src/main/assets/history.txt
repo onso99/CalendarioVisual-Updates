@@ -1,3 +1,5 @@
+2026-07-16 - Setup: Initial placeholder for Modern Widget development
+2026-07-16 - Refactor: Settings UI, localization, and automated history
 2026-07-16 - v1.98.99 Historial.txt automatizado con tarea en buildgradle.kts
 2026-07-16 - v1.98.98 Idiomas corregidos
 2026-07-16 - v1.98.97 Widget: icono de alarma con corrección de opacidad

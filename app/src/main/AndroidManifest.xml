@@ -109,6 +109,18 @@
                 android:resource="@xml/calendar_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".ModernCalendarWidgetReceiver"
+            android:exported="true"
+            android:label="Calendario Moderno">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/modern_calendar_widget_info" />
+        </receiver>
+
         <service
             android:name=".CalendarWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"
