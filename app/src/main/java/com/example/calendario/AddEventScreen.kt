@@ -221,12 +221,14 @@ fun AddEventScreen(
             selectedCalendar = editableCalendars.find { it.id == localEventToEdit!!.calendarId }
             
             if (localEventToEdit!!.fullStartMillis != null && localEventToEdit!!.fullEndMillis != null) {
-                // Recuperamos el rango completo real del evento
-                startDate = Instant.ofEpochMilli(localEventToEdit!!.fullStartMillis!!).atZone(ZoneId.systemDefault()).toLocalDateTime()
-                endDate = Instant.ofEpochMilli(localEventToEdit!!.fullEndMillis!!).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                // Recuperamos el rango completo real del evento. 
+                // IMPORTANTE: Los eventos "All Day" se almacenan en UTC por estándar de Android.
+                val zoneId = if (localEventToEdit!!.isAllDay) ZoneId.of("UTC") else ZoneId.systemDefault()
+                startDate = Instant.ofEpochMilli(localEventToEdit!!.fullStartMillis!!).atZone(zoneId).toLocalDateTime()
+                endDate = Instant.ofEpochMilli(localEventToEdit!!.fullEndMillis!!).atZone(zoneId).toLocalDateTime()
                 
                 // Ajuste visual para el fin de eventos Todo el día (Android guarda el día siguiente a las 00:00)
-                if (localEventToEdit!!.isAllDay && endDate.toLocalTime() == LocalTime.MIDNIGHT && endDate.isAfter(startDate)) {
+                if (localEventToEdit!!.isAllDay && endDate.isAfter(startDate)) {
                     endDate = endDate.minusDays(1)
                 }
             } else {
@@ -398,7 +400,16 @@ fun AddEventScreen(
             AddEventForm(
                 title = title, onTitleChange = { title = it },
                 selectedCalendar = selectedCalendar, onCalendarClick = { showCalendarDialog = true },
-                isAllDay = isAllDay, onAllDayChange = { isAllDay = it },
+                isAllDay = isAllDay, onAllDayChange = { 
+                    isAllDay = it
+                    // Si quitamos "Todo el dÃ­a" y no es un periodo largo, sincronizamos la fecha de fin con la de inicio
+                    if (!it && !isLongPeriod) {
+                        endDate = LocalDateTime.of(startDate.toLocalDate(), endDate.toLocalTime())
+                        if (endDate.isBefore(startDate)) {
+                            endDate = startDate.plusHours(1)
+                        }
+                    }
+                },
                 startDate = startDate, onStartDateClick = { showStartDatePickerDialog = true }, onStartTimeClick = { showStartTimePickerDialog = true },
                 endDate = endDate, onEndDateClick = { showEndDatePickerDialog = true }, onEndTimeClick = { showEndTimePickerDialog = true },
                 repetitionRule = repetitionRule, onRepetitionClick = { showRepetitionDialog = true },
@@ -415,6 +426,14 @@ fun AddEventScreen(
                         // Si no hay color elegido, ponemos el Azul Especial por defecto
                         if (selectedColorInt == null) {
                             selectedColorInt = 0xFF4C58D8.toInt()
+                        }
+                    } else {
+                        // Si desactivamos periodo largo, volvemos a la misma fecha para evitar el bug del dÃ­a extra
+                        if (endDate.toLocalDate() != startDate.toLocalDate()) {
+                            endDate = LocalDateTime.of(startDate.toLocalDate(), endDate.toLocalTime())
+                            if (endDate.isBefore(startDate)) {
+                                endDate = startDate.plusHours(1)
+                            }
                         }
                     }
                 },
