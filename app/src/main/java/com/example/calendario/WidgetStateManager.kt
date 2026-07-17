@@ -10,15 +10,13 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 /**
- * Gestiona el estado de datos para el Widget Moderno (Glance).
- * Utiliza SharedPreferences compartidas para mÃ¡xima fiabilidad entre procesos.
+ * Motor de datos del Widget Moderno.
+ * Utiliza SharedPreferences compartidas para garantizar que los datos lleguen al instante.
  */
 object WidgetStateManager {
-    private const val PREFS_NAME = "modern_widget_shared_state"
+    private const val PREFS_NAME = "modern_widget_prefs_v2"
     private const val KEY_JSON = "events_json"
     private val gson = Gson()
-    
-    // Usamos Dispatchers.Main para la parte de Glance para asegurar prioridad de UI
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     data class WidgetEvent(
@@ -36,11 +34,7 @@ object WidgetStateManager {
 
     fun updateWidgetState(context: Context, events: List<Festivo>) {
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val limit = try {
-            widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        } catch (_: Exception) {
-            WidgetConstants.DEFAULT_EVENT_COUNT
-        }
+        val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
 
         val now = LocalDateTime.now().withNano(0).withSecond(0)
         val futureEvents = events.filter { event ->
@@ -54,7 +48,7 @@ object WidgetStateManager {
         }.sortedWith(compareBy({ it.date }, { it.startTime }))
         .take(limit)
 
-        val widgetEvents = futureEvents.map { event ->
+        val json = gson.toJson(futureEvents.map { event ->
             WidgetEvent(
                 title = event.title,
                 dateEpochDay = event.date.toEpochDay(),
@@ -67,20 +61,17 @@ object WidgetStateManager {
                 totalDays = event.totalDays,
                 alarmTimeStr = AlarmUtils.getAlarmTimeString(context, event)
             )
-        }
+        })
 
-        val json = gson.toJson(widgetEvents)
-
-        // 1. Guardado inmediato y persistente
+        // Guardado sÃ­ncrono forzado para evitar latencia entre procesos
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
             .putString(KEY_JSON, json)
-            .commit() // Usamos commit() en lugar de apply() para asegurar escritura inmediata en disco
+            .commit()
 
-        // 2. NotificaciÃ³n AGRESIVA a Glance
         scope.launch {
             try {
                 ModernCalendarWidget().updateAll(context)
-                LogCollector.addLog("GLANCE INSTANT: ${widgetEvents.size} eventos actualizados")
+                LogCollector.addLog("GLANCE REFRESH: Datos enviados (${futureEvents.size} eventos)")
             } catch (e: Exception) {
                 LogCollector.addLog("GLANCE ERROR: ${e.message}")
             }
