@@ -1,4 +1,9 @@
+2026-07-17 - Merge master: Fix date bug and sync history
+2026-07-17 - Docs: Auto-update history log before branch switch
 2026-07-17 - v1.99.00 Bug corregido: un evento todo el día al dejar de serlo creaba un evento de periodo largo
+2026-07-17 - v2.00.01 Widget moderno (Glance): fase-1. Previo a corrección en Master de Nuevo/Editar evento todo el día/evento largo
+2026-07-17 - v2.00.00 Widget moderno (Glance): muestra eventos. Retardo 1min al mostrar nuevos eventos
+2026-07-16 - Setup: Initial placeholder for Modern Widget development
 2026-07-16 - Refactor: Settings UI, localization, and automated history
 2026-07-16 - v1.98.99 Historial.txt automatizado con tarea en buildgradle.kts
 2026-07-16 - v1.98.98 Idiomas corregidos
