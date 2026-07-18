@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
@@ -38,14 +39,16 @@ import androidx.glance.unit.ColorProvider
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle as JTextStyle
-import java.util.Locale
 
 class ModernCalendarWidget : GlanceAppWidget() {
+
+    // HEMOS ELIMINADO stateDefinition: Esto obliga a Android a redibujar siempre
+    // que la App llame a updateAll, sin intentar ahorrar baterÃ­a comparando estados.
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val events = WidgetStateManager.getWidgetEvents(context)
-            LogCollector.addLog("WIDGET UI: Renderizando (${events.size} eventos)")
+            LogCollector.addLog("WIDGET UI: Redibujando con ${events.size} eventos")
             
             GlanceTheme {
                 WidgetContent(events)
@@ -53,6 +56,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @Composable
     private fun WidgetContent(events: List<WidgetStateManager.WidgetEvent>) {
         val context = LocalContext.current
@@ -105,6 +109,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @Composable
     private fun EventItem(
         event: WidgetStateManager.WidgetEvent,
@@ -113,17 +118,16 @@ class ModernCalendarWidget : GlanceAppWidget() {
         fontWeight: FontWeight,
         clickAction: androidx.glance.action.Action
     ) {
-        val context = LocalContext.current
         val eventDate = LocalDate.ofEpochDay(event.dateEpochDay)
         val isToday = eventDate.isEqual(LocalDate.now())
-        
-        val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        val appPrefs = LocalContext.current.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
         val colorInt = if (isToday) appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
                        else appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
         
-        val colorProvider = ColorProvider(Color(colorInt))
+        val color = Color(colorInt)
+        val colorProvider = ColorProvider(color)
         val dateStr = eventDate.format(DateTimeFormatter.ofPattern("dd/MM"))
-        val locale = context.resources.configuration.locales[0]
+        val locale = LocalContext.current.resources.configuration.locales[0]
         val dayName = eventDate.dayOfWeek.getDisplayName(JTextStyle.SHORT, locale).replaceFirstChar { it.titlecase(locale) }
 
         Row(
@@ -133,64 +137,16 @@ class ModernCalendarWidget : GlanceAppWidget() {
                 .clickable(clickAction),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // CORRECCIÃ“N: Eliminada la negrita forzada del dÃ­a
-            Text(
-                text = dayName,
-                modifier = GlanceModifier.width(36.dp),
-                style = TextStyle(
-                    color = colorProvider,
-                    fontSize = (14 + textBoost).sp,
-                    fontWeight = fontWeight,
-                    fontFamily = fontFamily,
-                    textAlign = TextAlign.End
-                )
-            )
-
-            Text(
-                text = dateStr,
-                modifier = GlanceModifier.width(55.dp),
-                style = TextStyle(
-                    color = colorProvider,
-                    fontSize = (14 + textBoost).sp,
-                    fontFamily = fontFamily,
-                    fontWeight = fontWeight,
-                    textAlign = TextAlign.Center
-                )
-            )
-
+            Text(text = dayName, modifier = GlanceModifier.width(36.dp), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End))
+            Text(text = dateStr, modifier = GlanceModifier.width(55.dp), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center))
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
-            Text(
-                text = "$timePart${event.title}$agePart",
-                modifier = GlanceModifier.defaultWeight(),
-                style = TextStyle(
-                    color = colorProvider,
-                    fontSize = (14 + textBoost).sp,
-                    fontFamily = fontFamily,
-                    fontWeight = fontWeight
-                ),
-                maxLines = 1
-            )
-
+            Text(text = "$timePart${event.title}$agePart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
             if (event.alarmTimeStr != null) {
                 Spacer(modifier = GlanceModifier.width(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        provider = ImageProvider(R.drawable.ic_alarm_bell_outlined),
-                        contentDescription = null,
-                        modifier = GlanceModifier.size(14.dp),
-                        colorFilter = ColorFilter.tint(colorProvider)
-                    )
-                    Text(
-                        text = event.alarmTimeStr,
-                        style = TextStyle(
-                            color = colorProvider,
-                            fontSize = (12 + textBoost).sp,
-                            fontFamily = fontFamily,
-                            fontWeight = fontWeight
-                        ),
-                        modifier = GlanceModifier.padding(start = 1.dp)
-                    )
+                    Image(provider = ImageProvider(R.drawable.ic_alarm_bell_outlined), contentDescription = null, modifier = GlanceModifier.size(14.dp), colorFilter = ColorFilter.tint(colorProvider))
+                    Text(text = event.alarmTimeStr, style = TextStyle(color = colorProvider, fontSize = (12 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight), modifier = GlanceModifier.padding(start = 1.dp))
                 }
             }
         }

@@ -16,7 +16,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Motor de datos del Widget Moderno.
- * Agrupa actualizaciones para evitar saturaciÃ³n pero garantiza el refresco visual.
  */
 object WidgetStateManager {
     private const val PREFS_NAME = "modern_widget_shared_prefs"
@@ -38,65 +37,74 @@ object WidgetStateManager {
         val alarmTimeStr: String?
     )
 
+    /**
+     * ActualizaciÃ³n normal con agrupaciÃ³n (Debouncing) para evitar saturar al sistema
+     */
     fun updateWidgetState(context: Context, events: List<Festivo>) {
         updateJob?.cancel()
         updateJob = scope.launch {
-            // Agrupamos peticiones rÃ¡pidas (250ms) para no colapsar Android
             delay(250.milliseconds)
-
-            val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-
-            val now = LocalDateTime.now().withNano(0).withSecond(0)
-            val futureEvents = events.filter { event ->
-                val eventEndDateTime = if (event.isAllDay) {
-                    event.date.plusDays(1).atStartOfDay()
-                } else {
-                    val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX
-                    LocalDateTime.of(event.date, endTime)
-                }
-                eventEndDateTime.isAfter(now)
-            }.sortedWith(compareBy({ it.date }, { it.startTime }))
-            .take(limit)
-
-            val json = gson.toJson(futureEvents.map { event ->
-                WidgetEvent(
-                    title = event.title,
-                    dateEpochDay = event.date.toEpochDay(),
-                    startTimeStr = event.startTime?.toString(),
-                    isAllDay = event.isAllDay,
-                    isBirthday = event.isBirthday,
-                    age = event.age,
-                    isLongPeriod = event.isLongPeriod,
-                    currentDay = event.currentDay,
-                    totalDays = event.totalDays,
-                    alarmTimeStr = AlarmUtils.getAlarmTimeString(context, event)
-                )
-            })
-
-            // Guardado sÃ­ncrono para asegurar que el dato estÃ© listo para la UI
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
-                putString(KEY_JSON, json)
-            }
-
-            try {
-                // DISPARADOR NATIVO: Despertamos al receptor para prioridad alta
-                val intent = Intent(context, ModernCalendarWidgetReceiver::class.java).apply {
-                    action = ModernCalendarWidgetReceiver.ACTION_REFRESH_WIDGET
-                }
-                context.sendBroadcast(intent)
-
-                // DISPARADOR GLANCE: Redibujado de la interfaz
-                ModernCalendarWidget().updateAll(context)
-                
-                LogCollector.addLog("GLANCE PUSH: OK (${futureEvents.size} eventos)")
-            } catch (_: Exception) {}
+            performUpdate(context, events)
         }
     }
 
+    /**
+     * ActualizaciÃ³n INSTANTÃNEA para cuando el usuario cambia ajustes visuales.
+     */
     fun refreshWithCurrentEvents(context: Context) {
         val events = loadHistoryFromDisk(context)
-        updateWidgetState(context, events)
+        scope.launch {
+            performUpdate(context, events)
+        }
+    }
+
+    private suspend fun performUpdate(context: Context, events: List<Festivo>) {
+        val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+
+        val now = LocalDateTime.now().withNano(0).withSecond(0)
+        val futureEvents = events.filter { event ->
+            val eventEndDateTime = if (event.isAllDay) {
+                event.date.plusDays(1).atStartOfDay()
+            } else {
+                val endTime = event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX
+                LocalDateTime.of(event.date, endTime)
+            }
+            eventEndDateTime.isAfter(now)
+        }.sortedWith(compareBy({ it.date }, { it.startTime }))
+        .take(limit)
+
+        val json = gson.toJson(futureEvents.map { event ->
+            WidgetEvent(
+                title = event.title,
+                dateEpochDay = event.date.toEpochDay(),
+                startTimeStr = event.startTime?.toString(),
+                isAllDay = event.isAllDay,
+                isBirthday = event.isBirthday,
+                age = event.age,
+                isLongPeriod = event.isLongPeriod,
+                currentDay = event.currentDay,
+                totalDays = event.totalDays,
+                alarmTimeStr = AlarmUtils.getAlarmTimeString(context, event)
+            )
+        })
+
+        // Guardado sÃ­ncrono garantizado
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+            putString(KEY_JSON, json)
+        }
+
+        try {
+            // DISPARADOR NATIVO: Despertamos al receptor para prioridad alta
+            val intent = Intent(context, ModernCalendarWidgetReceiver::class.java).apply {
+                action = ModernCalendarWidgetReceiver.ACTION_REFRESH_WIDGET
+            }
+            context.sendBroadcast(intent)
+
+            // DISPARADOR GLANCE
+            ModernCalendarWidget().updateAll(context)
+            LogCollector.addLog("GLANCE PUSH: OK (${futureEvents.size} eventos)")
+        } catch (_: Exception) {}
     }
 
     fun getWidgetEvents(context: Context): List<WidgetEvent> {
