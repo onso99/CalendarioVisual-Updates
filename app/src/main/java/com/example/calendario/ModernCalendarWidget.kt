@@ -38,13 +38,14 @@ import androidx.glance.unit.ColorProvider
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle as JTextStyle
+import java.util.Locale
 
 class ModernCalendarWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val events = WidgetStateManager.getWidgetEvents(context)
-            LogCollector.addLog("WIDGET UI: Dibujando ${events.size} eventos")
+            LogCollector.addLog("WIDGET UI: Renderizando (${events.size} eventos)")
             
             GlanceTheme {
                 WidgetContent(events)
@@ -72,8 +73,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         }
         val fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal
 
-        // AcciÃ³n de clic para abrir la App
-        val openAppAction = actionStartActivity(Intent(context, MainActivity::class.java).apply {
+        val clickAction = actionStartActivity(Intent(context, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
 
@@ -81,10 +81,10 @@ class ModernCalendarWidget : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(Color(bgColorInt))
-                .clickable(openAppAction) // Clic en el fondo
+                .clickable(clickAction)
         ) {
             if (events.isEmpty()) {
-                Box(modifier = GlanceModifier.fillMaxSize().clickable(openAppAction), contentAlignment = Alignment.Center) {
+                Box(modifier = GlanceModifier.fillMaxSize().clickable(clickAction), contentAlignment = Alignment.Center) {
                     Text(
                         text = context.getString(R.string.widget_no_events),
                         style = TextStyle(
@@ -98,7 +98,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
                     items(events) { event ->
-                        EventItem(event, textBoost, widgetFontFamily, fontWeight, openAppAction)
+                        EventItem(event, textBoost, widgetFontFamily, fontWeight, clickAction)
                     }
                 }
             }
@@ -113,47 +113,62 @@ class ModernCalendarWidget : GlanceAppWidget() {
         fontWeight: FontWeight,
         clickAction: androidx.glance.action.Action
     ) {
+        val context = LocalContext.current
         val eventDate = LocalDate.ofEpochDay(event.dateEpochDay)
         val isToday = eventDate.isEqual(LocalDate.now())
         
-        val appPrefs = LocalContext.current.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val todayColorInt = appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-        val eventColorInt = appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
+        val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        val colorInt = if (isToday) appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
+                       else appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
         
-        val colorInt = if (isToday) todayColorInt else eventColorInt
         val colorProvider = ColorProvider(Color(colorInt))
-        
         val dateStr = eventDate.format(DateTimeFormatter.ofPattern("dd/MM"))
-        val locale = LocalContext.current.resources.configuration.locales[0]
+        val locale = context.resources.configuration.locales[0]
         val dayName = eventDate.dayOfWeek.getDisplayName(JTextStyle.SHORT, locale).replaceFirstChar { it.titlecase(locale) }
 
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .padding(horizontal = 6.dp, vertical = 1.dp)
-                .clickable(clickAction), // Clic en la fila (Asegura respuesta incluso con scroll)
+                .clickable(clickAction),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // CORRECCIÃ“N: Eliminada la negrita forzada del dÃ­a
             Text(
                 text = dayName,
                 modifier = GlanceModifier.width(36.dp),
-                style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontWeight = FontWeight.Bold, fontFamily = fontFamily, textAlign = TextAlign.End)
+                style = TextStyle(
+                    color = colorProvider,
+                    fontSize = (14 + textBoost).sp,
+                    fontWeight = fontWeight,
+                    fontFamily = fontFamily,
+                    textAlign = TextAlign.End
+                )
             )
 
             Text(
                 text = dateStr,
                 modifier = GlanceModifier.width(55.dp),
-                style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center)
+                style = TextStyle(
+                    color = colorProvider,
+                    fontSize = (14 + textBoost).sp,
+                    fontFamily = fontFamily,
+                    fontWeight = fontWeight,
+                    textAlign = TextAlign.Center
+                )
             )
 
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
-            val progressPart = if (event.isLongPeriod) " (${event.currentDay}/${event.totalDays})" else ""
-            
             Text(
-                text = "$timePart${event.title}$agePart$progressPart",
+                text = "$timePart${event.title}$agePart",
                 modifier = GlanceModifier.defaultWeight(),
-                style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight),
+                style = TextStyle(
+                    color = colorProvider,
+                    fontSize = (14 + textBoost).sp,
+                    fontFamily = fontFamily,
+                    fontWeight = fontWeight
+                ),
                 maxLines = 1
             )
 
@@ -168,7 +183,12 @@ class ModernCalendarWidget : GlanceAppWidget() {
                     )
                     Text(
                         text = event.alarmTimeStr,
-                        style = TextStyle(color = colorProvider, fontSize = (12 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight),
+                        style = TextStyle(
+                            color = colorProvider,
+                            fontSize = (12 + textBoost).sp,
+                            fontFamily = fontFamily,
+                            fontWeight = fontWeight
+                        ),
                         modifier = GlanceModifier.padding(start = 1.dp)
                     )
                 }

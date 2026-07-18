@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Motor de datos del Widget Moderno.
- * Agrupa actualizaciones para evitar saturaciÃ³n y utiliza redundancia de disparos para mayor eficacia.
+ * Agrupa actualizaciones para evitar saturaciÃ³n pero garantiza el refresco visual.
  */
 object WidgetStateManager {
     private const val PREFS_NAME = "modern_widget_shared_prefs"
@@ -39,12 +39,10 @@ object WidgetStateManager {
     )
 
     fun updateWidgetState(context: Context, events: List<Festivo>) {
-        // LÃ³gica de "Solo la Ãºltima": Cancelamos cualquier refresco pendiente para no saturar
         updateJob?.cancel()
-        
         updateJob = scope.launch {
-            // Esperamos un instante para agrupar cambios (Guardado + Alarma + Sincro)
-            delay(300.milliseconds)
+            // Agrupamos peticiones rÃ¡pidas (250ms) para no colapsar Android
+            delay(250.milliseconds)
 
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
             val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
@@ -76,25 +74,23 @@ object WidgetStateManager {
                 )
             })
 
-            // Guardado sÃ­ncrono garantizado (KTX)
+            // Guardado sÃ­ncrono para asegurar que el dato estÃ© listo para la UI
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
                 putString(KEY_JSON, json)
             }
 
             try {
-                // DISPARADOR 1: Intent de alta prioridad (El "grito" al sistema)
+                // DISPARADOR NATIVO: Despertamos al receptor para prioridad alta
                 val intent = Intent(context, ModernCalendarWidgetReceiver::class.java).apply {
                     action = ModernCalendarWidgetReceiver.ACTION_REFRESH_WIDGET
                 }
                 context.sendBroadcast(intent)
 
-                // DISPARADOR 2: Orden directa a Glance
+                // DISPARADOR GLANCE: Redibujado de la interfaz
                 ModernCalendarWidget().updateAll(context)
                 
                 LogCollector.addLog("GLANCE PUSH: OK (${futureEvents.size} eventos)")
-            } catch (_: Exception) {
-                // Error ignorado de forma segura
-            }
+            } catch (_: Exception) {}
         }
     }
 

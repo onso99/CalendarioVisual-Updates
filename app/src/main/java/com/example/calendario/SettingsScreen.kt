@@ -391,7 +391,9 @@ fun SettingsScreen(
                             }
                             if (pendingBackupFreq != "manual") BackupScheduler.scheduleBackup(context, pendingBackupFreq)
                             else BackupScheduler.cancelBackup(context)
-                            widgetPrefs.edit {
+
+                            // CORRECCIÃ“N: Usamos commit = true para asegurar que el Widget lea los datos frescos
+                            widgetPrefs.edit(commit = true) {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
                                 putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, pendingTextBoost)
                                 putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, pendingEventColor.toArgb())
@@ -400,6 +402,7 @@ fun SettingsScreen(
                                 putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, pendingFontFamily)
                                 putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold)
                             }
+
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                             WidgetStateManager.refreshWithCurrentEvents(context)
                             onBackPress()
