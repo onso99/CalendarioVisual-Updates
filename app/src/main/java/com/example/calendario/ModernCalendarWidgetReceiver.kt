@@ -1,11 +1,29 @@
 package com.example.calendario
 
+import android.content.Context
+import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.updateAll
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = ModernCalendarWidget()
-    
-    // No sobreescribimos onUpdate para evitar llamadas recursivas a la App.
-    // Glance se encargarÃ¡ de llamar a provideGlance cuando sea necesario.
+
+    companion object {
+        const val ACTION_REFRESH_WIDGET = "com.example.calendario.ACTION_REFRESH_MODERN_WIDGET"
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action == ACTION_REFRESH_WIDGET) {
+            // El receptor "despierta" al widget forzando el redibujado de Glance
+            // IMPORTANTE: AquÃ­ NO llamamos a la App para refrescar datos (evita bucles)
+            MainScope().launch {
+                ModernCalendarWidget().updateAll(context)
+                LogCollector.addLog("RECEPTOR MODERNO: Orden de redibujado inmediata")
+            }
+        }
+    }
 }
