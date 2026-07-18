@@ -5,6 +5,7 @@ package com.example.calendario
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.provider.Settings
@@ -674,19 +675,20 @@ fun SettingsScreen(
                         WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
                         WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
                         WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(
-                            android.graphics.Typeface.create(
+                            Typeface.create(
                                 "sans-serif-condensed",
-                                if (pendingFontBold) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL
+                                if (pendingFontBold) Typeface.BOLD else Typeface.NORMAL
                             )
                         )
                         WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
                         else -> FontFamily.Default
                     }
+                    val currentFontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal
                     Text(
                         text = fontFamilyDisplay,
                         color = CalendarioTheme.colors.textSystem,
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = currentFontWeight,
                         textAlign = TextAlign.End,
                         fontFamily = currentFontFamily,
                         maxLines = 1,
@@ -1145,8 +1147,64 @@ private fun FontFamilySelectionDialog(
     onOptionSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val options = listOf(WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system, WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif, WidgetConstants.FONT_FAMILY_SERIF to R.string.font_serif, WidgetConstants.FONT_FAMILY_MONOSPACE to R.string.font_monospace, WidgetConstants.FONT_FAMILY_CONDENSED to R.string.font_condensed)
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold) }, text = { Column { options.forEach { (key, labelRes) -> Row(Modifier.fillMaxWidth().clickable { onOptionSelected(key) }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { Text(stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp); if (key == currentSelection) Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) } } } }, confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } })
+    val options = listOf(
+        WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system,
+        WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif,
+        WidgetConstants.FONT_FAMILY_SERIF to R.string.font_serif,
+        WidgetConstants.FONT_FAMILY_MONOSPACE to R.string.font_monospace,
+        WidgetConstants.FONT_FAMILY_CONDENSED to R.string.font_condensed
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                options.forEach { (key, labelRes) ->
+                    val family = when(key) {
+                        WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
+                        WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
+                        WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL))
+                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
+                        else -> FontFamily.Default
+                    }
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOptionSelected(key) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = labelRes),
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp,
+                            fontFamily = family,
+                            fontWeight = FontWeight.Normal // SIEMPRE Normal en el diÃ¡logo
+                        )
+                        if (key == currentSelection) {
+                            Icon(
+                                Icons.Default.Check,
+                                null,
+                                tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) 
+                                    CalendarioTheme.colors.textSystem 
+                                else 
+                                    CalendarioTheme.colors.cabecera
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
+            }
+        }
+    )
 }
 
 @Composable
