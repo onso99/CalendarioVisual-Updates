@@ -1,3 +1,4 @@
+2026-07-18 - v2.00.03 Widget moderno: Refresco via SharedPreferences + High Priority Broadcast. Estable (1min para actualización)
 2026-07-17 - v2.00.02 Widget moderno: click solucionado. Retardo en aparecer eventos
 2026-07-17 - Merge master: Fix date bug and sync history
 2026-07-17 - Docs: Auto-update history log before branch switch

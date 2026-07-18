@@ -18,11 +18,9 @@ class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         if (intent.action == ACTION_REFRESH_WIDGET) {
-            // El receptor "despierta" al widget forzando el redibujado de Glance
-            // IMPORTANTE: AquÃ­ NO llamamos a la App para refrescar datos (evita bucles)
             MainScope().launch {
                 ModernCalendarWidget().updateAll(context)
-                LogCollector.addLog("RECEPTOR MODERNO: Orden de redibujado inmediata")
+                LogCollector.addLog("RECEPTOR MODERNO: Forzando redibujado instantÃ¡neo")
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.calendario
 import android.content.Context
 import android.content.Intent
 import androidx.glance.appwidget.updateAll
+import androidx.core.content.edit
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,10 +12,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Motor de datos del Widget Moderno.
- * Agrupa actualizaciones para evitar saturaciÃ³n pero garantiza el refresco.
+ * Agrupa actualizaciones para evitar saturaciÃ³n y utiliza redundancia de disparos para mayor eficacia.
  */
 object WidgetStateManager {
     private const val PREFS_NAME = "modern_widget_shared_prefs"
@@ -37,12 +39,12 @@ object WidgetStateManager {
     )
 
     fun updateWidgetState(context: Context, events: List<Festivo>) {
-        // LÃ³gica de "Solo la Ãºltima": Cancelamos cualquier refresco pendiente
+        // LÃ³gica de "Solo la Ãºltima": Cancelamos cualquier refresco pendiente para no saturar
         updateJob?.cancel()
         
         updateJob = scope.launch {
-            // Breve espera para agrupar cambios (Guardado + Alarma + Sincro)
-            delay(250)
+            // Esperamos un instante para agrupar cambios (Guardado + Alarma + Sincro)
+            delay(300.milliseconds)
 
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
             val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
@@ -74,13 +76,13 @@ object WidgetStateManager {
                 )
             })
 
-            // Guardado sÃ­ncrono garantizado
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
-                .putString(KEY_JSON, json)
-                .commit()
+            // Guardado sÃ­ncrono garantizado (KTX)
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+                putString(KEY_JSON, json)
+            }
 
             try {
-                // DISPARADOR 1: Intent de alta prioridad al receptor
+                // DISPARADOR 1: Intent de alta prioridad (El "grito" al sistema)
                 val intent = Intent(context, ModernCalendarWidgetReceiver::class.java).apply {
                     action = ModernCalendarWidgetReceiver.ACTION_REFRESH_WIDGET
                 }
@@ -90,8 +92,8 @@ object WidgetStateManager {
                 ModernCalendarWidget().updateAll(context)
                 
                 LogCollector.addLog("GLANCE PUSH: OK (${futureEvents.size} eventos)")
-            } catch (e: Exception) {
-                LogCollector.addLog("GLANCE ERROR: ${e.message}")
+            } catch (_: Exception) {
+                // Error ignorado de forma segura
             }
         }
     }
@@ -106,7 +108,7 @@ object WidgetStateManager {
             .getString(KEY_JSON, null) ?: return emptyList()
         return try {
             gson.fromJson(json, Array<WidgetEvent>::class.java).toList()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
