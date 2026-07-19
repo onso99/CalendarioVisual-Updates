@@ -1,3 +1,4 @@
+2026-07-19 - v2.00.08 Widget moderno: al crear un nuevo widget ya obtiene datos
 2026-07-19 - v2.00.07 Widget moderno: REFRESCO INSTANTANEO!!!
 2026-07-18 - Merge master into feature/modern-widget: Integrando mejoras de fuentes v1.99.01
 2026-07-18 - v1.99.01 Ajustes/Widget: corregido botón bold y previsualización

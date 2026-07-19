@@ -112,7 +112,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
                     items(events) { event ->
-                        EventRow(event, eventColor, todayColor, textBoost, widgetFontFamily, fontWeight, clickAction)
+                        EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction)
                     }
                 }
             }
@@ -126,6 +126,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         defaultColor: Color,
         todayColor: Color,
         textBoost: Float,
+        fontFamilyStr: String, // Recibimos el key para ajustar el algoritmo
         fontFamily: FontFamily,
         fontWeight: FontWeight,
         clickAction: androidx.glance.action.Action
@@ -139,12 +140,50 @@ class ModernCalendarWidget : GlanceAppWidget() {
         val locale = LocalContext.current.resources.configuration.locales[0]
         val dayName = eventDate.dayOfWeek.getDisplayName(JTextStyle.SHORT, locale).replaceFirstChar { it.titlecase(locale) }
 
+        // ALGORITMO DE ALTA DENSIDAD TIPOGRÃFICA REFINADO
+        val baseFontSize = 14f + textBoost
+        
+        // Coeficientes (Ancho DÃ­a, Ancho Fecha, Espaciado)
+        val (dayF, dateF, gapF) = when(fontFamilyStr) {
+            WidgetConstants.FONT_FAMILY_CONDENSED -> Triple(0.82f, 0.82f, 0.40f)
+            WidgetConstants.FONT_FAMILY_MONOSPACE -> Triple(0.85f, 1.15f, 0.01f) // Aumento de ancho para evitar salto de lÃ­nea
+            WidgetConstants.FONT_FAMILY_SERIF -> Triple(0.98f, 0.98f, 0.45f)
+            else -> Triple(0.95f, 0.95f, 0.45f) // Sistema / Sans
+        }
+
+        // CÃ¡lculo de dimensiones con margen de seguridad para evitar saltos de lÃ­nea
+        val dayWidth = (baseFontSize * 2.6f * dayF).dp
+        val dateWidth = (baseFontSize * 3.8f * dateF).dp
+        val columnGap = (baseFontSize * 0.16f * gapF).dp
+
         Row(modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 1.dp).clickable(clickAction), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = dayName, modifier = GlanceModifier.width(36.dp), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End))
-            Text(text = dateStr, modifier = GlanceModifier.width(55.dp), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center))
+            // Columna 1: DÃ­a de la semana
+            Text(
+                text = dayName, 
+                modifier = GlanceModifier.width(dayWidth), 
+                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End)
+            )
+            
+            Spacer(modifier = GlanceModifier.width(columnGap))
+            
+            // Columna 2: Fecha
+            Text(
+                text = dateStr, 
+                modifier = GlanceModifier.width(dateWidth), 
+                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center)
+            )
+
+            Spacer(modifier = GlanceModifier.width(columnGap * 1.4f)) // ProporciÃ³n armÃ³nica antes del tÃ­tulo
+            
+            // Columna 3: TÃ­tulo
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
-            Text(text = "$timePart${event.title}$agePart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
+            Text(
+                text = "$timePart${event.title}$agePart", 
+                modifier = GlanceModifier.defaultWeight(), 
+                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), 
+                maxLines = 1
+            )
             if (event.alarmTimeStr != null) {
                 Spacer(modifier = GlanceModifier.width(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

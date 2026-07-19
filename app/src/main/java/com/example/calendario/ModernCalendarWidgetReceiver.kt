@@ -9,6 +9,7 @@ import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = ModernCalendarWidget()
@@ -32,7 +33,7 @@ class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
         if (intent.action == ACTION_REFRESH_WIDGET) {
             MainScope().launch {
-                delay(100) // Breve respiro para el DataStore
+                delay(100.milliseconds) // Breve respiro para el DataStore
                 ModernCalendarWidget().updateAll(context)
                 LogCollector.addLog("RECEPTOR MODERNO: Redibujado forzado ejecutado")
             }
