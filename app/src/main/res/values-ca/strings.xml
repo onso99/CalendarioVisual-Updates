@@ -299,4 +299,8 @@
     <string name="bundled_theme_6_name">Grafit</string>
     <string name="bundled_theme_7_name">Terra</string>
     <string name="bundled_theme_8_name">Lavanda</string>
+
+    <!-- Noms de Widgets -->
+    <string name="widget_name_modern">Esdeveniments Adaptatius</string>
+    <string name="widget_name_classic">Esdeveniments Clàssics</string>
 </resources>

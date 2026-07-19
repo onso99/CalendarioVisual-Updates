@@ -298,4 +298,8 @@
     <string name="bundled_theme_6_name">Graphite</string>
     <string name="bundled_theme_7_name">Terre</string>
     <string name="bundled_theme_8_name">Lavande</string>
+
+    <!-- Noms des Widgets -->
+    <string name="widget_name_modern">Événements Adaptatifs</string>
+    <string name="widget_name_classic">Événements Classiques</string>
 </resources>

@@ -298,4 +298,8 @@
     <string name="bundled_theme_6_name">Графит</string>
     <string name="bundled_theme_7_name">Земля</string>
     <string name="bundled_theme_8_name">Лаванда</string>
+
+    <!-- Названия виджетов -->
+    <string name="widget_name_modern">Адаптивные события</string>
+    <string name="widget_name_classic">Классические события</string>
 </resources>

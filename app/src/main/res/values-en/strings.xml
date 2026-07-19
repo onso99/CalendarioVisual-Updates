@@ -299,4 +299,8 @@
     <string name="bundled_theme_6_name">Graphite</string>
     <string name="bundled_theme_7_name">Earth</string>
     <string name="bundled_theme_8_name">Lavender</string>
+
+    <!-- Widget Names -->
+    <string name="widget_name_modern">Adaptive Events</string>
+    <string name="widget_name_classic">Classic Events</string>
 </resources>

@@ -298,4 +298,8 @@
     <string name="bundled_theme_6_name">グラファイト</string>
     <string name="bundled_theme_7_name">アース</string>
     <string name="bundled_theme_8_name">ラベンダー</string>
+
+    <!-- ウィジェット名 -->
+    <string name="widget_name_modern">アダプティブ・イベント</string>
+    <string name="widget_name_classic">クラシック・イベント</string>
 </resources>

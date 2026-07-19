@@ -298,4 +298,8 @@
     <string name="bundled_theme_6_name">Graphit</string>
     <string name="bundled_theme_7_name">Erde</string>
     <string name="bundled_theme_8_name">Lavendel</string>
+
+    <!-- Widget-Namen -->
+    <string name="widget_name_modern">Adaptive Ereignisse</string>
+    <string name="widget_name_classic">Klassische Ereignisse</string>
 </resources>

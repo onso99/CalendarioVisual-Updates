@@ -298,4 +298,8 @@
     <string name="bundled_theme_6_name">石墨</string>
     <string name="bundled_theme_7_name">大地</string>
     <string name="bundled_theme_8_name">薰衣草</string>
+
+    <!-- 小部件名称 -->
+    <string name="widget_name_modern">自适应事件</string>
+    <string name="widget_name_classic">经典事件</string>
 </resources>

@@ -297,4 +297,8 @@
     <string name="bundled_theme_6_name">Grafitoa</string>
     <string name="bundled_theme_7_name">Lurra</string>
     <string name="bundled_theme_8_name">Labanda</string>
+
+    <!-- Widget izenak -->
+    <string name="widget_name_modern">Gertaera Egokitzaileak</string>
+    <string name="widget_name_classic">Gertaera Klasikoak</string>
 </resources>
