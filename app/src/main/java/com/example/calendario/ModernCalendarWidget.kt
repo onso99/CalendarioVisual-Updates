@@ -14,6 +14,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionStartActivity
@@ -28,6 +29,7 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
@@ -52,19 +54,10 @@ class ModernCalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
+            val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
+            val events = try { Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
             
-            // 1. Extraer Eventos con Fallback (Si DataStore estÃ¡ vacÃ­o, lee de Prefs)
-            val jsonFromState = prefs[WidgetStateManager.KEY_WIDGET_DATA]
-            val events = if (jsonFromState != null) {
-                try { Gson().fromJson(jsonFromState, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
-            } else {
-                // FALLBACK: Si es la primera vez que se pone el widget, leemos de SharedPreferences
-                WidgetStateManager.getWidgetEvents(context)
-            }
-            
-            // 2. Extraer Ajustes Visuales del Estado con Fallback
             val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            
             val bgColor = Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB))
             val eventColor = Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB))
             val todayColor = Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB))
@@ -90,6 +83,8 @@ class ModernCalendarWidget : GlanceAppWidget() {
         isBold: Boolean
     ) {
         val context = LocalContext.current
+        val widgetSize = LocalSize.current
+        
         val widgetFontFamily = when (fontFamilyStr) {
             WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
             WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
@@ -109,8 +104,27 @@ class ModernCalendarWidget : GlanceAppWidget() {
                 }
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
+                    // 1. Pintamos los eventos reales
                     items(events) { event ->
                         EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction)
+                    }
+                    
+                    // 2. REGLA DE LAS 4 LÃNEAS: Si hay menos de 4 eventos, rellenamos con filas clicables invisibles
+                    val minRows = 4
+                    if (events.size < minRows) {
+                        val emptyRowsNeeded = minRows - events.size
+                        val rowHeight = (25f + textBoost).dp // Misma altura que un evento real
+                        
+                        repeat(emptyRowsNeeded) {
+                            item {
+                                Spacer(
+                                    modifier = GlanceModifier
+                                        .fillMaxWidth()
+                                        .height(rowHeight)
+                                        .clickable(clickAction)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -124,7 +138,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         defaultColor: Color,
         todayColor: Color,
         textBoost: Float,
-        fontFamilyStr: String, // Recibimos el key para ajustar el algoritmo
+        fontFamilyStr: String,
         fontFamily: FontFamily,
         fontWeight: FontWeight,
         clickAction: androidx.glance.action.Action
@@ -138,50 +152,26 @@ class ModernCalendarWidget : GlanceAppWidget() {
         val locale = LocalContext.current.resources.configuration.locales[0]
         val dayName = eventDate.dayOfWeek.getDisplayName(JTextStyle.SHORT, locale).replaceFirstChar { it.titlecase(locale) }
 
-        // ALGORITMO DE ALTA DENSIDAD TIPOGRÃFICA REFINADO
         val baseFontSize = 14f + textBoost
-        
-        // Coeficientes (Ancho DÃ­a, Ancho Fecha, Espaciado)
         val (dayF, dateF, gapF) = when(fontFamilyStr) {
             WidgetConstants.FONT_FAMILY_CONDENSED -> Triple(0.82f, 0.82f, 0.40f)
-            WidgetConstants.FONT_FAMILY_MONOSPACE -> Triple(0.85f, 1.15f, 0.01f) // Aumento de ancho para evitar salto de lÃ­nea
+            WidgetConstants.FONT_FAMILY_MONOSPACE -> Triple(0.85f, 1.15f, 0.01f)
             WidgetConstants.FONT_FAMILY_SERIF -> Triple(0.98f, 0.98f, 0.45f)
-            else -> Triple(0.95f, 0.95f, 0.45f) // Sistema / Sans
+            else -> Triple(0.95f, 0.95f, 0.45f)
         }
 
-        // CÃ¡lculo de dimensiones con margen de seguridad para evitar saltos de lÃ­nea
         val dayWidth = (baseFontSize * 2.6f * dayF).dp
         val dateWidth = (baseFontSize * 3.8f * dateF).dp
         val columnGap = (baseFontSize * 0.16f * gapF).dp
 
         Row(modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 1.dp).clickable(clickAction), verticalAlignment = Alignment.CenterVertically) {
-            // Columna 1: DÃ­a de la semana
-            Text(
-                text = dayName, 
-                modifier = GlanceModifier.width(dayWidth), 
-                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End)
-            )
-            
+            Text(text = dayName, modifier = GlanceModifier.width(dayWidth), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End))
             Spacer(modifier = GlanceModifier.width(columnGap))
-            
-            // Columna 2: Fecha
-            Text(
-                text = dateStr, 
-                modifier = GlanceModifier.width(dateWidth), 
-                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center)
-            )
-
-            Spacer(modifier = GlanceModifier.width(columnGap * 1.4f)) // ProporciÃ³n armÃ³nica antes del tÃ­tulo
-            
-            // Columna 3: TÃ­tulo
+            Text(text = dateStr, modifier = GlanceModifier.width(dateWidth), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center))
+            Spacer(modifier = GlanceModifier.width(columnGap * 1.4f))
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
-            Text(
-                text = "$timePart${event.title}$agePart", 
-                modifier = GlanceModifier.defaultWeight(), 
-                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), 
-                maxLines = 1
-            )
+            Text(text = "$timePart${event.title}$agePart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
             if (event.alarmTimeStr != null) {
                 Spacer(modifier = GlanceModifier.width(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

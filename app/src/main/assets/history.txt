@@ -1,3 +1,4 @@
+2026-07-19 - v2.00.10 Widget moderno: Limpieza de logs, trazados y mensajes de seguimiento
 2026-07-19 - v2.00.09 Widget moderno: ajuste automático de espacio entre columnas
 2026-07-19 - v2.00.08 Widget moderno: al crear un nuevo widget ya obtiene datos
 2026-07-19 - v2.00.07 Widget moderno: REFRESCO INSTANTANEO!!!
