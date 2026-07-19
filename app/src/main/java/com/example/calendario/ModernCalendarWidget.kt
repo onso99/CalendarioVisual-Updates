@@ -54,16 +54,29 @@ class ModernCalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
-            val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
-            val events = try { Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
+            
+            // 1. Extraer Eventos con ESCUDO DE MIGRACIÃ“N
+            // Si el estado estÃ¡ corrupto o es de una versiÃ³n vieja, el catch evita que la App se cierre.
+            val events = try {
+                val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
+                if (json.isNotEmpty()) {
+                    Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList()
+                } else {
+                    WidgetStateManager.getWidgetEvents(context)
+                }
+            } catch (e: Exception) {
+                WidgetStateManager.getWidgetEvents(context)
+            }
             
             val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            val bgColor = Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB))
-            val eventColor = Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB))
-            val todayColor = Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB))
-            val textBoost = prefs[WidgetStateManager.KEY_TEXT_BOOST] ?: appPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
-            val fontFamilyStr = prefs[WidgetStateManager.KEY_FONT_FAMILY] ?: appPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: ""
-            val isBold = prefs[WidgetStateManager.KEY_FONT_BOLD] ?: appPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
+            
+            // 2. Extraer Ajustes Visuales con Try-Catch individual para mÃ¡xima seguridad
+            val bgColor = try { Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) } catch(_:Exception) { Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB) }
+            val eventColor = try { Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) } catch(_:Exception) { Color(WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB) }
+            val todayColor = try { Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) } catch(_:Exception) { Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB) }
+            val textBoost = try { prefs[WidgetStateManager.KEY_TEXT_BOOST] ?: appPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) } catch(_:Exception) { 0f }
+            val fontFamilyStr = try { prefs[WidgetStateManager.KEY_FONT_FAMILY] ?: appPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: "" } catch(_:Exception) { "" }
+            val isBold = try { prefs[WidgetStateManager.KEY_FONT_BOLD] ?: appPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) } catch(_:Exception) { false }
 
             GlanceTheme {
                 WidgetLayout(events, bgColor, eventColor, todayColor, textBoost, fontFamilyStr, isBold)
