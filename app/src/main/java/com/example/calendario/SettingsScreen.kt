@@ -380,7 +380,6 @@ fun SettingsScreen(
                 actions = {
                     if (hasPendingChanges) {
                         IconButton(onClick = {
-                            LogCollector.addLog("AJUSTES: Guardando cambios y notificando widgets")
                             appPrefs.edit {
                                 putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, pendingShowWeekNumber)
                                 putString(AppConstants.KEY_START_OF_WEEK, pendingStartOfWeekKey)

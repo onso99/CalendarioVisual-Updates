@@ -24,7 +24,6 @@ class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        LogCollector.addLog("RECEPTOR MODERNO: onUpdate (Widget aÃ±adido o reiniciado)")
         // Pedimos al motor que inyecte datos en los nuevos IDs
         WidgetStateManager.refreshWithCurrentEvents(context)
     }
@@ -35,7 +34,6 @@ class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
             MainScope().launch {
                 delay(100.milliseconds) // Breve respiro para el DataStore
                 ModernCalendarWidget().updateAll(context)
-                LogCollector.addLog("RECEPTOR MODERNO: Redibujado forzado ejecutado")
             }
         }
     }

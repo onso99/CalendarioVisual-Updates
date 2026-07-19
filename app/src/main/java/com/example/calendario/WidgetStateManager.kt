@@ -51,14 +51,11 @@ object WidgetStateManager {
         updateJob?.cancel()
         val events = loadHistoryFromDisk(context)
         updateJob = scope.launch {
-            LogCollector.addLog("WIDGET MOTOR: Sincronizando estado completo (Ajustes + Eventos)")
             performUpdate(context, events)
         }
     }
 
     private suspend fun performUpdate(context: Context, events: List<Festivo>) {
-        val startTime = System.currentTimeMillis()
-        
         // 1. Preparar datos y leer preferencias actuales
         val (json, prefsMap) = withContext(Dispatchers.Default) {
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
@@ -106,11 +103,7 @@ object WidgetStateManager {
             
             // 3. Orden final de redibujado
             ModernCalendarWidget().updateAll(context)
-            
-            val duration = System.currentTimeMillis() - startTime
-            LogCollector.addLog("GLANCE SYNC: Estado actualizado en ${duration}ms")
-        } catch (e: Exception) {
-            LogCollector.addLog("GLANCE SYNC ERROR: ${e.message}")
+        } catch (_: Exception) {
         }
     }
 

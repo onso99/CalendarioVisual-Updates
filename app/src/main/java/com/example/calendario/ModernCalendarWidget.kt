@@ -72,8 +72,6 @@ class ModernCalendarWidget : GlanceAppWidget() {
             val fontFamilyStr = prefs[WidgetStateManager.KEY_FONT_FAMILY] ?: appPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: ""
             val isBold = prefs[WidgetStateManager.KEY_FONT_BOLD] ?: appPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
 
-            LogCollector.addLog("WIDGET UI: Renderizando ${events.size} ev (Source: ${if(jsonFromState!=null) "DataStore" else "Fallback"})")
-            
             GlanceTheme {
                 WidgetLayout(events, bgColor, eventColor, todayColor, textBoost, fontFamilyStr, isBold)
             }
