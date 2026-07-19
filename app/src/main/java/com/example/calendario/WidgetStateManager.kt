@@ -22,10 +22,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Motor de datos del Widget Moderno.
- * Sincroniza tanto eventos como ajustes visuales en el estado nativo para forzar redibujados.
  */
 object WidgetStateManager {
-    // Claves de Estado Nativo (Glance)
     val KEY_WIDGET_DATA = stringPreferencesKey("widget_events_json")
     val KEY_BG_COLOR = intPreferencesKey("widget_bg_color")
     val KEY_EVENT_COLOR = intPreferencesKey("widget_event_color")
@@ -33,7 +31,7 @@ object WidgetStateManager {
     val KEY_TEXT_BOOST = floatPreferencesKey("widget_text_boost")
     val KEY_FONT_FAMILY = stringPreferencesKey("widget_font_family")
     val KEY_FONT_BOLD = booleanPreferencesKey("widget_font_bold")
-    val KEY_REFRESH_TOKEN = longPreferencesKey("widget_refresh_token") // Fuerza el cambio siempre
+    val KEY_REFRESH_TOKEN = longPreferencesKey("widget_refresh_token")
     
     private val gson = Gson()
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -56,19 +54,23 @@ object WidgetStateManager {
     }
 
     private suspend fun performUpdate(context: Context, events: List<Festivo>) {
-        // 1. Preparar datos y leer preferencias actuales
         val (json, prefsMap) = withContext(Dispatchers.Default) {
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
             val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
             val now = LocalDateTime.now().withNano(0).withSecond(0)
             
-            val futureEvents = events.filter { event ->
-                val eventEndDateTime = if (event.isAllDay) event.date.plusDays(1).atStartOfDay()
-                else LocalDateTime.of(event.date, event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX)
-                eventEndDateTime.isAfter(now)
-            }.sortedWith(compareBy({ it.date }, { it.startTime })).take(limit)
+            // 1. FILTRO DE SEGURIDAD Y LIMPIEZA DE DUPLICADOS
+            val uniqueEvents = events
+                .filter { event ->
+                    val eventEndDateTime = if (event.isAllDay) event.date.plusDays(1).atStartOfDay()
+                    else LocalDateTime.of(event.date, event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX)
+                    eventEndDateTime.isAfter(now)
+                }
+                .distinctBy { "${it.date}_${it.title}" } // Evita duplicados exactos en el mismo dÃ­a
+                .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
+                .take(limit)
 
-            val jsonStr = gson.toJson(futureEvents.map { event ->
+            val jsonStr = gson.toJson(uniqueEvents.map { event ->
                 WidgetEvent(event.title, event.date.toEpochDay(), event.startTime?.toString(), event.isAllDay, event.isBirthday, event.age, event.isLongPeriod, event.currentDay, event.totalDays, AlarmUtils.getAlarmTimeString(context, event))
             })
 
@@ -84,10 +86,8 @@ object WidgetStateManager {
         }
 
         try {
-            // 2. Inyectar TODO en el estado nativo (Glance DataStore)
             val manager = GlanceAppWidgetManager(context)
             val glanceIds = manager.getGlanceIds(ModernCalendarWidget::class.java)
-            
             glanceIds.forEach { id ->
                 updateAppWidgetState(context, id) { state ->
                     state[KEY_WIDGET_DATA] = json
@@ -97,14 +97,11 @@ object WidgetStateManager {
                     state[KEY_TEXT_BOOST] = prefsMap["boost"] as Float
                     state[KEY_FONT_FAMILY] = prefsMap["font"] as String
                     state[KEY_FONT_BOLD] = prefsMap["bold"] as Boolean
-                    state[KEY_REFRESH_TOKEN] = System.currentTimeMillis() // TOKEN SIEMPRE NUEVO
+                    state[KEY_REFRESH_TOKEN] = System.currentTimeMillis()
                 }
             }
-            
-            // 3. Orden final de redibujado
             ModernCalendarWidget().updateAll(context)
-        } catch (_: Exception) {
-        }
+        } catch (_: Exception) { }
     }
 
     data class WidgetEvent(val title: String, val dateEpochDay: Long, val startTimeStr: String?, val isAllDay: Boolean, val isBirthday: Boolean, val age: Int?, val isLongPeriod: Boolean, val currentDay: Int, val totalDays: Int, val alarmTimeStr: String?)

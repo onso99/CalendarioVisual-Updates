@@ -104,23 +104,14 @@ class ModernCalendarWidget : GlanceAppWidget() {
                 }
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
-                    // 1. Eventos reales
                     items(events) { event ->
                         EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction)
                     }
                     
-                    // 2. BLOQUE DE CLIC UNIVERSAL: Cubre todo el espacio sobrante con un solo elemento
                     item {
-                        // Reservamos un alto generoso pero controlado para el relleno (aprox 12 filas)
                         val estimatedContentHeight = events.size * (25f + textBoost)
                         val fillHeight = (widgetSize.height.value - estimatedContentHeight).coerceAtLeast(40f)
-                        
-                        Box(
-                            modifier = GlanceModifier
-                                .fillMaxWidth()
-                                .height(fillHeight.dp)
-                                .clickable(clickAction)
-                        ) {}
+                        Box(modifier = GlanceModifier.fillMaxWidth().height(fillHeight.dp).clickable(clickAction)) {}
                     }
                 }
             }
@@ -150,20 +141,31 @@ class ModernCalendarWidget : GlanceAppWidget() {
 
         val baseFontSize = 14f + textBoost
         val (dayF, dateF, gapF) = when(fontFamilyStr) {
-            WidgetConstants.FONT_FAMILY_CONDENSED -> Triple(0.82f, 0.82f, 0.40f)
-            WidgetConstants.FONT_FAMILY_MONOSPACE -> Triple(0.85f, 1.15f, 0.01f)
-            WidgetConstants.FONT_FAMILY_SERIF -> Triple(0.98f, 0.98f, 0.45f)
-            else -> Triple(0.95f, 0.95f, 0.45f)
+            WidgetConstants.FONT_FAMILY_CONDENSED -> Triple(0.92f, 0.90f, 0.40f) // Subida de 0.78 a 0.92 para evitar "Do..."
+            WidgetConstants.FONT_FAMILY_MONOSPACE -> Triple(0.95f, 1.15f, 0.01f)
+            WidgetConstants.FONT_FAMILY_SERIF -> Triple(1.02f, 1.0f, 0.45f)
+            else -> Triple(1.08f, 1.0f, 0.45f) // Sistema / Sans
         }
 
-        val dayWidth = (baseFontSize * 2.6f * dayF).dp
-        val dateWidth = (baseFontSize * 3.8f * dateF).dp
+        // Multiplicadores base unificados para estabilidad en dispositivo fÃ­sico
+        val dayWidth = (baseFontSize * 3.0f * dayF).dp
+        val dateWidth = (baseFontSize * 4.1f * dateF).dp
         val columnGap = (baseFontSize * 0.16f * gapF).dp
 
-        Row(modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 1.dp).clickable(clickAction), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = dayName, modifier = GlanceModifier.width(dayWidth), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End))
+        Row(modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 2.dp, vertical = 1.dp).clickable(clickAction), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = dayName, 
+                modifier = GlanceModifier.width(dayWidth), 
+                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End),
+                maxLines = 1
+            )
             Spacer(modifier = GlanceModifier.width(columnGap))
-            Text(text = dateStr, modifier = GlanceModifier.width(dateWidth), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center))
+            Text(
+                text = dateStr, 
+                modifier = GlanceModifier.width(dateWidth), 
+                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center),
+                maxLines = 1
+            )
             Spacer(modifier = GlanceModifier.width(columnGap * 1.4f))
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
