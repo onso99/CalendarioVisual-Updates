@@ -14,6 +14,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionStartActivity
@@ -82,6 +83,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         isBold: Boolean
     ) {
         val context = LocalContext.current
+        val widgetSize = LocalSize.current
         
         val widgetFontFamily = when (fontFamilyStr) {
             WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
@@ -102,27 +104,23 @@ class ModernCalendarWidget : GlanceAppWidget() {
                 }
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
-                    // 1. Pintamos los eventos reales
+                    // 1. Eventos reales
                     items(events) { event ->
                         EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction)
                     }
                     
-                    // 2. REGLA DE LAS 4 LÃNEAS: Si hay menos de 4 eventos, rellenamos con filas clicables invisibles
-                    val minRows = 4
-                    if (events.size < minRows) {
-                        val emptyRowsNeeded = minRows - events.size
-                        val rowHeight = (25f + textBoost).dp // Misma altura que un evento real
+                    // 2. BLOQUE DE CLIC UNIVERSAL: Cubre todo el espacio sobrante con un solo elemento
+                    item {
+                        // Reservamos un alto generoso pero controlado para el relleno (aprox 12 filas)
+                        val estimatedContentHeight = events.size * (25f + textBoost)
+                        val fillHeight = (widgetSize.height.value - estimatedContentHeight).coerceAtLeast(40f)
                         
-                        repeat(emptyRowsNeeded) {
-                            item {
-                                Spacer(
-                                    modifier = GlanceModifier
-                                        .fillMaxWidth()
-                                        .height(rowHeight)
-                                        .clickable(clickAction)
-                                )
-                            }
-                        }
+                        Box(
+                            modifier = GlanceModifier
+                                .fillMaxWidth()
+                                .height(fillHeight.dp)
+                                .clickable(clickAction)
+                        ) {}
                     }
                 }
             }
