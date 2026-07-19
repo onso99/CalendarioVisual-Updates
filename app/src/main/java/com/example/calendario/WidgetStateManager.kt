@@ -110,7 +110,6 @@ object WidgetStateManager {
     data class WidgetEvent(val title: String, val dateEpochDay: Long, val startTimeStr: String?, val isAllDay: Boolean, val isBirthday: Boolean, val age: Int?, val isLongPeriod: Boolean, val currentDay: Int, val totalDays: Int, val alarmTimeStr: String?)
 
     fun getWidgetEvents(context: Context): List<WidgetEvent> {
-        // Fallback para SharedPreferences clÃ¡sicas (por si acaso)
         val json = context.getSharedPreferences("modern_widget_shared_prefs", Context.MODE_PRIVATE).getString("events_json", null) ?: return emptyList()
         return try { gson.fromJson(json, Array<WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
     }

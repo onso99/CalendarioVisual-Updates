@@ -14,7 +14,6 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionStartActivity
@@ -83,7 +82,6 @@ class ModernCalendarWidget : GlanceAppWidget() {
         isBold: Boolean
     ) {
         val context = LocalContext.current
-        val widgetSize = LocalSize.current
         
         val widgetFontFamily = when (fontFamilyStr) {
             WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
