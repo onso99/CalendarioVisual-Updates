@@ -6,17 +6,7 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <!-- Nombre de la App en la previsualización -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="#FFFFFF"
-        android:textSize="10sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="4dp"
-        android:alpha="0.7" />
+    <!-- Lista de Eventos de PrevisualizaciÃ³n -->
 
     <!-- Fila 1: HOY -->
     <LinearLayout

@@ -1,3 +1,4 @@
+2026-07-19 - v2.00.12 Widget moderno: warnings corregidos
 2026-07-19 - v2.00.11 Widget moderno: si número de eventos <4 se rellena con filas para asegurar clic
 2026-07-19 - v2.00.10 Widget moderno: Limpieza de logs, trazados y mensajes de seguimiento
 2026-07-19 - v2.00.09 Widget moderno: ajuste automático de espacio entre columnas
