@@ -53,26 +53,33 @@ object WidgetStateManager {
         }
     }
 
+    /**
+     * LÃ³gica de limpieza compartida para asegurar que los datos sean siempre correctos.
+     */
+    private fun cleanAndFilterEvents(context: Context, events: List<Festivo>): List<WidgetEvent> {
+        val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        val now = LocalDateTime.now().withNano(0).withSecond(0)
+        
+        return events
+            .filter { event ->
+                val eventEndDateTime = if (event.isAllDay) event.date.plusDays(1).atStartOfDay()
+                else LocalDateTime.of(event.date, event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX)
+                eventEndDateTime.isAfter(now)
+            }
+            .distinctBy { "${it.date}_${it.title}" }
+            .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
+            .take(limit)
+            .map { event ->
+                WidgetEvent(event.title, event.date.toEpochDay(), event.startTime?.toString(), event.isAllDay, event.isBirthday, event.age, event.isLongPeriod, event.currentDay, event.totalDays, AlarmUtils.getAlarmTimeString(context, event))
+            }
+    }
+
     private suspend fun performUpdate(context: Context, events: List<Festivo>) {
         val (json, prefsMap) = withContext(Dispatchers.Default) {
             val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-            val now = LocalDateTime.now().withNano(0).withSecond(0)
-            
-            // 1. FILTRO DE SEGURIDAD Y LIMPIEZA DE DUPLICADOS
-            val uniqueEvents = events
-                .filter { event ->
-                    val eventEndDateTime = if (event.isAllDay) event.date.plusDays(1).atStartOfDay()
-                    else LocalDateTime.of(event.date, event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX)
-                    eventEndDateTime.isAfter(now)
-                }
-                .distinctBy { "${it.date}_${it.title}" } // Evita duplicados exactos en el mismo dÃ­a
-                .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
-                .take(limit)
-
-            val jsonStr = gson.toJson(uniqueEvents.map { event ->
-                WidgetEvent(event.title, event.date.toEpochDay(), event.startTime?.toString(), event.isAllDay, event.isBirthday, event.age, event.isLongPeriod, event.currentDay, event.totalDays, AlarmUtils.getAlarmTimeString(context, event))
-            })
+            val cleaned = cleanAndFilterEvents(context, events)
+            val jsonStr = gson.toJson(cleaned)
 
             val map = mapOf(
                 "bg" to widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB),
@@ -106,8 +113,11 @@ object WidgetStateManager {
 
     data class WidgetEvent(val title: String, val dateEpochDay: Long, val startTimeStr: String?, val isAllDay: Boolean, val isBirthday: Boolean, val age: Int?, val isLongPeriod: Boolean, val currentDay: Int, val totalDays: Int, val alarmTimeStr: String?)
 
+    /**
+     * Fallback mejorado: ya no lee de Prefs antiguas, sino que limpia el archivo real.
+     */
     fun getWidgetEvents(context: Context): List<WidgetEvent> {
-        val json = context.getSharedPreferences("modern_widget_shared_prefs", Context.MODE_PRIVATE).getString("events_json", null) ?: return emptyList()
-        return try { gson.fromJson(json, Array<WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
+        val rawEvents = loadHistoryFromDisk(context)
+        return cleanAndFilterEvents(context, rawEvents)
     }
 }
