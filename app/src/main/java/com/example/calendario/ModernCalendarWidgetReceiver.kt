@@ -6,6 +6,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
@@ -19,8 +20,10 @@ class ModernCalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
         if (intent.action == ACTION_REFRESH_WIDGET) {
             MainScope().launch {
+                // PequeÃ±o respiro para que el DataStore termine de asentarse
+                delay(100)
                 ModernCalendarWidget().updateAll(context)
-                LogCollector.addLog("RECEPTOR MODERNO: Forzando redibujado instantÃ¡neo")
+                LogCollector.addLog("RECEPTOR MODERNO: Orden de redibujado ejecutada")
             }
         }
     }

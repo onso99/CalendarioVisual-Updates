@@ -1,3 +1,6 @@
+2026-07-18 - Merge master into feature/modern-widget: Integrando mejoras de fuentes v1.99.01
+2026-07-18 - v1.99.01 Ajustes/Widget: corregido botón bold y previsualización
+2026-07-18 - v2.00.06 Widget moderno: se aplican los ajustes en el ciclo de 15 minutos
 2026-07-18 - v2.00.05 Widget moderno: retardo al aplicar cambios en los ajustes
 2026-07-18 - v2.00.04 Widget moderno: warnings corregidos
 2026-07-18 - v2.00.03 Widget moderno: Refresco via SharedPreferences + High Priority Broadcast. Estable (1min para actualización)

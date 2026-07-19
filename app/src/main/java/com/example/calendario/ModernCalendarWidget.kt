@@ -21,6 +21,7 @@ import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Row
@@ -36,43 +37,58 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.state.GlanceStateDefinition
+import androidx.glance.state.PreferencesGlanceStateDefinition
+import androidx.datastore.preferences.core.Preferences
+import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle as JTextStyle
 
 class ModernCalendarWidget : GlanceAppWidget() {
 
-    // HEMOS ELIMINADO stateDefinition: Esto obliga a Android a redibujar siempre
-    // que la App llame a updateAll, sin intentar ahorrar baterÃ­a comparando estados.
+    override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val events = WidgetStateManager.getWidgetEvents(context)
-            LogCollector.addLog("WIDGET UI: Redibujando con ${events.size} eventos")
+            val prefs = currentState<Preferences>()
+            
+            // 1. Extraer Eventos
+            val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
+            val events = try { Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
+            
+            // 2. Extraer Ajustes Visuales del Estado (Ya no leemos SharedPreferences aquÃ­)
+            val bgColor = Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
+            val eventColor = Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
+            val todayColor = Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
+            val textBoost = prefs[WidgetStateManager.KEY_TEXT_BOOST] ?: 0f
+            val fontFamilyStr = prefs[WidgetStateManager.KEY_FONT_FAMILY] ?: ""
+            val isBold = prefs[WidgetStateManager.KEY_FONT_BOLD] ?: false
+
+            LogCollector.addLog("WIDGET UI: Renderizando ${events.size} ev con ajustes nativos")
             
             GlanceTheme {
-                WidgetContent(events)
+                WidgetLayout(events, bgColor, eventColor, todayColor, textBoost, fontFamilyStr, isBold)
             }
         }
     }
 
     @SuppressLint("RestrictedApi")
     @Composable
-    private fun WidgetContent(events: List<WidgetStateManager.WidgetEvent>) {
+    private fun WidgetLayout(
+        events: List<WidgetStateManager.WidgetEvent>,
+        bgColor: Color,
+        eventColor: Color,
+        todayColor: Color,
+        textBoost: Float,
+        fontFamilyStr: String,
+        isBold: Boolean
+    ) {
         val context = LocalContext.current
-        val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        
-        val bgColorInt = appPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
-        val eventColorInt = appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-        val textBoost = appPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
-        val fontFamilyStr = appPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: ""
-        val isBold = appPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
-
         val widgetFontFamily = when (fontFamilyStr) {
             WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
             WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
             WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily("sans-serif-condensed")
-            WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
             else -> FontFamily.SansSerif
         }
         val fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal
@@ -81,28 +97,15 @@ class ModernCalendarWidget : GlanceAppWidget() {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
 
-        Box(
-            modifier = GlanceModifier
-                .fillMaxSize()
-                .background(Color(bgColorInt))
-                .clickable(clickAction)
-        ) {
+        Box(modifier = GlanceModifier.fillMaxSize().background(bgColor).clickable(clickAction)) {
             if (events.isEmpty()) {
                 Box(modifier = GlanceModifier.fillMaxSize().clickable(clickAction), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = context.getString(R.string.widget_no_events),
-                        style = TextStyle(
-                            color = ColorProvider(Color(eventColorInt)),
-                            fontSize = (14 + textBoost).sp,
-                            fontFamily = widgetFontFamily,
-                            fontWeight = fontWeight
-                        )
-                    )
+                    Text(text = context.getString(R.string.widget_no_events), style = TextStyle(color = ColorProvider(eventColor), fontSize = (14 + textBoost).sp, fontFamily = widgetFontFamily, fontWeight = fontWeight))
                 }
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
                     items(events) { event ->
-                        EventItem(event, textBoost, widgetFontFamily, fontWeight, clickAction)
+                        EventRow(event, eventColor, todayColor, textBoost, widgetFontFamily, fontWeight, clickAction)
                     }
                 }
             }
@@ -111,8 +114,10 @@ class ModernCalendarWidget : GlanceAppWidget() {
 
     @SuppressLint("RestrictedApi")
     @Composable
-    private fun EventItem(
+    private fun EventRow(
         event: WidgetStateManager.WidgetEvent,
+        defaultColor: Color,
+        todayColor: Color,
         textBoost: Float,
         fontFamily: FontFamily,
         fontWeight: FontWeight,
@@ -120,23 +125,14 @@ class ModernCalendarWidget : GlanceAppWidget() {
     ) {
         val eventDate = LocalDate.ofEpochDay(event.dateEpochDay)
         val isToday = eventDate.isEqual(LocalDate.now())
-        val appPrefs = LocalContext.current.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val colorInt = if (isToday) appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-                       else appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-        
-        val color = Color(colorInt)
+        val color = if (isToday) todayColor else defaultColor
         val colorProvider = ColorProvider(color)
+        
         val dateStr = eventDate.format(DateTimeFormatter.ofPattern("dd/MM"))
         val locale = LocalContext.current.resources.configuration.locales[0]
         val dayName = eventDate.dayOfWeek.getDisplayName(JTextStyle.SHORT, locale).replaceFirstChar { it.titlecase(locale) }
 
-        Row(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp, vertical = 1.dp)
-                .clickable(clickAction),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 1.dp).clickable(clickAction), verticalAlignment = Alignment.CenterVertically) {
             Text(text = dayName, modifier = GlanceModifier.width(36.dp), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontWeight = fontWeight, fontFamily = fontFamily, textAlign = TextAlign.End))
             Text(text = dateStr, modifier = GlanceModifier.width(55.dp), style = TextStyle(color = colorProvider, fontSize = (14 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight, textAlign = TextAlign.Center))
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
