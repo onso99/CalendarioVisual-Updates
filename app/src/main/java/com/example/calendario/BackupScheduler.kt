@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit
 
 object BackupScheduler {
     private const val BACKUP_WORK_NAME = "google_drive_backup_work"
+    private const val RECOVERY_WORK_NAME = "google_drive_recovery_work"
 
     fun scheduleBackup(context: Context, frequency: String) {
         if (frequency == "manual") {
@@ -14,7 +15,6 @@ object BackupScheduler {
         }
 
         val repeatInterval = getInterval(frequency)
-
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -26,15 +26,12 @@ object BackupScheduler {
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             BACKUP_WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE,
+            ExistingPeriodicWorkPolicy.UPDATE, // Forzamos actualizaciÃ³n si el usuario cambia el ajuste
             backupRequest
         )
+        LogCollector.addLog(">>> PROGRAMADOR: Backup $frequency activado.")
     }
 
-    /**
-     * Asegura que el trabajo esté programado sin reiniciar el contador de tiempo.
-     * Incluye auto-sanación si la tarea ha desaparecido del sistema.
-     */
     fun ensureBackupScheduled(context: Context) {
         val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         val frequency = appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
@@ -43,33 +40,27 @@ object BackupScheduler {
         if (!isAutoBackupEnabled) return
 
         val workManager = WorkManager.getInstance(context)
-        val workInfos = workManager.getWorkInfosForUniqueWork(BACKUP_WORK_NAME).get()
-        
-        if (workInfos.isNullOrEmpty()) {
-            LogCollector.addLog(">>> AUTO-SANACIÓN: La tarea había desaparecido. Recreándola...")
-        }
-
         val lastBackup = appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
         val intervalMillis = TimeUnit.DAYS.toMillis(getInterval(frequency))
         
-        // INSPECTOR: Detectar retrasos
+        // RECUPERACIÃ“N DE EMERGENCIA: Si hay mÃ¡s de 6h de retraso sobre el plan, lanzamos uno ya mismo.
         if (lastBackup != 0L) {
             val diff = System.currentTimeMillis() - lastBackup
-            if (diff > (intervalMillis + TimeUnit.HOURS.toMillis(6))) { // Margen de 6h de gracia
-                LogCollector.addLog(">>> ALERTA INSPECTOR: Respaldo con ${diff/3600000}h de retraso.")
+            if (diff > (intervalMillis + TimeUnit.HOURS.toMillis(6))) {
+                LogCollector.addLog(">>> ALERTA PROGRAMADOR: Retraso detectado (${diff/3600000}h). Lanzando rescate...")
+                val recoveryRequest = OneTimeWorkRequestBuilder<BackupWorker>()
+                    .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build()
+                workManager.enqueueUniqueWork(RECOVERY_WORK_NAME, ExistingWorkPolicy.REPLACE, recoveryRequest)
             }
         }
 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
         val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(getInterval(frequency), TimeUnit.DAYS)
-            .setConstraints(constraints)
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
             .build()
 
-        // KEEP asegura que si ya existe un trabajo con este nombre, NO lo toque (no reinicia las 24h)
         workManager.enqueueUniquePeriodicWork(
             BACKUP_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
@@ -88,5 +79,7 @@ object BackupScheduler {
 
     fun cancelBackup(context: Context) {
         WorkManager.getInstance(context).cancelUniqueWork(BACKUP_WORK_NAME)
+        WorkManager.getInstance(context).cancelUniqueWork(RECOVERY_WORK_NAME)
+        LogCollector.addLog(">>> PROGRAMADOR: Backup cancelado.")
     }
 }

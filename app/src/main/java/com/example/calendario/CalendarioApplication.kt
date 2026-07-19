@@ -30,15 +30,10 @@ class CalendarioApplication : Application(), Configuration.Provider {
         super.onCreate()
         Log.i(TAG, "onCreate() de CalendarioApplication FUE LLAMADO.")
 
-        // WorkManager se inicializará automáticamente usando la 'workManagerConfiguration'
-        // definida arriba la primera vez que se llame a WorkManager.getInstance() en cualquier
-        // parte de la aplicación (por ejemplo, en CalendarAppWidgetProvider) o por su
-        // ContentProvider interno.
-        // Ya no necesitamos llamar a ningún método de configuración de trabajos desde aquí,
-        // ya que CalendarAppWidgetProvider.onEnabled() se encarga de encolar
-        // tanto el trabajo inicial como el periódico cuando se añade un widget,
-        // y onDisabled() se encarga de la limpieza.
-        Log.d(TAG, "WorkManager se inicializará bajo demanda con la configuración proporcionada.")
+        // SISTEMA DE AUTO-SANACIÃ“N: Aseguramos que el backup estÃ© programado al arrancar la App
+        BackupScheduler.ensureBackupScheduled(this)
+
+        Log.d(TAG, "WorkManager se inicializarÃ¡ bajo demanda con la configuraciÃ³n proporcionada.")
     }
 
     companion object {

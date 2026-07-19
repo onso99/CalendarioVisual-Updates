@@ -1,3 +1,5 @@
+2026-07-19 - v2.00.15 Eventos Adaptativo y Eventos Clásico: strings propagados al resto de idiomas
+2026-07-19 - v2.00.14 Widget moderno: Se pueden crear varios widgets. Cambio de nombres: Eventos Adaptativo y Eventos Clásico
 2026-07-19 - v2.00.13 Widget moderno: Previsualización 3x1 corregida
 2026-07-19 - v2.00.12 Widget moderno: warnings corregidos
 2026-07-19 - v2.00.11 Widget moderno: si número de eventos <4 se rellena con filas para asegurar clic
