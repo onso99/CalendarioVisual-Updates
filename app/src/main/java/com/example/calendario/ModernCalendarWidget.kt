@@ -53,19 +53,26 @@ class ModernCalendarWidget : GlanceAppWidget() {
         provideContent {
             val prefs = currentState<Preferences>()
             
-            // 1. Extraer Eventos
-            val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
-            val events = try { Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
+            // 1. Extraer Eventos con Fallback (Si DataStore estÃ¡ vacÃ­o, lee de Prefs)
+            val jsonFromState = prefs[WidgetStateManager.KEY_WIDGET_DATA]
+            val events = if (jsonFromState != null) {
+                try { Gson().fromJson(jsonFromState, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
+            } else {
+                // FALLBACK: Si es la primera vez que se pone el widget, leemos de SharedPreferences
+                WidgetStateManager.getWidgetEvents(context)
+            }
             
-            // 2. Extraer Ajustes Visuales del Estado (Ya no leemos SharedPreferences aquÃ­)
-            val bgColor = Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
-            val eventColor = Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-            val todayColor = Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-            val textBoost = prefs[WidgetStateManager.KEY_TEXT_BOOST] ?: 0f
-            val fontFamilyStr = prefs[WidgetStateManager.KEY_FONT_FAMILY] ?: ""
-            val isBold = prefs[WidgetStateManager.KEY_FONT_BOLD] ?: false
+            // 2. Extraer Ajustes Visuales del Estado con Fallback
+            val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+            
+            val bgColor = Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB))
+            val eventColor = Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB))
+            val todayColor = Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB))
+            val textBoost = prefs[WidgetStateManager.KEY_TEXT_BOOST] ?: appPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
+            val fontFamilyStr = prefs[WidgetStateManager.KEY_FONT_FAMILY] ?: appPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: ""
+            val isBold = prefs[WidgetStateManager.KEY_FONT_BOLD] ?: appPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
 
-            LogCollector.addLog("WIDGET UI: Renderizando ${events.size} ev con ajustes nativos")
+            LogCollector.addLog("WIDGET UI: Renderizando ${events.size} ev (Source: ${if(jsonFromState!=null) "DataStore" else "Fallback"})")
             
             GlanceTheme {
                 WidgetLayout(events, bgColor, eventColor, todayColor, textBoost, fontFamilyStr, isBold)
