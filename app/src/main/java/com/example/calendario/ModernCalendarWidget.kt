@@ -105,7 +105,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
             } else {
                 LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
                     items(events) { event ->
-                        EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction)
+                        EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction, bgColor)
                     }
                     
                     item {
@@ -128,7 +128,8 @@ class ModernCalendarWidget : GlanceAppWidget() {
         fontFamilyStr: String,
         fontFamily: FontFamily,
         fontWeight: FontWeight,
-        clickAction: androidx.glance.action.Action
+        clickAction: androidx.glance.action.Action,
+        bgColor: Color
     ) {
         val eventDate = LocalDate.ofEpochDay(event.dateEpochDay)
         val isToday = eventDate.isEqual(LocalDate.now())
@@ -141,13 +142,12 @@ class ModernCalendarWidget : GlanceAppWidget() {
 
         val baseFontSize = 14f + textBoost
         val (dayF, dateF, gapF) = when(fontFamilyStr) {
-            WidgetConstants.FONT_FAMILY_CONDENSED -> Triple(0.92f, 0.90f, 0.40f) // Subida de 0.78 a 0.92 para evitar "Do..."
+            WidgetConstants.FONT_FAMILY_CONDENSED -> Triple(0.92f, 0.90f, 0.40f)
             WidgetConstants.FONT_FAMILY_MONOSPACE -> Triple(0.95f, 1.15f, 0.01f)
             WidgetConstants.FONT_FAMILY_SERIF -> Triple(1.02f, 1.0f, 0.45f)
-            else -> Triple(1.08f, 1.0f, 0.45f) // Sistema / Sans
+            else -> Triple(1.08f, 1.0f, 0.45f)
         }
 
-        // Multiplicadores base unificados para estabilidad en dispositivo fÃ­sico
         val dayWidth = (baseFontSize * 3.0f * dayF).dp
         val dateWidth = (baseFontSize * 4.1f * dateF).dp
         val columnGap = (baseFontSize * 0.16f * gapF).dp
@@ -170,11 +170,41 @@ class ModernCalendarWidget : GlanceAppWidget() {
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
             Text(text = "$timePart${event.title}$agePart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
+            
             if (event.alarmTimeStr != null) {
                 Spacer(modifier = GlanceModifier.width(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(provider = ImageProvider(R.drawable.ic_alarm_bell_outlined), contentDescription = null, modifier = GlanceModifier.size(14.dp), colorFilter = ColorFilter.tint(colorProvider))
-                    Text(text = event.alarmTimeStr, style = TextStyle(color = colorProvider, fontSize = (12 + textBoost).sp, fontFamily = fontFamily, fontWeight = fontWeight), modifier = GlanceModifier.padding(start = 1.dp))
+                    // ALGORITMO DE OPACIDAD ADAPTATIVA
+                    // Compensamos la delgadez del icono con una curva no lineal:
+                    // Boost fuerte en opacidades bajas, boost mÃ­nimo en opacidades altas.
+                    val rawAlpha = color.alpha
+                    val adjustedAlpha = if (rawAlpha > 0f) {
+                        (rawAlpha * 0.7f + 0.3f).coerceAtMost(1f)
+                    } else 0f
+                    
+                    val mixedColor = Color(
+                        red = color.red * adjustedAlpha + bgColor.red * (1f - adjustedAlpha),
+                        green = color.green * adjustedAlpha + bgColor.green * (1f - adjustedAlpha),
+                        blue = color.blue * adjustedAlpha + bgColor.blue * (1f - adjustedAlpha),
+                        alpha = 1f
+                    )
+                    
+                    Image(
+                        provider = ImageProvider(R.drawable.ic_alarm_bell_outlined), 
+                        contentDescription = null, 
+                        modifier = GlanceModifier.size(14.dp),
+                        colorFilter = ColorFilter.tint(ColorProvider(mixedColor))
+                    )
+                    Text(
+                        text = event.alarmTimeStr, 
+                        style = TextStyle(
+                            color = colorProvider,
+                            fontSize = (12 + textBoost).sp, 
+                            fontFamily = fontFamily, 
+                            fontWeight = fontWeight
+                        ), 
+                        modifier = GlanceModifier.padding(start = 1.dp)
+                    )
                 }
             }
         }
