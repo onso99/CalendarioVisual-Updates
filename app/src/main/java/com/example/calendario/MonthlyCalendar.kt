@@ -70,63 +70,6 @@ fun MonthlyCalendar(
     val showWeekNumber = remember(prefs) { prefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
     val weekFields = remember(locale) { WeekFields.of(locale) }
 
-    val intelligentTodayBorderColor = remember(themeColors.monthlyCalendarTodayCellBorder, themeColors.settingsBackground) {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(themeColors.monthlyCalendarTodayCellBorder.toArgb(), hsl)
-        val originalHue = hsl[0]
-
-        // Ajustar color segÃºn la luminancia del fondo de ajustes (modo app)
-        val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
-        
-        if (isAppDark) {
-            // Modo Oscuro: EcualizaciÃ³n CromÃ¡tica por Tramos de PercepciÃ³n
-            hsl[0] = (originalHue + 25f) % 360
-            
-            when (originalHue) {
-                // OcÃ©ano y Grafito: Ajustado para no deslumbrar
-                in 190f..225f -> {
-                    hsl[1] = 0.90f 
-                    hsl[2] = 0.70f 
-                }
-                // Bosque y Verdes
-                in 60f..160f -> {
-                    hsl[1] = 0.50f 
-                    hsl[2] = 0.40f
-                }
-                // VolcÃ¡n, Lavanda, Amanecer
-                else -> {
-                    hsl[1] = 0.70f 
-                    hsl[2] = 0.55f
-                }
-            }
-        } else {
-            // Modo Claro: LÃ³gica unificada con refuerzo para Lavanda
-            val isLavandaTramo = originalHue in 230f..290f
-            
-            hsl[0] = (originalHue + 140f) % 360
-            
-            // Refuerzo de saturaciÃ³n para el tramo Lavanda
-            hsl[1] = if (isLavandaTramo) 0.80f else 0.40f
-            hsl[2] = 0.55f
-        }
-        
-        Color(ColorUtils.HSLToColor(hsl))
-    }
-
-    // Calculamos el alpha final: si es Lavanda lo hacemos mÃ¡s compacto (menos transparente)
-    val finalTodayAlpha = remember(themeColors.monthlyCalendarTodayCellBorder, themeColors.settingsBackground) {
-        val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(themeColors.monthlyCalendarTodayCellBorder.toArgb(), hsl)
-        val isAppLight = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) >= 0.5
-        
-        // Detectamos si es el tema lavanda en modo claro
-        if (hsl[0] in 230f..290f && isAppLight) {
-            1.0f 
-        } else {
-            0.8f
-        }
-    }
-
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
         val startDayIndex = days.indexOf(startOfWeek)
@@ -282,6 +225,9 @@ fun MonthlyCalendar(
                         if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
                     }
 
+                    // Determinamos el color del borde de "Hoy" según la luminancia del fondo de la celda
+                    val todayBorderColor = if (ColorUtils.calculateLuminance(cellBackground.toArgb()) > 0.5) Color.Black else Color.White
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -302,7 +248,7 @@ fun MonthlyCalendar(
                                     }
                                 }
                         ) {
-                            // --- CARRILES DE PERIODOS LARGOS (Grosor fijo con separaciÃ³n reducida) ---
+                            // ... (resto del código de carriles y textos)
                             val longPeriods = dayEvents.filter { it.isLongPeriod && it.lane != null }
                             if (isCurrentMonth && longPeriods.isNotEmpty()) {
                                 Column(
@@ -471,10 +417,9 @@ fun MonthlyCalendar(
                                         .fillMaxSize()
                                         .drawBehind {
                                             drawRoundRect(
-                                                color = intelligentTodayBorderColor,
+                                                color = todayBorderColor,
                                                 cornerRadius = CornerRadius(4.dp.toPx()),
-                                                style = Stroke(width = 2.dp.toPx()),
-                                                alpha = finalTodayAlpha
+                                                style = Stroke(width = 2.dp.toPx())
                                             )
                                         }
                                 )
