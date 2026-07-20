@@ -48,9 +48,12 @@ object WidgetStateManager {
 
     fun refreshWithCurrentEvents(context: Context) {
         updateJob?.cancel()
-        val events = loadHistoryFromDisk(context)
+        // CORRECCIÃ“N: Leemos del cachÃ© de eventos de la App, no del historial de la nube
+        val eventsMap = loadEventsFromPrefs(context)
+        val allEvents = eventsMap.values.flatten()
+        
         updateJob = scope.launch {
-            performUpdate(context, events)
+            performUpdate(context, allEvents)
         }
     }
 

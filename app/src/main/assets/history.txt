@@ -1,3 +1,4 @@
+2026-07-20 - v2.00.23 Gestión de festivos locales unificada en widget clásico y moderno
 2026-07-20 - v2.00.22 Corrección de warnings
 2026-07-20 - v2.00.21 Corrección Festivos locales: comparación pura de fecha
 2026-07-20 - v2.00.20 Escudo de migración anterior a v.2.00
