@@ -1,3 +1,4 @@
+2026-07-20 - v2.00.20 Escudo de migración anterior a v.2.00
 2026-07-19 - v2.00.19 Widget moderno: Unificación de limpieza de eventos y mejora del arranque del widget
 2026-07-19 - v2.00.18 Widget moderno: Opacidad adaptativa para el icono de alarma
 2026-07-19 - v2.00.17 Widget moderno: Ajuste de texto se ve correctamente en todas las fuentes

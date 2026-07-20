@@ -17,6 +17,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -53,19 +54,28 @@ object WidgetStateManager {
         }
     }
 
-    /**
-     * LÃ³gica de limpieza compartida para asegurar que los datos sean siempre correctos.
-     */
     private fun cleanAndFilterEvents(context: Context, events: List<Festivo>): List<WidgetEvent> {
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
         val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        
+        // Usamos la fecha de hoy a medianoche para una comparaciÃ³n limpia
+        val today = LocalDate.now()
         val now = LocalDateTime.now().withNano(0).withSecond(0)
         
         return events
             .filter { event ->
-                val eventEndDateTime = if (event.isAllDay) event.date.plusDays(1).atStartOfDay()
-                else LocalDateTime.of(event.date, event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX)
-                eventEndDateTime.isAfter(now)
+                // REGLA DE ORO: Si es hoy, se queda. Si es futuro, se queda.
+                // Usamos la misma lógica que el widget clásico para evitar discrepancias.
+                if (event.date.isBefore(today)) return@filter false
+                
+                // Si es hoy, verificamos si ya terminó (solo para eventos con hora)
+                if (event.date.isEqual(today) && !event.isAllDay) {
+                    val eventEndTime = event.endTime ?: event.startTime?.plusHours(1) ?: java.time.LocalTime.MAX
+                    val eventEndDateTime = LocalDateTime.of(event.date, eventEndTime)
+                    if (eventEndDateTime.isBefore(now)) return@filter false
+                }
+                
+                true
             }
             .distinctBy { "${it.date}_${it.title}" }
             .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
