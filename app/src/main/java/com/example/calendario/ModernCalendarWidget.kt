@@ -17,6 +17,7 @@ import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
@@ -50,27 +51,17 @@ import java.time.format.TextStyle as JTextStyle
 class ModernCalendarWidget : GlanceAppWidget() {
 
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
+    
+    // LA CLAVE: Activamos el modo exacto para recibir la altura real del widget en pantalla
+    override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
-            
-            // 1. Extraer Eventos con ESCUDO DE MIGRACIÃ“N
-            // Si el estado estÃ¡ corrupto o es de una versiÃ³n vieja, el catch evita que la App se cierre.
-            val events = try {
-                val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
-                if (json.isNotEmpty()) {
-                    Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList()
-                } else {
-                    WidgetStateManager.getWidgetEvents(context)
-                }
-            } catch (_: Exception) {
-                WidgetStateManager.getWidgetEvents(context)
-            }
+            val json = prefs[WidgetStateManager.KEY_WIDGET_DATA] ?: ""
+            val events = try { Gson().fromJson(json, Array<WidgetStateManager.WidgetEvent>::class.java).toList() } catch (_: Exception) { emptyList() }
             
             val appPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            
-            // 2. Extraer Ajustes Visuales con Try-Catch individual para mÃ¡xima seguridad
             val bgColor = try { Color(prefs[WidgetStateManager.KEY_BG_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)) } catch(_:Exception) { Color(WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB) }
             val eventColor = try { Color(prefs[WidgetStateManager.KEY_EVENT_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)) } catch(_:Exception) { Color(WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB) }
             val todayColor = try { Color(prefs[WidgetStateManager.KEY_TODAY_COLOR] ?: appPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)) } catch(_:Exception) { Color(WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB) }
@@ -96,7 +87,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         isBold: Boolean
     ) {
         val context = LocalContext.current
-        val widgetSize = LocalSize.current
+        val widgetSize = LocalSize.current // Ahora sí contiene la altura real (gracias a SizeMode.Exact)
         
         val widgetFontFamily = when (fontFamilyStr) {
             WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
@@ -121,10 +112,20 @@ class ModernCalendarWidget : GlanceAppWidget() {
                         EventRow(event, eventColor, todayColor, textBoost, fontFamilyStr, widgetFontFamily, fontWeight, clickAction, bgColor)
                     }
                     
+                    // RELLENO MATEMÃTICO REAL: Ahora que widgetSize es exacto, rellenamos el hueco con precisiÃ³n.
                     item {
-                        val estimatedContentHeight = events.size * (25f + textBoost)
-                        val fillHeight = (widgetSize.height.value - estimatedContentHeight).coerceAtLeast(40f)
-                        Box(modifier = GlanceModifier.fillMaxWidth().height(fillHeight.dp).clickable(clickAction)) {}
+                        val estimatedRowHeight = 25f + textBoost 
+                        val totalContentHeight = (events.size * estimatedRowHeight) + 8f // Margen de seguridad reducido
+                        val remainingHeight = (widgetSize.height.value - totalContentHeight).coerceAtLeast(0f)
+                        
+                        if (remainingHeight > 5f) {
+                            Box(
+                                modifier = GlanceModifier
+                                    .fillMaxWidth()
+                                    .height(remainingHeight.dp)
+                                    .clickable(clickAction)
+                            ) {}
+                        }
                     }
                 }
             }
@@ -187,9 +188,6 @@ class ModernCalendarWidget : GlanceAppWidget() {
             if (event.alarmTimeStr != null) {
                 Spacer(modifier = GlanceModifier.width(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // ALGORITMO DE OPACIDAD ADAPTATIVA
-                    // Compensamos la delgadez del icono con una curva no lineal:
-                    // Boost fuerte en opacidades bajas, boost mÃ­nimo en opacidades altas.
                     val rawAlpha = color.alpha
                     val adjustedAlpha = if (rawAlpha > 0f) {
                         (rawAlpha * 0.7f + 0.3f).coerceAtMost(1f)
