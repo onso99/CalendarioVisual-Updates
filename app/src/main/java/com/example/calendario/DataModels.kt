@@ -64,6 +64,7 @@ data class FestivoDto(
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
+    val dateStr: String? = null,
     // --- Campos para SincronizaciÃ³n Segura ---
     val lastModified: Long? = null,
     val isDeleted: Boolean? = false

@@ -1,3 +1,5 @@
+2026-07-20 - v2.00.22 Corrección de warnings
+2026-07-20 - v2.00.21 Corrección Festivos locales: comparación pura de fecha
 2026-07-20 - v2.00.20 Escudo de migración anterior a v.2.00
 2026-07-19 - v2.00.19 Widget moderno: Unificación de limpieza de eventos y mejora del arranque del widget
 2026-07-19 - v2.00.18 Widget moderno: Opacidad adaptativa para el icono de alarma

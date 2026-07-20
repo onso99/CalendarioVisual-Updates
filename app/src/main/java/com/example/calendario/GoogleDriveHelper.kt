@@ -42,7 +42,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             val remoteEvents = if (remoteContent != null) {
                 val type = object : TypeToken<List<FestivoDto>>() {}.type
                 val dtos: List<FestivoDto> = Gson().fromJson(remoteContent, type) ?: emptyList()
-                dtos.map { it.toFestivo() }
+                dtos.mapNotNull { it.toFestivo() }
             } else {
                 emptyList()
             }

@@ -80,39 +80,44 @@ fun Festivo.toDto() = FestivoDto(
     fullStartMillis = this.fullStartMillis,
     fullEndMillis = this.fullEndMillis,
     repeatCount = this.repeatCount,
+    dateStr = this.date.toString(), // Guardamos la fecha explÃ­cita
     lastModified = this.lastModified,
     isDeleted = this.isDeleted
 )
 
-fun FestivoDto.toFestivo() = Festivo(
-    id = this.id ?: 0L,
-    calendarId = this.calendarId ?: 0L,
-    title = this.title ?: "",
-    description = this.description,
-    date = LocalDate.now(),
-    startTime = this.startTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
-    endTime = this.endTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
-    isAllDay = this.isAllDay ?: true,
-    isFromHolidaySource = this.isFromHolidaySource ?: false,
-    rrule = this.rrule,
-    age = this.age,
-    isBirthday = this.isBirthday ?: false,
-    isLongPeriod = this.isLongPeriod ?: false,
-    lane = this.lane,
-    totalDays = this.totalDays ?: 1,
-    currentDay = this.currentDay ?: 1,
-    customColor = this.customColor,
-    fullStartMillis = this.fullStartMillis,
-    fullEndMillis = this.fullEndMillis,
-    repeatCount = this.repeatCount,
-    lastModified = this.lastModified ?: System.currentTimeMillis(),
-    isDeleted = this.isDeleted ?: false
-).let { 
-    if (this.fullStartMillis != null) {
-        try {
-            it.copy(date = Instant.ofEpochMilli(this.fullStartMillis).atZone(ZoneId.systemDefault()).toLocalDate())
-        } catch(_: Exception) { it }
-    } else it
+fun FestivoDto.toFestivo(): Festivo? {
+    // LÃ“GICA DE SEGURIDAD (WIDGET CLÃSICO): Si no hay una fecha vÃ¡lida, el dato es corrupto/antiguo.
+    // No usamos LocalDate.now() por defecto para evitar "fantasmas" en el widget moderno.
+    val finalDate = when {
+        this.dateStr != null -> try { LocalDate.parse(this.dateStr) } catch(_: Exception) { null }
+        this.fullStartMillis != null -> try { Instant.ofEpochMilli(this.fullStartMillis).atZone(ZoneId.systemDefault()).toLocalDate() } catch(_: Exception) { null }
+        else -> null
+    } ?: return null // Si no hay fecha, ignoramos este evento (Auto-sanaciÃ³n)
+
+    return Festivo(
+        id = this.id ?: 0L,
+        calendarId = this.calendarId ?: 0L,
+        title = this.title ?: "",
+        description = this.description,
+        date = finalDate,
+        startTime = this.startTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
+        endTime = this.endTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
+        isAllDay = this.isAllDay ?: true,
+        isFromHolidaySource = this.isFromHolidaySource ?: false,
+        rrule = this.rrule,
+        age = this.age,
+        isBirthday = this.isBirthday ?: false,
+        isLongPeriod = this.isLongPeriod ?: false,
+        lane = this.lane,
+        totalDays = this.totalDays ?: 1,
+        currentDay = this.currentDay ?: 1,
+        customColor = this.customColor,
+        fullStartMillis = this.fullStartMillis,
+        fullEndMillis = this.fullEndMillis,
+        repeatCount = this.repeatCount,
+        lastModified = this.lastModified ?: System.currentTimeMillis(),
+        isDeleted = this.isDeleted ?: false
+    )
 }
 
 // --- GESTIÓN DE BORRADOS (Tombstones) ---
@@ -182,7 +187,7 @@ fun loadEventsFromPrefs(context: Context): Map<LocalDate, List<Festivo>> {
     return dtoMap.mapNotNull { (dateStr, dtoList) ->
         val date = try { LocalDate.parse(dateStr) } catch (_: Exception) { null }
         date?.let { validDate ->
-            validDate to dtoList.map { it.toFestivo().copy(date = validDate) }
+            validDate to dtoList.mapNotNull { it.toFestivo()?.copy(date = validDate) }
         }
     }.toMap()
 }
