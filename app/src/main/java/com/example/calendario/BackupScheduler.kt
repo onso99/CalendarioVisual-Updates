@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 object BackupScheduler {
     private const val BACKUP_WORK_NAME = "google_drive_backup_work"
@@ -71,7 +70,7 @@ object BackupScheduler {
                     ExistingPeriodicWorkPolicy.KEEP,
                     backupRequest
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Error en segundo plano ignorado para no colapsar la App
             }
         }

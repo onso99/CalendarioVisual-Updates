@@ -30,8 +30,4 @@ class CalendarioApplication : Application(), Configuration.Provider {
             }
         }
     }
-
-    companion object {
-        private const val TAG = "CalendarioApplication"
-    }
 }

@@ -64,7 +64,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
                 } else {
                     WidgetStateManager.getWidgetEvents(context)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 WidgetStateManager.getWidgetEvents(context)
             }
             
