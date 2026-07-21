@@ -210,7 +210,8 @@ class ModernCalendarWidget : GlanceAppWidget() {
                         text = event.alarmTimeStr, 
                         style = TextStyle(
                             color = colorProvider,
-                            fontSize = (12 + textBoost).sp, 
+                            // ESCALADO PROPORCIONAL: 20% mÃ¡s pequeÃ±o (jerarquÃ­a visual reforzada)
+                            fontSize = (baseFontSize * 0.80f).sp,
                             fontFamily = fontFamily, 
                             fontWeight = fontWeight
                         ), 

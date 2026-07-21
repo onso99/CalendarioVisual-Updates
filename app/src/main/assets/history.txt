@@ -1,3 +1,4 @@
+2026-07-21 - v2.00.27 Dia actual: borde outset y opacidad 0.6f al blanco en modo oscuro
 2026-07-20 - v2.00.26 Dia actual de calendario mensual con borde negro/blanco
 2026-07-20 - v2.00.25 Widget moderno: espacio vacío clicable se ajusta dinámicamente
 2026-07-20 - v2.00.24 Corregido desfase de datos en el widget moderno usando el caché de evento
