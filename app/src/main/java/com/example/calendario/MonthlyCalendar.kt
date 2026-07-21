@@ -416,10 +416,17 @@ fun MonthlyCalendar(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            // Si el borde es blanco (modo oscuro), le aplicamos un 80% de opacidad
+                                            val finalAlpha = if (todayBorderColor == Color.White) 0.6f else 1.0f
+                                            
                                             drawRoundRect(
                                                 color = todayBorderColor,
-                                                cornerRadius = CornerRadius(4.dp.toPx()),
-                                                style = Stroke(width = 2.dp.toPx())
+                                                topLeft = androidx.compose.ui.geometry.Offset(-borderSize / 2, -borderSize / 2),
+                                                size = androidx.compose.ui.geometry.Size(size.width + borderSize, size.height + borderSize),
+                                                cornerRadius = CornerRadius(4.dp.toPx() + borderSize / 2),
+                                                style = Stroke(width = borderSize),
+                                                alpha = finalAlpha
                                             )
                                         }
                                 )

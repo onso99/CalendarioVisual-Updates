@@ -1,3 +1,4 @@
+2026-07-20 - v2.00.26 Dia actual de calendario mensual con borde negro/blanco
 2026-07-20 - v2.00.25 Widget moderno: espacio vacío clicable se ajusta dinámicamente
 2026-07-20 - v2.00.24 Corregido desfase de datos en el widget moderno usando el caché de evento
 2026-07-20 - v2.00.23 Gestión de festivos locales unificada en widget clásico y moderno
