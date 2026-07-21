@@ -443,7 +443,7 @@ fun readFestivosFromCalendarsSync(
                     val organizer = data["organizer"] as String
                     val title = (data["title"] as String).lowercase()
                     val isHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
-                    val isBirthday = (technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || (isAllDay && birthdayKeywords.any { title.contains(it) }))
+                    val isBirthday = (technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || (birthdayKeywords.any { title.contains(it) }))
                     if (!isHoliday && !isBirthday) {
                         val uniqueKey = "${eventId}_${beginMillis}"
                         Triple(uniqueKey, startDate, endDate)
@@ -491,7 +491,7 @@ fun readFestivosFromCalendarsSync(
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
                 val hasBirthdayWord = birthdayKeywords.any { title.lowercase().contains(it) }
                 val hasGreetingWord = greetingKeywords.any { title.lowercase().contains(it) }
-                val finalIsBirthday = (isTechnicalBirthday || (isAllDay && (hasBirthdayWord || hasGreetingWord))) && !isFromHoliday
+                val finalIsBirthday = (isTechnicalBirthday || hasBirthdayWord || hasGreetingWord) && !isFromHoliday
                 var birthYear = birthYearMap[eventId]
                 if (finalIsBirthday) {
                     if (hasGreetingWord && !isTechnicalBirthday) birthYear = null

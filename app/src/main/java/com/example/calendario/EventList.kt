@@ -106,16 +106,29 @@ fun MonthlyEventList(
                             CalendarioTheme.colors.textSystem
                         }
 
-                        // Color para el título (específico del evento)
+                        // Color para el tÃ­tulo (especÃ­fico del evento)
                         val titleColor = if (isTodayEvents) {
                             val highlightColor = CalendarioTheme.colors.todayHighlightColor
                             val opaqueHighlightInt = ColorUtils.setAlphaComponent(highlightColor.toArgb(), 255)
                             val opaqueEventColorInt = ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255)
                             
-                            if (ColorUtils.calculateContrast(opaqueEventColorInt, opaqueHighlightInt) > 1.5) {
+                            // Aumentamos la tolerancia: si el evento NO es normal (tiene color especial),
+                            // intentamos mantener su color aunque el contraste sea bajo (umbral 1.2 en lugar de 1.5)
+                            val isSpecialEvent = eventSpecificColor != CalendarioTheme.colors.textSystem
+                            val contrastThreshold = if (isSpecialEvent) 1.2 else 1.5
+
+                            if (ColorUtils.calculateContrast(opaqueEventColorInt, opaqueHighlightInt) > contrastThreshold) {
                                 eventSpecificColor
                             } else {
-                                if (isColorDark(highlightColor, MaterialTheme.colorScheme.background)) Color.White else Color.Black
+                                // Si realmente no se lee, en lugar de blanco puro, intentamos una variante clara del mismo color
+                                if (isSpecialEvent) {
+                                    val hsl = FloatArray(3)
+                                    ColorUtils.colorToHSL(eventSpecificColor.toArgb(), hsl)
+                                    hsl[2] = 0.90f // Forzamos mucha luz para que brille sobre el fondo oscuro
+                                    Color(ColorUtils.HSLToColor(hsl))
+                                } else {
+                                    if (isColorDark(highlightColor, MaterialTheme.colorScheme.background)) Color.White else Color.Black
+                                }
                             }
                         } else {
                             eventSpecificColor

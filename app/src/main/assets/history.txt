@@ -1,3 +1,4 @@
+2026-07-21 - v2.00.28 Corrección de acentos y "ñ" en comentarios del código
 2026-07-21 - v2.00.28 Widget: tamaño de fuente de alarma reducida un 20%
 2026-07-21 - v2.00.27 Dia actual: borde outset y opacidad 0.6f al blanco en modo oscuro
 2026-07-20 - v2.00.26 Dia actual de calendario mensual con borde negro/blanco

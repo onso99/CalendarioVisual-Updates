@@ -69,6 +69,7 @@ fun MonthlyCalendar(
     
     val showWeekNumber = remember(prefs) { prefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
     val weekFields = remember(locale) { WeekFields.of(locale) }
+    val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
 
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
@@ -376,7 +377,9 @@ fun MonthlyCalendar(
                                 }
 
                                 if (hasNormalEvent) {
-                                    indicatorColors.add(themeColors.cabecera)
+                                    // En Modo Oscuro, usamos un gris claro para que el punto de eventos normales resalte
+                                    val normalIndicatorColor = if (isAppDark) Color(0xFFBDBDBD) else themeColors.cabecera
+                                    indicatorColors.add(normalIndicatorColor)
                                 }
 
                                 val hasBirthday = eventsForIndicators.any { it.isBirthday }
