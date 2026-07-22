@@ -32,98 +32,103 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
     }
 
     /**
-     * Motor de Sincronización Incremental (Download-Merge-Upload)
+     * Motor de Sincronización Incremental (Eventos y Notas)
      */
     suspend fun syncHistoryWithDrive(): SyncResult = withContext(Dispatchers.IO) {
         try {
-            // 1. Descargar copia actual de Drive
-            Log.d("DriveHelper", "Descargando copia de Drive para fusionar...")
-            val remoteContent = downloadHistoryContent()
+            // --- 1. SINCRONIZACIÓN DE EVENTOS ---
+            Log.d("DriveHelper", "Sincronizando eventos...")
+            val remoteContent = downloadFileContent("calendar_history_backup.json")
             val remoteEvents = if (remoteContent != null) {
                 val type = object : TypeToken<List<FestivoDto>>() {}.type
                 val dtos: List<FestivoDto> = Gson().fromJson(remoteContent, type) ?: emptyList()
                 dtos.mapNotNull { it.toFestivo() }
-            } else {
-                emptyList()
-            }
+            } else emptyList()
 
-            // 2. Cargar copia local
             val localEvents = loadHistoryFromDisk(context)
-
-            // 3. Fusión Maestra (Incremental)
             val (mergedEvents, purgedCount) = mergeHistoryLists(context, localEvents, remoteEvents)
-
-            // 4. Guardar resultado localmente
             saveHistoryToDisk(context, mergedEvents)
+            uploadFileToDrive("calendar_history_backup.json", context.getFileStreamPath("calendar_history_v2.json"))
 
-            // 5. Subir resultado final a Drive
-            val historyFile = context.getFileStreamPath("calendar_history_v2.json")
-            if (!historyFile.exists()) return@withContext SyncResult(0, 0, false)
+            // --- 2. SINCRONIZACIÓN DE NOTAS ---
+            Log.d("DriveHelper", "Sincronizando notas...")
+            val remoteNotesContent = downloadFileContent("notes_history_backup.json")
+            val remoteNotes = if (remoteNotesContent != null) {
+                val type = object : TypeToken<List<DailyNoteDto>>() {}.type
+                val dtos: List<DailyNoteDto> = Gson().fromJson(remoteNotesContent, type) ?: emptyList()
+                dtos.mapNotNull { it.toDailyNote() }
+            } else emptyList()
 
-            val result = driveService.files().list()
-                .setSpaces("appDataFolder")
-                .setQ("name = 'calendar_history_backup.json'")
-                .execute()
-            val existingFiles = result.files
+            val localNotes = loadNotesFromDisk(context)
+            val mergedNotes = mergeNotesLists(localNotes, remoteNotes)
+            saveNotesToDisk(context, mergedNotes)
+            uploadFileToDrive("notes_history_backup.json", context.getFileStreamPath("notes_history.json"))
 
-            val fileMetadata = File().apply {
-                name = "calendar_history_backup.json"
-                parents = Collections.singletonList("appDataFolder")
-            }
-            val mediaContent = FileContent("application/json", historyFile)
-
-            if (existingFiles.isNullOrEmpty()) {
-                driveService.files().create(fileMetadata, mediaContent).execute()
-            } else {
-                driveService.files().update(existingFiles[0].id, null, mediaContent).execute()
-            }
-
-            // Limpiar lista de borrados tras subida exitosa
             clearDeletedEventIds(context)
-            Log.d("DriveHelper", "Sincronización incremental completada con éxito")
+            Log.d("DriveHelper", "Sincronización completa finalizada")
             SyncResult(mergedEvents.size, purgedCount, true)
         } catch (e: Exception) {
-            Log.e("DriveHelper", "Error en la sincronización incremental", e)
+            Log.e("DriveHelper", "Error en la sincronización dual", e)
             SyncResult(0, 0, false)
         }
     }
 
-    /**
-     * Descarga el histórico de Google Drive y lo devuelve como String
-     */
-    private suspend fun downloadHistoryContent(): String? = withContext(Dispatchers.IO) {
+    private suspend fun downloadFileContent(fileName: String): String? = withContext(Dispatchers.IO) {
         try {
             val result = driveService.files().list()
                 .setSpaces("appDataFolder")
-                .setQ("name = 'calendar_history_backup.json'")
+                .setQ("name = '$fileName'")
                 .execute()
             val files = result.files
-
             if (files.isNullOrEmpty()) return@withContext null
 
-            val driveFileId = files[0].id
             val outputStream = java.io.ByteArrayOutputStream()
-            driveService.files().get(driveFileId).executeMediaAndDownloadTo(outputStream)
+            driveService.files().get(files[0].id).executeMediaAndDownloadTo(outputStream)
             outputStream.toString("UTF-8")
         } catch (e: Exception) {
-            Log.e("DriveHelper", "Error descargando contenido de Drive", e)
+            Log.e("DriveHelper", "Error descargando $fileName", e)
             null
         }
     }
 
+    private suspend fun uploadFileToDrive(fileName: String, localFile: java.io.File) = withContext(Dispatchers.IO) {
+        if (!localFile.exists()) return@withContext
+        
+        val result = driveService.files().list()
+            .setSpaces("appDataFolder")
+            .setQ("name = '$fileName'")
+            .execute()
+        
+        val fileMetadata = File().apply {
+            name = fileName
+            parents = java.util.Collections.singletonList("appDataFolder")
+        }
+        val mediaContent = FileContent("application/json", localFile)
+
+        if (result.files.isNullOrEmpty()) {
+            driveService.files().create(fileMetadata, mediaContent).execute()
+        } else {
+            driveService.files().update(result.files[0].id, null, mediaContent).execute()
+        }
+    }
+
     /**
-     * Descarga el histórico de Google Drive y reemplaza la local (Restauración clásica)
+     * Descarga y reemplaza todos los archivos locales (Restauración total)
      */
     suspend fun downloadHistoryFile(): Boolean = withContext(Dispatchers.IO) {
         try {
-            val content = downloadHistoryContent() ?: return@withContext false
-            context.openFileOutput("calendar_history_v2.json", Context.MODE_PRIVATE).use { outputStream ->
-                outputStream.write(content.toByteArray())
+            val eventsContent = downloadFileContent("calendar_history_backup.json")
+            if (eventsContent != null) {
+                context.openFileOutput("calendar_history_v2.json", Context.MODE_PRIVATE).use { it.write(eventsContent.toByteArray()) }
             }
-            Log.d("DriveHelper", "Archivo histórico reemplazado por copia de Drive")
+            
+            val notesContent = downloadFileContent("notes_history_backup.json")
+            if (notesContent != null) {
+                context.openFileOutput("notes_history.json", Context.MODE_PRIVATE).use { it.write(notesContent.toByteArray()) }
+            }
             true
         } catch (e: Exception) {
-            Log.e("DriveHelper", "Error reemplazando histórico local", e)
+            Log.e("DriveHelper", "Error en restauraciÃ³n", e)
             false
         }
     }

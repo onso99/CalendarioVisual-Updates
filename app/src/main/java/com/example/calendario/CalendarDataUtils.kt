@@ -204,6 +204,22 @@ fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festi
     return Pair(result, purgedCount)
 }
 
+/**
+ * Fusión Inteligente para Notas Diarias.
+ */
+fun mergeNotesLists(local: List<DailyNote>, remote: List<DailyNote>): List<DailyNote> {
+    val allNotes = (local + remote).groupBy { it.dateStr }
+    val result = mutableListOf<DailyNote>()
+
+    allNotes.forEach { (_, versions) ->
+        val newest = versions.maxByOrNull { it.lastModified }
+        if (newest != null && !newest.isDeleted) {
+            result.add(newest)
+        }
+    }
+    return result
+}
+
 // --- PERSISTENCIA COMPATIBILIDAD (SharedPreferences) ---
 
 fun saveEventsToPrefs(context: Context, eventsMap: Map<LocalDate, List<Festivo>>) {

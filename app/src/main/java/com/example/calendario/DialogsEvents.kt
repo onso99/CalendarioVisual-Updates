@@ -88,6 +88,14 @@ fun DayEventsDialog(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     val charLimit = 140
 
+    // AUTO-GUARDADO: Si el texto cambia, esperamos 800ms de inactividad y guardamos
+    LaunchedEffect(noteText) {
+        if (noteText != (note?.content ?: "") && noteText.isNotBlank()) {
+            kotlinx.coroutines.delay(800)
+            onSaveNote(noteText)
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
