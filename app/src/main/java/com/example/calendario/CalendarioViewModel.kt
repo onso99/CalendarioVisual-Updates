@@ -29,6 +29,7 @@ data class CalendarioUiState(
     val importedEvent: Festivo? = null,
     val isSyncing: Boolean = false,
     val isRestoring: Boolean = false,
+    val dailyNotes: Map<String, DailyNote> = emptyMap(), // dateStr -> DailyNote
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -75,6 +76,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             try {
                 // Asegurar que el respaldo automático esté programado en el sistema
                 BackupScheduler.ensureBackupScheduled(context)
+
+                // --- CARGA DE NOTAS DIARIAS ---
+                val notes = withContext(Dispatchers.IO) { loadNotesFromDisk(context) }
+                val notesMap = notes.filter { !it.isDeleted }.associateBy { it.dateStr }
 
                 // --- PASO 0: CARGA ULTRA-INSTANTÁNEA (JSON + Migración) ---
                 var cachedHistory = withContext(Dispatchers.IO) { 
@@ -154,7 +159,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     availableCalendars = availableCalendars,
                     selectedCalendarIds = validSelectedIds,
                     hasCalendarPermission = true,
-                    favoriteCalendarId = favoriteId
+                    favoriteCalendarId = favoriteId,
+                    dailyNotes = notesMap
                 )
 
                 if (validSelectedIds != selectedIds) {
@@ -316,6 +322,45 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
             _uiState.update { it.copy(isRestoring = false) }
             onComplete(success)
+        }
+    }
+
+    fun saveDailyNote(date: LocalDate, content: String) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            val dateStr = date.toString()
+            val newNote = DailyNote(dateStr = dateStr, content = content)
+            
+            val currentNotes = _uiState.value.dailyNotes.toMutableMap()
+            currentNotes[dateStr] = newNote
+            
+            _uiState.update { it.copy(dailyNotes = currentNotes) }
+            
+            withContext(Dispatchers.IO) {
+                val allNotes = loadNotesFromDisk(context).toMutableList()
+                allNotes.removeAll { it.dateStr == dateStr }
+                allNotes.add(newNote)
+                saveNotesToDisk(context, allNotes)
+            }
+        }
+    }
+
+    fun deleteDailyNote(date: LocalDate) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            val dateStr = date.toString()
+            
+            val currentNotes = _uiState.value.dailyNotes.toMutableMap()
+            currentNotes.remove(dateStr)
+            
+            _uiState.update { it.copy(dailyNotes = currentNotes) }
+            
+            withContext(Dispatchers.IO) {
+                val allNotes = loadNotesFromDisk(context).toMutableList()
+                allNotes.removeAll { it.dateStr == dateStr }
+                allNotes.add(DailyNote(dateStr = dateStr, content = "", isDeleted = true))
+                saveNotesToDisk(context, allNotes)
+            }
         }
     }
 

@@ -94,3 +94,19 @@ data class HolidayAdjustmentDto(
     val type: String,
     val originalEventId: Long? = null
 )
+
+// --- Modelos para Notas Diarias ---
+
+data class DailyNote(
+    val dateStr: String, // Formato "yyyy-MM-dd"
+    val content: String,
+    val lastModified: Long = System.currentTimeMillis(),
+    val isDeleted: Boolean = false
+)
+
+data class DailyNoteDto(
+    val dateStr: String?,
+    val content: String?,
+    val lastModified: Long?,
+    val isDeleted: Boolean? = false
+)

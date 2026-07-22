@@ -20,6 +20,7 @@ import java.time.ZoneId
 // --- PERSISTENCIA HISTÓRICA (JSON) ---
 
 private const val HISTORY_FILE_NAME = "calendar_history_v2.json"
+private const val NOTES_FILE_NAME = "notes_history.json"
 
 fun saveHistoryToDisk(context: Context, events: List<Festivo>) {
     try {
@@ -58,6 +59,31 @@ fun loadHistoryFromDisk(context: Context): List<Festivo> {
     }
 }
 
+fun saveNotesToDisk(context: Context, notes: List<DailyNote>) {
+    try {
+        val json = Gson().toJson(notes.map { it.toDto() })
+        context.openFileOutput(NOTES_FILE_NAME, Context.MODE_PRIVATE).use {
+            it.write(json.toByteArray())
+        }
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error saving notes", e)
+    }
+}
+
+fun loadNotesFromDisk(context: Context): List<DailyNote> {
+    return try {
+        val file = context.getFileStreamPath(NOTES_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        val json = context.openFileInput(NOTES_FILE_NAME).bufferedReader().use { it.readText() }
+        val type = object : TypeToken<List<DailyNoteDto>>() {}.type
+        val dtos: List<DailyNoteDto> = Gson().fromJson(json, type) ?: emptyList()
+        dtos.mapNotNull { it.toDailyNote() }
+    } catch (e: Exception) {
+        Log.e("CalendarDataUtils", "Error loading notes", e)
+        emptyList()
+    }
+}
+
 // --- CONVERSORES DTO ---
 
 fun Festivo.toDto() = FestivoDto(
@@ -84,6 +110,22 @@ fun Festivo.toDto() = FestivoDto(
     lastModified = this.lastModified,
     isDeleted = this.isDeleted
 )
+
+fun DailyNote.toDto() = DailyNoteDto(
+    dateStr = this.dateStr,
+    content = this.content,
+    lastModified = this.lastModified,
+    isDeleted = this.isDeleted
+)
+
+fun DailyNoteDto.toDailyNote(): DailyNote? {
+    return DailyNote(
+        dateStr = this.dateStr ?: return null,
+        content = this.content ?: "",
+        lastModified = this.lastModified ?: System.currentTimeMillis(),
+        isDeleted = this.isDeleted ?: false
+    )
+}
 
 fun FestivoDto.toFestivo(): Festivo? {
     // LÃ“GICA DE SEGURIDAD (WIDGET CLÃSICO): Si no hay una fecha vÃ¡lida, el dato es corrupto/antiguo.

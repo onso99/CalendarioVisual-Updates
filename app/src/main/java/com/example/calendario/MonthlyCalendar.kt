@@ -55,7 +55,8 @@ fun MonthlyCalendar(
     onDayClick: (date: LocalDate, events: List<Festivo>) -> Unit,
     onEmptyDayClick: (date: LocalDate) -> Unit,
     startOfWeek: DayOfWeek,
-    availableCalendars: List<CalendarInfo>
+    availableCalendars: List<CalendarInfo>,
+    dailyNotes: Map<String, DailyNote> = emptyMap()
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -364,6 +365,27 @@ fun MonthlyCalendar(
                                 ),
                                 modifier = Modifier.align(Alignment.Center)
                             )
+
+                            // INDICADOR DE NOTA DIARIA (TriÃ¡ngulo Post-it)
+                            val hasNote = dailyNotes.containsKey(date.toString())
+                            if (isCurrentMonth && hasNote) {
+                                val noteColor = if (isAppDark) Color(0xFFFFCC80).copy(alpha = 0.8f) else Color(0xFFFFB300)
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopCenter)
+                                        .padding(top = 2.dp)
+                                        .size(8.dp)
+                                        .drawBehind {
+                                            val path = androidx.compose.ui.graphics.Path().apply {
+                                                moveTo(size.width / 2f, 0f)
+                                                lineTo(size.width, size.height)
+                                                lineTo(0f, size.height)
+                                                close()
+                                            }
+                                            drawPath(path, noteColor)
+                                        }
+                                )
+                            }
 
                             val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
                             if (isCurrentMonth && eventsForIndicators.isNotEmpty()) {

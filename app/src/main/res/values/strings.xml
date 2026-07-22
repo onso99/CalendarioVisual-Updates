@@ -301,4 +301,12 @@
     <!-- Nombres de Widgets -->
     <string name="widget_name_modern">Eventos Adaptativo</string>
     <string name="widget_name_classic">Eventos Clásico</string>
+    <string name="evento">Evento</string>
+
+    <!-- Notas Diarias -->
+    <string name="note_label">Nota</string>
+    <string name="note_hint">Escribe un recordatorio rápido…</string>
+    <string name="save_note">Guardar</string>
+    <string name="delete_note">Eliminar nota</string>
+    <string name="confirm_delete_note">Confirma que quieres eliminar la nota</string>
 </resources>

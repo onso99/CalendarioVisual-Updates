@@ -537,10 +537,13 @@ fun CalendarioScreen(
                                     showDayEventsDialog = true
                                 },
                                 onEmptyDayClick = { date ->
-                                    launchAddEditScreen(date, null)
+                                    selectedDateForDialog = date
+                                    eventsForDialog = emptyList()
+                                    showDayEventsDialog = true
                                 },
                                 startOfWeek = startOfWeek,
-                                availableCalendars = uiState.availableCalendars
+                                availableCalendars = uiState.availableCalendars,
+                                dailyNotes = uiState.dailyNotes
                             )
                         }
                         Spacer(Modifier.height(16.dp))
@@ -726,6 +729,13 @@ fun CalendarioScreen(
                 DayEventsDialog(
                     date = selectedDateForDialog!!,
                     events = eventsForDialog,
+                    note = uiState.dailyNotes[selectedDateForDialog.toString()],
+                    onSaveNote = { content ->
+                        viewModel.saveDailyNote(selectedDateForDialog!!, content)
+                    },
+                    onDeleteNote = {
+                        viewModel.deleteDailyNote(selectedDateForDialog!!)
+                    },
                     availableCalendars = uiState.availableCalendars,
                     onDismissRequest = {
                         showDayEventsDialog = false
