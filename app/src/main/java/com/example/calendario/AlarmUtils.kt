@@ -153,16 +153,19 @@ object AlarmUtils {
         try {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             
-            // 1. Cancelar Alarma Normal (del día actual o específico)
-            val targetDate = date ?: LocalDate.now()
-            val requestCode = getUniqueRequestCode(eventId, targetDate)
-            val intent = Intent(context, AlarmReceiver::class.java).apply {
-                action = "com.example.calendario.ALARM_DISPARO_${eventId}_$targetDate"
-            }
-            val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
-            if (pendingIntent != null) {
-                alarmManager.cancel(pendingIntent)
-                pendingIntent.cancel()
+            // 1. Cancelar Alarma Normal (Iteramos por seguridad si no hay fecha)
+            // En Android, los PendingIntent se identifican por el par (RequestCode + Intent).
+            // Si no tenemos la fecha exacta, el sistema puede dejar alarmas vivas.
+            
+            if (date != null) {
+                cancelAlarmInternal(context, alarmManager, eventId, date)
+            } else {
+                // Si borramos el evento raíz (desde el listado o historial), 
+                // barremos una ventana razonable de 31 días para asegurar limpieza total.
+                val today = LocalDate.now()
+                for (i in -1..30) {
+                    cancelAlarmInternal(context, alarmManager, eventId, today.plusDays(i.toLong()))
+                }
             }
 
             // 2. Cancelar Snooze (si existiera)
@@ -177,6 +180,18 @@ object AlarmUtils {
             }
 
         } catch (_: Exception) {}
+    }
+
+    private fun cancelAlarmInternal(context: Context, alarmManager: AlarmManager, eventId: Long, date: LocalDate) {
+        val requestCode = getUniqueRequestCode(eventId, date)
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            action = "com.example.calendario.ALARM_DISPARO_${eventId}_$date"
+        }
+        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+        if (pendingIntent != null) {
+            alarmManager.cancel(pendingIntent)
+            pendingIntent.cancel()
+        }
     }
 
     fun rescheduleAllAlarms(context: Context): Int {
