@@ -10,11 +10,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
@@ -26,6 +27,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -34,7 +36,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,8 +47,6 @@ import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -110,11 +109,10 @@ fun DayEventsDialog(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // El chip es de color si el editor estÃ¡ abierto O si ya hay una nota guardada
                     val isChipSelected = showNoteField || note != null
                     ActionChip(
                         label = stringResource(id = R.string.note_label),
-                        icon = Icons.Default.StickyNote2,
+                        icon = Icons.AutoMirrored.Filled.StickyNote2,
                         isSelected = isChipSelected,
                         onClick = { showNoteField = !showNoteField },
                         modifier = Modifier.weight(1f)
@@ -157,7 +155,6 @@ fun DayEventsDialog(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Papelera Integrada (Izquierda)
                             IconButton(
                                 onClick = { showDeleteConfirmation = true },
                                 modifier = Modifier.size(24.dp)
@@ -166,14 +163,12 @@ fun DayEventsDialog(
                             }
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                // Guardado Rápido si hay cambios
                                 if (noteText != (note?.content ?: "")) {
                                     IconButton(onClick = { onSaveNote(noteText) }, modifier = Modifier.size(24.dp)) {
                                         Icon(Icons.Default.Check, "Guardar", tint = CalendarioTheme.colors.cabecera)
                                     }
                                     Spacer(Modifier.width(8.dp))
                                 }
-                                // Contador Integrado (Derecha)
                                 Text(
                                     text = "${noteText.length}/$charLimit",
                                     fontSize = 11.sp,
@@ -185,7 +180,6 @@ fun DayEventsDialog(
                     Spacer(Modifier.height(12.dp))
                 }
 
-                // --- LISTA DE EVENTOS (Sin línea separadora según imagen) ---
                 if (events.isNotEmpty()) {
                     LazyColumn(Modifier.heightIn(max = 300.dp)) {
                         items(events) { festivo ->
@@ -263,7 +257,7 @@ fun DayEventsDialog(
 @Composable
 fun ActionChip(
     label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -308,7 +302,7 @@ fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar
             Spacer(Modifier.height(16.dp))
             Text(stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
         }}},
-        confirmButton = { Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        confirmButton = { Row(Modifier.fillMaxWidth(), Arrangement.End) {
             if (festivo.isFromHolidaySource) TextButton(onClick = { onDismissRequest(); onOpenHolidayManager(festivo) }, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.cabecera) ) { Text(stringResource(id = R.string.holiday_manager)) }
             Button(onClick = onDismissRequest, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) }
         }}
@@ -458,43 +452,22 @@ fun RepetitionSelectionDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(id = R.string.repeat_after), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
                         Spacer(Modifier.width(4.dp))
-                        TextField(value = tempCount, onValueChange = { if (it.all { c -> c.isDigit() }) { val limit = if (tempSelection == RepetitionRule.DAILY) 3 else 2; if (it.length <= limit) tempCount = it } }, modifier = Modifier.width(75.dp).focusRequester(focusRequester), textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)), keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number, imeAction = ImeAction.Done), singleLine = true, enabled = (endMode == 2 && isRepetitionActive),
+                        TextField(value = tempCount, onValueChange = { if (it.all { c -> c.isDigit() }) { val limit = if (tempSelection == RepetitionRule.DAILY) 3 else 2; if (it.length <= limit) tempCount = it } }, modifier = Modifier.width(75.dp).focusRequester(focusRequester), textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { val finalUntil = if (endMode == 1) tempUntil else null; val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null; onConfirm(tempSelection, finalUntil, finalCount) }), singleLine = true, enabled = (endMode == 2 && isRepetitionActive),
                             colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent, disabledContainerColor = Color.Transparent, focusedIndicatorColor = CalendarioTheme.colors.cabecera, unfocusedIndicatorColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), disabledIndicatorColor = Color.Transparent))
                     }
                 }
             }
         },
         confirmButton = { Button(onClick = { val finalUntil = if (endMode == 1) tempUntil else null; val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null; onConfirm(tempSelection, finalUntil, finalCount) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
-        dismissButton = {
-            TextButton(
-                onClick = onDismissRequest,
-                colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
-            ) {
-                Text(stringResource(id = R.string.cancel))
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismissRequest) }
     )
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = (tempUntil ?: LocalDate.now()).atStartOfDay(java.time.ZoneId.of("UTC")).toInstant().toEpochMilli()
-        )
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let {
-                        tempUntil = Instant.ofEpochMilli(it).atZone(java.time.ZoneId.of("UTC")).toLocalDate()
-                    }
-                    showDatePicker = false
-                }) { Text(stringResource(id = R.string.apply)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel)) }
-            },
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = (tempUntil ?: LocalDate.now()).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli())
+        DatePickerDialog(onDismissRequest = { showDatePicker = false },
+            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { tempUntil = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate() }; showDatePicker = false }) { Text(stringResource(id = R.string.apply)) } },
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel)) } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
-        ) {
-            DatePicker(state = datePickerState)
-        }
+        ) { DatePicker(state = datePickerState) }
     }
 }

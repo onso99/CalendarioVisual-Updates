@@ -1,3 +1,4 @@
+2026-07-22 - v2.1.01 Notas: Creado el Diálogo Notas/Eventos
 2026-07-21 - v2.00.30 Mejoras de visibilidad en Modo Oscuro: puntos de eventos y contraste de aniversarios
 2026-07-21 - v2.00.29 Corrección de acentos y "ñ" en comentarios del código
 2026-07-21 - v2.00.28 Widget: tamaño de fuente de alarma reducida un 20%
