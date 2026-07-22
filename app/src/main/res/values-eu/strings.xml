@@ -225,8 +225,8 @@
     <string name="alarm_snooze_label">Atzeratu</string>
     <string name="semana_label">Astea</string>
     <string name="local_holidays_label">Tokiko jai-egunak</string>
-    <string name="preferences_backup_label">Hobespenen kopia</string>
-    <string name="preferences_title">Hobespenak</string>
+    <string name="preferences_backup_label">Tokiko babeskopia</string>
+    <string name="preferences_title">Tokiko kopia</string>
     <string name="cargar_label">Kargatu</string>
     <string name="guardar_label">Gorde</string>
     <string name="system_permissions">Sistemaren baimenak</string>
@@ -301,4 +301,12 @@
     <!-- Widget izenak -->
     <string name="widget_name_modern">Gertaera Egokitzaileak</string>
     <string name="widget_name_classic">Gertaera Klasikoak</string>
+    <string name="evento">Ekitaldia</string>
+
+    <!-- Eguneroko Oharrak -->
+    <string name="note_label">Oharra</string>
+    <string name="note_hint">Idatzi gogorarazle azkar bat…</string>
+    <string name="save_note">Gorde</string>
+    <string name="delete_note">Ezabatu oharra</string>
+    <string name="confirm_delete_note">Berretsi oharra ezabatu nahi duzula</string>
 </resources>

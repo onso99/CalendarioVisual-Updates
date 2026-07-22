@@ -225,8 +225,8 @@
     <string name="alarm_snooze_label">Позже</string>
     <string name="semana_label">Неделя</string>
     <string name="local_holidays_label">Местные праздники</string>
-    <string name="preferences_backup_label">Резервное копирование настроек</string>
-    <string name="preferences_title">Настройки</string>
+    <string name="preferences_backup_label">Локальное резервное копирование</string>
+    <string name="preferences_title">Локальная копия</string>
     <string name="cargar_label">Загрузить</string>
     <string name="guardar_label">Сохранить</string>
 
@@ -302,4 +302,12 @@
     <!-- Названия виджетов -->
     <string name="widget_name_modern">Адаптивные события</string>
     <string name="widget_name_classic">Классические события</string>
+    <string name="evento">Событие</string>
+
+    <!-- Ежедневные заметки -->
+    <string name="note_label">Заметка</string>
+    <string name="note_hint">Напишите быстрое напоминание…</string>
+    <string name="save_note">Сохранить</string>
+    <string name="delete_note">Удалить заметку</string>
+    <string name="confirm_delete_note">Подтвердите удаление заметки</string>
 </resources>

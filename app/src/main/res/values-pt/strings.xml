@@ -226,8 +226,8 @@
 
     <string name="semana_label">Semana</string>
     <string name="local_holidays_label">Feriados locais</string>
-    <string name="preferences_backup_label">Cópia de preferências</string>
-    <string name="preferences_title">Preferências</string>
+    <string name="preferences_backup_label">Backup local</string>
+    <string name="preferences_title">Cópia local</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Guardar</string>
 
@@ -303,4 +303,12 @@
     <!-- Nomes de Widgets -->
     <string name="widget_name_modern">Eventos Adaptativos</string>
     <string name="widget_name_classic">Eventos Clássicos</string>
+    <string name="evento">Evento</string>
+
+    <!-- Notas Diárias -->
+    <string name="note_label">Nota</string>
+    <string name="note_hint">Escreva um lembrete rápido…</string>
+    <string name="save_note">Salvar</string>
+    <string name="delete_note">Excluir nota</string>
+    <string name="confirm_delete_note">Confirme que deseja excluir a nota</string>
 </resources>

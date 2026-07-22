@@ -225,8 +225,8 @@
     <string name="alarm_snooze_label">稍后提醒</string>
     <string name="semana_label">周</string>
     <string name="local_holidays_label">本地节假日</string>
-    <string name="preferences_backup_label">偏好设置备份</string>
-    <string name="preferences_title">偏好设置</string>
+    <string name="preferences_backup_label">本地备份</string>
+    <string name="preferences_title">本地副本</string>
     <string name="cargar_label">加载</string>
     <string name="guardar_label">保存</string>
 
@@ -302,4 +302,12 @@
     <!-- 小部件名称 -->
     <string name="widget_name_modern">自适应事件</string>
     <string name="widget_name_classic">经典事件</string>
+    <string name="evento">事件</string>
+
+    <!-- 每日笔记 -->
+    <string name="note_label">笔记</string>
+    <string name="note_hint">写下快速提醒…</string>
+    <string name="save_note">保存</string>
+    <string name="delete_note">删除笔记</string>
+    <string name="confirm_delete_note">确认要删除笔记</string>
 </resources>

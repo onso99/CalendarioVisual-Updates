@@ -225,8 +225,8 @@
     <string name="alarm_snooze_label">Reporter</string>
     <string name="semana_label">Semaine</string>
     <string name="local_holidays_label">Jours fériés locaux</string>
-    <string name="preferences_backup_label">Copie des préférences</string>
-    <string name="preferences_title">Préférences</string>
+    <string name="preferences_backup_label">Sauvegarde locale</string>
+    <string name="preferences_title">Copie locale</string>
     <string name="cargar_label">Charger</string>
     <string name="guardar_label">Enregistrer</string>
 
@@ -302,4 +302,12 @@
     <!-- Noms des Widgets -->
     <string name="widget_name_modern">Événements Adaptatifs</string>
     <string name="widget_name_classic">Événements Classiques</string>
+    <string name="evento">Événement</string>
+
+    <!-- Notes Quotidiennes -->
+    <string name="note_label">Note</string>
+    <string name="note_hint">Écrivez un rappel rapide…</string>
+    <string name="save_note">Enregistrer</string>
+    <string name="delete_note">Supprimer la note</string>
+    <string name="confirm_delete_note">Confirmez que vous souhaitez supprimer la note</string>
 </resources>

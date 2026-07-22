@@ -225,8 +225,8 @@
     <string name="alarm_snooze_label">Schlummern</string>
     <string name="semana_label">Woche</string>
     <string name="local_holidays_label">Lokale Feiertage</string>
-    <string name="preferences_backup_label">Sicherung der Einstellungen</string>
-    <string name="preferences_title">Einstellungen</string>
+    <string name="preferences_backup_label">Lokales Backup</string>
+    <string name="preferences_title">Lokale Kopie</string>
     <string name="cargar_label">Laden</string>
     <string name="guardar_label">Speichern</string>
 
@@ -302,4 +302,12 @@
     <!-- Widget-Namen -->
     <string name="widget_name_modern">Adaptive Ereignisse</string>
     <string name="widget_name_classic">Klassische Ereignisse</string>
+    <string name="evento">Ereignis</string>
+
+    <!-- Tägliche Notizen -->
+    <string name="note_label">Notiz</string>
+    <string name="note_hint">Schreiben Sie eine kurze Erinnerung…</string>
+    <string name="save_note">Speichern</string>
+    <string name="delete_note">Notiz löschen</string>
+    <string name="confirm_delete_note">Bestätigen Sie, dass Sie die Notiz löschen möchten</string>
 </resources>

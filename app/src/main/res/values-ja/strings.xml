@@ -225,8 +225,8 @@
     <string name="alarm_snooze_label">スヌーズ</string>
     <string name="semana_label">週</string>
     <string name="local_holidays_label">地域の祝日</string>
-    <string name="preferences_backup_label">設定のバックアップ</string>
-    <string name="preferences_title">設定</string>
+    <string name="preferences_backup_label">ローカルバックアップ</string>
+    <string name="preferences_title">ローカルコピー</string>
     <string name="cargar_label">読み込み</string>
     <string name="guardar_label">保存</string>
 
@@ -302,4 +302,12 @@
     <!-- ウィジェット名 -->
     <string name="widget_name_modern">アダプティブ・イベント</string>
     <string name="widget_name_classic">クラシック・イベント</string>
+    <string name="evento">イベント</string>
+
+    <!-- デイリーノート -->
+    <string name="note_label">ノート</string>
+    <string name="note_hint">クイックリマインダーを書く…</string>
+    <string name="save_note">保存</string>
+    <string name="delete_note">ノートを削除</string>
+    <string name="confirm_delete_note">ノートを削除することを確認します</string>
 </resources>
