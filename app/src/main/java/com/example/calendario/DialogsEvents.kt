@@ -49,6 +49,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class DeleteRecurringOption { SINGLE_EVENT, ALL_EVENTS }
 enum class EditRecurringOption { SINGLE_EVENT, ALL_EVENTS }
@@ -91,7 +92,7 @@ fun DayEventsDialog(
     // AUTO-GUARDADO: Si el texto cambia, esperamos 800ms de inactividad y guardamos
     LaunchedEffect(noteText) {
         if (noteText != (note?.content ?: "") && noteText.isNotBlank()) {
-            kotlinx.coroutines.delay(800)
+            kotlinx.coroutines.delay(800.milliseconds)
             onSaveNote(noteText)
         }
     }

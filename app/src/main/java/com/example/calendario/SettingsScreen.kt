@@ -1012,10 +1012,15 @@ fun SettingsScreen(
             },
             onSaveClick = {
                 showPreferencesBackupDialog = false
+                
+                // Generamos el nombre dinámico: calendariovisual_backup_YYYYMMDD.json
+                val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+                val suggestedName = "calendariovisual_backup_$dateStr.json"
+                
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
-                    putExtra(Intent.EXTRA_TITLE, "ajustes_aspecto_calendario.json") 
+                    putExtra(Intent.EXTRA_TITLE, suggestedName)
                 }
                 exportFullBackupLauncher.launch(intent)
             }

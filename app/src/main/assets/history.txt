@@ -1,3 +1,5 @@
+2026-07-22 - v2.1.07 Copia de seguridad local (antes Copia de preferencias): guarda preferencias, aspecto y Notas
+2026-07-22 - v2.1.06 Notas: backup en la nube. Auto-guardado de nota (tras 800ms de inactividad)
 2026-07-22 - v2.1.05 Diálogo eventos/notas: deslizamiento de nota
 2026-07-22 - v2.1.04 Diálogo eventos/notas: nueva distribución: Notas sobre iconos chips
 2026-07-22 - Merge master into feature/daily-notes: Incorporando corrección de seguridad de alarmas

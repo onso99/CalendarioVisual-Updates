@@ -18,6 +18,7 @@ object BackupManager {
     private const val KEY_HOLIDAY_PREFS = "holiday_preferences"
     private const val KEY_CALENDAR_PREFS = "calendar_preferences"
     private const val KEY_ALARM_PREFS = "alarm_preferences"
+    private const val KEY_DAILY_NOTES = "daily_notes"
     private const val KEY_BACKUP_METADATA = "backup_metadata"
 
     fun exportFullBackup(context: Context, uri: Uri) {
@@ -48,7 +49,7 @@ object BackupManager {
             // 4. Holiday Adjustments (Gestor de Festivos)
             fullBackupJson.put(KEY_HOLIDAY_PREFS, JSONObject(holidayPrefs.all))
             
-            // 5. Selected Calendars (Manejo especial para Set<String>)
+            // 5. Selected Calendars
             val calPrefsMap = calendarPrefs.all.mapValues { entry ->
                 val value = entry.value
                 if (value is Set<*>) JSONArray(value) else value
@@ -57,6 +58,19 @@ object BackupManager {
             
             // 6. Alarm Preferences
             fullBackupJson.put(KEY_ALARM_PREFS, JSONObject(alarmPrefs.all))
+
+            // 7. Daily Notes (Datos del usuario)
+            val notes = loadNotesFromDisk(context)
+            val notesArray = JSONArray()
+            notes.forEach { note ->
+                val noteJson = JSONObject()
+                noteJson.put("dateStr", note.dateStr)
+                noteJson.put("content", note.content)
+                noteJson.put("lastModified", note.lastModified)
+                noteJson.put("isDeleted", note.isDeleted)
+                notesArray.put(noteJson)
+            }
+            fullBackupJson.put(KEY_DAILY_NOTES, notesArray)
 
             context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                 outputStream.write(fullBackupJson.toString(4).toByteArray())
@@ -124,6 +138,22 @@ object BackupManager {
             
             // 6. Re-programar todas las alarmas restauradas
             AlarmUtils.rescheduleAllAlarms(context)
+
+            // 7. Restaurar Notas Diarias (Datos del usuario)
+            val notesJson = json.optJSONArray(KEY_DAILY_NOTES)
+            if (notesJson != null) {
+                val restoredNotes = mutableListOf<DailyNote>()
+                for (i in 0 until notesJson.length()) {
+                    val noteObj = notesJson.getJSONObject(i)
+                    restoredNotes.add(DailyNote(
+                        dateStr = noteObj.getString("dateStr"),
+                        content = noteObj.getString("content"),
+                        lastModified = noteObj.optLong("lastModified", System.currentTimeMillis()),
+                        isDeleted = noteObj.optBoolean("isDeleted", false)
+                    ))
+                }
+                saveNotesToDisk(context, restoredNotes)
+            }
 
             // Re-aplicar lógica de colores de temas si no hay colores individuales
             val appJson = json.optJSONObject(KEY_APP_PREFS)

@@ -101,7 +101,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
         
         val fileMetadata = File().apply {
             name = fileName
-            parents = java.util.Collections.singletonList("appDataFolder")
+            parents = Collections.singletonList("appDataFolder")
         }
         val mediaContent = FileContent("application/json", localFile)
 
