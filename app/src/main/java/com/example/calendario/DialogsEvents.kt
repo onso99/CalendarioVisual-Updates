@@ -133,25 +133,31 @@ fun DayEventsDialog(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp, vertical = 6.dp) // Márgenes del contenedor ajustados
                     ) {
-                        TextField(
+                        // Usamos BasicTextField para eliminar el padding forzado de Material 3
+                        androidx.compose.foundation.text.BasicTextField(
                             value = noteText,
                             onValueChange = { if (it.length <= charLimit) noteText = it },
-                            placeholder = { Text(stringResource(id = R.string.note_hint), fontSize = 13.sp) },
                             modifier = Modifier.fillMaxWidth(),
-                            textStyle = TextStyle(fontSize = 13.sp),
+                            textStyle = TextStyle(
+                                fontSize = 13.sp, 
+                                color = CalendarioTheme.colors.textSystem
+                            ),
                             maxLines = 3,
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent
-                            )
+                            decorationBox = { innerTextField ->
+                                if (noteText.isEmpty()) {
+                                    Text(
+                                        stringResource(id = R.string.note_hint), 
+                                        fontSize = 13.sp, 
+                                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                                    )
+                                }
+                                innerTextField()
+                            }
                         )
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                            modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
