@@ -15,7 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
@@ -104,7 +104,50 @@ fun DayEventsDialog(
         },
         text = {
             Column {
-                // --- SECCIÓN DE CHIPS DE ACCIÓN ---
+                // --- 1. EDITOR DE NOTA INTEGRADO (ARRIBA) ---
+                if (showNoteField) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        androidx.compose.foundation.text.BasicTextField(
+                            value = noteText,
+                            onValueChange = { if (it.length <= charLimit) noteText = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = TextStyle(fontSize = 13.sp, color = CalendarioTheme.colors.textSystem),
+                            maxLines = 3,
+                            decorationBox = { innerTextField ->
+                                if (noteText.isEmpty()) {
+                                    Text(stringResource(id = R.string.note_hint), fontSize = 13.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+                                }
+                                innerTextField()
+                            }
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = { showDeleteConfirmation = true }, modifier = Modifier.size(24.dp)) {
+                                Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red, modifier = Modifier.size(20.dp))
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (noteText != (note?.content ?: "")) {
+                                    IconButton(onClick = { onSaveNote(noteText) }, modifier = Modifier.size(24.dp)) {
+                                        Icon(Icons.Default.Check, "Guardar", tint = CalendarioTheme.colors.cabecera)
+                                    }
+                                    Spacer(Modifier.width(8.dp))
+                                }
+                                Text(text = "${noteText.length}/$charLimit", fontSize = 11.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
+                            }
+                        }
+                    }
+                }
+
+                // --- 2. SECCIÓN DE CHIPS DE ACCIÓN (DIVISOR) ---
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -126,66 +169,7 @@ fun DayEventsDialog(
                     )
                 }
 
-                // --- EDITOR DE NOTA INTEGRADO (Según Imagen) ---
-                if (showNoteField) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                            .padding(horizontal = 8.dp, vertical = 6.dp) // Márgenes del contenedor ajustados
-                    ) {
-                        // Usamos BasicTextField para eliminar el padding forzado de Material 3
-                        androidx.compose.foundation.text.BasicTextField(
-                            value = noteText,
-                            onValueChange = { if (it.length <= charLimit) noteText = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = TextStyle(
-                                fontSize = 13.sp, 
-                                color = CalendarioTheme.colors.textSystem
-                            ),
-                            maxLines = 3,
-                            decorationBox = { innerTextField ->
-                                if (noteText.isEmpty()) {
-                                    Text(
-                                        stringResource(id = R.string.note_hint), 
-                                        fontSize = 13.sp, 
-                                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
-                                    )
-                                }
-                                innerTextField()
-                            }
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = { showDeleteConfirmation = true },
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red, modifier = Modifier.size(20.dp))
-                            }
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (noteText != (note?.content ?: "")) {
-                                    IconButton(onClick = { onSaveNote(noteText) }, modifier = Modifier.size(24.dp)) {
-                                        Icon(Icons.Default.Check, "Guardar", tint = CalendarioTheme.colors.cabecera)
-                                    }
-                                    Spacer(Modifier.width(8.dp))
-                                }
-                                Text(
-                                    text = "${noteText.length}/$charLimit",
-                                    fontSize = 11.sp,
-                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                                )
-                            }
-                        }
-                    }
-                    Spacer(Modifier.height(12.dp))
-                }
-
+                // --- 3. LISTA DE EVENTOS ---
                 if (events.isNotEmpty()) {
                     LazyColumn(Modifier.heightIn(max = 300.dp)) {
                         items(events) { festivo ->
@@ -465,15 +449,36 @@ fun RepetitionSelectionDialog(
             }
         },
         confirmButton = { Button(onClick = { val finalUntil = if (endMode == 1) tempUntil else null; val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null; onConfirm(tempSelection, finalUntil, finalCount) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
-        dismissButton = { DialogDismissButton(onDismissRequest) }
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest,
+                colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
+            ) {
+                Text(stringResource(id = R.string.cancel))
+            }
+        }
     )
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = (tempUntil ?: LocalDate.now()).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli())
-        DatePickerDialog(onDismissRequest = { showDatePicker = false },
-            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { tempUntil = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate() }; showDatePicker = false }) { Text(stringResource(id = R.string.apply)) } },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel)) } },
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = (tempUntil ?: LocalDate.now()).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        tempUntil = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
+                    }
+                    showDatePicker = false
+                }) { Text(stringResource(id = R.string.apply)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel)) }
+            },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
-        ) { DatePicker(state = datePickerState) }
+        ) {
+            DatePicker(state = datePickerState)
+        }
     }
 }
