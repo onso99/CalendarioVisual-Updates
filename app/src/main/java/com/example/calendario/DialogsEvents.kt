@@ -105,7 +105,11 @@ fun DayEventsDialog(
         text = {
             Column {
                 // --- 1. EDITOR DE NOTA INTEGRADO (ARRIBA) ---
-                if (showNoteField) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = showNoteField,
+                    enter = androidx.compose.animation.expandVertically() + androidx.compose.animation.fadeIn(),
+                    exit = androidx.compose.animation.shrinkVertically() + androidx.compose.animation.fadeOut()
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()

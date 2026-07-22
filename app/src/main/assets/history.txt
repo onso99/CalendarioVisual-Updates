@@ -1,3 +1,4 @@
+2026-07-22 - v2.1.04 Diálogo eventos/notas: nueva distribución: Notas sobre iconos chips
 2026-07-22 - Merge master into feature/daily-notes: Incorporando corrección de seguridad de alarmas
 2026-07-22 - v2.00.31 Corrección: barrido de seguridad de 31 días para cancelar alarmas de eventos eliminados
 2026-07-22 - v2.1.03 Margen interno del contenedor de nota se ha reducido
