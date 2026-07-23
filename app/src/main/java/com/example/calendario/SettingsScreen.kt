@@ -73,7 +73,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -84,13 +86,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.delay
 import org.json.JSONObject
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -209,7 +220,7 @@ fun SettingsScreen(
                         BackupManager.exportFullBackup(context, uri)
                         Toast.makeText(context, R.string.backup_exported_successfully, Toast.LENGTH_SHORT).show()
                     } catch (e: Exception) {
-                        val errorMsg = context.getString(R.string.error_exporting_backup, e.message ?: "Unknown error")
+                        val errorMsg = context.applicationContext.getString(R.string.error_exporting_backup, e.message ?: "Unknown error")
                         Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                     }
                 }
@@ -351,11 +362,11 @@ fun SettingsScreen(
     }
 
     // --- Lógica de Refresco de Permisos al volver de Ajustes ---
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
                 permissionsUpdateTrigger++
             }
         }
@@ -798,11 +809,11 @@ fun SettingsScreen(
                         }
                         
                         val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
-                                     else java.time.format.DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(java.time.ZoneId.systemDefault()).format(java.time.Instant.ofEpochMilli(lastBackupTimestamp))
+                                     else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
                         
                         // Calculamos tamaño en MB (asumiendo lastBackupCount * 2 como KB base)
                         val sizeMB = (lastBackupCount * 2) / 1024.0
-                        val sizeStr = if (lastBackupCount > 0) " · ${"%.2f".format(java.util.Locale.US, sizeMB)}MB" else ""
+                        val sizeStr = if (lastBackupCount > 0) " · ${"%.2f".format(Locale.US, sizeMB)}MB" else ""
                         Text(text = "Última copia: $lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp))
                     }
                     
@@ -893,9 +904,9 @@ fun SettingsScreen(
             Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 val titleColor = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
                 Text(stringResource(id = R.string.about), style = typography.titleMedium, fontWeight = FontWeight.Bold, color = titleColor)
-                val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
-                IconButton(onClick = { if (loggingEnabled) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress); loggingEnabled = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, modifier = Modifier.size(24.dp)) {
-                    Icon(Icons.Default.BugReport, null, tint = if (loggingEnabled) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f), modifier = Modifier.combinedClickable(onClick = { if (loggingEnabled) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress); loggingEnabled = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, onLongClick = { if (loggingEnabled) { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress); loggingEnabled = false; LogCollector.setLoggingEnabled(context, false); debugClickCount = 0 } }))
+                val haptic = LocalHapticFeedback.current
+                IconButton(onClick = { if (loggingEnabled) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabled = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.Default.BugReport, null, tint = if (loggingEnabled) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f), modifier = Modifier.combinedClickable(onClick = { if (loggingEnabled) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabled = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, onLongClick = { if (loggingEnabled) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabled = false; LogCollector.setLoggingEnabled(context, false); debugClickCount = 0 } }))
                 }
             }
             Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
@@ -991,7 +1002,7 @@ fun SettingsScreen(
                 showPreferencesBackupDialog = false
                 
                 // Generamos el nombre dinámico: calendariovisual_backup_YYYYMMDD.json
-                val dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+                val dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
                 val suggestedName = "calendariovisual_backup_$dateStr.json"
                 
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
@@ -1040,7 +1051,7 @@ fun SettingsScreen(
         // Forzamos un refresco inmediato al abrir y tras un pequeño delay
         LaunchedEffect(Unit) {
             permissionsUpdateTrigger++
-            kotlinx.coroutines.delay(500.milliseconds)
+            delay(500.milliseconds)
             permissionsUpdateTrigger++
         }
 
@@ -1090,7 +1101,7 @@ fun SettingsScreen(
                         if (success) {
                             Toast.makeText(context, R.string.restore_success, Toast.LENGTH_SHORT).show()
                             if (prefs) {
-                                (context as? android.app.Activity)?.let { activity ->
+                                (context as? Activity)?.let { activity ->
                                     val intent = activity.intent
                                     activity.finish()
                                     activity.startActivity(intent)
@@ -1107,7 +1118,7 @@ fun SettingsScreen(
                         if (success) {
                             Toast.makeText(context, R.string.restore_success, Toast.LENGTH_SHORT).show()
                             if (prefs) {
-                                (context as? android.app.Activity)?.let { activity ->
+                                (context as? Activity)?.let { activity ->
                                     val intent = activity.intent
                                     activity.finish()
                                     activity.startActivity(intent)

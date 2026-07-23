@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -48,7 +47,7 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     val titleColor = lerp(
         start = CalendarioTheme.colors.cabecera,
         stop = CalendarioTheme.colors.textSystem,
-        fraction = 0.4f
+        fraction = 0.4f,
     )
     Text(
         text = text,
@@ -64,7 +63,7 @@ internal fun WidgetSectionTitle() {
     val titleColor = lerp(
         start = CalendarioTheme.colors.cabecera,
         stop = CalendarioTheme.colors.textSystem,
-        fraction = 0.4f
+        fraction = 0.4f,
     )
     Text(
         text = stringResource(id = R.string.widget),
@@ -97,9 +96,9 @@ internal fun ActionRow(
                 color = if (isLoading) CalendarioTheme.colors.textSystem.copy(alpha = 0.4f) else CalendarioTheme.colors.textSystem, 
                 fontSize = 16.sp
             )
-            if (detail != null) {
+            detail?.let {
                 Text(
-                    text = detail,
+                    text = it,
                     color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                     fontSize = 13.sp,
                     maxLines = 1,

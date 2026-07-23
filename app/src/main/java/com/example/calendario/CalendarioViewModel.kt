@@ -80,7 +80,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 // --- CARGA DE NOTAS DIARIAS ---
                 val notes = withContext(Dispatchers.IO) { loadNotesFromDisk(context) }
-                val notesMap = notes.filter { !it.isDeleted }.associateBy { it.dateStr }
+                val notesMap = notes.asSequence().filter { !it.isDeleted }.associateBy { it.dateStr }
 
                 // --- PASO 0: CARGA ULTRA-INSTANTÁNEA (JSON + Migración) ---
                 var cachedHistory = withContext(Dispatchers.IO) { 
@@ -104,7 +104,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     _uiState.update { state -> 
                         state.copy(
                             eventsByDate = cachedHistory.groupBy { it.date },
-                            hasCalendarPermission = true
+                            hasCalendarPermission = true,
                         ) 
                     }
                 }
@@ -161,7 +161,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     selectedCalendarIds = validSelectedIds,
                     hasCalendarPermission = true,
                     favoriteCalendarId = favoriteId,
-                    dailyNotes = notesMap
+                    dailyNotes = notesMap,
                 )
 
                 if (validSelectedIds != selectedIds) {
@@ -268,7 +268,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val result = withContext(Dispatchers.IO) {
                 try {
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
-                        ?: return@withContext SyncResult(0, 0, false)
+                        ?: return@withContext SyncResult(0, 0, success = false)
 
                     // 1. Asegurar datos frescos respetando coherencia
                     val selectedIds = loadSelectedCalendarIds(context)
@@ -283,7 +283,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     GoogleDriveHelper(context, account).syncHistoryWithDrive()
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Sync error", e)
-                    SyncResult(0, 0, false)
+                    SyncResult(0, 0, success = false)
                 }
             }
 
@@ -409,7 +409,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         
         // Cargar ajustes para filtrado de laborables
         val adjustments = loadHolidayAdjustments(context)
-        val workingDayIds = adjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
+        val workingDayIds = adjustments.asSequence().filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
 
         // 1. DEDUPLICACIÃ“N AGRESIVA POR CONTENIDO
         // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicaciÃ³n.
@@ -426,7 +426,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val eventKey = "${event.date}_${event.title.trim().lowercase().unaccent()}_${event.startTime}"
             
             // A) Filtro de Seguridad: No recuperar si estÃ¡ marcado como borrado o laborable
-            if (event.id in deletedIds || workingDayIds.contains(event.id)) return@filter false
+            if ((event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
 
             // B) LÃ³gica de ResurrecciÃ³n Inteligente:
             // Si el evento NO estÃ¡ en el sistema pero SI en el historial...
