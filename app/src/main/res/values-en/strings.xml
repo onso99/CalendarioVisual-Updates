@@ -272,7 +272,7 @@
     <string name="restore_from_drive">Restore from Drive</string>
     <string name="restore_confirm_title">Restore events?</string>
     <string name="restore_confirm_message">Saved events will be replaced by the Google Drive copy. Current system events will not be affected.</string>
-    <string name="restore_success">Events restored successfully</string>
+    <string name="restore_success">Backup restored successfully</string>
     <string name="restore_error">No valid backup found in Drive</string>
     <string name="last_backup_with_count">Last: %1$s · %2$d events</string>
     <string name="never">Never</string>

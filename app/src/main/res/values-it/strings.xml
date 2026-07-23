@@ -272,7 +272,7 @@
     <string name="restore_from_drive">Ripristina da Drive</string>
     <string name="restore_confirm_title">Ripristinare gli eventi?</string>
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
-    <string name="restore_success">Eventi ripristinati con successo</string>
+    <string name="restore_success">Copia ripristinata con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
     <string name="last_backup_with_count">Ultima: %1$s · %2$d eventi</string>
     <string name="never">Mai</string>

@@ -271,7 +271,7 @@
     <string name="restore_from_drive">ドライブから復元</string>
     <string name="restore_confirm_title">イベントを復元しますか？</string>
     <string name="restore_confirm_message">保存されたイベントがGoogleドライブのコピーで上書きされます。現在のシステムイベントには影響しません。</string>
-    <string name="restore_success">イベントが復元されました</string>
+    <string name="restore_success">バックアップを復元しました</string>
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="last_backup_with_count">最終: %1$s · %2$d件</string>
     <string name="never">未実行</string>

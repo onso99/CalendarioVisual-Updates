@@ -272,7 +272,7 @@
     <string name="restore_from_drive">Restaurar des de Drive</string>
     <string name="restore_confirm_title">Restaurar esdeveniments?</string>
     <string name="restore_confirm_message">Se substituiran els esdeveniments desats per la còpia de Google Drive. Els esdeveniments actuals del sistema no es veuran afectats.</string>
-    <string name="restore_success">Esdeveniments restaurats amb èxit</string>
+    <string name="restore_success">Còpia restaurada amb èxit</string>
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
     <string name="last_backup_with_count">Última: %1$s · %2$d esdeveniments</string>
     <string name="never">Mai</string>

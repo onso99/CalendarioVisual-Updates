@@ -271,7 +271,7 @@
     <string name="restore_from_drive">Восстановить с Диска</string>
     <string name="restore_confirm_title">Восстановить события?</string>
     <string name="restore_confirm_message">Сохраненные события будут заменены копией из Google Диска. Текущие системные события не пострадают.</string>
-    <string name="restore_success">События успешно восстановлены</string>
+    <string name="restore_success">Копия успешно восстановлена</string>
     <string name="restore_error">Валидная копия на Диске не найдена</string>
     <string name="last_backup_with_count">Последняя: %1$s · событий: %2$d</string>
     <string name="never">Никогда</string>

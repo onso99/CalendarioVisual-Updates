@@ -5,6 +5,7 @@ package com.example.calendario
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -171,8 +172,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 WidgetStateManager.updateWidgetState(context, cleanListToSave)
 
             } catch (e: Exception) {
-                Log.e("CalendarioViewModel", "Error loading all data", e)
-                Toast.makeText(context, R.string.error_updating_data, Toast.LENGTH_SHORT).show()
+                if (e !is kotlinx.coroutines.CancellationException) {
+                    Log.e("CalendarioViewModel", "Error loading all data", e)
+                    Toast.makeText(context, R.string.error_updating_data, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -297,7 +300,14 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun restoreHistoryFromDrive(context: Context, onComplete: (Boolean) -> Unit) {
+    fun restoreHistoryFromDrive(
+        context: Context, 
+        restorePrefs: Boolean,
+        restoreHolidays: Boolean,
+        restoreNotes: Boolean,
+        restoreEvents: Boolean,
+        onComplete: (Boolean) -> Unit
+    ) {
         if (_uiState.value.isRestoring) return
 
         viewModelScope.launch {
@@ -308,8 +318,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
                         ?: return@withContext false
 
-                    // 1. Descargar y sobrescribir el JSON local
-                    GoogleDriveHelper(context, account).downloadHistoryFile()
+                    GoogleDriveHelper(context, account).downloadAndRestoreSelective(
+                        restorePrefs, restoreHolidays, restoreNotes, restoreEvents
+                    )
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Restore error", e)
                     false
@@ -317,9 +328,36 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             if (success) {
-                refreshData() // Recargar la UI con los nuevos datos
+                refreshData() 
             }
 
+            _uiState.update { it.copy(isRestoring = false) }
+            onComplete(success)
+        }
+    }
+
+    fun restoreFromLocal(
+        context: Context,
+        uri: Uri,
+        restorePrefs: Boolean,
+        restoreHolidays: Boolean,
+        restoreNotes: Boolean,
+        restoreEvents: Boolean,
+        onComplete: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRestoring = true) }
+            
+            val success = withContext(Dispatchers.IO) {
+                BackupManager.importFullBackup(
+                    context, uri, restorePrefs, restoreHolidays, restoreNotes, restoreEvents
+                )
+            }
+            
+            if (success) {
+                refreshData()
+            }
+            
             _uiState.update { it.copy(isRestoring = false) }
             onComplete(success)
         }

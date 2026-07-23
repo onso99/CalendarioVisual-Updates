@@ -271,7 +271,7 @@
     <string name="restore_from_drive">从云端硬盘恢复</string>
     <string name="restore_confirm_title">恢复事件？</string>
     <string name="restore_confirm_message">保存的事件将被 Google 云端硬盘中的副本替换。当前系统事件不会受到影响。</string>
-    <string name="restore_success">事件恢复成功</string>
+    <string name="restore_success">备份恢复成功</string>
     <string name="restore_error">在云端硬盘中未找到有效备份</string>
     <string name="last_backup_with_count">上次：%1$s · %2$d 个事件</string>
     <string name="never">从未</string>

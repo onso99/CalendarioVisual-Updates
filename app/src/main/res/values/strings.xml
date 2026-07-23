@@ -270,7 +270,7 @@
     <string name="restore_from_drive">Restaurar desde Drive</string>
     <string name="restore_confirm_title">¿Restaurar eventos?</string>
     <string name="restore_confirm_message">Se reemplazarán los eventos guardados por la copia de Google Drive. Los eventos actuales del sistema no se verán afectados.</string>
-    <string name="restore_success">Eventos restaurados con éxito</string>
+    <string name="restore_success">Copia restaurada con éxito</string>
     <string name="restore_error">No se encontró una copia válida en Drive</string>
     <string name="last_backup_with_count">Última: %1$s · %2$d eventos</string>
     <string name="never">Nunca</string>

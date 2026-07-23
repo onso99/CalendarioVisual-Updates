@@ -271,7 +271,7 @@
     <string name="restore_from_drive">Von Drive wiederherstellen</string>
     <string name="restore_confirm_title">Ereignisse wiederherstellen?</string>
     <string name="restore_confirm_message">Gespeicherte Ereignisse werden durch die Google Drive-Kopie ersetzt. Aktuelle Systemereignisse sind nicht betroffen.</string>
-    <string name="restore_success">Ereignisse erfolgreich wiederhergestellt</string>
+    <string name="restore_success">Backup erfolgreich wiederhergestellt</string>
     <string name="restore_error">Kein gültiges Backup in Drive gefunden</string>
     <string name="last_backup_with_count">Zuletzt: %1$s · %2$d Ereignisse</string>
     <string name="never">Nie</string>
