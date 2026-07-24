@@ -1,6 +1,10 @@
 package com.example.calendario
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -34,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -131,7 +136,8 @@ internal fun SettingsActionChip(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(10.dp),
     containerColor: Color = Color.Transparent,
-    icon: androidx.compose.ui.graphics.vector.ImageVector? = null
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    isIconRotating: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -144,6 +150,17 @@ internal fun SettingsActionChip(
 
     val borderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
 
+    // Animación de rotación infinita
+    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearEasing)
+        ),
+        label = "angle"
+    )
+
     Box(
         modifier = modifier
             .clip(shape)
@@ -152,6 +169,7 @@ internal fun SettingsActionChip(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
+                enabled = !isIconRotating, // Deshabilitar mientras gira para evitar clics dobles
                 onClick = onClick
             ),
         contentAlignment = Alignment.Center
@@ -165,14 +183,18 @@ internal fun SettingsActionChip(
                 Icon(
                     imageVector = icon, 
                     contentDescription = null, 
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier
+                        .size(18.dp)
+                        .graphicsLayer {
+                            if (isIconRotating) rotationZ = rotation
+                        },
                     tint = CalendarioTheme.colors.textSystem
                 )
                 Spacer(Modifier.width(8.dp))
             }
             Text(
                 text = text,
-                color = CalendarioTheme.colors.textSystem,
+                color = if (isIconRotating) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )

@@ -130,6 +130,9 @@ fun SettingsScreen(
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val isSyncing = uiState.isSyncing
+
     val context = LocalContext.current
     val typography = MaterialTheme.typography
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -869,6 +872,7 @@ fun SettingsScreen(
                         SettingsActionChip(
                             text = stringResource(id = R.string.sincronizar_label),
                             icon = Icons.Default.Sync,
+                            isIconRotating = isSyncing,
                             modifier = Modifier.weight(1f).height(44.dp),
                             shape = RoundedCornerShape(12.dp),
                             containerColor = btnBg,
