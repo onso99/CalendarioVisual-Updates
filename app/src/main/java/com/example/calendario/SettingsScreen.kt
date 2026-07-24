@@ -319,6 +319,7 @@ fun SettingsScreen(
     }
     val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
     val lastBackupCount = remember(permissionsUpdateTrigger) { appPrefs.getInt(AppConstants.KEY_LAST_BACKUP_COUNT, 0) }
+    val lastBackupSize = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
     var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
@@ -792,30 +793,21 @@ fun SettingsScreen(
                         googleSignInLauncher.launch(client.signInIntent)
                     }
                 } else {
-                    // 1. CUENTA (Drive + Email + Info Última Copia)
-                    Column(
-                        modifier = Modifier.fillMaxWidth().clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp, vertical = 8.dp)
+                    // 1. CUENTA (Drive + Email)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "Drive", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
-                            Text(
-                                text = accountEmail, 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontSize = 14.sp, 
-                                fontWeight = FontWeight.SemiBold, 
-                                textAlign = TextAlign.End, 
-                                maxLines = 1, 
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        
-                        val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
-                                     else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
-                        
-                        // Calculamos tamaño en MB (asumiendo lastBackupCount * 2 como KB base)
-                        val sizeMB = (lastBackupCount * 2) / 1024.0
-                        val sizeStr = if (lastBackupCount > 0) " · ${"%.2f".format(Locale.US, sizeMB)}MB" else ""
-                        Text(text = "Última copia: $lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp))
+                        Text(text = "Drive", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        Text(
+                            text = accountEmail, 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontSize = 14.sp, 
+                            fontWeight = FontWeight.SemiBold, 
+                            textAlign = TextAlign.End, 
+                            maxLines = 1, 
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                     
                     HorizontalDivider(
@@ -832,17 +824,32 @@ fun SettingsScreen(
                         else -> pendingBackupFreq
                     }
                     
-                    // 2. FRECUENCIA
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    // 2. FRECUENCIA + Info Última Copia
+                    Column(
+                        modifier = Modifier.fillMaxWidth().clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Text(text = stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
+                            Text(
+                                text = freqLabel, 
+                                color = CalendarioTheme.colors.textSystem, 
+                                fontSize = 15.sp, 
+                                fontWeight = FontWeight.SemiBold 
+                            )
+                        }
+
+                        val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
+                                     else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
+                        
+                        val sizeMB = lastBackupSize / (1024.0 * 1024.0)
+                        val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, sizeMB)}MB" else ""
                         Text(
-                            text = freqLabel, 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontSize = 15.sp, 
-                            fontWeight = FontWeight.SemiBold 
+                            text = "Última copia: $lastStr$sizeStr", 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
+                            fontSize = 13.sp, 
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(top = 2.dp)
                         )
                     }
                     
@@ -881,7 +888,8 @@ fun SettingsScreen(
                                 viewModel.syncHistoryToDrive(context) { result ->
                                     if (result.success) {
                                         permissionsUpdateTrigger++
-                                        Toast.makeText(context, R.string.sync_success_detailed, Toast.LENGTH_LONG).show()
+                                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
+                                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                                     } else {
                                         Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
                                     }

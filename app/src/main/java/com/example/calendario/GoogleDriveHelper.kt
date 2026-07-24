@@ -54,20 +54,31 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             // Creamos el nuevo paquete con los datos fusionados (o nuevos si no había remotos)
             val fullBackupJson = BackupManager.createFullBackupJson(context)
             
+            // Calculamos estadísticas para el resultado
+            val totalEvents = fullBackupJson.optJSONArray("calendar_history")?.length() ?: 0
+            val totalNotes = fullBackupJson.optJSONArray("daily_notes")?.length() ?: 0
+            
+            val jsonString = fullBackupJson.toString()
+            val sizeBytes = jsonString.toByteArray(Charsets.UTF_8).size.toLong()
+
             // Guardamos temporalmente para subir
             val tempFile = java.io.File(context.cacheDir, "temp_backup.json")
-            tempFile.writeText(fullBackupJson.toString())
+            tempFile.writeText(jsonString)
             
             uploadFileToDrive(backupFileName, tempFile)
             tempFile.delete()
 
             clearDeletedEventIds(context)
             
-            // Devolvemos éxito (las estadísticas reales se leen tras refrescar el UI)
-            SyncResult(0, 0, true)
+            SyncResult(
+                totalEvents = totalEvents + totalNotes, 
+                deletedCount = 0, // El motor de fusión ya limpió, informamos total resultante
+                success = true,
+                sizeBytes = sizeBytes
+            )
         } catch (e: Exception) {
             Log.e("DriveHelper", "Error en la sincronización unificada", e)
-            SyncResult(0, 0, false)
+            SyncResult(0, 0, false, 0L)
         }
     }
 

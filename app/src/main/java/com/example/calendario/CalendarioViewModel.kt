@@ -292,6 +292,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 prefs.edit { 
                     putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) 
                     putInt(AppConstants.KEY_LAST_BACKUP_COUNT, result.totalEvents)
+                    putLong(AppConstants.KEY_LAST_BACKUP_SIZE, result.sizeBytes)
                 }
             }
 

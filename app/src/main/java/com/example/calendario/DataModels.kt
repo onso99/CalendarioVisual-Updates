@@ -85,7 +85,8 @@ enum class HolidayAdjustmentType {
 data class SyncResult(
     val totalEvents: Int,
     val deletedCount: Int,
-    val success: Boolean
+    val success: Boolean,
+    val sizeBytes: Long = 0L
 )
 
 data class HolidayAdjustmentDto(
