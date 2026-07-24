@@ -225,7 +225,7 @@
     <string name="alarm_snooze_label">Reporter</string>
     <string name="semana_label">Semaine</string>
     <string name="local_holidays_label">Jours fériés locaux</string>
-    <string name="preferences_backup_label">Sauvegarde locale</string>
+    <string name="preferences_backup_label">Copie locale</string>
     <string name="preferences_title">Copie locale</string>
     <string name="cargar_label">Charger</string>
     <string name="guardar_label">Enregistrer</string>

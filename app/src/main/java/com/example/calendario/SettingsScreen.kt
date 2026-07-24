@@ -782,9 +782,6 @@ fun SettingsScreen(
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
                 
-                // Color para la línea interna más oscura (Oscurecemos el fondo un 20% para más contraste)
-                val internalDividerColor = lerp(CalendarioTheme.colors.settingsBackground, Color.Black, 0.2f)
-
                 if (accountEmail == null) {
                     ActionRow(text = stringResource(id = R.string.link_google_account)) {
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build()
@@ -809,11 +806,7 @@ fun SettingsScreen(
                         )
                     }
                     
-                    HorizontalDivider(
-                        color = internalDividerColor, 
-                        thickness = 1.dp, 
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                     
                     val freqLabel = when(pendingBackupFreq) {
                         "manual" -> stringResource(R.string.frequency_manual)
@@ -851,14 +844,10 @@ fun SettingsScreen(
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }
-                    
-                    HorizontalDivider(
-                        color = internalDividerColor, 
-                        thickness = 1.dp, 
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
 
-                    // 3. BOTONES DE ACCIÃ“N (Drive)
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                    // 3. BOTONES DE ACCIÓN (Drive)
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)

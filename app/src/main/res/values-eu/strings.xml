@@ -225,7 +225,7 @@
     <string name="alarm_snooze_label">Atzeratu</string>
     <string name="semana_label">Astea</string>
     <string name="local_holidays_label">Tokiko jai-egunak</string>
-    <string name="preferences_backup_label">Tokiko babeskopia</string>
+    <string name="preferences_backup_label">Tokiko kopia</string>
     <string name="preferences_title">Tokiko kopia</string>
     <string name="cargar_label">Kargatu</string>
     <string name="guardar_label">Gorde</string>

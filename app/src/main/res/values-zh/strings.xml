@@ -225,7 +225,7 @@
     <string name="alarm_snooze_label">稍后提醒</string>
     <string name="semana_label">周</string>
     <string name="local_holidays_label">本地节假日</string>
-    <string name="preferences_backup_label">本地备份</string>
+    <string name="preferences_backup_label">本地副本</string>
     <string name="preferences_title">本地副本</string>
     <string name="cargar_label">加载</string>
     <string name="guardar_label">保存</string>

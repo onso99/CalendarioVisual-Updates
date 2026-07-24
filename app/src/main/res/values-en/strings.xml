@@ -226,7 +226,7 @@
 
     <string name="semana_label">Week</string>
     <string name="local_holidays_label">Local holidays</string>
-    <string name="preferences_backup_label">Local backup</string>
+    <string name="preferences_backup_label">Local copy</string>
     <string name="preferences_title">Local copy</string>
     <string name="cargar_label">Load</string>
     <string name="guardar_label">Save</string>

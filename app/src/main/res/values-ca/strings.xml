@@ -226,7 +226,7 @@
 
     <string name="semana_label">Setmana</string>
     <string name="local_holidays_label">Festius locals</string>
-    <string name="preferences_backup_label">Còpia de seguretat local</string>
+    <string name="preferences_backup_label">Còpia local</string>
     <string name="preferences_title">Còpia local</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Desar</string>
