@@ -442,21 +442,7 @@ fun SettingsScreen(
             // --- 1. General Section ---
             SectionTitle(text = stringResource(id = R.string.general))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                // 1. MODO
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = stringResource(id = themeSetting.displayNameRes), 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontSize = 16.sp, 
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
-                    )
-                }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                
-                // 2. PERMISOS
+                // 1. PERMISOS
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showPermissionsDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.system_permissions), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
@@ -464,7 +450,7 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 3. SEMANA (Fila unificada - Sin flecha porque tiene valor)
+                // 2. SEMANA (Fila unificada - Sin flecha porque tiene valor)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -489,7 +475,7 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 4. ALARMA (Fila unificada - Sin flecha porque tiene valor)
+                // 3. ALARMA (Fila unificada - Sin flecha porque tiene valor)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -542,7 +528,7 @@ fun SettingsScreen(
                 
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                // 5. FESTIVOS (Navegación al gestor)
+                // 4. FESTIVOS (Navegación al gestor)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -561,6 +547,20 @@ fun SettingsScreen(
                     )
                 }
                 
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // 5. MODO
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = stringResource(id = themeSetting.displayNameRes), 
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontSize = 16.sp, 
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End
+                    )
+                }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
                 // 6. TEMAS

@@ -1,3 +1,4 @@
+2026-07-24 - v2.1.15 Ajustes/Widget/Colores: círculos con borde claro/oscuro dependiendo del modo
 2026-07-24 - v2.1.14 Corrección de warnings
 2026-07-24 - v2.1.13 Sincronización: toast corregido. Última copia muestra tamaño de archivo y vuelve bajo Frecuencia de copia
 2026-07-24 - v2.1.12 Temas y Personalizar colores en sección General. Estilo suprimida
