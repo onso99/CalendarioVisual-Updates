@@ -562,11 +562,10 @@ fun SettingsScreen(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-            }
+                
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-            // --- 2. Estilo Section ---
-            SectionTitle(text = stringResource(id = R.string.customize_theme))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                // 6. TEMAS
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -605,10 +604,12 @@ fun SettingsScreen(
                     )
                 }
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                
+                // 7. PERSONALIZAR COLORES
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
             }
 
-            // --- 3. Widget Section ---
+            // --- 2. Widget Section ---
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
@@ -776,7 +777,7 @@ fun SettingsScreen(
             }
 
 
-            // --- 6. Copia de Seguridad Unificada (Diseño Refinado v3) ---
+            // --- 3. Copia de Seguridad Unificada (Diseño Refinado v3) ---
             SectionTitle(text = "Copia de seguridad")
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }

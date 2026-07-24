@@ -1,3 +1,4 @@
+2026-07-23 - v2.1.11 Corrección de warnings
 2026-07-23 - v2.1.10 Copia de seguridad: unificado fichero de Drive y Local. Restauración común a ambos
 2026-07-23 - v2.1.09 Cadenas nuevas/modificadas propagadas al resto de idiomas
 2026-07-22 - v2.1.08 Corrección de warnings
