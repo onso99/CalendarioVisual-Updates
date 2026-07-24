@@ -1,3 +1,4 @@
+2026-07-24 - v2.1.13 Sincronización: toast corregido. Última copia muestra tamaño de archivo y vuelve bajo Frecuencia de copia
 2026-07-24 - v2.1.12 Temas y Personalizar colores en sección General. Estilo suprimida
 2026-07-23 - v2.1.11 Corrección de warnings
 2026-07-23 - v2.1.10 Copia de seguridad: unificado fichero de Drive y Local. Restauración común a ambos

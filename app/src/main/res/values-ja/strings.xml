@@ -266,7 +266,7 @@
     <string name="frequency_daily">毎日</string>
     <string name="frequency_weekly">毎週</string>
     <string name="frequency_monthly">毎月</string>
-    <string name="sync_success_detailed">同期完了: %1$d件（%2$d件削除）</string>
+    <string name="sync_success_detailed">同期完了: %1$d件</string>
     <string name="sync_error_drive">ドライブエラー。アカウントを確認してください。</string>
     <string name="restore_from_drive">ドライブから復元</string>
     <string name="restore_confirm_title">イベントを復元しますか？</string>

@@ -266,7 +266,7 @@
     <string name="frequency_daily">每天</string>
     <string name="frequency_weekly">每周</string>
     <string name="frequency_monthly">每月</string>
-    <string name="sync_success_detailed">同步完成：%1$d 个事件 (已删除 %2$d 个)</string>
+    <string name="sync_success_detailed">同步完成：%1$d 个元素</string>
     <string name="sync_error_drive">云端硬盘错误。请检查您的账号。</string>
     <string name="restore_from_drive">从云端硬盘恢复</string>
     <string name="restore_confirm_title">恢复事件？</string>

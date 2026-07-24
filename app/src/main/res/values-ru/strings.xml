@@ -266,7 +266,7 @@
     <string name="frequency_daily">Ежедневно</string>
     <string name="frequency_weekly">Еженедельно</string>
     <string name="frequency_monthly">Ежемесячно</string>
-    <string name="sync_success_detailed">Синхронизация завершена: %1$d событий (удалено %2$d)</string>
+    <string name="sync_success_detailed">Синхронизация завершена: %1$d элементов</string>
     <string name="sync_error_drive">Ошибка Диска. Проверьте ваш аккаунт.</string>
     <string name="restore_from_drive">Восстановить с Диска</string>
     <string name="restore_confirm_title">Восстановить события?</string>

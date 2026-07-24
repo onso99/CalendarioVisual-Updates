@@ -312,13 +312,12 @@ fun SettingsScreen(
     val originalSnoozeInterval = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) }
     
     // Si no está habilitado el backup, forzamos a que la frecuencia original se lea como "manual"
-    val originalAutoBackup = remember { appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) }
     val originalBackupFreq = remember { 
-        if (!originalAutoBackup) "manual" 
+        val autoBackup = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        if (!autoBackup) "manual" 
         else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
     }
     val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
-    val lastBackupCount = remember(permissionsUpdateTrigger) { appPrefs.getInt(AppConstants.KEY_LAST_BACKUP_COUNT, 0) }
     val lastBackupSize = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) }
 
     var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
@@ -333,7 +332,6 @@ fun SettingsScreen(
     
     var pendingAlarmOffset by remember { mutableFloatStateOf(originalAlarmOffset.toFloat()) }
     var pendingSnoozeInterval by remember { mutableFloatStateOf(originalSnoozeInterval.toFloat()) }
-    var pendingAutoBackup by remember { mutableStateOf(originalAutoBackup) }
     var pendingBackupFreq by remember { mutableStateOf(originalBackupFreq) }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
@@ -353,7 +351,6 @@ fun SettingsScreen(
                     pendingFontBold != originalFontBold ||
                     pendingAlarmOffset.roundToInt() != originalAlarmOffset ||
                     pendingSnoozeInterval.roundToInt() != originalSnoozeInterval ||
-                    pendingAutoBackup != originalAutoBackup ||
                     pendingBackupFreq != originalBackupFreq
         }
     }
@@ -888,7 +885,7 @@ fun SettingsScreen(
                                 viewModel.syncHistoryToDrive(context) { result ->
                                     if (result.success) {
                                         permissionsUpdateTrigger++
-                                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents, result.deletedCount)
+                                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents)
                                         Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                                     } else {
                                         Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()

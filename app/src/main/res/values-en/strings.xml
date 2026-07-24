@@ -267,7 +267,7 @@
     <string name="frequency_daily">Daily</string>
     <string name="frequency_weekly">Weekly</string>
     <string name="frequency_monthly">Monthly</string>
-    <string name="sync_success_detailed">Sync complete: %1$d events (%2$d deleted)</string>
+    <string name="sync_success_detailed">Sync complete: %1$d elements</string>
     <string name="sync_error_drive">Drive error. Check your account.</string>
     <string name="restore_from_drive">Restore from Drive</string>
     <string name="restore_confirm_title">Restore events?</string>

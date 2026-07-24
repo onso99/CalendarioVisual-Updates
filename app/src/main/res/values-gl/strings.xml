@@ -267,7 +267,7 @@
     <string name="frequency_daily">Diaria</string>
     <string name="frequency_weekly">Semanal</string>
     <string name="frequency_monthly">Mensual</string>
-    <string name="sync_success_detailed">Sincronización completa: %1$d eventos (%2$d eliminados)</string>
+    <string name="sync_success_detailed">Sincronización completa: %1$d elementos</string>
     <string name="sync_error_drive">Erro de Drive. Verifica a túa conta.</string>
     <string name="restore_from_drive">Restaurar desde Drive</string>
     <string name="restore_confirm_title">Restaurar eventos?</string>
