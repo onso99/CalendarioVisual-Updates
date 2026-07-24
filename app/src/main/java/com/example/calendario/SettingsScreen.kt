@@ -728,9 +728,11 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), CircleShape))
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingEventColor).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), CircleShape))
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingTodayEventColor).border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), CircleShape))
+                            val dotBorderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
+                            
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(0.5.dp, dotBorderColor, CircleShape))
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingEventColor).border(0.5.dp, dotBorderColor, CircleShape))
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingTodayEventColor).border(0.5.dp, dotBorderColor, CircleShape))
                         }
 
                         Icon(
@@ -1665,15 +1667,16 @@ private fun WidgetColorChip(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    // Calculamos color de texto (Blanco o Negro) segÃºn oscuridad del fondo
+    // Calculamos color de texto (Blanco o Negro) según oscuridad del fondo
     val textColor = if (isColorDark(color, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black
+    val borderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
 
     Box(
         modifier = modifier
             .height(44.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(color)
-            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), RoundedCornerShape(10.dp))
+            .border(0.5.dp, borderColor, RoundedCornerShape(10.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
