@@ -377,9 +377,9 @@ fun MonthlyCalendar(
                                         .size(8.dp)
                                         .drawBehind {
                                             val path = androidx.compose.ui.graphics.Path().apply {
-                                                moveTo(size.width / 2f, 0f)
-                                                lineTo(size.width, size.height)
-                                                lineTo(0f, size.height)
+                                                moveTo(0f, 0f)
+                                                lineTo(size.width, 0f)
+                                                lineTo(size.width / 2f, size.height)
                                                 close()
                                             }
                                             drawPath(path, noteColor)
