@@ -45,6 +45,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -155,8 +156,9 @@ fun SettingsScreen(
     var showRestoreSelectDialog by remember { mutableStateOf(false) }
     var restoreSource by remember { mutableStateOf<String?>(null) }
     var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
-    var showPreferencesBackupDialog by remember { mutableStateOf(false) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
+    var showBackupActionsExpand by remember { mutableStateOf(false) }
+    var showLocalBackupExpand by remember { mutableStateOf(false) }
 
     // --- Launchers ---
     val onThemeImported = {
@@ -819,84 +821,168 @@ fun SettingsScreen(
                         else -> pendingBackupFreq
                     }
                     
-                    // 2. FRECUENCIA + Info Última Copia
-                    Column(
-                        modifier = Modifier.fillMaxWidth().clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp, vertical = 8.dp)
+                    // 2. FRECUENCIA
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
-                            Text(
-                                text = freqLabel, 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontSize = 15.sp, 
-                                fontWeight = FontWeight.SemiBold 
-                            )
-                        }
-
-                        val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
-                                     else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
-                        
-                        val sizeMB = lastBackupSize / (1024.0 * 1024.0)
-                        val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, sizeMB)}MB" else ""
+                        Text(text = stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
                         Text(
-                            text = "Última copia: $lastStr$sizeStr", 
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
-                            fontSize = 13.sp, 
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = 2.dp)
+                            text = freqLabel, 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontSize = 15.sp, 
+                            fontWeight = FontWeight.SemiBold 
                         )
                     }
 
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                    // 3. BOTONES DE ACCIÓN (Drive)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        val btnBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                        
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.restaurar_label),
-                            icon = Icons.Default.Restore,
-                            modifier = Modifier.weight(1f).height(44.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            containerColor = btnBg,
-                            onClick = { 
-                                restoreSource = "drive"
-                                showRestoreSelectDialog = true 
-                            }
-                        )
-                        
-                        SettingsActionChip(
-                            text = stringResource(id = R.string.sincronizar_label),
-                            icon = Icons.Default.Sync,
-                            isIconRotating = isSyncing,
-                            modifier = Modifier.weight(1f).height(44.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            containerColor = btnBg,
-                            onClick = {
-                                viewModel.syncHistoryToDrive(context) { result ->
-                                    if (result.success) {
-                                        permissionsUpdateTrigger++
-                                        val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents)
-                                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                                    } else {
-                                        Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
+                    // 3. ÚLTIMA (Interactiva / Desplegable)
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBackupActionsExpand = !showBackupActionsExpand }.padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.last_backup_label), 
+                                color = CalendarioTheme.colors.textSystem, 
+                                fontSize = 16.sp
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
+                                         else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
+                            
+                            val sizeMB = lastBackupSize / (1024.0 * 1024.0)
+                            val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, sizeMB)}MB" else ""
+                            
+                            Text(
+                                text = "$lastStr$sizeStr", 
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                            Icon(
+                                imageVector = if (showBackupActionsExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                                modifier = Modifier.padding(start = 8.dp).size(20.dp)
+                            )
+                        }
+
+                        if (showBackupActionsExpand) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                val btnBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                                
+                                SettingsActionChip(
+                                    text = stringResource(id = R.string.restaurar_label),
+                                    icon = painterResource(id = R.drawable.ic_restore_custom),
+                                    modifier = Modifier.weight(1f).height(44.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    containerColor = btnBg,
+                                    onClick = { 
+                                        restoreSource = "drive"
+                                        showRestoreSelectDialog = true 
                                     }
-                                }
+                                )
+                                
+                                SettingsActionChip(
+                                    text = stringResource(id = R.string.sincronizar_label),
+                                    icon = Icons.Default.Sync,
+                                    isIconRotating = isSyncing,
+                                    modifier = Modifier.weight(1f).height(44.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    containerColor = btnBg,
+                                    onClick = {
+                                        viewModel.syncHistoryToDrive(context) { result ->
+                                            if (result.success) {
+                                                permissionsUpdateTrigger++
+                                                val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents)
+                                                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                                            } else {
+                                                Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
                 
-                // 4. COPIA LOCAL (Mismo bloque, lÃ­nea clara estándar de ancho completo)
+                // 4. COPIA LOCAL (Interactiva / Desplegable)
                 HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                ActionRow(
-                    text = stringResource(id = R.string.preferences_backup_label),
-                    onClick = { showPreferencesBackupDialog = true }
-                )
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable { showLocalBackupExpand = !showLocalBackupExpand }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.preferences_backup_label), 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontSize = 16.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = if (showLocalBackupExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    if (showLocalBackupExpand) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val btnBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                            
+                            SettingsActionChip(
+                                text = stringResource(id = R.string.restaurar_label),
+                                icon = painterResource(id = R.drawable.ic_restore_custom),
+                                modifier = Modifier.weight(1f).height(44.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                containerColor = btnBg,
+                                onClick = { 
+                                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "application/json" 
+                                    }
+                                    importFullBackupLauncher.launch(intent)
+                                }
+                            )
+                            
+                            SettingsActionChip(
+                                text = stringResource(id = R.string.guardar_label),
+                                icon = Icons.Default.Save,
+                                modifier = Modifier.weight(1f).height(44.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                containerColor = btnBg,
+                                onClick = {
+                                    val dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                    val suggestedName = "calendariovisual_backup_$dateStr.json"
+                                    
+                                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "application/json"
+                                        putExtra(Intent.EXTRA_TITLE, suggestedName)
+                                    }
+                                    exportFullBackupLauncher.launch(intent)
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             // --- About Section ---
@@ -987,34 +1073,6 @@ fun SettingsScreen(
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
     if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.discard)) } }, dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }) }
-
-    if (showPreferencesBackupDialog) {
-        PreferencesBackupDialog(
-            onDismiss = { showPreferencesBackupDialog = false },
-            onLoadClick = {
-                showPreferencesBackupDialog = false
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json" 
-                }
-                importFullBackupLauncher.launch(intent)
-            },
-            onSaveClick = {
-                showPreferencesBackupDialog = false
-                
-                // Generamos el nombre dinámico: calendariovisual_backup_YYYYMMDD.json
-                val dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                val suggestedName = "calendariovisual_backup_$dateStr.json"
-                
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json"
-                    putExtra(Intent.EXTRA_TITLE, suggestedName)
-                }
-                exportFullBackupLauncher.launch(intent)
-            }
-        )
-    }
 
 
     if (showUnlinkAccountDialog) {
@@ -1523,6 +1581,7 @@ private fun BundledThemesDialog(
                     
                     SettingsActionChip(
                         text = stringResource(id = R.string.restaurar_label),
+                        icon = painterResource(id = R.drawable.ic_restore_custom),
                         modifier = Modifier.weight(1f).height(44.dp),
                         shape = RoundedCornerShape(12.dp),
                         containerColor = backupButtonBg,
@@ -1531,6 +1590,7 @@ private fun BundledThemesDialog(
                     
                     SettingsActionChip(
                         text = stringResource(id = R.string.guardar_label),
+                        icon = Icons.Default.Save,
                         modifier = Modifier.weight(1f).height(44.dp),
                         shape = RoundedCornerShape(12.dp),
                         containerColor = backupButtonBg,
@@ -1593,57 +1653,6 @@ private fun ThemeChip(
 }
 
 
-@Composable
-private fun PreferencesBackupDialog(
-    onDismiss: () -> Unit,
-    onLoadClick: () -> Unit,
-    onSaveClick: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss, 
-        containerColor = CalendarioTheme.colors.fondoDialogos, 
-        titleContentColor = CalendarioTheme.colors.textSystem, 
-        textContentColor = CalendarioTheme.colors.textSystem, 
-        title = { 
-            Text(
-                text = stringResource(id = R.string.preferences_title), 
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            ) 
-        }, 
-        text = { 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                
-                SettingsActionChip(
-                    text = stringResource(id = R.string.restaurar_label),
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    containerColor = backupButtonBg,
-                    onClick = onLoadClick
-                )
-                
-                SettingsActionChip(
-                    text = stringResource(id = R.string.guardar_label),
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    containerColor = backupButtonBg,
-                    onClick = onSaveClick
-                )
-            }
-        }, 
-        confirmButton = { 
-            TextButton(onClick = onDismiss) { 
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) 
-            } 
-        }
-    )
-}
 
 private fun getFileName(context: Context, uri: Uri): String {
     var fileName = "nombre_desconocido"

@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
@@ -59,7 +60,7 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.titleMedium,
         modifier = modifier.padding(bottom = 8.dp, top = 24.dp),
         fontWeight = FontWeight.Bold,
-        color = titleColor
+        color = titleColor,
     )
 }
 
@@ -75,7 +76,7 @@ internal fun WidgetSectionTitle() {
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp, top = 24.dp),
         fontWeight = FontWeight.Bold,
-        color = titleColor
+        color = titleColor,
     )
 }
 
@@ -136,7 +137,7 @@ internal fun SettingsActionChip(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(10.dp),
     containerColor: Color = Color.Transparent,
-    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    icon: Any? = null, // Puede ser ImageVector o Painter
     isIconRotating: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -180,16 +181,30 @@ internal fun SettingsActionChip(
             modifier = Modifier.padding(horizontal = 8.dp)
         ) {
             if (icon != null) {
-                Icon(
-                    imageVector = icon, 
-                    contentDescription = null, 
-                    modifier = Modifier
-                        .size(18.dp)
-                        .graphicsLayer {
-                            if (isIconRotating) rotationZ = rotation
-                        },
-                    tint = CalendarioTheme.colors.textSystem
-                )
+                val iconModifier = Modifier
+                    .size(18.dp)
+                    .graphicsLayer {
+                        if (isIconRotating) rotationZ = rotation
+                    }
+
+                when (icon) {
+                    is androidx.compose.ui.graphics.vector.ImageVector -> {
+                        Icon(
+                            imageVector = icon, 
+                            contentDescription = null, 
+                            modifier = iconModifier,
+                            tint = CalendarioTheme.colors.textSystem
+                        )
+                    }
+                    is Painter -> {
+                        Icon(
+                            painter = icon, 
+                            contentDescription = null, 
+                            modifier = iconModifier,
+                            tint = CalendarioTheme.colors.textSystem
+                        )
+                    }
+                }
                 Spacer(Modifier.width(8.dp))
             }
             Text(
