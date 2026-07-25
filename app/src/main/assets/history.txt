@@ -1,3 +1,4 @@
+2026-07-25 - v2.1.21 Unificación de botones Restaurar/Guardar con icono: copia de seguridad/Temas
 2026-07-25 - v2.1.20 Widget previsualización: renombrados Adaptativo y Clásico
 2026-07-24 - v2.1.19 Indicador de notas: triángulo invertido
 2026-07-24 - v2.1.18 Botón Sincronizar animado indicando la actividad

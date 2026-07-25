@@ -205,13 +205,15 @@ internal fun SettingsActionChip(
                         )
                     }
                 }
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(4.dp)) // Reducido de 8dp a 4dp para ganar espacio
             }
             Text(
                 text = text,
                 color = if (isIconRotating) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 13.sp, // Reducido ligeramente de 14sp a 13sp para idiomas largos
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

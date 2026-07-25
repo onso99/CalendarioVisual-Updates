@@ -44,7 +44,6 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
@@ -837,8 +836,10 @@ fun SettingsScreen(
 
                     HorizontalDivider(color = dividerColor, thickness = dividerThickness)
 
-                    // 3. ÚLTIMA (Interactiva / Desplegable)
+                    // 3. ÚLTIMA (Interactiva / Desplegable con Seguridad Visual)
                     Column {
+                        var dateFontSize by remember { mutableStateOf(14.sp) }
+                        
                         Row(
                             modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBackupActionsExpand = !showBackupActionsExpand }.padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -859,9 +860,16 @@ fun SettingsScreen(
                             Text(
                                 text = "$lastStr$sizeStr", 
                                 color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
-                                fontSize = 14.sp,
+                                fontSize = dateFontSize,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
+                                onTextLayout = { textLayoutResult ->
+                                    // Si hay desbordamiento visual, reducimos la fuente hasta 11sp
+                                    if (textLayoutResult.hasVisualOverflow && dateFontSize > 11.sp) {
+                                        dateFontSize = (dateFontSize.value - 1f).sp
+                                    }
+                                }
                             )
 
                             Icon(
