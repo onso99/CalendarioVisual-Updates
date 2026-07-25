@@ -272,7 +272,7 @@
     <string name="restore_confirm_message">Gordetako gertaerak Google Driveko kopiarekin ordeztuko dira. Sistemako uneko gertaerei ez die eragingo.</string>
     <string name="restore_success">Segurtasun-kopia ongi berrezarri da</string>
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
-    <string name="last_backup_with_count">Azkena: %1$s · %2$d gertaera</string>
+    <string name="last_backup_label">Azkena</string>
     <string name="never">Inoiz ez</string>
     <string name="error_updating_data">Errorea datuak eguneratzean.</string>
     <string name="confirm_delete_adjustment">Doitzea ezabatu nahi duzu? Egutegiaren jatorrizko egoera berrezarriko da.</string>

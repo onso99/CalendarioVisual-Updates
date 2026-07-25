@@ -273,7 +273,7 @@
     <string name="restore_confirm_message">Сохраненные события будут заменены копией из Google Диска. Текущие системные события не пострадают.</string>
     <string name="restore_success">Копия успешно восстановлена</string>
     <string name="restore_error">Валидная копия на Диске не найдена</string>
-    <string name="last_backup_with_count">Последняя: %1$s · событий: %2$d</string>
+    <string name="last_backup_label">Последняя</string>
     <string name="never">Никогда</string>
     <string name="error_updating_data">Ошибка обновления данных.</string>
     <string name="confirm_delete_adjustment">Удалить эту настройку? Будет восстановлено исходное состояние календаря.</string>

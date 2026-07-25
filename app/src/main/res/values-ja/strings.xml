@@ -273,7 +273,7 @@
     <string name="restore_confirm_message">保存されたイベントがGoogleドライブのコピーで上書きされます。現在のシステムイベントには影響しません。</string>
     <string name="restore_success">バックアップを復元しました</string>
     <string name="restore_error">有効なバックアップが見つかりません</string>
-    <string name="last_backup_with_count">最終: %1$s · %2$d件</string>
+    <string name="last_backup_label">最終</string>
     <string name="never">未実行</string>
     <string name="error_updating_data">データ更新エラー。</string>
     <string name="confirm_delete_adjustment">この設定を削除しますか？カレンダーの元の状態に戻ります。</string>

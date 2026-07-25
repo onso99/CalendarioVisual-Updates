@@ -274,7 +274,7 @@
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
     <string name="restore_success">Copia ripristinata con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
-    <string name="last_backup_with_count">Ultima: %1$s · %2$d eventi</string>
+    <string name="last_backup_label">Ultima</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Errore durante l\'aggiornamento dei dati.</string>
     <string name="confirm_delete_adjustment">Vuoi eliminare questa regolazione? Verrà ripristinato lo stato originale del calendario.</string>
