@@ -1,3 +1,4 @@
+2026-07-24 - v2.1.19 Indicador de notas: triángulo invertido
 2026-07-24 - v2.1.18 Botón Sincronizar animado indicando la actividad
 2026-07-24 - v2.1.17 Renombrada Copia local. Recuperada línea separatoria entre Drive y Local
 2026-07-24 - v2.1.16 Nuevo orden para la sección General
