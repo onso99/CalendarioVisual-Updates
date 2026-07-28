@@ -317,6 +317,8 @@ private fun SingleColorThemeRow(
     color: Color,
     onClick: () -> Unit
 ) {
+    var labelFontSize by remember { mutableStateOf(16.sp) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -328,10 +330,16 @@ private fun SingleColorThemeRow(
         Text(
             text = label,
             color = CalendarioTheme.colors.textSystem, 
-            fontSize = 16.sp, 
+            fontSize = labelFontSize, 
             modifier = Modifier.weight(1f),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            onTextLayout = { textLayoutResult ->
+                if (textLayoutResult.hasVisualOverflow && labelFontSize > 12.sp) {
+                    labelFontSize = (labelFontSize.value - 1f).sp
+                }
+            }
         )
         Spacer(modifier = Modifier.width(12.dp))
         ColorBox(color = color, onClick = onClick)
@@ -346,6 +354,8 @@ private fun EffectColorThemeRow(
     onEffectChange: (String) -> Unit,
     onColorClick: () -> Unit
 ) {
+    var labelFontSize by remember { mutableStateOf(16.sp) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -356,9 +366,16 @@ private fun EffectColorThemeRow(
         Text(
             text = label,
             color = CalendarioTheme.colors.textSystem,
-            fontSize = 16.sp,
+            fontSize = labelFontSize,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1.2f),
+            onTextLayout = { textLayoutResult ->
+                if (textLayoutResult.hasVisualOverflow && labelFontSize > 11.sp) {
+                    labelFontSize = (labelFontSize.value - 1f).sp
+                }
+            }
         )
 
         Row(
