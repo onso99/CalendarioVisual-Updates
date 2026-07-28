@@ -148,6 +148,7 @@
     <string name="calendar_background">Fondo calendario</string>
     <string name="effect">Efecto</string>
     <string name="current_month_cell">Celda del mes</string>
+    <string name="note_icon_color">Icono Nota</string>
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temas</string>
     <string name="themes_v6">Temas</string>

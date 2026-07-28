@@ -369,7 +369,7 @@ fun MonthlyCalendar(
                             // INDICADOR DE NOTA DIARIA (TriÃ¡ngulo Post-it)
                             val hasNote = dailyNotes.containsKey(date.toString())
                             if (isCurrentMonth && hasNote) {
-                                val noteColor = if (isAppDark) Color(0xFFFFCC80).copy(alpha = 0.8f) else Color(0xFFFFB300)
+                                val noteColor = themeColors.noteIconColor
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.TopCenter)

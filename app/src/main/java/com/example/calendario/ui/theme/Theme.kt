@@ -26,6 +26,7 @@ data class CustomColors(
     val textEvent1: Color,
     val textEvent2: Color,
     val todayHighlightColor: Color,
+    val noteIconColor: Color,
     val monthlyCalendarGridBackground: Color,
     val monthlyCalendarGridEffect: Color,
     val monthlyCalendarDayCellBackground: Color,
@@ -105,6 +106,7 @@ val LocalCustomColors = staticCompositionLocalOf {
         textEvent1 = AppConstants.LightColors.textEvent1,
         textEvent2 = AppConstants.LightColors.textEvent2,
         todayHighlightColor = AppConstants.LightColors.todayHighlightColor,
+        noteIconColor = AppConstants.LightColors.noteIconColor,
         monthlyCalendarGridBackground = AppConstants.LightColors.monthlyCalendarGridBackground,
         monthlyCalendarGridEffect = AppConstants.LightColors.monthlyCalendarGridEffect,
         monthlyCalendarDayCellBackground = AppConstants.LightColors.monthlyCalendarDayCellBackground
@@ -189,6 +191,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_1, AppConstants.DarkColors.textEvent1.toArgb())),
             textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_2, AppConstants.DarkColors.textEvent2.toArgb())),
             todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.DarkColors.todayHighlightColor.toArgb())),
+            noteIconColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_NOTE_ICON_COLOR, AppConstants.DarkColors.noteIconColor.toArgb())),
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.DarkColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.DarkColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.DarkColors.monthlyCalendarDayCellBackground.toArgb()))
@@ -202,6 +205,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.LightColors.textEvent1.toArgb())),
             textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.LightColors.textEvent2.toArgb())),
             todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor.toArgb())),
+            noteIconColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.LightColors.noteIconColor.toArgb())),
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.LightColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.LightColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground.toArgb()))

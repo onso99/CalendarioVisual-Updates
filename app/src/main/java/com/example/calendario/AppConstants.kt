@@ -40,6 +40,7 @@ object AppConstants {
         const val LIGHT_TEXT_EVENT_1 = "light_text_event_1"
         const val LIGHT_TEXT_EVENT_2 = "light_text_event_2"
         const val LIGHT_TODAY_HIGHLIGHT_COLOR = "light_today_highlight_color"
+        const val LIGHT_NOTE_ICON_COLOR = "light_note_icon_color"
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_GRID_EFFECT = "light_monthly_calendar_grid_effect"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
@@ -52,6 +53,7 @@ object AppConstants {
         const val DARK_TEXT_EVENT_1 = "dark_text_event_1"
         const val DARK_TEXT_EVENT_2 = "dark_text_event_2"
         const val DARK_TODAY_HIGHLIGHT_COLOR = "dark_today_highlight_color"
+        const val DARK_NOTE_ICON_COLOR = "dark_note_icon_color"
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_GRID_EFFECT = "dark_monthly_calendar_grid_effect"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
@@ -65,6 +67,7 @@ object AppConstants {
         val textEvent1 = Color(0xFF008000)
         val textEvent2 = Color(0xFF980062)
         val todayHighlightColor = Color(0x260077C2) // 15% opacidad
+        val noteIconColor = Color(0xFFFFB300)
         val monthlyCalendarGridBackground = Color(0xFF0077C2)
         val monthlyCalendarGridEffect = Color(0xFF38A391)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
@@ -78,6 +81,7 @@ object AppConstants {
         val textEvent1 = Color(0xFFB9F6CA)
         val textEvent2 = Color(0xFFFF80AB)
         val todayHighlightColor = Color(0x4D4FC3F7) // 30% opacidad
+        val noteIconColor = Color(0xFFFFCC80)
         val monthlyCalendarGridBackground = Color(0xFF006064)
         val monthlyCalendarGridEffect = Color(0xFF01579B)
         val monthlyCalendarDayCellBackground = Color(0xFF003341)
