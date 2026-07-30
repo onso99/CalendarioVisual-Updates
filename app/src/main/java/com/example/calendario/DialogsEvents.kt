@@ -347,18 +347,74 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
 @Composable
 fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: List<CalendarInfo>, favoriteCalendarId: Long?, onDismissRequest: () -> Unit, onApplySelection: (Set<Long>) -> Unit, onSetFavorite: (Long) -> Unit) {
     var currentIds by remember(initialSelectedIds) { mutableStateOf(initialSelectedIds) }
-    AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.select_calendars_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-        text = { LazyColumn(Modifier.heightIn(max = 400.dp).fillMaxWidth()) { items(availableCalendars.sortedBy { it.displayName }) { cal ->
-            val isFavorite = cal.id == favoriteCalendarId
-            Row(modifier = Modifier.fillMaxWidth().clickable(enabled = !isFavorite) { val set = currentIds.toMutableSet(); if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id); currentIds = set }.padding(vertical = 6.dp, horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = currentIds.contains(cal.id) || isFavorite, onCheckedChange = null, enabled = !isFavorite, colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera))
-                Spacer(Modifier.width(10.dp))
-                Column(Modifier.weight(1f)) { Text(cal.displayName, fontWeight = FontWeight.Medium, fontSize = 15.sp); Text(cal.accountName, fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)) }
-                if (cal.canModify) IconButton(onClick = { onSetFavorite(cal.id); val set = currentIds.toMutableSet(); set.add(cal.id); currentIds = set }) { Icon(if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline, null, tint = if (isFavorite) CalendarioTheme.colors.cabecera else Color.Gray) }
+    
+    // Ordenación estratégica: 1. Favorito, 2. Seleccionados (alfabético), 3. No seleccionados (alfabético)
+    val sortedCalendars = remember(availableCalendars, initialSelectedIds, favoriteCalendarId) {
+        availableCalendars.sortedWith(
+            compareByDescending<CalendarInfo> { it.id == favoriteCalendarId }
+                .thenByDescending { initialSelectedIds.contains(it.id) }
+                .thenBy { it.displayName }
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        text = { 
+            LazyColumn(Modifier.heightIn(max = 400.dp).fillMaxWidth()) { 
+                items(sortedCalendars) { cal ->
+                    val isFavorite = cal.id == favoriteCalendarId
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = !isFavorite) { 
+                                val set = currentIds.toMutableSet()
+                                if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
+                                currentIds = set 
+                            }
+                            .padding(vertical = 6.dp, horizontal = 8.dp), 
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = currentIds.contains(cal.id) || isFavorite, 
+                            onCheckedChange = null, 
+                            enabled = !isFavorite, 
+                            colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) { 
+                            Text(cal.displayName, fontWeight = FontWeight.Medium, fontSize = 15.sp)
+                            Text(cal.accountName, fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)) 
+                        }
+                        if (cal.canModify) {
+                            IconButton(onClick = { 
+                                onSetFavorite(cal.id)
+                                val set = currentIds.toMutableSet()
+                                set.add(cal.id)
+                                currentIds = set 
+                            }) { 
+                                Icon(
+                                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline, 
+                                    contentDescription = null, 
+                                    tint = if (isFavorite) CalendarioTheme.colors.cabecera else Color.Gray
+                                ) 
+                            }
+                        }
+                    }
+                }
             }
-        }}},
-        confirmButton = { Button(onClick = { onApplySelection(currentIds) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.apply)) } },
+        },
+        confirmButton = { 
+            Button(
+                onClick = { onApplySelection(currentIds) }, 
+                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
+            ) { 
+                Text(stringResource(id = R.string.apply)) 
+            } 
+        },
         dismissButton = { DialogDismissButton(onDismissRequest) }
     )
 }

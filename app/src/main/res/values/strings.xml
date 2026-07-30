@@ -18,7 +18,6 @@
     <string name="delete_all_events_option">Eliminar todos los eventos de la serie</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
-    <string name="select_calendars_title">Seleccionar Calendarios</string>
     <string name="no_calendars_found">No se encontraron calendarios disponibles.</string>
     <string name="read_only">(Solo lectura)</string>
     <string name="apply">Aplicar</string>

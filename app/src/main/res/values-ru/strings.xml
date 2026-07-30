@@ -18,7 +18,6 @@
     <string name="delete_all_events_option">Удалить все события в серии</string>
     <string name="delete">Удалить</string>
     <string name="cancel">Отмена</string>
-    <string name="select_calendars_title">Выбор Календарей</string>
     <string name="no_calendars_found">Доступные календари не найдены.</string>
     <string name="read_only">(Только чтение)</string>
     <string name="apply">Применить</string>

@@ -18,7 +18,6 @@
     <string name="delete_all_events_option">Ezabatu saileko gertaera guztiak</string>
     <string name="delete">Ezabatu</string>
     <string name="cancel">Utzi</string>
-    <string name="select_calendars_title">Hautatu Egutegiak</string>
     <string name="no_calendars_found">Ez da egutegi erabilgarririk aurkitu.</string>
     <string name="read_only">(Irakurtzeko soilik)</string>
     <string name="apply">Aplikatu</string>
