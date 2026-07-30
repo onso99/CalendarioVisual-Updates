@@ -263,7 +263,7 @@
     <string name="account_linked_error">Errorea kontua lotzean</string>
     <string name="unlink_google_account">Askatu Google kontua</string>
     <string name="unlink_account_confirmation">Google kontua askatu nahi duzu? Babeskopia automatikoak gelditu egingo dira.</string>
-    <string name="unlink_action">ASKATU</string>
+    <string name="unlink_action">Desestekatu</string>
     <string name="frequency_manual">Eskuz</string>
     <string name="frequency_daily">Egunero</string>
     <string name="frequency_weekly">Astero</string>
@@ -275,6 +275,10 @@
     <string name="restore_confirm_message">Gordetako gertaerak Google Driveko kopiarekin ordeztuko dira. Sistemako uneko gertaerei ez die eragingo.</string>
     <string name="restore_success">Segurtasun-kopia ongi berrezarri da</string>
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
+    <string name="restore_prefs_label">Ezarpenak</string>
+    <string name="restore_holidays_label">Tokiko jai-egunak</string>
+    <string name="restore_notes_label">Oharrak</string>
+    <string name="restore_events_label">Gertaerak</string>
     <string name="last_backup_label">Azkena</string>
     <string name="never">Inoiz ez</string>
     <string name="error_updating_data">Errorea datuak eguneratzean.</string>

@@ -276,6 +276,10 @@
     <string name="restore_confirm_message">保存的事件将被 Google 云端硬盘中的副本替换。当前系统事件不会受到影响。</string>
     <string name="restore_success">备份恢复成功</string>
     <string name="restore_error">在云端硬盘中未找到有效备份</string>
+    <string name="restore_prefs_label">设置</string>
+    <string name="restore_holidays_label">本地节假日</string>
+    <string name="restore_notes_label">备注</string>
+    <string name="restore_events_label">事件</string>
     <string name="last_backup_label">上次</string>
     <string name="never">从未</string>
     <string name="error_updating_data">更新数据出错。</string>

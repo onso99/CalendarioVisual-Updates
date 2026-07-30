@@ -265,7 +265,7 @@
     <string name="account_linked_error">Errore durante il collegamento dell\'account</string>
     <string name="unlink_google_account">Scollega account Google</string>
     <string name="unlink_account_confirmation">Scollegare l\'account Google? I backup automatici verranno interrotti.</string>
-    <string name="unlink_action">SCOLLEGA</string>
+    <string name="unlink_action">Scollega</string>
     <string name="frequency_manual">Manuale</string>
     <string name="frequency_daily">Giornaliera</string>
     <string name="frequency_weekly">Settimanale</string>
@@ -277,6 +277,10 @@
     <string name="restore_confirm_message">Gli eventi salvati verranno sostituiti dalla copia di Google Drive. Gli eventi di sistema attuali non saranno influenzati.</string>
     <string name="restore_success">Copia ripristinata con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
+    <string name="restore_prefs_label">Impostazioni</string>
+    <string name="restore_holidays_label">Giorni festivi locali</string>
+    <string name="restore_notes_label">Note</string>
+    <string name="restore_events_label">Eventi</string>
     <string name="last_backup_label">Ultima</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Errore durante l\'aggiornamento dei dati.</string>

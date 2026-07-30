@@ -265,7 +265,7 @@
     <string name="account_linked_error">Error linking account</string>
     <string name="unlink_google_account">Unlink Google account</string>
     <string name="unlink_account_confirmation">Unlink Google account? Automatic cloud backups will stop.</string>
-    <string name="unlink_action">UNLINK</string>
+    <string name="unlink_action">Unlink</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Daily</string>
     <string name="frequency_weekly">Weekly</string>
@@ -277,6 +277,10 @@
     <string name="restore_confirm_message">Saved events will be replaced by the Google Drive copy. Current system events will not be affected.</string>
     <string name="restore_success">Backup restored successfully</string>
     <string name="restore_error">No valid backup found in Drive</string>
+    <string name="restore_prefs_label">Settings</string>
+    <string name="restore_holidays_label">Local holidays</string>
+    <string name="restore_notes_label">Notes</string>
+    <string name="restore_events_label">Events</string>
     <string name="last_backup_label">Last</string>
     <string name="never">Never</string>
     <string name="error_updating_data">Error updating data.</string>

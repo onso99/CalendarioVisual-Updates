@@ -264,7 +264,7 @@
     <string name="account_linked_error">Erreur lors de l\'association du compte</string>
     <string name="unlink_google_account">Dissocier le compte Google</string>
     <string name="unlink_account_confirmation">Dissocier le compte Google ? Les sauvegardes automatiques s\'arrêteront.</string>
-    <string name="unlink_action">DISSOCIER</string>
+    <string name="unlink_action">Dissocier</string>
     <string name="frequency_manual">Manuel</string>
     <string name="frequency_daily">Quotidienne</string>
     <string name="frequency_weekly">Hebdomadaire</string>
@@ -276,6 +276,10 @@
     <string name="restore_confirm_message">Les événements enregistrés seront remplacés par la copie Google Drive. Les événements système actuels ne seront pas affectés.</string>
     <string name="restore_success">Copie restaurée avec succès</string>
     <string name="restore_error">Aucune copie valide trouvée sur Drive</string>
+    <string name="restore_prefs_label">Paramètres</string>
+    <string name="restore_holidays_label">Jours fériés locaux</string>
+    <string name="restore_notes_label">Notes</string>
+    <string name="restore_events_label">Événements</string>
     <string name="last_backup_label">Dernière</string>
     <string name="never">Jamais</string>
     <string name="error_updating_data">Erreur lors de la mise à jour des données.</string>

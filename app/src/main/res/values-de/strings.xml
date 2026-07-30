@@ -264,7 +264,7 @@
     <string name="account_linked_error">Fehler beim Verknüpfen des Kontos</string>
     <string name="unlink_google_account">Google-Konto trennen</string>
     <string name="unlink_account_confirmation">Google-Konto trennen? Automatische Cloud-Backups werden gestoppt.</string>
-    <string name="unlink_action">TRENNEN</string>
+    <string name="unlink_action">Trennen</string>
     <string name="frequency_manual">Manuell</string>
     <string name="frequency_daily">Täglich</string>
     <string name="frequency_weekly">Wöchentlich</string>
@@ -276,6 +276,10 @@
     <string name="restore_confirm_message">Gespeicherte Ereignisse werden durch die Google Drive-Kopie ersetzt. Aktuelle Systemereignisse sind nicht betroffen.</string>
     <string name="restore_success">Backup erfolgreich wiederhergestellt</string>
     <string name="restore_error">Kein gültiges Backup in Drive gefunden</string>
+    <string name="restore_prefs_label">Einstellungen</string>
+    <string name="restore_holidays_label">Lokale Feiertage</string>
+    <string name="restore_notes_label">Notizen</string>
+    <string name="restore_events_label">Ereignisse</string>
     <string name="last_backup_label">Zuletzt</string>
     <string name="never">Nie</string>
     <string name="error_updating_data">Fehler beim Aktualisieren der Daten.</string>

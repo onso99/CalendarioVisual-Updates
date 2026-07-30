@@ -265,7 +265,7 @@
     <string name="account_linked_error">Error en vincular el compte</string>
     <string name="unlink_google_account">Desvincular compte de Google</string>
     <string name="unlink_account_confirmation">Desvincular compte de Google? S\'aturaran les còpies de seguretat automàtiques al núvol.</string>
-    <string name="unlink_action">DESVINCULAR</string>
+    <string name="unlink_action">Desvincular</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diària</string>
     <string name="frequency_weekly">Setmanal</string>
@@ -277,6 +277,10 @@
     <string name="restore_confirm_message">Se substituiran els esdeveniments desats per la còpia de Google Drive. Els esdeveniments actuals del sistema no es veuran afectats.</string>
     <string name="restore_success">Còpia restaurada amb èxit</string>
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
+    <string name="restore_prefs_label">Ajustos</string>
+    <string name="restore_holidays_label">Festius locals</string>
+    <string name="restore_notes_label">Notes</string>
+    <string name="restore_events_label">Esdeveniments</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Error en actualitzar les dades.</string>

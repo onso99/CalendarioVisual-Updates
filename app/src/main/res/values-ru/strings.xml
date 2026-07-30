@@ -264,7 +264,7 @@
     <string name="account_linked_error">Ошибка при привязке аккаунта</string>
     <string name="unlink_google_account">Отвязать аккаунт Google</string>
     <string name="unlink_account_confirmation">Отвязать аккаунт Google? Автоматическое копирование в облако прекратится.</string>
-    <string name="unlink_action">ОТВЯЗАТЬ</string>
+    <string name="unlink_action">Отвязать</string>
     <string name="frequency_manual">Вручную</string>
     <string name="frequency_daily">Ежедневно</string>
     <string name="frequency_weekly">Еженедельно</string>
@@ -276,6 +276,10 @@
     <string name="restore_confirm_message">Сохраненные события будут заменены копией из Google Диска. Текущие системные события не пострадают.</string>
     <string name="restore_success">Копия успешно восстановлена</string>
     <string name="restore_error">Валидная копия на Диске не найдена</string>
+    <string name="restore_prefs_label">Настройки</string>
+    <string name="restore_holidays_label">Местные праздники</string>
+    <string name="restore_notes_label">Заметки</string>
+    <string name="restore_events_label">События</string>
     <string name="last_backup_label">Последняя</string>
     <string name="never">Никогда</string>
     <string name="error_updating_data">Ошибка обновления данных.</string>

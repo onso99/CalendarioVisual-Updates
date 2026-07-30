@@ -265,7 +265,7 @@
     <string name="account_linked_error">Erro ao vincular a conta</string>
     <string name="unlink_google_account">Desvincular conta Google</string>
     <string name="unlink_account_confirmation">Desvincular conta Google? As cópias de segurança automáticas na nuvem serão interrompidas.</string>
-    <string name="unlink_action">DESVINCULAR</string>
+    <string name="unlink_action">Desvincular</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diária</string>
     <string name="frequency_weekly">Semanal</string>
@@ -277,6 +277,10 @@
     <string name="restore_confirm_message">Os eventos guardados serão substituídos pela cópia do Google Drive. Os eventos atuais do sistema não serão afetados.</string>
     <string name="restore_success">Cópia restaurada com sucesso</string>
     <string name="restore_error">Não foi encontrada uma cópia válida no Drive</string>
+    <string name="restore_prefs_label">Ajustes</string>
+    <string name="restore_holidays_label">Feriados locais</string>
+    <string name="restore_notes_label">Notas</string>
+    <string name="restore_events_label">Eventos</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Nunca</string>
     <string name="error_updating_data">Erro ao atualizar dados.</string>
