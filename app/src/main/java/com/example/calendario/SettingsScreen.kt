@@ -1276,10 +1276,10 @@ private fun RestoreSelectDialog(
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                RestoreOptionRow("Preferencias", restorePrefs) { restorePrefs = it }
-                RestoreOptionRow("Festivos locales", restoreHolidays) { restoreHolidays = it }
-                RestoreOptionRow("Notas", restoreNotes) { restoreNotes = it }
-                RestoreOptionRow("Eventos", restoreEvents) { restoreEvents = it }
+                RestoreOptionRow(stringResource(id = R.string.restore_prefs_label), restorePrefs) { restorePrefs = it }
+                RestoreOptionRow(stringResource(id = R.string.restore_holidays_label), restoreHolidays) { restoreHolidays = it }
+                RestoreOptionRow(stringResource(id = R.string.restore_notes_label), restoreNotes) { restoreNotes = it }
+                RestoreOptionRow(stringResource(id = R.string.restore_events_label), restoreEvents) { restoreEvents = it }
             }
         },
         confirmButton = {
@@ -1299,7 +1299,7 @@ private fun RestoreOptionRow(label: String, isChecked: Boolean, onCheckedChange:
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCheckedChange(!isChecked) }
-            .padding(vertical = 4.dp),
+            .padding(vertical = 8.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
@@ -1307,7 +1307,12 @@ private fun RestoreOptionRow(label: String, isChecked: Boolean, onCheckedChange:
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
         )
-        Text(text = label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(start = 8.dp))
+        Text(
+            text = label, 
+            color = CalendarioTheme.colors.textSystem, 
+            modifier = Modifier.padding(start = 12.dp),
+            fontSize = 16.sp
+        )
     }
 }
 

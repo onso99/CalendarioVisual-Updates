@@ -316,12 +316,37 @@ fun DeleteRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (DeleteR
     var selectedOption by remember { mutableStateOf<DeleteRecurringOption?>(null) }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text(stringResource(id = R.string.delete_recurring_event_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = { Column { listOf(DeleteRecurringOption.SINGLE_EVENT to stringResource(R.string.delete_single_event_option), DeleteRecurringOption.ALL_EVENTS to stringResource(R.string.delete_all_events_option)).forEach { (opt, txt) ->
-            Row(modifier = Modifier.fillMaxWidth().clickable { selectedOption = opt }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = (selectedOption == opt), onClick = { selectedOption = opt }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem))
-                Text(txt, Modifier.padding(start = 8.dp))
+        text = { 
+            Column { 
+                listOf(
+                    DeleteRecurringOption.SINGLE_EVENT to stringResource(R.string.delete_single_event_option), 
+                    DeleteRecurringOption.ALL_EVENTS to stringResource(R.string.delete_all_events_option)
+                ).forEach { (opt, txt) ->
+                    val isSelected = selectedOption == opt
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedOption = opt }
+                            .padding(vertical = 12.dp), 
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = txt, 
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp,
+                            color = CalendarioTheme.colors.textSystem
+                        )
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check, 
+                                contentDescription = null, 
+                                tint = CalendarioTheme.colors.cabecera
+                            )
+                        }
+                    }
+                }
             }
-        }}},
+        },
         confirmButton = { 
             DialogConfirmButton(
                 text = stringResource(id = R.string.delete),
@@ -339,12 +364,37 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
     var selectedOption by remember { mutableStateOf<EditRecurringOption?>(null) }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text(stringResource(id = R.string.edit_recurring_event_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = { Column { listOf(EditRecurringOption.SINGLE_EVENT to stringResource(R.string.edit_recurring_event_dialog_single_event), EditRecurringOption.ALL_EVENTS to stringResource(R.string.edit_recurring_event_dialog_all_events)).forEach { (opt, txt) ->
-            Row(modifier = Modifier.fillMaxWidth().clickable { selectedOption = opt }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = (selectedOption == opt), onClick = { selectedOption = opt }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem))
-                Text(txt, Modifier.padding(start = 8.dp))
+        text = { 
+            Column { 
+                listOf(
+                    EditRecurringOption.SINGLE_EVENT to stringResource(R.string.edit_recurring_event_dialog_single_event), 
+                    EditRecurringOption.ALL_EVENTS to stringResource(R.string.edit_recurring_event_dialog_all_events)
+                ).forEach { (opt, txt) ->
+                    val isSelected = selectedOption == opt
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedOption = opt }
+                            .padding(vertical = 12.dp), 
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = txt, 
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp,
+                            color = CalendarioTheme.colors.textSystem
+                        )
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check, 
+                                contentDescription = null, 
+                                tint = CalendarioTheme.colors.cabecera
+                            )
+                        }
+                    }
+                }
             }
-        }}},
+        },
         confirmButton = { 
             DialogConfirmButton(
                 text = stringResource(id = R.string.accept),
@@ -435,9 +485,27 @@ fun SelectCalendarDialog(calendars: List<CalendarInfo>, currentSelection: Calend
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
         title = { Text(stringResource(id = R.string.select_calendar_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { Column(Modifier.verticalScroll(rememberScrollState())) { calendars.forEach { cal ->
-            Row(modifier = Modifier.fillMaxWidth().clickable { tempSelection = cal }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = (cal.id == tempSelection?.id), onClick = { tempSelection = cal }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera))
-                Text(cal.displayName, Modifier.padding(start = 8.dp))
+            val isSelected = cal.id == tempSelection?.id
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { tempSelection = cal }
+                    .padding(vertical = 12.dp), 
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = cal.displayName, 
+                    modifier = Modifier.weight(1f),
+                    fontSize = 16.sp,
+                    color = CalendarioTheme.colors.textSystem
+                )
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check, 
+                        contentDescription = null, 
+                        tint = CalendarioTheme.colors.cabecera
+                    )
+                }
             }
         }}},
         confirmButton = { 
@@ -479,21 +547,35 @@ fun RepetitionSelectionDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.repeat_event_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.repeat_event_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
                 RepetitionRule.entries.forEach { rule ->
-                    Row(Modifier.fillMaxWidth().clickable { 
-                        tempSelection = rule 
-                        val limit = if (rule == RepetitionRule.DAILY) 3 else 2
-                        if (tempCount.length > limit) tempCount = tempCount.take(limit)
-                    }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = (rule == tempSelection), onClick = { 
-                            tempSelection = rule 
-                            val limit = if (rule == RepetitionRule.DAILY) 3 else 2
-                            if (tempCount.length > limit) tempCount = tempCount.take(limit)
-                        }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem))
-                        Text(stringResource(id = rule.displayNameRes), Modifier.padding(start = 8.dp), fontSize = 16.sp)
+                    val isSelected = rule == tempSelection
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { 
+                                tempSelection = rule 
+                                val limit = if (rule == RepetitionRule.DAILY) 3 else 2
+                                if (tempCount.length > limit) tempCount = tempCount.take(limit)
+                            }
+                            .padding(vertical = 12.dp), 
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = rule.displayNameRes), 
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp,
+                            color = CalendarioTheme.colors.textSystem
+                        )
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check, 
+                                contentDescription = null, 
+                                tint = CalendarioTheme.colors.cabecera
+                            )
+                        }
                     }
                 }
 
@@ -503,31 +585,83 @@ fun RepetitionSelectionDialog(
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
                 Spacer(Modifier.height(8.dp))
 
-                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable(enabled = isRepetitionActive) { endMode = 0 }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = (endMode == 0), onClick = { if (isRepetitionActive) endMode = 0 }, enabled = isRepetitionActive, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(id = R.string.repeat_indefinite), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
+                // 1. INDEFINIDAMENTE
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { endMode = 0 }
+                        .padding(vertical = 10.dp), 
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.repeat_indefinite), 
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp, 
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)
+                    )
+                    if (endMode == 0 && isRepetitionActive) {
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                    }
                 }
 
-                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable(enabled = isRepetitionActive) { 
-                    endMode = 1
-                    if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
-                    showDatePicker = true 
-                }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = (endMode == 1), onClick = { if (isRepetitionActive) { endMode = 1; if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1); showDatePicker = true } }, enabled = isRepetitionActive, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)))
-                    Spacer(Modifier.width(8.dp))
+                // 2. HASTA LA FECHA
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { 
+                            endMode = 1
+                            if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
+                            showDatePicker = true 
+                        }
+                        .padding(vertical = 10.dp), 
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(DateTimeFormatter.ofPattern("EEEE, d/MM/yyyy", locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
-                    Text(textToShow, fontSize = 16.sp, color = if (endMode == 1) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        text = textToShow, 
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp, 
+                        color = if (endMode == 1) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha), 
+                        maxLines = 1, 
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (endMode == 1 && isRepetitionActive) {
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                    }
                 }
 
-                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable(enabled = isRepetitionActive) { endMode = 2 }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = (endMode == 2), onClick = { if (isRepetitionActive) endMode = 2 }, enabled = isRepetitionActive, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)))
-                    Spacer(Modifier.width(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                // 3. REPETICIONES
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { endMode = 2 }
+                        .padding(vertical = 10.dp), 
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(id = R.string.repeat_after), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
                         Spacer(Modifier.width(4.dp))
-                        TextField(value = tempCount, onValueChange = { if (it.all { c -> c.isDigit() }) { val limit = if (tempSelection == RepetitionRule.DAILY) 3 else 2; if (it.length <= limit) tempCount = it } }, modifier = Modifier.width(75.dp).focusRequester(focusRequester), textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { val finalUntil = if (endMode == 1) tempUntil else null; val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null; onConfirm(tempSelection, finalUntil, finalCount) }), singleLine = true, enabled = (endMode == 2 && isRepetitionActive),
-                            colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent, disabledContainerColor = Color.Transparent, focusedIndicatorColor = CalendarioTheme.colors.cabecera, unfocusedIndicatorColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), disabledIndicatorColor = Color.Transparent))
+                        TextField(
+                            value = tempCount, 
+                            onValueChange = { if (it.all { c -> c.isDigit() }) { val limit = if (tempSelection == RepetitionRule.DAILY) 3 else 2; if (it.length <= limit) tempCount = it } }, 
+                            modifier = Modifier.width(75.dp).focusRequester(focusRequester), 
+                            textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)), 
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), 
+                            keyboardActions = KeyboardActions(onDone = { 
+                                val finalUntil = if (endMode == 1) tempUntil else null
+                                val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null
+                                onConfirm(tempSelection, finalUntil, finalCount) 
+                            }), 
+                            singleLine = true, 
+                            enabled = (endMode == 2 && isRepetitionActive),
+                            colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent, disabledContainerColor = Color.Transparent, focusedIndicatorColor = CalendarioTheme.colors.cabecera, unfocusedIndicatorColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), disabledIndicatorColor = Color.Transparent)
+                        )
+                    }
+                    if (endMode == 2 && isRepetitionActive) {
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
                     }
                 }
             }
