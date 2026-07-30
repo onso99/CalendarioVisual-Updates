@@ -38,7 +38,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
      */
     suspend fun syncHistoryWithDrive(): SyncResult = withContext(Dispatchers.IO) {
         try {
-            val remoteContent = downloadFileContent(backupFileName)
+            val remoteContent = downloadFileContent()
             
             // Si hay datos remotos, los procesamos para fusión incremental antes de subir el nuevo estado
             if (remoteContent != null) {
@@ -65,7 +65,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             val tempFile = java.io.File(context.cacheDir, "temp_backup.json")
             tempFile.writeText(jsonString)
             
-            uploadFileToDrive(backupFileName, tempFile)
+            uploadFileToDrive(tempFile)
             tempFile.delete()
 
             clearDeletedEventIds(context)
@@ -92,7 +92,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
         restoreEvents: Boolean
     ): Boolean = withContext(Dispatchers.IO) {
         try {
-            val content = downloadFileContent(backupFileName) ?: return@withContext false
+            val content = downloadFileContent() ?: return@withContext false
             val json = JSONObject(content)
             
             // Delegamos toda la lógica al motor maestro
@@ -105,11 +105,11 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
         }
     }
 
-    private suspend fun downloadFileContent(fileName: String): String? = withContext(Dispatchers.IO) {
+    private suspend fun downloadFileContent(): String? = withContext(Dispatchers.IO) {
         try {
             val result = driveService.files().list()
                 .setSpaces("appDataFolder")
-                .setQ("name = '$fileName'")
+                .setQ("name = '$backupFileName'")
                 .execute()
             val files = result.files
             if (files.isNullOrEmpty()) return@withContext null
@@ -122,10 +122,10 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
         }
     }
 
-    private suspend fun uploadFileToDrive(fileName: String, localFile: java.io.File) = withContext(Dispatchers.IO) {
+    private suspend fun uploadFileToDrive(localFile: java.io.File) = withContext(Dispatchers.IO) {
         if (!localFile.exists()) return@withContext
-        val result = driveService.files().list().setSpaces("appDataFolder").setQ("name = '$fileName'").execute()
-        val fileMetadata = File().apply { name = fileName; parents = Collections.singletonList("appDataFolder") }
+        val result = driveService.files().list().setSpaces("appDataFolder").setQ("name = '$backupFileName'").execute()
+        val fileMetadata = File().apply { name = backupFileName; parents = Collections.singletonList("appDataFolder") }
         val mediaContent = FileContent("application/json", localFile)
         if (result.files.isNullOrEmpty()) driveService.files().create(fileMetadata, mediaContent).execute()
         else driveService.files().update(result.files[0].id, null, mediaContent).execute()

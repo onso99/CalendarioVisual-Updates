@@ -3,7 +3,6 @@ package com.example.calendario
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,10 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -23,8 +19,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +27,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -52,7 +45,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -136,75 +128,6 @@ fun rememberAdvancedColorPickerState(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun KeywordColorPickerDialog(
-    label: String,
-    initialColor: Color,
-    initialKeyword: String,
-    onDismissRequest: () -> Unit,
-    onConfirm: (Color, String) -> Unit
-) {
-    var selectedColor by remember { mutableStateOf(initialColor) }
-    var keyword by remember { mutableStateOf(initialKeyword) }
-    var showColorPicker by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        text = {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(stringResource(id = R.string.event_color_label), color = CalendarioTheme.colors.textSystem)
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(selectedColor, CircleShape)
-                            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), CircleShape)
-                            .clickable { showColorPicker = true }
-                    )
-                }
-                OutlinedTextField(
-                    value = keyword,
-                    onValueChange = { keyword = it },
-                    label = { Text(stringResource(id = R.string.keyword)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = CalendarioTheme.colors.cabecera,
-                        unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
-                    ),
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-                )
-            }
-        },
-        confirmButton = {
-            DialogConfirmButton(
-                text = stringResource(id = R.string.save),
-                onClick = { onConfirm(selectedColor, keyword) }
-            )
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
-    )
-
-    if (showColorPicker) {
-        AdvancedColorPickerDialog(
-            initialColor = selectedColor,
-            onDismissRequest = { showColorPicker = false },
-            onColorConfirm = { color ->
-                selectedColor = color
-                showColorPicker = false
-            }
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

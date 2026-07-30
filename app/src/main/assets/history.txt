@@ -1,3 +1,5 @@
+2026-07-30 - v2.1.30 Corrección de warnings
+2026-07-30 - v2.1.29 Unificación diálogos Parte-1: la estructura (título y botones)
 2026-07-30 - v2.1.28 Cambio de nombres en botón Restaurar>Cargar en diálogo Temas. Propagados cambios a resto de idiomas
 2026-07-30 - v2.1.27 Renombrado diálogo Calendarios y Oden: favorito, seleccionados, otros
 2026-07-30 - v2.1.26 Personalizar colores: Organizados Bloques Tema y Propios
