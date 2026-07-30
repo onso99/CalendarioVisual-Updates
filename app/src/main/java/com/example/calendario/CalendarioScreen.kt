@@ -303,7 +303,7 @@ fun CalendarioScreen(
     if (showColorThemeScreen) {
         ColorThemeScreen(
             onBackPress = { showColorThemeScreen = false },
-            onThemeUpdated = onThemeUpdated
+            onThemeModified = onThemeUpdated
         )
         return
     }

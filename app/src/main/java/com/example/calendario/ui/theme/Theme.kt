@@ -61,16 +61,6 @@ data class CustomColors(
             return Color(ColorUtils.HSLToColor(hsl))
         }
 
-    // Cálculo automático del borde del día actual (Tintado sutil basado en el color principal)
-    val monthlyCalendarTodayCellBorder: Color
-        get() {
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(cabecera.toArgb(), hsl)
-            val isCellDark = ColorUtils.calculateLuminance(monthlyCalendarDayCellBackground.toArgb()) < 0.5
-            hsl[2] = if (isCellDark) 0.80f else 0.25f
-            return Color(ColorUtils.HSLToColor(hsl))
-        }
-
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
     val fondoSecciones: Color
         get() {

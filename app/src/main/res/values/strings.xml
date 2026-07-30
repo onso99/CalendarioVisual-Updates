@@ -127,6 +127,9 @@
     <string name="no_events_this_month">No hay eventos para este mes.</string>
     <string name="widget_no_events">No hay eventos</string>
     <string name="monthly_calendar">Calendario Mensual</string>
+    <string name="theme_section_title">Tema</string>
+    <string name="propios_section_title">Propios</string>
+    <string name="reset_color">Restablecer color</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="error_exporting_theme">Error al exportar el tema: %1$s</string>
     <string name="widget">Widget</string>
