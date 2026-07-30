@@ -534,7 +534,7 @@ fun RepetitionSelectionDialog(
         },
         confirmButton = { 
             DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
+                text = stringResource(id = R.string.apply),
                 onClick = { 
                     val finalUntil = if (endMode == 1) tempUntil else null
                     val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null

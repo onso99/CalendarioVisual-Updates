@@ -145,7 +145,9 @@ fun ThemeSelectionDialog(
                 }
             }
         },
-        confirmButton = {},
+        confirmButton = {
+            DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss)
+        },
         dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }

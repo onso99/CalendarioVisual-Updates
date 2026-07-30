@@ -1284,7 +1284,7 @@ private fun RestoreSelectDialog(
         },
         confirmButton = {
             DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
+                text = stringResource(id = R.string.apply),
                 onClick = { onConfirm(restorePrefs, restoreHolidays, restoreNotes, restoreEvents) },
                 enabled = anySelected
             )

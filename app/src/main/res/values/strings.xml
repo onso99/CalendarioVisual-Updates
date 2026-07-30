@@ -263,7 +263,7 @@
     <string name="account_linked_error">Error al vincular la cuenta</string>
     <string name="unlink_google_account">Desvincular cuenta de Google</string>
     <string name="unlink_account_confirmation">¿Desvincular cuenta de Google? Se detendrán las copias de seguridad automáticas en la nube.</string>
-    <string name="unlink_action">DESVINCULAR</string>
+    <string name="unlink_action">Desvincular</string>
     <string name="frequency_manual">Manual</string>
     <string name="frequency_daily">Diaria</string>
     <string name="frequency_weekly">Semanal</string>
