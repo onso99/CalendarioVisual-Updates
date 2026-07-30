@@ -52,6 +52,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
@@ -538,9 +541,27 @@ fun AddEventScreen(
                 Triple(stringResource(R.string.error), stringResource(R.string.lanes_full_error, dateStr), false)
             }
         }
-        AlertDialog(onDismissRequest = { saveError = null }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(errorTitle, fontWeight = FontWeight.Bold) }, text = { Text(errorText) },
-            confirmButton = { Button(onClick = { saveError = null }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(R.string.accept)) } },
-            dismissButton = { if (showSettingsButton) { TextButton(onClick = { saveError = null; context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))) }) { Text(stringResource(R.string.go_to_settings), color = CalendarioTheme.colors.textSystem) } } }
+        AlertDialog(
+            onDismissRequest = { saveError = null }, 
+            containerColor = CalendarioTheme.colors.fondoDialogos, 
+            titleContentColor = CalendarioTheme.colors.textSystem, 
+            textContentColor = CalendarioTheme.colors.textSystem, 
+            title = { Text(errorTitle, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
+            text = { Text(errorText) },
+            confirmButton = { 
+                DialogConfirmButton(
+                    text = stringResource(R.string.accept),
+                    onClick = { saveError = null }
+                )
+            },
+            dismissButton = { 
+                if (showSettingsButton) { 
+                    DialogDismissButton(text = stringResource(R.string.go_to_settings)) { 
+                        saveError = null
+                        context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))) 
+                    } 
+                } 
+            }
         )
     }
 
@@ -565,10 +586,21 @@ fun AddEventScreen(
     }
 
     if (showDiscardChangesDialog) {
-        AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(R.string.discard_changes_confirmation)) },
-            confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(R.string.discard)) } },
-            dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(R.string.cancel), color = CalendarioTheme.colors.textSystem) } }
+        AlertDialog(
+            onDismissRequest = { showDiscardChangesDialog = false }, 
+            containerColor = CalendarioTheme.colors.fondoDialogos, 
+            titleContentColor = CalendarioTheme.colors.textSystem, 
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
+            text = { Text(stringResource(R.string.discard_changes_confirmation)) },
+            confirmButton = { 
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.discard),
+                    onClick = { showDiscardChangesDialog = false; onBackPress() },
+                    color = Color.Red
+                )
+            },
+            dismissButton = { DialogDismissButton { showDiscardChangesDialog = false } }
         )
     }
 
@@ -576,17 +608,20 @@ fun AddEventScreen(
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = startDate.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
         DatePickerDialog(onDismissRequest = { showStartDatePickerDialog = false },
             confirmButton = {
-                Button(onClick = {
-                    datePickerState.selectedDateMillis?.let { millis ->
-                        val newLocalDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
-                        val duration = Duration.between(startDate, endDate)
-                        startDate = LocalDateTime.of(newLocalDate, startDate.toLocalTime())
-                        endDate = startDate.plus(duration)
+                DialogConfirmButton(
+                    text = stringResource(R.string.accept),
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val newLocalDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+                            val duration = Duration.between(startDate, endDate)
+                            startDate = LocalDateTime.of(newLocalDate, startDate.toLocalTime())
+                            endDate = startDate.plus(duration)
+                        }
+                        showStartDatePickerDialog = false
                     }
-                    showStartDatePickerDialog = false
-                }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(R.string.accept)) }
+                )
             },
-            dismissButton = { TextButton(onClick = { showStartDatePickerDialog = false }) { Text(stringResource(R.string.cancel), color = CalendarioTheme.colors.textSystem) } },
+            dismissButton = { DialogDismissButton { showStartDatePickerDialog = false } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, headlineContentColor = CalendarioTheme.colors.textSystem, weekdayContentColor = CalendarioTheme.colors.textSystem, dayContentColor = CalendarioTheme.colors.textSystem, selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black, selectedDayContainerColor = CalendarioTheme.colors.cabecera, todayContentColor = CalendarioTheme.colors.cabecera, todayDateBorderColor = CalendarioTheme.colors.cabecera))
@@ -598,8 +633,18 @@ fun AddEventScreen(
             override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis >= startDate.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
         })
         DatePickerDialog(onDismissRequest = { showEndDatePickerDialog = false },
-            confirmButton = { Button(onClick = { datePickerState.selectedDateMillis?.let { endDate = LocalDateTime.of(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate(), endDate.toLocalTime()) }; showEndDatePickerDialog = false }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(R.string.accept)) } },
-            dismissButton = { TextButton(onClick = { showEndDatePickerDialog = false }) { Text(stringResource(R.string.cancel), color = CalendarioTheme.colors.textSystem) } },
+            confirmButton = { 
+                DialogConfirmButton(
+                    text = stringResource(R.string.accept),
+                    onClick = { 
+                        datePickerState.selectedDateMillis?.let { 
+                            endDate = LocalDateTime.of(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate(), endDate.toLocalTime()) 
+                        }
+                        showEndDatePickerDialog = false 
+                    }
+                )
+            },
+            dismissButton = { DialogDismissButton { showEndDatePickerDialog = false } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, headlineContentColor = CalendarioTheme.colors.textSystem, weekdayContentColor = CalendarioTheme.colors.textSystem, dayContentColor = CalendarioTheme.colors.textSystem, selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black, selectedDayContainerColor = CalendarioTheme.colors.cabecera, todayContentColor = CalendarioTheme.colors.cabecera, todayDateBorderColor = CalendarioTheme.colors.cabecera))
@@ -629,11 +674,24 @@ fun AddEventScreen(
             override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis >= startDate.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
         })
         DatePickerDialog(onDismissRequest = { showRepeatUntilDatePickerDialog = false },
-            confirmButton = { Button(onClick = { datePickerState.selectedDateMillis?.let { repeatUntilDate = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }; showRepeatUntilDatePickerDialog = false }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
+            confirmButton = { 
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.accept),
+                    onClick = { 
+                        datePickerState.selectedDateMillis?.let { 
+                            repeatUntilDate = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() 
+                        }
+                        showRepeatUntilDatePickerDialog = false 
+                    }
+                )
+            },
             dismissButton = { 
                 Row {
-                    TextButton(onClick = { repeatUntilDate = null; showRepeatUntilDatePickerDialog = false }) { Text(stringResource(id = R.string.repeat_indefinite), color = CalendarioTheme.colors.textSystem) }
-                    TextButton(onClick = { showRepeatUntilDatePickerDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) }
+                    DialogDismissButton(text = stringResource(id = R.string.repeat_indefinite)) { 
+                        repeatUntilDate = null
+                        showRepeatUntilDatePickerDialog = false 
+                    }
+                    DialogDismissButton { showRepeatUntilDatePickerDialog = false }
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)

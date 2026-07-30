@@ -152,7 +152,7 @@ fun KeywordColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        title = { Text(label, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         text = {
             Column {
                 Row(
@@ -186,15 +186,12 @@ fun KeywordColorPickerDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(selectedColor, keyword) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) {
-                Text(stringResource(id = R.string.save))
-            }
+            DialogConfirmButton(
+                text = stringResource(id = R.string.save),
+                onClick = { onConfirm(selectedColor, keyword) }
+            )
         },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 
     if (showColorPicker) {
@@ -222,7 +219,7 @@ fun AdvancedColorPickerDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         text = {
             Column {
                 ColorPreview(
@@ -237,18 +234,12 @@ fun AdvancedColorPickerDialog(
             }
         },
         confirmButton = {
-            Button(
-                onClick = onConfirmAction,
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-            ) {
-                Text(stringResource(id = R.string.accept))
-            }
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = onConfirmAction
+            )
         },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 

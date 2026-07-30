@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -250,10 +251,14 @@ fun SearchScreen(
 
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold) },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
             text = { Text(deleteMultipleConfirmation) },
             confirmButton = {
-                Button(
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.delete),
                     onClick = {
                         val eventsToDelete = selectedFestivos.filter { festivo ->
                             availableCalendars.find { it.id == festivo.calendarId }?.canModify == true
@@ -279,17 +284,12 @@ fun SearchScreen(
                         selectedFestivos = emptySet()
                         showDeleteConfirmDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) {
-                    Text(stringResource(id = R.string.delete), color = Color.White)
-                }
+                    color = Color.Red
+                )
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirmDialog = false }) {
-                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-                }
-            },
-            containerColor = CalendarioTheme.colors.fondoDialogos
+                DialogDismissButton { showDeleteConfirmDialog = false }
+            }
         )
     }
 }

@@ -54,12 +54,6 @@ import kotlin.time.Duration.Companion.milliseconds
 enum class DeleteRecurringOption { SINGLE_EVENT, ALL_EVENTS }
 enum class EditRecurringOption { SINGLE_EVENT, ALL_EVENTS }
 
-@Composable
-private fun DialogDismissButton(onDismiss: () -> Unit) {
-    TextButton(onClick = onDismiss, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)) {
-        Text(stringResource(id = R.string.cancel))
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +102,7 @@ fun DayEventsDialog(
                 fontWeight = FontWeight.Bold, 
                 fontSize = 20.sp, 
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Start
             )
         },
         text = {
@@ -225,9 +219,10 @@ fun DayEventsDialog(
             }
         },
         confirmButton = { 
-            TextButton(onClick = onDismissRequest) { 
-                Text(stringResource(id = R.string.accept), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.cabecera) 
-            } 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = onDismissRequest
+            )
         }
     )
 
@@ -235,24 +230,21 @@ fun DayEventsDialog(
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
             containerColor = CalendarioTheme.colors.fondoDialogos,
-            title = { Text(stringResource(id = R.string.delete_note), fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(id = R.string.delete_note), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             text = { Text(stringResource(id = R.string.confirm_delete_note)) },
             confirmButton = {
-                Button(
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.delete),
                     onClick = {
                         onDeleteNote()
                         noteText = ""
                         showNoteField = false
                         showDeleteConfirmation = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) { Text(stringResource(id = R.string.delete)) }
+                    color = Color.Red
+                )
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirmation = false }) {
-                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-                }
-            }
+            dismissButton = { DialogDismissButton { showDeleteConfirmation = false } }
         )
     }
 }
@@ -298,17 +290,24 @@ fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar
     val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("E, dd MMM yyyy") }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(festivo.title.ifBlank { stringResource(id = R.string.no_title) }, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = CalendarioTheme.colors.textSystem) },
+        title = { Text(festivo.title.ifBlank { stringResource(id = R.string.no_title) }, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start, color = CalendarioTheme.colors.textSystem) },
         text = { SelectionContainer { Column {
             Text(festivo.date.format(dateFormatter).replaceFirstChar(Char::titlecase), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
             if (!festivo.isAllDay) Text("${festivo.startTime?.format(timeFormatter) ?: "--:--"} - ${festivo.endTime?.format(timeFormatter) ?: "--:--"}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
             Spacer(Modifier.height(16.dp))
             Text(stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
         }}},
-        confirmButton = { Row(Modifier.fillMaxWidth(), Arrangement.End) {
-            if (festivo.isFromHolidaySource) TextButton(onClick = { onDismissRequest(); onOpenHolidayManager(festivo) }, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.cabecera) ) { Text(stringResource(id = R.string.holiday_manager)) }
-            Button(onClick = onDismissRequest, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) }
-        }}
+        confirmButton = { 
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (festivo.isFromHolidaySource) {
+                    TextButton(onClick = { onDismissRequest(); onOpenHolidayManager(festivo) }, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.cabecera)) { 
+                        Text(stringResource(id = R.string.holiday_manager)) 
+                    }
+                    Spacer(Modifier.width(8.dp))
+                }
+                DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismissRequest)
+            }
+        }
     )
 }
 
@@ -316,15 +315,22 @@ fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar
 fun DeleteRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (DeleteRecurringOption) -> Unit) {
     var selectedOption by remember { mutableStateOf<DeleteRecurringOption?>(null) }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.delete_recurring_event_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.delete_recurring_event_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { Column { listOf(DeleteRecurringOption.SINGLE_EVENT to stringResource(R.string.delete_single_event_option), DeleteRecurringOption.ALL_EVENTS to stringResource(R.string.delete_all_events_option)).forEach { (opt, txt) ->
             Row(modifier = Modifier.fillMaxWidth().clickable { selectedOption = opt }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = (selectedOption == opt), onClick = { selectedOption = opt }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem))
                 Text(txt, Modifier.padding(start = 8.dp))
             }
         }}},
-        confirmButton = { Button(onClick = { selectedOption?.let(onConfirm) }, enabled = selectedOption != null, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.delete)) } },
-        dismissButton = { DialogDismissButton(onDismissRequest) }
+        confirmButton = { 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.delete),
+                onClick = { selectedOption?.let(onConfirm) },
+                enabled = selectedOption != null,
+                color = Color.Red
+            )
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -332,15 +338,21 @@ fun DeleteRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (DeleteR
 fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecurringOption) -> Unit) {
     var selectedOption by remember { mutableStateOf<EditRecurringOption?>(null) }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.edit_recurring_event_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.edit_recurring_event_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { Column { listOf(EditRecurringOption.SINGLE_EVENT to stringResource(R.string.edit_recurring_event_dialog_single_event), EditRecurringOption.ALL_EVENTS to stringResource(R.string.edit_recurring_event_dialog_all_events)).forEach { (opt, txt) ->
             Row(modifier = Modifier.fillMaxWidth().clickable { selectedOption = opt }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = (selectedOption == opt), onClick = { selectedOption = opt }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera, unselectedColor = CalendarioTheme.colors.textSystem))
                 Text(txt, Modifier.padding(start = 8.dp))
             }
         }}},
-        confirmButton = { Button(onClick = { selectedOption?.let(onConfirm) }, enabled = selectedOption != null, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
-        dismissButton = { DialogDismissButton(onDismissRequest) }
+        confirmButton = { 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = { selectedOption?.let(onConfirm) },
+                enabled = selectedOption != null
+            )
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -362,7 +374,7 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
         containerColor = CalendarioTheme.colors.fondoDialogos, 
         titleContentColor = CalendarioTheme.colors.textSystem, 
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { 
             LazyColumn(Modifier.heightIn(max = 400.dp).fillMaxWidth()) { 
                 items(sortedCalendars) { cal ->
@@ -408,14 +420,12 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
             }
         },
         confirmButton = { 
-            Button(
-                onClick = { onApplySelection(currentIds) }, 
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-            ) { 
-                Text(stringResource(id = R.string.apply)) 
-            } 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.apply),
+                onClick = { onApplySelection(currentIds) }
+            ) 
         },
-        dismissButton = { DialogDismissButton(onDismissRequest) }
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -423,15 +433,20 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
 fun SelectCalendarDialog(calendars: List<CalendarInfo>, currentSelection: CalendarInfo?, onCalendarSelected: (CalendarInfo) -> Unit, onDismissRequest: () -> Unit) {
     var tempSelection by remember { mutableStateOf(currentSelection) }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.select_calendar_title)) },
+        title = { Text(stringResource(id = R.string.select_calendar_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { Column(Modifier.verticalScroll(rememberScrollState())) { calendars.forEach { cal ->
             Row(modifier = Modifier.fillMaxWidth().clickable { tempSelection = cal }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = (cal.id == tempSelection?.id), onClick = { tempSelection = cal }, colors = RadioButtonDefaults.colors(selectedColor = CalendarioTheme.colors.cabecera))
                 Text(cal.displayName, Modifier.padding(start = 8.dp))
             }
         }}},
-        confirmButton = { Button(onClick = { tempSelection?.let(onCalendarSelected); onDismissRequest() }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
-        dismissButton = { DialogDismissButton(onDismissRequest) }
+        confirmButton = { 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = { tempSelection?.let(onCalendarSelected); onDismissRequest() }
+            )
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }
 
@@ -517,15 +532,17 @@ fun RepetitionSelectionDialog(
                 }
             }
         },
-        confirmButton = { Button(onClick = { val finalUntil = if (endMode == 1) tempUntil else null; val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null; onConfirm(tempSelection, finalUntil, finalCount) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
-        dismissButton = {
-            TextButton(
-                onClick = onDismissRequest,
-                colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
-            ) {
-                Text(stringResource(id = R.string.cancel))
-            }
-        }
+        confirmButton = { 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = { 
+                    val finalUntil = if (endMode == 1) tempUntil else null
+                    val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null
+                    onConfirm(tempSelection, finalUntil, finalCount) 
+                }
+            )
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 
     if (showDatePicker) {

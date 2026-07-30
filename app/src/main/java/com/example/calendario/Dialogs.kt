@@ -13,7 +13,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,15 +42,6 @@ import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 
-@Composable
-private fun DialogDismissButton(onDismiss: () -> Unit) {
-    TextButton(
-        onClick = onDismiss,
-        colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
-    ) {
-        Text(stringResource(id = R.string.cancel))
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +59,7 @@ fun GoToYearDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.year_selection_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.year_selection_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -108,16 +98,14 @@ fun GoToYearDialog(
             }
         },
         confirmButton = {
-            Button(
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
                 onClick = {
                     val selectedYear = year.toIntOrNull()?.coerceIn(minYear, maxYear) ?: initialYear
                     onYearSelected(selectedYear)
                     onDismissRequest()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)
-            ) {
-                Text(stringResource(id = R.string.accept))
-            }
+                }
+            )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
@@ -134,7 +122,7 @@ fun ThemeSelectionDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.select_mode_title), fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.select_mode_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
                 ThemeSetting.entries.forEach { theme ->
@@ -159,13 +147,8 @@ fun ThemeSelectionDialog(
                 }
             }
         },
-        confirmButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        confirmButton = {},
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
 
@@ -181,16 +164,14 @@ fun ConfirmDeleteDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { Text(stringResource(id = R.string.confirm_deletion_message, title)) },
         confirmButton = {
-            Button(
+            DialogConfirmButton(
+                text = stringResource(id = R.string.delete),
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
-                )
-            ) { Text(stringResource(id = R.string.delete)) }
+                color = Color.Red
+            )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
@@ -210,7 +191,7 @@ fun TimePickerDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.select_time_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        title = { Text(stringResource(id = R.string.select_time_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             TimePicker(
                 state = timePickerState,
@@ -224,7 +205,12 @@ fun TimePickerDialog(
                 )
             )
         },
-        confirmButton = { Button(onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }, colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera)) { Text(stringResource(id = R.string.accept)) } },
+        confirmButton = { 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }
+            )
+        },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )
 }

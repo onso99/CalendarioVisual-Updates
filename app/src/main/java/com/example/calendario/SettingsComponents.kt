@@ -46,7 +46,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
 import com.example.calendario.ui.theme.CalendarioTheme
+
+@Composable
+internal fun DialogConfirmButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    color: Color = CalendarioTheme.colors.cabecera
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(24.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = color,
+            disabledContainerColor = Color.Gray.copy(alpha = 0.3f)
+        )
+    ) {
+        Text(text, modifier = Modifier.padding(horizontal = 8.dp))
+    }
+}
+
+@Composable
+internal fun DialogDismissButton(
+    text: String = stringResource(id = R.string.cancel),
+    onDismiss: () -> Unit
+) {
+    TextButton(
+        onClick = onDismiss,
+        colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
+    ) {
+        Text(text)
+    }
+}
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {

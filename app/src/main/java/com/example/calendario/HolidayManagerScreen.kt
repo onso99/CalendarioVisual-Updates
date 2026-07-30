@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -302,10 +303,14 @@ fun HolidayManagerScreen(
 
         AlertDialog(
             onDismissRequest = { adjustmentToDelete = null },
-            title = { Text(stringResource(id = R.string.confirm_deletion_title)) },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
             text = { Text(stringResource(id = R.string.confirm_delete_adjustment)) },
             confirmButton = {
-                Button(
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.delete),
                     onClick = {
                         val newList = adjustments.toMutableList()
                         newList.remove(toDelete)
@@ -318,13 +323,12 @@ fun HolidayManagerScreen(
                         resetForm()
                         adjustmentToDelete = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) { Text(stringResource(id = R.string.delete)) }
+                    color = Color.Red
+                )
             },
             dismissButton = {
-                TextButton(onClick = { adjustmentToDelete = null }) { Text(stringResource(id = R.string.cancel)) }
-            },
-            containerColor = CalendarioTheme.colors.fondoDialogos
+                DialogDismissButton { adjustmentToDelete = null }
+            }
         )
     }
 }

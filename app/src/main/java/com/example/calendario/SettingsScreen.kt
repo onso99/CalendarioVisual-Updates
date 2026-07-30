@@ -1081,7 +1081,24 @@ fun SettingsScreen(
     if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; showWidgetEventColorPalette = false }) }
     if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; showWidgetTodayEventColorPalette = false }) }
     if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; showWidgetBackgroundColorPalette = false }) }
-    if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { Button(onClick = { showDiscardChangesDialog = false; onBackPress() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(id = R.string.discard)) } }, dismissButton = { TextButton(onClick = { showDiscardChangesDialog = false }) { Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) } }) }
+    if (showDiscardChangesDialog) { 
+        AlertDialog(
+            onDismissRequest = { showDiscardChangesDialog = false }, 
+            containerColor = CalendarioTheme.colors.fondoDialogos, 
+            titleContentColor = CalendarioTheme.colors.textSystem, 
+            textContentColor = CalendarioTheme.colors.textSystem, 
+            title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
+            text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, 
+            confirmButton = { 
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.discard),
+                    onClick = { showDiscardChangesDialog = false; onBackPress() },
+                    color = Color.Red
+                )
+            }, 
+            dismissButton = { DialogDismissButton { showDiscardChangesDialog = false } }
+        ) 
+    }
 
 
     if (showUnlinkAccountDialog) {
@@ -1090,10 +1107,11 @@ fun SettingsScreen(
             containerColor = CalendarioTheme.colors.fondoDialogos,
             titleContentColor = CalendarioTheme.colors.textSystem,
             textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
             text = { Text(stringResource(id = R.string.unlink_account_confirmation)) },
             confirmButton = {
-                Button(
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.unlink_action),
                     onClick = {
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
                         GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener {
@@ -1102,16 +1120,10 @@ fun SettingsScreen(
                             showUnlinkAccountDialog = false
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) {
-                    Text(stringResource(id = R.string.unlink_action), color = Color.White)
-                }
+                    color = Color.Red
+                )
             },
-            dismissButton = {
-                TextButton(onClick = { showUnlinkAccountDialog = false }) {
-                    Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-                }
-            }
+            dismissButton = { DialogDismissButton { showUnlinkAccountDialog = false } }
         )
     }
 
@@ -1228,7 +1240,16 @@ private fun ExportThemeDialog(
     onConfirm: (String) -> Unit
 ) {
     var text by remember { mutableStateOf("") }
-    AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold) }, text = { OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text(stringResource(id = R.string.theme_name)) }, singleLine = true, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)) }, confirmButton = { Button(onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) }, enabled = text.isNotBlank()) { Text(stringResource(id = R.string.export)) } }, dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(id = R.string.cancel)) } })
+    AlertDialog(
+        onDismissRequest = onDismissRequest, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem, 
+        title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
+        text = { OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text(stringResource(id = R.string.theme_name)) }, singleLine = true, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)) }, 
+        confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.export), onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) }, enabled = text.isNotBlank()) }, 
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+    )
 }
 
 @Composable
@@ -1250,8 +1271,9 @@ private fun RestoreSelectDialog(
             Text(
                 text = stringResource(id = R.string.restaurar_label),
                 fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Start
             )
         },
         text = {
@@ -1263,24 +1285,13 @@ private fun RestoreSelectDialog(
             }
         },
         confirmButton = {
-            Button(
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
                 onClick = { onConfirm(restorePrefs, restoreHolidays, restoreNotes, restoreEvents) },
-                enabled = anySelected,
-                shape = RoundedCornerShape(24.dp), // Forma de pÃ­ldora según imagen
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    disabledContainerColor = Color.Gray.copy(alpha = 0.3f)
-                ),
-                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp)
-            ) {
-                Text(stringResource(id = R.string.accept), modifier = Modifier.padding(horizontal = 8.dp))
-            }
+                enabled = anySelected
+            )
         },
-        dismissButton = {
-            TextButton(onClick = onDismiss, modifier = Modifier.padding(bottom = 8.dp)) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
 
@@ -1321,7 +1332,7 @@ private fun FontFamilySelectionDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
                 options.forEach { (key, labelRes) ->
@@ -1360,11 +1371,8 @@ private fun FontFamilySelectionDialog(
                 }
             }
         },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        confirmButton = {},
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
 
@@ -1381,7 +1389,7 @@ private fun AlarmConfigDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
                 // Bloque AnticipaciÃ³n
@@ -1443,9 +1451,7 @@ private fun AlarmConfigDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(id = R.string.accept), color = CalendarioTheme.colors.cabecera)
-            }
+            DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss)
         }
     )
 }
@@ -1463,7 +1469,7 @@ private fun WeekConfigDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
                 // Selector de dÃ­a
@@ -1522,9 +1528,7 @@ private fun WeekConfigDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(id = R.string.accept), color = CalendarioTheme.colors.cabecera)
-            }
+            DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss)
         }
     )
 }
@@ -1549,8 +1553,9 @@ private fun BundledThemesDialog(
             Text(
                 text = stringResource(id = R.string.themes_v6), 
                 fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Start
             ) 
         }, 
         text = { 
@@ -1608,11 +1613,8 @@ private fun BundledThemesDialog(
                 }
             }
         }, 
-        confirmButton = { 
-            TextButton(onClick = onDismiss) { 
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem) 
-            } 
-        }
+        confirmButton = {},
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
 
@@ -1718,10 +1720,10 @@ private fun PermissionsDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                // 1. CALENDARIO
+                // ... (filas de permisos iguales)
                 PermissionRow(
                     label = stringResource(id = R.string.calendar_permission_label),
                     status = calStatus,
@@ -1788,7 +1790,7 @@ private fun BackupFrequencyDialog(
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
                 options.forEach { (key, labelRes) ->
@@ -1805,11 +1807,8 @@ private fun BackupFrequencyDialog(
                 }
             }
         },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(id = R.string.cancel), color = CalendarioTheme.colors.textSystem)
-            }
-        }
+        confirmButton = {},
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
 
