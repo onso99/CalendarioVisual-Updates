@@ -103,6 +103,7 @@ fun ColorThemeScreen(
                             effectType = effectType,
                             onEffectChange = { newType ->
                                 prefs.edit { putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, newType) }
+                                ThemePersistence.markThemeAsModified(prefs)
                                 onThemeModified()
                                 updateTrigger++
                             }
@@ -168,6 +169,7 @@ fun ColorThemeScreen(
             onColorConfirm = { newColor ->
                 prefs.edit { putInt(key, newColor.toArgb()) }
                 if (!item.isIndependent) {
+                    ThemePersistence.markThemeAsModified(prefs)
                     onThemeModified()
                 }
                 updateTrigger++

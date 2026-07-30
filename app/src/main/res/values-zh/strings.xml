@@ -126,6 +126,9 @@
     <string name="no_events_this_month">本月没有事件。</string>
     <string name="widget_no_events">无事件</string>
     <string name="monthly_calendar">月历</string>
+    <string name="theme_section_title">主题</string>
+    <string name="propios_section_title">自定义</string>
+    <string name="reset_color">重置</string>
     <string name="theme_exported_successfully">主题导出成功</string>
     <string name="error_exporting_theme">导出主题出错：%1$s</string>
     <string name="widget">小组件</string>
@@ -147,6 +150,7 @@
     <string name="calendar_background">日历背景</string>
     <string name="effect">效果</string>
     <string name="current_month_cell">月份单元格</string>
+    <string name="note_icon_color">备注图标</string>
     <string name="calendar_source">日历：%1$s</string>
     <string name="predefined_themes">主题</string>
     <string name="themes_v6">主题</string>

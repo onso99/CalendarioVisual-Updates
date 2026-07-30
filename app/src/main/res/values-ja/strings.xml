@@ -126,6 +126,9 @@
     <string name="no_events_this_month">今月のイベントはありません。</string>
     <string name="widget_no_events">イベントなし</string>
     <string name="monthly_calendar">月間カレンダー</string>
+    <string name="theme_section_title">テーマ</string>
+    <string name="propios_section_title">独自</string>
+    <string name="reset_color">リセット</string>
     <string name="theme_exported_successfully">テーマをエクスポートしました</string>
     <string name="error_exporting_theme">テーマのエクスポート中にエラーが発生しました: %1$s</string>
     <string name="widget">ウィジェット</string>
@@ -147,6 +150,7 @@
     <string name="calendar_background">カレンダー背景</string>
     <string name="effect">エフェクト</string>
     <string name="current_month_cell">今月のセル</string>
+    <string name="note_icon_color">メモアイコン</string>
     <string name="calendar_source">カレンダー: %1$s</string>
     <string name="predefined_themes">テーマ</string>
     <string name="themes_v6">テーマ</string>

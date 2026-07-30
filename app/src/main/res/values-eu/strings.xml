@@ -126,6 +126,9 @@
     <string name="no_events_this_month">Ez dago gertaerarik hilabete honetarako.</string>
     <string name="widget_no_events">Ez dago gertaerarik</string>
     <string name="monthly_calendar">Hileko Egutegia</string>
+    <string name="theme_section_title">Gaia</string>
+    <string name="propios_section_title">Propioak</string>
+    <string name="reset_color">Berrezarri</string>
     <string name="theme_exported_successfully">Gaia ongi esportatu da</string>
     <string name="error_exporting_theme">Errorea gaia esportatzean: %1$s</string>
     <string name="widget">Widget-a</string>
@@ -147,6 +150,7 @@
     <string name="calendar_background">Egutegiaren atzeko planoa</string>
     <string name="effect">Efektua</string>
     <string name="current_month_cell">Hilabeteko gela</string>
+    <string name="note_icon_color">Oharraren ikonoa</string>
     <string name="calendar_source">Egutegia: %1$s</string>
     <string name="predefined_themes">Gaiak</string>
     <string name="themes_v6">Gaiak</string>

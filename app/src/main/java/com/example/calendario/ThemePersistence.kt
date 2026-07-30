@@ -67,6 +67,20 @@ object ThemePersistence {
         }
     }
 
+    /**
+     * Marca el tema actual como modificado añadiendo asteriscos al nombre.
+     */
+    fun markThemeAsModified(prefs: android.content.SharedPreferences) {
+        val currentName = prefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "theme_1") ?: "theme_1"
+        if (!currentName.endsWith("***")) {
+            val modifiedName = "$currentName***"
+            prefs.edit {
+                putString(AppConstants.KEY_LIGHT_THEME_NAME, modifiedName)
+                putString(AppConstants.KEY_DARK_THEME_NAME, modifiedName)
+            }
+        }
+    }
+
     fun exportThemeToJson(context: Context, uri: Uri, newName: String): Boolean {
         try {
             val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)

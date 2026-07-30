@@ -126,6 +126,9 @@
     <string name="no_events_this_month">Il n\'y a aucun événement pour ce mois.</string>
     <string name="widget_no_events">Aucun événement</string>
     <string name="monthly_calendar">Calendrier mensuel</string>
+    <string name="theme_section_title">Thème</string>
+    <string name="propios_section_title">Propres</string>
+    <string name="reset_color">Réinitialiser</string>
     <string name="theme_exported_successfully">Thème exporté avec succès</string>
     <string name="error_exporting_theme">Erreur lors de l\'exportation du thème : %1$s</string>
     <string name="widget">Widget</string>
@@ -147,6 +150,7 @@
     <string name="calendar_background">Fond du calendrier</string>
     <string name="effect">Effet</string>
     <string name="current_month_cell">Cellule du mois</string>
+    <string name="note_icon_color">Icône de note</string>
     <string name="calendar_source">Calendrier : %1$s</string>
     <string name="predefined_themes">Thèmes</string>
     <string name="themes_v6">Thèmes</string>

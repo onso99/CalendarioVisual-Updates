@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
@@ -1588,8 +1589,8 @@ private fun BundledThemesDialog(
                     val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
                     
                     SettingsActionChip(
-                        text = stringResource(id = R.string.restaurar_label),
-                        icon = painterResource(id = R.drawable.ic_restore_custom),
+                        text = stringResource(id = R.string.cargar_label),
+                        icon = Icons.Default.FolderOpen,
                         modifier = Modifier.weight(1f).height(44.dp),
                         shape = RoundedCornerShape(12.dp),
                         containerColor = backupButtonBg,

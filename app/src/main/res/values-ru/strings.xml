@@ -126,6 +126,9 @@
     <string name="no_events_this_month">Нет событий в этом месяце.</string>
     <string name="widget_no_events">Событий нет</string>
     <string name="monthly_calendar">Месячный Календарь</string>
+    <string name="theme_section_title">Тема</string>
+    <string name="propios_section_title">Собственные</string>
+    <string name="reset_color">Сбросить</string>
     <string name="theme_exported_successfully">Тема успешно экспортирована</string>
     <string name="error_exporting_theme">Ошибка экспорта темы: %1$s</string>
     <string name="widget">Виджет</string>
@@ -147,6 +150,7 @@
     <string name="calendar_background">Фон календаря</string>
     <string name="effect">Эффект</string>
     <string name="current_month_cell">Ячейка месяца</string>
+    <string name="note_icon_color">Иконка заметки</string>
     <string name="calendar_source">Календарь: %1$s</string>
     <string name="predefined_themes">Темы</string>
     <string name="themes_v6">Темы</string>
