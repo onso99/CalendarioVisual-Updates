@@ -288,7 +288,7 @@ fun SearchScreen(
                 )
             },
             dismissButton = {
-                DialogDismissButton { showDeleteConfirmDialog = false }
+                DialogDismissButton(onDismiss = { showDeleteConfirmDialog = false })
             }
         )
     }
@@ -391,7 +391,7 @@ private fun EventRow(
             val colorToUse = if (festivo.customColor != null) {
                 Color(festivo.customColor)
             } else if (cal != null) {
-                Color(cal.color ?: 0xFFFFFFFF.toInt())
+                Color(cal.color)
             } else {
                 Color.Transparent
             }

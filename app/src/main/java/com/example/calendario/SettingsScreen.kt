@@ -127,7 +127,7 @@ fun SettingsScreen(
     onHolidayManagerClick: () -> Unit,
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
-    onLogClick: () -> Unit = {}
+    onLogClick: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isSyncing = uiState.isSyncing
@@ -141,17 +141,17 @@ fun SettingsScreen(
     var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "theme_1")) }
 
     // --- Dialog States ---
-    var showThemeDialog by remember { mutableStateOf(false) }
-    var showExportDialog by remember { mutableStateOf(false) }
-    var showDiscardChangesDialog by remember { mutableStateOf(false) }
-    var showWeekConfigDialog by remember { mutableStateOf(false) }
-    var showAlarmConfigDialog by remember { mutableStateOf(false) }
-    var showBundledThemesDialog by remember { mutableStateOf(false) }
-    var showFontFamilyDialog by remember { mutableStateOf(false) }
-    var showPermissionsDialog by remember { mutableStateOf(false) }
-    var showUnlinkAccountDialog by remember { mutableStateOf(false) }
-    var showFrequencyDialog by remember { mutableStateOf(false) }
-    var showRestoreSelectDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(value = false) }
+    var showExportDialog by remember { mutableStateOf(value = false) }
+    var showDiscardChangesDialog by remember { mutableStateOf(value = false) }
+    var showWeekConfigDialog by remember { mutableStateOf(value = false) }
+    var showAlarmConfigDialog by remember { mutableStateOf(value = false) }
+    var showBundledThemesDialog by remember { mutableStateOf(value = false) }
+    var showFontFamilyDialog by remember { mutableStateOf(value = false) }
+    var showPermissionsDialog by remember { mutableStateOf(value = false) }
+    var showUnlinkAccountDialog by remember { mutableStateOf(value = false) }
+    var showFrequencyDialog by remember { mutableStateOf(value = false) }
+    var showRestoreSelectDialog by remember { mutableStateOf(value = false) }
     var restoreSource by remember { mutableStateOf<String?>(null) }
     var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
@@ -343,18 +343,18 @@ fun SettingsScreen(
 
     val hasPendingChanges by remember {
         derivedStateOf {
-            pendingShowWeekNumber != originalShowWeekNumber ||
-                    pendingStartOfWeekKey != originalStartOfWeekKey ||
-                    pendingEventCount.roundToInt() != originalEventCount ||
-                    pendingTextBoost != originalTextBoost ||
-                    pendingEventColor != originalEventColor ||
-                    pendingTodayEventColor != originalTodayEventColor ||
-                    pendingWidgetBackgroundColor != originalWidgetBackgroundColor ||
-                    pendingFontFamily != originalFontFamily ||
-                    pendingFontBold != originalFontBold ||
-                    pendingAlarmOffset.roundToInt() != originalAlarmOffset ||
-                    pendingSnoozeInterval.roundToInt() != originalSnoozeInterval ||
-                    pendingBackupFreq != originalBackupFreq
+            (pendingShowWeekNumber != originalShowWeekNumber) ||
+                    (pendingStartOfWeekKey != originalStartOfWeekKey) ||
+                    (pendingEventCount.roundToInt() != originalEventCount) ||
+                    (pendingTextBoost != originalTextBoost) ||
+                    (pendingEventColor != originalEventColor) ||
+                    (pendingTodayEventColor != originalTodayEventColor) ||
+                    (pendingWidgetBackgroundColor != originalWidgetBackgroundColor) ||
+                    (pendingFontFamily != originalFontFamily) ||
+                    (pendingFontBold != originalFontBold) ||
+                    (pendingAlarmOffset.roundToInt() != originalAlarmOffset) ||
+                    (pendingSnoozeInterval.roundToInt() != originalSnoozeInterval) ||
+                    (pendingBackupFreq != originalBackupFreq)
         }
     }
 
@@ -1094,7 +1094,7 @@ fun SettingsScreen(
                     color = Color.Red
                 )
             }, 
-            dismissButton = { DialogDismissButton { showDiscardChangesDialog = false } }
+            dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }
         ) 
     }
 
@@ -1121,7 +1121,7 @@ fun SettingsScreen(
                     color = Color.Red
                 )
             },
-            dismissButton = { DialogDismissButton { showUnlinkAccountDialog = false } }
+            dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }
         )
     }
 

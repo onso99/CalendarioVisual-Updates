@@ -46,7 +46,7 @@ import com.example.calendario.ui.theme.isColorDark
 fun GoToYearDialog(
     initialYear: Int,
     onYearSelected: (Int) -> Unit,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
 ) {
     var year by remember { mutableStateOf(initialYear.toString()) }
     val minYear = 1924
@@ -64,11 +64,13 @@ fun GoToYearDialog(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = {
-                    val currentYear = year.toIntOrNull() ?: initialYear
-                    val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
-                    year = newYear.toString()
-                }) {
+                IconButton(
+                    onClick = {
+                        val currentYear = year.toIntOrNull() ?: initialYear
+                        val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
+                        year = newYear.toString()
+                    }
+                ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = stringResource(id = R.string.previous_year), modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
                 }
                 OutlinedTextField(

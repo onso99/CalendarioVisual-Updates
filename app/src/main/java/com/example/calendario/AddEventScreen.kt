@@ -597,7 +597,7 @@ fun AddEventScreen(
                     color = Color.Red
                 )
             },
-            dismissButton = { DialogDismissButton { showDiscardChangesDialog = false } }
+            dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }
         )
     }
 
@@ -618,7 +618,7 @@ fun AddEventScreen(
                     }
                 )
             },
-            dismissButton = { DialogDismissButton { showStartDatePickerDialog = false } },
+            dismissButton = { DialogDismissButton(onDismiss = { showStartDatePickerDialog = false }) },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, headlineContentColor = CalendarioTheme.colors.textSystem, weekdayContentColor = CalendarioTheme.colors.textSystem, dayContentColor = CalendarioTheme.colors.textSystem, selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black, selectedDayContainerColor = CalendarioTheme.colors.cabecera, todayContentColor = CalendarioTheme.colors.cabecera, todayDateBorderColor = CalendarioTheme.colors.cabecera))
@@ -641,7 +641,7 @@ fun AddEventScreen(
                     }
                 )
             },
-            dismissButton = { DialogDismissButton { showEndDatePickerDialog = false } },
+            dismissButton = { DialogDismissButton(onDismiss = { showEndDatePickerDialog = false }) },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
             DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, headlineContentColor = CalendarioTheme.colors.textSystem, weekdayContentColor = CalendarioTheme.colors.textSystem, dayContentColor = CalendarioTheme.colors.textSystem, selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black, selectedDayContainerColor = CalendarioTheme.colors.cabecera, todayContentColor = CalendarioTheme.colors.cabecera, todayDateBorderColor = CalendarioTheme.colors.cabecera))
@@ -688,7 +688,7 @@ fun AddEventScreen(
                         repeatUntilDate = null
                         showRepeatUntilDatePickerDialog = false 
                     }
-                    DialogDismissButton { showRepeatUntilDatePickerDialog = false }
+                    DialogDismissButton(onDismiss = { showRepeatUntilDatePickerDialog = false })
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)

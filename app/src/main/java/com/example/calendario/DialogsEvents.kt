@@ -247,7 +247,7 @@ fun DayEventsDialog(
                     color = Color.Red
                 )
             },
-            dismissButton = { DialogDismissButton { showDeleteConfirmation = false } }
+            dismissButton = { DialogDismissButton(onDismiss = { showDeleteConfirmation = false }) }
         )
     }
 }

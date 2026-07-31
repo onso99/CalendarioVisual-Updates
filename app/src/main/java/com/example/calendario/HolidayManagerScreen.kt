@@ -64,7 +64,7 @@ import java.time.format.DateTimeFormatter
 fun HolidayManagerScreen(
     onBackPress: () -> Unit,
     onRefresh: () -> Unit,
-    initialFestivo: Festivo? = null
+    initialFestivo: Festivo? = null,
 ) {
     val context = LocalContext.current
     var adjustments by remember { mutableStateOf(loadHolidayAdjustments(context)) }
@@ -76,9 +76,9 @@ fun HolidayManagerScreen(
     var date by remember { mutableStateOf(initialFestivo?.date ?: LocalDate.now()) }
     var isHoliday by remember { mutableStateOf(initialFestivo?.isFromHolidaySource ?: true) }
     
-    val isFromExistingGoogleEvent = currentOriginalEventId != null && currentOriginalEventId!! >= 0L
+    val isFromExistingGoogleEvent = (currentOriginalEventId != null) && (currentOriginalEventId!! >= 0L)
 
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(value = false) }
     var adjustmentToDelete by remember { mutableStateOf<HolidayAdjustment?>(null) }
     
     // Logic to store reference values to detect changes
@@ -88,7 +88,7 @@ fun HolidayManagerScreen(
 
     val hasChanges by remember(title, date, isHoliday, refTitle, refDate, refIsHoliday) {
         derivedStateOf {
-            title != refTitle || date != refDate || isHoliday != refIsHoliday
+            (title != refTitle) || (date != refDate) || (isHoliday != refIsHoliday)
         }
     }
 
@@ -343,7 +343,7 @@ fun HolidayManagerScreen(
                 )
             },
             dismissButton = {
-                DialogDismissButton { adjustmentToDelete = null }
+                DialogDismissButton(onDismiss = { adjustmentToDelete = null })
             }
         )
     }

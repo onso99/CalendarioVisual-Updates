@@ -56,10 +56,10 @@ import kotlin.math.roundToInt
 
 @Stable
 class AdvancedColorPickerState(
-    initialColor: Color
+    initialColor: Color,
 ) {
     var currentColor by mutableStateOf(initialColor)
-    var isHexError by mutableStateOf(false)
+    var isHexError by mutableStateOf(value = false)
         private set
 
     val hsl: FloatArray
@@ -79,7 +79,7 @@ class AdvancedColorPickerState(
         val newHexUncapped = if (newHex.startsWith("#")) newHex else "#$newHex"
         hexCode = newHexUncapped.take(9)
 
-        if (hexCode.length == 9 || hexCode.length == 7) { // Support ARGB and RGB
+        if ((hexCode.length == 9) || (hexCode.length == 7)) { // Support ARGB and RGB
             try {
                 val colorToParse = if (hexCode.length == 7) hexCode.replace("#", "#FF") else hexCode
                 currentColor = Color(colorToParse.toColorInt())
@@ -208,6 +208,7 @@ private fun ColorSliders(state: AdvancedColorPickerState) {
 @Composable
 private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
     val context = LocalContext.current
+    @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
     val fontScale = LocalConfiguration.current.fontScale
     val useVerticalLayout = fontScale > 1.4f
