@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">删除序列中的所有事件</string>
     <string name="delete">删除</string>
     <string name="cancel">取消</string>
-    <string name="no_calendars_found">未找到可用日历。</string>
     <string name="read_only">(只读)</string>
     <string name="apply">应用</string>
-    <string name="add_event">添加事件</string>
     <string name="no_title">(无标题)</string>
-    <string name="all_day">(全天)</string>
-    <string name="no_detailed_events">没有详细事件。</string>
     <string name="close">关闭</string>
     <string name="year_selection_title">选择年份</string>
     <string name="previous_year">上一年</string>
@@ -80,7 +76,6 @@
     <string name="general">常规</string>
     <string name="mode">模式</string>
     <string name="week_in_year_view">周数</string>
-    <string name="customize_theme">风格</string>
     <string name="customize_colors">自定义颜色</string>
     <string name="widget_event_count">事件数量</string>
     <string name="widget_text_adjustment">文字调整</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">小组件</string>
     <string name="help_widget_1">该应用包含一个用于主屏幕的小组件，显示即将到来的事件。您可以通过选择显示的事件数量、更改字体大小和修改其颜色来自定义其外观。</string>
     <string name="copied_to_clipboard">已复制：%1$s</string>
-    <string name="event_color_label">事件颜色：</string>
-    <string name="keyword">关键词</string>
     <string name="select_color_title">选择颜色</string>
     <string name="hex_argb">十六进制 (ARGB)</string>
     <string name="clear">清除</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">本月没有待办事件。</string>
     <string name="no_events_this_month">本月没有事件。</string>
     <string name="widget_no_events">无事件</string>
-    <string name="monthly_calendar">月历</string>
     <string name="theme_section_title">主题</string>
     <string name="propios_section_title">自定义</string>
     <string name="reset_color">重置</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">仅此事件</string>
     <string name="edit_recurring_event_dialog_all_events">所有事件</string>
     <string name="copy_event">复制事件</string>
-    <string name="mark_as_favorite_calendar">标记为收藏日历</string>
-    <string name="favorite_calendar_marked">收藏日历（已标记）</string>
 
     <string name="holiday_manager">管理</string>
     <string name="holiday_manager_title">节假日管理</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">已删除 %1$d 个事件。</string>
 
     <string name="backup_exported_successfully">备份创建成功</string>
-    <string name="backup_imported_successfully">备份恢复成功</string>
     <string name="error_exporting_backup">创建备份出错：%1$s</string>
-    <string name="error_importing_backup">恢复备份出错：%1$s</string>
-    <string name="invalid_backup_file">备份文件无效</string>
 
     <string name="alarm">闹钟</string>
     <string name="stop_alarm">停止</string>
@@ -229,7 +216,6 @@
     <string name="semana_label">周</string>
     <string name="local_holidays_label">本地节假日</string>
     <string name="preferences_backup_label">本地副本</string>
-    <string name="preferences_title">本地副本</string>
     <string name="cargar_label">加载</string>
     <string name="guardar_label">保存</string>
 
@@ -252,11 +238,7 @@
     <string name="status_optimized">已优化 (受限)</string>
     <string name="history">历史记录</string>
 
-    <string name="backup_section_title">事件备份</string>
-    <string name="account_label">账号</string>
     <string name="backup_frequency">频率</string>
-    <string name="manage_backup_label">备份管理</string>
-    <string name="event_backup_dialog_title">事件备份</string>
     <string name="restaurar_label">恢复</string>
     <string name="sincronizar_label">同步</string>
     <string name="link_google_account">关联 Google 账号</string>
@@ -271,9 +253,6 @@
     <string name="frequency_monthly">每月</string>
     <string name="sync_success_detailed">同步完成：%1$d 个元素</string>
     <string name="sync_error_drive">云端硬盘错误。请检查您的账号。</string>
-    <string name="restore_from_drive">从云端硬盘恢复</string>
-    <string name="restore_confirm_title">恢复事件？</string>
-    <string name="restore_confirm_message">保存的事件将被 Google 云端硬盘中的副本替换。当前系统事件不会受到影响。</string>
     <string name="restore_success">备份恢复成功</string>
     <string name="restore_error">在云端硬盘中未找到有效备份</string>
     <string name="restore_prefs_label">设置</string>
@@ -322,7 +301,6 @@
     <!-- 每日笔记 -->
     <string name="note_label">笔记</string>
     <string name="note_hint">写下快速提醒…</string>
-    <string name="save_note">保存</string>
     <string name="delete_note">删除笔记</string>
     <string name="confirm_delete_note">确认要删除笔记</string>
 </resources>

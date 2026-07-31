@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">Alle Ereignisse der Serie löschen</string>
     <string name="delete">Löschen</string>
     <string name="cancel">Abbrechen</string>
-    <string name="no_calendars_found">Keine verfügbaren Kalender gefunden.</string>
     <string name="read_only">(Nur Lesen)</string>
     <string name="apply">Anwenden</string>
-    <string name="add_event">Ereignis hinzufügen</string>
     <string name="no_title">(Kein Titel)</string>
-    <string name="all_day">(Ganztägig)</string>
-    <string name="no_detailed_events">Keine Ereignisse mit Details vorhanden.</string>
     <string name="close">Schließen</string>
     <string name="year_selection_title">Jahresauswahl</string>
     <string name="previous_year">Vorheriges Jahr</string>
@@ -80,7 +76,6 @@
     <string name="general">Allgemein</string>
     <string name="mode">Modus</string>
     <string name="week_in_year_view">Wochennummer</string>
-    <string name="customize_theme">Stil</string>
     <string name="customize_colors">Farben anpassen</string>
     <string name="widget_event_count">Anzahl der Ereignisse</string>
     <string name="widget_text_adjustment">Textanpassung</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">Die Anwendung enthält ein Widget für den Startbildschirm, das anstehende Ereignisse anzeigt. Sie können das Erscheinungsbild anpassen, indem Sie die Anzahl der anzuzeigenden Ereignisse wählen, die Schriftgröße ändern und die Farben anpassen.</string>
     <string name="copied_to_clipboard">Kopiert: %1$s</string>
-    <string name="event_color_label">Ereignisfarbe:</string>
-    <string name="keyword">Schlüsselwort</string>
     <string name="select_color_title">Farbe auswählen</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Löschen</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">Keine ausstehenden Ereignisse in diesem Monat.</string>
     <string name="no_events_this_month">Keine Ereignisse in diesem Monat.</string>
     <string name="widget_no_events">Keine Ereignisse</string>
-    <string name="monthly_calendar">Monatskalender</string>
     <string name="theme_section_title">Thema</string>
     <string name="propios_section_title">Eigene</string>
     <string name="reset_color">Zurücksetzen</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">Nur dieses Ereignis</string>
     <string name="edit_recurring_event_dialog_all_events">Alle Ereignisse</string>
     <string name="copy_event">Ereignis kopieren</string>
-    <string name="mark_as_favorite_calendar">Als bevorzugten Kalender markieren</string>
-    <string name="favorite_calendar_marked">Bevorzugter Kalender (markiert)</string>
 
     <string name="holiday_manager">Manager</string>
     <string name="holiday_manager_title">Feiertagsmanager</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">%1$d Ereignisse gelöscht.</string>
 
     <string name="backup_exported_successfully">Backup erfolgreich erstellt</string>
-    <string name="backup_imported_successfully">Backup erfolgreich wiederhergestellt</string>
     <string name="error_exporting_backup">Fehler beim Erstellen des Backups: %1$s</string>
-    <string name="error_importing_backup">Fehler beim Wiederherstellen des Backups: %1$s</string>
-    <string name="invalid_backup_file">Ungültige Backup-Datei</string>
 
     <string name="alarm">Alarm</string>
     <string name="stop_alarm">STOPP</string>
@@ -229,7 +216,6 @@
     <string name="semana_label">Woche</string>
     <string name="local_holidays_label">Lokale Feiertage</string>
     <string name="preferences_backup_label">Lokale Kopie</string>
-    <string name="preferences_title">Lokale Kopie</string>
     <string name="cargar_label">Laden</string>
     <string name="guardar_label">Speichern</string>
 
@@ -252,11 +238,7 @@
     <string name="status_optimized">OPTIMIERT (EINGESCHR.)</string>
     <string name="history">Verlauf</string>
 
-    <string name="backup_section_title">Ereignis-Sicherung</string>
-    <string name="account_label">Konto</string>
     <string name="backup_frequency">Häufigkeit</string>
-    <string name="manage_backup_label">Backup-Verwaltung</string>
-    <string name="event_backup_dialog_title">Ereigniskopie</string>
     <string name="restaurar_label">Wiederherstellen</string>
     <string name="sincronizar_label">Synchronisieren</string>
     <string name="link_google_account">Google-Konto verknüpfen</string>
@@ -271,9 +253,6 @@
     <string name="frequency_monthly">Monatlich</string>
     <string name="sync_success_detailed">Synchronisierung abgeschlossen: %1$d Elemente</string>
     <string name="sync_error_drive">Drive-Fehler. Überprüfen Sie Ihr Konto.</string>
-    <string name="restore_from_drive">Von Drive wiederherstellen</string>
-    <string name="restore_confirm_title">Ereignisse wiederherstellen?</string>
-    <string name="restore_confirm_message">Gespeicherte Ereignisse werden durch die Google Drive-Kopie ersetzt. Aktuelle Systemereignisse sind nicht betroffen.</string>
     <string name="restore_success">Backup erfolgreich wiederhergestellt</string>
     <string name="restore_error">Kein gültiges Backup in Drive gefunden</string>
     <string name="restore_prefs_label">Einstellungen</string>
@@ -322,7 +301,6 @@
     <!-- Tägliche Notizen -->
     <string name="note_label">Notiz</string>
     <string name="note_hint">Schreiben Sie eine kurze Erinnerung…</string>
-    <string name="save_note">Speichern</string>
     <string name="delete_note">Notiz löschen</string>
     <string name="confirm_delete_note">Bestätigen Sie, dass Sie die Notiz löschen möchten</string>
 </resources>

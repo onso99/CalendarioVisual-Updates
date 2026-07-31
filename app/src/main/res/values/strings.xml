@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Calendario Visual</string>
     <string name="calendar_widget_description">Muestra tus próximos eventos del calendario</string>
     <string name="permission_calendar_select">Permiso de calendario necesario para seleccionar calendarios.</string>
@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">Eliminar todos los eventos de la serie</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
-    <string name="no_calendars_found">No se encontraron calendarios disponibles.</string>
     <string name="read_only">(Solo lectura)</string>
     <string name="apply">Aplicar</string>
-    <string name="add_event">Añadir evento</string>
     <string name="no_title">(Sin título)</string>
-    <string name="all_day">(Todo el día)</string>
-    <string name="no_detailed_events">No hay eventos con detalle.</string>
     <string name="close">Cerrar</string>
     <string name="year_selection_title">Selección de Año</string>
     <string name="previous_year">Año anterior</string>
@@ -80,7 +76,6 @@
     <string name="general">General</string>
     <string name="mode">Modo</string>
     <string name="week_in_year_view">Número semana</string>
-    <string name="customize_theme">Estilo</string>
     <string name="customize_colors">Personalizar colores</string>
     <string name="widget_event_count">Número de eventos</string>
     <string name="widget_text_adjustment">Ajuste de texto</string>
@@ -92,7 +87,7 @@
     <string name="theme_name">Nombre del tema</string>
     <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vista de calendario</string>
-    <string name="help_calendar_views_1">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas pulsando en el año de la cabecera.</string>
+    <string name="help_calendar_views_1" tools:ignore="Typos">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas pulsando en el año de la cabecera.</string>
     <string name="help_calendar_views_2">En la vista mensual, desliza a izquierda o derecha para cambiar de mes. La flecha superior izquierda de la cabecera volverá al mes actual.</string>
     <string name="help_section_event_management">Gestión de eventos</string>
     <string name="help_event_management_1">Pulsa en un día del calendario mensual para ver sus eventos o añadir uno nuevo. También se pueden crear eventos pulsando en el icono (+) de la cabecera.</string>
@@ -102,12 +97,10 @@
     <string name="help_section_customization">Personalización</string>
     <string name="help_customization_1">Desde el menú Ajustes se puede elegir el modo Claro y Oscuro. También se pueden personalizar los colores de la interfaz e Importar y Exportar los temas de color para compartirlos.</string>
     <string name="help_section_holiday_manager">Gestor de Festivos</string>
-    <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos o laborables de forma manual, independientemente de lo que indique el calendario del sistema o los eventos importados. Al marcar un día como festivo, su número se resaltará en el color correspondiente en las vistas mensual y anual.</string>
+    <string name="help_holiday_manager_1" tools:ignore="Typos">Esta función permite marcar días específicos como festivos o laborables de forma manual, independientemente de lo que indique el calendario del sistema o los eventos importados. Al marcar un día como festivo, su número se resaltará en el color correspondiente en las vistas mensual y anual.</string>
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">La aplicación incluye un Widget para la pantalla de Inicio que muestra los próximos eventos. Se puede personalizar su apariencia eligiendo el número de eventos a mostrar, cambiando el tamaño de la letra y modificado sus colores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
-    <string name="event_color_label">Color del evento:</string>
-    <string name="keyword">Palabra clave</string>
     <string name="select_color_title">Seleccionar Color</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Limpiar</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">No hay eventos pendientes para este mes.</string>
     <string name="no_events_this_month">No hay eventos para este mes.</string>
     <string name="widget_no_events">No hay eventos</string>
-    <string name="monthly_calendar">Calendario Mensual</string>
     <string name="theme_section_title">Tema</string>
     <string name="propios_section_title">Propios</string>
     <string name="reset_color">Restablecer</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">Solo este evento</string>
     <string name="edit_recurring_event_dialog_all_events">Todos los eventos</string>
     <string name="copy_event">Copiar evento</string>
-    <string name="mark_as_favorite_calendar">Marcar como calendario favorito</string>
-    <string name="favorite_calendar_marked">Calendario favorito (marcado)</string>
 
     <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Festivos</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
 
     <string name="backup_exported_successfully">Copia de seguridad creada con éxito</string>
-    <string name="backup_imported_successfully">Copia de seguridad restaurada con éxito</string>
     <string name="error_exporting_backup">Error al crear la copia: %1$s</string>
-    <string name="error_importing_backup">Error al restaurar la copia: %1$s</string>
-    <string name="invalid_backup_file">Archivo de copia de seguridad no válido</string>
 
     <string name="alarm">Alarma</string>
     <string name="stop_alarm">DETENER</string>
@@ -229,7 +216,6 @@
     <string name="semana_label">Semana</string>
     <string name="local_holidays_label">Festivos locales</string>
     <string name="preferences_backup_label">Copia local</string>
-    <string name="preferences_title">Copia local</string>
     <string name="cargar_label">Cargar</string>
     <string name="guardar_label">Guardar</string>
     <string name="system_permissions">Permisos del sistema</string>
@@ -251,11 +237,7 @@
     <string name="status_optimized">OPTIMIZADA (RESTRINGIDO)</string>
     <string name="history">Historial</string>
 
-    <string name="backup_section_title">Respaldo de eventos</string>
-    <string name="account_label">Cuenta</string>
     <string name="backup_frequency">Frecuencia</string>
-    <string name="manage_backup_label">Gestión de copia</string>
-    <string name="event_backup_dialog_title">Copia de eventos</string>
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronizar</string>
     <string name="link_google_account">Vincular cuenta de Google</string>
@@ -270,9 +252,6 @@
     <string name="frequency_monthly">Mensual</string>
     <string name="sync_success_detailed">Sincronización completa: %1$d elementos</string>
     <string name="sync_error_drive">Error de Drive. Verifica tu cuenta.</string>
-    <string name="restore_from_drive">Restaurar desde Drive</string>
-    <string name="restore_confirm_title">¿Restaurar eventos?</string>
-    <string name="restore_confirm_message">Se reemplazarán los eventos guardados por la copia de Google Drive. Los eventos actuales del sistema no se verán afectados.</string>
     <string name="restore_success">Copia restaurada con éxito</string>
     <string name="restore_error">No se encontró una copia válida en Drive</string>
     <string name="restore_prefs_label">Ajustes</string>
@@ -321,7 +300,6 @@
     <!-- Notas Diarias -->
     <string name="note_label">Nota</string>
     <string name="note_hint">Escribe un recordatorio rápido…</string>
-    <string name="save_note">Guardar</string>
     <string name="delete_note">Eliminar nota</string>
     <string name="confirm_delete_note">Confirma que quieres eliminar la nota</string>
 </resources>

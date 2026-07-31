@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">Ezabatu saileko gertaera guztiak</string>
     <string name="delete">Ezabatu</string>
     <string name="cancel">Utzi</string>
-    <string name="no_calendars_found">Ez da egutegi erabilgarririk aurkitu.</string>
     <string name="read_only">(Irakurtzeko soilik)</string>
     <string name="apply">Aplikatu</string>
-    <string name="add_event">Gehitu gertaera</string>
     <string name="no_title">(Izenbururik gabe)</string>
-    <string name="all_day">(Egun osoa)</string>
-    <string name="no_detailed_events">Ez dago gertaera zehatzik.</string>
     <string name="close">Itxi</string>
     <string name="year_selection_title">Urte Hautaketa</string>
     <string name="previous_year">Aurreko urtea</string>
@@ -80,7 +76,6 @@
     <string name="general">Orokorra</string>
     <string name="mode">Modua</string>
     <string name="week_in_year_view">Aste zenbakia</string>
-    <string name="customize_theme">Estiloa</string>
     <string name="customize_colors">Pertsonalizatu koloreak</string>
     <string name="widget_event_count">Gertaera kopurua</string>
     <string name="widget_text_adjustment">Testuaren doitzea</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">Widget-a</string>
     <string name="help_widget_1">Aplikazioak Widget bat du Hasiera pantailarako, hurrengo gertaerak erakusten dituena. Itxura pertsonalizatu daiteke erakutsiko den gertaera kopurua aukera dezakezu, letraren tamaina aldatuz eta koloreak doituz.</string>
     <string name="copied_to_clipboard">Kopiatua: %1$s</string>
-    <string name="event_color_label">Gertaeraren kolorea:</string>
-    <string name="keyword">Gako-hitza</string>
     <string name="select_color_title">Hautatu Kolorea</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Garbitu</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">Ez dago zain dagoen gertaerarik hilabete honetarako.</string>
     <string name="no_events_this_month">Ez dago gertaerarik hilabete honetarako.</string>
     <string name="widget_no_events">Ez dago gertaerarik</string>
-    <string name="monthly_calendar">Hileko Egutegia</string>
     <string name="theme_section_title">Gaia</string>
     <string name="propios_section_title">Propioak</string>
     <string name="reset_color">Berrezarri</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">Gertaera hau bakarrik</string>
     <string name="edit_recurring_event_dialog_all_events">Gertaera guztiak</string>
     <string name="copy_event">Kopiatu gertaera</string>
-    <string name="mark_as_favorite_calendar">Markatu egutegi gogoko gisa</string>
-    <string name="favorite_calendar_marked">Egutegi gogokoena (markatuta)</string>
 
     <string name="holiday_manager">Kudeatzailea</string>
     <string name="holiday_manager_title">Jai-egun Kudeatzailea</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
 
     <string name="backup_exported_successfully">Segurtasun-kopia ongi sortu da</string>
-    <string name="backup_imported_successfully">Segurtasun-kopia ongi berrezarri da</string>
     <string name="error_exporting_backup">Errorea kopia sortzean: %1$s</string>
-    <string name="error_importing_backup">Errorea kopia berrezartzean: %1$s</string>
-    <string name="invalid_backup_file">Segurtasun-kopiaren fitxategi baliogabea</string>
 
     <string name="alarm">Alarma</string>
     <string name="stop_alarm">GELDITU</string>
@@ -229,7 +216,6 @@
     <string name="semana_label">Astea</string>
     <string name="local_holidays_label">Tokiko jai-egunak</string>
     <string name="preferences_backup_label">Tokiko kopia</string>
-    <string name="preferences_title">Tokiko kopia</string>
     <string name="cargar_label">Kargatu</string>
     <string name="guardar_label">Gorde</string>
     <string name="system_permissions">Sistemaren baimenak</string>
@@ -251,11 +237,7 @@
     <string name="status_optimized">OPTIMIZATUA (MUGATUA)</string>
     <string name="history">Historia</string>
 
-    <string name="backup_section_title">Gertaeren babeskopia</string>
-    <string name="account_label">Kontua</string>
     <string name="backup_frequency">Maiztasuna</string>
-    <string name="manage_backup_label">Kopia kudeatu</string>
-    <string name="event_backup_dialog_title">Gertaeren kopia</string>
     <string name="restaurar_label">Berrezarri</string>
     <string name="sincronizar_label">Sinkronizatu</string>
     <string name="link_google_account">Lotu Google kontua</string>
@@ -270,9 +252,6 @@
     <string name="frequency_monthly">Hilero</string>
     <string name="sync_success_detailed">Sinkronizazio osoa: %1$d elementu</string>
     <string name="sync_error_drive">Drive errorea. Egiaztatu zure kontua.</string>
-    <string name="restore_from_drive">Berrezarri Drivetik</string>
-    <string name="restore_confirm_title">Berrezarri gertaerak?</string>
-    <string name="restore_confirm_message">Gordetako gertaerak Google Driveko kopiarekin ordeztuko dira. Sistemako uneko gertaerei ez die eragingo.</string>
     <string name="restore_success">Segurtasun-kopia ongi berrezarri da</string>
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
     <string name="restore_prefs_label">Ezarpenak</string>
@@ -321,7 +300,6 @@
     <!-- Eguneroko Oharrak -->
     <string name="note_label">Oharra</string>
     <string name="note_hint">Idatzi gogorarazle azkar bat…</string>
-    <string name="save_note">Gorde</string>
     <string name="delete_note">Ezabatu oharra</string>
     <string name="confirm_delete_note">Berretsi oharra ezabatu nahi duzula</string>
 </resources>

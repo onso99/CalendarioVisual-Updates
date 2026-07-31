@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">シリーズのすべてのイベントを削除</string>
     <string name="delete">削除</string>
     <string name="cancel">キャンセル</string>
-    <string name="no_calendars_found">利用可能なカレンダーが見つかりません。</string>
     <string name="read_only">(読み取り専用)</string>
     <string name="apply">適用</string>
-    <string name="add_event">イベントを追加</string>
     <string name="no_title">(タイトルなし)</string>
-    <string name="all_day">(終日)</string>
-    <string name="no_detailed_events">詳細なイベントはありません。</string>
     <string name="close">閉じる</string>
     <string name="year_selection_title">年の選択</string>
     <string name="previous_year">前年</string>
@@ -80,7 +76,6 @@
     <string name="general">一般</string>
     <string name="mode">モード</string>
     <string name="week_in_year_view">週番号</string>
-    <string name="customize_theme">スタイル</string>
     <string name="customize_colors">カラーのカスタマイズ</string>
     <string name="widget_event_count">表示イベント数</string>
     <string name="widget_text_adjustment">テキスト調整</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">ウィジェット</string>
     <string name="help_widget_1">ホーム画面用のウィジェットが含まれています。表示するイベント数、フォントサイズ、カラーなどをカスタマイズできます。</string>
     <string name="copied_to_clipboard">コピーしました: %1$s</string>
-    <string name="event_color_label">イベントの色:</string>
-    <string name="keyword">キーワード</string>
     <string name="select_color_title">色の選択</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">クリア</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">今月の予定はありません。</string>
     <string name="no_events_this_month">今月のイベントはありません。</string>
     <string name="widget_no_events">イベントなし</string>
-    <string name="monthly_calendar">月間カレンダー</string>
     <string name="theme_section_title">テーマ</string>
     <string name="propios_section_title">独自</string>
     <string name="reset_color">リセット</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">このイベントのみ</string>
     <string name="edit_recurring_event_dialog_all_events">すべてのイベント</string>
     <string name="copy_event">イベントをコピー</string>
-    <string name="mark_as_favorite_calendar">お気に入りカレンダーに設定</string>
-    <string name="favorite_calendar_marked">お気に入りカレンダー（設定済み）</string>
 
     <string name="holiday_manager">管理</string>
     <string name="holiday_manager_title">祝日管理</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">%1$d件のイベントを削除しました。</string>
 
     <string name="backup_exported_successfully">バックアップを作成しました</string>
-    <string name="backup_imported_successfully">バックアップから復元しました</string>
     <string name="error_exporting_backup">バックアップ作成エラー: %1$s</string>
-    <string name="error_importing_backup">復元エラー: %1$s</string>
-    <string name="invalid_backup_file">無効なバックアップファイルです</string>
 
     <string name="alarm">アラーム</string>
     <string name="stop_alarm">停止</string>
@@ -229,7 +216,6 @@
     <string name="semana_label">週</string>
     <string name="local_holidays_label">地域の祝日</string>
     <string name="preferences_backup_label">ローカルコピー</string>
-    <string name="preferences_title">ローカルコピー</string>
     <string name="cargar_label">読み込み</string>
     <string name="guardar_label">保存</string>
 
@@ -252,11 +238,7 @@
     <string name="status_optimized">最適化済み (制限あり)</string>
     <string name="history">履歴</string>
 
-    <string name="backup_section_title">イベントのバックアップ</string>
-    <string name="account_label">アカウント</string>
     <string name="backup_frequency">頻度</string>
-    <string name="manage_backup_label">バックアップの管理</string>
-    <string name="event_backup_dialog_title">イベントのコピー</string>
     <string name="restaurar_label">復元</string>
     <string name="sincronizar_label">同期</string>
     <string name="link_google_account">Googleアカウントを連携</string>
@@ -271,9 +253,6 @@
     <string name="frequency_monthly">毎月</string>
     <string name="sync_success_detailed">同期完了: %1$d件</string>
     <string name="sync_error_drive">ドライブエラー。アカウントを確認してください。</string>
-    <string name="restore_from_drive">ドライブから復元</string>
-    <string name="restore_confirm_title">イベントを復元しますか？</string>
-    <string name="restore_confirm_message">保存されたイベントがGoogleドライブのコピーで上書きされます。現在のシステムイベントには影響しません。</string>
     <string name="restore_success">バックアップを復元しました</string>
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="restore_prefs_label">設定</string>
@@ -322,7 +301,6 @@
     <!-- デイリーノート -->
     <string name="note_label">ノート</string>
     <string name="note_hint">クイックリマインダーを書く…</string>
-    <string name="save_note">保存</string>
     <string name="delete_note">ノートを削除</string>
     <string name="confirm_delete_note">ノートを削除することを確認します</string>
 </resources>

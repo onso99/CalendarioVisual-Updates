@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">Eliminar tots els esdeveniments de la sèrie</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancel·lar</string>
-    <string name="no_calendars_found">No s\'han trobat calendaris disponibles.</string>
     <string name="read_only">(Només lectura)</string>
     <string name="apply">Aplicar</string>
-    <string name="add_event">Afegir esdeveniment</string>
     <string name="no_title">(Sense títol)</string>
-    <string name="all_day">(Tot el dia)</string>
-    <string name="no_detailed_events">No hi ha esdeveniments amb detall.</string>
     <string name="close">Tancar</string>
     <string name="year_selection_title">Selecció d\'Any</string>
     <string name="previous_year">Any anterior</string>
@@ -80,7 +76,6 @@
     <string name="general">General</string>
     <string name="mode">Mode</string>
     <string name="week_in_year_view">Número de setmana</string>
-    <string name="customize_theme">Estil</string>
     <string name="customize_colors">Personalitzar colors</string>
     <string name="widget_event_count">Nombre d\'esdeveniments</string>
     <string name="widget_text_adjustment">Ajust de text</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'aplicació inclou un Widget per a la pantalla d\'Inici que mostra els propers esdeveniments. Es pot personalitzar la seva aparença triant el nombre d\'esdeveniments a mostrar, canviant la mida de la lletra i modificat els seus colors.</string>
     <string name="copied_to_clipboard">Copiat: %1$s</string>
-    <string name="event_color_label">Color de l\'esdeveniment:</string>
-    <string name="keyword">Paraula clau</string>
     <string name="select_color_title">Seleccionar Color</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Netejar</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">No hi ha esdeveniments pendents per a aquest mes.</string>
     <string name="no_events_this_month">No hi ha esdeveniments per a aquest mes.</string>
     <string name="widget_no_events">No hi ha esdeveniments</string>
-    <string name="monthly_calendar">Calendari Mensual</string>
     <string name="theme_section_title">Tema</string>
     <string name="propios_section_title">Propis</string>
     <string name="reset_color">Restablir</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">Només aquest esdeveniment</string>
     <string name="edit_recurring_event_dialog_all_events">Tots els esdeveniments</string>
     <string name="copy_event">Copiar esdeveniment</string>
-    <string name="mark_as_favorite_calendar">Marcar com a calendari preferit</string>
-    <string name="favorite_calendar_marked">Calendari preferit (marcat)</string>
 
     <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Festius</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
 
     <string name="backup_exported_successfully">Còpia de seguretat creada amb èxit</string>
-    <string name="backup_imported_successfully">Còpia de seguretat restaurada amb èxit</string>
     <string name="error_exporting_backup">Error en crear la còpia: %1$s</string>
-    <string name="error_importing_backup">Error en restaurar la còpia: %1$s</string>
-    <string name="invalid_backup_file">Fitxer de còpia de seguretat no vàlid</string>
 
     <string name="alarm">Alarma</string>
     <string name="stop_alarm">ATURAR</string>
@@ -230,7 +217,6 @@
     <string name="semana_label">Setmana</string>
     <string name="local_holidays_label">Festius locals</string>
     <string name="preferences_backup_label">Còpia local</string>
-    <string name="preferences_title">Còpia local</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Desar</string>
 
@@ -253,11 +239,7 @@
     <string name="status_optimized">OPTIMITZADA (RESTRINGIT)</string>
     <string name="history">Historial</string>
 
-    <string name="backup_section_title">Còpia d\'esdeveniments</string>
-    <string name="account_label">Compte</string>
     <string name="backup_frequency">Freqüència</string>
-    <string name="manage_backup_label">Gestió de còpia</string>
-    <string name="event_backup_dialog_title">Còpia d\'esdeveniments</string>
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronitzar</string>
     <string name="link_google_account">Vincular compte de Google</string>
@@ -272,9 +254,6 @@
     <string name="frequency_monthly">Mensual</string>
     <string name="sync_success_detailed">Sincronització completa: %1$d elements</string>
     <string name="sync_error_drive">Error de Drive. Verifica el teu compte.</string>
-    <string name="restore_from_drive">Restaurar des de Drive</string>
-    <string name="restore_confirm_title">Restaurar esdeveniments?</string>
-    <string name="restore_confirm_message">Se substituiran els esdeveniments desats per la còpia de Google Drive. Els esdeveniments actuals del sistema no es veuran afectats.</string>
     <string name="restore_success">Còpia restaurada amb èxit</string>
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
     <string name="restore_prefs_label">Ajustos</string>
@@ -323,7 +302,6 @@
     <!-- Notes Diàries -->
     <string name="note_label">Nota</string>
     <string name="note_hint">Escriu un recordatori ràpid…</string>
-    <string name="save_note">Desar</string>
     <string name="delete_note">Eliminar nota</string>
     <string name="confirm_delete_note">Confirma que vols eliminar la nota</string>
 </resources>

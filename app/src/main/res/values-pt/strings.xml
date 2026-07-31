@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">Eliminar todos os eventos da série</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
-    <string name="no_calendars_found">Não foram encontrados calendários disponíveis.</string>
     <string name="read_only">(Apenas leitura)</string>
     <string name="apply">Aplicar</string>
-    <string name="add_event">Adicionar evento</string>
     <string name="no_title">(Sem título)</string>
-    <string name="all_day">(Dia inteiro)</string>
-    <string name="no_detailed_events">Não existem eventos com detalhes.</string>
     <string name="close">Fechar</string>
     <string name="year_selection_title">Seleção de Ano</string>
     <string name="previous_year">Ano anterior</string>
@@ -80,7 +76,6 @@
     <string name="general">Geral</string>
     <string name="mode">Modo</string>
     <string name="week_in_year_view">Número da semana</string>
-    <string name="customize_theme">Estilo</string>
     <string name="customize_colors">Personalizar cores</string>
     <string name="widget_event_count">Número de eventos</string>
     <string name="widget_text_adjustment">Ajuste de texto</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">A aplicação inclui um Widget para o ecrã inicial que mostra os próximos eventos. Pode personalizar a sua aparência escolhendo o número de eventos a mostrar, alterando o tamanho da letra e modificando as suas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
-    <string name="event_color_label">Cor do evento:</string>
-    <string name="keyword">Palavra-chave</string>
     <string name="select_color_title">Selecionar Cor</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Limpar</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">Não há eventos pendentes para este mês.</string>
     <string name="no_events_this_month">Não há eventos para este mês.</string>
     <string name="widget_no_events">Não há eventos</string>
-    <string name="monthly_calendar">Calendário Mensal</string>
     <string name="theme_section_title">Tema</string>
     <string name="propios_section_title">Próprios</string>
     <string name="reset_color">Redefinir</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">Apenas este evento</string>
     <string name="edit_recurring_event_dialog_all_events">Todos os eventos</string>
     <string name="copy_event">Copiar evento</string>
-    <string name="mark_as_favorite_calendar">Marcar como calendário favorito</string>
-    <string name="favorite_calendar_marked">Calendário favorito (marcado)</string>
 
     <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Feriados</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
 
     <string name="backup_exported_successfully">Cópia de segurança criada com sucesso</string>
-    <string name="backup_imported_successfully">Cópia de segurança restaurada com sucesso</string>
     <string name="error_exporting_backup">Erro ao criar a cópia: %1$s</string>
-    <string name="error_importing_backup">Erro ao restaurar a cópia: %1$s</string>
-    <string name="invalid_backup_file">Ficheiro de cópia de segurança inválido</string>
 
     <string name="alarm">Alarme</string>
     <string name="stop_alarm">PARAR</string>
@@ -230,7 +217,6 @@
     <string name="semana_label">Semana</string>
     <string name="local_holidays_label">Feriados locais</string>
     <string name="preferences_backup_label">Cópia local</string>
-    <string name="preferences_title">Cópia local</string>
     <string name="cargar_label">Carregar</string>
     <string name="guardar_label">Guardar</string>
 
@@ -253,11 +239,7 @@
     <string name="status_optimized">OPTIMIZADA (RESTRITA)</string>
     <string name="history">Histórico</string>
 
-    <string name="backup_section_title">Cópia de eventos</string>
-    <string name="account_label">Conta</string>
     <string name="backup_frequency">Frequência</string>
-    <string name="manage_backup_label">Gestão de cópia</string>
-    <string name="event_backup_dialog_title">Cópia de eventos</string>
     <string name="restaurar_label">Restaurar</string>
     <string name="sincronizar_label">Sincronizar</string>
     <string name="link_google_account">Vincular conta Google</string>
@@ -272,9 +254,6 @@
     <string name="frequency_monthly">Mensal</string>
     <string name="sync_success_detailed">Sincronização completa: %1$d elementos</string>
     <string name="sync_error_drive">Erro de Drive. Verifique a sua conta.</string>
-    <string name="restore_from_drive">Restaurar do Drive</string>
-    <string name="restore_confirm_title">Restaurar eventos?</string>
-    <string name="restore_confirm_message">Os eventos guardados serão substituídos pela cópia do Google Drive. Os eventos atuais do sistema não serão afetados.</string>
     <string name="restore_success">Cópia restaurada com sucesso</string>
     <string name="restore_error">Não foi encontrada uma cópia válida no Drive</string>
     <string name="restore_prefs_label">Ajustes</string>
@@ -323,7 +302,6 @@
     <!-- Notas Diárias -->
     <string name="note_label">Nota</string>
     <string name="note_hint">Escreva um lembrete rápido…</string>
-    <string name="save_note">Salvar</string>
     <string name="delete_note">Excluir nota</string>
     <string name="confirm_delete_note">Confirme que deseja excluir a nota</string>
 </resources>

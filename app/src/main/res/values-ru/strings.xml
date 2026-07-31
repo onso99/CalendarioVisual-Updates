@@ -18,13 +18,9 @@
     <string name="delete_all_events_option">Удалить все события в серии</string>
     <string name="delete">Удалить</string>
     <string name="cancel">Отмена</string>
-    <string name="no_calendars_found">Доступные календари не найдены.</string>
     <string name="read_only">(Только чтение)</string>
     <string name="apply">Применить</string>
-    <string name="add_event">Добавить событие</string>
     <string name="no_title">(Без названия)</string>
-    <string name="all_day">(Весь день)</string>
-    <string name="no_detailed_events">Нет подробных событий.</string>
     <string name="close">Закрыть</string>
     <string name="year_selection_title">Выбор Года</string>
     <string name="previous_year">Предыдущий год</string>
@@ -80,7 +76,6 @@
     <string name="general">Общие</string>
     <string name="mode">Режим</string>
     <string name="week_in_year_view">Номер недели</string>
-    <string name="customize_theme">Стиль</string>
     <string name="customize_colors">Настроить цвета</string>
     <string name="widget_event_count">Количество событий</string>
     <string name="widget_text_adjustment">Настройка текста</string>
@@ -106,8 +101,6 @@
     <string name="help_section_widget">Виджет</string>
     <string name="help_widget_1">Приложение включает виджет для главного экрана, показывающий ближайшие события. Можно настроить его внешний вид, выбрав количество отображаемых событий, изменив размер шрифта и цвета.</string>
     <string name="copied_to_clipboard">Скопировано: %1$s</string>
-    <string name="event_color_label">Цвет события:</string>
-    <string name="keyword">Ключевое слово</string>
     <string name="select_color_title">Выбор Цвета</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Очистить</string>
@@ -125,7 +118,6 @@
     <string name="no_pending_events_this_month">Нет предстоящих событий в этом месяце.</string>
     <string name="no_events_this_month">Нет событий в этом месяце.</string>
     <string name="widget_no_events">Событий нет</string>
-    <string name="monthly_calendar">Месячный Календарь</string>
     <string name="theme_section_title">Тема</string>
     <string name="propios_section_title">Собственные</string>
     <string name="reset_color">Сбросить</string>
@@ -181,8 +173,6 @@
     <string name="edit_recurring_event_dialog_single_event">Только это событие</string>
     <string name="edit_recurring_event_dialog_all_events">Все события</string>
     <string name="copy_event">Копировать событие</string>
-    <string name="mark_as_favorite_calendar">Сделать основным календарем</string>
-    <string name="favorite_calendar_marked">Основной календарь (отмечен)</string>
 
     <string name="holiday_manager">Менеджер</string>
     <string name="holiday_manager_title">Менеджер Праздников</string>
@@ -216,10 +206,7 @@
     <string name="events_deleted_count">Удалено событий: %1$d.</string>
 
     <string name="backup_exported_successfully">Резервная копия создана</string>
-    <string name="backup_imported_successfully">Данные успешно восстановлены</string>
     <string name="error_exporting_backup">Ошибка при создании копии: %1$s</string>
-    <string name="error_importing_backup">Ошибка при восстановлении: %1$s</string>
-    <string name="invalid_backup_file">Некорректный файл резервной копии</string>
 
     <string name="alarm">Будильник</string>
     <string name="stop_alarm">СТОП</string>
@@ -229,7 +216,6 @@
     <string name="semana_label">Неделя</string>
     <string name="local_holidays_label">Местные праздники</string>
     <string name="preferences_backup_label">Локальная копия</string>
-    <string name="preferences_title">Локальная копия</string>
     <string name="cargar_label">Загрузить</string>
     <string name="guardar_label">Сохранить</string>
 
@@ -252,11 +238,7 @@
     <string name="status_optimized">ОПТИМИЗИРОВАНО (ОГР.)</string>
     <string name="history">История</string>
 
-    <string name="backup_section_title">Резервное копирование событий</string>
-    <string name="account_label">Аккаунт</string>
     <string name="backup_frequency">Частота</string>
-    <string name="manage_backup_label">Управление копиями</string>
-    <string name="event_backup_dialog_title">Копия событий</string>
     <string name="restaurar_label">Восстановить</string>
     <string name="sincronizar_label">Синхронизировать</string>
     <string name="link_google_account">Связать с аккаунтом Google</string>
@@ -271,9 +253,6 @@
     <string name="frequency_monthly">Ежемесячно</string>
     <string name="sync_success_detailed">Синхронизация завершена: %1$d элементов</string>
     <string name="sync_error_drive">Ошибка Диска. Проверьте ваш аккаунт.</string>
-    <string name="restore_from_drive">Восстановить с Диска</string>
-    <string name="restore_confirm_title">Восстановить события?</string>
-    <string name="restore_confirm_message">Сохраненные события будут заменены копией из Google Диска. Текущие системные события не пострадают.</string>
     <string name="restore_success">Копия успешно восстановлена</string>
     <string name="restore_error">Валидная копия на Диске не найдена</string>
     <string name="restore_prefs_label">Настройки</string>
@@ -322,7 +301,6 @@
     <!-- Ежедневные заметки -->
     <string name="note_label">Заметка</string>
     <string name="note_hint">Напишите быстрое напоминание…</string>
-    <string name="save_note">Сохранить</string>
     <string name="delete_note">Удалить заметку</string>
     <string name="confirm_delete_note">Подтвердите удаление заметки</string>
 </resources>
