@@ -285,6 +285,14 @@
     <string name="confirm_delete_adjustment">¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.</string>
     <string name="not_applicable">N/A</string>
 
+    <string name="backup_section_title_label">Copia de seguridad</string>
+    <string name="drive_label">Drive</string>
+    <string name="holiday_manager_legend">Gestor de Festivos</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="birthday_keywords">cumpleaños,cumple,aniversario,onomástica</string>
     <string name="greeting_keywords">feliz,felicidades,felicitamos,felicitaciones</string>
     <string name="preview_today">Hoy</string>

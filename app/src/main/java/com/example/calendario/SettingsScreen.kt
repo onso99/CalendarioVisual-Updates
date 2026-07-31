@@ -780,8 +780,8 @@ fun SettingsScreen(
             }
 
 
-            // --- 3. Copia de Seguridad Unificada (Diseño Refinado v3) ---
-            SectionTitle(text = "Copia de seguridad")
+            // --- 3. Copia de seguridad (Diseño Refinado v3) ---
+            SectionTitle(text = stringResource(id = R.string.backup_section_title_label))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
                 
@@ -797,7 +797,7 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Drive", color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        Text(text = stringResource(id = R.string.drive_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
                         Text(
                             text = accountEmail, 
                             color = CalendarioTheme.colors.textSystem, 

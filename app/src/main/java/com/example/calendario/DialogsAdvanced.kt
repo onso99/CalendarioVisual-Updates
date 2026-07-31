@@ -192,12 +192,12 @@ private fun ColorPreview(initialColor: Color, newColor: Color, isHexError: Boole
 @Composable
 private fun ColorSliders(state: AdvancedColorPickerState) {
     Column {
-        ColorSlider(label = "A", value = state.currentColor.alpha * 255, onValueChange = { state.onColorPartChanged(alpha = it / 255f) })
-        ColorSlider(label = "R", value = state.currentColor.red * 255, onValueChange = { state.onColorPartChanged(red = it / 255f) })
-        ColorSlider(label = "G", value = state.currentColor.green * 255, onValueChange = { state.onColorPartChanged(green = it / 255f) })
-        ColorSlider(label = "B", value = state.currentColor.blue * 255, onValueChange = { state.onColorPartChanged(blue = it / 255f) })
+        ColorSlider(label = stringResource(id = R.string.color_alpha_label), value = state.currentColor.alpha * 255, onValueChange = { state.onColorPartChanged(alpha = it / 255f) })
+        ColorSlider(label = stringResource(id = R.string.color_red_label), value = state.currentColor.red * 255, onValueChange = { state.onColorPartChanged(red = it / 255f) })
+        ColorSlider(label = stringResource(id = R.string.color_green_label), value = state.currentColor.green * 255, onValueChange = { state.onColorPartChanged(green = it / 255f) })
+        ColorSlider(label = stringResource(id = R.string.color_blue_label), value = state.currentColor.blue * 255, onValueChange = { state.onColorPartChanged(blue = it / 255f) })
         ColorSlider(
-            label = "L",
+            label = stringResource(id = R.string.color_lightness_label),
             value = state.lightness * 100,
             onValueChange = { state.onLightnessChanged(it) },
             valueRange = 0f..100f
