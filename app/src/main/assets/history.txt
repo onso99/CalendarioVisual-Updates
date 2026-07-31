@@ -1,3 +1,4 @@
+2026-07-30 - v2.1.33 Cadenas propagadas al resto de idiomas
 2026-07-30 - v2.1.32 Unificación diálogos Parte-3
 2026-07-30 - v2.1.31 Unificación diálogos Parte-2
 2026-07-30 - v2.1.30 Corrección de warnings

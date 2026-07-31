@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,7 +36,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -284,13 +285,30 @@ fun HolidayManagerScreen(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(onClick = {
+                DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = {
                     datePickerState.selectedDateMillis?.let { date = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
                     showDatePicker = false
-                }) { Text(stringResource(id = R.string.accept)) }
-            }
+                })
+            },
+            dismissButton = {
+                DialogDismissButton { showDatePicker = false }
+            },
+            colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = CalendarioTheme.colors.fondoDialogos,
+                    titleContentColor = CalendarioTheme.colors.textSystem,
+                    headlineContentColor = CalendarioTheme.colors.textSystem,
+                    weekdayContentColor = CalendarioTheme.colors.textSystem,
+                    dayContentColor = CalendarioTheme.colors.textSystem,
+                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black,
+                    selectedDayContainerColor = CalendarioTheme.colors.cabecera,
+                    todayContentColor = CalendarioTheme.colors.cabecera,
+                    todayDateBorderColor = CalendarioTheme.colors.cabecera
+                )
+            )
         }
     }
 

@@ -27,6 +27,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -437,7 +440,7 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                                 if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
                                 currentIds = set 
                             }
-                            .padding(vertical = 6.dp, horizontal = 8.dp), 
+                            .padding(start = 8.dp, end = 2.dp, top = 6.dp, bottom = 6.dp), // Reducido margen derecho para ganar espacio
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
@@ -446,24 +449,42 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                             enabled = !isFavorite, 
                             colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
                         )
-                        Spacer(Modifier.width(10.dp))
+                        Spacer(Modifier.width(8.dp)) // Reducido de 10dp a 8dp
                         Column(Modifier.weight(1f)) { 
-                            Text(cal.displayName, fontWeight = FontWeight.Medium, fontSize = 15.sp)
-                            Text(cal.accountName, fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)) 
+                            Text(
+                                text = cal.displayName, 
+                                fontWeight = FontWeight.Medium, 
+                                fontSize = 14.sp, // Reducido de 15sp a 14sp
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = cal.accountName, 
+                                fontSize = 11.sp, // Reducido de 12sp a 11sp
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            ) 
                         }
                         if (cal.canModify) {
-                            IconButton(onClick = { 
-                                onSetFavorite(cal.id)
-                                val set = currentIds.toMutableSet()
-                                set.add(cal.id)
-                                currentIds = set 
-                            }) { 
+                            IconButton(
+                                onClick = { 
+                                    onSetFavorite(cal.id)
+                                    val set = currentIds.toMutableSet()
+                                    set.add(cal.id)
+                                    currentIds = set 
+                                },
+                                modifier = Modifier.size(40.dp) // Reducido de 48dp (default) a 40dp
+                            ) { 
                                 Icon(
                                     imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline, 
                                     contentDescription = null, 
-                                    tint = if (isFavorite) CalendarioTheme.colors.cabecera else Color.Gray
+                                    tint = if (isFavorite) CalendarioTheme.colors.cabecera else Color.Gray,
+                                    modifier = Modifier.size(20.dp) // Icono un poco más pequeño
                                 ) 
                             }
+                        } else {
+                            Spacer(Modifier.width(8.dp)) // Espacio de seguridad si no hay estrella
                         }
                     }
                 }
@@ -560,7 +581,7 @@ fun RepetitionSelectionDialog(
                                 val limit = if (rule == RepetitionRule.DAILY) 3 else 2
                                 if (tempCount.length > limit) tempCount = tempCount.take(limit)
                             }
-                            .padding(vertical = 12.dp), 
+                            .padding(vertical = 10.dp), 
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -581,9 +602,9 @@ fun RepetitionSelectionDialog(
 
                 val isRepetitionActive = tempSelection != RepetitionRule.NONE
                 val activeAlpha = if (isRepetitionActive) 1f else 0.4f
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
 
                 // 1. INDEFINIDAMENTE
                 Row(
@@ -591,7 +612,7 @@ fun RepetitionSelectionDialog(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .clickable(enabled = isRepetitionActive) { endMode = 0 }
-                        .padding(vertical = 10.dp), 
+                        .padding(vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -615,7 +636,7 @@ fun RepetitionSelectionDialog(
                             if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
                             showDatePicker = true 
                         }
-                        .padding(vertical = 10.dp), 
+                        .padding(vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(DateTimeFormatter.ofPattern("EEEE, d/MM/yyyy", locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
@@ -638,16 +659,32 @@ fun RepetitionSelectionDialog(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .clickable(enabled = isRepetitionActive) { endMode = 2 }
-                        .padding(vertical = 10.dp), 
+                        .padding(vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(id = R.string.repeat_after), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha))
-                        Spacer(Modifier.width(4.dp))
-                        TextField(
+                        Spacer(Modifier.width(8.dp))
+                        
+                        val underlineColor = if (endMode == 2 && isRepetitionActive) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+                        val cursorBrush = SolidColor(CalendarioTheme.colors.cabecera)
+                        
+                        androidx.compose.foundation.text.BasicTextField(
                             value = tempCount, 
                             onValueChange = { if (it.all { c -> c.isDigit() }) { val limit = if (tempSelection == RepetitionRule.DAILY) 3 else 2; if (it.length <= limit) tempCount = it } }, 
-                            modifier = Modifier.width(75.dp).focusRequester(focusRequester), 
+                            modifier = Modifier
+                                .width(50.dp)
+                                .focusRequester(focusRequester)
+                                .drawBehind {
+                                    val strokeWidth = 1.dp.toPx()
+                                    val y = size.height - strokeWidth / 2
+                                    drawLine(
+                                        color = underlineColor,
+                                        start = Offset(0f, y),
+                                        end = Offset(size.width, y),
+                                        strokeWidth = strokeWidth
+                                    )
+                                },
                             textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)), 
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), 
                             keyboardActions = KeyboardActions(onDone = { 
@@ -657,7 +694,7 @@ fun RepetitionSelectionDialog(
                             }), 
                             singleLine = true, 
                             enabled = (endMode == 2 && isRepetitionActive),
-                            colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent, disabledContainerColor = Color.Transparent, focusedIndicatorColor = CalendarioTheme.colors.cabecera, unfocusedIndicatorColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), disabledIndicatorColor = Color.Transparent)
+                            cursorBrush = cursorBrush
                         )
                     }
                     if (endMode == 2 && isRepetitionActive) {
@@ -686,19 +723,32 @@ fun RepetitionSelectionDialog(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(onClick = {
+                DialogConfirmButton(text = stringResource(id = R.string.apply), onClick = {
                     datePickerState.selectedDateMillis?.let {
                         tempUntil = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
                     }
                     showDatePicker = false
-                }) { Text(stringResource(id = R.string.apply)) }
+                })
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel)) }
+                DialogDismissButton { showDatePicker = false }
             },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = CalendarioTheme.colors.fondoDialogos,
+                    titleContentColor = CalendarioTheme.colors.textSystem,
+                    headlineContentColor = CalendarioTheme.colors.textSystem,
+                    weekdayContentColor = CalendarioTheme.colors.textSystem,
+                    dayContentColor = CalendarioTheme.colors.textSystem,
+                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black,
+                    selectedDayContainerColor = CalendarioTheme.colors.cabecera,
+                    todayContentColor = CalendarioTheme.colors.cabecera,
+                    todayDateBorderColor = CalendarioTheme.colors.cabecera
+                )
+            )
         }
     }
 }
