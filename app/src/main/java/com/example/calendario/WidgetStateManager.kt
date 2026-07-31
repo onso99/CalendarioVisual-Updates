@@ -65,7 +65,7 @@ object WidgetStateManager {
         val today = LocalDate.now()
         val now = LocalDateTime.now().withNano(0).withSecond(0)
         
-        return events
+        return events.asSequence()
             .filter { event ->
                 // REGLA DE ORO: Si es hoy, se queda. Si es futuro, se queda.
                 // Usamos la misma lógica que el widget clásico para evitar discrepancias.
@@ -86,6 +86,7 @@ object WidgetStateManager {
             .map { event ->
                 WidgetEvent(event.title, event.date.toEpochDay(), event.startTime?.toString(), event.isAllDay, event.isBirthday, event.age, event.isLongPeriod, event.currentDay, event.totalDays, AlarmUtils.getAlarmTimeString(context, event))
             }
+            .toList()
     }
 
     private suspend fun performUpdate(context: Context, events: List<Festivo>) {
