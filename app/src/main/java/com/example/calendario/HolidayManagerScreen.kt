@@ -182,9 +182,9 @@ fun HolidayManagerScreen(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = if (isFromExistingGoogleEvent) Color.Transparent else CalendarioTheme.colors.cabecera,
                         unfocusedBorderColor = if (isFromExistingGoogleEvent) Color.Transparent else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        focusedTextColor = if (isFromExistingGoogleEvent) Color.Gray else CalendarioTheme.colors.textSystem,
-                        unfocusedTextColor = if (isFromExistingGoogleEvent) Color.Gray else CalendarioTheme.colors.textSystem,
-                        disabledTextColor = if (isFromExistingGoogleEvent) Color.Gray else CalendarioTheme.colors.textSystem
+                        focusedTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
+                        unfocusedTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
+                        disabledTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem
                     )
                 )
                 
@@ -205,7 +205,7 @@ fun HolidayManagerScreen(
                 if (isFromExistingGoogleEvent) {
                     Text(
                         text = stringResource(id = R.string.read_only),
-                        color = Color.Gray,
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp)
                     )
@@ -367,12 +367,13 @@ fun HolidayAdjustmentItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
+            val secondaryTextColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
             Text(
                 text = "${adjustment.date.format(DateTimeFormatter.ofPattern("dd/MM/yy"))} ${adjustment.title}",
                 fontSize = 14.sp,
                 color = when {
-                    isGoogle -> Color.Gray
-                    isPastYear -> Color.Gray.copy(alpha = 0.6f)
+                    isGoogle -> secondaryTextColor
+                    isPastYear -> secondaryTextColor.copy(alpha = 0.4f)
                     adjustment.type == HolidayAdjustmentType.HOLIDAY -> festivoColor
                     else -> CalendarioTheme.colors.textSystem
                 },
@@ -383,7 +384,7 @@ fun HolidayAdjustmentItem(
             Text(
                 text = "[${stringResource(id = if (adjustment.type == HolidayAdjustmentType.HOLIDAY) R.string.festivo else R.string.laborable)}] - $sourceLegend",
                 fontSize = 10.sp,
-                color = if (isGoogle || isPastYear || adjustment.type == HolidayAdjustmentType.WORKING_DAY) Color.Gray.copy(alpha = 0.7f) else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                color = secondaryTextColor
             )
         }
         if (!isGoogle) {
@@ -391,7 +392,7 @@ fun HolidayAdjustmentItem(
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = null,
-                    tint = if (adjustment.type == HolidayAdjustmentType.WORKING_DAY) Color.Gray else festivoColor,
+                    tint = Color.Red, // Unificado a Rojo para consistencia de acciÃ³n
                     modifier = Modifier.size(20.dp)
                 )
             }

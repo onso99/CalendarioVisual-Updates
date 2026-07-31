@@ -1,3 +1,4 @@
+2026-07-31 - Finalizada la unificación de interfaz, diálogos y propagación de idiomas
 2026-07-31 - v2.1.34 Unificación de selectores de fecha y hora. Diálogo Repetición mejorado.
 2026-07-30 - v2.1.33 Cadenas propagadas al resto de idiomas
 2026-07-30 - v2.1.32 Unificación diálogos Parte-3
