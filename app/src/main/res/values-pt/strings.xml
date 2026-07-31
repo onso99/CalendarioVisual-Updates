@@ -281,6 +281,14 @@
     <string name="restore_holidays_label">Feriados locais</string>
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Eventos</string>
+    <string name="backup_section_title_label">Cópia de segurança</string>
+    <string name="drive_label">Drive</string>
+    <string name="holiday_manager_legend">Gestor de Feriados</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Nunca</string>
     <string name="error_updating_data">Erro ao atualizar dados.</string>

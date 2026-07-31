@@ -281,6 +281,14 @@
     <string name="restore_holidays_label">Giorni festivi locali</string>
     <string name="restore_notes_label">Note</string>
     <string name="restore_events_label">Eventi</string>
+    <string name="backup_section_title_label">Backup</string>
+    <string name="drive_label">Drive</string>
+    <string name="holiday_manager_legend">Gestore Festività</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Ultima</string>
     <string name="never">Mai</string>
     <string name="error_updating_data">Errore durante l\'aggiornamento dei dati.</string>

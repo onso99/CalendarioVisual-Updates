@@ -279,6 +279,14 @@
     <string name="restore_holidays_label">Tokiko jai-egunak</string>
     <string name="restore_notes_label">Oharrak</string>
     <string name="restore_events_label">Gertaerak</string>
+    <string name="backup_section_title_label">Babeskopia</string>
+    <string name="drive_label">Drive</string>
+    <string name="holiday_manager_legend">Jai-egun kudeatzailea</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Azkena</string>
     <string name="never">Inoiz ez</string>
     <string name="error_updating_data">Errorea datuak eguneratzean.</string>

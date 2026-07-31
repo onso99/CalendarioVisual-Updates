@@ -280,6 +280,14 @@
     <string name="restore_holidays_label">本地节假日</string>
     <string name="restore_notes_label">备注</string>
     <string name="restore_events_label">事件</string>
+    <string name="backup_section_title_label">备份</string>
+    <string name="drive_label">云端硬盘</string>
+    <string name="holiday_manager_legend">节假日管理</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="last_backup_label">上次</string>
     <string name="never">从未</string>
     <string name="error_updating_data">更新数据出错。</string>

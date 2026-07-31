@@ -280,6 +280,14 @@
     <string name="restore_holidays_label">Jours fériés locaux</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Événements</string>
+    <string name="backup_section_title_label">Sauvegarde</string>
+    <string name="drive_label">Drive</string>
+    <string name="holiday_manager_legend">Gestionnaire de jours fériés</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Dernière</string>
     <string name="never">Jamais</string>
     <string name="error_updating_data">Erreur lors de la mise à jour des données.</string>

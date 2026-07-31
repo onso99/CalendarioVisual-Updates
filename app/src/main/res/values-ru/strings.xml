@@ -280,6 +280,14 @@
     <string name="restore_holidays_label">Местные праздники</string>
     <string name="restore_notes_label">Заметки</string>
     <string name="restore_events_label">События</string>
+    <string name="backup_section_title_label">Резервное копирование</string>
+    <string name="drive_label">Диск</string>
+    <string name="holiday_manager_legend">Менеджер праздников</string>
+    <string name="color_alpha_label">A</string>
+    <string name="color_red_label">R</string>
+    <string name="color_green_label">G</string>
+    <string name="color_blue_label">B</string>
+    <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Последняя</string>
     <string name="never">Никогда</string>
     <string name="error_updating_data">Ошибка обновления данных.</string>
