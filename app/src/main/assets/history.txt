@@ -1,3 +1,4 @@
+2026-07-31 - v2.1.40 Optimización de eficiencia del widget y limpieza final de avisos: uso de Sequence en la función de filtrado de eventos
 2026-07-31 - v2.1.39 Strings: eliminadas 22 cadenas sobrantes en todos los idiomas
 2026-07-31 - v2.1.38 Corrección de warnings
 2026-07-31 - v2.1.37 Textos centralizados: propagados al resto de idiomas
