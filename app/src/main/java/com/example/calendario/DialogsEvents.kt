@@ -244,7 +244,7 @@ fun DayEventsDialog(
                                     if (timeText != null) withStyle(SpanStyle(color = neutralColor)) { append("$timeText ") }
                                     withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) } + (if (festivo.age != null) " (${festivo.age})" else "")) }
                                     if (festivo.isLongPeriod) withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) { append(" (${festivo.currentDay}/${festivo.totalDays})") }
-                                }, fontSize = 16.sp, maxLines = 10, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                                }, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                             }
                             Spacer(Modifier.height(4.dp))
                         }
