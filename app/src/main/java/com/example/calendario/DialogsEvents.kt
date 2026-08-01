@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -77,7 +76,8 @@ fun DayEventsDialog(
     val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
     val locale = LocalConfiguration.current.locales[0]
 
-    val formatter = remember { DateTimeFormatter.ofPattern("E, dd/MM/yyyy", locale) }
+    // Formato: Dia dd/mm/aa (ej: Lun 22/05/26)
+    val formatter = remember { DateTimeFormatter.ofPattern("E dd/MM/yy", locale) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
     val isToday = date == LocalDate.now()
 
@@ -100,17 +100,64 @@ fun DayEventsDialog(
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
         title = {
-            Text(
-                formattedDate, 
-                fontWeight = FontWeight.Bold, 
-                fontSize = 20.sp, 
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 1. TÍTULO (Izquierda)
+                Text(
+                    text = formattedDate, 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 20.sp, 
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Start
+                )
+
+                // 2. ICONO NOTA (Opacidad dinámica)
+                val hasNote = note != null || noteText.isNotBlank()
+                val noteOpacity = if (showNoteField || hasNote) 1f else 0.5f
+                val circleColor = CalendarioTheme.colors.cabecera
+                val contentColor = if (isColorDark(circleColor, Color.White)) Color.White else Color.Black
+
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(circleColor.copy(alpha = noteOpacity))
+                        .clickable { showNoteField = !showNoteField },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.StickyNote2,
+                        contentDescription = stringResource(id = R.string.note_label),
+                        tint = contentColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(12.dp))
+
+                // 3. ICONO EVENTO (+)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(circleColor)
+                        .clickable { onAddEventClick(date) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.new_event),
+                        tint = contentColor,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
         },
         text = {
             Column {
-                // --- 1. EDITOR DE NOTA INTEGRADO (ARRIBA) ---
+                // --- 1. EDITOR DE NOTA INTEGRADO ---
                 androidx.compose.animation.AnimatedVisibility(
                     visible = showNoteField,
                     enter = androidx.compose.animation.expandVertically() + androidx.compose.animation.fadeIn(),
@@ -141,13 +188,19 @@ fun DayEventsDialog(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = { showDeleteConfirmation = true }, modifier = Modifier.size(24.dp)) {
-                                Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red, modifier = Modifier.size(20.dp))
+                            IconButton(
+                                onClick = { 
+                                    if (noteText.isBlank()) showNoteField = false 
+                                    else showDeleteConfirmation = true 
+                                }, 
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.Red, modifier = Modifier.size(20.dp))
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 if (noteText != (note?.content ?: "")) {
                                     IconButton(onClick = { onSaveNote(noteText) }, modifier = Modifier.size(24.dp)) {
-                                        Icon(Icons.Default.Check, "Guardar", tint = CalendarioTheme.colors.cabecera)
+                                        Icon(Icons.Default.Check, stringResource(id = R.string.save), tint = CalendarioTheme.colors.cabecera)
                                     }
                                     Spacer(Modifier.width(8.dp))
                                 }
@@ -157,29 +210,7 @@ fun DayEventsDialog(
                     }
                 }
 
-                // --- 2. SECCIÓN DE CHIPS DE ACCIÓN (DIVISOR) ---
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val isChipSelected = showNoteField || note != null
-                    ActionChip(
-                        label = stringResource(id = R.string.note_label),
-                        icon = Icons.AutoMirrored.Filled.StickyNote2,
-                        isSelected = isChipSelected,
-                        onClick = { showNoteField = !showNoteField },
-                        modifier = Modifier.weight(1f)
-                    )
-                    ActionChip(
-                        label = stringResource(id = R.string.evento),
-                        icon = Icons.Default.Add,
-                        isSelected = false,
-                        onClick = { onAddEventClick(date) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                // --- 3. LISTA DE EVENTOS ---
+                // --- 2. LISTA DE EVENTOS (Ahora empieza inmediatamente) ---
                 if (events.isNotEmpty()) {
                     LazyColumn(Modifier.heightIn(max = 300.dp)) {
                         items(events) { festivo ->
@@ -252,41 +283,6 @@ fun DayEventsDialog(
     }
 }
 
-@Composable
-fun ActionChip(
-    label: String,
-    icon: ImageVector,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor = if (isSelected) CalendarioTheme.colors.cabecera else Color.Transparent
-    val contentColor = if (isSelected) (if (isColorDark(backgroundColor, Color.White)) Color.White else Color.Black) else CalendarioTheme.colors.textSystem
-    val borderColor = if (isSelected) Color.Transparent else CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-
-    Row(
-        modifier = modifier
-            .height(40.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
-            .border(1.dp, borderColor, RoundedCornerShape(12.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Icon(imageVector = icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = label, 
-            color = contentColor, 
-            fontSize = 14.sp, 
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
 
 @Composable
 fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar: CalendarInfo?, onOpenHolidayManager: (Festivo) -> Unit) {
