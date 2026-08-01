@@ -100,7 +100,7 @@ fun AddEventForm(
         ) {
             TextField(
                 value = title,
-                onValueChange = onTitleChange,
+                onValueChange = { if (it.length <= 120) onTitleChange(it) },
                 placeholder = { Text(stringResource(id = R.string.title), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.colors(

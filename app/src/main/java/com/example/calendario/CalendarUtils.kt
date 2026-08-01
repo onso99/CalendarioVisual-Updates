@@ -282,8 +282,9 @@ private fun createEventValues(
     }
     
     return ContentValues().apply {
+        val limitedTitle = title.take(120)
         put(CalendarContract.Events.DTSTART, startMillis)
-        put(CalendarContract.Events.TITLE, title)
+        put(CalendarContract.Events.TITLE, limitedTitle)
         put(CalendarContract.Events.CALENDAR_ID, calendarId)
         put(CalendarContract.Events.ALL_DAY, if (isAllDay) 1 else 0)
         put(CalendarContract.Events.EVENT_TIMEZONE, timezone)

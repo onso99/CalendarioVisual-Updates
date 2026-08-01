@@ -423,7 +423,7 @@ fun readFestivosFromCalendarsSync(
                         tempInstancesMap[uniqueKey] = mapOf(
                             "eventId" to eventId,
                             "calendarId" to cursor.getLong(calIdCol),
-                            "title" to (cursor.getStringOrNull(titleCol) ?: ""),
+                            "title" to (cursor.getStringOrNull(titleCol)?.take(120) ?: ""),
                             "begin" to startM,
                             "end" to cursor.getLong(endCol),
                             "isAllDay" to (cursor.getInt(allDayCol) == 1),
