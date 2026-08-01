@@ -232,14 +232,14 @@ fun DayEventsDialog(
                             val titleColor = if (isToday) (if (ColorUtils.calculateContrast(ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255), ColorUtils.setAlphaComponent(CalendarioTheme.colors.todayHighlightColor.toArgb(), 255)) > 1.5) eventSpecificColor else neutralColor) else eventSpecificColor
                             val timeText = if (!festivo.isAllDay && festivo.startTime != null) festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm")) else null
                             
-                            Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp, horizontal = 8.dp), verticalAlignment = Alignment.Top) {
-                                Box(Modifier.padding(top = 6.dp)) {
+                            Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {
+                                Box(Modifier.padding(top = 8.dp, start = 2.dp)) {
                                     val calendarForEvent = availableCalendars.find { it.id == festivo.calendarId }
                                     val colorToUse = if (festivo.customColor != null) Color(festivo.customColor) else if (calendarForEvent != null) Color(calendarForEvent.color) else Color.Transparent
                                     if (festivo.isLongPeriod && festivo.lane != null) Box(Modifier.size(6.dp).background(colorToUse, RoundedCornerShape(1.5.dp)))
                                     else Box(Modifier.size(6.dp).background(Color.Gray.copy(alpha = 0.6f), CircleShape).border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), CircleShape))
                                 }
-                                Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.width(4.dp))
                                 Text(buildAnnotatedString {
                                     if (timeText != null) withStyle(SpanStyle(color = neutralColor)) { append("$timeText ") }
                                     withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) } + (if (festivo.age != null) " (${festivo.age})" else "")) }
