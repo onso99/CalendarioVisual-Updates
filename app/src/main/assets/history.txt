@@ -1,3 +1,4 @@
+2026-08-02 - v2.1.46 Diálogo Calendarios: mensajes de aviso en strings y propagados al resto de idiomas
 2026-08-02 - v2.1.45 Diálogo Calendarios: Selección con check y favorito con pulsación larga
 2026-08-01 - v2.1.44 Diálogo día: reducción de márgenes para ampliar espacio
 2026-08-01 - v2.1.43 Título de evento: límite de 120 caracteres

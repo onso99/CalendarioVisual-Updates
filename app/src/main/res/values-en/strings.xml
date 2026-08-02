@@ -304,4 +304,7 @@
     <string name="note_hint">Write a quick reminder…</string>
     <string name="delete_note">Delete note</string>
     <string name="confirm_delete_note">Confirm that you want to delete the note</string>
+    <string name="hint_long_press_favorite">Long press to set as favorite</string>
+    <string name="favorite_updated">Favorite updated</string>
+    <string name="calendar_read_only_error">Read-only calendar</string>
 </resources>

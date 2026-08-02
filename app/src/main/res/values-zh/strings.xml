@@ -303,4 +303,7 @@
     <string name="note_hint">写下快速提醒…</string>
     <string name="delete_note">删除笔记</string>
     <string name="confirm_delete_note">确认要删除笔记</string>
+    <string name="hint_long_press_favorite">长按设置为收藏</string>
+    <string name="favorite_updated">收藏已更新</string>
+    <string name="calendar_read_only_error">只读日历</string>
 </resources>

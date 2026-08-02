@@ -304,4 +304,7 @@
     <string name="note_hint">Escriu un recordatori ràpid…</string>
     <string name="delete_note">Eliminar nota</string>
     <string name="confirm_delete_note">Confirma que vols eliminar la nota</string>
+    <string name="hint_long_press_favorite">Manté premut per fer favorit</string>
+    <string name="favorite_updated">Favorit actualitzat</string>
+    <string name="calendar_read_only_error">Calendari de només lectura</string>
 </resources>

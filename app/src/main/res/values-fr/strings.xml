@@ -303,4 +303,7 @@
     <string name="note_hint">Écrivez un rappel rapide…</string>
     <string name="delete_note">Supprimer la note</string>
     <string name="confirm_delete_note">Confirmez que vous souhaitez supprimer la note</string>
+    <string name="hint_long_press_favorite">Appui long pour mettre en favori</string>
+    <string name="favorite_updated">Favori mis à jour</string>
+    <string name="calendar_read_only_error">Calendrier en lecture seule</string>
 </resources>

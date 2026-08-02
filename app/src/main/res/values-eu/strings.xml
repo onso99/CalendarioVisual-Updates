@@ -302,4 +302,7 @@
     <string name="note_hint">Idatzi gogorarazle azkar bat…</string>
     <string name="delete_note">Ezabatu oharra</string>
     <string name="confirm_delete_note">Berretsi oharra ezabatu nahi duzula</string>
+    <string name="hint_long_press_favorite">Sakatu luze gogoko egiteko</string>
+    <string name="favorite_updated">Gogokoa eguneratua</string>
+    <string name="calendar_read_only_error">Irakurtzeko soilik den egutegia</string>
 </resources>

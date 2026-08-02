@@ -302,4 +302,7 @@
     <string name="note_hint">Escribe un recordatorio rápido…</string>
     <string name="delete_note">Eliminar nota</string>
     <string name="confirm_delete_note">Confirma que quieres eliminar la nota</string>
+    <string name="hint_long_press_favorite">Mantén pulsado para hacer favorito</string>
+    <string name="favorite_updated">Favorito actualizado</string>
+    <string name="calendar_read_only_error">Calendario de solo lectura</string>
 </resources>

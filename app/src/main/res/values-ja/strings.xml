@@ -303,4 +303,7 @@
     <string name="note_hint">クイックリマインダーを書く…</string>
     <string name="delete_note">ノートを削除</string>
     <string name="confirm_delete_note">ノートを削除することを確認します</string>
+    <string name="hint_long_press_favorite">長押しでお気に入りに設定</string>
+    <string name="favorite_updated">お気に入りを更新しました</string>
+    <string name="calendar_read_only_error">読み取り専用カレンダー</string>
 </resources>

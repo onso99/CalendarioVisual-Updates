@@ -418,6 +418,10 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
     var currentFavoriteId by remember(favoriteCalendarId) { mutableStateOf(favoriteCalendarId) }
     var infoMessage by remember { mutableStateOf<String?>(null) }
     val haptic = LocalHapticFeedback.current
+    
+    val hintMsg = stringResource(id = R.string.hint_long_press_favorite)
+    val favUpdatedMsg = stringResource(id = R.string.favorite_updated)
+    val readOnlyMsg = stringResource(id = R.string.calendar_read_only_error)
 
     // Inicialización de seguridad del favorito si no existe
     LaunchedEffect(Unit) {
@@ -429,14 +433,14 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
             }
         }
         // Mensaje de ayuda inicial
-        infoMessage = "Mantén pulsado para hacer favorito"
+        infoMessage = hintMsg
         delay(5000.milliseconds)
         infoMessage = null
     }
 
     // Efecto para limpiar mensajes de error tras 5 segundos
     LaunchedEffect(infoMessage) {
-        if (infoMessage != null && infoMessage != "Mantén pulsado para hacer favorito") {
+        if (infoMessage != null && infoMessage != hintMsg) {
             delay(5000.milliseconds)
             infoMessage = null
         }
@@ -514,9 +518,9 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                                         onSetFavorite(cal.id)
                                         currentFavoriteId = cal.id
                                         currentIds = currentIds + cal.id // El favorito debe estar seleccionado
-                                        infoMessage = "Favorito actualizado"
+                                        infoMessage = favUpdatedMsg
                                     } else {
-                                        infoMessage = "Este calendario es de solo lectura"
+                                        infoMessage = readOnlyMsg
                                     }
                                 }
                             )

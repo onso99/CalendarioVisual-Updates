@@ -303,4 +303,7 @@
     <string name="note_hint">Напишите быстрое напоминание…</string>
     <string name="delete_note">Удалить заметку</string>
     <string name="confirm_delete_note">Подтвердите удаление заметки</string>
+    <string name="hint_long_press_favorite">Нажмите и удерживайте, чтобы сделать избранным</string>
+    <string name="favorite_updated">Избранное обновлено</string>
+    <string name="calendar_read_only_error">Календарь только для чтения</string>
 </resources>

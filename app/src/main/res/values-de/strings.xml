@@ -303,4 +303,7 @@
     <string name="note_hint">Schreiben Sie eine kurze Erinnerung…</string>
     <string name="delete_note">Notiz löschen</string>
     <string name="confirm_delete_note">Bestätigen Sie, dass Sie die Notiz löschen möchten</string>
+    <string name="hint_long_press_favorite">Gedrückt halten, um als Favorit festzulegen</string>
+    <string name="favorite_updated">Favorit aktualisiert</string>
+    <string name="calendar_read_only_error">Schreibgeschützter Kalender</string>
 </resources>
