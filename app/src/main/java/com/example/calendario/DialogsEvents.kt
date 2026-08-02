@@ -1,9 +1,13 @@
 package com.example.calendario
 
 import android.content.Context
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,8 +33,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -51,6 +57,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 enum class DeleteRecurringOption { SINGLE_EVENT, ALL_EVENTS }
@@ -86,10 +93,9 @@ fun DayEventsDialog(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     val charLimit = 140
 
-    // AUTO-GUARDADO: Si el texto cambia, esperamos 800ms de inactividad y guardamos
     LaunchedEffect(noteText) {
         if (noteText != (note?.content ?: "") && noteText.isNotBlank()) {
-            kotlinx.coroutines.delay(800.milliseconds)
+            delay(800.milliseconds)
             onSaveNote(noteText)
         }
     }
@@ -405,82 +411,157 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: List<CalendarInfo>, favoriteCalendarId: Long?, onDismissRequest: () -> Unit, onApplySelection: (Set<Long>) -> Unit, onSetFavorite: (Long) -> Unit) {
     var currentIds by remember(initialSelectedIds) { mutableStateOf(initialSelectedIds) }
+    var currentFavoriteId by remember(favoriteCalendarId) { mutableStateOf(favoriteCalendarId) }
+    var infoMessage by remember { mutableStateOf<String?>(null) }
+    val haptic = LocalHapticFeedback.current
+
+    // Inicialización de seguridad del favorito si no existe
+    LaunchedEffect(Unit) {
+        if (currentFavoriteId == null) {
+            findBestCalendarCandidate(availableCalendars)?.let { candidate ->
+                onSetFavorite(candidate.id)
+                currentFavoriteId = candidate.id
+                currentIds = currentIds + candidate.id
+            }
+        }
+        // Mensaje de ayuda inicial
+        infoMessage = "Mantén pulsado para hacer favorito"
+        delay(5000.milliseconds)
+        infoMessage = null
+    }
+
+    // Efecto para limpiar mensajes de error tras 5 segundos
+    LaunchedEffect(infoMessage) {
+        if (infoMessage != null && infoMessage != "Mantén pulsado para hacer favorito") {
+            delay(5000.milliseconds)
+            infoMessage = null
+        }
+    }
     
-    // Ordenación estratégica: 1. Favorito, 2. Seleccionados (alfabético), 3. No seleccionados (alfabético)
-    val sortedCalendars = remember(availableCalendars, initialSelectedIds, favoriteCalendarId) {
+    val sortedCalendars = remember(availableCalendars, currentIds, currentFavoriteId) {
         availableCalendars.sortedWith(
-            compareByDescending<CalendarInfo> { it.id == favoriteCalendarId }
-                .thenByDescending { initialSelectedIds.contains(it.id) }
+            compareByDescending<CalendarInfo> { it.id == currentFavoriteId }
+                .thenByDescending { currentIds.contains(it.id) }
                 .thenBy { it.displayName }
         )
     }
+
+    // Control de transparencia y persistencia del mensaje
+    val messageAlpha by animateFloatAsState(
+        targetValue = if (infoMessage != null) 1f else 0f,
+        animationSpec = tween(durationMillis = 800),
+        label = "alpha"
+    )
+    var lastKnownMessage by remember { mutableStateOf("") }
+    if (infoMessage != null) lastKnownMessage = infoMessage!!
 
     AlertDialog(
         onDismissRequest = onDismissRequest, 
         containerColor = CalendarioTheme.colors.fondoDialogos, 
         titleContentColor = CalendarioTheme.colors.textSystem, 
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
+        title = { 
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp, textAlign = TextAlign.Start)
+                
+                // Mensaje fijo que solo cambia opacidad
+                Text(
+                    text = lastKnownMessage,
+                    fontSize = 12.sp,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f * messageAlpha),
+                    modifier = Modifier.offset(y = (-16).dp) // Pegado casi al título
+                )
+            }
+        },
         text = { 
-            LazyColumn(Modifier.heightIn(max = 400.dp).fillMaxWidth()) { 
+            LazyColumn(
+                modifier = Modifier
+                    .heightIn(max = 400.dp)
+                    .fillMaxWidth()
+                    .drawBehind { /* Solo para asegurar el renderizado */ }
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val offsetPx = 48.dp.roundToPx()
+                        // Reportamos un alto menor al real para que los botones de abajo suban
+                        layout(placeable.width, placeable.height - offsetPx) {
+                            placeable.placeRelative(0, -offsetPx)
+                        }
+                    }
+            ) {
                 items(sortedCalendars) { cal ->
-                    val isFavorite = cal.id == favoriteCalendarId
+                    val isFavorite = cal.id == currentFavoriteId
+                    val isSelected = currentIds.contains(cal.id) || isFavorite
+                    
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(enabled = !isFavorite) { 
-                                val set = currentIds.toMutableSet()
-                                if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
-                                currentIds = set 
-                            }
-                            .padding(start = 8.dp, end = 2.dp, top = 6.dp, bottom = 6.dp), // Reducido margen derecho para ganar espacio
-                        verticalAlignment = Alignment.CenterVertically
+                            .clip(RoundedCornerShape(12.dp))
+                            .combinedClickable(
+                                onClick = { 
+                                    if (!isFavorite) {
+                                        val set = currentIds.toMutableSet()
+                                        if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
+                                        currentIds = set 
+                                    }
+                                },
+                                onLongClick = {
+                                    if (cal.canModify) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        onSetFavorite(cal.id)
+                                        currentFavoriteId = cal.id
+                                        currentIds = currentIds + cal.id // El favorito debe estar seleccionado
+                                        infoMessage = "Favorito actualizado"
+                                    } else {
+                                        infoMessage = "Este calendario es de solo lectura"
+                                    }
+                                }
+                            )
+                            .padding(vertical = 12.dp, horizontal = 4.dp),
+                        verticalAlignment = Alignment.Top
                     ) {
-                        Checkbox(
-                            checked = currentIds.contains(cal.id) || isFavorite, 
-                            onCheckedChange = null, 
-                            enabled = !isFavorite, 
-                            colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
-                        )
-                        Spacer(Modifier.width(8.dp)) // Reducido de 10dp a 8dp
+                        // El lado izquierdo queda limpio sin Checkbox físico
                         Column(Modifier.weight(1f)) { 
                             Text(
                                 text = cal.displayName, 
-                                fontWeight = FontWeight.Medium, 
-                                fontSize = 14.sp, // Reducido de 15sp a 14sp
+                                fontWeight = if (isFavorite) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 15.sp,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
+                                color = CalendarioTheme.colors.textSystem
                             )
                             Text(
                                 text = cal.accountName, 
-                                fontSize = 11.sp, // Reducido de 12sp a 11sp
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                fontSize = 12.sp,
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             ) 
                         }
-                        if (cal.canModify) {
-                            IconButton(
-                                onClick = { 
-                                    onSetFavorite(cal.id)
-                                    val set = currentIds.toMutableSet()
-                                    set.add(cal.id)
-                                    currentIds = set 
-                                },
-                                modifier = Modifier.size(40.dp) // Reducido de 48dp (default) a 40dp
-                            ) { 
+                        
+                        // Icono dinÃ¡mico a la derecha (Mutante)
+                        Box(
+                            modifier = Modifier.size(32.dp).offset(y = (-2).dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isFavorite) {
                                 Icon(
-                                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline, 
-                                    contentDescription = null, 
-                                    tint = if (isFavorite) CalendarioTheme.colors.cabecera else Color.Gray,
-                                    modifier = Modifier.size(20.dp) // Icono un poco más pequeño
-                                ) 
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.cabecera,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            } else if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.cabecera,
+                                    modifier = Modifier.size(22.dp)
+                                )
                             }
-                        } else {
-                            Spacer(Modifier.width(8.dp)) // Espacio de seguridad si no hay estrella
                         }
                     }
                 }
