@@ -412,43 +412,36 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val adjustments = loadHolidayAdjustments(context)
         val workingDayIds = adjustments.asSequence().filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
 
-        // 1. DEDUPLICACIÃ“N AGRESIVA POR CONTENIDO
-        // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicaciÃ³n.
-        val combined = systemEvents + cachedHistory
-        val deduped = combined.distinctBy { 
-            "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}"
-        }
+        // 1. GENERACIÓN DE CLAVES DE SISTEMA (Para comparación rápida)
+        val systemKeys = systemEvents.asSequence()
+            .map { "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}" }
+            .toSet()
 
-        // 2. PURGA DE EVENTOS BORRADOS (Saneamiento de "Fantasmas")
-        // Creamos un Set de claves de lo que Google Calendar dice que existe HOY
-        val systemKeys = systemEvents.map { "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}" }.toSet()
-
-        val finalEvents = deduped.filter { event ->
-            val eventKey = "${event.date}_${event.title.trim().lowercase().unaccent()}_${event.startTime}"
-            
-            // A) Filtro de Seguridad: No recuperar si estÃ¡ marcado como borrado o laborable
-            if ((event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
-
-            // B) LÃ³gica de ResurrecciÃ³n Inteligente:
-            // Si el evento NO estÃ¡ en el sistema pero SI en el historial...
-            if (!systemKeys.contains(eventKey)) {
-                // Si es un festivo manual (ID < 0), solo lo mantenemos si es FRESCO (systemEvents lo trae)
-                // Al no estar en systemKeys, significa que es un manual viejo del JSON -> Borrar.
-                if (event.id < 0) return@filter false
+        // 2. PROCESAMIENTO UNIFICADO CON SECUENCIAS
+        // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicación.
+        return@withContext (systemEvents + cachedHistory).asSequence()
+            // Deduplicación agresiva por contenido
+            .distinctBy { "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}" }
+            .filter { event ->
+                val eventKey = "${event.date}_${event.title.trim().lowercase().unaccent()}_${event.startTime}"
                 
-                // Si es un evento de Google (ID >= 0) y es FUTURO o muy reciente, 
-                // confiamos en que si Google no lo trae es porque se ha BORRADO.
-                // Usamos un margen de 7 dÃ­as para proteger contra fallos temporales de red.
-                if (event.date.isAfter(today.minusDays(7))) return@filter false
-            }
-            
-            true
-        }
+                // A) Filtro de Seguridad: No recuperar si está marcado como borrado o laborable
+                if ((event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
 
-        // 3. RECORTAR VENTANA (JSON Ligero pero inclusivo: 20 aÃ±os atrÃ¡s, 6 adelante)
-        val cutoffStart = today.minusYears(20)
-        val cutoffEnd = today.plusYears(6)
-        
-        finalEvents.filter { it.date.isAfter(cutoffStart) && it.date.isBefore(cutoffEnd) }
+                // B) Lógica de Resurrección Inteligente:
+                // Si el evento NO está en el sistema pero SI en el historial...
+                if (!systemKeys.contains(eventKey)) {
+                    // Si es un festivo manual (ID < 0), solo lo mantenemos si es FRESCO (systemEvents lo trae)
+                    if (event.id < 0) return@filter false
+                    
+                    // Si es un evento de Google (ID >= 0) y es FUTURO o muy reciente, 
+                    // confiamos en que si Google no lo trae es porque se ha BORRADO.
+                    if (event.date.isAfter(today.minusDays(7))) return@filter false
+                }
+                true
+            }
+            // 3. RECORTAR VENTANA (JSON Ligero pero inclusivo: 20 años atrás, 6 adelante)
+            .filter { it.date.isAfter(today.minusYears(20)) && it.date.isBefore(today.plusYears(6)) }
+            .toList()
     }
 }
