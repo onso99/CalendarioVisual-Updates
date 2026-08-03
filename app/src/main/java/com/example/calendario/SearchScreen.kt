@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -60,6 +61,7 @@ fun SearchScreen(
     searchResults: Map<LocalDate, List<Festivo>>,
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
+    onOpenHolidayManager: (Festivo) -> Unit,
     onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>,
 ) {
@@ -219,21 +221,33 @@ fun SearchScreen(
                             )
                         }
                         
-                        items(events, key = { it.id.toString() + "_" + it.date.toString() + "_" + it.startTime }) { festivo ->
+                        items(events, key = { it.adn }) { festivo ->
                             val isSelected = selectedFestivos.contains(festivo)
+                            val isLocalHoliday = festivo.calendarId == -1L && festivo.isFromHolidaySource
+                            val isSpecial = isLocalHoliday || festivo.isBirthday || festivo.isFromHolidaySource
+                            
                             EventRow(
                                 festivo = festivo,
                                 availableCalendars = availableCalendars,
                                 isSelected = isSelected,
+                                isSpecial = isSpecial,
                                 onEventClick = { clicked ->
                                     if (isSelectionMode) {
-                                        selectedFestivos = if (isSelected) selectedFestivos - clicked else selectedFestivos + clicked
+                                        if (!isSpecial) {
+                                            selectedFestivos = if (isSelected) selectedFestivos - clicked else selectedFestivos + clicked
+                                        }
                                     } else {
-                                        onEventClick(clicked)
+                                        if (isLocalHoliday) {
+                                            onOpenHolidayManager(clicked)
+                                        } else {
+                                            onEventClick(clicked)
+                                        }
                                     }
                                 },
                                 onLongClick = { target ->
-                                    selectedFestivos += target
+                                    if (!isSpecial) {
+                                        selectedFestivos += target
+                                    }
                                 },
                                 searchScope = searchScope
                             )
@@ -300,6 +314,7 @@ private fun EventRow(
     festivo: Festivo,
     availableCalendars: List<CalendarInfo>,
     isSelected: Boolean,
+    isSpecial: Boolean,
     onEventClick: (Festivo) -> Unit,
     onLongClick: (Festivo) -> Unit,
     searchScope: SearchScope
@@ -365,8 +380,10 @@ private fun EventRow(
             .combinedClickable(
                 onClick = { onEventClick(festivo) },
                 onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onLongClick(festivo)
+                    if (!isSpecial) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onLongClick(festivo)
+                    }
                 }
             )
             .padding(horizontal = 8.dp, vertical = 10.dp),
@@ -453,6 +470,15 @@ private fun EventRow(
                 contentDescription = null,
                 tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
                 modifier = Modifier.padding(start = 8.dp).size(16.dp)
+            )
+        }
+
+        if (isSpecial) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                modifier = Modifier.padding(start = 8.dp).size(14.dp)
             )
         }
     }
