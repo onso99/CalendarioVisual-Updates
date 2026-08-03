@@ -106,7 +106,8 @@ fun Festivo.toDto() = FestivoDto(
     fullStartMillis = this.fullStartMillis,
     fullEndMillis = this.fullEndMillis,
     repeatCount = this.repeatCount,
-    dateStr = this.date.toString(), // Guardamos la fecha explÃ­cita
+    adn = this.adn,
+    dateStr = this.date.toString(), // Guardamos la fecha explícita
     lastModified = this.lastModified,
     isDeleted = this.isDeleted
 )
@@ -157,6 +158,7 @@ fun FestivoDto.toFestivo(): Festivo? {
         fullStartMillis = this.fullStartMillis,
         fullEndMillis = this.fullEndMillis,
         repeatCount = this.repeatCount,
+        adn = this.adn ?: "${finalDate}_${(this.title ?: "").trim().lowercase().unaccent()}_${this.startTimeStr}",
         lastModified = this.lastModified ?: System.currentTimeMillis(),
         isDeleted = this.isDeleted ?: false
     )
@@ -582,7 +584,8 @@ fun readFestivosFromCalendarsSync(
                         calendarId = calendarId, isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday,
                         isLongPeriod = isLongPeriod, lane = assignedLane, totalDays = totalDaysCount, currentDay = dayIndex,
-                        customColor = customColorMap[eventId], fullStartMillis = beginMillis, fullEndMillis = endMillis, repeatCount = extractedCount
+                        customColor = customColorMap[eventId], fullStartMillis = beginMillis, fullEndMillis = endMillis, repeatCount = extractedCount,
+                        adn = "${currentLoopDate}_${title.trim().lowercase().unaccent()}_${if (currentLoopDate == startDate) startTime else null}"
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)
                     dayIndex++
@@ -600,7 +603,8 @@ fun readFestivosFromCalendarsSync(
             id = stableId,
             title = manual.title, description = "Festivo manual", date = manual.date,
             startTime = null, endTime = null, isAllDay = true, calendarId = -1L,
-            isFromHolidaySource = true, rrule = null, age = null, isBirthday = false
+            isFromHolidaySource = true, rrule = null, age = null, isBirthday = false,
+            adn = "${manual.date}_${manual.title.trim().lowercase().unaccent()}_null"
         ))
     }
     

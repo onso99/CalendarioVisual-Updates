@@ -144,11 +144,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     mergeHistoryWithSystem(cachedHistory, systemEvents)
                 }
                 
-                // GUARDADO SANEADO: Aseguramos que lo que va al disco y a Drive estÃ© deduplicado por ADN
+                // GUARDADO SANEADO: Aseguramos que lo que va al disco y a Drive esté deduplicado por ADN
                 val cleanListToSave = withContext(Dispatchers.Default) {
-                    finalEventsList.distinctBy { 
-                        "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}"
-                    }
+                    finalEventsList.distinctBy { it.adn }
                 }
 
                 withContext(Dispatchers.IO) {
@@ -414,23 +412,21 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
         // 1. GENERACIÓN DE CLAVES DE SISTEMA (Para comparación rápida)
         val systemKeys = systemEvents.asSequence()
-            .map { "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}" }
+            .map { it.adn }
             .toSet()
 
         // 2. PROCESAMIENTO UNIFICADO CON SECUENCIAS
         // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicación.
         return@withContext (systemEvents + cachedHistory).asSequence()
             // Deduplicación agresiva por contenido
-            .distinctBy { "${it.date}_${it.title.trim().lowercase().unaccent()}_${it.startTime}" }
+            .distinctBy { it.adn }
             .filter { event ->
-                val eventKey = "${event.date}_${event.title.trim().lowercase().unaccent()}_${event.startTime}"
-                
                 // A) Filtro de Seguridad: No recuperar si está marcado como borrado o laborable
                 if ((event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
 
                 // B) Lógica de Resurrección Inteligente:
                 // Si el evento NO está en el sistema pero SI en el historial...
-                if (!systemKeys.contains(eventKey)) {
+                if (!systemKeys.contains(event.adn)) {
                     // Si es un festivo manual (ID < 0), solo lo mantenemos si es FRESCO (systemEvents lo trae)
                     if (event.id < 0) return@filter false
                     

@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
 import android.widget.Toast
+import java.text.Normalizer
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -337,4 +338,10 @@ fun findBestCalendarCandidate(calendars: List<CalendarInfo>): CalendarInfo? {
             if (calendar.isPrimary) score += 5
             score
         }
+}
+
+private val REGEX_UNACCENT = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+fun CharSequence.unaccent(): String {
+    val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
+    return REGEX_UNACCENT.replace(temp, "")
 }

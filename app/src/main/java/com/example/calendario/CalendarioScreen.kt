@@ -72,7 +72,6 @@ import com.example.calendario.ui.theme.isColorDark
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.Normalizer
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
@@ -83,11 +82,6 @@ import java.time.temporal.WeekFields
 enum class CalendarViewMode { MONTHLY, YEARLY }
 enum class SearchScope { MONTH, YEAR, ALL }
 
-private val REGEX_UNACCENT = "\\p{InCombiningDiacriticalMarks}+".toRegex()
-fun CharSequence.unaccent(): String {
-    val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
-    return REGEX_UNACCENT.replace(temp, "")
-}
 
 @Composable
 private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {

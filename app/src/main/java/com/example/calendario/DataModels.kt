@@ -26,6 +26,7 @@ data class Festivo(
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
+    val adn: String = "", // Huella digital única para deduplicación y refresco
     // --- Campos para Sincronización Segura ---
     val lastModified: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false
@@ -65,6 +66,7 @@ data class FestivoDto(
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
     val dateStr: String? = null,
+    val adn: String? = null,
     // --- Campos para SincronizaciÃ³n Segura ---
     val lastModified: Long? = null,
     val isDeleted: Boolean? = false
