@@ -1,3 +1,5 @@
+2026-08-03 - v2.1.50 Saneamiento del arranque: carga paralela y optimización de flujos
+2026-08-03 - v2.1.49 Búsqueda: implementado sistema de candados y redirección inteligente
 2026-08-03 - v2.1.48 Optimización del ADN de datos y unificación técnica
 2026-08-03 - Fusionadas optimizaciones: Compose Keys + Secuencias
 2026-08-03 - v2.1.48 Procesamiento de eventos con Secuencias optimizado

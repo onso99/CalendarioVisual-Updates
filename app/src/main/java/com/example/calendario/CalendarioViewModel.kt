@@ -13,6 +13,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -78,41 +79,43 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 // Asegurar que el respaldo automático esté programado en el sistema
                 BackupScheduler.ensureBackupScheduled(context)
 
-                // --- CARGA DE NOTAS DIARIAS ---
-                val notes = withContext(Dispatchers.IO) { loadNotesFromDisk(context) }
-                val notesMap = notes.asSequence().filter { !it.isDeleted }.associateBy { it.dateStr }
-
-                // --- PASO 0: CARGA ULTRA-INSTANTÁNEA (JSON + Migración) ---
-                var cachedHistory = withContext(Dispatchers.IO) { 
+                // --- 1. CARGA PARALELA INICIAL (IO) ---
+                val notesTask = async(Dispatchers.IO) { loadNotesFromDisk(context) }
+                val historyTask = async(Dispatchers.IO) { 
                     runCatching { loadHistoryFromDisk(context) }.getOrDefault(emptyList())
                 }
                 
+                val notes = notesTask.await()
+                val notesMap = notes.asSequence().filter { !it.isDeleted }.associateBy { it.dateStr }
+                var cachedHistory = historyTask.await()
+                
                 // MIGRACIÓN: Si el histórico está vacío, rescatamos de Prefs antiguos
                 if (cachedHistory.isEmpty()) {
-                    val oldPrefsEvents = loadEventsFromPrefs(context)
-                    if (oldPrefsEvents.isNotEmpty()) {
-                        cachedHistory = oldPrefsEvents.values.flatten()
-                    }
+                    cachedHistory = withContext(Dispatchers.IO) { loadEventsFromPrefs(context).values.flatten() }
                 }
                 
-                // BLINDAJE DE ARRANQUE: Limpiamos la caché antes de mostrarla por primera vez
+                // --- 2. ARRANQUE "FLASH" (Paso 0) ---
+                // Mostramos lo que tenemos en disco inmediatamente sin filtros pesados
                 if (cachedHistory.isNotEmpty()) {
-                    cachedHistory = withContext(Dispatchers.Default) {
-                        // Aplicamos la misma lógica de fusión pero sin eventos de sistema nuevos aún
-                        mergeHistoryWithSystem(cachedHistory, emptyList())
+                    val fastGrouped = withContext(Dispatchers.Default) { 
+                        cachedHistory.groupBy { it.date } 
                     }
                     _uiState.update { state -> 
                         state.copy(
-                            eventsByDate = cachedHistory.groupBy { it.date },
+                            eventsByDate = fastGrouped,
+                            dailyNotes = notesMap,
                             hasCalendarPermission = true,
                         ) 
                     }
                 }
 
-                // --- PASO 1: TAREAS DE SISTEMA (Calendarios disponibles) ---
-                var selectedIds = loadSelectedCalendarIds(context)
-                var favoriteId = getFavoriteCalendarId(context)
+                // --- 3. TAREAS DE SISTEMA (Calendarios disponibles) ---
+                val selectedIdsTask = async(Dispatchers.IO) { loadSelectedCalendarIds(context) }
+                val favoriteIdTask = async(Dispatchers.IO) { getFavoriteCalendarId(context) }
                 val availableCalendars = loadAvailableCalendarsSuspend(context)
+
+                var selectedIds = selectedIdsTask.await()
+                var favoriteId = favoriteIdTask.await()
 
                 val favoriteExists = availableCalendars.any { it.id == favoriteId }
                 if (((favoriteId == null) || !favoriteExists) && availableCalendars.any { it.canModify }) {
@@ -144,30 +147,28 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     mergeHistoryWithSystem(cachedHistory, systemEvents)
                 }
                 
-                // GUARDADO SANEADO: Aseguramos que lo que va al disco y a Drive esté deduplicado por ADN
-                val cleanListToSave = withContext(Dispatchers.Default) {
-                    finalEventsList.distinctBy { it.adn }
+                // GUARDADO EN SEGUNDO PLANO: No bloqueamos la UI final por el disco
+                launch(Dispatchers.IO) {
+                    saveHistoryToDisk(context, finalEventsList)
                 }
 
-                withContext(Dispatchers.IO) {
-                    saveHistoryToDisk(context, cleanListToSave)
+                _uiState.update { state -> 
+                    state.copy(
+                        eventsByDate = finalEventsList.groupBy { it.date },
+                        availableCalendars = availableCalendars,
+                        selectedCalendarIds = validSelectedIds,
+                        hasCalendarPermission = true,
+                        favoriteCalendarId = favoriteId,
+                        dailyNotes = notesMap,
+                    )
                 }
-
-                _uiState.value = CalendarioUiState(
-                    eventsByDate = cleanListToSave.groupBy { it.date },
-                    availableCalendars = availableCalendars,
-                    selectedCalendarIds = validSelectedIds,
-                    hasCalendarPermission = true,
-                    favoriteCalendarId = favoriteId,
-                    dailyNotes = notesMap,
-                )
 
                 if (validSelectedIds != selectedIds) {
                     saveSelectedCalendarIds(context, validSelectedIds)
                 }
                 
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
-                WidgetStateManager.updateWidgetState(context, cleanListToSave)
+                WidgetStateManager.updateWidgetState(context, finalEventsList)
 
             } catch (e: Exception) {
                 if (e !is kotlinx.coroutines.CancellationException) {
