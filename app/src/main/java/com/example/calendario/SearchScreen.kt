@@ -219,7 +219,7 @@ fun SearchScreen(
                             )
                         }
                         
-                        items(events) { festivo ->
+                        items(events, key = { it.id.toString() + "_" + it.date.toString() + "_" + it.startTime }) { festivo ->
                             val isSelected = selectedFestivos.contains(festivo)
                             EventRow(
                                 festivo = festivo,
