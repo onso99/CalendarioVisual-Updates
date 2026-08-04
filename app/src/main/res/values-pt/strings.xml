@@ -22,11 +22,11 @@
     <string name="apply">Aplicar</string>
     <string name="no_title">(Sem título)</string>
     <string name="close">Fechar</string>
-    <string name="year_selection_title">Seleção de Ano</string>
+    <string name="year_selection_title">Ano</string>
     <string name="previous_year">Ano anterior</string>
     <string name="next_year">Ano seguinte</string>
     <string name="accept">Aceitar</string>
-    <string name="select_mode_title">Selecionar Modo</string>
+    <string name="select_mode_title">Modo</string>
     <string name="custom_selected">Selecionado</string>
     <string name="confirm_deletion_title">Confirmar eliminação</string>
     <string name="confirm_deletion_message">Tem a certeza que deseja eliminar este evento: \"%1$s\"?</string>
@@ -40,8 +40,8 @@
     <string name="date">Data</string>
     <string name="end_time">Fim</string>
     <string name="lanes_full_error">O dia %1$s excedeu o limite de 5 eventos longos. Tente criar eventos normais com repetição.</string>
-    <string name="select_calendar_title">Selecionar Calendário</string>
-    <string name="select_time_title">Selecionar hora</string>
+    <string name="select_calendar_title">Calendário</string>
+    <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">Não se repete</string>
     <string name="every_day">Todos os dias</string>
     <string name="every_week">Todas as semanas</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">A aplicação inclui um Widget para o ecrã inicial que mostra os próximos eventos. Pode personalizar a sua aparência escolhendo o número de eventos a mostrar, alterando o tamanho da letra e modificando as suas cores.</string>
     <string name="copied_to_clipboard">Copiado: %1$s</string>
-    <string name="select_color_title">Selecionar Cor</string>
+    <string name="select_color_title">Cor</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Limpar</string>
     <string name="copy_color">Copiar cor</string>

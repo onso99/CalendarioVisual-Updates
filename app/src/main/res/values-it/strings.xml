@@ -22,11 +22,11 @@
     <string name="apply">Applica</string>
     <string name="no_title">(Senza titolo)</string>
     <string name="close">Chiudi</string>
-    <string name="year_selection_title">Selezione Anno</string>
+    <string name="year_selection_title">Anno</string>
     <string name="previous_year">Anno precedente</string>
     <string name="next_year">Anno successivo</string>
     <string name="accept">Accetta</string>
-    <string name="select_mode_title">Seleziona Modalità</string>
+    <string name="select_mode_title">Modalità</string>
     <string name="custom_selected">Selezionato</string>
     <string name="confirm_deletion_title">Conferma eliminazione</string>
     <string name="confirm_deletion_message">Sei sicuro di voler eliminare questo evento: \"%1$s\"?</string>
@@ -40,8 +40,8 @@
     <string name="date">Data</string>
     <string name="end_time">Fine</string>
     <string name="lanes_full_error">Il giorno %1$s ha superato il limite di 5 eventi lunghi. Prova a creare eventi normali con ripetizione.</string>
-    <string name="select_calendar_title">Seleziona Calendario</string>
-    <string name="select_time_title">Seleziona ora</string>
+    <string name="select_calendar_title">Calendario</string>
+    <string name="select_time_title">Ora</string>
     <string name="does_not_repeat">Non si ripete</string>
     <string name="every_day">Ogni giorno</string>
     <string name="every_week">Ogni settimana</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'applicazione include un Widget per la schermata Home che mostra i prossimi eventi. Puoi personalizzare il suo aspetto scegliendo il numero di eventi da mostrare, cambiando la dimensione del carattere e modificando i suoi colori.</string>
     <string name="copied_to_clipboard">Copiato: %1$s</string>
-    <string name="select_color_title">Seleziona Colore</string>
+    <string name="select_color_title">Colore</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Cancella</string>
     <string name="copy_color">Copia colore</string>

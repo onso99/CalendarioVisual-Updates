@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 enum class ThemeSetting(@field:StringRes val displayNameRes: Int) {
+    SYSTEM(R.string.system_default),
     LIGHT(R.string.light_theme),
-    DARK(R.string.dark_theme),
-    SYSTEM(R.string.system_default)
+    DARK(R.string.dark_theme)
 }
 
 class ThemeManager(context: Context) {

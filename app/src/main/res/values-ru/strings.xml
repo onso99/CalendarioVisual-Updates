@@ -22,11 +22,11 @@
     <string name="apply">Применить</string>
     <string name="no_title">(Без названия)</string>
     <string name="close">Закрыть</string>
-    <string name="year_selection_title">Выбор Года</string>
+    <string name="year_selection_title">Год</string>
     <string name="previous_year">Предыдущий год</string>
     <string name="next_year">Следующий год</string>
     <string name="accept">ОК</string>
-    <string name="select_mode_title">Выбор Режима</string>
+    <string name="select_mode_title">Режим</string>
     <string name="custom_selected">Выбрано</string>
     <string name="confirm_deletion_title">Подтверждение удаления</string>
     <string name="confirm_deletion_message">Вы уверены, что хотите удалить это событие: \"%1$s\"?</string>
@@ -40,8 +40,8 @@
     <string name="date">Дата</string>
     <string name="end_time">Конец</string>
     <string name="lanes_full_error">День %1$s превысил лимит в 5 длительных событий. Попробуйте создать обычные события с повторением.</string>
-    <string name="select_calendar_title">Выберите Календарь</string>
-    <string name="select_time_title">Выберите время</string>
+    <string name="select_calendar_title">Календарь</string>
+    <string name="select_time_title">Время</string>
     <string name="does_not_repeat">Не повторяется</string>
     <string name="every_day">Каждый день</string>
     <string name="every_week">Каждую неделю</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Виджет</string>
     <string name="help_widget_1">Приложение включает виджет для главного экрана, показывающий ближайшие события. Можно настроить его внешний вид, выбрав количество отображаемых событий, изменив размер шрифта и цвета.</string>
     <string name="copied_to_clipboard">Скопировано: %1$s</string>
-    <string name="select_color_title">Выбор Цвета</string>
+    <string name="select_color_title">Цвет</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Очистить</string>
     <string name="copy_color">Копировать цвет</string>

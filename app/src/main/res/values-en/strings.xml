@@ -22,11 +22,11 @@
     <string name="apply">Apply</string>
     <string name="no_title">(No title)</string>
     <string name="close">Close</string>
-    <string name="year_selection_title">Year Selection</string>
+    <string name="year_selection_title">Year</string>
     <string name="previous_year">Previous year</string>
     <string name="next_year">Next year</string>
     <string name="accept">Accept</string>
-    <string name="select_mode_title">Select Mode</string>
+    <string name="select_mode_title">Mode</string>
     <string name="custom_selected">Selected</string>
     <string name="confirm_deletion_title">Confirm deletion</string>
     <string name="confirm_deletion_message">Are you sure you want to delete this event: \"%1$s\"?</string>
@@ -40,8 +40,8 @@
     <string name="date">Date</string>
     <string name="end_time">End</string>
     <string name="lanes_full_error">Day %1$s has exceeded the limit of 5 long events. Try creating normal events with repetition.</string>
-    <string name="select_calendar_title">Select Calendar</string>
-    <string name="select_time_title">Select time</string>
+    <string name="select_calendar_title">Calendar</string>
+    <string name="select_time_title">Time</string>
     <string name="does_not_repeat">Does not repeat</string>
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">The application includes a Widget for the Home screen that shows upcoming events. You can customize its appearance by choosing the number of events to show, changing the font size and modifying its colors.</string>
     <string name="copied_to_clipboard">Copied: %1$s</string>
-    <string name="select_color_title">Select Color</string>
+    <string name="select_color_title">Color</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Clear</string>
     <string name="copy_color">Copy color</string>

@@ -22,11 +22,11 @@
     <string name="apply">Aplicar</string>
     <string name="no_title">(Sense títol)</string>
     <string name="close">Tancar</string>
-    <string name="year_selection_title">Selecció d\'Any</string>
+    <string name="year_selection_title">Any</string>
     <string name="previous_year">Any anterior</string>
     <string name="next_year">Any següent</string>
     <string name="accept">Acceptar</string>
-    <string name="select_mode_title">Seleccionar Mode</string>
+    <string name="select_mode_title">Mode</string>
     <string name="custom_selected">Seleccionat</string>
     <string name="confirm_deletion_title">Confirmar eliminació</string>
     <string name="confirm_deletion_message">Segur que vols eliminar aquest esdeveniment: \"%1$s\"?</string>
@@ -40,8 +40,8 @@
     <string name="date">Data</string>
     <string name="end_time">Fi</string>
     <string name="lanes_full_error">El dia %1$s ha superat el límit de 5 esdeveniments llargs. Intenta crear esdeveniments normals amb repetició.</string>
-    <string name="select_calendar_title">Seleccionar Calendari</string>
-    <string name="select_time_title">Seleccionar hora</string>
+    <string name="select_calendar_title">Calendari</string>
+    <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">No es repeteix</string>
     <string name="every_day">Cada dia</string>
     <string name="every_week">Cada setmana</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'aplicació inclou un Widget per a la pantalla d\'Inici que mostra els propers esdeveniments. Es pot personalitzar la seva aparença triant el nombre d\'esdeveniments a mostrar, canviant la mida de la lletra i modificat els seus colors.</string>
     <string name="copied_to_clipboard">Copiat: %1$s</string>
-    <string name="select_color_title">Seleccionar Color</string>
+    <string name="select_color_title">Color</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Netejar</string>
     <string name="copy_color">Copiar color</string>

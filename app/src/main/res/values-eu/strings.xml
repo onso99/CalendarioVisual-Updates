@@ -22,11 +22,11 @@
     <string name="apply">Aplikatu</string>
     <string name="no_title">(Izenbururik gabe)</string>
     <string name="close">Itxi</string>
-    <string name="year_selection_title">Urte Hautaketa</string>
+    <string name="year_selection_title">Urtea</string>
     <string name="previous_year">Aurreko urtea</string>
     <string name="next_year">Hurrengo urtea</string>
     <string name="accept">Ados</string>
-    <string name="select_mode_title">Hautatu Modua</string>
+    <string name="select_mode_title">Modua</string>
     <string name="custom_selected">Hautatua</string>
     <string name="confirm_deletion_title">Baieztatu ezabatzea</string>
     <string name="confirm_deletion_message">Ziur al zaude gertaera hau ezabatu nahi duzula: \"%1$s\"?</string>
@@ -40,8 +40,8 @@
     <string name="date">Data</string>
     <string name="end_time">Amaiera</string>
     <string name="lanes_full_error">%1$s egunak 5 aldi luzeko gertaeren muga gainditu du. Saiatu errepikapena duten gertaera arruntak sortzen.</string>
-    <string name="select_calendar_title">Hautatu Egutegia</string>
-    <string name="select_time_title">Hautatu ordua</string>
+    <string name="select_calendar_title">Egutegia</string>
+    <string name="select_time_title">Ordua</string>
     <string name="does_not_repeat">Ez da errepikatzen</string>
     <string name="every_day">Egunero</string>
     <string name="every_week">Astero</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Widget-a</string>
     <string name="help_widget_1">Aplikazioak Widget bat du Hasiera pantailarako, hurrengo gertaerak erakusten dituena. Itxura pertsonalizatu daiteke erakutsiko den gertaera kopurua aukera dezakezu, letraren tamaina aldatuz eta koloreak doituz.</string>
     <string name="copied_to_clipboard">Kopiatua: %1$s</string>
-    <string name="select_color_title">Hautatu Kolorea</string>
+    <string name="select_color_title">Kolorea</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Garbitu</string>
     <string name="copy_color">Kopiatu kolorea</string>

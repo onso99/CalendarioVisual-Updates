@@ -22,11 +22,11 @@
     <string name="apply">应用</string>
     <string name="no_title">(无标题)</string>
     <string name="close">关闭</string>
-    <string name="year_selection_title">选择年份</string>
+    <string name="year_selection_title">年</string>
     <string name="previous_year">上一年</string>
     <string name="next_year">下一年</string>
     <string name="accept">确定</string>
-    <string name="select_mode_title">选择模式</string>
+    <string name="select_mode_title">模式</string>
     <string name="custom_selected">已选择</string>
     <string name="confirm_deletion_title">确认删除</string>
     <string name="confirm_deletion_message">您确定要删除此事件吗：\"%1$s\"？</string>
@@ -40,8 +40,8 @@
     <string name="date">日期</string>
     <string name="end_time">结束</string>
     <string name="lanes_full_error">%1$s 已超过 5 个长期事件的限制。请尝试创建带重复的普通事件。</string>
-    <string name="select_calendar_title">选择日历</string>
-    <string name="select_time_title">选择时间</string>
+    <string name="select_calendar_title">日历</string>
+    <string name="select_time_title">时间</string>
     <string name="does_not_repeat">不重复</string>
     <string name="every_day">每天</string>
     <string name="every_week">每周</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">小组件</string>
     <string name="help_widget_1">该应用包含一个用于主屏幕的小组件，显示即将到来的事件。您可以通过选择显示的事件数量、更改字体大小和修改其颜色来自定义其外观。</string>
     <string name="copied_to_clipboard">已复制：%1$s</string>
-    <string name="select_color_title">选择颜色</string>
+    <string name="select_color_title">颜色</string>
     <string name="hex_argb">十六进制 (ARGB)</string>
     <string name="clear">清除</string>
     <string name="copy_color">复制颜色</string>

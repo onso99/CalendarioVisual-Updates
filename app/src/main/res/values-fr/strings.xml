@@ -22,11 +22,11 @@
     <string name="apply">Appliquer</string>
     <string name="no_title">(Sans titre)</string>
     <string name="close">Fermer</string>
-    <string name="year_selection_title">Sélection de l\'année</string>
+    <string name="year_selection_title">Année</string>
     <string name="previous_year">Année précédente</string>
     <string name="next_year">Année suivante</string>
     <string name="accept">Accepter</string>
-    <string name="select_mode_title">Sélectionner le mode</string>
+    <string name="select_mode_title">Mode</string>
     <string name="custom_selected">Sélectionné</string>
     <string name="confirm_deletion_title">Confirmer la suppression</string>
     <string name="confirm_deletion_message">Êtes-vous sûr de vouloir supprimer cet événement : \"%1$s\" ?</string>
@@ -40,8 +40,8 @@
     <string name="date">Date</string>
     <string name="end_time">Fin</string>
     <string name="lanes_full_error">Le jour %1$s a dépassé la limite de 5 événements longs. Essayez de créer des événements normaux avec répétition.</string>
-    <string name="select_calendar_title">Sélectionner un calendrier</string>
-    <string name="select_time_title">Sélectionner l\'heure</string>
+    <string name="select_calendar_title">Calendrier</string>
+    <string name="select_time_title">Heure</string>
     <string name="does_not_repeat">Ne se répète pas</string>
     <string name="every_day">Chaque jour</string>
     <string name="every_week">Chaque semaine</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">Widget</string>
     <string name="help_widget_1">L\'application comprend un Widget pour l\'écran d\'accueil qui affiche les prochains événements. Vous pouvez personnaliser son apparence en choisissant le nombre d\'événements à afficher, en changeant la taille de la police et en modifiant ses couleurs.</string>
     <string name="copied_to_clipboard">Copié : %1$s</string>
-    <string name="select_color_title">Sélectionner une couleur</string>
+    <string name="select_color_title">Couleur</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">Effacer</string>
     <string name="copy_color">Copier la couleur</string>

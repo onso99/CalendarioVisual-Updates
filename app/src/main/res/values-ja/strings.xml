@@ -22,11 +22,11 @@
     <string name="apply">適用</string>
     <string name="no_title">(タイトルなし)</string>
     <string name="close">閉じる</string>
-    <string name="year_selection_title">年の選択</string>
+    <string name="year_selection_title">年</string>
     <string name="previous_year">前年</string>
     <string name="next_year">翌年</string>
     <string name="accept">OK</string>
-    <string name="select_mode_title">モードを選択</string>
+    <string name="select_mode_title">モード</string>
     <string name="custom_selected">選択済み</string>
     <string name="confirm_deletion_title">削除の確認</string>
     <string name="confirm_deletion_message">このイベントを削除してもよろしいですか：\"%1$s\"？</string>
@@ -40,8 +40,8 @@
     <string name="date">日付</string>
     <string name="end_time">終了</string>
     <string name="lanes_full_error">%1$sは長期イベントの制限数（5件）を超えています。繰り返しの通常イベントを作成してください。</string>
-    <string name="select_calendar_title">カレンダーを選択</string>
-    <string name="select_time_title">時間を選択</string>
+    <string name="select_calendar_title">カレンダー</string>
+    <string name="select_time_title">時間</string>
     <string name="does_not_repeat">繰り返さない</string>
     <string name="every_day">毎日</string>
     <string name="every_week">毎週</string>
@@ -101,7 +101,7 @@
     <string name="help_section_widget">ウィジェット</string>
     <string name="help_widget_1">ホーム画面用のウィジェットが含まれています。表示するイベント数、フォントサイズ、カラーなどをカスタマイズできます。</string>
     <string name="copied_to_clipboard">コピーしました: %1$s</string>
-    <string name="select_color_title">色の選択</string>
+    <string name="select_color_title">色</string>
     <string name="hex_argb">Hex (ARGB)</string>
     <string name="clear">クリア</string>
     <string name="copy_color">色をコピー</string>
