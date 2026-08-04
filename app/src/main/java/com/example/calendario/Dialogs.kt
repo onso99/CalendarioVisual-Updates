@@ -133,7 +133,8 @@ fun ThemeSelectionDialog(
                         Text(
                             text = stringResource(id = theme.displayNameRes),
                             modifier = Modifier.weight(1f),
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            fontWeight = if (theme == currentTheme) FontWeight.Medium else FontWeight.Normal
                         )
                         if (theme == currentTheme) {
                             val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {

@@ -531,7 +531,7 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                         Column(Modifier.weight(1f)) { 
                             Text(
                                 text = cal.displayName, 
-                                fontWeight = if (isFavorite) FontWeight.Bold else FontWeight.Normal,
+                                fontWeight = if (isFavorite) FontWeight.Medium else FontWeight.Normal,
                                 fontSize = 15.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -599,7 +599,8 @@ fun SelectCalendarDialog(calendars: List<CalendarInfo>, currentSelection: Calend
                     text = cal.displayName, 
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp,
-                    color = CalendarioTheme.colors.textSystem
+                    color = CalendarioTheme.colors.textSystem,
+                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                 )
                 if (isSelected) {
                     Icon(

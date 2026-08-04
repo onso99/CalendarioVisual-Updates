@@ -802,7 +802,7 @@ fun SettingsScreen(
                             text = accountEmail, 
                             color = CalendarioTheme.colors.textSystem, 
                             fontSize = 14.sp, 
-                            fontWeight = FontWeight.SemiBold, 
+                            fontWeight = FontWeight.Medium, 
                             textAlign = TextAlign.End, 
                             maxLines = 1, 
                             overflow = TextOverflow.Ellipsis
@@ -829,7 +829,7 @@ fun SettingsScreen(
                             text = freqLabel, 
                             color = CalendarioTheme.colors.textSystem, 
                             fontSize = 15.sp, 
-                            fontWeight = FontWeight.SemiBold 
+                            fontWeight = FontWeight.Medium 
                         )
                     }
 
@@ -1358,7 +1358,7 @@ private fun FontFamilySelectionDialog(
                             modifier = Modifier.weight(1f),
                             fontSize = 16.sp,
                             fontFamily = family,
-                            fontWeight = FontWeight.Normal // SIEMPRE Normal en el diÃ¡logo
+                            fontWeight = if (key == currentSelection) FontWeight.Medium else FontWeight.Normal
                         )
                         if (key == currentSelection) {
                             Icon(
@@ -1484,12 +1484,14 @@ private fun WeekConfigDialog(
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val isSelected = option.key == currentSelectionKey
                         Text(
-                            stringResource(id = option.displayNameRes),
+                            text = stringResource(id = option.displayNameRes),
                             modifier = Modifier.weight(1f),
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                         )
-                        if (option.key == currentSelectionKey) {
+                        if (isSelected) {
                             Icon(
                                 Icons.Default.Check,
                                 null,
@@ -1804,8 +1806,15 @@ private fun BackupFrequencyDialog(
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                        if (key == selection) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                        val isSelected = key == selection
+                        Text(
+                            text = stringResource(id = labelRes), 
+                            modifier = Modifier.weight(1f), 
+                            fontSize = 16.sp, 
+                            color = CalendarioTheme.colors.textSystem,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                        )
+                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
                     }
                 }
             }
