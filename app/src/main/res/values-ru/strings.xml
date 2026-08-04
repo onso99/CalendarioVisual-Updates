@@ -75,7 +75,7 @@
     <string name="apply_changes">Применить изменения</string>
     <string name="general">Общие</string>
     <string name="mode">Режим</string>
-    <string name="week_in_year_view">Номер недели</string>
+    <string name="week_in_year_view">№ недели</string>
     <string name="customize_colors">Настроить цвета</string>
     <string name="widget_event_count">Количество событий</string>
     <string name="widget_text_adjustment">Настройка текста</string>

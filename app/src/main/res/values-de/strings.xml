@@ -75,7 +75,7 @@
     <string name="apply_changes">Änderungen anwenden</string>
     <string name="general">Allgemein</string>
     <string name="mode">Modus</string>
-    <string name="week_in_year_view">Wochennummer</string>
+    <string name="week_in_year_view">Wochen-Nr.</string>
     <string name="customize_colors">Farben anpassen</string>
     <string name="widget_event_count">Anzahl der Ereignisse</string>
     <string name="widget_text_adjustment">Textanpassung</string>
