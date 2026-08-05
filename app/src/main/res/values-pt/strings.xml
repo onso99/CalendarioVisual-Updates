@@ -14,8 +14,8 @@
     <string name="all">Todos</string>
     <string name="pending">Pendentes</string>
     <string name="delete_recurring_event_title">Eliminar evento recorrente</string>
-    <string name="delete_single_event_option">Eliminar apenas este evento</string>
-    <string name="delete_all_events_option">Eliminar todos os eventos da série</string>
+    <string name="delete_single_event_option">Apenas este evento</string>
+    <string name="delete_all_events_option">Toda a série</string>
     <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
     <string name="read_only">(Apenas leitura)</string>
@@ -88,7 +88,7 @@
     <string name="theme_name">Nome do tema</string>
     <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vistas do calendário</string>
-    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensual e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
+    <string name="help_calendar_views_1">A aplicação tem duas vistas principais: Mensal e Anual. Pode alternar entre elas tocando no ano no cabeçalho.</string>
     <string name="help_calendar_views_2">Na vista mensal, deslize para a esquerda ou direita para mudar de mês. A seta superior esquerda no cabeçalho voltará ao mês atual.</string>
     <string name="help_section_event_management">Gestão de eventos</string>
     <string name="help_event_management_1">Toque num dia do calendário mensal para ver os seus eventos ou adicionar um novo. Também se podem criar eventos tocando no ícone (+) no cabeçalho.</string>
@@ -172,7 +172,7 @@
 
     <string name="edit_recurring_event_dialog_title">Editar evento recorrente</string>
     <string name="edit_recurring_event_dialog_single_event">Apenas este evento</string>
-    <string name="edit_recurring_event_dialog_all_events">Todos os eventos</string>
+    <string name="edit_recurring_event_dialog_all_events">Toda a série</string>
     <string name="copy_event">Copiar evento</string>
 
     <string name="holiday_manager">Gestor</string>

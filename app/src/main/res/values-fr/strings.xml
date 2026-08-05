@@ -14,8 +14,8 @@
     <string name="all">Tous</string>
     <string name="pending">En attente</string>
     <string name="delete_recurring_event_title">Supprimer l\'événement récurrent</string>
-    <string name="delete_single_event_option">Supprimer seulement cet événement</string>
-    <string name="delete_all_events_option">Supprimer tous les événements de la série</string>
+    <string name="delete_single_event_option">Seulement cet événement</string>
+    <string name="delete_all_events_option">Toute la série</string>
     <string name="delete">Supprimer</string>
     <string name="cancel">Annuler</string>
     <string name="read_only">(Lecture seule)</string>
@@ -83,7 +83,7 @@
     <string name="about">À propos de</string>
     <string name="discard_changes_title">Abandonner les modifications</string>
     <string name="discard_changes_confirmation">Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les abandonner ?</string>
-    <string name="discard">Abandonner</string>
+    <string name="discard">Annuler</string>
     <string name="export_theme_title">Enregistrer le thème</string>
     <string name="theme_name">Nom du thème</string>
     <string name="export">Enregistrer</string>
@@ -172,7 +172,7 @@
 
     <string name="edit_recurring_event_dialog_title">Modifier l\'événement récurrent</string>
     <string name="edit_recurring_event_dialog_single_event">Seulement cet événement</string>
-    <string name="edit_recurring_event_dialog_all_events">Tous les événements</string>
+    <string name="edit_recurring_event_dialog_all_events">Toute la série</string>
     <string name="copy_event">Copier l\'événement</string>
 
     <string name="holiday_manager">Gestionnaire</string>

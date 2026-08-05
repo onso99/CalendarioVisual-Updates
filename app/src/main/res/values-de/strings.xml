@@ -13,7 +13,7 @@
     <string name="events_of_month">Ereignisse %1$s</string>
     <string name="all">Alle</string>
     <string name="pending">Ausstehend</string>
-    <string name="delete_recurring_event_title">Wiederkehrendes Ereignis löschen</string>
+    <string name="delete_recurring_event_title">Serientermin löschen</string>
     <string name="delete_single_event_option">Nur dieses Ereignis löschen</string>
     <string name="delete_all_events_option">Alle Ereignisse der Serie löschen</string>
     <string name="delete">Löschen</string>
@@ -80,7 +80,7 @@
     <string name="customize_colors">Farben anpassen</string>
     <string name="widget_event_count">Anzahl der Ereignisse</string>
     <string name="widget_text_adjustment">Textanpassung</string>
-    <string name="about">Über</string>
+    <string name="about">Info</string>
     <string name="discard_changes_title">Änderungen verwerfen</string>
     <string name="discard_changes_confirmation">Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie diese verwerfen möchten?</string>
     <string name="discard">Verwerfen</string>
@@ -170,7 +170,7 @@
     <string name="unexpected_error_delete">Unerwarteter Fehler beim Löschen des Ereignisses: %1$s</string>
     <string name="unexpected_error_cancel">Unerwarteter Fehler beim Abbrechen des Ereignisses: %1$s</string>
 
-    <string name="edit_recurring_event_dialog_title">Wiederkehrendes Ereignis bearbeiten</string>
+    <string name="edit_recurring_event_dialog_title">Serientermin bearbeiten</string>
     <string name="edit_recurring_event_dialog_single_event">Nur dieses Ereignis</string>
     <string name="edit_recurring_event_dialog_all_events">Alle Ereignisse</string>
     <string name="copy_event">Ereignis kopieren</string>
@@ -260,7 +260,7 @@
     <string name="restore_holidays_label">Lokale Feiertage</string>
     <string name="restore_notes_label">Notizen</string>
     <string name="restore_events_label">Ereignisse</string>
-    <string name="backup_section_title_label">Sicherung</string>
+    <string name="backup_section_title_label">Backup</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Feiertagsmanager</string>
     <string name="color_alpha_label">A</string>

@@ -14,8 +14,8 @@
     <string name="all">Tutti</string>
     <string name="pending">In sospeso</string>
     <string name="delete_recurring_event_title">Elimina evento ricorrente</string>
-    <string name="delete_single_event_option">Elimina solo questo evento</string>
-    <string name="delete_all_events_option">Elimina tutti gli eventi della serie</string>
+    <string name="delete_single_event_option">Solo questo evento</string>
+    <string name="delete_all_events_option">Tutta la serie</string>
     <string name="delete">Elimina</string>
     <string name="cancel">Annulla</string>
     <string name="read_only">(Sola lettura)</string>
@@ -80,10 +80,10 @@
     <string name="customize_colors">Personalizza colori</string>
     <string name="widget_event_count">Numero di eventi</string>
     <string name="widget_text_adjustment">Regolazione testo</string>
-    <string name="about">Informazioni</string>
+    <string name="about">Info</string>
     <string name="discard_changes_title">Abbandona modifiche</string>
     <string name="discard_changes_confirmation">Hai modifiche non salvate. Sei sicuro di volerle abbandonare?</string>
-    <string name="discard">Abbandona</string>
+    <string name="discard">Annulla</string>
     <string name="export_theme_title">Salva Tema</string>
     <string name="theme_name">Nome del tema</string>
     <string name="export">Salva</string>
@@ -172,7 +172,7 @@
 
     <string name="edit_recurring_event_dialog_title">Modifica evento ricorrente</string>
     <string name="edit_recurring_event_dialog_single_event">Solo questo evento</string>
-    <string name="edit_recurring_event_dialog_all_events">Tutti gli eventi</string>
+    <string name="edit_recurring_event_dialog_all_events">Tutta la serie</string>
     <string name="copy_event">Copia evento</string>
 
     <string name="holiday_manager">Gestore</string>

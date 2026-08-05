@@ -65,7 +65,7 @@
     <string name="to">終了：</string>
     <string name="save">保存</string>
     <string name="end_time_before_start_time_error">終了時間は開始時間より後である必要があります</string>
-    <string name="system_default">システムデフォルト</string>
+    <string name="system_default">システム</string>
     <string name="monday">月曜日</string>
     <string name="sunday">日曜日</string>
     <string name="saturday">土曜日</string>
@@ -80,10 +80,10 @@
     <string name="customize_colors">カラーのカスタマイズ</string>
     <string name="widget_event_count">表示イベント数</string>
     <string name="widget_text_adjustment">テキスト調整</string>
-    <string name="about">このアプリについて</string>
+    <string name="about">アプリ情報</string>
     <string name="discard_changes_title">変更を破棄</string>
     <string name="discard_changes_confirmation">未保存の変更があります。破棄してもよろしいですか？</string>
-    <string name="discard">破棄</string>
+    <string name="discard">破棄する</string>
     <string name="export_theme_title">テーマを保存</string>
     <string name="theme_name">テーマ名</string>
     <string name="export">保存</string>
@@ -258,7 +258,7 @@
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="restore_prefs_label">設定</string>
     <string name="restore_holidays_label">ローカルの祝日</string>
-    <string name="restore_notes_label">メモ</string>
+    <string name="restore_notes_label">ノート</string>
     <string name="restore_events_label">イベント</string>
     <string name="backup_section_title_label">バックアップ</string>
     <string name="drive_label">ドライブ</string>

@@ -13,9 +13,9 @@
     <string name="events_of_month">События %1$s</string>
     <string name="all">Все</string>
     <string name="pending">Предстоящие</string>
-    <string name="delete_recurring_event_title">Удалить повторяющееся событие</string>
+    <string name="delete_recurring_event_title">Удалить серию</string>
     <string name="delete_single_event_option">Удалить только это событие</string>
-    <string name="delete_all_events_option">Удалить все события в серии</string>
+    <string name="delete_all_events_option">Вся серия</string>
     <string name="delete">Удалить</string>
     <string name="cancel">Отмена</string>
     <string name="read_only">(Только чтение)</string>
@@ -80,7 +80,7 @@
     <string name="customize_colors">Настроить цвета</string>
     <string name="widget_event_count">Количество событий</string>
     <string name="widget_text_adjustment">Настройка текста</string>
-    <string name="about">О программе</string>
+    <string name="about">О приложении</string>
     <string name="discard_changes_title">Отменить изменения</string>
     <string name="discard_changes_confirmation">У вас есть несохраненные изменения. Вы уверены, что хотите их отменить?</string>
     <string name="discard">Отменить</string>
@@ -172,7 +172,7 @@
 
     <string name="edit_recurring_event_dialog_title">Правка серии событий</string>
     <string name="edit_recurring_event_dialog_single_event">Только это событие</string>
-    <string name="edit_recurring_event_dialog_all_events">Все события</string>
+    <string name="edit_recurring_event_dialog_all_events">Вся серия</string>
     <string name="copy_event">Копировать событие</string>
 
     <string name="holiday_manager">Менеджер</string>

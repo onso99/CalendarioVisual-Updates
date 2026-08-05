@@ -87,13 +87,13 @@
     <string name="export_theme_title">Save Theme</string>
     <string name="theme_name">Theme name</string>
     <string name="export">Save</string>
-    <string name="help_section_calendar_views">Calendar views</string>
+    <string name="help_section_calendar_views">Calendar Views</string>
     <string name="help_calendar_views_1">The application has two main views: Monthly and Yearly. You can switch between them by tapping on the year in the header.</string>
     <string name="help_calendar_views_2">In the monthly view, swipe left or right to change the month. The upper left arrow in the header will return to the current month.</string>
-    <string name="help_section_event_management">Event management</string>
+    <string name="help_section_event_management">Event Management</string>
     <string name="help_event_management_1">Tap on a day in the monthly calendar to see its events or add a new one. Events can also be created by tapping on the (+) icon in the header.</string>
     <string name="help_event_management_2">Events (single or repeated) can be edited and deleted in any calendar that is editable.</string>
-    <string name="help_section_event_list">Event list</string>
+    <string name="help_section_event_list">Event List</string>
     <string name="help_event_list_1">Below the monthly calendar, the list of events for the month is displayed. For the current month, you can choose between seeing Pending or All events by tapping on the Pending-All button. Each event in the list can be edited and deleted.</string>
     <string name="help_section_customization">Customization</string>
     <string name="help_customization_1">From the Settings menu you can choose Light and Dark mode. You can also customize the interface colors and Import and Export color themes to share them.</string>
@@ -178,7 +178,7 @@
     <string name="holiday_manager">Manager</string>
     <string name="holiday_manager_title">Holiday Manager</string>
     <string name="festivo">Holiday</string>
-    <string name="laborable">Working day</string>
+    <string name="laborable">Workday</string>
     <string name="holiday_updated_successfully">Holiday adjustment updated</string>
 
     <string name="holidays_section">Holidays</string>
