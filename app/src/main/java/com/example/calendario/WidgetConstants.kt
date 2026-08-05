@@ -14,6 +14,7 @@ object WidgetConstants {
     const val KEY_WIDGET_EVENT_COLOR = "widget_event_color_key"
     const val KEY_WIDGET_TODAY_EVENT_COLOR = "widget_today_event_color_key"
     const val KEY_WIDGET_BACKGROUND_COLOR = "widget_background_color_key"
+    const val KEY_WIDGET_SELECTED_CALENDARS = "widget_selected_calendars_ids"
 
     val DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB = Color(0x230000DB).toArgb()
     val DEFAULT_WIDGET_EVENT_COLOR_ARGB = Color(0xFFECECEC.toInt()).toArgb()

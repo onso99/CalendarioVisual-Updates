@@ -1,9 +1,9 @@
 package com.example.calendario
 
 import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -576,6 +576,141 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                 text = stringResource(id = R.string.apply),
                 onClick = { onApplySelection(currentIds) }
             ) 
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+    )
+}
+
+@Composable
+fun SelectWidgetCalendarsDialog(
+    appActiveCalendars: List<CalendarInfo>,
+    initialSelectedIds: Set<Long>,
+    currentFavoriteId: Long?,
+    onApply: (Set<Long>) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    var currentIds by remember { mutableStateOf(initialSelectedIds) }
+    var showError by remember { mutableStateOf(false) }
+
+    // Efecto para limpiar el mensaje de error tras 5 segundos, igual que en el diálogo global
+    LaunchedEffect(showError) {
+        if (showError) {
+            delay(5000.milliseconds)
+            showError = false
+        }
+    }
+
+    val sortedCalendars = remember(appActiveCalendars, currentIds, currentFavoriteId) {
+        appActiveCalendars.sortedWith(
+            compareByDescending<CalendarInfo> { it.id == currentFavoriteId }
+                .thenByDescending { currentIds.contains(it.id) }
+                .thenBy { it.displayName }
+        )
+    }
+
+    val errorAlpha by animateFloatAsState(
+        targetValue = if (showError) 1f else 0f,
+        animationSpec = tween(durationMillis = 800),
+        label = "errorAlpha"
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(id = R.string.calendars),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Start
+                )
+                // Mensaje fijo que solo cambia opacidad para no mover la lista
+                Text(
+                    text = stringResource(id = R.string.widget_min_calendar_error),
+                    fontSize = 12.sp,
+                    color = Color.Red.copy(alpha = errorAlpha),
+                    modifier = Modifier.offset(y = (-16).dp) // Imitamos el offset del diÃ¡logo global
+                )
+            }
+        },
+        text = {
+            LazyColumn(
+                modifier = Modifier
+                    .heightIn(max = 400.dp)
+                    .fillMaxWidth()
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val offsetPx = 48.dp.roundToPx() // Reservamos el espacio para el aviso
+                        // Reportamos un alto menor al real para que los botones de abajo suban y la lista no baile
+                        layout(placeable.width, placeable.height - offsetPx) {
+                            placeable.placeRelative(0, -offsetPx)
+                        }
+                    }
+            ) {
+                items(sortedCalendars) { cal ->
+                    val isSelected = currentIds.contains(cal.id)
+                    val isFavorite = cal.id == currentFavoriteId
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable {
+                                if (isSelected) {
+                                    if (currentIds.size > 1) {
+                                        currentIds = currentIds - cal.id
+                                        showError = false
+                                    } else {
+                                        showError = true
+                                    }
+                                } else {
+                                    currentIds = currentIds + cal.id
+                                    showError = false
+                                }
+                            }
+                            .padding(vertical = 12.dp, horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                text = cal.displayName,
+                                // SÓLO el favorito de la App destaca en seminegrita
+                                fontWeight = if (isFavorite) FontWeight.Medium else FontWeight.Normal,
+                                fontSize = 15.sp,
+                                color = CalendarioTheme.colors.textSystem,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = cal.accountName,
+                                fontSize = 12.sp,
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        
+                        Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.cabecera,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            DialogConfirmButton(
+                text = stringResource(id = R.string.apply),
+                onClick = { onApply(currentIds) }
+            )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
     )

@@ -1,3 +1,4 @@
+2026-08-06 - v2.1.57 Selección de calendarios independiente para el widget moderno y refinamiento de diálogos
 2026-08-05 - v2.1.56 Correcciones en idiomas: Inglés, Alemán, Francés, Italiano, Japonés, Portugués, Ruso y Chino
 2026-08-05 - v2.1.55 Correcciones en idiomas: Galego, Català y Euskara
 2026-08-05 - v2.1.54 Selector de idioma

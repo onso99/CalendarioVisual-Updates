@@ -160,6 +160,7 @@ fun SettingsScreen(
     var showAlarmConfigDialog by remember { mutableStateOf(value = false) }
     var showBundledThemesDialog by remember { mutableStateOf(value = false) }
     var showFontFamilyDialog by remember { mutableStateOf(value = false) }
+    var showWidgetCalendarDialog by remember { mutableStateOf(value = false) }
     var showPermissionsDialog by remember { mutableStateOf(value = false) }
     var showUnlinkAccountDialog by remember { mutableStateOf(value = false) }
     var showFrequencyDialog by remember { mutableStateOf(value = false) }
@@ -325,6 +326,11 @@ fun SettingsScreen(
     val originalFontFamily = remember { widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY }
     val originalFontBold = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) }
 
+    val originalWidgetCalendarIds = remember {
+        widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
+            ?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+    }
+
     val originalAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) }
     val originalSnoozeInterval = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) }
     
@@ -346,6 +352,7 @@ fun SettingsScreen(
     var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
     var pendingFontFamily by remember { mutableStateOf(originalFontFamily) }
     var pendingFontBold by remember { mutableStateOf(originalFontBold) }
+    var pendingWidgetCalendarIds by remember { mutableStateOf(originalWidgetCalendarIds) }
     
     var pendingAlarmOffset by remember { mutableFloatStateOf(originalAlarmOffset.toFloat()) }
     var pendingSnoozeInterval by remember { mutableFloatStateOf(originalSnoozeInterval.toFloat()) }
@@ -366,6 +373,7 @@ fun SettingsScreen(
                     (pendingWidgetBackgroundColor != originalWidgetBackgroundColor) ||
                     (pendingFontFamily != originalFontFamily) ||
                     (pendingFontBold != originalFontBold) ||
+                    (pendingWidgetCalendarIds != originalWidgetCalendarIds) ||
                     (pendingAlarmOffset.roundToInt() != originalAlarmOffset) ||
                     (pendingSnoozeInterval.roundToInt() != originalSnoozeInterval) ||
                     (pendingBackupFreq != originalBackupFreq)
@@ -425,7 +433,7 @@ fun SettingsScreen(
                             if (pendingBackupFreq != "manual") BackupScheduler.scheduleBackup(context, pendingBackupFreq)
                             else BackupScheduler.cancelBackup(context)
 
-                            // CORRECCIÃ“N: Usamos commit = true para asegurar que el Widget lea los datos frescos
+                            // CORRECCIÓN: Usamos commit = true para asegurar que el Widget lea los datos frescos
                             widgetPrefs.edit(commit = true) {
                                 putInt(WidgetConstants.KEY_EVENT_COUNT, pendingEventCount.roundToInt())
                                 putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, pendingTextBoost)
@@ -434,6 +442,7 @@ fun SettingsScreen(
                                 putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, pendingWidgetBackgroundColor.toArgb())
                                 putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, pendingFontFamily)
                                 putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold)
+                                putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, pendingWidgetCalendarIds.map { it.toString() }.toSet())
                             }
 
                             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
@@ -654,7 +663,28 @@ fun SettingsScreen(
             // --- 2. Widget Section ---
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)) {
+                // 1. CALENDARIOS (NUEVO - PRIMERO)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { showWidgetCalendarDialog = true }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.widget_selected_calendars_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // 2. NÚMERO DE EVENTOS
+                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 12.dp, bottom = 8.dp)) {
                     Text(text = stringResource(id = R.string.widget_event_count), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Slider(
@@ -1268,6 +1298,19 @@ fun SettingsScreen(
                     putExtra(Intent.EXTRA_TITLE, "${newName}.json")
                 })
             }
+        )
+    }
+
+    if (showWidgetCalendarDialog) {
+        SelectWidgetCalendarsDialog(
+            appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) },
+            initialSelectedIds = if (pendingWidgetCalendarIds.isEmpty()) uiState.selectedCalendarIds else pendingWidgetCalendarIds,
+            currentFavoriteId = uiState.favoriteCalendarId,
+            onApply = { newIds ->
+                pendingWidgetCalendarIds = newIds
+                showWidgetCalendarDialog = false
+            },
+            onDismissRequest = { showWidgetCalendarDialog = false }
         )
     }
 

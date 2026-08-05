@@ -61,12 +61,27 @@ object WidgetStateManager {
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
         val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
         
-        // Usamos la fecha de hoy a medianoche para una comparaciÃ³n limpia
+        // 1. Obtener IDs seleccionados del Widget y activos de la App
+        val widgetSelectedIds = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
+            ?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+        
+        val appActiveIds = loadSelectedCalendarIds(context)
+
+        // Usamos la fecha de hoy a medianoche para una comparación limpia
         val today = LocalDate.now()
         val now = LocalDateTime.now().withNano(0).withSecond(0)
         
         return events.asSequence()
             .filter { event ->
+                // FILTRO DE CALENDARIOS: 
+                // Si el widget tiene selección propia, usamos la intersección con la App.
+                // Si el widget no tiene selección (vacío), mostramos todo lo de la App.
+                if (widgetSelectedIds.isNotEmpty()) {
+                    val isCalendarActiveInApp = appActiveIds.contains(event.calendarId) || event.calendarId == -1L
+                    val isCalendarSelectedInWidget = widgetSelectedIds.contains(event.calendarId)
+                    if (!isCalendarActiveInApp || !isCalendarSelectedInWidget) return@filter false
+                }
+
                 // REGLA DE ORO: Si es hoy, se queda. Si es futuro, se queda.
                 // Usamos la misma lógica que el widget clásico para evitar discrepancias.
                 if (event.date.isBefore(today)) return@filter false
