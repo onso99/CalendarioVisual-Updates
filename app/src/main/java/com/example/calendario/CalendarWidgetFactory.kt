@@ -213,9 +213,24 @@ class CalendarWidgetFactory(
     override fun hasStableIds(): Boolean = true
 
     private fun loadCalendarEvents() {
-        val selectedCalendarIds = loadSelectedCalendarIds(context)
-        val allEventsByDateMap = if (selectedCalendarIds.isNotEmpty()) {
-            readFestivosFromCalendarsSync(context, selectedCalendarIds)
+        val appActiveIds = loadSelectedCalendarIds(context)
+        
+        val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        val widgetSelectedIds = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
+            ?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+
+        // Lógica de Intersección y Autosanación:
+        // Si el widget tiene selección propia, usamos la intersección con los activos de la App.
+        // Si la intersección resulta vacía (autosanación) o el widget no tiene selección, usamos todo lo de la App.
+        val effectiveIds = if (widgetSelectedIds.isNotEmpty()) {
+            val intersection = appActiveIds.intersect(widgetSelectedIds)
+            if (intersection.isNotEmpty()) intersection else appActiveIds
+        } else {
+            appActiveIds
+        }
+
+        val allEventsByDateMap = if (effectiveIds.isNotEmpty()) {
+            readFestivosFromCalendarsSync(context, effectiveIds)
         } else {
             emptyMap()
         }
