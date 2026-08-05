@@ -206,7 +206,7 @@
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
 
-    <string name="backup_exported_successfully">Segurtasun-kopia ongi sortu da</string>
+    <string name="backup_exported_successfully">Babeskopia ongi sortu da</string>
     <string name="error_exporting_backup">Errorea kopia sortzean: %1$s</string>
 
     <string name="alarm">Alarma</string>
@@ -253,7 +253,7 @@
     <string name="frequency_monthly">Hilero</string>
     <string name="sync_success_detailed">Sinkronizazio osoa: %1$d elementu</string>
     <string name="sync_error_drive">Drive errorea. Egiaztatu zure kontua.</string>
-    <string name="restore_success">Segurtasun-kopia ongi berrezarri da</string>
+    <string name="restore_success">Babeskopia ongi berrezarri da</string>
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
     <string name="restore_prefs_label">Ezarpenak</string>
     <string name="restore_holidays_label">Tokiko jai-egunak</string>
@@ -296,7 +296,7 @@
     <!-- Widget izenak -->
     <string name="widget_name_modern">Gertaera Egokitzaileak</string>
     <string name="widget_name_classic">Gertaera Klasikoak</string>
-    <string name="evento">Ekitaldia</string>
+    <string name="evento">Gertaera</string>
 
     <!-- Eguneroko Oharrak -->
     <string name="note_label">Oharra</string>
