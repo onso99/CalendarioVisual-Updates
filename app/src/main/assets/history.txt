@@ -1,3 +1,4 @@
+2026-08-04 - v2.1.53 Opción seleccionada en seminegrita en todos los ajustes y diálogos
 2026-08-04 - v2.1.52 Reducción de títulos en los diálogos. Modo con opciones ordenadas
 2026-08-04 - v2.1.51 Diálogo semana: abreviatura de Nº semana en todos los idiomas
 2026-08-03 - v2.1.50 Saneamiento del arranque: carga paralela y optimización de flujos

@@ -12,7 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -28,7 +28,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.YearMonth
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val calendarioViewModel: CalendarioViewModel by viewModels()
     private var calendarObserver: ContentObserver? = null
@@ -114,12 +114,15 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        val newConfig = Configuration(newBase.resources.configuration)
-        if (newConfig.fontScale > 1.3f) {
+        val configuration = newBase.resources.configuration
+        if (configuration.fontScale > 1.3f) {
+            val newConfig = Configuration(configuration)
             newConfig.fontScale = 1.3f
+            val context = newBase.createConfigurationContext(newConfig)
+            super.attachBaseContext(context)
+        } else {
+            super.attachBaseContext(newBase)
         }
-        val context = newBase.createConfigurationContext(newConfig)
-        super.attachBaseContext(context)
     }
 }
 

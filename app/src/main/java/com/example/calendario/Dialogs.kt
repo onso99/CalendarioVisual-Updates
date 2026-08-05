@@ -1,12 +1,16 @@
 package com.example.calendario
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
@@ -108,6 +112,86 @@ fun GoToYearDialog(
             )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+    )
+}
+
+/**
+ * Representa las opciones de idioma soportadas por la App.
+ */
+enum class AppLanguageSetting(val code: String?, @field:StringRes val displayNameRes: Int) {
+    SYSTEM(null, R.string.lang_system),
+    ES("es", R.string.lang_es),
+    CA("ca", R.string.lang_ca),
+    GL("gl", R.string.lang_gl),
+    EU("eu", R.string.lang_eu),
+    EN("en", R.string.lang_en),
+    FR("fr", R.string.lang_fr),
+    DE("de", R.string.lang_de),
+    IT("it", R.string.lang_it),
+    PT("pt", R.string.lang_pt),
+    RU("ru", R.string.lang_ru),
+    ZH("zh", R.string.lang_zh),
+    JA("ja", R.string.lang_ja);
+
+    companion object {
+        fun fromCode(code: String?): AppLanguageSetting {
+            if (code == null) return SYSTEM
+            // Buscamos coincidencia exacta o por prefijo (ej: "es" coincide con "es-ES")
+            return entries.find { it.code != null && code.startsWith(it.code) } ?: SYSTEM
+        }
+    }
+}
+
+@Composable
+fun LanguageSelectionDialog(
+    currentLanguageCode: String?,
+    onLanguageSelected: (String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val currentSetting = remember(currentLanguageCode) { AppLanguageSetting.fromCode(currentLanguageCode) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.language), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
+        text = {
+            LazyColumn(modifier = Modifier.heightIn(max = 400.dp).fillMaxWidth()) {
+                items(AppLanguageSetting.entries) { lang ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { 
+                                onLanguageSelected(lang.code)
+                                onDismiss() 
+                            }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val isSelected = lang == currentSetting
+                        Text(
+                            text = stringResource(id = lang.displayNameRes),
+                            modifier = Modifier.weight(1f),
+                            fontSize = 16.sp,
+                            color = CalendarioTheme.colors.textSystem,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                        )
+                        if (isSelected) {
+                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
+                                CalendarioTheme.colors.textSystem
+                            } else {
+                                CalendarioTheme.colors.cabecera
+                            }
+                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            DialogConfirmButton(text = stringResource(id = R.string.cancel), onClick = onDismiss)
+        }
     )
 }
 

@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Ошибка при сохранении файла темы.</string>
     <string name="apply_changes">Применить изменения</string>
     <string name="general">Общие</string>
+    <string name="language">Язык</string>
     <string name="mode">Режим</string>
     <string name="week_in_year_view">№ недели</string>
     <string name="customize_colors">Настроить цвета</string>
@@ -306,4 +307,19 @@
     <string name="hint_long_press_favorite">Нажмите и удерживайте, чтобы сделать избранным</string>
     <string name="favorite_updated">Избранное обновлено</string>
     <string name="calendar_read_only_error">Календарь только для чтения</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">Система</string>
+    <string name="lang_es">Испанский (Español)</string>
+    <string name="lang_en">Английский (English)</string>
+    <string name="lang_fr">Французский (Français)</string>
+    <string name="lang_de">Немецкий (Deutsch)</string>
+    <string name="lang_it">Итальянский (Italiano)</string>
+    <string name="lang_pt">Португальский (Português)</string>
+    <string name="lang_ca">Каталанский (Català)</string>
+    <string name="lang_gl">Галисийский (Galego)</string>
+    <string name="lang_eu">Баскский (Euskara)</string>
+    <string name="lang_ru">Русский</string>
+    <string name="lang_zh">Китайский (中文)</string>
+    <string name="lang_ja">Японский (日本語)</string>
 </resources>

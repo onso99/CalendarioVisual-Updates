@@ -13,6 +13,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,6 +94,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -95,6 +105,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.time.Instant
 import java.time.LocalDate
@@ -133,6 +144,7 @@ fun SettingsScreen(
     val isSyncing = uiState.isSyncing
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val typography = MaterialTheme.typography
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -151,6 +163,8 @@ fun SettingsScreen(
     var showPermissionsDialog by remember { mutableStateOf(value = false) }
     var showUnlinkAccountDialog by remember { mutableStateOf(value = false) }
     var showFrequencyDialog by remember { mutableStateOf(value = false) }
+    var showLanguageDialog by remember { mutableStateOf(value = false) }
+    var isChangingLanguage by remember { mutableStateOf(value = false) }
     var showRestoreSelectDialog by remember { mutableStateOf(value = false) }
     var restoreSource by remember { mutableStateOf<String?>(null) }
     var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
@@ -547,6 +561,33 @@ fun SettingsScreen(
                         contentDescription = null,
                         tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
                         modifier = Modifier.size(24.dp)
+                    )
+                }
+                
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // 4.5. IDIOMA
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { showLanguageDialog = true }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.language), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    val currentLocales = AppCompatDelegate.getApplicationLocales()
+                    val currentLangCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language
+                    val langSetting = AppLanguageSetting.fromCode(currentLangCode)
+                    
+                    Text(
+                        text = stringResource(id = langSetting.displayNameRes), 
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontSize = 15.sp, 
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End
                     )
                 }
                 
@@ -1230,6 +1271,60 @@ fun SettingsScreen(
         )
     }
 
+    if (showLanguageDialog) {
+        val currentLocales = AppCompatDelegate.getApplicationLocales()
+        val currentLangCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language
+        
+        LanguageSelectionDialog(
+            currentLanguageCode = currentLangCode,
+            onLanguageSelected = { newCode ->
+                scope.launch {
+                    isChangingLanguage = true
+                    delay(1000.milliseconds) // Duración de la animación
+                    
+                    val appLocales: LocaleListCompat = if (newCode == null) {
+                        LocaleListCompat.getEmptyLocaleList()
+                    } else {
+                        LocaleListCompat.forLanguageTags(newCode)
+                    }
+                    AppCompatDelegate.setApplicationLocales(appLocales)
+                    // La actividad se recreará aquí
+                }
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
+    // CAPA DE ANIMACIÓN DE CAMBIO DE IDIOMA
+    if (isChangingLanguage) {
+        val infiniteTransition = rememberInfiniteTransition(label = "lang_rotation")
+        val rotation by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2000, easing = LinearEasing), // Velocidad reducida a la mitad
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "rotation"
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f)) // Fondo oscurecido sutil
+                .clickable(enabled = false) {}, // Bloquea clics
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Language,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp) // Tamaño reducido para mayor elegancia
+                    .graphicsLayer { rotationZ = rotation },
+                tint = Color.White // Blanco puro para máxima visibilidad sobre el fondo oscuro
+            )
+        }
+    }
 }
 
 @Composable

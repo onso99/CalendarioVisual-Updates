@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Errorea gaiaren fitxategia gordetzean.</string>
     <string name="apply_changes">Aplikatu aldaketak</string>
     <string name="general">Orokorra</string>
+    <string name="language">Hizkuntza</string>
     <string name="mode">Modua</string>
     <string name="week_in_year_view">Aste zk.</string>
     <string name="customize_colors">Pertsonalizatu koloreak</string>
@@ -305,4 +306,19 @@
     <string name="hint_long_press_favorite">Sakatu luze gogoko egiteko</string>
     <string name="favorite_updated">Gogokoa eguneratua</string>
     <string name="calendar_read_only_error">Irakurtzeko soilik den egutegia</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">Sistema</string>
+    <string name="lang_es">Gaztelania (Español)</string>
+    <string name="lang_en">Ingelesa (English)</string>
+    <string name="lang_fr">Frantsesa (Français)</string>
+    <string name="lang_de">Alemana (Deutsch)</string>
+    <string name="lang_it">Italiera (Italiano)</string>
+    <string name="lang_pt">Portugesa (Português)</string>
+    <string name="lang_ca">Katalana (Català)</string>
+    <string name="lang_gl">Galiziera (Galego)</string>
+    <string name="lang_eu">Euskara</string>
+    <string name="lang_ru">Errusiera (Русский)</string>
+    <string name="lang_zh">Txinera (中文)</string>
+    <string name="lang_ja">Japoniera (日本語)</string>
 </resources>

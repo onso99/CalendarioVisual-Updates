@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Fehler beim Speichern der Designdatei.</string>
     <string name="apply_changes">Änderungen anwenden</string>
     <string name="general">Allgemein</string>
+    <string name="language">Sprache</string>
     <string name="mode">Modus</string>
     <string name="week_in_year_view">Wochen-Nr.</string>
     <string name="customize_colors">Farben anpassen</string>
@@ -306,4 +307,19 @@
     <string name="hint_long_press_favorite">Gedrückt halten, um als Favorit festzulegen</string>
     <string name="favorite_updated">Favorit aktualisiert</string>
     <string name="calendar_read_only_error">Schreibgeschützter Kalender</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">System</string>
+    <string name="lang_es">Spanisch (Español)</string>
+    <string name="lang_en">Englisch (English)</string>
+    <string name="lang_fr">Französisch (Français)</string>
+    <string name="lang_de">Deutsch</string>
+    <string name="lang_it">Italienisch (Italiano)</string>
+    <string name="lang_pt">Portugiesisch (Português)</string>
+    <string name="lang_ca">Katalanisch (Català)</string>
+    <string name="lang_gl">Galicisch (Galego)</string>
+    <string name="lang_eu">Baskisch (Euskara)</string>
+    <string name="lang_ru">Russisch (Русский)</string>
+    <string name="lang_zh">Chinesisch (中文)</string>
+    <string name="lang_ja">Japanisch (日本語)</string>
 </resources>

@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Error en desar el fitxer del tema.</string>
     <string name="apply_changes">Applica canvis</string>
     <string name="general">General</string>
+    <string name="language">Idioma</string>
     <string name="mode">Mode</string>
     <string name="week_in_year_view">Núm. setmana</string>
     <string name="customize_colors">Personalitzar colors</string>
@@ -307,4 +308,19 @@
     <string name="hint_long_press_favorite">Manté premut per fer favorit</string>
     <string name="favorite_updated">Favorit actualitzat</string>
     <string name="calendar_read_only_error">Calendari de només lectura</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">Sistema</string>
+    <string name="lang_es">Espanyol (Español)</string>
+    <string name="lang_en">Anglès (English)</string>
+    <string name="lang_fr">Francès (Français)</string>
+    <string name="lang_de">Alemany (Deutsch)</string>
+    <string name="lang_it">Italià (Italiano)</string>
+    <string name="lang_pt">Portuguès (Português)</string>
+    <string name="lang_ca">Català</string>
+    <string name="lang_gl">Gallec (Galego)</string>
+    <string name="lang_eu">Basc (Euskara)</string>
+    <string name="lang_ru">Rus (Русский)</string>
+    <string name="lang_zh">Xinès (中文)</string>
+    <string name="lang_ja">Japonès (日本語)</string>
 </resources>

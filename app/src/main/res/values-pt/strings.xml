@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Erro ao guardar o ficheiro do tema.</string>
     <string name="apply_changes">Aplicar alterações</string>
     <string name="general">Geral</string>
+    <string name="language">Idioma</string>
     <string name="mode">Modo</string>
     <string name="week_in_year_view">N.º semana</string>
     <string name="customize_colors">Personalizar cores</string>
@@ -307,4 +308,19 @@
     <string name="hint_long_press_favorite">Pressione e segure para tornar favorito</string>
     <string name="favorite_updated">Favorito atualizado</string>
     <string name="calendar_read_only_error">Calendário somente leitura</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">Sistema</string>
+    <string name="lang_es">Espanhol (Español)</string>
+    <string name="lang_en">Inglês (English)</string>
+    <string name="lang_fr">Francês (Français)</string>
+    <string name="lang_de">Alemão (Deutsch)</string>
+    <string name="lang_it">Italiano (Italiano)</string>
+    <string name="lang_pt">Português</string>
+    <string name="lang_ca">Catalão (Català)</string>
+    <string name="lang_gl">Galego (Galego)</string>
+    <string name="lang_eu">Basco (Euskara)</string>
+    <string name="lang_ru">Russo (Русский)</string>
+    <string name="lang_zh">Chinês (中文)</string>
+    <string name="lang_ja">Japonês (日本語)</string>
 </resources>

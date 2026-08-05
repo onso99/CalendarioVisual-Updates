@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">テーマファイルの保存エラー。</string>
     <string name="apply_changes">変更を適用</string>
     <string name="general">一般</string>
+    <string name="language">言語</string>
     <string name="mode">モード</string>
     <string name="week_in_year_view">週番号</string>
     <string name="customize_colors">カラーのカスタマイズ</string>
@@ -306,4 +307,19 @@
     <string name="hint_long_press_favorite">長押しでお気に入りに設定</string>
     <string name="favorite_updated">お気に入りを更新しました</string>
     <string name="calendar_read_only_error">読み取り専用カレンダー</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">システム</string>
+    <string name="lang_es">スペイン語 (Español)</string>
+    <string name="lang_en">英語 (English)</string>
+    <string name="lang_fr">フランス語 (Français)</string>
+    <string name="lang_de">ドイツ語 (Deutsch)</string>
+    <string name="lang_it">イタリア語 (Italiano)</string>
+    <string name="lang_pt">ポルトガル語 (Português)</string>
+    <string name="lang_ca">カタルーニャ語 (Català)</string>
+    <string name="lang_gl">ガリシア語 (Galego)</string>
+    <string name="lang_eu">バスク語 (Euskara)</string>
+    <string name="lang_ru">ロシア語 (Русский)</string>
+    <string name="lang_zh">中国語 (中文)</string>
+    <string name="lang_ja">日本語</string>
 </resources>

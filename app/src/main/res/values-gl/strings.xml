@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Erro ao gardar o ficheiro do tema.</string>
     <string name="apply_changes">Aplicar cambios</string>
     <string name="general">Xeral</string>
+    <string name="language">Idioma</string>
     <string name="mode">Modo</string>
     <string name="week_in_year_view">N.º semana</string>
     <string name="customize_colors">Personalizar cores</string>
@@ -307,4 +308,19 @@
     <string name="hint_long_press_favorite">Mantén premido para facer favorito</string>
     <string name="favorite_updated">Favorito actualizado</string>
     <string name="calendar_read_only_error">Calendario de só lectura</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">Sistema</string>
+    <string name="lang_es">Español (Español)</string>
+    <string name="lang_en">Inglés (English)</string>
+    <string name="lang_fr">Francés (Français)</string>
+    <string name="lang_de">Alemán (Deutsch)</string>
+    <string name="lang_it">Italiano (Italiano)</string>
+    <string name="lang_pt">Portugués (Português)</string>
+    <string name="lang_ca">Catalán (Català)</string>
+    <string name="lang_gl">Galego</string>
+    <string name="lang_eu">Éuscaro (Euskara)</string>
+    <string name="lang_ru">Ruso (Русский)</string>
+    <string name="lang_zh">Chinés (中文)</string>
+    <string name="lang_ja">Xaponés (日本語)</string>
 </resources>

@@ -74,6 +74,7 @@
     <string name="error_saving_theme_file">Error saving theme file.</string>
     <string name="apply_changes">Apply changes</string>
     <string name="general">General</string>
+    <string name="language">Language</string>
     <string name="mode">Mode</string>
     <string name="week_in_year_view">Week No.</string>
     <string name="customize_colors">Customize colors</string>
@@ -307,4 +308,19 @@
     <string name="hint_long_press_favorite">Long press to set as favorite</string>
     <string name="favorite_updated">Favorite updated</string>
     <string name="calendar_read_only_error">Read-only calendar</string>
+
+    <!-- Idiomas -->
+    <string name="lang_system">System</string>
+    <string name="lang_es">Spanish (Español)</string>
+    <string name="lang_en">English</string>
+    <string name="lang_fr">French (Français)</string>
+    <string name="lang_de">German (Deutsch)</string>
+    <string name="lang_it">Italian (Italiano)</string>
+    <string name="lang_pt">Portuguese (Português)</string>
+    <string name="lang_ca">Catalan (Català)</string>
+    <string name="lang_gl">Galician (Galego)</string>
+    <string name="lang_eu">Basque (Euskara)</string>
+    <string name="lang_ru">Russian (Русский)</string>
+    <string name="lang_zh">Chinese (中文)</string>
+    <string name="lang_ja">Japanese (日本語)</string>
 </resources>
