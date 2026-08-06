@@ -76,8 +76,7 @@ class CalendarWidgetFactory(
             prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
         } catch (_: ClassCastException) {
             val v = allPrefs[WidgetConstants.KEY_WIDGET_FONT_BOLD]
-            if (v is Boolean) v 
-            else v?.toString()?.toBooleanStrictOrNull() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
+            (v as? Boolean) ?: v?.toString()?.toBooleanStrictOrNull() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
         }
 
         widgetEventColor = try {

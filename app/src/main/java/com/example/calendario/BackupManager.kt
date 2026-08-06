@@ -292,7 +292,7 @@ object BackupManager {
             WidgetConstants.KEY_WIDGET_TEXT_BOOST -> editor.putFloat(key, (value as? Number)?.toFloat() ?: value.toString().toFloatOrNull() ?: 0f)
             AppConstants.KEY_LAST_BACKUP_TIME, AppConstants.KEY_LAST_BACKUP_SIZE -> editor.putLong(key, (value as? Number)?.toLong() ?: value.toString().toLongOrNull() ?: 0L)
             AppConstants.KEY_DEFAULT_ALARM_OFFSET, AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, WidgetConstants.KEY_EVENT_COUNT -> editor.putInt(key, (value as? Number)?.toInt() ?: value.toString().toIntOrNull() ?: 0)
-            AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, WidgetConstants.KEY_WIDGET_FONT_BOLD -> editor.putBoolean(key, if (value is Boolean) value else value.toString().toBoolean())
+            AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, WidgetConstants.KEY_WIDGET_FONT_BOLD -> editor.putBoolean(key, (value as? Boolean) ?: value.toString().toBoolean())
             else -> {
                 // Para colores y otros que suelen ser Int
                 if (key.startsWith("light_") || key.startsWith("dark_") || key.contains("color")) {
