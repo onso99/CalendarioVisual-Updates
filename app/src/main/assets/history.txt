@@ -1,3 +1,4 @@
+2026-08-06 - v2.1.62 Corrección de warnings
 2026-08-06 - v2.1.61 Ajustes: surpimida la confirmación con el check de cabecera
 2026-08-06 - v2.1.60 Optimización de los botones en los diálogos de otros idiomas
 2026-08-06 - v2.1.59 Selección de calendarios independientes para el widget clásico
