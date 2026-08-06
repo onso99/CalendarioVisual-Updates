@@ -259,7 +259,22 @@ fun saveSelectedCalendarIds(context: Context, ids: Set<Long>) {
 
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
     val prefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
-    return prefs.getStringSet("selected_ids", emptySet())?.map { it.toLong() }?.toSet() ?: emptySet()
+    val rawSet = try {
+        prefs.getStringSet("selected_ids", emptySet())
+    } catch (_: ClassCastException) {
+        // Si el tipo es incorrecto, intentamos recuperarlo de la lista total
+        val all = prefs.all["selected_ids"]
+        if (all is String) {
+            // Caso típico de corrupción por restauración JSON: el Set se guardó como un String "[1, 2]"
+            all.removeSurrounding("[", "]")
+                .split(",")
+                .map { it.trim() }
+                .toSet()
+        } else {
+            emptySet()
+        }
+    }
+    return rawSet?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
 }
 
 // --- PERSISTENCIA DE COLORES DE PERIODOS ---

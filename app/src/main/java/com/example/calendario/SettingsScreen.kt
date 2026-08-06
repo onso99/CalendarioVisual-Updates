@@ -238,10 +238,20 @@ fun SettingsScreen(
 
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
-    val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
-    val lastBackupSize = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) }
+    val lastBackupTimestamp = remember(permissionsUpdateTrigger) { 
+        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) } 
+        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_TIME] as? Number)?.toLong() ?: 0L }
+    }
+    val lastBackupSize = remember(permissionsUpdateTrigger) { 
+        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) } 
+        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_SIZE] as? Number)?.toLong() ?: 0L }
+    }
 
-    var pendingShowWeekNumber by remember { mutableStateOf(appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)) }
+    var pendingShowWeekNumber by remember { 
+        val v = try { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) } 
+                catch (_: Exception) { appPrefs.all[AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW]?.toString()?.toBoolean() ?: false }
+        mutableStateOf(v) 
+    }
     var pendingStartOfWeekKey by remember { 
         val raw = appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
         mutableStateOf(StartOfWeekOption.fromKey(raw).key)
@@ -267,14 +277,30 @@ fun SettingsScreen(
         mutableStateOf(Color(c))
     }
     var pendingFontFamily by remember { mutableStateOf(widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) }
-    var pendingFontBold by remember { mutableStateOf(widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)) }
+    var pendingFontBold by remember { 
+        val v = try { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) } 
+                catch (_: Exception) { widgetPrefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD]?.toString()?.toBoolean() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD }
+        mutableStateOf(v) 
+    }
     var pendingWidgetCalendarIds by remember {
-        val ids = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+        val ids = try {
+            widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
+        } catch (_: ClassCastException) {
+            emptySet()
+        }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
         mutableStateOf(ids)
     }
     
-    var pendingAlarmOffset by remember { mutableFloatStateOf(appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20).toFloat()) }
-    var pendingSnoozeInterval by remember { mutableFloatStateOf(appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10).toFloat()) }
+    var pendingAlarmOffset by remember { 
+        val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) } 
+                catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET]?.toString()?.toIntOrNull() ?: 20 }
+        mutableFloatStateOf(v.toFloat()) 
+    }
+    var pendingSnoozeInterval by remember { 
+        val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) } 
+                catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL]?.toString()?.toIntOrNull() ?: 10 }
+        mutableFloatStateOf(v.toFloat()) 
+    }
     var pendingBackupFreq by remember { 
         val auto = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
         val f = if (!auto) "manual" else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"

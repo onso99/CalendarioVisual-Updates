@@ -59,11 +59,20 @@ object WidgetStateManager {
 
     private fun cleanAndFilterEvents(context: Context, events: List<Festivo>): List<WidgetEvent> {
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val limit = widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
+        val limit = try { 
+            widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) 
+        } catch (_: ClassCastException) { 
+            (widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() 
+                ?: widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT]?.toString()?.toIntOrNull() 
+                ?: WidgetConstants.DEFAULT_EVENT_COUNT 
+        }
         
         // 1. Obtener IDs seleccionados del Widget y activos de la App
-        val widgetSelectedIds = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-            ?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+        val widgetSelectedIds = try {
+            widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
+        } catch (_: ClassCastException) {
+            emptySet()
+        }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
         
         val appActiveIds = loadSelectedCalendarIds(context)
 
@@ -110,13 +119,33 @@ object WidgetStateManager {
             val cleaned = cleanAndFilterEvents(context, events)
             val jsonStr = gson.toJson(cleaned)
 
+            val all = widgetPrefs.all
+            val fontVal = try { 
+                widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) 
+            } catch (_: Exception) { all[WidgetConstants.KEY_WIDGET_FONT_FAMILY]?.toString() } ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
+
             val map = mapOf(
-                "bg" to widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB),
-                "event" to widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB),
-                "today" to widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB),
-                "boost" to widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f),
-                "font" to (widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: ""),
-                "bold" to widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
+                "bg" to try { 
+                    widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB) 
+                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB },
+                
+                "event" to try { 
+                    widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB) 
+                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB },
+                
+                "today" to try { 
+                    widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB) 
+                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB },
+                
+                "boost" to try { 
+                    widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) 
+                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() ?: 0f },
+                
+                "font" to fontVal,
+                
+                "bold" to try { 
+                    widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) 
+                } catch (_: Exception) { all[WidgetConstants.KEY_WIDGET_FONT_BOLD]?.toString()?.toBoolean() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD }
             )
             jsonStr to map
         }

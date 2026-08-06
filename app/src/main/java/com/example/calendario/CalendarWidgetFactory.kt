@@ -48,35 +48,52 @@ class CalendarWidgetFactory(
             WidgetConstants.GLOBAL_WIDGET_PREFS_NAME,
             Context.MODE_PRIVATE,
         )
+        val allPrefs = prefs.all
+
         eventCountToShow = try {
             prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
         } catch (_: ClassCastException) {
-            (prefs.all[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_EVENT_COUNT
+            (allPrefs[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() 
+                ?: allPrefs[WidgetConstants.KEY_EVENT_COUNT]?.toString()?.toIntOrNull() 
+                ?: WidgetConstants.DEFAULT_EVENT_COUNT
         }
 
         textBoost = try {
             prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
         } catch (_: ClassCastException) {
-            (prefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() ?: 0f
+            (allPrefs[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() 
+                ?: allPrefs[WidgetConstants.KEY_WIDGET_TEXT_BOOST]?.toString()?.toFloatOrNull() 
+                ?: 0f
         }
-        widgetFontFamily = prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
+        
+        widgetFontFamily = try {
+            prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY)
+        } catch (_: ClassCastException) {
+            allPrefs[WidgetConstants.KEY_WIDGET_FONT_FAMILY]?.toString()
+        } ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
         
         widgetFontBold = try {
             prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
         } catch (_: ClassCastException) {
-            (prefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD] as? Boolean) ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
+            val v = allPrefs[WidgetConstants.KEY_WIDGET_FONT_BOLD]
+            if (v is Boolean) v 
+            else v?.toString()?.toBooleanStrictOrNull() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
         }
 
         widgetEventColor = try {
             prefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
         } catch (_: ClassCastException) {
-            (prefs.all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
+            (allPrefs[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() 
+                ?: allPrefs[WidgetConstants.KEY_WIDGET_EVENT_COLOR]?.toString()?.toLongOrNull()?.toInt()
+                ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
         }
 
         widgetTodayEventColor = try {
             prefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
         } catch (_: ClassCastException) {
-            (prefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
+            (allPrefs[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() 
+                ?: allPrefs[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR]?.toString()?.toLongOrNull()?.toInt()
+                ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
         }
     }
 
@@ -216,8 +233,12 @@ class CalendarWidgetFactory(
         val appActiveIds = loadSelectedCalendarIds(context)
         
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val widgetSelectedIds = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-            ?.asSequence()
+        val widgetSelectedIds = try {
+            widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
+        } catch (_: ClassCastException) {
+            // Autosanación: Si el tipo es incorrecto (String en vez de Set), lo ignoramos
+            emptySet()
+        }?.asSequence()
             ?.mapNotNull { it.toLongOrNull() }
             ?.toSet() ?: emptySet()
 

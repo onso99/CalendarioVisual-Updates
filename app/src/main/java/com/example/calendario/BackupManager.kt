@@ -149,11 +149,7 @@ object BackupManager {
                         while (keys.hasNext()) {
                             val key = keys.next()
                             val value = it.get(key)
-                            if (value is JSONArray) {
-                                val set = mutableSetOf<String>()
-                                for (i in 0 until value.length()) set.add(value.getString(i))
-                                putStringSet(key, set)
-                            } else if (value != null && value != JSONObject.NULL) {
+                            if (value != null && value != JSONObject.NULL) {
                                 putPreference(this, key, value)
                             }
                         }
@@ -294,7 +290,19 @@ object BackupManager {
         when (key) {
             AppConstants.KEY_FAVORITE_CALENDAR_ID -> editor.putLong(key, (value as? Number)?.toLong() ?: value.toString().toLongOrNull() ?: 0L)
             WidgetConstants.KEY_WIDGET_TEXT_BOOST -> editor.putFloat(key, (value as? Number)?.toFloat() ?: value.toString().toFloatOrNull() ?: 0f)
+            AppConstants.KEY_LAST_BACKUP_TIME, AppConstants.KEY_LAST_BACKUP_SIZE -> editor.putLong(key, (value as? Number)?.toLong() ?: value.toString().toLongOrNull() ?: 0L)
+            AppConstants.KEY_DEFAULT_ALARM_OFFSET, AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, WidgetConstants.KEY_EVENT_COUNT -> editor.putInt(key, (value as? Number)?.toInt() ?: value.toString().toIntOrNull() ?: 0)
+            AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, WidgetConstants.KEY_WIDGET_FONT_BOLD -> editor.putBoolean(key, if (value is Boolean) value else value.toString().toBoolean())
             else -> {
+                // Para colores y otros que suelen ser Int
+                if (key.startsWith("light_") || key.startsWith("dark_") || key.contains("color")) {
+                    val intVal = (value as? Number)?.toInt() ?: value.toString().toLongOrNull()?.toInt()
+                    if (intVal != null) {
+                        editor.putInt(key, intVal)
+                        return
+                    }
+                }
+
                 when (value) {
                     is Boolean -> editor.putBoolean(key, value)
                     is Int -> editor.putInt(key, value)
@@ -302,6 +310,14 @@ object BackupManager {
                     is Float -> editor.putFloat(key, value)
                     is String -> editor.putString(key, value)
                     is Double -> if (value == value.toInt().toDouble()) editor.putInt(key, value.toInt()) else editor.putFloat(key, value.toFloat())
+                    is JSONArray -> {
+                        val set = mutableSetOf<String>()
+                        for (i in 0 until value.length()) {
+                            val item = value.opt(i)
+                            if (item != null) set.add(item.toString())
+                        }
+                        editor.putStringSet(key, set)
+                    }
                     else -> editor.putString(key, value.toString())
                 }
             }

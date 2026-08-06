@@ -168,7 +168,10 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
         return try {
             prefs.getInt(key, default)
         } catch (_: ClassCastException) {
-            (prefs.all[key] as? Number)?.toInt() ?: default
+            val all = prefs.all[key]
+            (all as? Number)?.toInt() 
+                ?: all?.toString()?.toLongOrNull()?.toInt() 
+                ?: default
         }
     }
 
