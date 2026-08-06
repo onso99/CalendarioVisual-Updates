@@ -14,33 +14,16 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,36 +32,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.FormatBold
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -88,9 +49,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
@@ -133,7 +94,7 @@ enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
 fun SettingsScreen(
     onBackPress: () -> Unit,
     themeManager: ThemeManager,
-    viewModel: CalendarioViewModel, // Cambiado para recibir el ViewModel
+    viewModel: CalendarioViewModel,
     onColorThemeClick: () -> Unit,
     onHolidayManagerClick: () -> Unit,
     onThemeUpdated: () -> Unit,
@@ -153,20 +114,20 @@ fun SettingsScreen(
     var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "theme_1")) }
 
     // --- Dialog States ---
-    var showThemeDialog by remember { mutableStateOf(value = false) }
-    var showExportDialog by remember { mutableStateOf(value = false) }
-    var showDiscardChangesDialog by remember { mutableStateOf(value = false) }
-    var showWeekConfigDialog by remember { mutableStateOf(value = false) }
-    var showAlarmConfigDialog by remember { mutableStateOf(value = false) }
-    var showBundledThemesDialog by remember { mutableStateOf(value = false) }
-    var showFontFamilyDialog by remember { mutableStateOf(value = false) }
-    var showWidgetCalendarDialog by remember { mutableStateOf(value = false) }
-    var showPermissionsDialog by remember { mutableStateOf(value = false) }
-    var showUnlinkAccountDialog by remember { mutableStateOf(value = false) }
-    var showFrequencyDialog by remember { mutableStateOf(value = false) }
-    var showLanguageDialog by remember { mutableStateOf(value = false) }
-    var isChangingLanguage by remember { mutableStateOf(value = false) }
-    var showRestoreSelectDialog by remember { mutableStateOf(value = false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showExportDialog by remember { mutableStateOf(false) }
+    var showDiscardChangesDialog by remember { mutableStateOf(false) }
+    var showWeekConfigDialog by remember { mutableStateOf(false) }
+    var showAlarmConfigDialog by remember { mutableStateOf(false) }
+    var showBundledThemesDialog by remember { mutableStateOf(false) }
+    var showFontFamilyDialog by remember { mutableStateOf(false) }
+    var showWidgetCalendarDialog by remember { mutableStateOf(false) }
+    var showPermissionsDialog by remember { mutableStateOf(false) }
+    var showUnlinkAccountDialog by remember { mutableStateOf(false) }
+    var showFrequencyDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var isChangingLanguage by remember { mutableStateOf(false) }
+    var showRestoreSelectDialog by remember { mutableStateOf(false) }
     var restoreSource by remember { mutableStateOf<String?>(null) }
     var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
@@ -204,6 +165,7 @@ fun SettingsScreen(
             }
         }
     )
+
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -212,7 +174,6 @@ fun SettingsScreen(
                     try {
                         val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
                         if (ThemePersistence.exportThemeToJson(context, uri, newName)) {
-                            // Al guardar con éxito, el tema "oficial" pasa a ser el nuevo nombre (sin asteriscos)
                             appPrefs.edit {
                                 putString(AppConstants.KEY_LIGHT_THEME_NAME, newName)
                                 putString(AppConstants.KEY_DARK_THEME_NAME, newName)
@@ -227,7 +188,6 @@ fun SettingsScreen(
             }
         }
     )
-
 
     val exportFullBackupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -278,120 +238,68 @@ fun SettingsScreen(
 
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
-    val originalShowWeekNumber = remember { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
-    val originalStartOfWeekKey = remember { 
-        val raw = appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
-        StartOfWeekOption.fromKey(raw).key
-    }
-    val originalEventCount = remember {
-        try {
-            widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        } catch (_: ClassCastException) {
-            val value = widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT]
-            (value as? Number)?.toInt() ?: WidgetConstants.DEFAULT_EVENT_COUNT
-        }
-    }
-    val originalTextBoost = remember {
-        try {
-            widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
-        } catch (_: ClassCastException) {
-            val value = widgetPrefs.all[WidgetConstants.KEY_WIDGET_TEXT_BOOST]
-            (value as? Number)?.toFloat() ?: 0f
-        }
-    }
-    val originalEventColor = remember {
-        val colorInt = try {
-            widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-        } catch (_: ClassCastException) {
-            (widgetPrefs.all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
-        }
-        Color(colorInt)
-    }
-    val originalTodayEventColor = remember {
-        val colorInt = try {
-            widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-        } catch (_: ClassCastException) {
-            (widgetPrefs.all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
-        }
-        Color(colorInt)
-    }
-    val originalWidgetBackgroundColor = remember {
-        val colorInt = try {
-            widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
-        } catch (_: ClassCastException) {
-            (widgetPrefs.all[WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB
-        }
-        Color(colorInt)
-    }
-    val originalFontFamily = remember { widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY }
-    val originalFontBold = remember { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) }
-
-    val originalWidgetCalendarIds = remember {
-        widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-            ?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
-    }
-
-    val originalAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) }
-    val originalSnoozeInterval = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) }
-    
-    // Si no está habilitado el backup, forzamos a que la frecuencia original se lea como "manual"
-    val originalBackupFreq = remember { 
-        val autoBackup = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
-        if (!autoBackup) "manual" 
-        else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
-    }
     val lastBackupTimestamp = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
     val lastBackupSize = remember(permissionsUpdateTrigger) { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) }
 
-    var pendingShowWeekNumber by remember { mutableStateOf(originalShowWeekNumber) }
-    var pendingStartOfWeekKey by remember { mutableStateOf(originalStartOfWeekKey) }
-    var pendingEventCount by remember { mutableFloatStateOf(originalEventCount.toFloat()) }
-    var pendingTextBoost by remember { mutableFloatStateOf(originalTextBoost) }
-    var pendingEventColor by remember { mutableStateOf(originalEventColor) }
-    var pendingTodayEventColor by remember { mutableStateOf(originalTodayEventColor) }
-    var pendingWidgetBackgroundColor by remember { mutableStateOf(originalWidgetBackgroundColor) }
-    var pendingFontFamily by remember { mutableStateOf(originalFontFamily) }
-    var pendingFontBold by remember { mutableStateOf(originalFontBold) }
-    var pendingWidgetCalendarIds by remember { mutableStateOf(originalWidgetCalendarIds) }
+    var pendingShowWeekNumber by remember { mutableStateOf(appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)) }
+    var pendingStartOfWeekKey by remember { 
+        val raw = appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
+        mutableStateOf(StartOfWeekOption.fromKey(raw).key)
+    }
+    var pendingEventCount by remember { 
+        val v = try { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) } catch (_: Exception) { WidgetConstants.DEFAULT_EVENT_COUNT }
+        mutableFloatStateOf(v.toFloat())
+    }
+    var pendingTextBoost by remember {
+        val v = try { widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) } catch (_: Exception) { 0f }
+        mutableFloatStateOf(v)
+    }
+    var pendingEventColor by remember { 
+        val c = try { widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB) } catch (_: Exception) { WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB }
+        mutableStateOf(Color(c))
+    }
+    var pendingTodayEventColor by remember {
+        val c = try { widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB) } catch (_: Exception) { WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB }
+        mutableStateOf(Color(c))
+    }
+    var pendingWidgetBackgroundColor by remember {
+        val c = try { widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB) } catch (_: Exception) { WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB }
+        mutableStateOf(Color(c))
+    }
+    var pendingFontFamily by remember { mutableStateOf(widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) }
+    var pendingFontBold by remember { mutableStateOf(widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)) }
+    var pendingWidgetCalendarIds by remember {
+        val ids = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+        mutableStateOf(ids)
+    }
     
-    var pendingAlarmOffset by remember { mutableFloatStateOf(originalAlarmOffset.toFloat()) }
-    var pendingSnoozeInterval by remember { mutableFloatStateOf(originalSnoozeInterval.toFloat()) }
-    var pendingBackupFreq by remember { mutableStateOf(originalBackupFreq) }
+    var pendingAlarmOffset by remember { mutableFloatStateOf(appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20).toFloat()) }
+    var pendingSnoozeInterval by remember { mutableFloatStateOf(appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10).toFloat()) }
+    var pendingBackupFreq by remember { 
+        val auto = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        val f = if (!auto) "manual" else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
+        mutableStateOf(f)
+    }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
     var showWidgetBackgroundColorPalette by remember { mutableStateOf(false) }
 
-    val backAction = {
-        onBackPress()
-    }
-
-    // Funciones auxiliares para el auto-guardado
+    // Auxiliares
     val updateAppPrefs = { block: android.content.SharedPreferences.Editor.() -> Unit ->
-        appPrefs.edit { 
-            block()
-        }
+        appPrefs.edit { block() }
         CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         WidgetStateManager.refreshWithCurrentEvents(context)
     }
-
     val updateWidgetPrefs = { block: android.content.SharedPreferences.Editor.() -> Unit ->
-        widgetPrefs.edit(commit = true) { 
-            block()
-        }
+        widgetPrefs.edit(commit = true) { block() }
         CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         WidgetStateManager.refreshWithCurrentEvents(context)
     }
 
-    // --- Lógica de Refresco de Permisos al volver de Ajustes ---
     val lifecycleOwner = LocalLifecycleOwner.current
-    
     DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                permissionsUpdateTrigger++
-            }
-        }
+        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) permissionsUpdateTrigger++ }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
@@ -408,14 +316,11 @@ fun SettingsScreen(
         else -> Color.Green
     }
 
-    val dividerColor = CalendarioTheme.colors.settingsBackground
-    val dividerThickness = 1.dp
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(id = R.string.settings), color = MaterialTheme.colorScheme.onPrimary) },
-                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) } },
+                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
@@ -428,1632 +333,303 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // --- 1. General Section ---
             SectionTitle(text = stringResource(id = R.string.general))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                // 1. PERMISOS
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showPermissionsDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.system_permissions), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     Box(modifier = Modifier.size(10.dp).background(permissionPointColor, CircleShape))
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                // 2. SEMANA (Fila unificada - Sin flecha porque tiene valor)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable { showWeekConfigDialog = true }
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWeekConfigDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.semana_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    
                     val startDayName = stringResource(id = StartOfWeekOption.fromKey(pendingStartOfWeekKey).displayNameRes)
-                    val weekNumberInfo = if (pendingShowWeekNumber) " (123)" else ""
-                    
-                    Text(
-                        text = "$startDayName$weekNumberInfo", 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontSize = 15.sp, 
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
-                    )
+                    Text(text = "$startDayName${if (pendingShowWeekNumber) " (123)" else ""}", color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                // 3. ALARMA (Fila unificada - Sin flecha porque tiene valor)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable { showAlarmConfigDialog = true }
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showAlarmConfigDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.alarm), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    
-                    // Anticipación
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_alarm_anticipation),
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                            modifier = Modifier.size(18.dp)
-                        )
-                        val anticipationVal = pendingAlarmOffset.roundToInt()
-                        val anticipationSign = if (anticipationVal > 0) "-" else ""
-                        Text(
-                            text = "$anticipationSign$anticipationVal'",
-                            modifier = Modifier.padding(start = 2.dp),
-                            color = CalendarioTheme.colors.textSystem,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Icon(painterResource(id = R.drawable.ic_alarm_anticipation), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.size(18.dp))
+                        Text(text = "${if (pendingAlarmOffset > 0) "-" else ""}${pendingAlarmOffset.roundToInt()}'", modifier = Modifier.padding(start = 2.dp), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
-                    
                     Spacer(modifier = Modifier.width(12.dp))
-                    
-                    // Posponer
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_alarm_snooze),
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Text(
-                            text = "${pendingSnoozeInterval.roundToInt()}'",
-                            modifier = Modifier.padding(start = 2.dp),
-                            color = CalendarioTheme.colors.textSystem,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Icon(painterResource(id = R.drawable.ic_alarm_snooze), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.size(18.dp))
+                        Text(text = "${pendingSnoozeInterval.roundToInt()}'", modifier = Modifier.padding(start = 2.dp), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
                 }
-                
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                // 4. FESTIVOS (Navegación al gestor)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable(onClick = onHolidayManagerClick)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable(onClick = onHolidayManagerClick).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.holidays_section), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
                 }
-                
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                // 4.5. IDIOMA
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable { showLanguageDialog = true }
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showLanguageDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.language), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    
-                    val currentLocales = AppCompatDelegate.getApplicationLocales()
-                    val currentLangCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language
-                    val langSetting = AppLanguageSetting.fromCode(currentLangCode)
-                    
-                    Text(
-                        text = stringResource(id = langSetting.displayNameRes), 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontSize = 15.sp, 
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
-                    )
+                    val curLangs = AppCompatDelegate.getApplicationLocales()
+                    val langSetting = AppLanguageSetting.fromCode(if (curLangs.isEmpty) null else curLangs.get(0)?.language)
+                    Text(text = stringResource(id = langSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
                 }
-                
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                // 5. MODO
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = stringResource(id = themeSetting.displayNameRes), 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontSize = 16.sp, 
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
-                    )
+                    Text(text = stringResource(id = themeSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                // 6. TEMAS
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable { showBundledThemesDialog = true }
-                        .padding(horizontal = 16.dp), 
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBundledThemesDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    
                     val currentThemeId = lightThemeName ?: "theme_1"
-                    val isModified = currentThemeId.endsWith("***")
-                    val cleanId = if (isModified) currentThemeId.removeSuffix("***") else currentThemeId
-                    
-                    val bundledTheme = BundledThemes.themes.find { theme ->
-                        val manifest = theme["themeManifest"] as Map<*, *>
-                        val id = manifest["id"] as? String
-                        val legacyName = manifest["name"] as? String
-                        id == cleanId || legacyName == cleanId
-                    }
-                    
-                    val finalName = if (bundledTheme != null) {
-                        val resId = (bundledTheme["themeManifest"] as Map<*, *>)["nameRes"] as Int
-                        stringResource(id = resId) + (if (isModified) "***" else "")
-                    } else {
-                        currentThemeId
-                    }
-
-                    Text(
-                        text = truncateThemeName(finalName, 20), 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontSize = 15.sp, 
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
-                    )
+                    val bundledTheme = BundledThemes.themes.find { t -> val manifest = t["themeManifest"] as Map<*,*>; manifest["id"] == currentThemeId.removeSuffix("***") || manifest["name"] == currentThemeId.removeSuffix("***") }
+                    val finalName = if (bundledTheme != null) stringResource(id = (bundledTheme["themeManifest"] as Map<*,*>)["nameRes"] as Int) + (if (currentThemeId.endsWith("***")) "***" else "") else currentThemeId
+                    Text(text = truncateThemeName(finalName, 20), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                
-                // 7. PERSONALIZAR COLORES
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
             }
 
-            // --- 2. Widget Section ---
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                // 1. CALENDARIOS (NUEVO - PRIMERO)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .clickable { showWidgetCalendarDialog = true }
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWidgetCalendarDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.widget_selected_calendars_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-
-                // 2. NÚMERO DE EVENTOS
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 12.dp, bottom = 8.dp)) {
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Text(text = stringResource(id = R.string.widget_event_count), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(
-                            value = pendingEventCount,
-                            onValueChange = { pendingEventCount = it },
-                            valueRange = 1f..12f,
-                            steps = 10,
-                            modifier = Modifier.weight(1f),
-                            colors = SliderDefaults.colors(
-                                thumbColor = CalendarioTheme.colors.cabecera,
-                                activeTrackColor = CalendarioTheme.colors.cabecera,
-                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
-                            )
-                        )
+                        Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_EVENT_COUNT, it.roundToInt()) } }, valueRange = 1f..12f, steps = 10, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera))
                         Text(text = pendingEventCount.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Column(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 8.dp)) {
-                    val textBoostLabel = if (pendingTextBoost.roundToInt() > 0) "+${pendingTextBoost.roundToInt()}" else pendingTextBoost.roundToInt().toString()
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(
-                            value = pendingTextBoost,
-                            onValueChange = { pendingTextBoost = it },
-                            valueRange = -4f..4f,
-                            steps = 7,
-                            modifier = Modifier.weight(1f),
-                            colors = SliderDefaults.colors(
-                                thumbColor = CalendarioTheme.colors.cabecera,
-                                activeTrackColor = CalendarioTheme.colors.cabecera,
-                                inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
-                            )
-                        )
-                        Text(text = textBoostLabel, modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
+                        Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it; updateWidgetPrefs { putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, it) } }, valueRange = -4f..4f, steps = 7, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera))
+                        Text(text = (if (pendingTextBoost.roundToInt() > 0) "+" else "") + pendingTextBoost.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), 
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .background(if (pendingFontBold) CalendarioTheme.colors.cabecera.copy(alpha = 0.12f) else Color.Transparent)
-                            .border(1.dp, if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.15f), CircleShape)
-                            .clickable { pendingFontBold = !pendingFontBold },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.FormatBold,
-                            null,
-                            tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                            modifier = Modifier.size(34.dp)
-                        )
-                    }
+                    Box(modifier = Modifier.size(30.dp).clip(CircleShape).background(if (pendingFontBold) CalendarioTheme.colors.cabecera.copy(alpha = 0.12f) else Color.Transparent).border(1.dp, if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.15f), CircleShape).clickable { pendingFontBold = !pendingFontBold; updateWidgetPrefs { putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold) } }, contentAlignment = Alignment.Center) { Icon(Icons.Default.FormatBold, null, tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(34.dp)) }
                     Spacer(modifier = Modifier.width(8.dp))
-                    val fontFamilyDisplay = when(pendingFontFamily) {
-                        WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
-                        WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
-                        WidgetConstants.FONT_FAMILY_CONDENSED -> stringResource(id = R.string.font_condensed)
-                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
-                        else -> stringResource(id = R.string.font_system)
-                    }
-                    val currentFontFamily = when(pendingFontFamily) {
-                        WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
-                        WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
-                        WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(
-                            Typeface.create(
-                                "sans-serif-condensed",
-                                if (pendingFontBold) Typeface.BOLD else Typeface.NORMAL
-                            )
-                        )
-                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
-                        else -> FontFamily.Default
-                    }
-                    val currentFontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal
-                    Text(
-                        text = fontFamilyDisplay,
-                        color = CalendarioTheme.colors.textSystem,
-                        fontSize = 15.sp,
-                        fontWeight = currentFontWeight,
-                        textAlign = TextAlign.End,
-                        fontFamily = currentFontFamily,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
+                    val display = when(pendingFontFamily) { WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif); WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace); WidgetConstants.FONT_FAMILY_CONDENSED -> stringResource(id = R.string.font_condensed); WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif); else -> stringResource(id = R.string.font_system) }
+                    Text(text = display, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                 }
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                
-                // Nueva Fila Unificada de Colores del Widget
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                 Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .clickable { showWidgetColorExpand = !showWidgetColorExpand }
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.widget_colors_label),
-                            fontSize = 16.sp,
-                            modifier = Modifier.weight(1f),
-                            color = CalendarioTheme.colors.textSystem
-                        )
-                        
-                        // Previsualización de los 3 colores (puntos separados para claridad total)
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            val dotBorderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
-                            
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(0.5.dp, dotBorderColor, CircleShape))
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingEventColor).border(0.5.dp, dotBorderColor, CircleShape))
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingTodayEventColor).border(0.5.dp, dotBorderColor, CircleShape))
+                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWidgetColorExpand = !showWidgetColorExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(id = R.string.widget_colors_label), fontSize = 16.sp, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            val border = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(0.5.dp, border, CircleShape))
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingEventColor).border(0.5.dp, border, CircleShape))
+                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingTodayEventColor).border(0.5.dp, border, CircleShape))
                         }
-
-                        Icon(
-                            imageVector = if (showWidgetColorExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                            modifier = Modifier.padding(start = 8.dp).size(20.dp)
-                        )
+                        Icon(if (showWidgetColorExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.padding(start = 8.dp).size(20.dp))
                     }
-
                     if (showWidgetColorExpand) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // BOTÃ“N FONDO
-                            WidgetColorChip(
-                                label = stringResource(id = R.string.widget_color_fondo),
-                                color = pendingWidgetBackgroundColor,
-                                modifier = Modifier.weight(1f),
-                                onClick = { showWidgetBackgroundColorPalette = true }
-                            )
-                            // BOTÃ“N EVENTO
-                            WidgetColorChip(
-                                label = stringResource(id = R.string.widget_color_evento),
-                                color = pendingEventColor,
-                                modifier = Modifier.weight(1f),
-                                onClick = { showWidgetEventColorPalette = true }
-                            )
-                            // BOTÃ“N HOY
-                            WidgetColorChip(
-                                label = stringResource(id = R.string.widget_color_hoy),
-                                color = pendingTodayEventColor,
-                                modifier = Modifier.weight(1f),
-                                onClick = { showWidgetTodayEventColorPalette = true }
-                            )
+                        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            WidgetColorChip(stringResource(id = R.string.widget_color_fondo), pendingWidgetBackgroundColor, Modifier.weight(1f)) { showWidgetBackgroundColorPalette = true }
+                            WidgetColorChip(stringResource(id = R.string.widget_color_evento), pendingEventColor, Modifier.weight(1f)) { showWidgetEventColorPalette = true }
+                            WidgetColorChip(stringResource(id = R.string.widget_color_hoy), pendingTodayEventColor, Modifier.weight(1f)) { showWidgetTodayEventColorPalette = true }
                         }
                     }
                 }
             }
 
-
-            // --- 3. Copia de seguridad (Diseño Refinado v3) ---
             SectionTitle(text = stringResource(id = R.string.backup_section_title_label))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                val accountEmail = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
-                
-                if (accountEmail == null) {
+                val email = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
+                if (email == null) {
                     ActionRow(text = stringResource(id = R.string.link_google_account)) {
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build()
-                        val client = GoogleSignIn.getClient(context, gso)
-                        googleSignInLauncher.launch(client.signInIntent)
+                        googleSignInLauncher.launch(GoogleSignIn.getClient(context, gso).signInIntent)
                     }
                 } else {
-                    // 1. CUENTA (Drive + Email)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = stringResource(id = R.string.drive_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
-                        Text(
-                            text = accountEmail, 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontSize = 14.sp, 
-                            fontWeight = FontWeight.Medium, 
-                            textAlign = TextAlign.End, 
-                            maxLines = 1, 
-                            overflow = TextOverflow.Ellipsis
-                        )
+                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(id = R.string.drive_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        Text(text = email, color = CalendarioTheme.colors.textSystem, fontSize = 14.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
-                    
-                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-                    
-                    val freqLabel = when(pendingBackupFreq) {
-                        "manual" -> stringResource(R.string.frequency_manual)
-                        "daily" -> stringResource(R.string.frequency_daily)
-                        "weekly" -> stringResource(R.string.frequency_weekly)
-                        "monthly" -> stringResource(R.string.frequency_monthly)
-                        else -> pendingBackupFreq
+                    HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                    val freqLabel = when(pendingBackupFreq) { "manual" -> stringResource(R.string.frequency_manual); "daily" -> stringResource(R.string.frequency_daily); "weekly" -> stringResource(R.string.frequency_weekly); "monthly" -> stringResource(R.string.frequency_monthly); else -> pendingBackupFreq }
+                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
+                        Text(text = freqLabel, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
-                    
-                    // 2. FRECUENCIA
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
-                        Text(
-                            text = freqLabel, 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontSize = 15.sp, 
-                            fontWeight = FontWeight.Medium 
-                        )
-                    }
-
-                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
-
-                    // 3. ÚLTIMA (Interactiva / Desplegable con Seguridad Visual)
+                    HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                     Column {
                         var dateFontSize by remember { mutableStateOf(14.sp) }
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBackupActionsExpand = !showBackupActionsExpand }.padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.last_backup_label), 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontSize = 16.sp
-                            )
+                        Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBackupActionsExpand = !showBackupActionsExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(id = R.string.last_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                             Spacer(modifier = Modifier.weight(1f))
-
-                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) 
-                                         else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
-                            
-                            val sizeMB = lastBackupSize / (1024.0 * 1024.0)
-                            val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, sizeMB)}MB" else ""
-                            
-                            Text(
-                                text = "$lastStr$sizeStr", 
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
-                                fontSize = dateFontSize,
-                                maxLines = 1,
-                                softWrap = false,
-                                overflow = TextOverflow.Ellipsis,
-                                onTextLayout = { textLayoutResult ->
-                                    // Si hay desbordamiento visual, reducimos la fuente hasta 11sp
-                                    if (textLayoutResult.hasVisualOverflow && dateFontSize > 11.sp) {
-                                        dateFontSize = (dateFontSize.value - 1f).sp
-                                    }
-                                }
-                            )
-
-                            Icon(
-                                imageVector = if (showBackupActionsExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                                modifier = Modifier.padding(start = 8.dp).size(20.dp)
-                            )
+                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
+                            val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))}MB" else ""
+                            Text(text = "$lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = dateFontSize, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis, onTextLayout = { if (it.hasVisualOverflow && dateFontSize > 11.sp) dateFontSize = (dateFontSize.value - 1f).sp })
+                            Icon(if (showBackupActionsExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.padding(start = 8.dp).size(20.dp))
                         }
-
                         if (showBackupActionsExpand) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                val btnBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                                
-                                SettingsActionChip(
-                                    text = stringResource(id = R.string.restaurar_label),
-                                    icon = painterResource(id = R.drawable.ic_restore_custom),
-                                    modifier = Modifier.weight(1f).height(44.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    containerColor = btnBg,
-                                    onClick = { 
-                                        restoreSource = "drive"
-                                        showRestoreSelectDialog = true 
-                                    }
-                                )
-                                
-                                SettingsActionChip(
-                                    text = stringResource(id = R.string.sincronizar_label),
-                                    icon = Icons.Default.Sync,
-                                    isIconRotating = isSyncing,
-                                    modifier = Modifier.weight(1f).height(44.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    containerColor = btnBg,
-                                    onClick = {
-                                        viewModel.syncHistoryToDrive(context) { result ->
-                                            if (result.success) {
-                                                permissionsUpdateTrigger++
-                                                val msg = context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents)
-                                                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                                            } else {
-                                                Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
-                                    }
-                                )
+                            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                                SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { restoreSource = "drive"; showRestoreSelectDialog = true })
+                                SettingsActionChip(text = stringResource(id = R.string.sincronizar_label), icon = Icons.Default.Sync, isIconRotating = isSyncing, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; Toast.makeText(context, context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG).show() } else { Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show() } } })
                             }
                         }
                     }
                 }
-                
-                // 4. COPIA LOCAL (Interactiva / Desplegable)
-                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                 Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .clickable { showLocalBackupExpand = !showLocalBackupExpand }
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.preferences_backup_label), 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontSize = 16.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(
-                            imageVector = if (showLocalBackupExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                            modifier = Modifier.size(20.dp)
-                        )
+                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showLocalBackupExpand = !showLocalBackupExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(id = R.string.preferences_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        Icon(if (showLocalBackupExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(20.dp))
                     }
-
                     if (showLocalBackupExpand) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            val btnBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                            
-                            SettingsActionChip(
-                                text = stringResource(id = R.string.restaurar_label),
-                                icon = painterResource(id = R.drawable.ic_restore_custom),
-                                modifier = Modifier.weight(1f).height(44.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                containerColor = btnBg,
-                                onClick = { 
-                                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                                        addCategory(Intent.CATEGORY_OPENABLE)
-                                        type = "application/json" 
-                                    }
-                                    importFullBackupLauncher.launch(intent)
-                                }
-                            )
-                            
-                            SettingsActionChip(
-                                text = stringResource(id = R.string.guardar_label),
-                                icon = Icons.Default.Save,
-                                modifier = Modifier.weight(1f).height(44.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                containerColor = btnBg,
-                                onClick = {
-                                    val dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                                    val suggestedName = "calendariovisual_backup_$dateStr.json"
-                                    
-                                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
-                                        addCategory(Intent.CATEGORY_OPENABLE)
-                                        type = "application/json"
-                                        putExtra(Intent.EXTRA_TITLE, suggestedName)
-                                    }
-                                    exportFullBackupLauncher.launch(intent)
-                                }
-                            )
+                        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                            SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { importFullBackupLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) })
+                            SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { val suggested = "calendariovisual_backup_${LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))}.json"; exportFullBackupLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, suggested) }) })
                         }
                     }
                 }
             }
 
-            // --- About Section ---
-            var loggingEnabled by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
-            var debugClickCount by remember { mutableIntStateOf(0) }
             Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                val titleColor = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
-                Text(stringResource(id = R.string.about), style = typography.titleMedium, fontWeight = FontWeight.Bold, color = titleColor)
+                Text(stringResource(id = R.string.about), style = typography.titleMedium, fontWeight = FontWeight.Bold, color = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f))
                 val haptic = LocalHapticFeedback.current
-                IconButton(onClick = { if (loggingEnabled) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabled = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, modifier = Modifier.size(24.dp)) {
-                    Icon(Icons.Default.BugReport, null, tint = if (loggingEnabled) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f), modifier = Modifier.combinedClickable(onClick = { if (loggingEnabled) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabled = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, onLongClick = { if (loggingEnabled) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabled = false; LogCollector.setLoggingEnabled(context, false); debugClickCount = 0 } }))
-                }
+                var loggingEnabledInternal by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
+                var debugClickCount by remember { mutableIntStateOf(0) }
+                IconButton(onClick = { if (loggingEnabledInternal) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabledInternal = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, modifier = Modifier.size(24.dp)) { Icon(Icons.Default.BugReport, null, tint = if (loggingEnabledInternal) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f), modifier = Modifier.combinedClickable(onClick = { if (loggingEnabledInternal) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabledInternal = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, onLongClick = { if (loggingEnabledInternal) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabledInternal = false; LogCollector.setLoggingEnabled(context, false); debugClickCount = 0 } })) }
             }
             Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
                 Text("${stringResource(id = R.string.app_name)} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()} > ", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                    Text(
-                        text = stringResource(id = R.string.history),
-                        fontSize = 16.sp,
-                        color = Color(0xFF2196F3),
-                        modifier = Modifier.clickable { onHistoryClick() }
-                    )
+                    Text(text = stringResource(id = R.string.history), fontSize = 16.sp, color = Color(0xFF2196F3), modifier = Modifier.clickable { onHistoryClick() } )
                 }
             }
         }
-    }
 
-    if (showLanguageDialog) {
-        val currentLocales = AppCompatDelegate.getApplicationLocales()
-        val currentLangCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language
-        
-        LanguageSelectionDialog(
-            currentLanguageCode = currentLangCode,
-            onLanguageSelected = { newCode ->
-                scope.launch {
-                    isChangingLanguage = true
-                    delay(1000.milliseconds)
-                    val appLocales = if (newCode == null) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(newCode)
-                    AppCompatDelegate.setApplicationLocales(appLocales)
-                    showLanguageDialog = false
-                }
-            },
-            onDismiss = { showLanguageDialog = false }
-        )
-    }
-
-    if (showThemeDialog) { 
-        ThemeSelectionDialog(
-            currentTheme = themeSetting, 
-            onThemeSelected = { 
-                themeManager.setTheme(it)
-                showThemeDialog = false
-            }, 
-            onDismiss = { showThemeDialog = false }
-        ) 
-    }
-
-    if (showWeekConfigDialog) {
-        WeekConfigDialog(
-            currentSelectionKey = pendingStartOfWeekKey,
-            showWeekNumber = pendingShowWeekNumber,
-            onConfirm = { key, show ->
-                pendingStartOfWeekKey = key
-                pendingShowWeekNumber = show
-                updateAppPrefs { 
-                    putString(AppConstants.KEY_START_OF_WEEK, key)
-                    putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, show)
-                }
-                showWeekConfigDialog = false
-            },
-            onDismiss = { showWeekConfigDialog = false }
-        )
-    }
-
-    if (showAlarmConfigDialog) {
-        AlarmConfigDialog(
-            anticipation = pendingAlarmOffset,
-            snooze = pendingSnoozeInterval,
-            onConfirm = { offset, interval ->
-                pendingAlarmOffset = offset
-                pendingSnoozeInterval = interval
-                updateAppPrefs {
-                    putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset.roundToInt())
-                    putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, interval.roundToInt())
-                }
-                showAlarmConfigDialog = false
-            },
-            onDismiss = { showAlarmConfigDialog = false }
-        )
-    }
-
-    if (showFontFamilyDialog) { 
-        FontFamilySelectionDialog(
-            currentSelection = pendingFontFamily, 
-            onConfirm = { family ->
-                pendingFontFamily = family
-                updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, family) }
-                showFontFamilyDialog = false 
-            }, 
-            onDismiss = { showFontFamilyDialog = false }
-        ) 
-    }
-
-    if (showFrequencyDialog) {
-        BackupFrequencyDialog(
-            selection = pendingBackupFreq,
-            onConfirm = { freq ->
-                pendingBackupFreq = freq
-                updateAppPrefs {
-                    val isEnabled = freq != "manual"
-                    putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, isEnabled)
-                    putString(AppConstants.KEY_BACKUP_FREQUENCY, freq)
-                }
-                if (freq != "manual") BackupScheduler.scheduleBackup(context, freq)
-                else BackupScheduler.cancelBackup(context)
-                showFrequencyDialog = false
-            },
-            onDismiss = { showFrequencyDialog = false }
-        )
-    }
-    if (showWidgetEventColorPalette) { 
-        AdvancedColorPickerDialog(
-            initialColor = pendingEventColor, 
-            onDismissRequest = { showWidgetEventColorPalette = false }, 
-            onColorConfirm = { 
-                pendingEventColor = it
-                updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, it.toArgb()) }
-                showWidgetEventColorPalette = false 
-            }
-        ) 
-    }
-    if (showWidgetTodayEventColorPalette) { 
-        AdvancedColorPickerDialog(
-            initialColor = pendingTodayEventColor, 
-            onDismissRequest = { showWidgetTodayEventColorPalette = false }, 
-            onColorConfirm = { 
-                pendingTodayEventColor = it
-                updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, it.toArgb()) }
-                showWidgetTodayEventColorPalette = false 
-            }
-        ) 
-    }
-    if (showWidgetBackgroundColorPalette) { 
-        AdvancedColorPickerDialog(
-            initialColor = pendingWidgetBackgroundColor, 
-            onDismissRequest = { showWidgetBackgroundColorPalette = false }, 
-            onColorConfirm = { 
-                pendingWidgetBackgroundColor = it
-                updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, it.toArgb()) }
-                showWidgetBackgroundColorPalette = false 
-            }
-        ) 
-    }
-    if (showDiscardChangesDialog) { 
-        AlertDialog(
-            onDismissRequest = { showDiscardChangesDialog = false }, 
-            containerColor = CalendarioTheme.colors.fondoDialogos, 
-            titleContentColor = CalendarioTheme.colors.textSystem, 
-            textContentColor = CalendarioTheme.colors.textSystem, 
-            title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
-            text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, 
-            confirmButton = { 
-                DialogConfirmButton(
-                    text = stringResource(id = R.string.discard),
-                    onClick = { showDiscardChangesDialog = false; onBackPress() },
-                    color = Color.Red
-                )
-            }, 
-            dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }
-        ) 
-    }
-
-
-    if (showUnlinkAccountDialog) {
-        AlertDialog(
-            onDismissRequest = { showUnlinkAccountDialog = false },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            titleContentColor = CalendarioTheme.colors.textSystem,
-            textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-            text = { Text(stringResource(id = R.string.unlink_account_confirmation)) },
-            confirmButton = {
-                DialogConfirmButton(
-                    text = stringResource(id = R.string.unlink_action),
-                    onClick = {
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
-                        GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener {
-                            appPrefs.edit { remove("google_account_email") }
-                            permissionsUpdateTrigger++
-                            showUnlinkAccountDialog = false
-                        }
-                    },
-                    color = Color.Red
-                )
-            },
-            dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }
-        )
-    }
-
-    if (showPermissionsDialog) {
-        // Forzamos un refresco inmediato al abrir y tras un pequeño delay
-        LaunchedEffect(Unit) {
-            permissionsUpdateTrigger++
-            delay(500.milliseconds)
-            permissionsUpdateTrigger++
+        // --- Dialogs ---
+        if (showLanguageDialog) {
+            val currentLocales = AppCompatDelegate.getApplicationLocales()
+            LanguageSelectionDialog(currentLanguageCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language, onLanguageSelected = { newCode -> scope.launch { isChangingLanguage = true; delay(1000.milliseconds); AppCompatDelegate.setApplicationLocales(if (newCode == null) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(newCode)); showLanguageDialog = false } }, onDismiss = { showLanguageDialog = false })
         }
+        if (showThemeDialog) { ThemeSelectionDialog(currentTheme = themeSetting, onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false }, onDismiss = { showThemeDialog = false }) }
+        if (showWeekConfigDialog) { WeekConfigDialog(currentSelectionKey = pendingStartOfWeekKey, showWeekNumber = pendingShowWeekNumber, onConfirm = { key, show -> pendingStartOfWeekKey = key; pendingShowWeekNumber = show; updateAppPrefs { putString(AppConstants.KEY_START_OF_WEEK, key); putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, show) }; showWeekConfigDialog = false }, onDismiss = { showWeekConfigDialog = false }) }
+        if (showAlarmConfigDialog) { AlarmConfigDialog(anticipation = pendingAlarmOffset, snooze = pendingSnoozeInterval, onConfirm = { offset, interval -> pendingAlarmOffset = offset; pendingSnoozeInterval = interval; updateAppPrefs { putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset.roundToInt()); putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, interval.roundToInt()) }; showAlarmConfigDialog = false }, onDismiss = { showAlarmConfigDialog = false }) }
+        if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onConfirm = { family -> pendingFontFamily = family; updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, family) }; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
+        if (showFrequencyDialog) { BackupFrequencyDialog(selection = pendingBackupFreq, onConfirm = { freq -> pendingBackupFreq = freq; updateAppPrefs { val enabled = freq != "manual"; putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, enabled); putString(AppConstants.KEY_BACKUP_FREQUENCY, freq) }; if (freq != "manual") BackupScheduler.scheduleBackup(context, freq) else BackupScheduler.cancelBackup(context); showFrequencyDialog = false }, onDismiss = { showFrequencyDialog = false }) }
+        if (showBundledThemesDialog) { BundledThemesDialog(currentThemeId = lightThemeName, onDismiss = { showBundledThemesDialog = false }, onThemeSelected = { theme -> showBundledThemesDialog = false; try { val manifestObj = theme["themeManifest"] as? Map<*, *> ?: return@BundledThemesDialog; val manifest = JSONObject(manifestObj); val light = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }; val dark = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }; val id = manifestObj["id"] as? String ?: "theme_1"; ThemePersistence.applyTheme(context, ParsedTheme(manifest, light, dark), id); onThemeImported(); CalendarAppWidgetProvider.triggerWidgetUpdate(context); WidgetStateManager.refreshWithCurrentEvents(context) } catch (e: Exception) { Log.e("SettingsScreen", "Error applying bundled theme", e) } }, onLoadClick = { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }, onSaveClick = { showExportDialog = true }) }
+        if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, it.toArgb()) }; showWidgetEventColorPalette = false }) }
+        if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, it.toArgb()) }; showWidgetTodayEventColorPalette = false }) }
+        if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, it.toArgb()) }; showWidgetBackgroundColorPalette = false }) }
+        if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }) }
+        if (showUnlinkAccountDialog) { AlertDialog(onDismissRequest = { showUnlinkAccountDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.unlink_account_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.unlink_action), onClick = { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build(); GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { appPrefs.edit { remove("google_account_email") }; permissionsUpdateTrigger++; showUnlinkAccountDialog = false } }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }) }
+        if (showPermissionsDialog) { LaunchedEffect(Unit) { permissionsUpdateTrigger++; delay(500.milliseconds); permissionsUpdateTrigger++ }; PermissionsDialog(calStatus = calStatus, notifStatus = notifStatus, alarmStatus = alarmStatus, driveStatus = driveStatus, batteryStatus = batteryStatus, onDismiss = { showPermissionsDialog = false }, onFix = { type -> when (type) { "drive" -> { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build(); googleSignInLauncher.launch(GoogleSignIn.getClient(context, gso).signInIntent) }; "battery" -> context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)); else -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) } }) }
+        if (showRestoreSelectDialog) { RestoreSelectDialog(onDismiss = { showRestoreSelectDialog = false; restoreSource = null; pendingLocalUri = null }, onConfirm = { prefs, holidays, notes, events -> showRestoreSelectDialog = false; if (restoreSource == "drive") { viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { if (it) { if (prefs) (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } else permissionsUpdateTrigger++ } else Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() } } else if (restoreSource == "local" && pendingLocalUri != null) { viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { if (it) { if (prefs) (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } else permissionsUpdateTrigger++ } else Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() } }; restoreSource = null; pendingLocalUri = null }) }
+        if (showExportDialog) { ExportThemeDialog(onDismissRequest = { showExportDialog = false }, onConfirm = { newName -> showExportDialog = false; appPrefs.edit { putString("temp_export_name", newName) }; exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "${newName}.json") }) }) }
+        if (showWidgetCalendarDialog) { SelectWidgetCalendarsDialog(appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }, initialSelectedIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds }, currentFavoriteId = uiState.favoriteCalendarId, onApply = { newIds -> pendingWidgetCalendarIds = newIds; updateWidgetPrefs { putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet()) }; showWidgetCalendarDialog = false }, onDismissRequest = { showWidgetCalendarDialog = false }) }
 
-        PermissionsDialog(
-            calStatus = calStatus,
-            notifStatus = notifStatus,
-            alarmStatus = alarmStatus,
-            driveStatus = driveStatus,
-            batteryStatus = batteryStatus,
-            onDismiss = { showPermissionsDialog = false },
-            onFix = { type ->
-                when (type) {
-                    "drive" -> {
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestEmail()
-                            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
-                            .build()
-                        val client = GoogleSignIn.getClient(context, gso)
-                        googleSignInLauncher.launch(client.signInIntent)
-                    }
-                    "battery" -> {
-                        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                        context.startActivity(intent)
-                    }
-                    else -> {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", context.packageName, null)
-                        }
-                        context.startActivity(intent)
-                    }
-                }
-            }
-        )
-    }
-
-    if (showRestoreSelectDialog) {
-        RestoreSelectDialog(
-            onDismiss = { 
-                showRestoreSelectDialog = false
-                restoreSource = null
-                pendingLocalUri = null
-            },
-            onConfirm = { prefs, holidays, notes, events ->
-                showRestoreSelectDialog = false
-                if (restoreSource == "drive") {
-                    viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { success ->
-                        if (success) {
-                            Toast.makeText(context, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                            if (prefs) {
-                                (context as? Activity)?.let { activity ->
-                                    val intent = activity.intent
-                                    activity.finish()
-                                    activity.startActivity(intent)
-                                }
-                            } else {
-                                permissionsUpdateTrigger++
-                            }
-                        } else {
-                            Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                } else if (restoreSource == "local" && pendingLocalUri != null) {
-                    viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { success ->
-                        if (success) {
-                            Toast.makeText(context, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                            if (prefs) {
-                                (context as? Activity)?.let { activity ->
-                                    val intent = activity.intent
-                                    activity.finish()
-                                    activity.startActivity(intent)
-                                }
-                            } else {
-                                permissionsUpdateTrigger++
-                            }
-                        } else {
-                            Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-                restoreSource = null
-                pendingLocalUri = null
-            }
-        )
-    }
-
-    if (showExportDialog) {
-        ExportThemeDialog(
-            onDismissRequest = { showExportDialog = false },
-            onConfirm = { newName ->
-                showExportDialog = false
-                appPrefs.edit { putString("temp_export_name", newName) }
-                exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json"
-                    putExtra(Intent.EXTRA_TITLE, "${newName}.json")
-                })
-            }
-        )
-    }
-
-    if (showWidgetCalendarDialog) {
-        SelectWidgetCalendarsDialog(
-            appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) },
-            initialSelectedIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds },
-            currentFavoriteId = uiState.favoriteCalendarId,
-            onApply = { newIds ->
-                pendingWidgetCalendarIds = newIds
-                updateWidgetPrefs {
-                    putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet())
-                }
-                showWidgetCalendarDialog = false
-            },
-            onDismissRequest = { showWidgetCalendarDialog = false }
-        )
-    }
-
-    if (showLanguageDialog) {
-        val currentLocales = AppCompatDelegate.getApplicationLocales()
-        val currentLangCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language
-        
-        LanguageSelectionDialog(
-            currentLanguageCode = currentLangCode,
-            onLanguageSelected = { newCode ->
-                scope.launch {
-                    isChangingLanguage = true
-                    delay(1000.milliseconds) // Duración de la animación
-                    
-                    val appLocales: LocaleListCompat = if (newCode == null) {
-                        LocaleListCompat.getEmptyLocaleList()
-                    } else {
-                        LocaleListCompat.forLanguageTags(newCode)
-                    }
-                    AppCompatDelegate.setApplicationLocales(appLocales)
-                    // La actividad se recreará aquí
-                }
-            },
-            onDismiss = { showLanguageDialog = false }
-        )
-    }
-
-    // CAPA DE ANIMACIÓN DE CAMBIO DE IDIOMA
-    if (isChangingLanguage) {
-        val infiniteTransition = rememberInfiniteTransition(label = "lang_rotation")
-        val rotation by infiniteTransition.animateFloat(
-            initialValue = 0f,
-            targetValue = 360f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = LinearEasing), // Velocidad reducida a la mitad
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "rotation"
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f)) // Fondo oscurecido sutil
-                .clickable(enabled = false) {}, // Bloquea clics
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(48.dp) // Tamaño reducido para mayor elegancia
-                    .graphicsLayer { rotationZ = rotation },
-                tint = Color.White // Blanco puro para máxima visibilidad sobre el fondo oscuro
-            )
+        if (isChangingLanguage) {
+            val transition = rememberInfiniteTransition(label = "lang_rotation")
+            val rot by transition.animateFloat(initialValue = 0f, targetValue = 360f, animationSpec = infiniteRepeatable(animation = tween(2000, easing = LinearEasing), repeatMode = RepeatMode.Restart), label = "rotation")
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f)).clickable(enabled = false) {}, contentAlignment = Alignment.Center) { Icon(Icons.Default.Language, null, modifier = Modifier.size(48.dp).graphicsLayer { rotationZ = rot }, tint = Color.White) }
         }
     }
 }
 
 @Composable
-private fun ExportThemeDialog(
-    onDismissRequest: () -> Unit,
-    onConfirm: (String) -> Unit
-) {
+private fun ExportThemeDialog(onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
-    AlertDialog(
-        onDismissRequest = onDismissRequest, 
-        containerColor = CalendarioTheme.colors.fondoDialogos, 
-        titleContentColor = CalendarioTheme.colors.textSystem, 
-        textContentColor = CalendarioTheme.colors.textSystem, 
-        title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
-        text = { OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text(stringResource(id = R.string.theme_name)) }, singleLine = true, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)) }, 
-        confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.export), onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) }, enabled = text.isNotBlank()) }, 
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
-    )
+    AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text(stringResource(id = R.string.theme_name)) }, singleLine = true, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.export), onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) }, enabled = text.isNotBlank()) }, dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) })
 }
 
 @Composable
-private fun RestoreSelectDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (prefs: Boolean, holidays: Boolean, notes: Boolean, events: Boolean) -> Unit
-) {
+private fun RestoreSelectDialog(onDismiss: () -> Unit, onConfirm: (prefs: Boolean, holidays: Boolean, notes: Boolean, events: Boolean) -> Unit) {
     var restorePrefs by remember { mutableStateOf(true) }
     var restoreHolidays by remember { mutableStateOf(true) }
     var restoreNotes by remember { mutableStateOf(true) }
     var restoreEvents by remember { mutableStateOf(true) }
-
     val anySelected = restorePrefs || restoreHolidays || restoreNotes || restoreEvents
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = {
-            Text(
-                text = stringResource(id = R.string.restaurar_label),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                RestoreOptionRow(stringResource(id = R.string.restore_prefs_label), restorePrefs) { restorePrefs = it }
-                RestoreOptionRow(stringResource(id = R.string.restore_holidays_label), restoreHolidays) { restoreHolidays = it }
-                RestoreOptionRow(stringResource(id = R.string.restore_notes_label), restoreNotes) { restoreNotes = it }
-                RestoreOptionRow(stringResource(id = R.string.restore_events_label), restoreEvents) { restoreEvents = it }
-            }
-        },
-        confirmButton = {
-            DialogConfirmButton(
-                text = stringResource(id = R.string.apply),
-                onClick = { onConfirm(restorePrefs, restoreHolidays, restoreNotes, restoreEvents) },
-                enabled = anySelected
-            )
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
-    )
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, title = { Text(text = stringResource(id = R.string.restaurar_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { RestoreOptionRow(stringResource(id = R.string.restore_prefs_label), restorePrefs) { restorePrefs = it }; RestoreOptionRow(stringResource(id = R.string.restore_holidays_label), restoreHolidays) { restoreHolidays = it }; RestoreOptionRow(stringResource(id = R.string.restore_notes_label), restoreNotes) { restoreNotes = it }; RestoreOptionRow(stringResource(id = R.string.restore_events_label), restoreEvents) { restoreEvents = it } } }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.apply), onClick = { onConfirm(restorePrefs, restoreHolidays, restoreNotes, restoreEvents) }, enabled = anySelected) }, dismissButton = { DialogDismissButton(onDismiss = onDismiss) })
 }
 
 @Composable
 private fun RestoreOptionRow(label: String, isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCheckedChange(!isChecked) }
-            .padding(vertical = 8.dp, horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
-        )
-        Text(
-            text = label, 
-            color = CalendarioTheme.colors.textSystem, 
-            modifier = Modifier.padding(start = 12.dp),
-            fontSize = 16.sp
-        )
-    }
+    Row(modifier = Modifier.fillMaxWidth().clickable { onCheckedChange(!isChecked) }.padding(vertical = 8.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = isChecked, onCheckedChange = onCheckedChange, colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)); Text(text = label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(start = 12.dp), fontSize = 16.sp) }
 }
 
 @Composable
-private fun FontFamilySelectionDialog(
-    currentSelection: String,
-    onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun FontFamilySelectionDialog(currentSelection: String, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
     var tempSelection by remember { mutableStateOf(currentSelection) }
-    val options = listOf(
-        WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system,
-        WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif,
-        WidgetConstants.FONT_FAMILY_SERIF to R.string.font_serif,
-        WidgetConstants.FONT_FAMILY_MONOSPACE to R.string.font_monospace,
-        WidgetConstants.FONT_FAMILY_CONDENSED to R.string.font_condensed
-    )
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Column {
-                options.forEach { (key, labelRes) ->
-                    val family = when(key) {
-                        WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
-                        WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
-                        WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL))
-                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
-                        else -> FontFamily.Default
-                    }
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { tempSelection = key }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val isSelected = key == tempSelection
-                        Text(
-                            text = stringResource(id = labelRes),
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp,
-                            fontFamily = family,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                        )
-                        if (isSelected) {
-                            Icon(
-                                Icons.Default.Check,
-                                null,
-                                tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) 
-                                    CalendarioTheme.colors.textSystem 
-                                else 
-                                    CalendarioTheme.colors.cabecera
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            AdaptiveDialogButtons(
-                confirmText = stringResource(id = R.string.accept),
-                onConfirm = { onConfirm(tempSelection) },
-                onDismiss = onDismiss
-            )
-        }
-    )
+    val options = listOf(WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system, WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif, WidgetConstants.FONT_FAMILY_SERIF to R.string.font_serif, WidgetConstants.FONT_FAMILY_MONOSPACE to R.string.font_monospace, WidgetConstants.FONT_FAMILY_CONDENSED to R.string.font_condensed)
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { options.forEach { (key, labelRes) -> val family = when(key) { WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif; WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace; WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL)); WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif; else -> FontFamily.Default }; Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = key == tempSelection; Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontFamily = family, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) { Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) } } } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempSelection) }, onDismiss = onDismiss) })
 }
 
 @Composable
-private fun AlarmConfigDialog(
-    anticipation: Float,
-    snooze: Float,
-    onConfirm: (Float, Float) -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun AlarmConfigDialog(anticipation: Float, snooze: Float, onConfirm: (Float, Float) -> Unit, onDismiss: () -> Unit) {
     var tempAnticipation by remember { mutableFloatStateOf(anticipation) }
     var tempSnooze by remember { mutableFloatStateOf(snooze) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Column {
-                Text(stringResource(id = R.string.alarm_anticipation_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Slider(
-                        value = tempAnticipation,
-                        onValueChange = { tempAnticipation = it },
-                        valueRange = 0f..120f,
-                        steps = 23,
-                        modifier = Modifier.weight(1f),
-                        colors = SliderDefaults.colors(
-                            thumbColor = CalendarioTheme.colors.cabecera,
-                            activeTrackColor = CalendarioTheme.colors.cabecera,
-                            inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
-                        )
-                    )
-                    val anticipationVal = tempAnticipation.roundToInt()
-                    val anticipationSign = if (anticipationVal > 0) "-" else ""
-                    Text(
-                        text = "$anticipationSign$anticipationVal'", 
-                        modifier = Modifier.width(52.dp).padding(start = 8.dp),
-                        color = CalendarioTheme.colors.textSystem, 
-                        textAlign = TextAlign.End, 
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                HorizontalDivider(
-                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f),
-                    modifier = Modifier.padding(vertical = 12.dp)
-                )
-
-                Text(stringResource(id = R.string.alarm_snooze_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Slider(
-                        value = tempSnooze,
-                        onValueChange = { tempSnooze = it },
-                        valueRange = 5f..60f,
-                        steps = 10,
-                        modifier = Modifier.weight(1f),
-                        colors = SliderDefaults.colors(
-                            thumbColor = CalendarioTheme.colors.cabecera,
-                            activeTrackColor = CalendarioTheme.colors.cabecera,
-                            inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
-                        )
-                    )
-                    Text(
-                        text = "${tempSnooze.roundToInt()}'", 
-                        modifier = Modifier.width(44.dp).padding(start = 8.dp), 
-                        color = CalendarioTheme.colors.textSystem, 
-                        textAlign = TextAlign.End, 
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            AdaptiveDialogButtons(
-                confirmText = stringResource(id = R.string.accept),
-                onConfirm = { onConfirm(tempAnticipation, tempSnooze) },
-                onDismiss = onDismiss
-            )
-        }
-    )
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { Text(stringResource(id = R.string.alarm_anticipation_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp); Row(verticalAlignment = Alignment.CenterVertically) { Slider(value = tempAnticipation, onValueChange = { tempAnticipation = it }, valueRange = 0f..120f, steps = 23, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera)); Text(text = "${if (tempAnticipation.roundToInt() > 0) "-" else ""}${tempAnticipation.roundToInt()}'", modifier = Modifier.width(52.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) }; HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 12.dp)); Text(stringResource(id = R.string.alarm_snooze_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp); Row(verticalAlignment = Alignment.CenterVertically) { Slider(value = tempSnooze, onValueChange = { tempSnooze = it }, valueRange = 5f..60f, steps = 10, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera)); Text(text = "${tempSnooze.roundToInt()}'", modifier = Modifier.width(44.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempAnticipation, tempSnooze) }, onDismiss = onDismiss) })
 }
 
 @Composable
-private fun WeekConfigDialog(
-    currentSelectionKey: String,
-    showWeekNumber: Boolean,
-    onConfirm: (String, Boolean) -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolean, onConfirm: (String, Boolean) -> Unit, onDismiss: () -> Unit) {
     var tempKey by remember { mutableStateOf(currentSelectionKey) }
     var tempShowWeek by remember { mutableStateOf(showWeekNumber) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Column {
-                StartOfWeekOption.entries.forEach { option ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { tempKey = option.key }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val isSelected = option.key == tempKey
-                        Text(
-                            text = stringResource(id = option.displayNameRes),
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                        )
-                        if (isSelected) {
-                            Icon(
-                                Icons.Default.Check,
-                                null,
-                                tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background))
-                                    CalendarioTheme.colors.textSystem
-                                else
-                                    CalendarioTheme.colors.cabecera
-                            )
-                        }
-                    }
-                }
-
-                HorizontalDivider(
-                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f),
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .clickable { tempShowWeek = !tempShowWeek },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp)
-                    Switch(
-                        checked = tempShowWeek,
-                        onCheckedChange = { tempShowWeek = it },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = CalendarioTheme.colors.cabecera,
-                            checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
-                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
-                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-                        )
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            AdaptiveDialogButtons(
-                confirmText = stringResource(id = R.string.accept),
-                onConfirm = { onConfirm(tempKey, tempShowWeek) },
-                onDismiss = onDismiss
-            )
-        }
-    )
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { StartOfWeekOption.entries.forEach { option -> Row(Modifier.fillMaxWidth().clickable { tempKey = option.key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = option.key == tempKey; Text(text = stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) { Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) } } }; HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp)); Row(modifier = Modifier.fillMaxWidth().height(56.dp).clickable { tempShowWeek = !tempShowWeek }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp); Switch(checked = tempShowWeek, onCheckedChange = { tempShowWeek = it }, colors = SwitchDefaults.colors(checkedThumbColor = CalendarioTheme.colors.cabecera, checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f))) } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempKey, tempShowWeek) }, onDismiss = onDismiss) })
 }
 
 @Suppress("UNCHECKED_CAST")
 @Composable
-private fun BundledThemesDialog(
-    currentThemeId: String?,
-    onDismiss: () -> Unit,
-    onThemeSelected: (Map<String, Any>) -> Unit,
-    onLoadClick: () -> Unit,
-    onSaveClick: () -> Unit
-) {
+private fun BundledThemesDialog(currentThemeId: String?, onDismiss: () -> Unit, onThemeSelected: (Map<String, Any>) -> Unit, onLoadClick: () -> Unit, onSaveClick: () -> Unit) {
     val effectiveId = currentThemeId ?: "theme_1"
-
-    AlertDialog(
-        onDismissRequest = onDismiss, 
-        containerColor = CalendarioTheme.colors.fondoDialogos, 
-        titleContentColor = CalendarioTheme.colors.textSystem, 
-        textContentColor = CalendarioTheme.colors.textSystem, 
-        title = { 
-            Text(
-                text = stringResource(id = R.string.themes_v6), 
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            ) 
-        }, 
-        text = { 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.height(210.dp) // Reducimos un poco para dar aire al respaldo
-                ) { 
-                    items(BundledThemes.themes) { theme: Map<String, Any> -> 
-                        val themeManifest = theme["themeManifest"] as Map<*, *>
-                        val themeId = themeManifest["id"] as String
-                        val themeResId = themeManifest["nameRes"] as Int
-                        
-                        val isSelected = themeId == effectiveId
-
-                        ThemeChip(
-                            name = stringResource(id = themeResId),
-                            isSelected = isSelected,
-                            onClick = { onThemeSelected(theme) }
-                        )
-                    } 
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Fila integrada de Respaldo dentro del diálogo con diferenciación visual
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                    
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.cargar_label),
-                        icon = Icons.Default.FolderOpen,
-                        modifier = Modifier.weight(1f).height(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        containerColor = backupButtonBg,
-                        onClick = onLoadClick
-                    )
-                    
-                    SettingsActionChip(
-                        text = stringResource(id = R.string.guardar_label),
-                        icon = Icons.Default.Save,
-                        modifier = Modifier.weight(1f).height(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        containerColor = backupButtonBg,
-                        onClick = onSaveClick
-                    )
-                }
-            }
-        }, 
-        confirmButton = {},
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
-    )
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(text = stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column(horizontalAlignment = Alignment.CenterHorizontally) { LazyVerticalGrid(columns = GridCells.Fixed(2), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.height(210.dp)) { items(BundledThemes.themes) { theme: Map<String, Any> -> val themeManifest = theme["themeManifest"] as Map<*, *>; val themeId = themeManifest["id"] as String; val themeResId = themeManifest["nameRes"] as Int; val isSelected = themeId == effectiveId; ThemeChip(name = stringResource(id = themeResId), isSelected = isSelected, onClick = { onThemeSelected(theme) }) } }; Spacer(modifier = Modifier.height(16.dp)); HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)); Spacer(modifier = Modifier.height(16.dp)); Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f); SettingsActionChip(text = stringResource(id = R.string.cargar_label), icon = Icons.Default.FolderOpen, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onLoadClick); SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onSaveClick) } } }, confirmButton = {}, dismissButton = { DialogDismissButton(onDismiss = onDismiss) })
 }
 
 @Composable
-private fun ThemeChip(
-    name: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderColor = if (isSelected) {
-        CalendarioTheme.colors.cabecera
-    } else {
-        CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
-    }
-    
-    val bgColor = if (isSelected) {
-        CalendarioTheme.colors.cabecera.copy(alpha = 0.08f)
-    } else {
-        Color.Transparent
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(bgColor)
-            .border(
-                width = if (isSelected) 2.dp else 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = name,
-            fontSize = 14.sp,
-            color = CalendarioTheme.colors.textSystem,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-    }
+private fun ThemeChip(name: String, isSelected: Boolean, onClick: () -> Unit) {
+    val borderColor = if (isSelected) { CalendarioTheme.colors.cabecera } else { CalendarioTheme.colors.textSystem.copy(alpha = 0.1f) }; val bgColor = if (isSelected) { CalendarioTheme.colors.cabecera.copy(alpha = 0.08f) } else { Color.Transparent }; Box(modifier = Modifier.fillMaxWidth().height(48.dp).clip(RoundedCornerShape(12.dp)).background(bgColor).border(width = if (isSelected) 2.dp else 1.dp, color = borderColor, shape = RoundedCornerShape(12.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = name, fontSize = 14.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp)) }
 }
 
-
-
 private fun getFileName(context: Context, uri: Uri): String {
-    var fileName = "nombre_desconocido"
-    context.contentResolver.query(uri, null, null, null, null)?.use { cursor -> if (cursor.moveToFirst()) { val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME); if (nameIndex != -1) fileName = cursor.getString(nameIndex) } }
-    return fileName.substringBeforeLast('.')
+    var fileName = "nombre_desconocido"; context.contentResolver.query(uri, null, null, null, null)?.use { cursor -> if (cursor.moveToFirst()) { val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME); if (nameIndex != -1) fileName = cursor.getString(nameIndex) } }; return fileName.substringBeforeLast('.')
 }
 
 fun truncateThemeName(name: String, limit: Int): String = if (name.length > limit) name.take(limit - 3) + "..." else name
 
 @Composable
-private fun WidgetColorChip(
-    label: String,
-    color: Color,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    // Calculamos color de texto (Blanco o Negro) según oscuridad del fondo
-    val textColor = if (isColorDark(color, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black
-    val borderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
-
-    Box(
-        modifier = modifier
-            .height(44.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(color)
-            .border(0.5.dp, borderColor, RoundedCornerShape(10.dp))
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = label,
-            color = textColor,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
-    }
+private fun WidgetColorChip(label: String, color: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val textColor = if (isColorDark(color, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black; val borderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f); Box(modifier = modifier.height(44.dp).clip(RoundedCornerShape(10.dp)).background(color).border(0.5.dp, borderColor, RoundedCornerShape(10.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = label, color = textColor, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 4.dp)) }
 }
 
 @Composable
-private fun PermissionsDialog(
-    calStatus: PermissionStatus,
-    notifStatus: PermissionStatus,
-    alarmStatus: PermissionStatus,
-    driveStatus: PermissionStatus,
-    batteryStatus: PermissionStatus,
-    onDismiss: () -> Unit,
-    onFix: (String) -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                // ... (filas de permisos iguales)
-                PermissionRow(
-                    label = stringResource(id = R.string.calendar_permission_label),
-                    status = calStatus,
-                    fixLabel = if (calStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted) else stringResource(R.string.status_denied),
-                    onFix = { onFix("calendar") }
-                )
-
-                // 2. NOTIFICACIONES
-                PermissionRow(
-                    label = stringResource(id = R.string.notifications_permission_label),
-                    status = notifStatus,
-                    fixLabel = if (notifStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted_f) else stringResource(R.string.status_denied),
-                    onFix = { onFix("notifications") }
-                )
-
-                // 3. ALARMAS (Específico: Pantalla Completa)
-                PermissionRow(
-                    label = stringResource(id = R.string.alarms_permission_label),
-                    status = alarmStatus,
-                    fixLabel = if (alarmStatus == PermissionStatus.GRANTED) stringResource(R.string.status_full_screen) else stringResource(R.string.status_no_full_screen),
-                    onFix = { onFix("alarms") }
-                )
-
-                // 4. DRIVE
-                PermissionRow(
-                    label = stringResource(id = R.string.google_drive_permission_label),
-                    status = driveStatus,
-                    fixLabel = if (driveStatus == PermissionStatus.GRANTED) stringResource(R.string.status_linked) else stringResource(R.string.status_unlinked),
-                    onFix = { onFix("drive") }
-                )
-                
-                // 5. BATERÍA
-                PermissionRow(
-                    label = stringResource(id = R.string.battery_optimization_label),
-                    status = batteryStatus,
-                    fixLabel = if (batteryStatus == PermissionStatus.GRANTED) stringResource(R.string.status_unrestricted) else stringResource(R.string.status_optimized),
-                    onFix = { onFix("battery") }
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(id = R.string.close), color = CalendarioTheme.colors.textSystem)
-            }
-        }
-    )
-}
-
-
-@Composable
-private fun BackupFrequencyDialog(
-    selection: String,
-    onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var tempSelection by remember { mutableStateOf(selection) }
-    val options = listOf(
-        "manual" to R.string.frequency_manual,
-        "daily" to R.string.frequency_daily, 
-        "weekly" to R.string.frequency_weekly, 
-        "monthly" to R.string.frequency_monthly
-    )
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Column {
-                options.forEach { (key, labelRes) ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { tempSelection = key }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val isSelected = key == tempSelection
-                        Text(
-                            text = stringResource(id = labelRes), 
-                            modifier = Modifier.weight(1f), 
-                            fontSize = 16.sp, 
-                            color = CalendarioTheme.colors.textSystem,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                        )
-                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            AdaptiveDialogButtons(
-                confirmText = stringResource(id = R.string.accept),
-                onConfirm = { onConfirm(tempSelection) },
-                onDismiss = onDismiss
-            )
-        }
-    )
+private fun PermissionsDialog(calStatus: PermissionStatus, notifStatus: PermissionStatus, alarmStatus: PermissionStatus, driveStatus: PermissionStatus, batteryStatus: PermissionStatus, onDismiss: () -> Unit, onFix: (String) -> Unit) {
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { PermissionRow(label = stringResource(id = R.string.calendar_permission_label), status = calStatus, fixLabel = if (calStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted) else stringResource(R.string.status_denied), onFix = { onFix("calendar") }); PermissionRow(label = stringResource(id = R.string.notifications_permission_label), status = notifStatus, fixLabel = if (notifStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted_f) else stringResource(R.string.status_denied), onFix = { onFix("notifications") }); PermissionRow(label = stringResource(id = R.string.alarms_permission_label), status = alarmStatus, fixLabel = if (alarmStatus == PermissionStatus.GRANTED) stringResource(R.string.status_full_screen) else stringResource(R.string.status_no_full_screen), onFix = { onFix("alarms") }); PermissionRow(label = stringResource(id = R.string.google_drive_permission_label), status = driveStatus, fixLabel = if (driveStatus == PermissionStatus.GRANTED) stringResource(R.string.status_linked) else stringResource(R.string.status_unlinked), onFix = { onFix("drive") }); PermissionRow(label = stringResource(id = R.string.battery_optimization_label), status = batteryStatus, fixLabel = if (batteryStatus == PermissionStatus.GRANTED) stringResource(R.string.status_unrestricted) else stringResource(R.string.status_optimized), onFix = { onFix("battery") }) } }, confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.close), color = CalendarioTheme.colors.textSystem) } })
 }
 
 @Composable
-private fun PermissionRow(
-    label: String, 
-    status: PermissionStatus, 
-    fixLabel: String,
-    onFix: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // El punto de color (Verde = OK, Rojo = Acción requerida)
-        Box(
-            modifier = Modifier
-                .padding(top = 6.dp)
-                .size(10.dp)
-                .background(if (status == PermissionStatus.GRANTED) Color.Green else Color.Red, CircleShape)
-        )
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = label,
-                color = CalendarioTheme.colors.textSystem,
-                fontSize = 15.sp,
-                lineHeight = 20.sp
-            )
-            
-            Text(
-                text = fixLabel,
-                color = if (status == PermissionStatus.DENIED) MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                fontWeight = if (status == PermissionStatus.DENIED) FontWeight.Bold else FontWeight.Normal,
-                fontSize = 13.sp,
-                modifier = Modifier
-                    .clickable { onFix() }
-                    .padding(vertical = 2.dp)
-            )
-        }
-    }
+private fun BackupFrequencyDialog(selection: String, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
+    var tempSelection by remember { mutableStateOf(selection) }; val options = listOf("manual" to R.string.frequency_manual, "daily" to R.string.frequency_daily, "weekly" to R.string.frequency_weekly, "monthly" to R.string.frequency_monthly); AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { options.forEach { (key, labelRes) -> Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = key == tempSelection; Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera) } } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempSelection) }, onDismiss = onDismiss) })
+}
+
+@Composable
+private fun PermissionRow(label: String, status: PermissionStatus, fixLabel: String, onFix: () -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) { Box(modifier = Modifier.padding(top = 6.dp).size(10.dp).background(if (status == PermissionStatus.GRANTED) Color.Green else Color.Red, CircleShape)); Column(modifier = Modifier.weight(1f)) { Text(text = label, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, lineHeight = 20.sp); Text(text = fixLabel, color = if (status == PermissionStatus.DENIED) MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontWeight = if (status == PermissionStatus.DENIED) FontWeight.Bold else FontWeight.Normal, fontSize = 13.sp, modifier = Modifier.clickable { onFix() }.padding(vertical = 2.dp)) } }
 }
