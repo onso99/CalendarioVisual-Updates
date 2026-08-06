@@ -624,14 +624,92 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
 
 @Suppress("UNCHECKED_CAST")
 @Composable
-private fun BundledThemesDialog(currentThemeId: String?, onDismiss: () -> Unit, onThemeSelected: (Map<String, Any>) -> Unit, onLoadClick: () -> Unit, onSaveClick: () -> Unit) {
+private fun BundledThemesDialog(
+    currentThemeId: String?,
+    onDismiss: () -> Unit,
+    onThemeSelected: (Map<String, Any>) -> Unit,
+    onLoadClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
     val effectiveId = currentThemeId ?: "theme_1"
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(text = stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column(horizontalAlignment = Alignment.CenterHorizontally) { LazyVerticalGrid(columns = GridCells.Fixed(2), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.height(210.dp)) { items(BundledThemes.themes) { theme: Map<String, Any> -> val themeManifest = theme["themeManifest"] as Map<*, *>; val themeId = themeManifest["id"] as String; val themeResId = themeManifest["nameRes"] as Int; val isSelected = themeId == effectiveId; ThemeChip(name = stringResource(id = themeResId), isSelected = isSelected, onClick = { onThemeSelected(theme) }) } }; Spacer(modifier = Modifier.height(16.dp)); HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)); Spacer(modifier = Modifier.height(16.dp)); Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f); SettingsActionChip(text = stringResource(id = R.string.cargar_label), icon = Icons.Default.FolderOpen, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onLoadClick); SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onSaveClick) } } }, confirmButton = {}, dismissButton = { DialogDismissButton(onDismiss = onDismiss) })
+    val initialTheme = remember(effectiveId) {
+        BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == effectiveId.removeSuffix("***") }
+    }
+    var tempSelection by remember { mutableStateOf<Map<String, Any>?>(initialTheme) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(text = stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.height(210.dp)
+                ) {
+                    items(BundledThemes.themes) { theme: Map<String, Any> ->
+                        val themeManifest = theme["themeManifest"] as Map<*, *>
+                        val themeId = themeManifest["id"] as String
+                        val themeResId = themeManifest["nameRes"] as Int
+                        val isSelected = (tempSelection?.get("themeManifest") as? Map<*, *>)?.get("id") == themeId
+                        
+                        ThemeChip(
+                            name = stringResource(id = themeResId),
+                            isSelected = isSelected,
+                            onClick = { tempSelection = theme }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                    SettingsActionChip(text = stringResource(id = R.string.cargar_label), icon = Icons.Default.FolderOpen, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onLoadClick)
+                    SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onSaveClick)
+                }
+            }
+        },
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = { tempSelection?.let { onThemeSelected(it) } },
+                onDismiss = onDismiss
+            )
+        }
+    )
 }
 
 @Composable
 private fun ThemeChip(name: String, isSelected: Boolean, onClick: () -> Unit) {
-    val borderColor = if (isSelected) { CalendarioTheme.colors.cabecera } else { CalendarioTheme.colors.textSystem.copy(alpha = 0.1f) }; val bgColor = if (isSelected) { CalendarioTheme.colors.cabecera.copy(alpha = 0.08f) } else { Color.Transparent }; Box(modifier = Modifier.fillMaxWidth().height(48.dp).clip(RoundedCornerShape(12.dp)).background(bgColor).border(width = if (isSelected) 2.dp else 1.dp, color = borderColor, shape = RoundedCornerShape(12.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = name, fontSize = 14.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp)) }
+    val borderColor = if (isSelected) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+    val bgColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.08f) else Color.Transparent
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(bgColor)
+            .border(width = if (isSelected) 2.dp else 1.dp, color = borderColor, shape = RoundedCornerShape(12.dp))
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = name,
+            fontSize = 14.sp,
+            color = CalendarioTheme.colors.textSystem,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+    }
 }
 
 private fun getFileName(context: Context, uri: Uri): String {
