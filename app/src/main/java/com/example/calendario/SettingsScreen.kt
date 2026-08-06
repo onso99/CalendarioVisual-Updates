@@ -1592,7 +1592,11 @@ private fun AlarmConfigDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss)
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = onDismiss,
+                onDismiss = onDismiss
+            )
         }
     )
 }
@@ -1671,7 +1675,11 @@ private fun WeekConfigDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss)
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = onDismiss,
+                onDismiss = onDismiss
+            )
         }
     )
 }
@@ -1957,8 +1965,13 @@ private fun BackupFrequencyDialog(
                 }
             }
         },
-        confirmButton = {},
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = onDismiss,
+                onDismiss = onDismiss
+            )
+        }
     )
 }
 

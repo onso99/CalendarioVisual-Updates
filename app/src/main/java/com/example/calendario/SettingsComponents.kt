@@ -49,11 +49,40 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.calendario.ui.theme.CalendarioTheme
+
+import androidx.compose.ui.unit.TextUnit
+
+@Composable
+internal fun AdaptiveButtonText(
+    text: String,
+    fontSize: TextUnit,
+    onOverflow: () -> Unit,
+    color: Color = Color.Unspecified
+) {
+    Text(
+        text = text,
+        fontSize = fontSize,
+        fontWeight = FontWeight.Medium,
+        maxLines = 1,
+        softWrap = false,
+        overflow = TextOverflow.Visible,
+        color = color,
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.hasVisualOverflow && fontSize > 10.sp) {
+                onOverflow()
+            }
+        }
+    )
+}
 
 @Composable
 internal fun DialogConfirmButton(
     text: String,
+    fontSize: TextUnit = 14.sp,
+    onOverflow: () -> Unit = {},
     onClick: () -> Unit,
     enabled: Boolean = true,
     color: Color = CalendarioTheme.colors.cabecera
@@ -67,20 +96,68 @@ internal fun DialogConfirmButton(
             disabledContainerColor = Color.Gray.copy(alpha = 0.3f)
         )
     ) {
-        Text(text, modifier = Modifier.padding(horizontal = 8.dp))
+        AdaptiveButtonText(
+            text = text,
+            fontSize = fontSize,
+            onOverflow = onOverflow
+        )
     }
 }
 
 @Composable
 internal fun DialogDismissButton(
     text: String = stringResource(id = R.string.cancel),
+    fontSize: TextUnit = 14.sp,
+    onOverflow: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     TextButton(
         onClick = onDismiss,
         colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
     ) {
-        Text(text)
+        AdaptiveButtonText(
+            text = text,
+            fontSize = fontSize,
+            onOverflow = onOverflow,
+            color = CalendarioTheme.colors.textSystem
+        )
+    }
+}
+
+@Composable
+fun AdaptiveDialogButtons(
+    confirmText: String,
+    onConfirm: () -> Unit,
+    dismissText: String = stringResource(id = R.string.cancel),
+    onDismiss: () -> Unit,
+    confirmColor: Color = CalendarioTheme.colors.cabecera
+) {
+    var fontSize by remember { mutableStateOf(14.sp) }
+    val decreaseSize = {
+        if (fontSize > 10.sp) {
+            fontSize = (fontSize.value - 0.5f).sp
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        DialogDismissButton(
+            text = dismissText,
+            fontSize = fontSize,
+            onOverflow = decreaseSize,
+            onDismiss = onDismiss
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        DialogConfirmButton(
+            text = confirmText,
+            fontSize = fontSize,
+            onOverflow = decreaseSize,
+            onClick = onConfirm,
+            color = confirmColor
+        )
     }
 }
 

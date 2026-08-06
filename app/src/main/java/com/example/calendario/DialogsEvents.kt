@@ -571,13 +571,13 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                 }
             }
         },
-        confirmButton = { 
-            DialogConfirmButton(
-                text = stringResource(id = R.string.apply),
-                onClick = { onApplySelection(currentIds) }
-            ) 
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.apply),
+                onConfirm = { onApplySelection(currentIds) },
+                onDismiss = onDismissRequest
+            )
+        }
     )
 }
 
@@ -707,12 +707,12 @@ fun SelectWidgetCalendarsDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(
-                text = stringResource(id = R.string.apply),
-                onClick = { onApply(currentIds) }
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.apply),
+                onConfirm = { onApply(currentIds) },
+                onDismiss = onDismissRequest
             )
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+        }
     )
 }
 

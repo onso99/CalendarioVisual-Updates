@@ -102,16 +102,17 @@ fun GoToYearDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
-                onClick = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = {
                     val selectedYear = year.toIntOrNull()?.coerceIn(minYear, maxYear) ?: initialYear
                     onYearSelected(selectedYear)
                     onDismissRequest()
-                }
+                },
+                onDismiss = onDismissRequest
             )
         },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+        dismissButton = null
     )
 }
 
@@ -190,7 +191,11 @@ fun LanguageSelectionDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(text = stringResource(id = R.string.cancel), onClick = onDismiss)
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.cancel),
+                onConfirm = onDismiss,
+                onDismiss = {}
+            )
         }
     )
 }
@@ -233,9 +238,12 @@ fun ThemeSelectionDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss)
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = onDismiss,
+                onDismiss = onDismiss
+            )
+        }
     )
 }
 
@@ -254,13 +262,13 @@ fun ConfirmDeleteDialog(
         title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = { Text(stringResource(id = R.string.confirm_deletion_message, title)) },
         confirmButton = {
-            DialogConfirmButton(
-                text = stringResource(id = R.string.delete),
-                onClick = onConfirm,
-                color = Color.Red
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.delete),
+                onConfirm = onConfirm,
+                onDismiss = onDismissRequest,
+                confirmColor = Color.Red
             )
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+        }
     )
 }
 
@@ -292,12 +300,12 @@ fun TimePickerDialog(
                 )
             )
         },
-        confirmButton = { 
-            DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
-                onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = { onConfirm(timePickerState.hour, timePickerState.minute) },
+                onDismiss = onDismissRequest
             )
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+        }
     )
 }
