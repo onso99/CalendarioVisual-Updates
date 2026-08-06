@@ -46,7 +46,7 @@ class CalendarWidgetFactory(
     private fun loadWidgetSettings() {
         val prefs: SharedPreferences = context.getSharedPreferences(
             WidgetConstants.GLOBAL_WIDGET_PREFS_NAME,
-            Context.MODE_PRIVATE
+            Context.MODE_PRIVATE,
         )
         eventCountToShow = try {
             prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
@@ -135,7 +135,7 @@ class CalendarWidgetFactory(
 
         // --- Description ---
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        val baseDesc = if (!actualEvent.isAllDay && actualEvent.startTime != null) {
+        val baseDesc = if (!actualEvent.isAllDay && (actualEvent.startTime != null)) {
             "${actualEvent.startTime.format(timeFormatter)} ${actualEvent.title}"
         } else {
             actualEvent.title
@@ -217,17 +217,14 @@ class CalendarWidgetFactory(
         
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
         val widgetSelectedIds = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-            ?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+            ?.asSequence()
+            ?.mapNotNull { it.toLongOrNull() }
+            ?.toSet() ?: emptySet()
 
         // Lógica de Intersección y Autosanación:
         // Si el widget tiene selección propia, usamos la intersección con los activos de la App.
         // Si la intersección resulta vacía (autosanación) o el widget no tiene selección, usamos todo lo de la App.
-        val effectiveIds = if (widgetSelectedIds.isNotEmpty()) {
-            val intersection = appActiveIds.intersect(widgetSelectedIds)
-            if (intersection.isNotEmpty()) intersection else appActiveIds
-        } else {
-            appActiveIds
-        }
+        val effectiveIds = appActiveIds.intersect(widgetSelectedIds).ifEmpty { appActiveIds }
 
         val allEventsByDateMap = if (effectiveIds.isNotEmpty()) {
             readFestivosFromCalendarsSync(context, effectiveIds)
