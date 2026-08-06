@@ -191,11 +191,12 @@ fun LanguageSelectionDialog(
             }
         },
         confirmButton = {
-            AdaptiveDialogButtons(
-                confirmText = stringResource(id = R.string.cancel),
-                onConfirm = onDismiss,
-                onDismiss = {}
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                DialogConfirmButton(text = stringResource(id = R.string.cancel), onClick = onDismiss)
+            }
         }
     )
 }

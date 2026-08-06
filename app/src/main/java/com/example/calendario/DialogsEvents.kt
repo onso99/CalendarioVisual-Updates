@@ -746,13 +746,16 @@ fun SelectCalendarDialog(calendars: List<CalendarInfo>, currentSelection: Calend
                 }
             }
         }}},
-        confirmButton = { 
-            DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
-                onClick = { tempSelection?.let(onCalendarSelected); onDismissRequest() }
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = {
+                    tempSelection?.let { onCalendarSelected(it) }
+                    onDismissRequest()
+                },
+                onDismiss = onDismissRequest
             )
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+        }
     )
 }
 

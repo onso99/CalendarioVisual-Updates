@@ -1065,6 +1065,7 @@ fun SettingsScreen(
                 pendingShowWeekNumber = it
                 updateAppPrefs { putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, it) }
             },
+            onConfirm = { showWeekConfigDialog = false },
             onDismiss = { showWeekConfigDialog = false }
         )
     }
@@ -1142,6 +1143,7 @@ fun SettingsScreen(
                 else BackupScheduler.cancelBackup(context)
                 showFrequencyDialog = false 
             },
+            onConfirm = { showFrequencyDialog = false },
             onDismiss = { showFrequencyDialog = false }
         )
     }
@@ -1332,7 +1334,7 @@ fun SettingsScreen(
     if (showWidgetCalendarDialog) {
         SelectWidgetCalendarsDialog(
             appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) },
-            initialSelectedIds = if (pendingWidgetCalendarIds.isEmpty()) uiState.selectedCalendarIds else pendingWidgetCalendarIds,
+            initialSelectedIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds },
             currentFavoriteId = uiState.favoriteCalendarId,
             onApply = { newIds ->
                 pendingWidgetCalendarIds = newIds
@@ -1626,7 +1628,7 @@ private fun AlarmConfigDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onDismiss,
+                onConfirm = onConfirm,
                 onDismiss = onDismiss
             )
         }
@@ -1639,6 +1641,7 @@ private fun WeekConfigDialog(
     onOptionSelected: (String) -> Unit,
     showWeekNumber: Boolean,
     onWeekNumberChange: (Boolean) -> Unit,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -1709,7 +1712,7 @@ private fun WeekConfigDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onDismiss,
+                onConfirm = onConfirm,
                 onDismiss = onDismiss
             )
         }
@@ -1960,6 +1963,7 @@ private fun PermissionsDialog(
 private fun BackupFrequencyDialog(
     selection: String,
     onSelected: (String) -> Unit,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val options = listOf(
@@ -2000,7 +2004,7 @@ private fun BackupFrequencyDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onDismiss,
+                onConfirm = onConfirm,
                 onDismiss = onDismiss
             )
         }
