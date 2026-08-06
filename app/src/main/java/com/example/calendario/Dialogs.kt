@@ -149,7 +149,8 @@ fun LanguageSelectionDialog(
     onLanguageSelected: (String?) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val currentSetting = remember(currentLanguageCode) { AppLanguageSetting.fromCode(currentLanguageCode) }
+    val initialSetting = remember(currentLanguageCode) { AppLanguageSetting.fromCode(currentLanguageCode) }
+    var tempSelection by remember { mutableStateOf(initialSetting) }
     
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -163,14 +164,11 @@ fun LanguageSelectionDialog(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { 
-                                onLanguageSelected(lang.code)
-                                onDismiss() 
-                            }
+                            .clickable { tempSelection = lang }
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val isSelected = lang == currentSetting
+                        val isSelected = lang == tempSelection
                         Text(
                             text = stringResource(id = lang.displayNameRes),
                             modifier = Modifier.weight(1f),
@@ -191,12 +189,14 @@ fun LanguageSelectionDialog(
             }
         },
         confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                DialogConfirmButton(text = stringResource(id = R.string.cancel), onClick = onDismiss)
-            }
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = { 
+                    onLanguageSelected(tempSelection.code)
+                    onDismiss()
+                },
+                onDismiss = onDismiss
+            )
         }
     )
 }
@@ -207,6 +207,8 @@ fun ThemeSelectionDialog(
     onThemeSelected: (ThemeSetting) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var tempSelection by remember { mutableStateOf(currentTheme) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,
@@ -217,16 +219,17 @@ fun ThemeSelectionDialog(
             Column {
                 ThemeSetting.entries.forEach { theme ->
                     Row(
-                        Modifier.fillMaxWidth().clickable { onThemeSelected(theme); onDismiss() }.padding(vertical = 12.dp),
+                        Modifier.fillMaxWidth().clickable { tempSelection = theme }.padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val isSelected = theme == tempSelection
                         Text(
                             text = stringResource(id = theme.displayNameRes),
                             modifier = Modifier.weight(1f),
                             fontSize = 16.sp,
-                            fontWeight = if (theme == currentTheme) FontWeight.Medium else FontWeight.Normal
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                         )
-                        if (theme == currentTheme) {
+                        if (isSelected) {
                             val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
                                 CalendarioTheme.colors.textSystem
                             } else {
@@ -241,7 +244,10 @@ fun ThemeSelectionDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onDismiss,
+                onConfirm = {
+                    onThemeSelected(tempSelection)
+                    onDismiss()
+                },
                 onDismiss = onDismiss
             )
         }

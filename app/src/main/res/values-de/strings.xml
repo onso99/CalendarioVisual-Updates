@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">Visueller Kalender</string>
     <string name="calendar_widget_description">Zeigt Ihre anstehenden Kalenderereignisse an</string>
     <string name="permission_calendar_select">Kalenderberechtigung ist erforderlich, um Kalender auszuwählen.</string>
@@ -72,7 +72,6 @@
     <string name="theme_imported_successfully">Design erfolgreich importiert.</string>
     <string name="error_reading_theme_file">Fehler beim Lesen der Designdatei.</string>
     <string name="error_saving_theme_file">Fehler beim Speichern der Designdatei.</string>
-    <string name="apply_changes">Änderungen anwenden</string>
     <string name="general">Allgemein</string>
     <string name="language">Sprache</string>
     <string name="mode">Modus</string>
@@ -301,7 +300,6 @@
     <!-- Widget-Namen -->
     <string name="widget_name_modern">Adaptive Ereignisse</string>
     <string name="widget_name_classic">Klassische Ereignisse</string>
-    <string name="evento">Ereignis</string>
 
     <!-- Tägliche Notizen -->
     <string name="note_label">Notiz</string>
@@ -327,3 +325,4 @@
     <string name="lang_zh">Chinesisch (中文)</string>
     <string name="lang_ja">Japanisch (日本語)</string>
 </resources>
+

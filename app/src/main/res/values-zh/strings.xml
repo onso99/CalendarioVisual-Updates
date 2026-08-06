@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">视觉日历</string>
     <string name="calendar_widget_description">显示您即将到来的日历事件</string>
     <string name="permission_calendar_select">选择日历需要日历权限。</string>
@@ -72,7 +72,6 @@
     <string name="theme_imported_successfully">主题导入成功。</string>
     <string name="error_reading_theme_file">读取主题文件出错。</string>
     <string name="error_saving_theme_file">保存主题文件出错。</string>
-    <string name="apply_changes">应用更改</string>
     <string name="general">常规</string>
     <string name="language">语言</string>
     <string name="mode">模式</string>
@@ -301,7 +300,6 @@
     <!-- 小部件名称 -->
     <string name="widget_name_modern">自适应事件</string>
     <string name="widget_name_classic">经典事件</string>
-    <string name="evento">事件</string>
 
     <!-- 每日笔记 -->
     <string name="note_label">备注</string>
@@ -327,3 +325,4 @@
     <string name="lang_zh">中文</string>
     <string name="lang_ja">日语 (日本語)</string>
 </resources>
+

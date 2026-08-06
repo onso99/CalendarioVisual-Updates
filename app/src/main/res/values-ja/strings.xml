@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">ビジュアルカレンダー</string>
     <string name="calendar_widget_description">今後のカレンダーイベントを表示します</string>
     <string name="permission_calendar_select">カレンダーを選択するにはカレンダーの権限が必要です。</string>
@@ -72,7 +72,6 @@
     <string name="theme_imported_successfully">テーマが正常にインポートされました。</string>
     <string name="error_reading_theme_file">テーマファイルの読み込みエラー。</string>
     <string name="error_saving_theme_file">テーマファイルの保存エラー。</string>
-    <string name="apply_changes">変更を適用</string>
     <string name="general">一般</string>
     <string name="language">言語</string>
     <string name="mode">モード</string>
@@ -301,7 +300,6 @@
     <!-- ウィジェット名 -->
     <string name="widget_name_modern">アダプティブ・イベント</string>
     <string name="widget_name_classic">クラシック・イベント</string>
-    <string name="evento">イベント</string>
 
     <!-- デイリーノート -->
     <string name="note_label">ノート</string>
@@ -327,3 +325,4 @@
     <string name="lang_zh">中国語 (中文)</string>
     <string name="lang_ja">日本語</string>
 </resources>
+

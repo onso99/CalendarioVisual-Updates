@@ -1052,20 +1052,49 @@ fun SettingsScreen(
         }
     }
 
-    if (showThemeDialog) { ThemeSelectionDialog(currentTheme = themeSetting, onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false }, onDismiss = { showThemeDialog = false }) }
+    if (showLanguageDialog) {
+        val currentLocales = AppCompatDelegate.getApplicationLocales()
+        val currentLangCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language
+        
+        LanguageSelectionDialog(
+            currentLanguageCode = currentLangCode,
+            onLanguageSelected = { newCode ->
+                scope.launch {
+                    isChangingLanguage = true
+                    delay(1000.milliseconds)
+                    val appLocales = if (newCode == null) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(newCode)
+                    AppCompatDelegate.setApplicationLocales(appLocales)
+                    showLanguageDialog = false
+                }
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
+    if (showThemeDialog) { 
+        ThemeSelectionDialog(
+            currentTheme = themeSetting, 
+            onThemeSelected = { 
+                themeManager.setTheme(it)
+                showThemeDialog = false
+            }, 
+            onDismiss = { showThemeDialog = false }
+        ) 
+    }
+
     if (showWeekConfigDialog) {
         WeekConfigDialog(
             currentSelectionKey = pendingStartOfWeekKey,
-            onOptionSelected = { 
-                pendingStartOfWeekKey = it
-                updateAppPrefs { putString(AppConstants.KEY_START_OF_WEEK, it) }
-            },
             showWeekNumber = pendingShowWeekNumber,
-            onWeekNumberChange = { 
-                pendingShowWeekNumber = it
-                updateAppPrefs { putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, it) }
+            onConfirm = { key, show ->
+                pendingStartOfWeekKey = key
+                pendingShowWeekNumber = show
+                updateAppPrefs { 
+                    putString(AppConstants.KEY_START_OF_WEEK, key)
+                    putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, show)
+                }
+                showWeekConfigDialog = false
             },
-            onConfirm = { showWeekConfigDialog = false },
             onDismiss = { showWeekConfigDialog = false }
         )
     }
@@ -1073,77 +1102,46 @@ fun SettingsScreen(
     if (showAlarmConfigDialog) {
         AlarmConfigDialog(
             anticipation = pendingAlarmOffset,
-            onAnticipationChange = { pendingAlarmOffset = it },
             snooze = pendingSnoozeInterval,
-            onSnoozeChange = { pendingSnoozeInterval = it },
-            onConfirm = {
+            onConfirm = { offset, interval ->
+                pendingAlarmOffset = offset
+                pendingSnoozeInterval = interval
                 updateAppPrefs {
-                    putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, pendingAlarmOffset.roundToInt())
-                    putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, pendingSnoozeInterval.roundToInt())
+                    putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset.roundToInt())
+                    putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, interval.roundToInt())
                 }
                 showAlarmConfigDialog = false
             },
             onDismiss = { showAlarmConfigDialog = false }
         )
     }
+
     if (showFontFamilyDialog) { 
         FontFamilySelectionDialog(
             currentSelection = pendingFontFamily, 
-            onOptionSelected = { 
-                pendingFontFamily = it
-                updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, it) }
+            onConfirm = { family ->
+                pendingFontFamily = family
+                updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, family) }
                 showFontFamilyDialog = false 
             }, 
             onDismiss = { showFontFamilyDialog = false }
         ) 
     }
-    if (showBundledThemesDialog) { 
-        BundledThemesDialog(
-            currentThemeId = lightThemeName, 
-            onDismiss = { showBundledThemesDialog = false }, 
-            onThemeSelected = { theme -> 
-                showBundledThemesDialog = false
-                try {
-                    val themeManifest = theme["themeManifest"] as? Map<*, *> ?: return@BundledThemesDialog
-                    val manifest = JSONObject(themeManifest)
-                    val lightTheme = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
-                    val darkTheme = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
-                    val themeId = themeManifest["id"] as? String ?: "theme_1"
-                    ThemePersistence.applyTheme(context, ParsedTheme(manifest, lightTheme, darkTheme), themeId)
-                    onThemeImported()
-                    // Refrescamos widget tras cambio de tema
-                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
-                    WidgetStateManager.refreshWithCurrentEvents(context)
-                } catch (e: Exception) {
-                    Log.e("SettingsScreen", "Error applying bundled theme", e)
-                }
-            },
-            onLoadClick = {
-                importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json" 
-                })
-            },
-            onSaveClick = {
-                showExportDialog = true
-            }
-        ) 
-    }
+
     if (showFrequencyDialog) {
         BackupFrequencyDialog(
             selection = pendingBackupFreq,
-            onSelected = { 
-                pendingBackupFreq = it
+            onConfirm = { freq ->
+                pendingBackupFreq = freq
                 updateAppPrefs {
-                    val isNowEnabled = it != "manual"
-                    putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, isNowEnabled)
-                    putString(AppConstants.KEY_BACKUP_FREQUENCY, it)
+                    val isEnabled = freq != "manual"
+                    putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, isEnabled)
+                    putString(AppConstants.KEY_BACKUP_FREQUENCY, freq)
                 }
-                if (it != "manual") BackupScheduler.scheduleBackup(context, it)
+                if (freq != "manual") BackupScheduler.scheduleBackup(context, freq)
                 else BackupScheduler.cancelBackup(context)
-                showFrequencyDialog = false 
+                showFrequencyDialog = false
             },
-            onConfirm = { showFrequencyDialog = false },
             onDismiss = { showFrequencyDialog = false }
         )
     }
@@ -1490,9 +1488,10 @@ private fun RestoreOptionRow(label: String, isChecked: Boolean, onCheckedChange:
 @Composable
 private fun FontFamilySelectionDialog(
     currentSelection: String,
-    onOptionSelected: (String) -> Unit,
+    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var tempSelection by remember { mutableStateOf(currentSelection) }
     val options = listOf(
         WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system,
         WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif,
@@ -1520,18 +1519,19 @@ private fun FontFamilySelectionDialog(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { onOptionSelected(key) }
+                            .clickable { tempSelection = key }
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val isSelected = key == tempSelection
                         Text(
                             text = stringResource(id = labelRes),
                             modifier = Modifier.weight(1f),
                             fontSize = 16.sp,
                             fontFamily = family,
-                            fontWeight = if (key == currentSelection) FontWeight.Medium else FontWeight.Normal
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                         )
-                        if (key == currentSelection) {
+                        if (isSelected) {
                             Icon(
                                 Icons.Default.Check,
                                 null,
@@ -1545,20 +1545,26 @@ private fun FontFamilySelectionDialog(
                 }
             }
         },
-        confirmButton = {},
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.accept),
+                onConfirm = { onConfirm(tempSelection) },
+                onDismiss = onDismiss
+            )
+        }
     )
 }
 
 @Composable
 private fun AlarmConfigDialog(
     anticipation: Float,
-    onAnticipationChange: (Float) -> Unit,
     snooze: Float,
-    onSnoozeChange: (Float) -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (Float, Float) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var tempAnticipation by remember { mutableFloatStateOf(anticipation) }
+    var tempSnooze by remember { mutableFloatStateOf(snooze) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,
@@ -1567,12 +1573,11 @@ private fun AlarmConfigDialog(
         title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
-                // Bloque AnticipaciÃ³n
                 Text(stringResource(id = R.string.alarm_anticipation_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Slider(
-                        value = anticipation,
-                        onValueChange = onAnticipationChange,
+                        value = tempAnticipation,
+                        onValueChange = { tempAnticipation = it },
                         valueRange = 0f..120f,
                         steps = 23,
                         modifier = Modifier.weight(1f),
@@ -1582,7 +1587,7 @@ private fun AlarmConfigDialog(
                             inactiveTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.24f)
                         )
                     )
-                    val anticipationVal = anticipation.roundToInt()
+                    val anticipationVal = tempAnticipation.roundToInt()
                     val anticipationSign = if (anticipationVal > 0) "-" else ""
                     Text(
                         text = "$anticipationSign$anticipationVal'", 
@@ -1599,14 +1604,13 @@ private fun AlarmConfigDialog(
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
 
-                // Bloque Posponer
                 Text(stringResource(id = R.string.alarm_snooze_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Slider(
-                        value = snooze,
-                        onValueChange = onSnoozeChange,
+                        value = tempSnooze,
+                        onValueChange = { tempSnooze = it },
                         valueRange = 5f..60f,
-                        steps = 10, // 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60 (11 posiciones)
+                        steps = 10,
                         modifier = Modifier.weight(1f),
                         colors = SliderDefaults.colors(
                             thumbColor = CalendarioTheme.colors.cabecera,
@@ -1615,7 +1619,7 @@ private fun AlarmConfigDialog(
                         )
                     )
                     Text(
-                        text = "${snooze.roundToInt()}'", 
+                        text = "${tempSnooze.roundToInt()}'", 
                         modifier = Modifier.width(44.dp).padding(start = 8.dp), 
                         color = CalendarioTheme.colors.textSystem, 
                         textAlign = TextAlign.End, 
@@ -1628,7 +1632,7 @@ private fun AlarmConfigDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onConfirm,
+                onConfirm = { onConfirm(tempAnticipation, tempSnooze) },
                 onDismiss = onDismiss
             )
         }
@@ -1638,12 +1642,13 @@ private fun AlarmConfigDialog(
 @Composable
 private fun WeekConfigDialog(
     currentSelectionKey: String,
-    onOptionSelected: (String) -> Unit,
     showWeekNumber: Boolean,
-    onWeekNumberChange: (Boolean) -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (String, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var tempKey by remember { mutableStateOf(currentSelectionKey) }
+    var tempShowWeek by remember { mutableStateOf(showWeekNumber) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CalendarioTheme.colors.fondoDialogos,
@@ -1652,16 +1657,15 @@ private fun WeekConfigDialog(
         title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column {
-                // Selector de dÃ­a
                 StartOfWeekOption.entries.forEach { option ->
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { onOptionSelected(option.key) }
+                            .clickable { tempKey = option.key }
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val isSelected = option.key == currentSelectionKey
+                        val isSelected = option.key == tempKey
                         Text(
                             text = stringResource(id = option.displayNameRes),
                             modifier = Modifier.weight(1f),
@@ -1686,18 +1690,18 @@ private fun WeekConfigDialog(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
-                // Ajuste de nÃºmero de semana
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(56.dp)
+                        .clickable { tempShowWeek = !tempShowWeek },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp)
                     Switch(
-                        checked = showWeekNumber,
-                        onCheckedChange = onWeekNumberChange,
+                        checked = tempShowWeek,
+                        onCheckedChange = { tempShowWeek = it },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = CalendarioTheme.colors.cabecera,
                             checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f),
@@ -1712,7 +1716,7 @@ private fun WeekConfigDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onConfirm,
+                onConfirm = { onConfirm(tempKey, tempShowWeek) },
                 onDismiss = onDismiss
             )
         }
@@ -1962,10 +1966,10 @@ private fun PermissionsDialog(
 @Composable
 private fun BackupFrequencyDialog(
     selection: String,
-    onSelected: (String) -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var tempSelection by remember { mutableStateOf(selection) }
     val options = listOf(
         "manual" to R.string.frequency_manual,
         "daily" to R.string.frequency_daily, 
@@ -1984,11 +1988,11 @@ private fun BackupFrequencyDialog(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { onSelected(key) }
+                            .clickable { tempSelection = key }
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val isSelected = key == selection
+                        val isSelected = key == tempSelection
                         Text(
                             text = stringResource(id = labelRes), 
                             modifier = Modifier.weight(1f), 
@@ -2004,7 +2008,7 @@ private fun BackupFrequencyDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = onConfirm,
+                onConfirm = { onConfirm(tempSelection) },
                 onDismiss = onDismiss
             )
         }

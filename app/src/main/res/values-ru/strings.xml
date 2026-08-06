@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">Визуальный Календарь</string>
     <string name="calendar_widget_description">Показывает ваши ближайшие события в календаре</string>
     <string name="permission_calendar_select">Разрешение календаря необходимо для выбора календарей.</string>
@@ -72,7 +72,6 @@
     <string name="theme_imported_successfully">Тема успешно импортирована.</string>
     <string name="error_reading_theme_file">Ошибка при чтении файла темы.</string>
     <string name="error_saving_theme_file">Ошибка при сохранении файла темы.</string>
-    <string name="apply_changes">Применить изменения</string>
     <string name="general">Общие</string>
     <string name="language">Язык</string>
     <string name="mode">Режим</string>
@@ -301,7 +300,6 @@
     <!-- Названия виджетов -->
     <string name="widget_name_modern">Адаптивные события</string>
     <string name="widget_name_classic">Классические события</string>
-    <string name="evento">Событие</string>
 
     <!-- Ежедневные заметки -->
     <string name="note_label">Заметка</string>
@@ -327,3 +325,4 @@
     <string name="lang_zh">Китайский (中文)</string>
     <string name="lang_ja">Японский (日本語)</string>
 </resources>
+

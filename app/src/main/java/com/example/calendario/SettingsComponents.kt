@@ -130,7 +130,8 @@ fun AdaptiveDialogButtons(
     onConfirm: () -> Unit,
     dismissText: String = stringResource(id = R.string.cancel),
     onDismiss: () -> Unit,
-    confirmColor: Color = CalendarioTheme.colors.cabecera
+    confirmColor: Color = CalendarioTheme.colors.cabecera,
+    confirmEnabled: Boolean = true
 ) {
     var fontSize by remember { mutableStateOf(14.sp) }
     val decreaseSize = {
@@ -156,7 +157,8 @@ fun AdaptiveDialogButtons(
             fontSize = fontSize,
             onOverflow = decreaseSize,
             onClick = onConfirm,
-            color = confirmColor
+            color = confirmColor,
+            enabled = confirmEnabled
         )
     }
 }

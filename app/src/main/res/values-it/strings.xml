@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">Calendario Visuale</string>
     <string name="calendar_widget_description">Mostra i tuoi prossimi eventi del calendario</string>
     <string name="permission_calendar_select">Il permesso del calendario è richiesto per selezionare i calendari.</string>
@@ -72,7 +72,6 @@
     <string name="theme_imported_successfully">Tema importato con successo.</string>
     <string name="error_reading_theme_file">Errore durante la lettura del file del tema.</string>
     <string name="error_saving_theme_file">Errore durante il salvataggio del file del tema.</string>
-    <string name="apply_changes">Applica modifiche</string>
     <string name="general">Generale</string>
     <string name="language">Lingua</string>
     <string name="mode">Modalità</string>
@@ -302,7 +301,6 @@
     <!-- Nomi dei Widget -->
     <string name="widget_name_modern">Eventi Adattivi</string>
     <string name="widget_name_classic">Eventi Classici</string>
-    <string name="evento">Evento</string>
 
     <!-- Note Giornaliere -->
     <string name="note_label">Nota</string>
@@ -328,3 +326,4 @@
     <string name="lang_zh">Cinese (中文)</string>
     <string name="lang_ja">Giapponese (日本語)</string>
 </resources>
+
