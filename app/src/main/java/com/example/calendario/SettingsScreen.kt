@@ -135,6 +135,9 @@ fun SettingsScreen(
     var showBackupActionsExpand by remember { mutableStateOf(false) }
     var showLocalBackupExpand by remember { mutableStateOf(false) }
 
+    // Estado para el tema cargado desde archivo (pero aún no aplicado)
+    var importedThemeData by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
+
     // --- Launchers ---
     val onThemeImported = {
         lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
@@ -150,8 +153,8 @@ fun SettingsScreen(
                         val fileName = getFileName(context, uri)
                         when (val importResult = ThemeImportManager.processThemeImport(context, uri)) {
                             is ImportResult.Success -> {
-                                ThemePersistence.applyTheme(context, importResult.parsedTheme, fileName)
-                                onThemeImported()
+                                // En lugar de aplicar, guardamos en el estado temporal
+                                importedThemeData = importResult.parsedTheme to fileName
                                 Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
                             }
                             is ImportResult.Failure -> {
@@ -179,6 +182,7 @@ fun SettingsScreen(
                                 putString(AppConstants.KEY_LIGHT_THEME_NAME, newName)
                                 putString(AppConstants.KEY_DARK_THEME_NAME, newName)
                             }
+                            importedThemeData = null // Limpiar memoria temporal al guardar
                             onThemeImported()
                         }
                     } catch (e: Exception) {
@@ -596,7 +600,31 @@ fun SettingsScreen(
         if (showAlarmConfigDialog) { AlarmConfigDialog(anticipation = pendingAlarmOffset, snooze = pendingSnoozeInterval, onConfirm = { offset, interval -> pendingAlarmOffset = offset; pendingSnoozeInterval = interval; updateAppPrefs { putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset.roundToInt()); putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, interval.roundToInt()) }; showAlarmConfigDialog = false }, onDismiss = { showAlarmConfigDialog = false }) }
         if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onConfirm = { family -> pendingFontFamily = family; updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, family) }; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
         if (showFrequencyDialog) { BackupFrequencyDialog(selection = pendingBackupFreq, onConfirm = { freq -> pendingBackupFreq = freq; updateAppPrefs { val enabled = freq != "manual"; putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, enabled); putString(AppConstants.KEY_BACKUP_FREQUENCY, freq) }; if (freq != "manual") BackupScheduler.scheduleBackup(context, freq) else BackupScheduler.cancelBackup(context); showFrequencyDialog = false }, onDismiss = { showFrequencyDialog = false }) }
-        if (showBundledThemesDialog) { BundledThemesDialog(currentThemeId = lightThemeName, onDismiss = { showBundledThemesDialog = false }, onThemeSelected = { theme -> showBundledThemesDialog = false; try { val manifestObj = theme["themeManifest"] as? Map<*, *> ?: return@BundledThemesDialog; val manifest = JSONObject(manifestObj); val light = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }; val dark = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }; val id = manifestObj["id"] as? String ?: "theme_1"; ThemePersistence.applyTheme(context, ParsedTheme(manifest, light, dark), id); onThemeImported(); CalendarAppWidgetProvider.triggerWidgetUpdate(context); WidgetStateManager.refreshWithCurrentEvents(context) } catch (e: Exception) { Log.e("SettingsScreen", "Error applying bundled theme", e) } }, onLoadClick = { importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) }, onSaveClick = { showExportDialog = true }) }
+        if (showBundledThemesDialog) { 
+            BundledThemesDialog(
+                currentThemeId = lightThemeName, 
+                importedTheme = importedThemeData,
+                onDismiss = { 
+                    showBundledThemesDialog = false
+                    importedThemeData = null 
+                }, 
+                onThemeSelected = { theme, id -> 
+                    showBundledThemesDialog = false
+                    ThemePersistence.applyTheme(context, theme, id)
+                    onThemeImported()
+                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+                    WidgetStateManager.refreshWithCurrentEvents(context)
+                    importedThemeData = null
+                }, 
+                onLoadClick = { 
+                    importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { 
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json" 
+                    }) 
+                }, 
+                onSaveClick = { showExportDialog = true }
+            ) 
+        }
         if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, it.toArgb()) }; showWidgetEventColorPalette = false }) }
         if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, it.toArgb()) }; showWidgetTodayEventColorPalette = false }) }
         if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, it.toArgb()) }; showWidgetBackgroundColorPalette = false }) }
@@ -787,16 +815,30 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
 @Composable
 private fun BundledThemesDialog(
     currentThemeId: String?,
+    importedTheme: Pair<ParsedTheme, String>?, // Nuevo: Tema cargado de archivo
     onDismiss: () -> Unit,
-    onThemeSelected: (Map<String, Any>) -> Unit,
+    onThemeSelected: (ParsedTheme, String) -> Unit, // Cambiado: Ahora devuelve ParsedTheme + ID
     onLoadClick: () -> Unit,
     onSaveClick: () -> Unit
 ) {
     val effectiveId = currentThemeId ?: "theme_1"
-    val initialTheme = remember(effectiveId) {
-        BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == effectiveId.removeSuffix("***") }
+    val cleanId = effectiveId.removeSuffix("***")
+    
+    // Verificar si el tema actual es uno de los predefinidos
+    val isCurrentBundled = remember(cleanId) {
+        BundledThemes.themes.any { (it["themeManifest"] as Map<*, *>)["id"] == cleanId }
     }
-    var tempSelection by remember { mutableStateOf<Map<String, Any>?>(initialTheme) }
+    
+    // El ID seleccionado puede ser un ID de tema bundled, el ID de un tema ya activo, o "imported_temp"
+    // Usamos cleanId como clave para que se resetee si el tema del sistema cambia (ej: al guardar)
+    var tempSelectionId by remember(cleanId) { mutableStateOf(cleanId) }
+    
+    // Si cargamos un archivo nuevo, lo seleccionamos automáticamente
+    LaunchedEffect(importedTheme) {
+        if (importedTheme != null) {
+            tempSelectionId = "imported_temp"
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -806,28 +848,53 @@ private fun BundledThemesDialog(
         title = { Text(text = stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                // La celda personalizada aparece si hay un tema importado nuevo O si el tema actual ya es personalizado
+                val hasCustomEntry = importedTheme != null || !isCurrentBundled
+                val gridHeight = if (hasCustomEntry) 264.dp else 210.dp
+
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.height(210.dp)
+                    modifier = Modifier.height(gridHeight)
                 ) {
+                    // 1. Temas predefinidos
                     items(BundledThemes.themes) { theme: Map<String, Any> ->
                         val themeManifest = theme["themeManifest"] as Map<*, *>
                         val themeId = themeManifest["id"] as String
                         val themeResId = themeManifest["nameRes"] as Int
-                        val isSelected = (tempSelection?.get("themeManifest") as? Map<*, *>)?.get("id") == themeId
+                        val isSelected = tempSelectionId == themeId
                         
                         ThemeChip(
                             name = stringResource(id = themeResId),
                             isSelected = isSelected,
-                            onClick = { tempSelection = theme }
+                            onClick = { tempSelectionId = themeId }
                         )
                     }
+                    
+                    // 2. Celda Inteligente de Tema Personalizado
+                    if (hasCustomEntry) {
+                        item {
+                            val customName = when {
+                                importedTheme != null -> importedTheme.second
+                                !isCurrentBundled -> cleanId
+                                else -> ""
+                            }
+                            // El ID de selección es "imported_temp" si es una carga fresca, 
+                            // o el cleanId original si es el tema ya activo.
+                            val targetId = if (importedTheme != null) "imported_temp" else cleanId
+                            
+                            ThemeChip(
+                                name = customName,
+                                isSelected = tempSelectionId == targetId,
+                                onClick = { tempSelectionId = targetId }
+                            )
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
-                Spacer(modifier = Modifier.height(16.dp))
+                
+                Spacer(modifier = Modifier.height(18.dp))
+                
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
                     SettingsActionChip(text = stringResource(id = R.string.cargar_label), icon = Icons.Default.FolderOpen, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onLoadClick)
@@ -838,7 +905,24 @@ private fun BundledThemesDialog(
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
-                onConfirm = { tempSelection?.let { onThemeSelected(it) } },
+                onConfirm = { 
+                    if (tempSelectionId == "imported_temp" && importedTheme != null) {
+                        onThemeSelected(importedTheme.first, importedTheme.second)
+                    } else if (tempSelectionId == cleanId && !isCurrentBundled) {
+                        // El usuario ha vuelto a seleccionar el tema personalizado que ya tenía
+                        onDismiss()
+                    } else {
+                        // Buscar el tema predefinido seleccionado
+                        BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == tempSelectionId }?.let { theme ->
+                            val manifestObj = theme["themeManifest"] as Map<*, *>
+                            val manifest = JSONObject(manifestObj)
+                            val light = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
+                            val dark = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
+                            val id = manifestObj["id"] as String
+                            onThemeSelected(ParsedTheme(manifest, light, dark), id)
+                        }
+                    }
+                },
                 onDismiss = onDismiss
             )
         }
