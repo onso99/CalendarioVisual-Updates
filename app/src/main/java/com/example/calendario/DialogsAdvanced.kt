@@ -25,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -308,12 +307,7 @@ fun ColorSlider(
             value = value,
             onValueChange = onValueChange,
             valueRange = valueRange,
-            modifier = Modifier.weight(1f),
-            colors = SliderDefaults.colors(
-                thumbColor = CalendarioTheme.colors.cabecera,
-                activeTrackColor = CalendarioTheme.colors.cabecera,
-                inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
-            )
+            modifier = Modifier.weight(1f)
         )
         Text(
             text = value.roundToInt().toString(),

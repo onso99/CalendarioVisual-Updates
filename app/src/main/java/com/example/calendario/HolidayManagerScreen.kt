@@ -34,7 +34,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -222,14 +221,7 @@ fun HolidayManagerScreen(
                     )
                     Switch(
                         checked = isHoliday,
-                        onCheckedChange = { isHoliday = it },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = festivoColor,
-                            checkedTrackColor = festivoColor.copy(alpha = 0.54f),
-                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
-                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-                        )
+                        onCheckedChange = { isHoliday = it }
                     )
                 }
             }

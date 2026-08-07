@@ -440,7 +440,18 @@ fun SettingsScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Text(text = stringResource(id = R.string.widget_event_count), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(value = pendingEventCount, onValueChange = { pendingEventCount = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_EVENT_COUNT, it.roundToInt()) } }, valueRange = 1f..12f, steps = 10, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera))
+                        Slider(
+                            value = pendingEventCount, 
+                            onValueChange = { pendingEventCount = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_EVENT_COUNT, it.roundToInt()) } }, 
+                            valueRange = 1f..12f, 
+                            steps = 10, 
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+                            )
+                        )
                         Text(text = pendingEventCount.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
@@ -448,7 +459,18 @@ fun SettingsScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(value = pendingTextBoost, onValueChange = { pendingTextBoost = it; updateWidgetPrefs { putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, it) } }, valueRange = -4f..4f, steps = 7, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera))
+                        Slider(
+                            value = pendingTextBoost, 
+                            onValueChange = { pendingTextBoost = it; updateWidgetPrefs { putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, it) } }, 
+                            valueRange = -4f..4f, 
+                            steps = 7, 
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = CalendarioTheme.colors.cabecera,
+                                activeTrackColor = CalendarioTheme.colors.cabecera,
+                                inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+                            )
+                        )
                         Text(text = (if (pendingTextBoost.roundToInt() > 0) "+" else "") + pendingTextBoost.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
                 }
@@ -641,7 +663,10 @@ private fun RestoreSelectDialog(onDismiss: () -> Unit, onConfirm: (prefs: Boolea
 
 @Composable
 private fun RestoreOptionRow(label: String, isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().clickable { onCheckedChange(!isChecked) }.padding(vertical = 8.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = isChecked, onCheckedChange = onCheckedChange, colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)); Text(text = label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(start = 12.dp), fontSize = 16.sp) }
+    Row(modifier = Modifier.fillMaxWidth().clickable { onCheckedChange(!isChecked) }.padding(vertical = 8.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) { 
+        Checkbox(checked = isChecked, onCheckedChange = onCheckedChange)
+        Text(text = label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(start = 12.dp), fontSize = 16.sp) 
+    }
 }
 
 @Composable
@@ -655,14 +680,97 @@ private fun FontFamilySelectionDialog(currentSelection: String, onConfirm: (Stri
 private fun AlarmConfigDialog(anticipation: Float, snooze: Float, onConfirm: (Float, Float) -> Unit, onDismiss: () -> Unit) {
     var tempAnticipation by remember { mutableFloatStateOf(anticipation) }
     var tempSnooze by remember { mutableFloatStateOf(snooze) }
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { Text(stringResource(id = R.string.alarm_anticipation_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp); Row(verticalAlignment = Alignment.CenterVertically) { Slider(value = tempAnticipation, onValueChange = { tempAnticipation = it }, valueRange = 0f..120f, steps = 23, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera)); Text(text = "${if (tempAnticipation.roundToInt() > 0) "-" else ""}${tempAnticipation.roundToInt()}'", modifier = Modifier.width(52.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) }; HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 12.dp)); Text(stringResource(id = R.string.alarm_snooze_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp); Row(verticalAlignment = Alignment.CenterVertically) { Slider(value = tempSnooze, onValueChange = { tempSnooze = it }, valueRange = 5f..60f, steps = 10, modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = CalendarioTheme.colors.cabecera, activeTrackColor = CalendarioTheme.colors.cabecera)); Text(text = "${tempSnooze.roundToInt()}'", modifier = Modifier.width(44.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempAnticipation, tempSnooze) }, onDismiss = onDismiss) })
+    AlertDialog(
+        onDismissRequest = onDismiss, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem, 
+        title = { Text(stringResource(id = R.string.alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
+        text = { 
+            Column { 
+                Text(stringResource(id = R.string.alarm_anticipation_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) { 
+                    Slider(
+                        value = tempAnticipation, 
+                        onValueChange = { tempAnticipation = it }, 
+                        valueRange = 0f..120f, 
+                        steps = 23, 
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = CalendarioTheme.colors.cabecera,
+                            activeTrackColor = CalendarioTheme.colors.cabecera,
+                            inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+                        )
+                    )
+                    Text(text = "${if (tempAnticipation.roundToInt() > 0) "-" else ""}${tempAnticipation.roundToInt()}'", modifier = Modifier.width(52.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) 
+                }
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 12.dp))
+                Text(stringResource(id = R.string.alarm_snooze_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) { 
+                    Slider(
+                        value = tempSnooze, 
+                        onValueChange = { tempSnooze = it }, 
+                        valueRange = 5f..60f, 
+                        steps = 10, 
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = CalendarioTheme.colors.cabecera,
+                            activeTrackColor = CalendarioTheme.colors.cabecera,
+                            inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+                        )
+                    )
+                    Text(text = "${tempSnooze.roundToInt()}'", modifier = Modifier.width(44.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) 
+                }
+            }
+        }, 
+        confirmButton = { 
+            AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempAnticipation, tempSnooze) }, onDismiss = onDismiss) 
+        }
+    )
 }
 
 @Composable
 private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolean, onConfirm: (String, Boolean) -> Unit, onDismiss: () -> Unit) {
     var tempKey by remember { mutableStateOf(currentSelectionKey) }
     var tempShowWeek by remember { mutableStateOf(showWeekNumber) }
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { StartOfWeekOption.entries.forEach { option -> Row(Modifier.fillMaxWidth().clickable { tempKey = option.key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = option.key == tempKey; Text(text = stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) { Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) } } }; HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp)); Row(modifier = Modifier.fillMaxWidth().height(56.dp).clickable { tempShowWeek = !tempShowWeek }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp); Switch(checked = tempShowWeek, onCheckedChange = { tempShowWeek = it }, colors = SwitchDefaults.colors(checkedThumbColor = CalendarioTheme.colors.cabecera, checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.54f), uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f))) } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempKey, tempShowWeek) }, onDismiss = onDismiss) })
+    AlertDialog(
+        onDismissRequest = onDismiss, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        titleContentColor = CalendarioTheme.colors.textSystem, 
+        textContentColor = CalendarioTheme.colors.textSystem, 
+        title = { Text(stringResource(id = R.string.semana_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
+        text = { 
+            Column { 
+                StartOfWeekOption.entries.forEach { option -> 
+                    Row(Modifier.fillMaxWidth().clickable { tempKey = option.key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
+                        val isSelected = option.key == tempKey
+                        Text(text = stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
+                        if (isSelected) { 
+                            Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) 
+                        } 
+                    } 
+                }
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                                Row(modifier = Modifier.fillMaxWidth().height(56.dp).clickable { tempShowWeek = !tempShowWeek }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { 
+                    Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp)
+                    Switch(
+                        checked = tempShowWeek, 
+                        onCheckedChange = { tempShowWeek = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = CalendarioTheme.colors.cabecera,
+                            uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                            uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.12f),
+                            uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+                        )
+                    )
+                } 
+            } 
+        }, 
+        confirmButton = { 
+            AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempKey, tempShowWeek) }, onDismiss = onDismiss) 
+        }
+    )
 }
 
 @Suppress("UNCHECKED_CAST")

@@ -115,24 +115,40 @@ fun CalendarioTheme(
     }
 
     val onPrimaryColor = if (isColorDark(customColors.cabecera, customColors.settingsBackground)) Color.White else Color.Black
+    val surfaceVariantColor = customColors.fondoSecciones
+    val outlineColor = customColors.textSystem.copy(alpha = 0.5f)
 
     val colorScheme = if (darkTheme) {
         darkColorScheme(
             primary = customColors.cabecera,
             onPrimary = onPrimaryColor,
+            primaryContainer = customColors.cabecera.copy(alpha = 0.2f),
+            onPrimaryContainer = customColors.textSystem,
+            secondary = customColors.cabecera,
+            onSecondary = onPrimaryColor,
             background = customColors.settingsBackground,
             onBackground = customColors.textSystem,
-            surface = customColors.fondoSecciones,
-            onSurface = customColors.textSystem
+            surface = customColors.settingsBackground,
+            onSurface = customColors.textSystem,
+            surfaceVariant = surfaceVariantColor,
+            onSurfaceVariant = customColors.textSystem,
+            outline = outlineColor
         )
     } else {
         lightColorScheme(
             primary = customColors.cabecera,
             onPrimary = onPrimaryColor,
+            primaryContainer = customColors.cabecera.copy(alpha = 0.1f),
+            onPrimaryContainer = customColors.textSystem,
+            secondary = customColors.cabecera,
+            onSecondary = onPrimaryColor,
             background = customColors.settingsBackground,
             onBackground = customColors.textSystem,
-            surface = customColors.fondoSecciones,
-            onSurface = customColors.textSystem
+            surface = customColors.settingsBackground,
+            onSurface = customColors.textSystem,
+            surfaceVariant = surfaceVariantColor,
+            onSurfaceVariant = customColors.textSystem,
+            outline = outlineColor
         )
     }
 
