@@ -1,3 +1,5 @@
+2026-08-07 - v2.1.70 Copia de seguridad: toast informativo tras Restauración. Ajustes del Widget muestra el número de calendarios mostrados
+2026-08-07 - v2.1.69 Corrección de warnings
 2026-08-07 - v2.1.68 Diálogo Temas: unificado botón Aceptar/Cancelar
 2026-08-07 - v2.1.67 Copia de seguridad local: corregida restauración
 2026-08-06 - v2.1.66 Corrección de warnings

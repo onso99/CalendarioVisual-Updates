@@ -79,9 +79,7 @@
     <string name="customize_colors">カラーのカスタマイズ</string>
     <string name="widget_event_count">表示イベント数</string>
     <string name="widget_selected_calendars_label">カレンダー</string>
-    <string name="widget_all_calendars">アプリと同じ</string>
     <string name="widget_min_calendar_error">少なくとも1つのカレンダーが必要です</string>
-    <string name="widget_multiple_calendars">複数</string>
     <string name="widget_text_adjustment">テキスト調整</string>
     <string name="about">アプリ情報</string>
     <string name="discard_changes_title">変更を破棄</string>

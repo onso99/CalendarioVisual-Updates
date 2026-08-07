@@ -79,9 +79,7 @@
     <string name="customize_colors">Настроить цвета</string>
     <string name="widget_event_count">Количество событий</string>
     <string name="widget_selected_calendars_label">Календари</string>
-    <string name="widget_all_calendars">Как в приложении</string>
     <string name="widget_min_calendar_error">Необходим хотя бы один календарь</string>
-    <string name="widget_multiple_calendars">Несколько</string>
     <string name="widget_text_adjustment">Настройка текста</string>
     <string name="about">О приложении</string>
     <string name="discard_changes_title">Отменить изменения</string>

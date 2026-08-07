@@ -79,9 +79,7 @@
     <string name="customize_colors">Pertsonalizatu koloreak</string>
     <string name="widget_event_count">Gertaera kopurua</string>
     <string name="widget_selected_calendars_label">Egutegiak</string>
-    <string name="widget_all_calendars">Aplikazioan bezala</string>
     <string name="widget_min_calendar_error">Gutxienez egutegi bat behar da</string>
-    <string name="widget_multiple_calendars">Hainbat</string>
     <string name="widget_text_adjustment">Testuaren doitzea</string>
     <string name="about">Honi buruz</string>
     <string name="discard_changes_title">Baztertu aldaketak</string>

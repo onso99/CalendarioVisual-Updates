@@ -290,6 +290,8 @@ fun SettingsScreen(
         }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
         mutableStateOf(ids)
     }
+    val currentWidgetIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds }
+    val widgetCalendarSummary = "(${currentWidgetIds.size})"
     
     var pendingAlarmOffset by remember { 
         val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) } 
@@ -431,6 +433,7 @@ fun SettingsScreen(
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWidgetCalendarDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.widget_selected_calendars_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
+                    Text(text = widgetCalendarSummary, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 14.sp, modifier = Modifier.padding(end = 8.dp))
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
                 }
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
@@ -568,7 +571,47 @@ fun SettingsScreen(
         if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }) }
         if (showUnlinkAccountDialog) { AlertDialog(onDismissRequest = { showUnlinkAccountDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.unlink_account_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.unlink_action), onClick = { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build(); GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { appPrefs.edit { remove("google_account_email") }; permissionsUpdateTrigger++; showUnlinkAccountDialog = false } }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }) }
         if (showPermissionsDialog) { LaunchedEffect(Unit) { permissionsUpdateTrigger++; delay(500.milliseconds); permissionsUpdateTrigger++ }; PermissionsDialog(calStatus = calStatus, notifStatus = notifStatus, alarmStatus = alarmStatus, driveStatus = driveStatus, batteryStatus = batteryStatus, onDismiss = { showPermissionsDialog = false }, onFix = { type -> when (type) { "drive" -> { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build(); googleSignInLauncher.launch(GoogleSignIn.getClient(context, gso).signInIntent) }; "battery" -> context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)); else -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) } }) }
-        if (showRestoreSelectDialog) { RestoreSelectDialog(onDismiss = { showRestoreSelectDialog = false; restoreSource = null; pendingLocalUri = null }, onConfirm = { prefs, holidays, notes, events -> showRestoreSelectDialog = false; if (restoreSource == "drive") { viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { if (it) { if (prefs) (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } else permissionsUpdateTrigger++ } else Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() } } else if (restoreSource == "local" && pendingLocalUri != null) { viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { if (it) { if (prefs) (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } else permissionsUpdateTrigger++ } else Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() } }; restoreSource = null; pendingLocalUri = null }) }
+        if (showRestoreSelectDialog) { 
+            RestoreSelectDialog(
+                onDismiss = { 
+                    showRestoreSelectDialog = false
+                    restoreSource = null
+                    pendingLocalUri = null 
+                }, 
+                onConfirm = { prefs, holidays, notes, events -> 
+                    showRestoreSelectDialog = false
+                    if (restoreSource == "drive") { 
+                        viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { success -> 
+                            if (success) { 
+                                Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                                if (prefs) {
+                                    (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                                } else {
+                                    permissionsUpdateTrigger++
+                                }
+                            } else {
+                                Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
+                            }
+                        } 
+                    } else if (restoreSource == "local" && pendingLocalUri != null) { 
+                        viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { success -> 
+                            if (success) { 
+                                Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                                if (prefs) {
+                                    (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                                } else {
+                                    permissionsUpdateTrigger++
+                                }
+                            } else {
+                                Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
+                            }
+                        } 
+                    }
+                    restoreSource = null
+                    pendingLocalUri = null 
+                }
+            ) 
+        }
         if (showExportDialog) { ExportThemeDialog(onDismissRequest = { showExportDialog = false }, onConfirm = { newName -> showExportDialog = false; appPrefs.edit { putString("temp_export_name", newName) }; exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "${newName}.json") }) }) }
         if (showWidgetCalendarDialog) { SelectWidgetCalendarsDialog(appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }, initialSelectedIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds }, currentFavoriteId = uiState.favoriteCalendarId, onApply = { newIds -> pendingWidgetCalendarIds = newIds; updateWidgetPrefs { putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet()) }; showWidgetCalendarDialog = false }, onDismissRequest = { showWidgetCalendarDialog = false }) }
 

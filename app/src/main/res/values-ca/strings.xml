@@ -79,9 +79,7 @@
     <string name="customize_colors">Personalitzar colors</string>
     <string name="widget_event_count">Nombre d\'esdeveniments</string>
     <string name="widget_selected_calendars_label">Calendaris</string>
-    <string name="widget_all_calendars">Igual que l\'aplicació</string>
     <string name="widget_min_calendar_error">Es necessita almenys un calendari</string>
-    <string name="widget_multiple_calendars">Diversos</string>
     <string name="widget_text_adjustment">Ajust de text</string>
     <string name="about">Quant a</string>
     <string name="discard_changes_title">Descartar canvis</string>
