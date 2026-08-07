@@ -1,3 +1,5 @@
+2026-08-07 - v2.1.72 Historial de copias de seguridad
+2026-08-07 - v2.1.71 Limpieza de cadenas huérfanas en strings. Componentes de Ajustes adaptados a la paleta del tema
 2026-08-07 - v2.1.70 Copia de seguridad: toast informativo tras Restauración. Ajustes del Widget muestra el número de calendarios mostrados
 2026-08-07 - v2.1.69 Corrección de warnings
 2026-08-07 - v2.1.68 Diálogo Temas: unificado botón Aceptar/Cancelar

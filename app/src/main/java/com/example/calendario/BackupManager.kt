@@ -102,17 +102,35 @@ object BackupManager {
         return root
     }
 
-    /**
-     * Exporta el JSON completo a un archivo local (Uri)
-     */
     fun exportFullBackup(context: Context, uri: Uri) {
         try {
             val json = createFullBackupJson(context)
+            val jsonStr = json.toString(4)
+            val bytes = jsonStr.toByteArray()
             context.contentResolver.openOutputStream(uri)?.use { 
-                it.write(json.toString(4).toByteArray()) 
+                it.write(bytes) 
             }
+            
+            // Registrar en historial
+            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                timestamp = System.currentTimeMillis(),
+                source = BackupSource.LOCAL,
+                action = BackupAction.SAVE,
+                isSuccess = true,
+                eventsCount = json.optJSONArray(KEY_CALENDAR_HISTORY)?.length() ?: 0,
+                notesCount = json.optJSONArray(KEY_DAILY_NOTES)?.length() ?: 0,
+                includePrefs = true,
+                sizeBytes = bytes.size.toLong()
+            ))
         } catch (e: Exception) {
             Log.e("BackupManager", "Export error", e)
+            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                timestamp = System.currentTimeMillis(),
+                source = BackupSource.LOCAL,
+                action = BackupAction.SAVE,
+                isSuccess = false,
+                technicalError = e.message
+            ))
             throw e
         }
     }
@@ -126,12 +144,26 @@ object BackupManager {
         restorePrefs: Boolean,
         restoreHolidays: Boolean,
         restoreNotes: Boolean,
-        restoreEvents: Boolean
+        restoreEvents: Boolean,
+        source: BackupSource,
+        logEntry: Boolean = true // Nuevo parámetro para silenciar logs durante sync
     ): Boolean {
+        var eventsCount = 0
+        var notesCount = 0
+        
         return try {
             val metadata = json.optJSONObject(KEY_BACKUP_METADATA)
-            if (metadata == null || metadata.optString("appName") != AppConstants.APP_SIGNATURE) {
+            if (metadata == null || (metadata.optString("appName") != AppConstants.APP_SIGNATURE)) {
                 Log.e("BackupManager", "Firma de App no válida o metadata ausente")
+                if (logEntry) {
+                    BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                        timestamp = System.currentTimeMillis(),
+                        source = source,
+                        action = BackupAction.RESTORE,
+                        isSuccess = false,
+                        errorMessageRes = R.string.invalid_json_file
+                    ))
+                }
                 return false
             }
 
@@ -148,7 +180,7 @@ object BackupManager {
                         val keys = it.keys()
                         while (keys.hasNext()) {
                             val key = keys.next()
-                            val value = it.get(key)
+                            val value = it.opt(key)
                             if (value != null && value != JSONObject.NULL) {
                                 putPreference(this, key, value)
                             }
@@ -159,8 +191,8 @@ object BackupManager {
                 val appJson = json.optJSONObject(KEY_APP_PREFS)
                 val hasIndividualColors = appJson?.keys()?.asSequence()?.any { it.startsWith("light_") || it.startsWith("dark_") } ?: false
                 if (!hasIndividualColors) {
-                    appJson?.optString(AppConstants.KEY_LIGHT_THEME_NAME)?.let { applyBundledThemeColors(context, it, false) }
-                    appJson?.optString(AppConstants.KEY_DARK_THEME_NAME)?.let { applyBundledThemeColors(context, it, true) }
+                    appJson?.optString(AppConstants.KEY_LIGHT_THEME_NAME)?.let { applyBundledThemeColors(context, it, isDark = false) }
+                    appJson?.optString(AppConstants.KEY_DARK_THEME_NAME)?.let { applyBundledThemeColors(context, it, isDark = true) }
                 }
             }
 
@@ -186,6 +218,7 @@ object BackupManager {
                             ))
                         } catch (_: Exception) {}
                     }
+                    notesCount = remoteNotes.size
                     saveNotesToDisk(context, mergeNotesLists(localNotes, remoteNotes))
                 }
             }
@@ -223,15 +256,38 @@ object BackupManager {
                             dto.toFestivo()?.let { remoteEvents.add(it) }
                         } catch (_: Exception) {}
                     }
+                    eventsCount = remoteEvents.size
                     val (merged, _) = mergeHistoryLists(context, localEvents, remoteEvents)
                     saveHistoryToDisk(context, merged)
                 }
             }
             
             AlarmUtils.rescheduleAllAlarms(context)
+            
+            if (logEntry) {
+                BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                    timestamp = System.currentTimeMillis(),
+                    source = source,
+                    action = BackupAction.RESTORE,
+                    isSuccess = true,
+                    eventsCount = eventsCount,
+                    notesCount = notesCount,
+                    includePrefs = restorePrefs
+                ))
+            }
+            
             true
         } catch (e: Exception) {
             Log.e("BackupManager", "Error en proceso de importación JSON", e)
+            if (logEntry) {
+                BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                    timestamp = System.currentTimeMillis(),
+                    source = source,
+                    action = BackupAction.RESTORE,
+                    isSuccess = false,
+                    technicalError = e.message
+                ))
+            }
             false
         }
     }
@@ -244,9 +300,16 @@ object BackupManager {
             val content = context.contentResolver.openInputStream(uri)?.use { 
                 BufferedReader(InputStreamReader(it)).readText() 
             } ?: return false
-            importFullBackupFromJson(context, JSONObject(content), restorePrefs, restoreHolidays, restoreNotes, restoreEvents)
+            importFullBackupFromJson(context, JSONObject(content), restorePrefs, restoreHolidays, restoreNotes, restoreEvents, BackupSource.LOCAL)
         } catch (e: Exception) {
             Log.e("BackupManager", "Local file import error", e)
+            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                timestamp = System.currentTimeMillis(),
+                source = BackupSource.LOCAL,
+                action = BackupAction.RESTORE,
+                isSuccess = false,
+                technicalError = e.message
+            ))
             false
         }
     }
@@ -258,7 +321,7 @@ object BackupManager {
                 val keys = it.keys()
                 while (keys.hasNext()) {
                     val key = keys.next()
-                    val value = it.get(key)
+                    val value = it.opt(key)
                     if (value != null && value != JSONObject.NULL) {
                         putPreference(this, key, value)
                     }

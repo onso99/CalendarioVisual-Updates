@@ -100,6 +100,7 @@ fun SettingsScreen(
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {},
+    onBackupHistoryClick: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isSyncing = uiState.isSyncing
@@ -505,7 +506,16 @@ fun SettingsScreen(
                 }
             }
 
-            SectionTitle(text = stringResource(id = R.string.backup_section_title_label))
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                SectionTitle(text = stringResource(id = R.string.backup_section_title_label), modifier = Modifier.weight(1f))
+                IconButton(onClick = onBackupHistoryClick, modifier = Modifier.padding(top = 16.dp).size(24.dp)) { 
+                    Icon(
+                        imageVector = Icons.Default.History, 
+                        contentDescription = null, 
+                        tint = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
+                    )
+                }
+            }
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val email = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
                 if (email == null) {

@@ -47,7 +47,9 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
                 BackupManager.importFullBackupFromJson(
                     context, remoteJson, 
                     restorePrefs = false, restoreHolidays = false, 
-                    restoreNotes = true, restoreEvents = true
+                    restoreNotes = true, restoreEvents = true,
+                    source = BackupSource.DRIVE,
+                    logEntry = false
                 )
             }
 
@@ -70,6 +72,18 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
 
             clearDeletedEventIds(context)
             
+            // Registrar en historial
+            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                timestamp = System.currentTimeMillis(),
+                source = BackupSource.DRIVE,
+                action = BackupAction.SYNC,
+                isSuccess = true,
+                eventsCount = totalEvents,
+                notesCount = totalNotes,
+                includePrefs = true,
+                sizeBytes = sizeBytes
+            ))
+            
             SyncResult(
                 totalEvents = totalEvents + totalNotes, 
                 deletedCount = 0, // El motor de fusión ya limpió, informamos total resultante
@@ -78,6 +92,13 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             )
         } catch (e: Exception) {
             Log.e("DriveHelper", "Error en la sincronización unificada", e)
+            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                timestamp = System.currentTimeMillis(),
+                source = BackupSource.DRIVE,
+                action = BackupAction.SYNC,
+                isSuccess = false,
+                technicalError = e.message
+            ))
             SyncResult(0, 0, false, 0L)
         }
     }
@@ -97,7 +118,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             
             // Delegamos toda la lógica al motor maestro
             BackupManager.importFullBackupFromJson(
-                context, json, restorePrefs, restoreHolidays, restoreNotes, restoreEvents
+                context, json, restorePrefs, restoreHolidays, restoreNotes, restoreEvents, BackupSource.DRIVE
             )
         } catch (e: Exception) {
             Log.e("DriveHelper", "Error en restauración selectiva nube", e)
