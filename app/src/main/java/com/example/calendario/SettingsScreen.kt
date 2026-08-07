@@ -640,32 +640,37 @@ fun SettingsScreen(
                 }, 
                 onConfirm = { prefs, holidays, notes, events -> 
                     showRestoreSelectDialog = false
-                    if (restoreSource == "drive") { 
-                        viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { success -> 
-                            if (success) { 
-                                Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                                if (prefs) {
-                                    (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                    when (restoreSource) {
+                        "drive" -> {
+                            viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { success -> 
+                                if (success) { 
+                                    Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                                    if (prefs) {
+                                        (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                                    } else {
+                                        permissionsUpdateTrigger++
+                                    }
                                 } else {
-                                    permissionsUpdateTrigger++
+                                    Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
                                 }
-                            } else {
-                                Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
                             }
-                        } 
-                    } else if (restoreSource == "local" && pendingLocalUri != null) { 
-                        viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { success -> 
-                            if (success) { 
-                                Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                                if (prefs) {
-                                    (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
-                                } else {
-                                    permissionsUpdateTrigger++
+                        }
+                        "local" -> {
+                            if (pendingLocalUri != null) {
+                                viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { success -> 
+                                    if (success) { 
+                                        Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                                        if (prefs) {
+                                            (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                                        } else {
+                                            permissionsUpdateTrigger++
+                                        }
+                                    } else {
+                                        Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
+                                    }
                                 }
-                            } else {
-                                Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
                             }
-                        } 
+                        }
                     }
                     restoreSource = null
                     pendingLocalUri = null 
@@ -906,20 +911,36 @@ private fun BundledThemesDialog(
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
                 onConfirm = { 
-                    if (tempSelectionId == "imported_temp" && importedTheme != null) {
-                        onThemeSelected(importedTheme.first, importedTheme.second)
-                    } else if (tempSelectionId == cleanId && !isCurrentBundled) {
-                        // El usuario ha vuelto a seleccionar el tema personalizado que ya tenía
-                        onDismiss()
-                    } else {
-                        // Buscar el tema predefinido seleccionado
-                        BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == tempSelectionId }?.let { theme ->
-                            val manifestObj = theme["themeManifest"] as Map<*, *>
-                            val manifest = JSONObject(manifestObj)
-                            val light = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
-                            val dark = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
-                            val id = manifestObj["id"] as String
-                            onThemeSelected(ParsedTheme(manifest, light, dark), id)
+                    when (tempSelectionId) {
+                        "imported_temp" -> {
+                            importedTheme?.let { onThemeSelected(it.first, it.second) }
+                        }
+                        cleanId -> {
+                            if (!isCurrentBundled) {
+                                // El usuario ha vuelto a seleccionar el tema personalizado que ya tenía
+                                onDismiss()
+                            } else {
+                                // Es el tema bundled que estaba activo
+                                BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == tempSelectionId }?.let { theme ->
+                                    val manifestObj = theme["themeManifest"] as Map<*, *>
+                                    val manifest = JSONObject(manifestObj)
+                                    val light = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
+                                    val dark = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
+                                    val id = manifestObj["id"] as String
+                                    onThemeSelected(ParsedTheme(manifest, light, dark), id)
+                                }
+                            }
+                        }
+                        else -> {
+                            // Buscar y aplicar el tema predefinido seleccionado
+                            BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == tempSelectionId }?.let { theme ->
+                                val manifestObj = theme["themeManifest"] as Map<*, *>
+                                val manifest = JSONObject(manifestObj)
+                                val light = theme["lightTheme"]?.let { JSONObject(it as Map<*, *>) }
+                                val dark = theme["darkTheme"]?.let { JSONObject(it as Map<*, *>) }
+                                val id = manifestObj["id"] as String
+                                onThemeSelected(ParsedTheme(manifest, light, dark), id)
+                            }
                         }
                     }
                 },
