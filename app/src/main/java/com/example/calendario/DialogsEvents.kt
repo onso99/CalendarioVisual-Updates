@@ -91,7 +91,7 @@ fun DayEventsDialog(
     var showNoteField by remember(note) { mutableStateOf(note != null) }
     var noteText by remember(note) { mutableStateOf(note?.content ?: "") }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-    val charLimit = 140
+    val charLimit = 200
 
     LaunchedEffect(noteText) {
         if (noteText != (note?.content ?: "") && noteText.isNotBlank()) {
@@ -181,7 +181,7 @@ fun DayEventsDialog(
                             onValueChange = { if (it.length <= charLimit) noteText = it },
                             modifier = Modifier.fillMaxWidth(),
                             textStyle = TextStyle(fontSize = 13.sp, color = CalendarioTheme.colors.textSystem),
-                            maxLines = 3,
+                            maxLines = 4,
                             decorationBox = { innerTextField ->
                                 if (noteText.isEmpty()) {
                                     Text(stringResource(id = R.string.note_hint), fontSize = 13.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
@@ -218,7 +218,7 @@ fun DayEventsDialog(
 
                 // --- 2. LISTA DE EVENTOS (Ahora empieza inmediatamente) ---
                 if (events.isNotEmpty()) {
-                    LazyColumn(Modifier.heightIn(max = 300.dp)) {
+                    LazyColumn(Modifier.heightIn(max = 320.dp)) {
                         items(events, key = { it.id.toString() + "_" + it.date.toString() + "_" + it.startTime }) { festivo ->
                             val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                             val esCumpleanos = festivo.isBirthday && !esFestivo
