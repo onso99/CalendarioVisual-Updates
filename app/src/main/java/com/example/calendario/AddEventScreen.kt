@@ -47,11 +47,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
@@ -569,11 +572,25 @@ fun AddEventScreen(
     }
 
     if (showDeleteDialog) {
-        ConfirmDeleteDialog(onDismissRequest = { showDeleteDialog = false }, onConfirm = { 
-            showDeleteDialog = false
-            localEventToEdit?.let { deleteEvent(context, it.id, it.title, it.date) }
-            onDelete() 
-        }, title = title)
+        ConfirmDeleteDialog(
+            onDismissRequest = { showDeleteDialog = false }, 
+            onConfirm = { 
+                showDeleteDialog = false
+                localEventToEdit?.let { deleteEvent(context, it) }
+                onDelete() 
+            }, 
+            title = title,
+            icon = if (localEventToEdit?.isGhost == true) {
+                {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_ghost_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            } else null
+        )
     }
 
     if (showDeleteRecurringDialog) {
@@ -582,7 +599,7 @@ fun AddEventScreen(
             localEventToEdit?.let { event ->
                 when (option) {
                     DeleteRecurringOption.SINGLE_EVENT -> { cancelEventInstance(context, event); onDelete() }
-                    DeleteRecurringOption.ALL_EVENTS -> { deleteEvent(context, event.id, event.title, event.date); onDelete() }
+                    DeleteRecurringOption.ALL_EVENTS -> { deleteEvent(context, event); onDelete() }
                 }
             }
         })

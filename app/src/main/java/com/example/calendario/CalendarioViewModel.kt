@@ -402,6 +402,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun removeOrphanEvent(event: Festivo) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            withContext(Dispatchers.IO) {
+                removeEventFromHistory(context, event.adn)
+            }
+            refreshData()
+        }
+    }
+
     private suspend fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> = withContext(Dispatchers.Default) {
         val context = getApplication<Application>()
         val deletedIds = getDeletedEventIds(context)
@@ -439,6 +449,14 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
             // 3. RECORTAR VENTANA (JSON Ligero pero inclusivo: 20 años atrás, 6 adelante)
             .filter { it.date.isAfter(today.minusYears(20)) && it.date.isBefore(today.plusYears(6)) }
+            // 4. MARCAR FANTASMAS: Si no está en el sistema y no es festivo manual, es un fantasma
+            .map { event ->
+                if (event.id > 0 && !systemKeys.contains(event.adn)) {
+                    event.copy(isGhost = true)
+                } else {
+                    event
+                }
+            }
             .toList()
     }
 }

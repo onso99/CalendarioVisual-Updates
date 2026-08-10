@@ -176,12 +176,22 @@ fun updateSingleEventInSeries(
     }
 }
 
-fun deleteEvent(context: Context, eventId: Long, eventTitle: String, eventDate: LocalDate) {
+fun deleteEvent(context: Context, event: Festivo) {
+    val eventId = event.id
+    val eventTitle = event.title
+    val eventDate = event.date
+    
     try {
         val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         val rows = context.contentResolver.delete(deleteUri, null, null)
 
-        if (rows > 0) {
+        if (rows > 0 || eventId > 0) {
+            // Si el sistema lo borró (rows > 0) O si el sistema no lo encontró (rows == 0)
+            // pero es un evento que debería estar ahí (eventId > 0), limpiamos nuestro historial.
+            
+            // Registrar borrado para sincronización futura
+            markEventAsDeleted(context, eventId)
+            removeEventFromHistory(context, event.adn)
             // Registrar borrado para sincronización futura
             markEventAsDeleted(context, eventId)
 

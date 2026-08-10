@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -230,7 +231,9 @@ fun SearchScreen(
                                     val festivo = searchItem.festivo
                                     val isSelected = selectedFestivos.contains(festivo)
                                     val isLocalHoliday = festivo.calendarId == -1L && festivo.isFromHolidaySource
-                                    val isSpecial = isLocalHoliday || festivo.isBirthday || festivo.isFromHolidaySource
+                                    val calendar = availableCalendars.find { it.id == festivo.calendarId }
+                                    val isReadOnlyCalendar = calendar != null && !calendar.canModify
+                                    val isSpecial = isLocalHoliday || festivo.isBirthday || festivo.isFromHolidaySource || isReadOnlyCalendar || festivo.isGhost
                                     
                                     EventRow(
                                         festivo = festivo,
@@ -302,8 +305,14 @@ fun SearchScreen(
                         eventsToDelete.forEach { festivo ->
                             try {
                                 val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, festivo.id)
-                                context.contentResolver.delete(deleteUri, null, null)
-                                deletedCount++
+                                val rows = context.contentResolver.delete(deleteUri, null, null)
+                                
+                                // Si el sistema lo borró o si no lo encontró (fantasma), limpiamos historial
+                                if (rows > 0 || festivo.id > 0) {
+                                    markEventAsDeleted(context, festivo.id)
+                                    removeEventFromHistory(context, festivo.adn)
+                                    deletedCount++
+                                }
                             } catch (_: Exception) {
                                 // Ignorar errores individuales
                             }
@@ -421,33 +430,44 @@ private fun EventRow(
 
         // 2. INDICADOR DE FORMA (Alineado)
         Box(
-            modifier = Modifier.width(8.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.width(26.dp), // Aumentado ligeramente para el fantasma
+            contentAlignment = Alignment.CenterStart
         ) {
             val cal = availableCalendars.find { it.id == festivo.calendarId }
-            val colorToUse = if (festivo.customColor != null) {
-                Color(festivo.customColor)
-            } else if (cal != null) {
-                Color(cal.color)
+            val isGhost = festivo.isGhost || (cal == null && festivo.calendarId > 0)
+            
+            if (isGhost) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_ghost_24),
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                    modifier = Modifier.size(16.dp)
+                )
             } else {
-                Color.Transparent
-            }
+                val colorToUse = if (festivo.customColor != null) {
+                    Color(festivo.customColor)
+                } else if (cal != null) {
+                    Color(cal.color)
+                } else {
+                    Color.Transparent
+                }
 
-            if (festivo.isLongPeriod && festivo.lane != null) {
-                Box(
-                    Modifier
-                        .width(4.dp)
-                        .height(10.dp)
-                        .clip(RoundedCornerShape(1.dp))
-                        .background(colorToUse)
-                )
-            } else if (colorToUse != Color.Transparent) {
-                Box(
-                    Modifier
-                        .size(6.dp)
-                        .background(colorToUse.copy(alpha = 0.6f), CircleShape)
-                        .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), CircleShape)
-                )
+                if (festivo.isLongPeriod && festivo.lane != null) {
+                    Box(
+                        Modifier
+                            .width(4.dp)
+                            .height(10.dp)
+                            .clip(RoundedCornerShape(1.dp))
+                            .background(colorToUse)
+                    )
+                } else if (colorToUse != Color.Transparent) {
+                    Box(
+                        Modifier
+                            .size(6.dp)
+                            .background(colorToUse.copy(alpha = 0.6f), CircleShape)
+                            .border(0.5.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), CircleShape)
+                    )
+                }
             }
         }
 

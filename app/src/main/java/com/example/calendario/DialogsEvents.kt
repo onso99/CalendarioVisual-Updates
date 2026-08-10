@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -291,7 +292,13 @@ fun DayEventsDialog(
 
 
 @Composable
-fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar: CalendarInfo?, onOpenHolidayManager: (Festivo) -> Unit) {
+fun ReadOnlyEventDialog(
+    onDismissRequest: () -> Unit, 
+    festivo: Festivo, 
+    calendar: CalendarInfo?, 
+    onOpenHolidayManager: (Festivo) -> Unit,
+    onRemoveFromHistory: (Festivo) -> Unit // Nueva acción
+) {
     val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("E, dd MMM yyyy") }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos,
@@ -300,7 +307,26 @@ fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar
             Text(festivo.date.format(dateFormatter).replaceFirstChar(Char::titlecase), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
             if (!festivo.isAllDay) Text("${festivo.startTime?.format(timeFormatter) ?: "--:--"} - ${festivo.endTime?.format(timeFormatter) ?: "--:--"}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+            Spacer(Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (festivo.isGhost || (calendar == null && festivo.calendarId > 0)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_ghost_24),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                        modifier = Modifier.size(20.dp).padding(end = 8.dp)
+                    )
+                }
+                Text(stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+            }
+            if (calendar?.canModify == false) {
+                Text(
+                    text = stringResource(id = R.string.calendar_read_only_error),
+                    fontSize = 13.sp,
+                    color = CalendarioTheme.colors.textSundayHoliday.copy(alpha = 0.8f),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         }}},
         confirmButton = { 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -311,6 +337,20 @@ fun ReadOnlyEventDialog(onDismissRequest: () -> Unit, festivo: Festivo, calendar
                     Spacer(Modifier.width(8.dp))
                 }
                 DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismissRequest)
+            }
+        },
+        dismissButton = {
+            if (festivo.isGhost || (calendar == null && festivo.calendarId > 0)) {
+                // Es un evento huérfano o fantasma
+                TextButton(
+                    onClick = { 
+                        onDismissRequest()
+                        onRemoveFromHistory(festivo) 
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                ) {
+                    Text(stringResource(id = R.string.delete)) // Usamos "Eliminar"
+                }
             }
         }
     )

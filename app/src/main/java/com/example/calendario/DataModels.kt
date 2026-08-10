@@ -29,7 +29,8 @@ data class Festivo(
     val adn: String = "", // Huella digital única para deduplicación y refresco
     // --- Campos para Sincronización Segura ---
     val lastModified: Long = System.currentTimeMillis(),
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val isGhost: Boolean = false
 )
 
 data class CalendarInfo(

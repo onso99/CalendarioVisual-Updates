@@ -259,15 +259,17 @@ fun ThemeSelectionDialog(
 fun ConfirmDeleteDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
-    title: String
+    title: String,
+    icon: (@Composable () -> Unit)? = null
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
         titleContentColor = CalendarioTheme.colors.textSystem,
         textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = { Text(stringResource(id = R.string.confirm_deletion_message, title)) },
+        icon = icon,
+        title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = if (icon != null) TextAlign.Center else TextAlign.Start) },
+        text = { Text(stringResource(id = R.string.confirm_deletion_message, title), textAlign = if (icon != null) TextAlign.Center else TextAlign.Start, modifier = Modifier.fillMaxWidth()) },
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.delete),

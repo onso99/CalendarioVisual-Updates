@@ -34,6 +34,14 @@ fun saveHistoryToDisk(context: Context, events: List<Festivo>) {
     }
 }
 
+fun removeEventFromHistory(context: Context, eventAdn: String) {
+    val currentHistory = loadHistoryFromDisk(context).toMutableList()
+    val removed = currentHistory.removeAll { it.adn == eventAdn }
+    if (removed) {
+        saveHistoryToDisk(context, currentHistory)
+    }
+}
+
 fun loadHistoryFromDisk(context: Context): List<Festivo> {
     return try {
         val file = context.getFileStreamPath(HISTORY_FILE_NAME)

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -59,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -76,6 +78,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 
@@ -146,6 +149,8 @@ fun CalendarioScreen(
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
     var showWidgetLogScreen by remember { mutableStateOf(false) }
     var showBackupHistoryScreen by remember { mutableStateOf(false) }
+    var showDeleteOrphanDialog by remember { mutableStateOf(false) }
+    var eventToDeleteOrphan by remember { mutableStateOf<Festivo?>(null) }
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
     var showHistoryScreen by remember { mutableStateOf(false) }
 
@@ -178,22 +183,28 @@ fun CalendarioScreen(
     }
 
     val onEventClickHandler = { event: Festivo ->
+        val calendar = uiState.availableCalendars.find { it.id == event.calendarId }
+        val canEdit = calendar?.canModify == true && !event.isGhost
+
         if (event.calendarId == -1L && event.isFromHolidaySource) {
             // Es un festivo local (manual) -> Abrir Gestor
             holidayForManager = event
             showHolidayManagerScreen = true
-        } else if (event.isBirthday) {
-            // Es un cumpleaños (sincronizado) -> Mostrar información
+        } else if (event.isGhost) {
+            // Es un evento fantasma (está en historial pero no en Google)
             eventForReadOnlyDialog = event
             showReadOnlyDialog = true
+        } else if (event.isBirthday && !canEdit) {
+            // Es un cumpleaños de SOLO LECTURA (sincronizado de contactos)
+            eventForReadOnlyDialog = event
+            showReadOnlyDialog = true
+        } else if (canEdit) {
+            // Es un evento normal o un cumpleaños en un calendario propio -> Editable
+            launchAddEditScreen(event.date, event)
         } else {
-            val calendar = uiState.availableCalendars.find { it.id == event.calendarId }
-            if (calendar?.canModify == true) {
-                launchAddEditScreen(event.date, event)
-            } else {
-                eventForReadOnlyDialog = event
-                showReadOnlyDialog = true
-            }
+            // Todo lo demás que no sea editable (calendarios compartidos lectura, etc.)
+            eventForReadOnlyDialog = event
+            showReadOnlyDialog = true
         }
     }
 
@@ -808,6 +819,43 @@ fun CalendarioScreen(
             onOpenHolidayManager = { festivo ->
                 holidayForManager = festivo
                 showHolidayManagerScreen = true
+            },
+            onRemoveFromHistory = { festivo ->
+                eventToDeleteOrphan = festivo
+                showDeleteOrphanDialog = true
+            }
+        )
+    }
+
+    if (showDeleteOrphanDialog && eventToDeleteOrphan != null) {
+        ConfirmDeleteDialog(
+            onDismissRequest = { 
+                showDeleteOrphanDialog = false
+                eventToDeleteOrphan = null
+            },
+            onConfirm = {
+                val event = eventToDeleteOrphan!!
+                viewModel.removeOrphanEvent(event)
+                
+                // Mostrar Toast unificado
+                val fmt = DateTimeFormatter.ofPattern("d/M/yy")
+                val dateStr = event.date.format(fmt)
+                val displayTitle = if (event.title.length > 60) event.title.take(57) + "..." else event.title
+                val message = context.applicationContext.getString(R.string.event_deleted_message, dateStr, displayTitle)
+                Toast.makeText(context.applicationContext, message, Toast.LENGTH_SHORT).show()
+
+                showDeleteOrphanDialog = false
+                eventToDeleteOrphan = null
+                showReadOnlyDialog = false // Cerrar también la ficha
+            },
+            title = eventToDeleteOrphan!!.title,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_ghost_24),
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                    modifier = Modifier.size(36.dp)
+                )
             }
         )
     }
