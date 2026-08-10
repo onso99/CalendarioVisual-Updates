@@ -288,18 +288,19 @@ fun AddEventScreen(
             val now = LocalDateTime.now().withSecond(0).withNano(0)
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             title = ""
-            isAllDay = false
+            isAllDay = true // Por defecto: Todo el día
             startDate = effectiveInitialDateTime
-            endDate = effectiveInitialDateTime
+            endDate = effectiveInitialDateTime.plusHours(2) // Margen de 2 horas si se quita Todo el día
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
             repeatUntilDate = null
             repeatCount = null
             hasAlarm = false
-            alarmTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+            // Alarma a las 09:00 AM por defecto para Todo el día
+            alarmTime = LocalTime.of(9, 0)
 
             initialTitle = ""
-            initialIsAllDay = false
+            initialIsAllDay = true
             initialStartDate = startDate
             initialEndDate = endDate
             initialRepetitionRule = repetitionRule
@@ -402,12 +403,9 @@ fun AddEventScreen(
                 selectedCalendar = selectedCalendar, onCalendarClick = { showCalendarDialog = true },
                 isAllDay = isAllDay, onAllDayChange = { 
                     isAllDay = it
-                    // Si quitamos "Todo el dÃ­a" y no es un periodo largo, sincronizamos la fecha de fin con la de inicio
+                    // Si quitamos "Todo el dÃ­a" y no es un periodo largo, sincronizamos la fecha de fin con un margen de 2 horas
                     if (!it && !isLongPeriod) {
-                        endDate = LocalDateTime.of(startDate.toLocalDate(), endDate.toLocalTime())
-                        if (endDate.isBefore(startDate)) {
-                            endDate = startDate.plusHours(1)
-                        }
+                        endDate = startDate.plusHours(2)
                     }
                 },
                 startDate = startDate, onStartDateClick = { showStartDatePickerDialog = true }, onStartTimeClick = { showStartTimePickerDialog = true },
@@ -448,14 +446,19 @@ fun AddEventScreen(
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
                         
-                        val now = LocalTime.now()
-                        val calculatedTime = if (isAllDay) now else startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
-                        
-                        // Sugerir siempre una hora posterior a la actual
-                        alarmTime = if (calculatedTime.isBefore(now)) {
-                            now.plusMinutes(10).withSecond(0).withNano(0)
+                        if (isAllDay) {
+                            // Para todo el día, sugerimos las 09:00 AM
+                            alarmTime = LocalTime.of(9, 0)
                         } else {
-                            calculatedTime.withSecond(0).withNano(0)
+                            // Para eventos con hora, aplicamos la anticipación configurada
+                            val calculatedTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                            val now = LocalTime.now()
+                            // Si la hora calculada ya pasó, sugerimos 10 min desde ahora
+                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate() == LocalDate.now()) {
+                                now.plusMinutes(10).withSecond(0).withNano(0)
+                            } else {
+                                calculatedTime.withSecond(0).withNano(0)
+                            }
                         }
                         
                         showAlarmTimePickerDialog = true
@@ -464,16 +467,19 @@ fun AddEventScreen(
                 alarmTime = alarmTime,
                 onAlarmTimeClick = { 
                     if (!hasAlarm) {
-                        // Si no tenÃ­a alarma, pedimos permiso y sugerimos hora futura
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                        val now = LocalTime.now()
-                        val calculatedTime = if (isAllDay) now else startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
-                        alarmTime = if (calculatedTime.isBefore(now)) {
-                            now.plusMinutes(10).withSecond(0).withNano(0)
+                        if (isAllDay) {
+                            alarmTime = LocalTime.of(9, 0)
                         } else {
-                            calculatedTime.withSecond(0).withNano(0)
+                            val calculatedTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
+                            val now = LocalTime.now()
+                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate() == LocalDate.now()) {
+                                now.plusMinutes(10).withSecond(0).withNano(0)
+                            } else {
+                                calculatedTime.withSecond(0).withNano(0)
+                            }
                         }
                     }
                     showAlarmTimePickerDialog = true 
