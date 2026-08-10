@@ -1,3 +1,4 @@
+2026-08-10 - v2.1.76 Nuevo evento, por defecto: Todo el día, alarma 9AM. Con hora de inicio/fin: hora actual + 2 horas y alarma según preferencias
 2026-08-07 - v2.1.75 Corrección de warnings
 2026-08-07 - v2.1.74 Temas: Verde oliva > Oliva, excepto en ruso y chino para contextualizarlo
 2026-08-07 - v2.1.73 Temas: flujo de confirmación y nuevo botón para el tema importado

@@ -114,7 +114,8 @@ fun AddEventForm(
                     focusedTextColor = CalendarioTheme.colors.textSystem,
                     unfocusedTextColor = CalendarioTheme.colors.textSystem
                 ),
-                singleLine = true,
+                singleLine = false,
+                maxLines = 5,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
