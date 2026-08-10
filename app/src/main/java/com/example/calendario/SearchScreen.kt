@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
@@ -58,9 +60,10 @@ fun SearchScreen(
     onSearchQueryChange: (String) -> Unit,
     searchScope: SearchScope,
     onSearchScopeChange: (SearchScope) -> Unit,
-    searchResults: Map<LocalDate, List<Festivo>>,
+    searchResults: Map<LocalDate, List<SearchItem>>,
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
+    onNoteClick: (DailyNote) -> Unit,
     onOpenHolidayManager: (Festivo) -> Unit,
     onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>,
@@ -71,7 +74,7 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
     
-    // --- Lógica de Multiselección ---
+    // --- Lógica de Multiselección (Solo para eventos editables) ---
     var selectedFestivos by remember { mutableStateOf(setOf<Festivo>()) }
     val isSelectionMode = selectedFestivos.isNotEmpty()
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -221,36 +224,53 @@ fun SearchScreen(
                             )
                         }
                         
-                        items(events, key = { it.adn }) { festivo ->
-                            val isSelected = selectedFestivos.contains(festivo)
-                            val isLocalHoliday = festivo.calendarId == -1L && festivo.isFromHolidaySource
-                            val isSpecial = isLocalHoliday || festivo.isBirthday || festivo.isFromHolidaySource
-                            
-                            EventRow(
-                                festivo = festivo,
-                                availableCalendars = availableCalendars,
-                                isSelected = isSelected,
-                                isSpecial = isSpecial,
-                                onEventClick = { clicked ->
-                                    if (isSelectionMode) {
-                                        if (!isSpecial) {
-                                            selectedFestivos = if (isSelected) selectedFestivos - clicked else selectedFestivos + clicked
+                        items(events, key = { it.adn }) { searchItem ->
+                            when (searchItem) {
+                                is SearchItem.Event -> {
+                                    val festivo = searchItem.festivo
+                                    val isSelected = selectedFestivos.contains(festivo)
+                                    val isLocalHoliday = festivo.calendarId == -1L && festivo.isFromHolidaySource
+                                    val isSpecial = isLocalHoliday || festivo.isBirthday || festivo.isFromHolidaySource
+                                    
+                                    EventRow(
+                                        festivo = festivo,
+                                        availableCalendars = availableCalendars,
+                                        isSelected = isSelected,
+                                        isSpecial = isSpecial,
+                                        onEventClick = { clicked ->
+                                            if (isSelectionMode) {
+                                                if (!isSpecial) {
+                                                    selectedFestivos = if (isSelected) selectedFestivos - clicked else selectedFestivos + clicked
+                                                }
+                                            } else {
+                                                if (isLocalHoliday) {
+                                                    onOpenHolidayManager(clicked)
+                                                } else {
+                                                    onEventClick(clicked)
+                                                }
+                                            }
+                                        },
+                                        onLongClick = { target ->
+                                            if (!isSpecial) {
+                                                selectedFestivos += target
+                                            }
+                                        },
+                                        searchScope = searchScope
+                                    )
+                                }
+                                is SearchItem.Note -> {
+                                    val note = searchItem.dailyNote
+                                    NoteRow(
+                                        note = note,
+                                        searchScope = searchScope,
+                                        onClick = { 
+                                            if (!isSelectionMode) {
+                                                onNoteClick(note)
+                                            }
                                         }
-                                    } else {
-                                        if (isLocalHoliday) {
-                                            onOpenHolidayManager(clicked)
-                                        } else {
-                                            onEventClick(clicked)
-                                        }
-                                    }
-                                },
-                                onLongClick = { target ->
-                                    if (!isSpecial) {
-                                        selectedFestivos += target
-                                    }
-                                },
-                                searchScope = searchScope
-                            )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -481,5 +501,68 @@ private fun EventRow(
                 modifier = Modifier.padding(start = 8.dp).size(14.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun NoteRow(
+    note: DailyNote,
+    searchScope: SearchScope,
+    onClick: (DailyNote) -> Unit
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    val neutralColor = CalendarioTheme.colors.textSystem
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick(note) }
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 1. DÍA (Solo si no es vista de mes)
+        if (searchScope != SearchScope.MONTH) {
+            Text(
+                text = String.format(locale, "%02d", note.date.dayOfMonth),
+                color = neutralColor,
+                fontSize = 16.sp,
+                modifier = Modifier.width(26.dp)
+            )
+        }
+
+        // 2. ICONO NOTA (Alineado con el indicador de eventos)
+        Box(
+            modifier = Modifier.width(18.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.StickyNote2,
+                contentDescription = null,
+                tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.6f),
+                modifier = Modifier.size(14.dp)
+            )
+        }
+
+        Spacer(Modifier.width(1.dp))
+
+        // 3. TEXTO (Contenido de la nota)
+        Text(
+            text = note.content.replace("\n", " "),
+            color = neutralColor,
+            fontSize = 16.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+
+        // 4. ICONO CANDADO (Protección Opción C)
+        Icon(
+            imageVector = Icons.Default.Lock,
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+            modifier = Modifier.padding(start = 8.dp).size(14.dp)
+        )
     }
 }

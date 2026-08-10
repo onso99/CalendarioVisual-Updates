@@ -140,7 +140,7 @@ fun CalendarioScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var searchScope by remember { mutableStateOf(SearchScope.YEAR) } // Default to YEAR
-    var searchResults by remember { mutableStateOf<Map<LocalDate, List<Festivo>>>(emptyMap()) }
+    var searchResults by remember { mutableStateOf<Map<LocalDate, List<SearchItem>>>(emptyMap()) }
     var showReadOnlyDialog by remember { mutableStateOf(false) }
     var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
@@ -197,6 +197,18 @@ fun CalendarioScreen(
         }
     }
 
+    val onNoteClickHandler = { note: DailyNote ->
+        val date = note.date
+        val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.from(date)).toInt()
+        scope.launch {
+            monthPagerState.scrollToPage(targetPage)
+            selectedDateForDialog = date
+            showDayEventsDialog = true
+            isSearchActive = false
+        }
+        Unit
+    }
+
     LaunchedEffect(uiState.hasCalendarPermission) {
         if (uiState.hasCalendarPermission) {
             viewModel.refreshData()
@@ -210,31 +222,47 @@ fun CalendarioScreen(
         }
     }
 
-    LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate) {
+    LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate, uiState.dailyNotes) {
         if (searchQuery.isNotBlank()) {
             delay(300.milliseconds) // Debounce
-            val allEvents = uiState.eventsByDate.values.flatten()
-            val scopeFilteredEvents = when (searchScope) {
-                SearchScope.MONTH -> allEvents.filter { it.date.year == currentMonth.year && it.date.month == currentMonth.month }
-                SearchScope.YEAR -> allEvents.filter { it.date.year == currentMonth.year }
-                SearchScope.ALL -> allEvents
-            }
             val normalizedQuery = searchQuery.unaccent().lowercase(locale)
-
-            val groupedEvents = scopeFilteredEvents
-                .filter { it.title.unaccent().lowercase(locale).contains(normalizedQuery) }
-                .groupBy {
+            
+            // 1. Filtrar Eventos
+            val allEvents = uiState.eventsByDate.values.flatten()
+            val filteredEvents = allEvents.filter { it.title.unaccent().lowercase(locale).contains(normalizedQuery) }
+                .filter { event ->
                     when (searchScope) {
-                        SearchScope.MONTH -> it.date
-                        SearchScope.YEAR -> it.date.withDayOfMonth(1) // Group by month
-                        SearchScope.ALL -> it.date.withDayOfYear(1)   // Group by year
+                        SearchScope.MONTH -> event.date.year == currentMonth.year && event.date.month == currentMonth.month
+                        SearchScope.YEAR -> event.date.year == currentMonth.year
+                        SearchScope.ALL -> true
                     }
                 }
-                .mapValues { (_, events) ->
-                    events.sortedWith(compareBy({ it.date }, { it.startTime }))
-                }
-            searchResults = groupedEvents.toSortedMap(compareByDescending { it })
+                .map { SearchItem.Event(it) }
 
+            // 2. Filtrar Notas
+            val filteredNotes = uiState.dailyNotes.values.filter { it.content.unaccent().lowercase(locale).contains(normalizedQuery) }
+                .filter { note ->
+                    when (searchScope) {
+                        SearchScope.MONTH -> note.date.year == currentMonth.year && note.date.month == currentMonth.month
+                        SearchScope.YEAR -> note.date.year == currentMonth.year
+                        SearchScope.ALL -> true
+                    }
+                }
+                .map { SearchItem.Note(it) }
+
+            // 3. Combinar y Agrupar
+            val combined = (filteredEvents + filteredNotes)
+            val grouped = combined.groupBy {
+                when (searchScope) {
+                    SearchScope.MONTH -> it.date
+                    SearchScope.YEAR -> it.date.withDayOfMonth(1)
+                    SearchScope.ALL -> it.date.withDayOfYear(1)
+                }
+            }.mapValues { (_, items) ->
+                items.sortedWith(compareBy({ it.date }, { (it as? SearchItem.Event)?.festivo?.startTime }))
+            }
+
+            searchResults = grouped.toSortedMap(compareByDescending { it })
         } else {
             searchResults = emptyMap()
         }
@@ -364,6 +392,7 @@ fun CalendarioScreen(
                 searchResults = emptyMap()
             },
             onEventClick = onEventClickHandler,
+            onNoteClick = onNoteClickHandler,
             onOpenHolidayManager = { clicked ->
                 holidayForManager = clicked
                 showHolidayManagerScreen = true

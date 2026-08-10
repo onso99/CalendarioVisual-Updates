@@ -105,7 +105,10 @@ data class DailyNote(
     val content: String,
     val lastModified: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false
-)
+) {
+    // Propiedad para facilitar la ordenación y búsqueda
+    val date: LocalDate get() = try { LocalDate.parse(dateStr) } catch(_: Exception) { LocalDate.now() }
+}
 
 data class DailyNoteDto(
     val dateStr: String?,
@@ -113,3 +116,20 @@ data class DailyNoteDto(
     val lastModified: Long?,
     val isDeleted: Boolean? = false
 )
+
+// --- Modelo para Resultados de Búsqueda Mixtos ---
+
+sealed class SearchItem {
+    abstract val date: LocalDate
+    abstract val adn: String
+
+    data class Event(val festivo: Festivo) : SearchItem() {
+        override val date: LocalDate = festivo.date
+        override val adn: String = festivo.adn
+    }
+
+    data class Note(val dailyNote: DailyNote) : SearchItem() {
+        override val date: LocalDate = dailyNote.date
+        override val adn: String = "note_${dailyNote.dateStr}"
+    }
+}
