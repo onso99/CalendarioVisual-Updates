@@ -1066,11 +1066,14 @@ private fun DataCleaningDialog(
     
     if (statusMessage != null) lastKnownMessage = statusMessage!!
 
+    val analyzingDataMsg = stringResource(id = R.string.analyzing_data)
+    val analysisFinishedMsg = stringResource(id = R.string.analysis_finished)
+
     LaunchedEffect(isScanning, scanFinishedTrigger) {
         if (isScanning) {
-            statusMessage = "Analizando datos..."
+            statusMessage = analyzingDataMsg
         } else if (scanFinishedTrigger > 0) {
-            statusMessage = "Análisis finalizado"
+            statusMessage = analysisFinishedMsg
             delay(5000.milliseconds)
             statusMessage = null
         }

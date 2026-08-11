@@ -310,6 +310,10 @@
     <string name="calendar_read_only_error">Read-only calendar</string>
 
     <!-- Idiomas -->
+    <string name="data_cleaning_label">Data cleaning</string>
+    <string name="scan_label">Scan</string>
+    <string name="analyzing_data">Analyzing data…</string>
+    <string name="analysis_finished">Analysis finished</string>
     <string name="lang_system">System</string>
     <string name="lang_es">Spanish (Español)</string>
     <string name="lang_en">English</string>
