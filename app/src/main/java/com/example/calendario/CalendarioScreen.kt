@@ -385,6 +385,14 @@ fun CalendarioScreen(
             onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
             onBackupHistoryClick = { showBackupHistoryScreen = true },
+            onNavigateToDate = { date ->
+                val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.from(date)).toInt()
+                scope.launch {
+                    monthPagerState.scrollToPage(targetPage)
+                    selectedDateForDialog = date
+                    showDayEventsDialog = true
+                }
+            },
             onThemeUpdated = onThemeUpdated
         )
         return

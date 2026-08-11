@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -21,9 +22,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +35,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -43,6 +47,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -101,6 +107,7 @@ fun SettingsScreen(
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {},
     onBackupHistoryClick: () -> Unit = {},
+    onNavigateToDate: (LocalDate) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isSyncing = uiState.isSyncing
@@ -134,6 +141,8 @@ fun SettingsScreen(
     var showWidgetColorExpand by remember { mutableStateOf(false) }
     var showBackupActionsExpand by remember { mutableStateOf(false) }
     var showLocalBackupExpand by remember { mutableStateOf(false) }
+
+    var showDataCleaningDialog by remember { mutableStateOf(false) }
 
     // Estado para el tema cargado desde archivo (pero aún no aplicado)
     var importedThemeData by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
@@ -572,6 +581,28 @@ fun SettingsScreen(
                         }
                     }
                 }
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { showDataCleaningDialog = true }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = R.string.data_cleaning_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (uiState.cleaningCandidates.isNotEmpty()) {
+                        Text(
+                            text = "(${uiState.cleaningCandidates.size})",
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
+                }
             }
 
             Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
@@ -591,6 +622,21 @@ fun SettingsScreen(
         }
 
         // --- Dialogs ---
+        if (showDataCleaningDialog) {
+            DataCleaningDialog(
+                candidates = uiState.cleaningCandidates,
+                onDismiss = { showDataCleaningDialog = false },
+                onNavigateToDate = { date ->
+                    showDataCleaningDialog = false
+                    onBackPress() // Salir de ajustes
+                    onNavigateToDate(date)
+                },
+                onDeleteCandidate = { viewModel.deleteCleaningCandidate(it) },
+                onDeleteAll = { viewModel.deleteAllCleaningCandidates() },
+                onScan = { onComplete -> viewModel.refreshData { onComplete() } }
+            )
+        }
+
         if (showLanguageDialog) {
             val currentLocales = AppCompatDelegate.getApplicationLocales()
             LanguageSelectionDialog(currentLanguageCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language, onLanguageSelected = { newCode -> scope.launch { isChangingLanguage = true; delay(1000.milliseconds); AppCompatDelegate.setApplicationLocales(if (newCode == null) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(newCode)); showLanguageDialog = false } }, onDismiss = { showLanguageDialog = false })
@@ -864,7 +910,7 @@ private fun BundledThemesDialog(
                     modifier = Modifier.height(gridHeight)
                 ) {
                     // 1. Temas predefinidos
-                    items(BundledThemes.themes) { theme: Map<String, Any> ->
+                    gridItems(BundledThemes.themes) { theme: Map<String, Any> ->
                         val themeManifest = theme["themeManifest"] as Map<*, *>
                         val themeId = themeManifest["id"] as String
                         val themeResId = themeManifest["nameRes"] as Int
@@ -1002,4 +1048,241 @@ private fun BackupFrequencyDialog(selection: String, onConfirm: (String) -> Unit
 @Composable
 private fun PermissionRow(label: String, status: PermissionStatus, fixLabel: String, onFix: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) { Box(modifier = Modifier.padding(top = 6.dp).size(10.dp).background(if (status == PermissionStatus.GRANTED) Color.Green else Color.Red, CircleShape)); Column(modifier = Modifier.weight(1f)) { Text(text = label, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, lineHeight = 20.sp); Text(text = fixLabel, color = if (status == PermissionStatus.DENIED) MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontWeight = if (status == PermissionStatus.DENIED) FontWeight.Bold else FontWeight.Normal, fontSize = 13.sp, modifier = Modifier.clickable { onFix() }.padding(vertical = 2.dp)) } }
+}
+
+@Composable
+private fun DataCleaningDialog(
+    candidates: List<SearchItem>,
+    onDismiss: () -> Unit,
+    onNavigateToDate: (LocalDate) -> Unit,
+    onDeleteCandidate: (SearchItem) -> Unit,
+    onDeleteAll: () -> Unit,
+    onScan: (() -> Unit) -> Unit
+) {
+    var isScanning by remember { mutableStateOf(false) }
+    var scanFinishedTrigger by remember { mutableIntStateOf(0) }
+    var statusMessage by remember { mutableStateOf<String?>(null) }
+    var lastKnownMessage by remember { mutableStateOf("") }
+    
+    if (statusMessage != null) lastKnownMessage = statusMessage!!
+
+    LaunchedEffect(isScanning, scanFinishedTrigger) {
+        if (isScanning) {
+            statusMessage = "Analizando datos..."
+        } else if (scanFinishedTrigger > 0) {
+            statusMessage = "Análisis finalizado"
+            delay(5000.milliseconds)
+            statusMessage = null
+        }
+    }
+
+    val messageAlpha by animateFloatAsState(
+        targetValue = if (statusMessage != null) 1f else 0f,
+        animationSpec = tween(durationMillis = 800),
+        label = "statusAlpha"
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { 
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    stringResource(id = R.string.data_cleaning_label), 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 20.sp, 
+                    textAlign = TextAlign.Start
+                )
+                // Mensaje fijo que no aumenta la altura del diálogo
+                Text(
+                    text = lastKnownMessage,
+                    fontSize = 12.sp,
+                    color = if (isScanning) CalendarioTheme.colors.textSystem.copy(alpha = 0.6f * messageAlpha) else CalendarioTheme.colors.cabecera.copy(alpha = messageAlpha),
+                    modifier = Modifier.offset(y = (-16).dp)
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints)
+                    val offsetPx = 48.dp.roundToPx() // Sincronizado con SelectCalendarsDialog
+                    layout(placeable.width, placeable.height - offsetPx) {
+                        placeable.placeRelative(0, -offsetPx)
+                    }
+                }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                        val ghostCount = candidates.count { it is SearchItem.Event }
+                        val noteCount = candidates.count { it is SearchItem.Note }
+
+                        if (ghostCount > 0) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_ghost_24),
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = " ($ghostCount)",
+                                fontSize = 14.sp,
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                modifier = Modifier.padding(end = 12.dp)
+                            )
+                        }
+
+                        if (noteCount > 0) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.StickyNote2,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = " ($noteCount)",
+                                fontSize = 14.sp,
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+                            )
+                        }
+
+                        if (ghostCount == 0 && noteCount == 0) {
+                            Text(
+                                text = "0",
+                                fontSize = 14.sp,
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+
+                    TextButton(
+                        onClick = { 
+                            isScanning = true
+                            onScan { 
+                                isScanning = false 
+                                scanFinishedTrigger++
+                            } 
+                        },
+                        enabled = !isScanning
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.scan_label), 
+                            color = if (isScanning) Color.Gray else CalendarioTheme.colors.cabecera,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                if (candidates.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.no_results_found),
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(candidates) { item ->
+                            CleaningCandidateRow(
+                                item = item,
+                                onClick = { onNavigateToDate(item.date) },
+                                onDelete = { onDeleteCandidate(item) }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = stringResource(id = R.string.delete_all_events_option).substringBefore(" "), // Reciclando "Eliminar"
+                confirmColor = Color.Red,
+                confirmEnabled = candidates.isNotEmpty(),
+                onConfirm = onDeleteAll,
+                onDismiss = onDismiss
+            )
+        }
+    )
+}
+
+@Composable
+private fun CleaningCandidateRow(
+    item: SearchItem,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    val fmt = remember { DateTimeFormatter.ofPattern("d MMM yyyy", locale) }
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(CalendarioTheme.colors.fondoSecciones)
+            .clickable { onClick() }
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Icono según tipo
+        if (item is SearchItem.Event) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_ghost_24),
+                contentDescription = null,
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.StickyNote2,
+                contentDescription = null,
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        
+        Spacer(modifier = Modifier.width(12.dp))
+        
+        Column(modifier = Modifier.weight(1f)) {
+            val title = when (item) {
+                is SearchItem.Event -> item.festivo.title.ifBlank { stringResource(id = R.string.no_title) }
+                is SearchItem.Note -> stringResource(id = R.string.note_label)
+            }
+            Text(
+                text = title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = CalendarioTheme.colors.textSystem,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = item.date.format(fmt),
+                fontSize = 12.sp,
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+            )
+        }
+        
+        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = null,
+                tint = Color.Red.copy(alpha = 0.7f),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
 }

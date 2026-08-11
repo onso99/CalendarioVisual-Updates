@@ -308,6 +308,8 @@
     <string name="calendar_read_only_error">Calendario de solo lectura</string>
 
     <!-- Idiomas -->
+    <string name="data_cleaning_label">Limpieza de datos</string>
+    <string name="scan_label">Escanear</string>
     <string name="lang_system">Sistema</string>
     <string name="lang_es">Español</string>
     <string name="lang_en">Inglés (English)</string>

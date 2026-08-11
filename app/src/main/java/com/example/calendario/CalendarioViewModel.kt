@@ -32,6 +32,7 @@ data class CalendarioUiState(
     val isSyncing: Boolean = false,
     val isRestoring: Boolean = false,
     val dailyNotes: Map<String, DailyNote> = emptyMap(), // dateStr -> DailyNote
+    val cleaningCandidates: List<SearchItem> = emptyList() // Candidatos para limpieza de datos
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -59,11 +60,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun refreshData() {
-        loadAllData()
+    fun refreshData(onComplete: () -> Unit = {}) {
+        loadAllData(onComplete)
     }
 
-    private fun loadAllData() {
+    private fun loadAllData(onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             val context = getApplication<Application>()
             val hasRead = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
@@ -162,6 +163,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         dailyNotes = notesMap,
                     )
                 }
+                
+                // Actualizar candidatos de limpieza
+                updateCleaningCandidates()
 
                 if (validSelectedIds != selectedIds) {
                     saveSelectedCalendarIds(context, validSelectedIds)
@@ -169,12 +173,14 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 
                 CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                 WidgetStateManager.updateWidgetState(context, finalEventsList)
+                onComplete()
 
             } catch (e: Exception) {
                 if (e !is kotlinx.coroutines.CancellationException) {
                     Log.e("CalendarioViewModel", "Error loading all data", e)
                     Toast.makeText(context, R.string.error_updating_data, Toast.LENGTH_SHORT).show()
                 }
+                onComplete()
             }
         }
     }
@@ -412,6 +418,63 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    private fun updateCleaningCandidates() {
+        val ghosts = _uiState.value.eventsByDate.values.flatten()
+            .filter { it.isGhost }
+            .map { SearchItem.Event(it) }
+        
+        val emptyNotes = _uiState.value.dailyNotes.values
+            .filter { it.content.isBlank() }
+            .map { SearchItem.Note(it) }
+        
+        val candidates = (ghosts + emptyNotes).sortedBy { it.date }
+        _uiState.update { it.copy(cleaningCandidates = candidates) }
+    }
+
+    fun deleteCleaningCandidate(item: SearchItem) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            withContext(Dispatchers.IO) {
+                when (item) {
+                    is SearchItem.Event -> removeEventFromHistory(context, item.festivo.adn)
+                    is SearchItem.Note -> {
+                        val allNotes = loadNotesFromDisk(context).toMutableList()
+                        allNotes.removeAll { it.dateStr == item.dailyNote.dateStr }
+                        saveNotesToDisk(context, allNotes)
+                    }
+                }
+            }
+            refreshData()
+        }
+    }
+
+    fun deleteAllCleaningCandidates() {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            val candidates = _uiState.value.cleaningCandidates
+            if (candidates.isEmpty()) return@launch
+
+            withContext(Dispatchers.IO) {
+                // Borrado de eventos fantasma
+                val eventAdns = candidates.filterIsInstance<SearchItem.Event>().map { it.festivo.adn }.toSet()
+                if (eventAdns.isNotEmpty()) {
+                    val currentHistory = loadHistoryFromDisk(context).toMutableList()
+                    currentHistory.removeAll { it.adn in eventAdns }
+                    saveHistoryToDisk(context, currentHistory)
+                }
+
+                // Borrado de notas vacías
+                val noteDates = candidates.filterIsInstance<SearchItem.Note>().map { it.dailyNote.dateStr }.toSet()
+                if (noteDates.isNotEmpty()) {
+                    val currentNotes = loadNotesFromDisk(context).toMutableList()
+                    currentNotes.removeAll { it.dateStr in noteDates }
+                    saveNotesToDisk(context, currentNotes)
+                }
+            }
+            refreshData()
+        }
+    }
+
     private suspend fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> = withContext(Dispatchers.Default) {
         val context = getApplication<Application>()
         val deletedIds = getDeletedEventIds(context)
@@ -449,10 +512,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
             // 3. RECORTAR VENTANA (JSON Ligero pero inclusivo: 20 años atrás, 6 adelante)
             .filter { it.date.isAfter(today.minusYears(20)) && it.date.isBefore(today.plusYears(6)) }
-            // 4. MARCAR FANTASMAS: Si no está en el sistema y no es festivo manual, es un fantasma
+            // 4. CURACIÓN DE IDENTIDAD Y MARCADO DE FANTASMAS
             .map { event ->
-                if (event.id > 0 && !systemKeys.contains(event.adn)) {
-                    event.copy(isGhost = true)
+                if (event.id > 0) {
+                    val isSystemPresent = systemKeys.contains(event.adn)
+                    // Solo marcamos como fantasma si:
+                    // 1. No está en el sistema (Google)
+                    // 2. Está dentro de la ventana de sincronización de Google (1 año atrás)
+                    // Los eventos más antiguos se consideran "Historial Archivado" legítimo.
+                    val isInSyncWindow = event.date.isAfter(today.minusYears(1))
+                    event.copy(isGhost = isInSyncWindow && !isSystemPresent)
                 } else {
                     event
                 }

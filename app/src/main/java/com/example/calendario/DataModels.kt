@@ -2,6 +2,7 @@ package com.example.calendario
 
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Locale
 
 data class Festivo(
     val id: Long, // eventId para eventos del calendario
@@ -31,7 +32,16 @@ data class Festivo(
     val lastModified: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
     val isGhost: Boolean = false
-)
+) {
+    companion object {
+        fun generateAdn(date: LocalDate, title: String, startTime: LocalTime?): String {
+            val cleanTitle = title.unaccent().trim().lowercase()
+            // Normalizamos la hora a HH:mm (sin segundos ni milisegundos) especificando Locale.US
+            val timeStr = startTime?.let { String.format(Locale.US, "%02d:%02d", it.hour, it.minute) } ?: "null"
+            return "${date}_${cleanTitle}_$timeStr"
+        }
+    }
+}
 
 data class CalendarInfo(
     val id: Long,

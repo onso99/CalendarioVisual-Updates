@@ -145,32 +145,34 @@ fun FestivoDto.toFestivo(): Festivo? {
         else -> null
     } ?: return null // Si no hay fecha, ignoramos este evento (Auto-sanaciÃ³n)
 
-    return Festivo(
-        id = this.id ?: 0L,
-        calendarId = this.calendarId ?: 0L,
-        title = this.title ?: "",
-        description = this.description,
-        date = finalDate,
-        startTime = this.startTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
-        endTime = this.endTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
-        isAllDay = this.isAllDay ?: true,
-        isFromHolidaySource = this.isFromHolidaySource ?: false,
-        rrule = this.rrule,
-        age = this.age,
-        isBirthday = this.isBirthday ?: false,
-        isLongPeriod = this.isLongPeriod ?: false,
-        lane = this.lane,
-        totalDays = this.totalDays ?: 1,
-        currentDay = this.currentDay ?: 1,
-        customColor = this.customColor,
-        fullStartMillis = this.fullStartMillis,
-        fullEndMillis = this.fullEndMillis,
-        repeatCount = this.repeatCount,
-        adn = this.adn ?: "${finalDate}_${(this.title ?: "").trim().lowercase().unaccent()}_${this.startTimeStr}",
-        lastModified = this.lastModified ?: System.currentTimeMillis(),
-        isDeleted = this.isDeleted ?: false
-    )
-}
+        val finalStartTime = this.startTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } }
+        return Festivo(
+            id = this.id ?: 0L,
+            calendarId = this.calendarId ?: 0L,
+            title = this.title ?: "",
+            description = this.description,
+            date = finalDate,
+            startTime = finalStartTime,
+            endTime = this.endTimeStr?.let { try { LocalTime.parse(it) } catch(_: Exception) { null } },
+            isAllDay = this.isAllDay ?: true,
+            isFromHolidaySource = this.isFromHolidaySource ?: false,
+            rrule = this.rrule,
+            age = this.age,
+            isBirthday = this.isBirthday ?: false,
+            isLongPeriod = this.isLongPeriod ?: false,
+            lane = this.lane,
+            totalDays = this.totalDays ?: 1,
+            currentDay = this.currentDay ?: 1,
+            customColor = this.customColor,
+            fullStartMillis = this.fullStartMillis,
+            fullEndMillis = this.fullEndMillis,
+            repeatCount = this.repeatCount,
+            // IGNORAR ADN GUARDADO: Recalculamos siempre para asegurar compatibilidad con el nuevo formato robusto
+            adn = Festivo.generateAdn(finalDate, this.title ?: "", finalStartTime),
+            lastModified = this.lastModified ?: System.currentTimeMillis(),
+            isDeleted = this.isDeleted ?: false
+        )
+    }
 
 // --- GESTIÓN DE BORRADOS (Tombstones) ---
 
@@ -597,18 +599,19 @@ fun readFestivosFromCalendarsSync(
                 val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
                 var currentLoopDate = startDate
                 var dayIndex = 1
-                while (!currentLoopDate.isAfter(endDate)) {
+                while (currentLoopDate.isBefore(endDate.plusDays(1))) {
                     val age = if (finalIsBirthday && birthYear != null) (currentLoopDate.year - birthYear) else null
+                    val startTimeForAdn = if (currentLoopDate == startDate) startTime else null
                     finalMap.getOrPut(currentLoopDate) { mutableListOf() }.add(Festivo(
                         id = eventId, title = title, description = descMap[eventId],
-                        date = currentLoopDate, startTime = if (currentLoopDate == startDate) startTime else null, 
+                        date = currentLoopDate, startTime = startTimeForAdn, 
                         endTime = if (currentLoopDate == endDate) endTime else null,
                         isAllDay = isAllDay || (currentLoopDate != startDate && currentLoopDate != endDate),
                         calendarId = calendarId, isFromHolidaySource = isFromHoliday,
                         rrule = rruleMap[eventId], age = age, isBirthday = finalIsBirthday,
                         isLongPeriod = isLongPeriod, lane = assignedLane, totalDays = totalDaysCount, currentDay = dayIndex,
                         customColor = customColorMap[eventId], fullStartMillis = beginMillis, fullEndMillis = endMillis, repeatCount = extractedCount,
-                        adn = "${currentLoopDate}_${title.trim().lowercase().unaccent()}_${if (currentLoopDate == startDate) startTime else null}"
+                        adn = Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)
                     dayIndex++
@@ -627,7 +630,7 @@ fun readFestivosFromCalendarsSync(
             title = manual.title, description = "Festivo manual", date = manual.date,
             startTime = null, endTime = null, isAllDay = true, calendarId = -1L,
             isFromHolidaySource = true, rrule = null, age = null, isBirthday = false,
-            adn = "${manual.date}_${manual.title.trim().lowercase().unaccent()}_null"
+            adn = Festivo.generateAdn(manual.date, manual.title, null)
         ))
     }
     
