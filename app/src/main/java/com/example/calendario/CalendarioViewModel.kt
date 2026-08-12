@@ -484,16 +484,24 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val adjustments = loadHolidayAdjustments(context)
         val workingDayIds = adjustments.asSequence().filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
 
-        // 1. GENERACIÓN DE CLAVES DE SISTEMA (Para comparación rápida)
-        val systemKeys = systemEvents.asSequence()
-            .map { it.adn }
-            .toSet()
+        // 1. GENERACIÓN DE MAPAS DE SISTEMA PARA CURACIÓN
+        val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
+        
+        // Mapa para curación por similitud (Fecha + Título -> Evento)
+        // Esto permite detectar eventos que han cambiado de hora o calendario
+        val fuzzySystemMap = systemEvents.associateBy { "${it.date}_${it.title.unaccent().trim().lowercase()}" }
 
         // 2. PROCESAMIENTO UNIFICADO CON SECUENCIAS
         // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicación.
         return@withContext (systemEvents + cachedHistory).asSequence()
-            // Deduplicación agresiva por contenido
-            .distinctBy { it.adn }
+            // Deduplicación agresiva:
+            // Intentamos primero por ADN exacto, y si no, por Similitud (Fuzzy)
+            .distinctBy { event ->
+                val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
+                if (systemKeys.contains(event.adn)) event.adn 
+                else if (fuzzySystemMap.containsKey(fuzzyKey)) fuzzyKey
+                else event.adn
+            }
             .filter { event ->
                 // A) Filtro de Seguridad: No recuperar si está marcado como borrado o laborable
                 if ((event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
@@ -519,9 +527,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     // Solo marcamos como fantasma si:
                     // 1. No está en el sistema (Google)
                     // 2. Está dentro de la ventana de sincronización de Google (1 año atrás)
-                    // Los eventos más antiguos se consideran "Historial Archivado" legítimo.
+                    // 3. NO es un evento recurrente (las series gestionan sus propias instancias)
                     val isInSyncWindow = event.date.isAfter(today.minusYears(1))
-                    event.copy(isGhost = isInSyncWindow && !isSystemPresent)
+                    val isRecurring = event.rrule != null
+                    event.copy(isGhost = isInSyncWindow && !isSystemPresent && !isRecurring)
                 } else {
                     event
                 }

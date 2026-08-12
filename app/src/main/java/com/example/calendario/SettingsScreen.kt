@@ -1154,13 +1154,6 @@ private fun DataCleaningDialog(
                             )
                         }
 
-                        if (ghostCount == 0 && noteCount == 0) {
-                            Text(
-                                text = "0",
-                                fontSize = 14.sp,
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
-                            )
-                        }
                     }
 
                     TextButton(
@@ -1186,7 +1179,7 @@ private fun DataCleaningDialog(
                 
                 if (candidates.isEmpty()) {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(100.dp),
+                        modifier = Modifier.fillMaxWidth().height(60.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

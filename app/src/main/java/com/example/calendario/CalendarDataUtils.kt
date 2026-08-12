@@ -198,15 +198,17 @@ fun clearDeletedEventIds(context: Context) {
  */
 fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festivo>): Pair<List<Festivo>, Int> {
     val deletedIds = getDeletedEventIds(context)
-    val allEvents = (local + remote).groupBy { it.id }
+    // FUSIÓN POR ADN: Ignoramos el ID numérico que puede cambiar entre dispositivos
+    val allEvents = (local + remote).groupBy { it.adn }
     
     val result = mutableListOf<Festivo>()
     var purgedCount = 0
 
-    allEvents.forEach { (id, versions) ->
+    allEvents.forEach { (_, versions) ->
         val newest = versions.maxByOrNull { it.lastModified }
         if (newest != null) {
-            if (newest.isDeleted || id in deletedIds) {
+            // Si el sistema lo tiene marcado como borrado (por ID o ADN), lo purgamos
+            if (newest.isDeleted || newest.id in deletedIds) {
                 purgedCount++
             } else {
                 result.add(newest)

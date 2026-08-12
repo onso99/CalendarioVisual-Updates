@@ -1,3 +1,5 @@
+2026-08-12 - v2.1.83 Corregida importación/exportación de datos
+2026-08-11 - v2.1.82 Cadenas propagadas al resto de idiomas
 2026-08-11 - v2.1.81 Limpieza de datos: corrección de interface, mensajes informativos
 2026-08-10 - v2.1.80 Eliminación de eventos huérfanos/fantasma
 2026-08-10 - v2.1.79 Notas: ampliadas de 140 a 200 caracteres, 4 líneas
