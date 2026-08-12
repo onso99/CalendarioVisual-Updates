@@ -1182,10 +1182,26 @@ private fun DataCleaningDialog(
                         modifier = Modifier.fillMaxWidth().height(60.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.no_results_found),
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.cabecera,
+                                modifier = Modifier.size(20.dp).padding(top = 2.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.no_cleaning_results),
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                                fontSize = 14.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 } else {
                     LazyColumn(

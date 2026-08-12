@@ -314,6 +314,7 @@
     <string name="scan_label">Escanejar</string>
     <string name="analyzing_data">Analitzant dades…</string>
     <string name="analysis_finished">Anàlisi finalitzada</string>
+    <string name="no_cleaning_results">Integritat de dades verificada</string>
     <string name="lang_system">Sistema</string>
     <string name="lang_es">Espanyol (Español)</string>
     <string name="lang_en">Anglès (English)</string>

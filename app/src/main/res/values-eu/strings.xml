@@ -312,6 +312,7 @@
     <string name="scan_label">Eskaneatu</string>
     <string name="analyzing_data">Datuak analizatzen…</string>
     <string name="analysis_finished">Analisia amaitu da</string>
+    <string name="no_cleaning_results">Datu-osotasuna egiaztatuta</string>
     <string name="lang_system">Sistema</string>
     <string name="lang_es">Gaztelania (Español)</string>
     <string name="lang_en">Ingelesa (English)</string>

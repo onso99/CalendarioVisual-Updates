@@ -314,6 +314,7 @@
     <string name="scan_label">Scan</string>
     <string name="analyzing_data">Analyzing data…</string>
     <string name="analysis_finished">Analysis finished</string>
+    <string name="no_cleaning_results">Data integrity verified</string>
     <string name="lang_system">System</string>
     <string name="lang_es">Spanish (Español)</string>
     <string name="lang_en">English</string>

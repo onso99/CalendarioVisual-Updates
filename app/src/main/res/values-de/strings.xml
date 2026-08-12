@@ -313,6 +313,7 @@
     <string name="scan_label">Scannen</string>
     <string name="analyzing_data">Daten werden analysiert…</string>
     <string name="analysis_finished">Analyse abgeschlossen</string>
+    <string name="no_cleaning_results">Datenintegrität überprüft</string>
     <string name="lang_system">System</string>
     <string name="lang_es">Spanisch (Español)</string>
     <string name="lang_en">Englisch (English)</string>
