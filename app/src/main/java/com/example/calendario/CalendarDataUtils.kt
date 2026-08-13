@@ -42,6 +42,15 @@ fun removeEventFromHistory(context: Context, eventAdn: String) {
     }
 }
 
+fun removeSeriesFromHistory(context: Context, eventId: Long) {
+    if (eventId <= 0) return // No aplica a festivos manuales
+    val currentHistory = loadHistoryFromDisk(context).toMutableList()
+    val removed = currentHistory.removeAll { it.id == eventId }
+    if (removed) {
+        saveHistoryToDisk(context, currentHistory)
+    }
+}
+
 fun loadHistoryFromDisk(context: Context): List<Festivo> {
     return try {
         val file = context.getFileStreamPath(HISTORY_FILE_NAME)

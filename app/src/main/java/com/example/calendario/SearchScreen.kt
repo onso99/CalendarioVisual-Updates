@@ -310,7 +310,8 @@ fun SearchScreen(
                                 // Si el sistema lo borró o si no lo encontró (fantasma), limpiamos historial
                                 if (rows > 0 || festivo.id > 0) {
                                     markEventAsDeleted(context, festivo.id)
-                                    removeEventFromHistory(context, festivo.adn)
+                                    // Limpiamos rastro total por si era una serie o excepción
+                                    removeSeriesFromHistory(context, festivo.id)
                                     deletedCount++
                                 }
                             } catch (_: Exception) {

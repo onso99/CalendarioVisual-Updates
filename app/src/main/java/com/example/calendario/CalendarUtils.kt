@@ -191,9 +191,8 @@ fun deleteEvent(context: Context, event: Festivo) {
             
             // Registrar borrado para sincronización futura
             markEventAsDeleted(context, eventId)
-            removeEventFromHistory(context, event.adn)
-            // Registrar borrado para sincronización futura
-            markEventAsDeleted(context, eventId)
+            // LIMPIEZA TOTAL: Borramos todas las instancias que compartan este ID (incluyendo excepciones)
+            removeSeriesFromHistory(context, eventId)
 
             // Forzar actualización del widget tras eliminar un evento
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
@@ -255,6 +254,9 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
         if (uri != null) {
             // Forzar actualización del widget tras cancelar una instancia
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+
+            // Limpiamos también esta instancia específica del historial JSON
+            removeEventFromHistory(context, eventToCancel.adn)
 
             // Cancelamos la alarma asociada si existe
             AlarmUtils.cancelAlarm(context, eventToCancel.id)

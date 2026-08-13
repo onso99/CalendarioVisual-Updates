@@ -1,3 +1,4 @@
+2026-08-12 - v2.1.84 Diálogo limpieza de datos corregido y expandido al resto de idiomas
 2026-08-12 - v2.1.83 Corregida importación/exportación de datos
 2026-08-11 - v2.1.82 Cadenas propagadas al resto de idiomas
 2026-08-11 - v2.1.81 Limpieza de datos: corrección de interface, mensajes informativos
