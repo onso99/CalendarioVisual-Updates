@@ -108,12 +108,12 @@ object ThemePersistence {
                 // Light
                 if (item.lightThemeKey.isNotBlank()) {
                     val lightColor = prefs.getInt(item.lightThemeKey, item.defaultLight.toArgb())
-                    lightTheme.put(item.lightThemeKey, String.format("#%08X", lightColor))
+                    lightTheme.put(item.lightThemeKey, String.format(java.util.Locale.US, "#%08X", lightColor))
                 }
                 // Dark
                 if (item.darkThemeKey.isNotBlank()) {
                     val darkColor = prefs.getInt(item.darkThemeKey, item.defaultDark.toArgb())
-                    darkTheme.put(item.darkThemeKey, String.format("#%08X", darkColor))
+                    darkTheme.put(item.darkThemeKey, String.format(java.util.Locale.US, "#%08X", darkColor))
                 }
             }
 

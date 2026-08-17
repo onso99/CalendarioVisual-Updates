@@ -37,9 +37,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +67,7 @@ fun ColorThemeScreen(
     var showColorPicker by remember { mutableStateOf(value = false) }
     var pendingItem by remember { mutableStateOf<ColorThemeItem?>(null) }
     var updateTrigger by remember { mutableIntStateOf(0) }
+    var showEffectExpand by remember { mutableStateOf(false) }
 
     val effectType = remember(updateTrigger) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
     val dividerColor = CalendarioTheme.colors.settingsBackground
@@ -92,25 +97,49 @@ fun ColorThemeScreen(
             // --- BLOQUE 1: TEMA ---
             SectionTitle(stringResource(id = R.string.theme_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                val themeItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Tema" }
+                val themeItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Tema" && it.labelRes != R.string.calendar_background }
                 themeItems.forEachIndexed { index, item ->
                     val currentColor = getThemeColor(prefs, if (isAppDark) item.darkThemeKey else item.lightThemeKey, if (isAppDark) item.defaultDark else item.defaultLight)
                     
                     if (item.labelRes == R.string.effect) {
+                        val backgroundItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.calendar_background }!!
+                        val color1 = getThemeColor(prefs, if (isAppDark) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey, if (isAppDark) backgroundItem.defaultDark else backgroundItem.defaultLight)
+
                         EffectColorThemeRow(
                             label = stringResource(id = item.labelRes),
-                            color = currentColor,
+                            color1 = color1,
+                            color2 = currentColor,
                             effectType = effectType,
+                            isExpanded = showEffectExpand,
+                            onExpandClick = { showEffectExpand = !showEffectExpand },
                             onEffectChange = { newType ->
                                 prefs.edit { putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, newType) }
                                 ThemePersistence.markThemeAsModified(prefs)
                                 onThemeModified()
                                 updateTrigger++
+                            },
+                            onColor1Click = {
+                                pendingItem = backgroundItem
+                                showColorPicker = true
+                            },
+                            onColor2Click = {
+                                pendingItem = item
+                                showColorPicker = true
+                            },
+                            onExchange = {
+                                val key1 = if (isAppDark) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey
+                                val key2 = if (isAppDark) item.darkThemeKey else item.lightThemeKey
+                                val c1 = color1.toArgb()
+                                val c2 = currentColor.toArgb()
+                                prefs.edit {
+                                    putInt(key1, c2)
+                                    putInt(key2, c1)
+                                }
+                                ThemePersistence.markThemeAsModified(prefs)
+                                onThemeModified()
+                                updateTrigger++
                             }
-                        ) {
-                            pendingItem = item
-                            showColorPicker = true
-                        }
+                        )
                     } else {
                         SingleColorThemeRow(
                             label = stringResource(id = item.labelRes),
@@ -253,78 +282,115 @@ private fun SingleColorThemeRow(
 @Composable
 private fun EffectColorThemeRow(
     label: String,
-    color: Color,
+    color1: Color,
+    color2: Color,
     effectType: String,
+    isExpanded: Boolean,
+    onExpandClick: () -> Unit,
     onEffectChange: (String) -> Unit,
-    onColorClick: () -> Unit
+    onColor1Click: () -> Unit,
+    onColor2Click: () -> Unit,
+    onExchange: () -> Unit
 ) {
-    var labelFontSize by remember { mutableStateOf(16.sp) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            color = CalendarioTheme.colors.textSystem,
-            fontSize = labelFontSize,
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1.2f),
-            onTextLayout = { textLayoutResult ->
-                if (textLayoutResult.hasVisualOverflow && labelFontSize > 11.sp) {
-                    labelFontSize = (labelFontSize.value - 1f).sp
-                }
-            }
-        )
-
+    Column {
         Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.Center
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .clickable { onExpandClick() }
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
-            val baseColor = CalendarioTheme.colors.fondoSecciones
-            val activeColor = CalendarioTheme.colors.cabecera
+            Text(
+                text = label,
+                color = CalendarioTheme.colors.textSystem,
+                fontSize = 16.sp,
+                modifier = Modifier.weight(1f)
+            )
 
+            Icon(
+                imageVector = if (isExpanded) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        if (isExpanded) {
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(baseColor.copy(alpha = 0.5f))
-                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                options.forEach { (type, text) ->
-                    val isSelected = effectType == type
+                // 1. Selector de efecto [0 1 2]
+                val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
+                val baseColor = CalendarioTheme.colors.fondoSecciones
+                val activeColor = CalendarioTheme.colors.cabecera
+                val innerHeight = 32.dp
 
-                    val containerColor = if (isSelected) activeColor else Color.Transparent
-                    val textColor = if (isSelected) {
-                        if (isColorDark(activeColor, baseColor)) Color.White else Color.Black
-                    } else {
-                        val hsl = FloatArray(3)
-                        ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
-                        val isDark = hsl[2] < 0.5f
-                        hsl[2] = if (isDark) (hsl[2] + 0.2f).coerceIn(0f, 1f) else (hsl[2] - 0.2f).coerceIn(0f, 1f)
-                        Color(ColorUtils.HSLToColor(hsl))
-                    }
+                Row(
+                    modifier = Modifier
+                        .height(innerHeight)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(baseColor.copy(alpha = 0.5f))
+                        .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                ) {
+                    options.forEach { (type, text) ->
+                        val isSelected = effectType == type
+                        val containerColor = if (isSelected) activeColor else Color.Transparent
+                        val textColor = if (isSelected) {
+                            if (isColorDark(activeColor, baseColor)) Color.White else Color.Black
+                        } else {
+                            CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                        }
 
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(containerColor)
-                            .clickable { onEffectChange(type) }
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
-                    ) {
-                        Text(text, color = textColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Box(
+                            modifier = Modifier
+                                .height(innerHeight)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(containerColor)
+                                .clickable { onEffectChange(type) }
+                                .padding(horizontal = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text, color = textColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        }
                     }
+                }
+
+                // 2. Simulación
+                val previewBrush = when (effectType) {
+                    "gradient" -> Brush.verticalGradient(listOf(color1, color2))
+                    "sweep" -> Brush.verticalGradient(listOf(color1, color2, color1))
+                    else -> androidx.compose.ui.graphics.SolidColor(color1)
+                }
+                
+                Box(
+                    modifier = Modifier
+                        .size(innerHeight)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(previewBrush)
+                        .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                )
+
+                // 3. Colores + Intercambio
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ColorBox(color = color1, onClick = onColor1Click)
+                    IconButton(onClick = onExchange, modifier = Modifier.padding(horizontal = 2.dp).size(32.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.SwapHoriz,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    ColorBox(color = color2, onClick = onColor2Click)
                 }
             }
         }
-
-        Spacer(modifier = Modifier.width(12.dp))
-        ColorBox(color = color, onClick = onColorClick)
     }
 }
 
