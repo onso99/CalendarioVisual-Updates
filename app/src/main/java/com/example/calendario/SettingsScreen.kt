@@ -799,8 +799,8 @@ private fun AlarmConfigDialog(anticipation: Float, snooze: Float, onConfirm: (Fl
                     Slider(
                         value = tempSnooze, 
                         onValueChange = { tempSnooze = it }, 
-                        valueRange = 5f..60f, 
-                        steps = 10, 
+                        valueRange = 10f..60f, 
+                        steps = 4,
                         modifier = Modifier.weight(1f),
                         colors = SliderDefaults.colors(
                             thumbColor = CalendarioTheme.colors.cabecera,
