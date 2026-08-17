@@ -308,8 +308,8 @@ fun SettingsScreen(
     val widgetCalendarSummary = "(${currentWidgetIds.size})"
     
     var pendingAlarmOffset by remember { 
-        val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 20) } 
-                catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET]?.toString()?.toIntOrNull() ?: 20 }
+        val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 30) } 
+                catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET]?.toString()?.toIntOrNull() ?: 30 }
         mutableFloatStateOf(v.toFloat()) 
     }
     var pendingSnoozeInterval by remember { 
@@ -782,8 +782,8 @@ private fun AlarmConfigDialog(anticipation: Float, snooze: Float, onConfirm: (Fl
                     Slider(
                         value = tempAnticipation, 
                         onValueChange = { tempAnticipation = it }, 
-                        valueRange = 0f..120f, 
-                        steps = 23, 
+                        valueRange = 0f..60f, 
+                        steps = 5,
                         modifier = Modifier.weight(1f),
                         colors = SliderDefaults.colors(
                             thumbColor = CalendarioTheme.colors.cabecera,
