@@ -456,9 +456,9 @@ fun AddEventScreen(
                             // Para eventos con hora, aplicamos la anticipación configurada
                             val calculatedTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
                             val now = LocalTime.now()
-                            // Si la hora calculada ya pasó, sugerimos 10 min desde ahora
-                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate() == LocalDate.now()) {
-                                now.plusMinutes(10).withSecond(0).withNano(0)
+                            // Lógica Conservadora: Si la anticipación ya pasó, sugerimos la hora de inicio
+                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate().isEqual(LocalDate.now())) {
+                                startDate.toLocalTime().withSecond(0).withNano(0)
                             } else {
                                 calculatedTime.withSecond(0).withNano(0)
                             }
@@ -478,8 +478,9 @@ fun AddEventScreen(
                         } else {
                             val calculatedTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
                             val now = LocalTime.now()
-                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate() == LocalDate.now()) {
-                                now.plusMinutes(10).withSecond(0).withNano(0)
+                            // Lógica Conservadora: Si la anticipación ya pasó, sugerimos la hora de inicio
+                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate().isEqual(LocalDate.now())) {
+                                startDate.toLocalTime().withSecond(0).withNano(0)
                             } else {
                                 calculatedTime.withSecond(0).withNano(0)
                             }

@@ -159,6 +159,8 @@
     <string name="error">Fehler</string>
     <string name="no_calendar_selected_error">Kein Kalender ausgewählt. Bitte wählen Sie einen Kalender zum Speichern des Ereignisses aus.</string>
     <string name="title_empty_error">Titel darf nicht leer sein. Bitte geben Sie einen Titel für das Ereignis ein.</string>
+    <string name="alarm_after_start_warning">Alarm ertönt nach dem Start</string>
+    <string name="alarm_after_end_warning">Alarm ertönt nach dem Ende</string>
 
     <string name="event_saved_successfully">Ereignis gespeichert</string>
     <string name="error_saving_event">Fehler beim Speichern des Ereignisses. Überprüfen Sie die ausgewählten Kalender.</string>

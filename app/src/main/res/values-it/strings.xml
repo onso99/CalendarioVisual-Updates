@@ -159,6 +159,8 @@
     <string name="error">Errore</string>
     <string name="no_calendar_selected_error">Nessun calendario selezionato. Scegli un calendario per salvare l\'evento.</string>
     <string name="title_empty_error">Il titolo non può essere vuoto. Inserisci un titolo per l\'evento.</string>
+    <string name="alarm_after_start_warning">L\'allarme suonerà dopo l\'inizio</string>
+    <string name="alarm_after_end_warning">L\'allarme suonerà dopo la fine</string>
 
     <string name="event_saved_successfully">Evento salvato</string>
     <string name="error_saving_event">Errore durante il salvataggio dell\'evento. Controlla i calendari selezionati.</string>

@@ -159,6 +159,8 @@
     <string name="error">Ошибка</string>
     <string name="no_calendar_selected_error">Календарь не выбран. Пожалуйста, выберите календарь для сохранения события.</string>
     <string name="title_empty_error">Название не может быть пустым. Пожалуйста, введите название события.</string>
+    <string name="alarm_after_start_warning">Будильник прозвучит после начала</string>
+    <string name="alarm_after_end_warning">Будильник прозвучит после окончания</string>
 
     <string name="event_saved_successfully">Событие сохранено</string>
     <string name="error_saving_event">Ошибка при сохранении события. Проверьте выбранные календари.</string>

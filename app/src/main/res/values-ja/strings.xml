@@ -159,6 +159,8 @@
     <string name="error">エラー</string>
     <string name="no_calendar_selected_error">カレンダーが選択されていません。保存するカレンダーを選択してください。</string>
     <string name="title_empty_error">タイトルは必須です。タイトルを入力してください。</string>
+    <string name="alarm_after_start_warning">アラームは開始後に鳴ります</string>
+    <string name="alarm_after_end_warning">アラームは終了後に鳴ります</string>
 
     <string name="event_saved_successfully">イベントを保存しました</string>
     <string name="error_saving_event">イベントの保存中にエラーが発生しました。</string>

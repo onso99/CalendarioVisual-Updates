@@ -159,6 +159,8 @@
     <string name="error">错误</string>
     <string name="no_calendar_selected_error">未选择日历。请选择一个日历来保存事件。</string>
     <string name="title_empty_error">标题不能为空。请输入事件标题。</string>
+    <string name="alarm_after_start_warning">闹钟将在开始后响铃</string>
+    <string name="alarm_after_end_warning">闹钟将在结束后响铃</string>
 
     <string name="event_saved_successfully">事件已保存</string>
     <string name="error_saving_event">保存事件出错。请检查所选日历。</string>

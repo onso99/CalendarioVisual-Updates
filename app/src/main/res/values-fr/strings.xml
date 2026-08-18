@@ -159,6 +159,8 @@
     <string name="error">Erreur</string>
     <string name="no_calendar_selected_error">Aucun calendrier sélectionné. Veuillez choisir un calendrier pour enregistrer l\'événement.</string>
     <string name="title_empty_error">Le titre ne peut pas être vide. Veuillez saisir un titre pour l\'événement.</string>
+    <string name="alarm_after_start_warning">L\'alarme sonnera après le début</string>
+    <string name="alarm_after_end_warning">L\'alarme sonnera après la fin</string>
 
     <string name="event_saved_successfully">Événement enregistré</string>
     <string name="error_saving_event">Erreur lors de l\'enregistrement de l\'événement. Vérifiez les calendriers sélectionnés.</string>

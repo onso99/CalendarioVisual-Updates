@@ -159,6 +159,8 @@
     <string name="error">Errorea</string>
     <string name="no_calendar_selected_error">Ez da egutegirik hautatu. Mesedez, aukeratu egutegi bat gertaera gordetzeko.</string>
     <string name="title_empty_error">Izenburua ezin da hutsik egon. Mesedez, idatzi gertaeraren izenburua.</string>
+    <string name="alarm_after_start_warning">Alarma hasieraren ondoren hasiko da</string>
+    <string name="alarm_after_end_warning">Alarma amaieraren ondoren hasiko da</string>
 
     <string name="event_saved_successfully">Gertaera gorde da</string>
     <string name="error_saving_event">Errorea gertaera gordetzean. Egiaztatu hautatutako egutegiak.</string>

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -373,52 +374,101 @@ fun AddEventForm(
                 }
             }
 
-            // --- Alarm Section (Nuevo diseÃ±o compacto) ---
+            // --- Alarm Section (Nuevo diseño compacto) ---
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onAlarmTimeClick)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(id = R.string.alarm), 
-                    modifier = Modifier.weight(1f), 
-                    color = CalendarioTheme.colors.textSystem
-                )
-                
-                if (hasAlarm) {
-                    // Botón X para eliminar
-                    IconButton(
-                        onClick = { onHasAlarmChange(false) },
-                        modifier = Modifier.size(28.dp)
-                    ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.alarm), 
+                        modifier = Modifier.weight(1f), 
+                        color = CalendarioTheme.colors.textSystem
+                    )
+                    
+                    if (hasAlarm) {
+                        // Botón X para eliminar
+                        IconButton(
+                            onClick = { onHasAlarmChange(false) },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.width(16.dp))
+                        
+                        // Valor de la hora
+                        Text(
+                            text = alarmTime.format(timeFormatter),
+                            color = CalendarioTheme.colors.textSystem,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp
+                        )
+                    } else {
+                        // Solo flecha si no hay valor
                         Icon(
-                            imageVector = Icons.Default.Close,
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                            modifier = Modifier.size(18.dp)
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                            modifier = Modifier.size(24.dp)
                         )
                     }
+                }
+
+                // Aviso de Alarma Posterior (Solo para eventos con hora)
+                if (hasAlarm && !isAllDay) {
+                    val alarmDateTime = LocalDateTime.of(startDate.toLocalDate(), alarmTime)
+                    // Si la alarma parece estar antes del inicio pero el inicio es muy tarde (ej: 23:00) 
+                    // y la alarma muy pronto (ej: 01:00), asumimos que la alarma es del día siguiente.
+                    val finalAlarmDateTime = if (alarmTime.isBefore(startDate.toLocalTime()) && startDate.hour > 20 && alarmTime.hour < 6) {
+                        alarmDateTime.plusDays(1)
+                    } else {
+                        alarmDateTime
+                    }
+
+                    val isAfterEnd = finalAlarmDateTime.isAfter(endDate)
+                    val isAfterStart = finalAlarmDateTime.isAfter(startDate)
                     
-                    Spacer(modifier = Modifier.width(16.dp))
-                    
-                    // Valor de la hora
-                    Text(
-                        text = alarmTime.format(timeFormatter),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    )
-                } else {
-                    // Solo flecha si no hay valor
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
+                    if (isAfterStart) {
+                        val warningColor = if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.White)) {
+                            Color(0xFFFFA500) // Naranja brillante para modo oscuro
+                        } else {
+                            Color(0xFFC45100) // Naranja tostado más oscuro para modo claro
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = warningColor,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(id = if (isAfterEnd) R.string.alarm_after_end_warning else R.string.alarm_after_start_warning),
+                                color = warningColor,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
             }
         }

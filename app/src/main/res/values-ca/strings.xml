@@ -159,6 +159,8 @@
     <string name="error">Error</string>
     <string name="no_calendar_selected_error">No s\'ha seleccionat cap calendari. Si us plau, tria un calendari per desar l\'esdeveniment.</string>
     <string name="title_empty_error">El títol no pot estar buit. Si us plau, introdueix un títol per a l\'esdeveniment.</string>
+    <string name="alarm_after_start_warning">L\'alarma sonarà després de l\'inici</string>
+    <string name="alarm_after_end_warning">L\'alarma sonarà després del fi</string>
 
     <string name="event_saved_successfully">Esdeveniment desat</string>
     <string name="error_saving_event">Error en desar l\'esdeveniment. Comprova els calendaris seleccionats.</string>
