@@ -56,12 +56,21 @@ object AlarmUtils {
 
         if (alarmMillis <= now) return
 
-        // VENTANA DE 3 DÍAS: Evita el spam de alarmas lejanas
-        val threeDaysOut = now + (3L * 24 * 60 * 60 * 1000)
-        if (alarmMillis > threeDaysOut) return
+        // VENTANA DE 7 DÍAS: Registramos la alarma en el sistema para que Android gestione el icono
+        val sevenDaysOut = now + (7L * 24 * 60 * 60 * 1000)
+        if (alarmMillis > sevenDaysOut) return
 
         try {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            
+            // Verificación de permiso de sistema (Android 12+)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    LogCollector.addLog("ALARMA: Sin permiso EXACT_ALARM para '${event.title}'")
+                    return
+                }
+            }
+
             val requestCode = getUniqueRequestCode(event.id, event.date)
 
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -91,11 +100,15 @@ object AlarmUtils {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
-            // 2. Intent de visualización (Usamos el oficial de apertura de la app)
-            val showIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            // 2. Intent de visualización (DNI absoluto para el sistema)
+            val showIntent = Intent("android.intent.action.SHOW_ALARMS").apply {
+                setPackage(context.packageName)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            
             val showPendingIntent = PendingIntent.getActivity(
                 context,
-                0, // Código 0 para el intent principal
+                requestCode,
                 showIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
@@ -103,7 +116,8 @@ object AlarmUtils {
             val info = AlarmManager.AlarmClockInfo(alarmMillis, showPendingIntent)
             alarmManager.setAlarmClock(info, receiverPendingIntent)
             
-            LogCollector.addLog("ALARMA: PROGRAMADA -> '${event.title}' para el ${event.date} a las ${alarmDateTime.toLocalTime()}")
+            val timeStr = alarmDateTime.toLocalTime().toString().take(5)
+            LogCollector.addLog("ALARMA: SISTEMA -> '${event.title}' ($timeStr) [Icono solicitado]")
             
         } catch (e: Exception) {
             LogCollector.addLog("ALARMA: ERROR en ID ${event.id}: ${e.message}")
@@ -236,8 +250,8 @@ object AlarmUtils {
             }
         }
 
-        // 2. SINCRONIZACIÓN DE VENTANA (7 DÍAS)
-        LogCollector.addLog("ALARMA: Sincronizando ventana de 7 días...")
+        // 2. SINCRONIZACIÓN DE VENTANA (7 DÍAS para lógica, 2h para Icono)
+        LogCollector.addLog("ALARMA: Sincronizando ventana...")
         var count = 0
         allEvents.forEach { event ->
             if (getAlarmOffset(context, event.id) != null) {
@@ -247,7 +261,7 @@ object AlarmUtils {
                     LocalDateTime.of(event.date, event.startTime)
                 }
                 
-                // Solo programamos si es futuro
+                // Solo programamos si es futuro (la función scheduleAlarm ya filtrará las 2h para el icono)
                 if (referenceDateTime.isAfter(now)) {
                     cancelAlarm(context, event.id, event.date)
                     scheduleAlarm(context, event)

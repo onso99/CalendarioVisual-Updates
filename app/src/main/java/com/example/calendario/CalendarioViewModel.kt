@@ -522,18 +522,22 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 else event.adn
             }
             .filter { event ->
-                // A) Filtro de Seguridad: No recuperar si está marcado como borrado o laborable
-                if ((event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
+                // A) Filtro de Seguridad: No recuperar si está marcado como borrado (físico o lógico) o laborable
+                if (event.isDeleted || (event.id in deletedIds) || workingDayIds.contains(event.id)) return@filter false
 
                 // B) Lógica de Resurrección Inteligente:
-                // Si el evento NO está en el sistema pero SI en el historial...
-                if (!systemKeys.contains(event.adn)) {
+                // Si el evento NO está en el sistema (por ADN ni por Similitud)...
+                val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
+                val isPresentInSystem = systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)
+
+                if (!isPresentInSystem) {
                     // Si es un festivo manual (ID < 0), solo lo mantenemos si es FRESCO (systemEvents lo trae)
                     if (event.id < 0) return@filter false
                     
                     // Si es un evento de Google (ID >= 0) y es FUTURO o muy reciente, 
                     // confiamos en que si Google no lo trae es porque se ha BORRADO.
-                    if (event.date.isAfter(today.minusDays(7))) return@filter false
+                    val isRecentOrFuture = event.date.isAfter(today.minusDays(7))
+                    if (isRecentOrFuture) return@filter false
                 }
                 true
             }

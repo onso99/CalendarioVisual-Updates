@@ -48,9 +48,8 @@ object WidgetStateManager {
 
     fun refreshWithCurrentEvents(context: Context) {
         updateJob?.cancel()
-        // CORRECCIÃ“N: Leemos del cachÃ© de eventos de la App, no del historial de la nube
-        val eventsMap = loadEventsFromPrefs(context)
-        val allEvents = eventsMap.values.flatten()
+        // CORRECCIÓN: Leemos del historial JSON real (Notario), no de las Prefs antiguas
+        val allEvents = loadHistoryFromDisk(context)
         
         updateJob = scope.launch {
             performUpdate(context, allEvents)
@@ -83,13 +82,23 @@ object WidgetStateManager {
         return events.asSequence()
             .filter { event ->
                 // FILTRO DE CALENDARIOS: 
-                // Si el widget tiene selección propia, usamos la intersección con la App.
-                // Si el widget no tiene selección (vacío), mostramos todo lo de la App.
+                // 1. Si el widget tiene selección propia, debe ser respetada.
+                // 2. Si esa selección es "basura" (IDs viejos de backup), detectamos la falta de intersección.
                 if (widgetSelectedIds.isNotEmpty()) {
-                    val isCalendarActiveInApp = appActiveIds.contains(event.calendarId) || event.calendarId == -1L
-                    val isCalendarSelectedInWidget = widgetSelectedIds.contains(event.calendarId)
-                    if (!isCalendarActiveInApp || !isCalendarSelectedInWidget) return@filter false
+                    // Si el ID del evento no está en la selección del widget -> Ocultar
+                    // EXCEPCIÓN: Si la selección del widget no tiene NADA que ver con los calendarios activos de la App,
+                    // es una señal clara de que los IDs han cambiado (Backup). En ese caso, mostramos todo por seguridad.
+                    val hasValidOverlap = widgetSelectedIds.any { id -> appActiveIds.contains(id) || id == -1L }
+                    
+                    if (hasValidOverlap) {
+                        val isCalendarSelectedInWidget = widgetSelectedIds.contains(event.calendarId)
+                        if (!isCalendarSelectedInWidget) return@filter false
+                    }
                 }
+                
+                // Además, siempre respetamos lo que el usuario haya desactivado en la App principal
+                val isCalendarActiveInApp = appActiveIds.contains(event.calendarId) || event.calendarId == -1L
+                if (!isCalendarActiveInApp) return@filter false
 
                 // REGLA DE ORO: Si es hoy, se queda. Si es futuro, se queda.
                 // Usamos la misma lógica que el widget clásico para evitar discrepancias.
