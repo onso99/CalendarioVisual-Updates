@@ -80,7 +80,8 @@ data class FestivoDto(
     val adn: String? = null,
     // --- Campos para SincronizaciÃ³n Segura ---
     val lastModified: Long? = null,
-    val isDeleted: Boolean? = false
+    val isDeleted: Boolean? = false,
+    val isGhost: Boolean? = false
 )
 
 data class HolidayAdjustment(

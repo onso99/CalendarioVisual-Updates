@@ -126,7 +126,8 @@ fun Festivo.toDto() = FestivoDto(
     adn = this.adn,
     dateStr = this.date.toString(), // Guardamos la fecha explícita
     lastModified = this.lastModified,
-    isDeleted = this.isDeleted
+    isDeleted = this.isDeleted,
+    isGhost = this.isGhost
 )
 
 fun DailyNote.toDto() = DailyNoteDto(
@@ -179,7 +180,8 @@ fun FestivoDto.toFestivo(): Festivo? {
             // IGNORAR ADN GUARDADO: Recalculamos siempre para asegurar compatibilidad con el nuevo formato robusto
             adn = Festivo.generateAdn(finalDate, this.title ?: "", finalStartTime),
             lastModified = this.lastModified ?: System.currentTimeMillis(),
-            isDeleted = this.isDeleted ?: false
+            isDeleted = this.isDeleted ?: false,
+            isGhost = this.isGhost ?: false
         )
     }
 

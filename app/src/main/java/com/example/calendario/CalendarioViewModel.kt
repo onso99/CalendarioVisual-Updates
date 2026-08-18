@@ -412,7 +412,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             val context = getApplication<Application>()
             withContext(Dispatchers.IO) {
-                removeEventFromHistory(context, event.adn)
+                // MARCADO PERSISTENTE: No lo borramos, lo marcamos como borrado para que no resucite al sincronizar
+                val currentHistory = loadHistoryFromDisk(context).toMutableList()
+                val index = currentHistory.indexOfFirst { it.adn == event.adn }
+                if (index != -1) {
+                    currentHistory[index] = currentHistory[index].copy(isDeleted = true, lastModified = System.currentTimeMillis())
+                    saveHistoryToDisk(context, currentHistory)
+                }
             }
             refreshData()
         }
@@ -436,7 +442,14 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val context = getApplication<Application>()
             withContext(Dispatchers.IO) {
                 when (item) {
-                    is SearchItem.Event -> removeEventFromHistory(context, item.festivo.adn)
+                    is SearchItem.Event -> {
+                        val currentHistory = loadHistoryFromDisk(context).toMutableList()
+                        val index = currentHistory.indexOfFirst { it.adn == item.festivo.adn }
+                        if (index != -1) {
+                            currentHistory[index] = currentHistory[index].copy(isDeleted = true, lastModified = System.currentTimeMillis())
+                            saveHistoryToDisk(context, currentHistory)
+                        }
+                    }
                     is SearchItem.Note -> {
                         val allNotes = loadNotesFromDisk(context).toMutableList()
                         allNotes.removeAll { it.dateStr == item.dailyNote.dateStr }
@@ -455,12 +468,18 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             if (candidates.isEmpty()) return@launch
 
             withContext(Dispatchers.IO) {
-                // Borrado de eventos fantasma
+                // Borrado persistente de eventos fantasma
                 val eventAdns = candidates.filterIsInstance<SearchItem.Event>().map { it.festivo.adn }.toSet()
                 if (eventAdns.isNotEmpty()) {
                     val currentHistory = loadHistoryFromDisk(context).toMutableList()
-                    currentHistory.removeAll { it.adn in eventAdns }
-                    saveHistoryToDisk(context, currentHistory)
+                    var changed = false
+                    currentHistory.forEachIndexed { i, ev ->
+                        if (ev.adn in eventAdns) {
+                            currentHistory[i] = ev.copy(isDeleted = true, lastModified = System.currentTimeMillis())
+                            changed = true
+                        }
+                    }
+                    if (changed) saveHistoryToDisk(context, currentHistory)
                 }
 
                 // Borrado de notas vacías
@@ -526,11 +545,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val isSystemPresent = systemKeys.contains(event.adn)
                     // Solo marcamos como fantasma si:
                     // 1. No está en el sistema (Google)
-                    // 2. Está dentro de la ventana de sincronización de Google (1 año atrás)
+                    // 2. Es un evento FUTURO o MUY RECIENTE (últimos 7 días)
                     // 3. NO es un evento recurrente (las series gestionan sus propias instancias)
-                    val isInSyncWindow = event.date.isAfter(today.minusYears(1))
+                    val isRecentOrFuture = event.date.isAfter(today.minusDays(7))
                     val isRecurring = event.rrule != null
-                    event.copy(isGhost = isInSyncWindow && !isSystemPresent && !isRecurring)
+                    event.copy(isGhost = isRecentOrFuture && !isSystemPresent && !isRecurring)
                 } else {
                     event
                 }

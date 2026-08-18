@@ -95,6 +95,7 @@ object BackupManager {
                 put("customColor", dto.customColor)
                 put("lastModified", dto.lastModified)
                 put("isDeleted", dto.isDeleted)
+                put("isGhost", dto.isGhost)
             })
         }
         root.put(KEY_CALENDAR_HISTORY, historyArray)
@@ -251,7 +252,8 @@ object BackupManager {
                                 currentDay = obj.optInt("currentDay", 1),
                                 customColor = if (obj.has("customColor") && !obj.isNull("customColor")) obj.getInt("customColor") else null,
                                 lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
-                                isDeleted = obj.optBoolean("isDeleted", false)
+                                isDeleted = obj.optBoolean("isDeleted", false),
+                                isGhost = obj.optBoolean("isGhost", false)
                             )
                             dto.toFestivo()?.let { remoteEvents.add(it) }
                         } catch (_: Exception) {}

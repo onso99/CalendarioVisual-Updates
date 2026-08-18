@@ -253,7 +253,8 @@ internal fun SettingsActionChip(
     shape: Shape = RoundedCornerShape(10.dp),
     containerColor: Color = Color.Transparent,
     icon: Any? = null, // Puede ser ImageVector o Painter
-    isIconRotating: Boolean = false
+    isIconRotating: Boolean = false,
+    reverseRotation: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -299,7 +300,7 @@ internal fun SettingsActionChip(
                 val iconModifier = Modifier
                     .size(18.dp)
                     .graphicsLayer {
-                        if (isIconRotating) rotationZ = rotation
+                        if (isIconRotating) rotationZ = if (reverseRotation) -rotation else rotation
                     }
 
                 when (icon) {
