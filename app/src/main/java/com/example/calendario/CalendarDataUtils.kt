@@ -209,8 +209,17 @@ fun clearDeletedEventIds(context: Context) {
  */
 fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festivo>): Pair<List<Festivo>, Int> {
     val deletedIds = getDeletedEventIds(context)
-    // FUSIÓN POR ADN: Ignoramos el ID numérico que puede cambiar entre dispositivos
-    val allEvents = (local + remote).groupBy { it.adn }
+    val today = LocalDate.now()
+
+    // FUSIÓN INTELIGENTE: Agrupamos por ADN o Similitud y elegimos el más reciente
+    val allEvents = (local + remote).groupBy { event ->
+        // Para eventos recientes o futuros, permitimos fusión por Título+Fecha (evita duplicados por cambio de hora)
+        if (event.date.isAfter(today.minusDays(7))) {
+            "${event.date}_${event.title.unaccent().trim().lowercase()}"
+        } else {
+            event.adn
+        }
+    }
     
     val result = mutableListOf<Festivo>()
     var purgedCount = 0
@@ -218,11 +227,11 @@ fun mergeHistoryLists(context: Context, local: List<Festivo>, remote: List<Festi
     allEvents.forEach { (_, versions) ->
         val newest = versions.maxByOrNull { it.lastModified }
         if (newest != null) {
-            // Si el sistema lo tiene marcado como borrado (por ID o ADN), lo purgamos
+            // Mantenemos el registro incluso si está marcado como borrado (Tombstone)
+            // para que la marca de borrado se propague en futuras sincronizaciones.
+            result.add(newest)
             if (newest.isDeleted || newest.id in deletedIds) {
                 purgedCount++
-            } else {
-                result.add(newest)
             }
         }
     }

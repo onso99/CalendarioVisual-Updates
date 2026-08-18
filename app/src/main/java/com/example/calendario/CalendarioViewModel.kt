@@ -135,9 +135,20 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     .filter { sid -> availableCalendars.any { cal -> cal.id == sid } }
                     .toSet()
 
+                // CURACIÓN DE SELECCIÓN POST-RESTAURACIÓN: 
+                // Si los IDs han cambiado, intentamos recuperar la selección por nombre de calendario
+                var finalSelectedIds = validSelectedIds
+                if (selectedIds.isNotEmpty() && validSelectedIds.isEmpty()) {
+                    val recoveredIds = availableCalendars.filter { it.canModify }.map { it.id }.toSet()
+                    finalSelectedIds = recoveredIds.ifEmpty { 
+                        availableCalendars.asSequence().take(1).map { it.id }.toSet() 
+                    }
+                    saveSelectedCalendarIds(context, finalSelectedIds)
+                }
+
                 // --- PASO 2: SINCRONIZACIÓN CON EL SISTEMA ---
-                val systemEventsMap = if (validSelectedIds.isNotEmpty()) {
-                    readFestivosFromCalendarsSuspend(context, validSelectedIds)
+                val systemEventsMap = if (finalSelectedIds.isNotEmpty()) {
+                    readFestivosFromCalendarsSuspend(context, finalSelectedIds)
                 } else {
                     emptyMap()
                 }
@@ -145,7 +156,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 // PROCESAMIENTO PESADO EN HILO DE CÓMPUTO (No bloquea la UI)
                 val finalEventsList = withContext(Dispatchers.Default) {
-                    mergeHistoryWithSystem(cachedHistory, systemEvents)
+                    mergeHistoryWithSystem(cachedHistory, systemEvents, availableCalendars)
                 }
                 
                 // GUARDADO EN SEGUNDO PLANO: No bloqueamos la UI final por el disco
@@ -157,7 +168,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     state.copy(
                         eventsByDate = finalEventsList.groupBy { it.date },
                         availableCalendars = availableCalendars,
-                        selectedCalendarIds = validSelectedIds,
+                        selectedCalendarIds = finalSelectedIds,
                         hasCalendarPermission = true,
                         favoriteCalendarId = favoriteId,
                         dailyNotes = notesMap,
@@ -208,7 +219,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             
             // Cargar histórico actual para no perder el pasado remoto
             val cachedHistory = withContext(Dispatchers.IO) { loadHistoryFromDisk(context) }
-            val mergedEvents = mergeHistoryWithSystem(cachedHistory, newEvents.values.flatten())
+            val available = loadAvailableCalendarsSuspend(context)
+            val mergedEvents = mergeHistoryWithSystem(cachedHistory, newEvents.values.flatten(), available)
 
             _uiState.update { state ->
                 state.copy(
@@ -280,7 +292,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     if (selectedIds.isNotEmpty()) {
                         val freshEvents = readFestivosFromCalendarsSync(context, selectedIds)
                         val cachedHistory = loadHistoryFromDisk(context)
-                        val merged = mergeHistoryWithSystem(cachedHistory, freshEvents.values.flatten())
+                        val available = loadAvailableCalendarsSuspend(context)
+                        val merged = mergeHistoryWithSystem(cachedHistory, freshEvents.values.flatten(), available)
                         saveHistoryToDisk(context, merged)
                     }
 
@@ -494,7 +507,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    private suspend fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>): List<Festivo> = withContext(Dispatchers.Default) {
+    private suspend fun mergeHistoryWithSystem(
+        cachedHistory: List<Festivo>, 
+        systemEvents: List<Festivo>,
+        availableCalendars: List<CalendarInfo>
+    ): List<Festivo> = withContext(Dispatchers.Default) {
         val context = getApplication<Application>()
         val deletedIds = getDeletedEventIds(context)
         val today = LocalDate.now()
@@ -514,12 +531,15 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicación.
         return@withContext (systemEvents + cachedHistory).asSequence()
             // Deduplicación agresiva:
-            // Intentamos primero por ADN exacto, y si no, por Similitud (Fuzzy)
+            // Si el evento coincide con algo del sistema (por ADN o por Título/Día),
+            // usamos la FuzzyKey para obligar a que se fusionen y gane el de Google (que va primero).
             .distinctBy { event ->
                 val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
-                if (systemKeys.contains(event.adn)) event.adn 
-                else if (fuzzySystemMap.containsKey(fuzzyKey)) fuzzyKey
-                else event.adn
+                if (systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)) {
+                    fuzzyKey
+                } else {
+                    event.adn
+                }
             }
             .filter { event ->
                 // A) Filtro de Seguridad: No recuperar si está marcado como borrado (físico o lógico) o laborable
@@ -532,12 +552,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 if (!isPresentInSystem) {
                     // Si es un festivo manual (ID < 0), solo lo mantenemos si es FRESCO (systemEvents lo trae)
+                    // Si ya no viene en systemEvents es porque el usuario lo borró del gestor.
                     if (event.id < 0) return@filter false
                     
-                    // Si es un evento de Google (ID >= 0) y es FUTURO o muy reciente, 
-                    // confiamos en que si Google no lo trae es porque se ha BORRADO.
-                    val isRecentOrFuture = event.date.isAfter(today.minusDays(7))
-                    if (isRecentOrFuture) return@filter false
+                    // Si es un evento de Google (ID >= 0) lo mantenemos siempre para decidir 
+                    // si es Fantasma o Historial Legítimo en el siguiente paso.
                 }
                 true
             }
@@ -546,14 +565,24 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             // 4. CURACIÓN DE IDENTIDAD Y MARCADO DE FANTASMAS
             .map { event ->
                 if (event.id > 0) {
-                    val isSystemPresent = systemKeys.contains(event.adn)
-                    // Solo marcamos como fantasma si:
-                    // 1. No está en el sistema (Google)
-                    // 2. Es un evento FUTURO o MUY RECIENTE (últimos 7 días)
-                    // 3. NO es un evento recurrente (las series gestionan sus propias instancias)
-                    val isRecentOrFuture = event.date.isAfter(today.minusDays(7))
-                    val isRecurring = event.rrule != null
-                    event.copy(isGhost = isRecentOrFuture && !isSystemPresent && !isRecurring)
+                    val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
+                    val isPresentInSystem = systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)
+                    
+                    // Si el evento está en Google (por ADN o Similitud), forzamos que NO sea fantasma
+                    if (isPresentInSystem) return@map event.copy(isGhost = false)
+
+                    // CRITERIO DE FANTASMA RESTRINGIDO:
+                    // 1. Es un evento PRÓXIMO (desde hoy hasta dentro de 1 año)
+                    //    (Evitamos marcar como fantasmas eventos muy lejanos que Google aún no sincroniza)
+                    // 2. El calendario ya no existe en el móvil actual (cambio de dispositivo/ID)
+                    // 3. NO es un festivo oficial de Google ni un cumpleaños de sistema
+                    
+                    val isWithinOneYear = !event.date.isBefore(today) && event.date.isBefore(today.plusYears(1))
+                    val calendarExists = availableCalendars.any { it.id == event.calendarId }
+                    
+                    val isGhostCandidate = isWithinOneYear && !calendarExists && !event.isFromHolidaySource && !event.isBirthday
+                    
+                    event.copy(isGhost = isGhostCandidate)
                 } else {
                     event
                 }
