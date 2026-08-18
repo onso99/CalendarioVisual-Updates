@@ -1,3 +1,4 @@
+2026-08-18 - v2.1.91 Optimización con la importación de datos en la gestión de elementos fantasma
 2026-08-18 - v2.1.90 Alarmas: mejoras para mostrar icono campana en barra de tareas (si el dispositivo lo permite)
 2026-08-18 - v2.1.89 Copia de seguridad: Restaurar y Sincronizar guardan los elementos fantasma
 2026-08-17 - v2.1.88 Posponer alarma: intervalos de 10' hasta 60'

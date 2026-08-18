@@ -260,6 +260,8 @@
     <string name="restore_holidays_label">Tokiko jai-egunak</string>
     <string name="restore_notes_label">Oharrak</string>
     <string name="restore_events_label">Gertaerak</string>
+    <string name="confirm_restore_title">Berrezarpena berretsi</string>
+    <string name="restore_total_confirmation">Segurtasun-kopia osoa berrezartzea: oharrak, gertaerak eta ezarpenak.</string>
     <string name="backup_section_title_label">Babeskopia</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Jai-egun kudeatzailea</string>

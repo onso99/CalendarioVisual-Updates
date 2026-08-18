@@ -262,6 +262,8 @@
     <string name="restore_holidays_label">Local holidays</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Events</string>
+    <string name="confirm_restore_title">Confirm restoration</string>
+    <string name="restore_total_confirmation">Total backup restoration: notes, events and settings.</string>
     <string name="backup_section_title_label">Backup</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Holiday Manager</string>

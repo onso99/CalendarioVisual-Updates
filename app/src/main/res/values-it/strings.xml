@@ -262,6 +262,8 @@
     <string name="restore_holidays_label">Giorni festivi locali</string>
     <string name="restore_notes_label">Note</string>
     <string name="restore_events_label">Eventi</string>
+    <string name="confirm_restore_title">Conferma ripristino</string>
+    <string name="restore_total_confirmation">Ripristino completo del backup: note, eventi e impostazioni.</string>
     <string name="backup_section_title_label">Backup</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Gestore Festività</string>

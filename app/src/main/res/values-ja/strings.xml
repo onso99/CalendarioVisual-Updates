@@ -259,8 +259,10 @@
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="restore_prefs_label">設定</string>
     <string name="restore_holidays_label">ローカルの祝日</string>
-    <string name="restore_notes_label">ノート</string>
+    <string name="restore_notes_label">メモ</string>
     <string name="restore_events_label">イベント</string>
+    <string name="confirm_restore_title">復元の確認</string>
+    <string name="restore_total_confirmation">バックアップの完全復元：メモ、イベント、設定。</string>
     <string name="backup_section_title_label">バックアップ</string>
     <string name="drive_label">ドライブ</string>
     <string name="holiday_manager_legend">祝日マネージャー</string>

@@ -136,7 +136,7 @@ fun SettingsScreen(
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var isChangingLanguage by remember { mutableStateOf(false) }
-    var showRestoreSelectDialog by remember { mutableStateOf(false) }
+    var showConfirmRestoreDialog by remember { mutableStateOf(false) }
     var restoreSource by remember { mutableStateOf<String?>(null) }
     var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
@@ -228,7 +228,7 @@ fun SettingsScreen(
                 result.data?.data?.let { uri ->
                     pendingLocalUri = uri
                     restoreSource = "local"
-                    showRestoreSelectDialog = true
+                    showConfirmRestoreDialog = true
                 }
             }
         }
@@ -562,7 +562,7 @@ fun SettingsScreen(
                         if (showBackupActionsExpand) {
                             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                                SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { restoreSource = "drive"; showRestoreSelectDialog = true })
+                                SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { restoreSource = "drive"; showConfirmRestoreDialog = true })
                                 SettingsActionChip(text = stringResource(id = R.string.sincronizar_label), icon = Icons.Default.Sync, isIconRotating = isSyncing, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; Toast.makeText(context, context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG).show() } else { Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show() } } })
                             }
                         }
@@ -678,51 +678,33 @@ fun SettingsScreen(
         if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }) }
         if (showUnlinkAccountDialog) { AlertDialog(onDismissRequest = { showUnlinkAccountDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.unlink_account_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.unlink_action), onClick = { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build(); GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { appPrefs.edit { remove("google_account_email") }; permissionsUpdateTrigger++; showUnlinkAccountDialog = false } }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }) }
         if (showPermissionsDialog) { LaunchedEffect(Unit) { permissionsUpdateTrigger++; delay(500.milliseconds); permissionsUpdateTrigger++ }; PermissionsDialog(calStatus = calStatus, notifStatus = notifStatus, alarmStatus = alarmStatus, driveStatus = driveStatus, batteryStatus = batteryStatus, onDismiss = { showPermissionsDialog = false }, onFix = { type -> when (type) { "drive" -> { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build(); googleSignInLauncher.launch(GoogleSignIn.getClient(context, gso).signInIntent) }; "battery" -> context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)); else -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) } }) }
-        if (showRestoreSelectDialog) { 
-            RestoreSelectDialog(
+        if (showConfirmRestoreDialog) { 
+            ConfirmRestoreDialog(
                 onDismiss = { 
-                    showRestoreSelectDialog = false
+                    showConfirmRestoreDialog = false
                     restoreSource = null
                     pendingLocalUri = null 
                 }, 
-                onConfirm = { prefs, holidays, notes, events -> 
-                    showRestoreSelectDialog = false
-                    when (restoreSource) {
-                        "drive" -> {
-                            viewModel.restoreHistoryFromDrive(context, prefs, holidays, notes, events) { success -> 
-                                if (success) { 
-                                    Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                                    if (prefs) {
-                                        (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
-                                    } else {
-                                        permissionsUpdateTrigger++
-                                    }
-                                } else {
-                                    Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
-                                }
-                            }
+                onConfirm = { 
+                    showConfirmRestoreDialog = false
+                    val callback: (Boolean) -> Unit = { success -> 
+                        if (success) { 
+                            Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                            (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                        } else {
+                            Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
                         }
+                    }
+                    when (restoreSource) {
+                        "drive" -> viewModel.restoreHistoryFromDrive(context, true, true, true, true, callback)
                         "local" -> {
                             if (pendingLocalUri != null) {
-                                viewModel.restoreFromLocal(context, pendingLocalUri!!, prefs, holidays, notes, events) { success -> 
-                                    if (success) { 
-                                        Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                                        if (prefs) {
-                                            (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
-                                        } else {
-                                            permissionsUpdateTrigger++
-                                        }
-                                    } else {
-                                        Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
-                                    }
-                                }
+                                viewModel.restoreFromLocal(context, pendingLocalUri!!, true, true, true, true, callback)
                             }
                         }
                     }
-                    restoreSource = null
-                    pendingLocalUri = null 
                 }
-            ) 
+            )
         }
         if (showExportDialog) { ExportThemeDialog(onDismissRequest = { showExportDialog = false }, onConfirm = { newName -> showExportDialog = false; appPrefs.edit { putString("temp_export_name", newName) }; exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "${newName}.json") }) }) }
         if (showWidgetCalendarDialog) { SelectWidgetCalendarsDialog(appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }, initialSelectedIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds }, currentFavoriteId = uiState.favoriteCalendarId, onApply = { newIds -> pendingWidgetCalendarIds = newIds; updateWidgetPrefs { putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet()) }; showWidgetCalendarDialog = false }, onDismissRequest = { showWidgetCalendarDialog = false }) }
@@ -742,21 +724,36 @@ private fun ExportThemeDialog(onDismissRequest: () -> Unit, onConfirm: (String) 
 }
 
 @Composable
-private fun RestoreSelectDialog(onDismiss: () -> Unit, onConfirm: (prefs: Boolean, holidays: Boolean, notes: Boolean, events: Boolean) -> Unit) {
-    var restorePrefs by remember { mutableStateOf(true) }
-    var restoreHolidays by remember { mutableStateOf(true) }
-    var restoreNotes by remember { mutableStateOf(true) }
-    var restoreEvents by remember { mutableStateOf(true) }
-    val anySelected = restorePrefs || restoreHolidays || restoreNotes || restoreEvents
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, title = { Text(text = stringResource(id = R.string.restaurar_label), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { RestoreOptionRow(stringResource(id = R.string.restore_prefs_label), restorePrefs) { restorePrefs = it }; RestoreOptionRow(stringResource(id = R.string.restore_holidays_label), restoreHolidays) { restoreHolidays = it }; RestoreOptionRow(stringResource(id = R.string.restore_notes_label), restoreNotes) { restoreNotes = it }; RestoreOptionRow(stringResource(id = R.string.restore_events_label), restoreEvents) { restoreEvents = it } } }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.apply), onClick = { onConfirm(restorePrefs, restoreHolidays, restoreNotes, restoreEvents) }, enabled = anySelected) }, dismissButton = { DialogDismissButton(onDismiss = onDismiss) })
-}
-
-@Composable
-private fun RestoreOptionRow(label: String, isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().clickable { onCheckedChange(!isChecked) }.padding(vertical = 8.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) { 
-        Checkbox(checked = isChecked, onCheckedChange = onCheckedChange)
-        Text(text = label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.padding(start = 12.dp), fontSize = 16.sp) 
-    }
+private fun ConfirmRestoreDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss, 
+        containerColor = CalendarioTheme.colors.fondoDialogos, 
+        title = { 
+            Text(
+                text = stringResource(id = R.string.confirm_restore_title), 
+                fontWeight = FontWeight.Bold, 
+                fontSize = 20.sp, 
+                modifier = Modifier.fillMaxWidth(), 
+                textAlign = TextAlign.Start
+            ) 
+        }, 
+        text = { 
+            Text(
+                text = stringResource(id = R.string.restore_total_confirmation),
+                color = CalendarioTheme.colors.textSystem,
+                fontSize = 16.sp
+            ) 
+        }, 
+        confirmButton = { 
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept), 
+                onClick = onConfirm
+            ) 
+        }, 
+        dismissButton = { 
+            DialogDismissButton(onDismiss = onDismiss) 
+        }
+    )
 }
 
 @Composable

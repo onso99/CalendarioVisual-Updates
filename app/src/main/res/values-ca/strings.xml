@@ -262,6 +262,8 @@
     <string name="restore_holidays_label">Festius locals</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Esdeveniments</string>
+    <string name="confirm_restore_title">Confirmar restauració</string>
+    <string name="restore_total_confirmation">Restauració de còpia de seguretat total: notes, esdeveniments i ajustos.</string>
     <string name="backup_section_title_label">Còpia de seguretat</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Gestor de Festius</string>

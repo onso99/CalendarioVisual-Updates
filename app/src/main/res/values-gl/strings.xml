@@ -262,6 +262,8 @@
     <string name="restore_holidays_label">Festivos locais</string>
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Eventos</string>
+    <string name="confirm_restore_title">Confirmar restauración</string>
+    <string name="restore_total_confirmation">Restauración de copia de seguridade total: notas, eventos e axustes.</string>
     <string name="backup_section_title_label">Copia de seguridade</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Gestor de Festivos</string>

@@ -261,6 +261,8 @@
     <string name="restore_holidays_label">Местные праздники</string>
     <string name="restore_notes_label">Заметки</string>
     <string name="restore_events_label">События</string>
+    <string name="confirm_restore_title">Подтвердите восстановление</string>
+    <string name="restore_total_confirmation">Полное восстановление резервной копии: заметки, события и настройки.</string>
     <string name="backup_section_title_label">Резервное копирование</string>
     <string name="drive_label">Диск</string>
     <string name="holiday_manager_legend">Менеджер праздников</string>

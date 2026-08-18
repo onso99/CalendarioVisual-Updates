@@ -261,6 +261,8 @@
     <string name="restore_holidays_label">Jours fériés locaux</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Événements</string>
+    <string name="confirm_restore_title">Confirmer la restauration</string>
+    <string name="restore_total_confirmation">Restauration complète de la sauvegarde : notes, événements et paramètres.</string>
     <string name="backup_section_title_label">Sauvegarde</string>
     <string name="drive_label">Drive</string>
     <string name="holiday_manager_legend">Gestionnaire de jours fériés</string>

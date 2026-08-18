@@ -260,6 +260,8 @@
     <string name="restore_holidays_label">Festivos locales</string>
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Eventos</string>
+    <string name="confirm_restore_title">Confirmar restauración</string>
+    <string name="restore_total_confirmation">Restauración de copia de seguridad total: notas, eventos y ajustes.</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Nunca</string>
     <string name="error_updating_data">Error al actualizar datos.</string>
