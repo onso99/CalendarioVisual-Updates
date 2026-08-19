@@ -624,7 +624,6 @@ fun SettingsScreen(
                 val haptic = LocalHapticFeedback.current
                 var loggingEnabledInternal by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
                 var debugClickCount by remember { mutableIntStateOf(0) }
-                val isDark = isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Text("${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
@@ -738,10 +737,25 @@ fun SettingsScreen(
                         }
                     }
                     when (restoreSource) {
-                        "drive" -> viewModel.restoreHistoryFromDrive(context, true, true, true, true, callback)
+                        "drive" -> viewModel.restoreHistoryFromDrive(
+                            context = context,
+                            restorePrefs = true,
+                            restoreHolidays = true,
+                            restoreNotes = true,
+                            restoreEvents = true,
+                            onComplete = callback
+                        )
                         "local" -> {
                             if (pendingLocalUri != null) {
-                                viewModel.restoreFromLocal(context, pendingLocalUri!!, true, true, true, true, callback)
+                                viewModel.restoreFromLocal(
+                                    context = context,
+                                    uri = pendingLocalUri!!,
+                                    restorePrefs = true,
+                                    restoreHolidays = true,
+                                    restoreNotes = true,
+                                    restoreEvents = true,
+                                    onComplete = callback
+                                )
                             }
                         }
                     }
