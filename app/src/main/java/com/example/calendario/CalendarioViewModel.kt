@@ -524,21 +524,31 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
         
         // Mapa para curación por similitud (Fecha + Título -> Evento)
-        // Esto permite detectar eventos que han cambiado de hora o calendario
         val fuzzySystemMap = systemEvents.associateBy { "${it.date}_${it.title.unaccent().trim().lowercase()}" }
+
+        // MAPA DE ANCLAJE POR ID: Crucial para evitar duplicados al cambiar TÍTULO
+        // (ID + Fecha -> ADN actual en el sistema)
+        val systemIdMap = systemEvents.associateBy( { "${it.id}_${it.date}" }, { it.adn } )
 
         // 2. PROCESAMIENTO UNIFICADO CON SECUENCIAS
         // Combinamos historial y sistema. El sistema (fresco) va primero para mandar en la deduplicación.
         return@withContext (systemEvents + cachedHistory).asSequence()
             // Deduplicación agresiva:
-            // Si el evento coincide con algo del sistema (por ADN o por Título/Día),
-            // usamos la FuzzyKey para obligar a que se fusionen y gane el de Google (que va primero).
             .distinctBy { event ->
                 val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
-                if (systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)) {
-                    fuzzyKey
-                } else {
-                    event.adn
+                
+                when {
+                    // A) Si el ID coincide en el mismo día, usamos el ADN del sistema como clave única
+                    // Esto fusiona "Viejo Título" con "Nuevo Título" instantáneamente.
+                    event.id > 0 && systemIdMap.containsKey("${event.id}_${event.date}") -> {
+                        systemIdMap["${event.id}_${event.date}"]
+                    }
+                    // B) Si el Título y Fecha coinciden (aunque cambie la hora), usamos FuzzyKey
+                    systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey) -> {
+                        fuzzyKey
+                    }
+                    // C) Si no hay coincidencias, mantenemos su propia identidad
+                    else -> event.adn
                 }
             }
             .filter { event ->
