@@ -306,7 +306,7 @@ fun SettingsScreen(
         }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
         mutableStateOf(ids)
     }
-    val currentWidgetIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds }
+    val currentWidgetIds = pendingWidgetCalendarIds.filter { id -> uiState.availableCalendars.any { it.id == id } }.ifEmpty { uiState.selectedCalendarIds }
     val widgetCalendarSummary = "(${currentWidgetIds.size})"
     
     var pendingAlarmOffset by remember { 
@@ -763,7 +763,22 @@ fun SettingsScreen(
             )
         }
         if (showExportDialog) { ExportThemeDialog(onDismissRequest = { showExportDialog = false }, onConfirm = { newName -> showExportDialog = false; appPrefs.edit { putString("temp_export_name", newName) }; exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "${newName}.json") }) }) }
-        if (showWidgetCalendarDialog) { SelectWidgetCalendarsDialog(appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }, initialSelectedIds = pendingWidgetCalendarIds.ifEmpty { uiState.selectedCalendarIds }, currentFavoriteId = uiState.favoriteCalendarId, onApply = { newIds -> pendingWidgetCalendarIds = newIds; updateWidgetPrefs { putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet()) }; showWidgetCalendarDialog = false }, onDismissRequest = { showWidgetCalendarDialog = false }) }
+        if (showWidgetCalendarDialog) { 
+            val appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }
+            val sanitizedInitialIds = pendingWidgetCalendarIds.filter { id -> appActiveCalendars.any { it.id == id } }.toSet()
+            
+            SelectWidgetCalendarsDialog(
+                appActiveCalendars = appActiveCalendars, 
+                initialSelectedIds = sanitizedInitialIds.ifEmpty { uiState.selectedCalendarIds }, 
+                currentFavoriteId = uiState.favoriteCalendarId, 
+                onApply = { newIds -> 
+                    pendingWidgetCalendarIds = newIds
+                    updateWidgetPrefs { putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet()) }
+                    showWidgetCalendarDialog = false 
+                }, 
+                onDismissRequest = { showWidgetCalendarDialog = false }
+            ) 
+        }
 
         if (isChangingLanguage) {
             val transition = rememberInfiniteTransition(label = "lang_rotation")

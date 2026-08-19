@@ -241,10 +241,24 @@ class CalendarWidgetFactory(
             ?.mapNotNull { it.toLongOrNull() }
             ?.toSet() ?: emptySet()
 
-        // Lógica de Intersección y Autosanación:
-        // Si el widget tiene selección propia, usamos la intersección con los activos de la App.
-        // Si la intersección resulta vacía (autosanación) o el widget no tiene selección, usamos todo lo de la App.
-        val effectiveIds = appActiveIds.intersect(widgetSelectedIds).ifEmpty { appActiveIds }
+        // Lógica de Saneamiento:
+        // 1. Verificamos qué IDs de la App existen realmente en el sistema actual
+        val availableIds = loadAvailableCalendarsSync(context).map { it.id }.toSet()
+        val validAppIds = appActiveIds.filter { it in availableIds }.toSet()
+        
+        // 2. Si el widget tiene selección propia, la filtramos contra lo que existe
+        val validWidgetIds = widgetSelectedIds.filter { it in availableIds }.toSet()
+
+        // 3. Decisión Final:
+        // Si el widget no tiene selección válida, usamos lo que sea válido en la App.
+        // Si nada es válido (post-restauración crítica), usamos el primer ID disponible.
+        val effectiveIds = if (validWidgetIds.isNotEmpty()) {
+            validWidgetIds
+        } else if (validAppIds.isNotEmpty()) {
+            validAppIds
+        } else {
+            availableIds.take(1).toSet()
+        }
 
         val allEventsByDateMap = if (effectiveIds.isNotEmpty()) {
             readFestivosFromCalendarsSync(context, effectiveIds)
@@ -253,4 +267,55 @@ class CalendarWidgetFactory(
         }
         eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
     }
+}
+
+/**
+ * Versión síncrona de carga de calendarios para la Fábrica del Widget
+ */
+private fun loadAvailableCalendarsSync(context: Context): List<CalendarInfo> {
+    val calendars = mutableListOf<CalendarInfo>()
+    val projection = arrayOf(
+        android.provider.CalendarContract.Calendars._ID,
+        android.provider.CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+        android.provider.CalendarContract.Calendars.ACCOUNT_NAME,
+        android.provider.CalendarContract.Calendars.OWNER_ACCOUNT,
+        android.provider.CalendarContract.Calendars.IS_PRIMARY,
+        android.provider.CalendarContract.Calendars.CALENDAR_COLOR,
+        android.provider.CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
+    )
+
+    try {
+        context.contentResolver.query(
+            android.provider.CalendarContract.Calendars.CONTENT_URI,
+            projection,
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            val idCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars._ID)
+            val nameCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
+            val accCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.ACCOUNT_NAME)
+            val ownerCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.OWNER_ACCOUNT)
+            val primaryCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.IS_PRIMARY)
+            val colorCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_COLOR)
+            val accessCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
+
+            while (cursor.moveToNext()) {
+                calendars.add(
+                    CalendarInfo(
+                        id = cursor.getLong(idCol),
+                        displayName = cursor.getString(nameCol),
+                        accountName = cursor.getString(accCol),
+                        ownerAccount = cursor.getString(ownerCol),
+                        isPrimary = cursor.getInt(primaryCol) == 1,
+                        color = cursor.getInt(colorCol),
+                        canModify = cursor.getInt(accessCol) >= android.provider.CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR,
+                        accessLevel = cursor.getInt(accessCol),
+                        isDeleted = false
+                    )
+                )
+            }
+        }
+    } catch (_: Exception) {}
+    return calendars
 }
