@@ -1,3 +1,4 @@
+2026-08-19 - v3.0.01 Base de datos-Fase 1: Infraestructura Room configurada y esquema de tablas definido
 2026-08-19 - v2.1.97 Versión con motor JSON: widget clásico no muestra todos los eventos de la lista principal de eventos
 2026-08-19 - v2.1.96 Corrección de warnings
 2026-08-19 - v2.1.95 Acerca de: reubicación de icono debug e Historial

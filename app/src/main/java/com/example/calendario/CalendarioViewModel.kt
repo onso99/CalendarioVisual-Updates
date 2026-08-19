@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.calendario.database.AppDatabase
+import com.example.calendario.database.MigrationManager
 import java.time.LocalDate
 
 data class CalendarioUiState(
@@ -77,6 +79,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             try {
+                // FASE 2: TRASVASE DE DATOS (JSON -> ROOM)
+                MigrationManager.checkAndMigrate(context, AppDatabase.getDatabase(context))
+
                 // Asegurar que el respaldo automático esté programado en el sistema
                 BackupScheduler.ensureBackupScheduled(context)
 
