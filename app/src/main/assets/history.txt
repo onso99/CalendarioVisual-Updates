@@ -1,3 +1,4 @@
+2026-08-19 - v2.1.94 Corrección de duplicidad de evento al editar el título
 2026-08-18 - v2.1.93 Eventos con hora de alarma posterior a inicio y fin tendrán aviso
 2026-08-18 - v2.1.92 Suprimido Diálogo Restaurar y la selección de elementos. Sólo se guarda/restaura una copia total.
 2026-08-18 - v2.1.91 Optimización con la importación de datos en la gestión de elementos fantasma

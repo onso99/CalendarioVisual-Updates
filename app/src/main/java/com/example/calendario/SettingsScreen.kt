@@ -21,6 +21,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -608,16 +609,57 @@ fun SettingsScreen(
 
             Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(stringResource(id = R.string.about), style = typography.titleMedium, fontWeight = FontWeight.Bold, color = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f))
-                val haptic = LocalHapticFeedback.current
-                var loggingEnabledInternal by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
-                var debugClickCount by remember { mutableIntStateOf(0) }
-                IconButton(onClick = { if (loggingEnabledInternal) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabledInternal = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, modifier = Modifier.size(24.dp)) { Icon(Icons.Default.BugReport, null, tint = if (loggingEnabledInternal) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f), modifier = Modifier.combinedClickable(onClick = { if (loggingEnabledInternal) onLogClick() else { debugClickCount++; if (debugClickCount >= 7) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabledInternal = true; LogCollector.setLoggingEnabled(context, true); debugClickCount = 0 } } }, onLongClick = { if (loggingEnabledInternal) { haptic.performHapticFeedback(HapticFeedbackType.LongPress); loggingEnabledInternal = false; LogCollector.setLoggingEnabled(context, false); debugClickCount = 0 } })) }
+                
+                IconButton(onClick = onHistoryClick, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.History, 
+                        contentDescription = null, 
+                        tint = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
+                    )
+                }
             }
             Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
                 Text("${stringResource(id = R.string.app_name)} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()} > ", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                    Text(text = stringResource(id = R.string.history), fontSize = 16.sp, color = Color(0xFF2196F3), modifier = Modifier.clickable { onHistoryClick() } )
+                
+                val haptic = LocalHapticFeedback.current
+                var loggingEnabledInternal by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
+                var debugClickCount by remember { mutableIntStateOf(0) }
+                val isDark = isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)
+
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    Text("${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
+                    
+                    Icon(
+                        imageVector = Icons.Default.BugReport, 
+                        contentDescription = null, 
+                        tint = if (loggingEnabledInternal) CalendarioTheme.colors.textSystem else Color.Gray.copy(alpha = 0.4f), 
+                        modifier = Modifier
+                            .size(24.dp)
+                            .combinedClickable(
+                                onClick = { 
+                                    if (loggingEnabledInternal) onLogClick() 
+                                    else { 
+                                        debugClickCount++
+                                        if (debugClickCount >= 7) { 
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            loggingEnabledInternal = true
+                                            LogCollector.setLoggingEnabled(context, true)
+                                            debugClickCount = 0 
+                                        } 
+                                    } 
+                                },
+                                onLongClick = { 
+                                    if (loggingEnabledInternal) { 
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        loggingEnabledInternal = false
+                                        LogCollector.setLoggingEnabled(context, false)
+                                        debugClickCount = 0 
+                                    } 
+                                },
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            )
+                    )
                 }
             }
         }
