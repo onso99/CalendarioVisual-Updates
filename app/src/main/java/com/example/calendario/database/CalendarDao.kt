@@ -1,0 +1,39 @@
+package com.example.calendario.database
+
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface CalendarDao {
+    // --- EVENTOS ---
+    @Query("SELECT * FROM events WHERE isDeleted = 0")
+    fun getAllEvents(): Flow<List<EventEntity>>
+
+    @Query("SELECT * FROM events WHERE date = :date AND isDeleted = 0")
+    fun getEventsByDate(date: String): Flow<List<EventEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvent(event: EventEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvents(events: List<EventEntity>)
+
+    @Query("UPDATE events SET isDeleted = 1, lastModified = :timestamp WHERE googleId = :googleId")
+    suspend fun markEventAsDeleted(googleId: Long, timestamp: Long)
+
+    @Query("DELETE FROM events WHERE googleId = :googleId")
+    suspend fun deleteEventPermanently(googleId: Long)
+
+    // --- NOTAS ---
+    @Query("SELECT * FROM notes WHERE isDeleted = 0")
+    fun getAllNotes(): Flow<List<NoteEntity>>
+
+    @Query("SELECT * FROM notes WHERE dateStr = :dateStr")
+    suspend fun getNoteByDate(dateStr: String): NoteEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNote(note: NoteEntity)
+
+    @Query("DELETE FROM notes WHERE dateStr = :dateStr")
+    suspend fun deleteNotePermanently(dateStr: String)
+}

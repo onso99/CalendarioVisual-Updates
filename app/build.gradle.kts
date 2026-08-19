@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 // Configuración de Kotlin
@@ -14,14 +15,14 @@ kotlin {
 // Configuración de Android usando la API moderna recomendada (ApplicationExtension)
 extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
     namespace = "com.example.calendario"
-    compileSdk = 37
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.calendario"
         minSdk = 29
-        targetSdk = 37
+        targetSdk = 35
         versionCode = 2
-        versionName = "2.1.97"
+        versionName = "3.0.01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -101,6 +102,11 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.datastore.preferences)
+
+    // Room (Base de Datos)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 }
 
 // Tarea para automatizar la generación del historial de commits
