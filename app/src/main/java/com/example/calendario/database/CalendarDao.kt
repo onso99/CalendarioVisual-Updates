@@ -18,6 +18,15 @@ interface CalendarDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvents(events: List<EventEntity>)
 
+    @Query("DELETE FROM events")
+    suspend fun clearAllEvents()
+
+    @Transaction
+    suspend fun refreshEvents(events: List<EventEntity>) {
+        clearAllEvents()
+        insertEvents(events)
+    }
+
     @Query("UPDATE events SET isDeleted = 1, lastModified = :timestamp WHERE googleId = :googleId")
     suspend fun markEventAsDeleted(googleId: Long, timestamp: Long)
 
@@ -33,6 +42,9 @@ interface CalendarDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: NoteEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNotes(notes: List<NoteEntity>)
 
     @Query("DELETE FROM notes WHERE dateStr = :dateStr")
     suspend fun deleteNotePermanently(dateStr: String)

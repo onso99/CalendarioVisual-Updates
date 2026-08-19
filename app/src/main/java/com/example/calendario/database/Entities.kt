@@ -5,12 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "events")
 data class EventEntity(
-    @PrimaryKey(autoGenerate = true) val dbId: Long = 0,
+    @PrimaryKey val adn: String, // Identidad única: Fecha_Título_Hora
     val googleId: Long, // ID original de Android Calendar
     val title: String,
     val description: String?,
-    val date: String, // LocalDate en formato ISO (yyyy-MM-dd)
-    val startTime: String?, // LocalTime en formato HH:mm
+    val date: String, // LocalDate ISO
+    val startTime: String?, 
     val endTime: String?,
     val isAllDay: Boolean,
     val calendarId: Long,
@@ -26,7 +26,6 @@ data class EventEntity(
     val fullStartMillis: Long?,
     val fullEndMillis: Long?,
     val repeatCount: Int?,
-    val adn: String,
     val lastModified: Long,
     val isDeleted: Boolean,
     val isGhost: Boolean
@@ -34,7 +33,7 @@ data class EventEntity(
 
 @Entity(tableName = "notes")
 data class NoteEntity(
-    @PrimaryKey val dateStr: String, // Fecha ISO (yyyy-MM-dd) como clave primaria
+    @PrimaryKey val dateStr: String, // Fecha ISO
     val content: String,
     val lastModified: Long,
     val isDeleted: Boolean
