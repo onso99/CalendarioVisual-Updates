@@ -11,9 +11,11 @@ import androidx.core.database.getStringOrNull
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 
@@ -35,19 +37,34 @@ fun saveHistoryToDisk(context: Context, events: List<Festivo>) {
 }
 
 fun removeEventFromHistory(context: Context, eventAdn: String) {
+    // 1. Limpieza JSON (LEGACY - Se mantendrá hasta Fase 5)
     val currentHistory = loadHistoryFromDisk(context).toMutableList()
-    val removed = currentHistory.removeAll { it.adn == eventAdn }
-    if (removed) {
+    val removedJson = currentHistory.removeAll { it.adn == eventAdn }
+    if (removedJson) {
         saveHistoryToDisk(context, currentHistory)
+    }
+
+    // 2. Limpieza ROOM (NUEVO - Motor principal)
+    kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+        val database = com.example.calendario.database.AppDatabase.getDatabase(context)
+        database.calendarDao().markEventAsDeletedByAdn(eventAdn, System.currentTimeMillis())
     }
 }
 
 fun removeSeriesFromHistory(context: Context, eventId: Long) {
-    if (eventId <= 0) return // No aplica a festivos manuales
+    if (eventId <= 0) return 
+    
+    // 1. Limpieza JSON (LEGACY)
     val currentHistory = loadHistoryFromDisk(context).toMutableList()
-    val removed = currentHistory.removeAll { it.id == eventId }
-    if (removed) {
+    val removedJson = currentHistory.removeAll { it.id == eventId }
+    if (removedJson) {
         saveHistoryToDisk(context, currentHistory)
+    }
+
+    // 2. Limpieza ROOM (NUEVO)
+    kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+        val database = com.example.calendario.database.AppDatabase.getDatabase(context)
+        database.calendarDao().markEventAsDeleted(eventId, System.currentTimeMillis())
     }
 }
 
@@ -665,6 +682,51 @@ fun readFestivosFromCalendarsSync(
 suspend fun readFestivosFromCalendarsSuspend(
     context: Context,
     selectedCalendarIds: Set<Long>
-): Map<LocalDate, List<Festivo>> = withContext(Dispatchers.IO) {
-    readFestivosFromCalendarsSync(context, selectedCalendarIds)
+): Map<LocalDate, List<Festivo>> = readFestivosFromCalendarsSync(context, selectedCalendarIds)
+
+suspend fun mergeHistoryWithSystemData(
+    context: Context,
+    cachedHistory: List<Festivo>,
+    systemEvents: List<Festivo>,
+    availableCalendars: List<CalendarInfo>
+): List<Festivo> = withContext(Dispatchers.Default) {
+    val today = LocalDate.now()
+    val deletedIds = getDeletedEventIds(context)
+    val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
+    val fuzzySystemMap = systemEvents.associateBy { "${it.date}_${it.title.unaccent().trim().lowercase()}" }
+    val systemIdMap = systemEvents.associateBy( { "${it.id}_${it.date}" }, { it.adn } )
+
+    (systemEvents + cachedHistory).asSequence()
+        .distinctBy { event ->
+            val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
+            when {
+                event.id > 0 && systemIdMap.containsKey("${event.id}_${event.date}") -> systemIdMap["${event.id}_${event.date}"]
+                systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey) -> fuzzyKey
+                else -> event.adn
+            }
+        }
+        .filter { event ->
+            // A) Filtro de Seguridad: No recuperar si está marcado como borrado (físico o lógico)
+            if (event.isDeleted || (event.id in deletedIds)) return@filter false
+            
+            // B) Saneamiento de huérfanos manuales
+            if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey("${event.date}_${event.title.unaccent().trim().lowercase()}")) {
+                if (event.id < 0) return@filter false
+            }
+            true
+        }
+        .filter { it.date.isAfter(today.minusYears(20)) && it.date.isBefore(today.plusYears(6)) }
+        .map { event ->
+            if (event.id > 0) {
+                val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
+                val isPresent = systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)
+                if (isPresent) event.copy(isGhost = false)
+                else {
+                    val isWithinYear = !event.date.isBefore(today) && event.date.isBefore(today.plusYears(1))
+                    val calendarExists = availableCalendars.any { it.id == event.calendarId }
+                    event.copy(isGhost = isWithinYear && !calendarExists && !event.isFromHolidaySource && !event.isBirthday)
+                }
+            } else event
+        }
+        .toList()
 }

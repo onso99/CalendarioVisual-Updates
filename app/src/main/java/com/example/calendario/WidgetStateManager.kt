@@ -9,14 +9,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.updateAll
+import com.example.calendario.database.AppDatabase
+import com.example.calendario.database.toFestivo
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.milliseconds
@@ -48,11 +44,12 @@ object WidgetStateManager {
 
     fun refreshWithCurrentEvents(context: Context) {
         updateJob?.cancel()
-        // CORRECCIÓN: Leemos del historial JSON real (Notario), no de las Prefs antiguas
-        val allEvents = loadHistoryFromDisk(context)
-        
         updateJob = scope.launch {
-            performUpdate(context, allEvents)
+            val database = AppDatabase.getDatabase(context)
+            val events = withContext(Dispatchers.IO) {
+                database.calendarDao().getAllEventsSync().map { it.toFestivo() }
+            }
+            performUpdate(context, events)
         }
     }
 
@@ -181,10 +178,11 @@ object WidgetStateManager {
     data class WidgetEvent(val title: String, val dateEpochDay: Long, val startTimeStr: String?, val isAllDay: Boolean, val isBirthday: Boolean, val age: Int?, val isLongPeriod: Boolean, val currentDay: Int, val totalDays: Int, val alarmTimeStr: String?)
 
     /**
-     * Fallback mejorado: ya no lee de Prefs antiguas, sino que limpia el archivo real.
+     * Fallback mejorado: Lee directamente de Room de forma síncrona
      */
     fun getWidgetEvents(context: Context): List<WidgetEvent> {
-        val rawEvents = loadHistoryFromDisk(context)
+        val database = AppDatabase.getDatabase(context)
+        val rawEvents = database.calendarDao().getAllEventsSync().map { it.toFestivo() }
         return cleanAndFilterEvents(context, rawEvents)
     }
 }

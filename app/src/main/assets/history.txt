@@ -1,3 +1,4 @@
+2026-08-20 - v3.0.03 Base de datos-Fase 3: ViewModel refactorizado para usar Base de Datos Room
 2026-08-19 - v3.0.02 Base de datos-Fase 2: Motor de migración JSON a DB completado
 2026-08-19 - v3.0.01 Base de datos-Fase 1: Infraestructura Room configurada y esquema de tablas definido
 2026-08-19 - v2.1.97 Versión con motor JSON: widget clásico no muestra todos los eventos de la lista principal de eventos

@@ -117,9 +117,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 // 4. ACTUALIZACIÓN DE BASE DE DATOS
                 withContext(Dispatchers.IO) {
-                    val currentEntities = dao.getAllEvents().first()
+                    val currentEntities = dao.getAllEventsSync()
                     val cachedHistory = currentEntities.map { it.toFestivo() }
-                    val merged = mergeHistoryWithSystem(cachedHistory, systemEventsMap.values.flatten(), availableCalendars)
+                    val merged = mergeHistoryWithSystemData(context, cachedHistory, systemEventsMap.values.flatten(), availableCalendars)
                     // Usamos refreshEvents para purgar duplicados antiguos y ADN obsoletos
                     dao.refreshEvents(merged.map { it.toEntity() })
                 }
@@ -157,9 +157,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     fun updateCalendarData(newEvents: Map<LocalDate, List<Festivo>>, newAvailable: List<CalendarInfo>, newSelectedIds: Set<Long>) {
         viewModelScope.launch {
-            val currentEntities = dao.getAllEvents().first()
+            val context = getApplication<Application>()
+            val currentEntities = dao.getAllEventsSync()
             val cachedHistory = currentEntities.map { it.toFestivo() }
-            val mergedEvents = mergeHistoryWithSystem(cachedHistory, newEvents.values.flatten(), newAvailable)
+            val mergedEvents = mergeHistoryWithSystemData(context, cachedHistory, newEvents.values.flatten(), newAvailable)
 
             withContext(Dispatchers.IO) {
                 dao.refreshEvents(mergedEvents.map { it.toEntity() })
@@ -309,41 +310,4 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    private suspend fun mergeHistoryWithSystem(cachedHistory: List<Festivo>, systemEvents: List<Festivo>, availableCalendars: List<CalendarInfo>): List<Festivo> = withContext(Dispatchers.Default) {
-        val today = LocalDate.now()
-        val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
-        val fuzzySystemMap = systemEvents.associateBy { "${it.date}_${it.title.unaccent().trim().lowercase()}" }
-        val systemIdMap = systemEvents.associateBy( { "${it.id}_${it.date}" }, { it.adn } )
-
-        (systemEvents + cachedHistory).asSequence()
-            .distinctBy { event ->
-                val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
-                when {
-                    event.id > 0 && systemIdMap.containsKey("${event.id}_${event.date}") -> systemIdMap["${event.id}_${event.date}"]
-                    systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey) -> fuzzyKey
-                    else -> event.adn
-                }
-            }
-            .filter { event ->
-                if (event.isDeleted) return@filter false
-                if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey("${event.date}_${event.title.unaccent().trim().lowercase()}")) {
-                    if (event.id < 0) return@filter false
-                }
-                true
-            }
-            .filter { it.date.isAfter(today.minusYears(20)) && it.date.isBefore(today.plusYears(6)) }
-            .map { event ->
-                if (event.id > 0) {
-                    val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
-                    val isPresent = systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)
-                    if (isPresent) event.copy(isGhost = false)
-                    else {
-                        val isWithinYear = !event.date.isBefore(today) && event.date.isBefore(today.plusYears(1))
-                        val calendarExists = availableCalendars.any { it.id == event.calendarId }
-                        event.copy(isGhost = isWithinYear && !calendarExists && !event.isFromHolidaySource && !event.isBirthday)
-                    }
-                } else event
-            }
-            .toList()
-    }
 }

@@ -12,6 +12,8 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.example.calendario.database.AppDatabase
+import com.example.calendario.database.toFestivo
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -230,18 +232,14 @@ class CalendarWidgetFactory(
 
     private fun loadCalendarEvents() {
         val appActiveIds = loadSelectedCalendarIds(context)
-        
         val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
+        
         val widgetSelectedIds = try {
             widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
         } catch (_: ClassCastException) {
-            // Autosanación: Si el tipo es incorrecto (String en vez de Set), lo ignoramos
             emptySet()
-        }?.asSequence()
-            ?.mapNotNull { it.toLongOrNull() }
-            ?.toSet() ?: emptySet()
+        }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
 
-        // Lógica de Saneamiento:
         // 1. Verificamos qué IDs de la App existen realmente en el sistema actual
         val availableIds = loadAvailableCalendarsSync(context).map { it.id }.toSet()
         val validAppIds = appActiveIds.filter { it in availableIds }.toSet()
@@ -249,9 +247,7 @@ class CalendarWidgetFactory(
         // 2. Si el widget tiene selección propia, la filtramos contra lo que existe
         val validWidgetIds = widgetSelectedIds.filter { it in availableIds }.toSet()
 
-        // 3. Decisión Final:
-        // Si el widget no tiene selección válida, usamos lo que sea válido en la App.
-        // Si nada es válido (post-restauración crítica), usamos el primer ID disponible.
+        // 3. Decisión Final de Calendarios
         val effectiveIds = if (validWidgetIds.isNotEmpty()) {
             validWidgetIds
         } else if (validAppIds.isNotEmpty()) {
@@ -260,62 +256,67 @@ class CalendarWidgetFactory(
             availableIds.take(1).toSet()
         }
 
-        val allEventsByDateMap = if (effectiveIds.isNotEmpty()) {
-            readFestivosFromCalendarsSync(context, effectiveIds)
-        } else {
-            emptyMap()
+        // 4. CARGA DESDE ROOM (Unificación de fuente de verdad)
+        val database = AppDatabase.getDatabase(context)
+        val allRoomEvents = database.calendarDao().getAllEventsSync().map { it.toFestivo() }
+        
+        // Filtramos por calendarios seleccionados
+        val filteredEvents = allRoomEvents.filter { event -> 
+            effectiveIds.contains(event.calendarId) || event.calendarId == -1L 
         }
-        eventsList = processEventsForWidget(allEventsByDateMap, eventCountToShow)
+
+        val groupedEvents = filteredEvents.groupBy { it.date }
+        eventsList = processEventsForWidget(groupedEvents, eventCountToShow)
     }
-}
 
-/**
- * Versión síncrona de carga de calendarios para la Fábrica del Widget
- */
-private fun loadAvailableCalendarsSync(context: Context): List<CalendarInfo> {
-    val calendars = mutableListOf<CalendarInfo>()
-    val projection = arrayOf(
-        android.provider.CalendarContract.Calendars._ID,
-        android.provider.CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-        android.provider.CalendarContract.Calendars.ACCOUNT_NAME,
-        android.provider.CalendarContract.Calendars.OWNER_ACCOUNT,
-        android.provider.CalendarContract.Calendars.IS_PRIMARY,
-        android.provider.CalendarContract.Calendars.CALENDAR_COLOR,
-        android.provider.CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
-    )
+    /**
+     * Versión síncrona de carga de calendarios para la Fábrica del Widget
+     */
+    private fun loadAvailableCalendarsSync(context: Context): List<CalendarInfo> {
+        val calendars = mutableListOf<CalendarInfo>()
+        val projection = arrayOf(
+            android.provider.CalendarContract.Calendars._ID,
+            android.provider.CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+            android.provider.CalendarContract.Calendars.ACCOUNT_NAME,
+            android.provider.CalendarContract.Calendars.OWNER_ACCOUNT,
+            android.provider.CalendarContract.Calendars.IS_PRIMARY,
+            android.provider.CalendarContract.Calendars.CALENDAR_COLOR,
+            android.provider.CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
+        )
 
-    try {
-        context.contentResolver.query(
-            android.provider.CalendarContract.Calendars.CONTENT_URI,
-            projection,
-            null,
-            null,
-            null
-        )?.use { cursor ->
-            val idCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars._ID)
-            val nameCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
-            val accCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.ACCOUNT_NAME)
-            val ownerCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.OWNER_ACCOUNT)
-            val primaryCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.IS_PRIMARY)
-            val colorCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_COLOR)
-            val accessCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
+        try {
+            context.contentResolver.query(
+                android.provider.CalendarContract.Calendars.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                val idCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars._ID)
+                val nameCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
+                val accCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.ACCOUNT_NAME)
+                val ownerCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.OWNER_ACCOUNT)
+                val primaryCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.IS_PRIMARY)
+                val colorCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_COLOR)
+                val accessCol = cursor.getColumnIndexOrThrow(android.provider.CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
 
-            while (cursor.moveToNext()) {
-                calendars.add(
-                    CalendarInfo(
-                        id = cursor.getLong(idCol),
-                        displayName = cursor.getString(nameCol),
-                        accountName = cursor.getString(accCol),
-                        ownerAccount = cursor.getString(ownerCol),
-                        isPrimary = cursor.getInt(primaryCol) == 1,
-                        color = cursor.getInt(colorCol),
-                        canModify = cursor.getInt(accessCol) >= android.provider.CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR,
-                        accessLevel = cursor.getInt(accessCol),
-                        isDeleted = false
+                while (cursor.moveToNext()) {
+                    calendars.add(
+                        CalendarInfo(
+                            id = cursor.getLong(idCol),
+                            displayName = cursor.getString(nameCol),
+                            accountName = cursor.getString(accCol),
+                            ownerAccount = cursor.getString(ownerCol),
+                            isPrimary = cursor.getInt(primaryCol) == 1,
+                            color = cursor.getInt(colorCol),
+                            canModify = cursor.getInt(accessCol) >= android.provider.CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR,
+                            accessLevel = cursor.getInt(accessCol),
+                            isDeleted = false
+                        )
                     )
-                )
+                }
             }
-        }
-    } catch (_: Exception) {}
-    return calendars
+        } catch (_: Exception) {}
+        return calendars
+    }
 }

@@ -21,6 +21,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "calendario_database"
                 )
                 .fallbackToDestructiveMigration(dropAllTables = true)
+                .allowMainThreadQueries() // Necesario para la Fábrica del Widget Clásico
                 .build()
                 INSTANCE = instance
                 instance

@@ -8,6 +8,10 @@ import androidx.work.WorkerParameters
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import androidx.core.app.NotificationCompat
+import com.example.calendario.database.toEntity
+import com.example.calendario.database.toFestivo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class UpdateCalendarDataWorker(
     appContext: Context,
@@ -71,6 +75,28 @@ class UpdateCalendarDataWorker(
 
             val eventsMap = readFestivosFromCalendarsSync(context, validSelectedCalendarIds)
             LogCollector.addLog("WORKER: Datos leídos (${eventsMap.size} días)")
+
+            // ACTUALIZACIÓN DE BASE DE DATOS (Fase 3/4)
+            val database = com.example.calendario.database.AppDatabase.getDatabase(context)
+            val dao = database.calendarDao()
+            
+            val currentEntities = dao.getAllEventsSync()
+            val cachedHistory = currentEntities.map { it.toFestivo() }
+            
+            // Fusión inteligente (usando la lógica que perfeccionamos en el ViewModel)
+            // Necesitamos acceder a mergeHistoryWithSystem. Como es privada en ViewModel, 
+            // deberíamos haberla movido a Utils. Lo haré en el siguiente paso si es necesario, 
+            // pero por ahora usemos una lógica similar.
+            
+            // Para simplificar esta fase, vamos a confiar en que la App principal 
+            // es la que hace las fusiones pesadas, y el Worker solo inyecta lo nuevo de Google.
+            val systemEvents = eventsMap.values.flatten()
+            
+            // FUSIÓN INTELIGENTE COMPLETA: Usamos el mismo cerebro que el ViewModel
+            val mergedEvents = mergeHistoryWithSystemData(context, cachedHistory, systemEvents, availableCalendars)
+            
+            // Actualizamos Room de forma segura
+            dao.refreshEvents(mergedEvents.map { it.toEntity() })
 
             saveEventsToPrefs(context, eventsMap)
             
