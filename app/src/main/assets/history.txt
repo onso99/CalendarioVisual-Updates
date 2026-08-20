@@ -1,3 +1,5 @@
+2026-08-20 - v3.0.06 Corrección de warnings
+2026-08-20 - v3.0.05 Base de datos-Fase 5: Migración finalizada, sistema de backup actualizado y limpieza de código obsoleto
 2026-08-20 - v3.0.04 Base de datos-Fase 4: Widgets unificados y sincronizados mediante Room
 2026-08-20 - v3.0.03 Base de datos-Fase 3: ViewModel refactorizado para usar Base de Datos Room
 2026-08-19 - v3.0.02 Base de datos-Fase 2: Motor de migración JSON a DB completado

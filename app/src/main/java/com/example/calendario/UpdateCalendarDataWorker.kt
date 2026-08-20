@@ -10,8 +10,6 @@ import android.app.NotificationManager
 import androidx.core.app.NotificationCompat
 import com.example.calendario.database.toEntity
 import com.example.calendario.database.toFestivo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class UpdateCalendarDataWorker(
     appContext: Context,

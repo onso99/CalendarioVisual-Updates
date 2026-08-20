@@ -244,7 +244,7 @@ object BackupManager {
                     }
                     if (newFavoriteId != null) {
                         context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE).edit {
-                            putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, newFavoriteId!!)
+                            putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, newFavoriteId)
                         }
                     }
                 }
@@ -353,7 +353,7 @@ object BackupManager {
         return try {
             val content = context.contentResolver.openInputStream(uri)?.use { BufferedReader(InputStreamReader(it)).readText() } ?: return false
             importFullBackupFromJson(context, JSONObject(content), restorePrefs, restoreHolidays, restoreNotes, restoreEvents, BackupSource.LOCAL)
-        } catch (e: Exception) { false }
+        } catch (_: Exception) { false }
     }
 
     private fun restorePrefs(prefs: SharedPreferences, json: JSONObject?) {

@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -16,8 +15,6 @@ import com.example.calendario.database.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 data class CalendarioUiState(
     val eventsByDate: Map<LocalDate, List<Festivo>> = emptyMap(),
@@ -51,8 +48,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 val notes = noteEntities.associate { it.dateStr to it.toDailyNote() }
                 events to notes
             }.collect { (events, notes) ->
-                _uiState.update { it.copy(
-                    eventsByDate = events.groupBy { it.date },
+                _uiState.update { state -> state.copy(
+                    eventsByDate = events.groupBy { event -> event.date },
                     dailyNotes = notes
                 ) }
                 updateCleaningCandidates()
@@ -104,7 +101,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 // Si la selección restaurada no es válida en este móvil, intentamos auto-reparar
                 val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
                 
-                var finalSelectedIds = if (validSelectedIds.isEmpty() && selectedIds.isNotEmpty()) {
+                val finalSelectedIds = if (validSelectedIds.isEmpty() && selectedIds.isNotEmpty()) {
                     // SI ESTAMOS AQUÍ, ES QUE LOS IDs HAN CAMBIADO (POST-RESTAURACIÓN)
                     // Intentamos recuperar seleccionando calendarios primarios o modificables por defecto
                     availableCalendars.filter { it.canModify }.map { it.id }.toSet()
@@ -229,7 +226,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val fullJson = BackupManager.createFullBackupJson(context, freshSelectedIds, freshFavoriteId)
                     GoogleDriveHelper(context, account).syncHistoryWithDrive()
                     SyncResult(merged.size, 0, true, fullJson.toString().toByteArray().size.toLong())
-                } catch (e: Exception) { SyncResult(0, 0, false, 0L) }
+                } catch (_: Exception) { SyncResult(0, 0, false, 0L) }
             }
             if (result.success) {
                 val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
@@ -253,7 +250,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
                         ?: return@withContext false
                     GoogleDriveHelper(context, account).downloadAndRestoreSelective(restorePrefs, restoreHolidays, restoreNotes, restoreEvents)
-                } catch (e: Exception) { false }
+                } catch (_: Exception) { false }
             }
             if (success) {
                 // Al terminar con éxito, refreshData cargará los nuevos calendarios y Room 
@@ -272,7 +269,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 try {
                     BackupManager.importFullBackup(context, uri, restorePrefs, restoreHolidays, restoreNotes, restoreEvents)
                     true
-                } catch (e: Exception) { false }
+                } catch (_: Exception) { false }
             }
             if (success) {
                 // Al terminar con éxito, refreshData se encarga de re-sincronizar

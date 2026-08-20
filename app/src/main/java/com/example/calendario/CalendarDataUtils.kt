@@ -4,19 +4,14 @@ import android.content.ContentUris
 import android.content.Context
 import androidx.core.content.edit
 import android.provider.CalendarContract
-import androidx.core.content.ContextCompat
 import androidx.core.database.getStringOrNull
-import com.example.calendario.database.toEntity
-import com.example.calendario.database.toFestivo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
-import java.util.Locale
 
 // --- GESTIÓN DE BORRADOS (Tombstones) ---
 
