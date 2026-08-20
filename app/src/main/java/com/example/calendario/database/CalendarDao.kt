@@ -43,6 +43,9 @@ interface CalendarDao {
     @Query("SELECT * FROM notes WHERE isDeleted = 0")
     fun getAllNotes(): Flow<List<NoteEntity>>
 
+    @Query("SELECT * FROM notes")
+    fun getAllNotesSync(): List<NoteEntity>
+
     @Query("SELECT * FROM notes WHERE dateStr = :dateStr")
     suspend fun getNoteByDate(dateStr: String): NoteEntity?
 
@@ -51,6 +54,9 @@ interface CalendarDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotes(notes: List<NoteEntity>)
+
+    @Query("DELETE FROM notes")
+    suspend fun clearAllNotes()
 
     @Query("DELETE FROM notes WHERE dateStr = :dateStr")
     suspend fun deleteNotePermanently(dateStr: String)

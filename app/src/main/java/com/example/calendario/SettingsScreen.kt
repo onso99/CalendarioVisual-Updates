@@ -211,7 +211,9 @@ fun SettingsScreen(
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     try {
-                        BackupManager.exportFullBackup(context, uri)
+                        val selIds = appPrefs.getString("temp_selected_ids", "")?.split(",")?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+                        val favId = appPrefs.getString("temp_fav_id", null)?.toLongOrNull()
+                        BackupManager.exportFullBackup(context, uri, selIds, favId)
                         Toast.makeText(context, R.string.backup_exported_successfully, Toast.LENGTH_SHORT).show()
                     } catch (e: Exception) {
                         val errorMsg = context.applicationContext.getString(R.string.error_exporting_backup, e.message ?: "Unknown error")
@@ -579,7 +581,14 @@ fun SettingsScreen(
                         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
                             SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { importFullBackupLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) })
-                            SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { val suggested = "calendariovisual_backup_${LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))}.json"; exportFullBackupLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, suggested) }) })
+                            SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { 
+                                val suggested = "calendariovisual_backup_${LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))}.json"
+                                appPrefs.edit { 
+                                    putString("temp_selected_ids", uiState.selectedCalendarIds.joinToString(","))
+                                    putString("temp_fav_id", uiState.favoriteCalendarId?.toString())
+                                }
+                                exportFullBackupLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, suggested) }) 
+                            })
                         }
                     }
                 }

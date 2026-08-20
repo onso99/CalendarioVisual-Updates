@@ -97,8 +97,6 @@ class UpdateCalendarDataWorker(
             
             // Actualizamos Room de forma segura
             dao.refreshEvents(mergedEvents.map { it.toEntity() })
-
-            saveEventsToPrefs(context, eventsMap)
             
             // Reprogramamos todas las alarmas para asegurar que coinciden con los nuevos datos sincronizados
             AlarmUtils.rescheduleAllAlarms(context)

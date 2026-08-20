@@ -100,13 +100,25 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     favoriteId?.let { setFavoriteCalendar(it) }
                 }
 
-                // 3. SINCRONIZACIÓN CON GOOGLE
-                val finalSelectedIds = if (selectedIds.isNotEmpty()) {
-                    selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
+                // 3. SINCRONIZACIÓN Y CURACIÓN DE SELECCIÓN
+                // Si la selección restaurada no es válida en este móvil, intentamos auto-reparar
+                val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
+                
+                var finalSelectedIds = if (validSelectedIds.isEmpty() && selectedIds.isNotEmpty()) {
+                    // SI ESTAMOS AQUÍ, ES QUE LOS IDs HAN CAMBIADO (POST-RESTAURACIÓN)
+                    // Intentamos recuperar seleccionando calendarios primarios o modificables por defecto
+                    availableCalendars.filter { it.canModify }.map { it.id }.toSet()
+                        .ifEmpty { availableCalendars.asSequence().take(1).map { it.id }.toSet() }
                 } else {
-                    val defaultIds = availableCalendars.filter { it.canModify }.map { it.id }.toSet()
-                    saveSelectedCalendarIds(context, defaultIds)
-                    defaultIds
+                    validSelectedIds.ifEmpty { 
+                        // Caso de primer arranque absoluto: seleccionar todo lo modificable
+                        availableCalendars.filter { it.canModify }.map { it.id }.toSet() 
+                    }
+                }
+                
+                // Si la selección ha cambiado tras la curación, la guardamos
+                if (finalSelectedIds != selectedIds) {
+                    saveSelectedCalendarIds(context, finalSelectedIds)
                 }
 
                 val systemEventsMap = if (finalSelectedIds.isNotEmpty()) {
@@ -199,9 +211,24 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             _uiState.update { it.copy(isSyncing = true) }
             val result = withContext(Dispatchers.IO) {
                 try {
+                    // 1. Asegurar datos frescos respetando coherencia
+                    val freshSelectedIds = loadSelectedCalendarIds(context)
+                    val freshFavoriteId = getFavoriteCalendarId(context)
+                    
+                    val freshEvents = readFestivosFromCalendarsSync(context, freshSelectedIds)
+                    val currentEntities = dao.getAllEventsSync()
+                    val cachedHistory = currentEntities.map { it.toFestivo() }
+                    val available = loadAvailableCalendarsSync(context)
+                    val merged = mergeHistoryWithSystemData(context, cachedHistory, freshEvents.values.flatten(), available)
+                    dao.refreshEvents(merged.map { it.toEntity() })
+
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
                         ?: return@withContext SyncResult(0, 0, false, 0L)
+                        
+                    // 2. Crear y subir Backup con metadatos de identidad de calendarios
+                    val fullJson = BackupManager.createFullBackupJson(context, freshSelectedIds, freshFavoriteId)
                     GoogleDriveHelper(context, account).syncHistoryWithDrive()
+                    SyncResult(merged.size, 0, true, fullJson.toString().toByteArray().size.toLong())
                 } catch (e: Exception) { SyncResult(0, 0, false, 0L) }
             }
             if (result.success) {
@@ -229,12 +256,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 } catch (e: Exception) { false }
             }
             if (success) {
-                withContext(Dispatchers.IO) {
-                    val freshHistory = loadHistoryFromDisk(context)
-                    val freshNotes = loadNotesFromDisk(context)
-                    dao.insertEvents(freshHistory.map { it.toEntity() })
-                    dao.insertNotes(freshNotes.map { it.toEntity() })
-                }
+                // Al terminar con éxito, refreshData cargará los nuevos calendarios y Room 
+                // ya tendrá los eventos inyectados por el BackupManager.
+                refreshData()
             }
             _uiState.update { it.copy(isRestoring = false) }
             onComplete(success)
@@ -251,12 +275,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 } catch (e: Exception) { false }
             }
             if (success) {
-                withContext(Dispatchers.IO) {
-                    val freshHistory = loadHistoryFromDisk(context)
-                    val freshNotes = loadNotesFromDisk(context)
-                    dao.insertEvents(freshHistory.map { it.toEntity() })
-                    dao.insertNotes(freshNotes.map { it.toEntity() })
-                }
+                // Al terminar con éxito, refreshData se encarga de re-sincronizar
+                refreshData()
             }
             _uiState.update { it.copy(isRestoring = false) }
             onComplete(success)

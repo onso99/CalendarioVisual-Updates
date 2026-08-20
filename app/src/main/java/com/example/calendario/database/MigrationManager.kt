@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
 import com.example.calendario.AppConstants
-import com.example.calendario.loadHistoryFromDisk
-import com.example.calendario.loadNotesFromDisk
+import com.example.calendario.BackupManager
+import com.example.calendario.Festivo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,10 +25,11 @@ object MigrationManager {
                 val dao = database.calendarDao()
 
                 // 1. Migrar Eventos
-                val legacyEvents = loadHistoryFromDisk(context)
+                val legacyEvents = BackupManager.getEventsFromLegacyJson(context)
                 if (legacyEvents.isNotEmpty()) {
                     val entities = legacyEvents.map { festivo ->
                         EventEntity(
+                            adn = festivo.adn,
                             googleId = festivo.id,
                             title = festivo.title,
                             description = festivo.description,
@@ -49,7 +50,6 @@ object MigrationManager {
                             fullStartMillis = festivo.fullStartMillis,
                             fullEndMillis = festivo.fullEndMillis,
                             repeatCount = festivo.repeatCount,
-                            adn = festivo.adn,
                             lastModified = festivo.lastModified,
                             isDeleted = festivo.isDeleted,
                             isGhost = festivo.isGhost
@@ -60,7 +60,7 @@ object MigrationManager {
                 }
 
                 // 2. Migrar Notas
-                val legacyNotes = loadNotesFromDisk(context)
+                val legacyNotes = BackupManager.getNotesFromLegacyJson(context)
                 if (legacyNotes.isNotEmpty()) {
                     legacyNotes.forEach { note ->
                         dao.insertNote(NoteEntity(

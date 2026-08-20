@@ -13,6 +13,8 @@ import androidx.core.content.edit
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import com.example.calendario.database.AppDatabase
+import com.example.calendario.database.toFestivo
 
 object AlarmUtils {
 
@@ -209,8 +211,8 @@ object AlarmUtils {
     }
 
     fun rescheduleAllAlarms(context: Context): Int {
-        val eventsMap = loadEventsFromPrefs(context)
-        val allEvents = eventsMap.values.flatten()
+        val database = AppDatabase.getDatabase(context)
+        val allEvents = database.calendarDao().getAllEventsSync().map { it.toFestivo() }
         val allEventIds = allEvents.map { it.id.toString() }.toSet()
         
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)

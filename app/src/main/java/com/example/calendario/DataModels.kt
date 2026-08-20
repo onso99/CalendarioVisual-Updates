@@ -55,34 +55,6 @@ data class CalendarInfo(
     val isDeleted: Boolean
 )
 
-data class FestivoDto(
-    val title: String?,
-    val description: String?,
-    val id: Long?,
-    val calendarId: Long? = 0L,
-    val startTimeStr: String?,
-    val endTimeStr: String?,
-    val isAllDay: Boolean? = true,
-    val rrule: String?,
-    val age: Int?,
-    val isBirthday: Boolean? = false,
-    val isFromHolidaySource: Boolean? = false,
-    val alarmTimeMillis: Long? = null,
-    val isLongPeriod: Boolean? = false,
-    val lane: Int? = null,
-    val totalDays: Int? = 1,
-    val currentDay: Int? = 1,
-    val customColor: Int? = null,
-    val fullStartMillis: Long? = null,
-    val fullEndMillis: Long? = null,
-    val repeatCount: Int? = null,
-    val dateStr: String? = null,
-    val adn: String? = null,
-    // --- Campos para SincronizaciÃ³n Segura ---
-    val lastModified: Long? = null,
-    val isDeleted: Boolean? = false,
-    val isGhost: Boolean? = false
-)
 
 data class HolidayAdjustment(
     val date: LocalDate,
@@ -103,11 +75,28 @@ data class SyncResult(
     val sizeBytes: Long = 0L
 )
 
+
 data class HolidayAdjustmentDto(
     val dateStr: String,
     val title: String,
     val type: String,
     val originalEventId: Long? = null
+)
+
+data class FestivoDto(
+    val title: String?, val description: String?, val id: Long?,
+    val calendarId: Long? = 0L, val startTimeStr: String?, val endTimeStr: String?,
+    val isAllDay: Boolean? = true, val rrule: String?, val age: Int?,
+    val isBirthday: Boolean? = false, val isFromHolidaySource: Boolean? = false,
+    val isLongPeriod: Boolean? = false, val lane: Int? = null,
+    val totalDays: Int? = 1, val currentDay: Int? = 1, val customColor: Int? = null,
+    val fullStartMillis: Long? = null, val fullEndMillis: Long? = null,
+    val repeatCount: Int? = null, val dateStr: String? = null, val adn: String? = null,
+    val lastModified: Long? = null, val isDeleted: Boolean? = false, val isGhost: Boolean? = false
+)
+
+data class DailyNoteDto(
+    val dateStr: String?, val content: String?, val lastModified: Long?, val isDeleted: Boolean? = false
 )
 
 // --- Modelos para Notas Diarias ---
@@ -122,12 +111,6 @@ data class DailyNote(
     val date: LocalDate get() = try { LocalDate.parse(dateStr) } catch(_: Exception) { LocalDate.now() }
 }
 
-data class DailyNoteDto(
-    val dateStr: String?,
-    val content: String?,
-    val lastModified: Long?,
-    val isDeleted: Boolean? = false
-)
 
 // --- Modelo para Resultados de Búsqueda Mixtos ---
 

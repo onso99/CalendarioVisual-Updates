@@ -683,9 +683,10 @@ fun SelectWidgetCalendarsDialog(
                     .fillMaxWidth()
                     .layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
-                        val offsetPx = 48.dp.roundToPx() // Reservamos el espacio para el aviso
-                        // Reportamos un alto menor al real para que los botones de abajo suban y la lista no baile
-                        layout(placeable.width, placeable.height - offsetPx) {
+                        val offsetPx = 48.dp.roundToPx() 
+                        // ASEGURAMOS QUE EL ALTO NUNCA SEA NEGATIVO (Evita el crash Size out of range)
+                        val layoutHeight = (placeable.height - offsetPx).coerceAtLeast(0)
+                        layout(placeable.width, layoutHeight) {
                             placeable.placeRelative(0, -offsetPx)
                         }
                     }
