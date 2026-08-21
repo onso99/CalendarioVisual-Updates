@@ -491,27 +491,54 @@ fun AddEventForm(
                 Text(stringResource(id = R.string.summary_calendar, calendarName))
 
                 val summaryFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy", locale) }
+                val timeOnlyFormatter = remember(locale) { DateTimeFormatter.ofPattern("HH:mm", locale) }
+                val isSameDay = startDate.toLocalDate() == endDate.toLocalDate()
 
                 if (isAllDay) {
-                    if (startDate.toLocalDate() != endDate.toLocalDate()) {
-                        Row {
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(stringResource(id = R.string.from))
-                                Text(stringResource(id = R.string.to))
-                            }
-                            Column {
-                                Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                                Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                            }
+                    if (!isSameDay) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.from) + ": ", fontWeight = FontWeight.Medium)
+                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.to) + ": ", fontWeight = FontWeight.Medium)
+                            Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                         }
                     } else {
-                        Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
+                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                        }
                     }
-                    Text(stringResource(id = R.string.all_day_switch))
+                    Text(stringResource(id = R.string.all_day_switch), fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, fontSize = 12.sp)
                 } else {
-                    val summaryTimeFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm", locale) }
-                    Text(stringResource(id = R.string.start) + ": " + startDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase(locale) })
-                    Text(stringResource(id = R.string.end) + ": " + endDate.format(summaryTimeFormatter).replaceFirstChar { it.titlecase(locale) })
+                    if (isSameDay) {
+                        // MISMO DÍA: Fecha una vez, horas a la derecha
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
+                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(startDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(endDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                        }
+                    } else {
+                        // DÍAS DISTINTOS: Fecha y hora en cada línea
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
+                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(startDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.end) + ": ", fontWeight = FontWeight.Medium)
+                            Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(endDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
                 if (repetitionRule != RepetitionRule.NONE) {
                     Text(stringResource(id = R.string.repeat_event_title) + ": " + stringResource(id = repetitionRule.displayNameRes))
