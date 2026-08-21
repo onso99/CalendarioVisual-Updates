@@ -86,14 +86,20 @@ fun loadAvailableCalendarsSync(context: Context): List<CalendarInfo> {
         CalendarContract.Calendars.OWNER_ACCOUNT,
         CalendarContract.Calendars.IS_PRIMARY,
         CalendarContract.Calendars.CALENDAR_COLOR,
-        CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
+        CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
+        CalendarContract.Calendars.VISIBLE,
+        CalendarContract.Calendars.SYNC_EVENTS
     )
 
     try {
+        // Filtramos directamente en la consulta: 
+        // Solo calendarios marcados como VISIBLES y que estén activados para SINCRONIZAR
+        val selection = "${CalendarContract.Calendars.VISIBLE} = 1 AND ${CalendarContract.Calendars.SYNC_EVENTS} = 1"
+
         context.contentResolver.query(
             CalendarContract.Calendars.CONTENT_URI,
             projection,
-            null,
+            selection,
             null,
             null
         )?.use { cursor ->
