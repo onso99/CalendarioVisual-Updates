@@ -248,13 +248,9 @@ class CalendarWidgetFactory(
         val validWidgetIds = widgetSelectedIds.filter { it in availableIds }.toSet()
 
         // 3. Decisión Final de Calendarios
-        val effectiveIds = if (validWidgetIds.isNotEmpty()) {
-            validWidgetIds
-        } else if (validAppIds.isNotEmpty()) {
-            validAppIds
-        } else {
-            availableIds.take(1).toSet()
-        }
+        val effectiveIds = validWidgetIds
+            .ifEmpty { validAppIds }
+            .ifEmpty { availableIds.take(1).toSet() }
 
         // 4. CARGA DESDE ROOM (Unificación de fuente de verdad)
         val database = AppDatabase.getDatabase(context)
