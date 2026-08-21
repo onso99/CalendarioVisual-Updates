@@ -1,3 +1,5 @@
+2026-08-21 - v3.0.12 Fuente: desplegable con botón Negrita y nombre de fuente
+2026-08-21 - v3.0.11 Diálogo Optimizar datos: cambio de strings y propagación al resto de idiomas
 2026-08-21 - v3.0.10 Calendarios: Sincronizada visibilidad de calendarios con Google Calendar
 2026-08-21 - v3.0.09 Editar/Añadir evento: Resumen organizado
 2026-08-21 - v3.0.08 Corrección de warnings

@@ -189,6 +189,7 @@
     <string name="event_deleted_message">Eliminado %1$s %2$s</string>
 
     <string name="font">Fonte</string>
+    <string name="font_bold">Negriña</string>
     <string name="font_system">Sistema</string>
     <string name="font_sans_serif">Sans Serif (Normal)</string>
     <string name="font_serif">Serif (Con remates)</string>

@@ -143,6 +143,7 @@ fun SettingsScreen(
     var showWidgetColorExpand by remember { mutableStateOf(false) }
     var showBackupActionsExpand by remember { mutableStateOf(false) }
     var showLocalBackupExpand by remember { mutableStateOf(false) }
+    var showFontExpand by remember { mutableStateOf(false) }
 
     var showDataCleaningDialog by remember { mutableStateOf(false) }
 
@@ -493,13 +494,96 @@ fun SettingsScreen(
                     }
                 }
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFontFamilyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Box(modifier = Modifier.size(30.dp).clip(CircleShape).background(if (pendingFontBold) CalendarioTheme.colors.cabecera.copy(alpha = 0.12f) else Color.Transparent).border(1.dp, if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.15f), CircleShape).clickable { pendingFontBold = !pendingFontBold; updateWidgetPrefs { putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold) } }, contentAlignment = Alignment.Center) { Icon(Icons.Default.FormatBold, null, tint = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(34.dp)) }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    val display = when(pendingFontFamily) { WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif); WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace); WidgetConstants.FONT_FAMILY_CONDENSED -> stringResource(id = R.string.font_condensed); WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif); else -> stringResource(id = R.string.font_system) }
-                    Text(text = display, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable { showFontExpand = !showFontExpand }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(id = R.string.font), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            imageVector = if (showFontExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    if (showFontExpand) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Botón Chip "Negrita" (Estilo Tema)
+                            val chipBg = if (pendingFontBold) CalendarioTheme.colors.cabecera.copy(alpha = 0.12f) else CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
+                            val chipBorder = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+                            val chipTextColor = if (pendingFontBold) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem
+                            
+                            Box(
+                                modifier = Modifier
+                                    .widthIn(min = 90.dp)
+                                    .height(36.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(chipBg)
+                                    .border(1.dp, chipBorder, RoundedCornerShape(18.dp))
+                                    .clickable { 
+                                        pendingFontBold = !pendingFontBold
+                                        updateWidgetPrefs { putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold) }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.font_bold),
+                                    color = chipTextColor,
+                                    fontSize = 14.sp,
+                                    fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal,
+                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.width(16.dp))
+                            
+                            // Nombre de la fuente (Clickable para abrir diálogo)
+                            val fontDisplayName = when(pendingFontFamily) {
+                                WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
+                                WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
+                                WidgetConstants.FONT_FAMILY_CONDENSED -> stringResource(id = R.string.font_condensed)
+                                WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
+                                else -> stringResource(id = R.string.font_system)
+                            }
+
+                            val previewFontFamily = when(pendingFontFamily) {
+                                WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
+                                WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
+                                WidgetConstants.FONT_FAMILY_CONDENSED -> {
+                                    val style = if (pendingFontBold) Typeface.BOLD else Typeface.NORMAL
+                                    FontFamily(Typeface.create("sans-serif-condensed", style))
+                                }
+                                WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
+                                else -> FontFamily.Default
+                            }
+                            
+                            Text(
+                                text = fontDisplayName,
+                                color = CalendarioTheme.colors.textSystem,
+                                fontSize = 13.sp, // Reducido ligeramente para acomodar nombres largos
+                                fontFamily = previewFontFamily,
+                                // Si es condensada, el peso ya va en la familia arriba, para las demás usamos FontWeight.Bold
+                                fontWeight = if (pendingFontBold && pendingFontFamily != WidgetConstants.FONT_FAMILY_CONDENSED) FontWeight.Bold else FontWeight.Normal,
+                                textAlign = TextAlign.End,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { showFontFamilyDialog = true }
+                            )
+                        }
+                    }
                 }
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                 Column {

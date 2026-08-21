@@ -189,6 +189,7 @@
     <string name="event_deleted_message">Ezabatua %1$s %2$s</string>
 
     <string name="font">Letra-tipoa</string>
+    <string name="font_bold">Lodia</string>
     <string name="font_system">Sistema</string>
     <string name="font_sans_serif">Sans Serif (Normala)</string>
     <string name="font_serif">Serif (Remateduna)</string>

@@ -189,6 +189,7 @@
     <string name="event_deleted_message">已删除 %1$s %2$s</string>
 
     <string name="font">字体</string>
+    <string name="font_bold">粗体</string>
     <string name="font_system">系统字体</string>
     <string name="font_sans_serif">无衬线体 (常规)</string>
     <string name="font_serif">衬线体 (带装饰)</string>
