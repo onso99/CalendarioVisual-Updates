@@ -15,9 +15,11 @@ data class Festivo(
     val calendarId: Long,
     val isFromHolidaySource: Boolean,
     val rrule: String?,
-    val age: Int? = null,
     val isBirthday: Boolean = false,
     val originalBirthDate: LocalDate? = null,
+    val age: Int? = if (isBirthday && originalBirthDate != null) {
+        java.time.Period.between(originalBirthDate, date).years
+    } else null,
     val alarmTimeMillis: Long? = null,
     val isLongPeriod: Boolean = false,
     val lane: Int? = null,

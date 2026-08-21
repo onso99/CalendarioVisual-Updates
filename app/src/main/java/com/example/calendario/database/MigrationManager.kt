@@ -41,6 +41,7 @@ object MigrationManager {
                             rrule = festivo.rrule,
                             age = festivo.age,
                             isBirthday = festivo.isBirthday,
+                            originalBirthDate = null, // JSON legado no guardaba este dato
                             isLongPeriod = festivo.isLongPeriod,
                             lane = festivo.lane,
                             totalDays = festivo.totalDays,

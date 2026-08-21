@@ -18,6 +18,7 @@ data class EventEntity(
     val rrule: String?,
     val age: Int?,
     val isBirthday: Boolean,
+    val originalBirthDate: String?, // Añadido: LocalDate ISO para cálculo de edad
     val isLongPeriod: Boolean,
     val lane: Int?,
     val totalDays: Int,

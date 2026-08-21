@@ -215,6 +215,7 @@ fun readFestivosFromCalendarsSync(
             val tempInstancesData = tempInstancesMap.values
             val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
             val rruleMap = mutableMapOf<Long, String>()
+            val birthYearMap = mutableMapOf<Long, Int>() // Mapa recuperado
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
             val customColorMap = mutableMapOf<Long, Int?>()
@@ -225,9 +226,11 @@ fun readFestivosFromCalendarsSync(
                 resolver.query(CalendarContract.Events.CONTENT_URI, null, eventSelection, null, null)?.use { cursor ->
                     val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
                     val rruleCol = cursor.getColumnIndex(CalendarContract.Events.RRULE)
+                    val startCol = cursor.getColumnIndex(CalendarContract.Events.DTSTART)
                     val descCol = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION)
                     val colorCol = cursor.getColumnIndex(CalendarContract.Events.EVENT_COLOR)
                     val s1Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA1)
+                    val s2Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA2)
                     val pkgCol = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
                     val orgCol = cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)
 
@@ -242,6 +245,17 @@ fun readFestivosFromCalendarsSync(
                         val pkg = if (pkgCol != -1) cursor.getStringOrNull(pkgCol)?.lowercase() ?: "" else ""
                         val org = if (orgCol != -1) cursor.getStringOrNull(orgCol)?.lowercase() ?: "" else ""
                         if (pkg.contains("contacts") || org.contains("contacts") || s1.contains("birthday") || pkg.contains("gms") || org.contains("contacts@google.com")) technicalBirthdayIds.add(id)
+                        
+                        // RECUPERACIÓN DEL AÑO DE NACIMIENTO (Para cálculo de edad)
+                        var bYear: Int? = null
+                        val s2 = if (s2Col != -1) cursor.getStringOrNull(s2Col) ?: "" else ""
+                        if (s2.length >= 4) bYear = Regex("\\b(19|20)\\d{2}\\b").find(s2)?.value?.toIntOrNull()
+                        if ((bYear == null || bYear < 1850) && startCol != -1) {
+                            val dtStartValue = cursor.getLong(startCol)
+                            val year = Instant.ofEpochMilli(dtStartValue).atZone(ZoneId.of("UTC")).toLocalDate().year
+                            if (year in 1850..LocalDate.now().year) bYear = year
+                        }
+                        if (bYear != null && bYear > 1850) birthYearMap[id] = bYear
                     }
                 }
             }
@@ -281,6 +295,7 @@ fun readFestivosFromCalendarsSync(
                     isFromHolidaySource = isFromHoliday,
                     rrule = rruleMap[eventId],
                     isBirthday = isTechnicalBirthday || hasBirthdayWord || hasGreetingWord,
+                    originalBirthDate = if (isTechnicalBirthday || hasBirthdayWord) birthYearMap[eventId]?.let { y -> startDate.withYear(y) } else null,
                     isLongPeriod = endDate.isAfter(startDate),
                     totalDays = if (endDate.isAfter(startDate)) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1,
                     currentDay = 1,
