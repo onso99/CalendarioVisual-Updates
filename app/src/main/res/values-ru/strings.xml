@@ -313,11 +313,11 @@
     <string name="calendar_read_only_error">Календарь только для чтения</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Очистка данных</string>
+    <string name="data_cleaning_label">Оптимизация данных</string>
     <string name="scan_label">Сканировать</string>
     <string name="analyzing_data">Анализ данных…</string>
     <string name="analysis_finished">Анализ завершен</string>
-    <string name="no_cleaning_results">Целостность данных проверена</string>
+    <string name="no_cleaning_results">События и заметки в отличном состоянии</string>
     <string name="lang_system">Система</string>
     <string name="lang_es">Испанский (Español)</string>
     <string name="lang_en">Английский (English)</string>

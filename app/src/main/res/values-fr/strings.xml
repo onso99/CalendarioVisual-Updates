@@ -313,11 +313,11 @@
     <string name="calendar_read_only_error">Calendrier en lecture seule</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Nettoyage des données</string>
+    <string name="data_cleaning_label">Optimiser les données</string>
     <string name="scan_label">Scanner</string>
     <string name="analyzing_data">Analyse des données…</string>
     <string name="analysis_finished">Analyse terminée</string>
-    <string name="no_cleaning_results">Intégrité des données vérifiée</string>
+    <string name="no_cleaning_results">Événements et notes en parfait état</string>
     <string name="lang_system">Système</string>
     <string name="lang_es">Espagnol (Español)</string>
     <string name="lang_en">Anglais (English)</string>

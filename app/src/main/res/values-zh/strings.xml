@@ -313,11 +313,11 @@
     <string name="calendar_read_only_error">只读日历</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">数据清理</string>
+    <string name="data_cleaning_label">优化数据</string>
     <string name="scan_label">扫描</string>
     <string name="analyzing_data">正在分析数据…</string>
     <string name="analysis_finished">分析完成</string>
-    <string name="no_cleaning_results">数据完整性已验证</string>
+    <string name="no_cleaning_results">事件和备注状态良好</string>
     <string name="lang_system">系统</string>
     <string name="lang_es">西班牙语 (Español)</string>
     <string name="lang_en">英语 (English)</string>

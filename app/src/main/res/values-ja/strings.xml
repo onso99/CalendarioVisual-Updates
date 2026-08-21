@@ -313,11 +313,11 @@
     <string name="calendar_read_only_error">読み取り専用カレンダー</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">データのクリーンアップ</string>
+    <string name="data_cleaning_label">データを最適化</string>
     <string name="scan_label">スキャン</string>
     <string name="analyzing_data">データを分析中…</string>
     <string name="analysis_finished">分析が完了しました</string>
-    <string name="no_cleaning_results">データの整合性が確認されました</string>
+    <string name="no_cleaning_results">予定とメモは良好な状態です</string>
     <string name="lang_system">システム</string>
     <string name="lang_es">スペイン語 (Español)</string>
     <string name="lang_en">英語 (English)</string>
