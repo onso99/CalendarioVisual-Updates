@@ -11,6 +11,7 @@ import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.core.graphics.ColorUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
@@ -590,10 +591,12 @@ fun SettingsScreen(
                     Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWidgetColorExpand = !showWidgetColorExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(id = R.string.widget_colors_label), fontSize = 16.sp, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            val border = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(0.5.dp, border, CircleShape))
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingEventColor).border(0.5.dp, border, CircleShape))
-                            Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(pendingTodayEventColor).border(0.5.dp, border, CircleShape))
+                            val isBgDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoSecciones.toArgb()) < 0.5
+                            val borderColor = if (isBgDark) Color.White.copy(alpha = 0.4f) else Color.Black.copy(alpha = 0.2f)
+                            
+                            Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(0.5.dp, borderColor, CircleShape))
+                            Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(pendingEventColor).border(0.5.dp, borderColor, CircleShape))
+                            Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(pendingTodayEventColor).border(0.5.dp, borderColor, CircleShape))
                         }
                         Icon(if (showWidgetColorExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.padding(start = 8.dp).size(20.dp))
                     }
