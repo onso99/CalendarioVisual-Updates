@@ -606,7 +606,8 @@ fun CalendarioScreen(
                                 },
                                 startOfWeek = startOfWeek,
                                 availableCalendars = uiState.availableCalendars,
-                                dailyNotes = uiState.dailyNotes
+                                dailyNotes = uiState.dailyNotes,
+                                workingDayDates = uiState.workingDayDates
                             )
                         }
                         Spacer(Modifier.height(16.dp))
@@ -765,7 +766,8 @@ fun CalendarioScreen(
                                 val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
                                 scope.launch { monthPagerState.scrollToPage(targetPage) }
                                 viewMode = CalendarViewMode.MONTHLY
-                            }
+                            },
+                            workingDayDates = uiState.workingDayDates
                         )
                     }
                 }

@@ -56,7 +56,8 @@ fun MonthlyCalendar(
     onEmptyDayClick: (date: LocalDate) -> Unit,
     startOfWeek: DayOfWeek,
     availableCalendars: List<CalendarInfo>,
-    dailyNotes: Map<String, DailyNote> = emptyMap()
+    dailyNotes: Map<String, DailyNote> = emptyMap(),
+    workingDayDates: Set<LocalDate> = emptySet()
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -216,8 +217,9 @@ fun MonthlyCalendar(
                     val dayHasEventsWithTitle = dayEvents.any { it.title.isNotBlank() }
 
                     val dayColor = run {
-                        val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                        val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
+                        val isForcedWorkingDay = workingDayDates.contains(date)
+                        val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
+                        val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
 
                         val baseColor = when {
                             isHoliday || isSundayNonHoliday -> themeColors.textSundayHoliday

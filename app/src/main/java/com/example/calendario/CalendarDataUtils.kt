@@ -158,6 +158,7 @@ fun readFestivosFromCalendarsSync(
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val holidayAdjustments = loadHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
+    val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
     val manualHolidays = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }
 
     if (selectedCalendarIds.isEmpty() && manualHolidays.isEmpty()) return finalMap
@@ -198,7 +199,6 @@ fun readFestivosFromCalendarsSync(
 
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(evIdCol)
-                    if (workingDayIds.contains(eventId)) continue
                     val startM = cursor.getLong(beginCol)
                     val uniqueKey = "${eventId}_${startM}"
                     if (!tempInstancesMap.containsKey(uniqueKey)) {
@@ -284,6 +284,12 @@ fun readFestivosFromCalendarsSync(
                 if (endMillis > beginMillis && endZdt.toLocalTime() == LocalTime.MIDNIGHT) endDate = endDate.minusDays(1)
                 val startTime = if (isAllDay) null else startZdt.toLocalTime()
                 val endTime = if (isAllDay) null else endZdt.toLocalTime()
+                
+                // AJUSTE: Si el ID o la FECHA están marcados como "Laborable", ignoramos el evento por completo
+                if (workingDayIds.contains(eventId) || workingDayDates.contains(startDate)) {
+                    return@forEach 
+                }
+
                 val isFromHoliday = organizer.contains("#holiday") || organizer.contains("#festivo")
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
                 val hasBirthdayWord = birthdayKeywords.any { title.lowercase().contains(it) }
@@ -355,6 +361,12 @@ suspend fun mergeHistoryWithSystemData(
 ): List<Festivo> = withContext(Dispatchers.Default) {
     val today = LocalDate.now()
     val deletedIds = getDeletedEventIds(context)
+    
+    // Cargar ajustes para filtrado de laborables en la fusión
+    val holidayAdjustments = loadHolidayAdjustments(context)
+    val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
+    val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
+
     val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
     val fuzzySystemMap = systemEvents.associateBy { "${it.date}_${it.title.unaccent().trim().lowercase()}" }
     val systemIdMap = systemEvents.associateBy( { "${it.id}_${it.date}" }, { it.adn } )
@@ -372,7 +384,10 @@ suspend fun mergeHistoryWithSystemData(
             // A) Filtro de Seguridad: No recuperar si está marcado como borrado (físico o lógico)
             if (event.isDeleted || (event.id in deletedIds)) return@filter false
             
-            // B) Saneamiento de huérfanos manuales
+            // B) Filtro de Laborables: No recuperar si el ID o la fecha están marcados como laborables
+            if (workingDayIds.contains(event.id) || workingDayDates.contains(event.date)) return@filter false
+
+            // C) Saneamiento de huérfanos manuales
             if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey("${event.date}_${event.title.unaccent().trim().lowercase()}")) {
                 if (event.id < 0) return@filter false
             }

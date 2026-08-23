@@ -26,7 +26,8 @@ data class CalendarioUiState(
     val isSyncing: Boolean = false,
     val isRestoring: Boolean = false,
     val dailyNotes: Map<String, DailyNote> = emptyMap(),
-    val cleaningCandidates: List<SearchItem> = emptyList()
+    val cleaningCandidates: List<SearchItem> = emptyList(),
+    val workingDayDates: Set<LocalDate> = emptySet()
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -42,6 +43,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             // Asegurar trasvase JSON -> Room si es necesario
             MigrationManager.checkAndMigrate(application, database)
             
+            // Carga inicial de ajustes de festivos
+            refreshAdjustments()
+
             // OBSERVACIÓN REACTIVA: La UI se actualiza sola cuando cambia la DB
             combine(dao.getAllEvents(), dao.getAllNotes()) { entities, noteEntities ->
                 val events = entities.map { it.toFestivo() }
@@ -69,7 +73,15 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun refreshData(onComplete: () -> Unit = {}) {
+        refreshAdjustments()
         loadAllData(onComplete)
+    }
+
+    fun refreshAdjustments() {
+        val context = getApplication<Application>()
+        val adjustments = loadHolidayAdjustments(context)
+        val workingDates = adjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
+        _uiState.update { it.copy(workingDayDates = workingDates) }
     }
 
     private fun loadAllData(onComplete: () -> Unit = {}) {

@@ -45,7 +45,8 @@ fun YearlyCalendar(
     eventsByDate: Map<LocalDate, List<Festivo>>,
     onMonthSelected: (YearMonth) -> Unit,
     showWeekNumber: Boolean,
-    startOfWeek: DayOfWeek
+    startOfWeek: DayOfWeek,
+    workingDayDates: Set<LocalDate> = emptySet()
 ) {
     val months = (1..12).map { YearMonth.of(currentYear.value, it) }
     val fontScale = LocalConfiguration.current.fontScale
@@ -82,7 +83,8 @@ fun YearlyCalendar(
                             showWeekNumber = showWeekNumber,
                             startOfWeek = startOfWeek,
                             modifier = Modifier.fillMaxSize(),
-                            fontScale = fontScale
+                            fontScale = fontScale,
+                            workingDayDates = workingDayDates
                         )
                     }
                 }
@@ -102,7 +104,8 @@ fun MiniMonthCalendar(
     showWeekNumber: Boolean,
     startOfWeek: DayOfWeek,
     modifier: Modifier = Modifier,
-    fontScale: Float
+    fontScale: Float,
+    workingDayDates: Set<LocalDate> = emptySet()
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val daysOfWeek = remember(startOfWeek) {
@@ -211,8 +214,9 @@ fun MiniMonthCalendar(
                             if (date != null) {
                                 val dayEvents = eventsByDate[date].orEmpty()
                                 val isToday = date == today
-                                val isHoliday = dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                                val isSundayNonHoliday = date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
+                                val isForcedWorkingDay = workingDayDates.contains(date)
+                                val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
+                                val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
 
                                 val textColor = when {
                                     isToday -> CalendarioTheme.colors.textSystem
