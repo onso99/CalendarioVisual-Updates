@@ -79,33 +79,35 @@ fun MonthlyCalendar(
         days.slice(startDayIndex until days.size) + days.slice(0 until startDayIndex)
     }
 
-    val prevMonth = currentMonth.minusMonths(1)
-    val nextMonth = currentMonth.plusMonths(1)
-
-    val firstDayOfMonth = currentMonth.atDay(1)
-    val firstDayOfWeekIndex = daysOfWeek.indexOf(firstDayOfMonth.dayOfWeek)
-
-    val daysInPrevMonth = prevMonth.lengthOfMonth()
-    val daysInCurrentMonth = currentMonth.lengthOfMonth()
-
     // --- GROSOR DE CARRIL FIJO (MÃ¡ximo para resaltar el efecto pÃ­ldora) ---
     val fixedLaneWidth = 6.5.dp
 
-    val visibleDays = mutableListOf<Pair<LocalDate, Boolean>>()
+    // --- CÁLCULO DE LA CUADRÍCULA (MEMORIZADO) ---
+    val weeksToDisplay = remember(currentMonth, startOfWeek) {
+        val days = mutableListOf<Pair<LocalDate, Boolean>>()
+        val firstDayOfMonth = currentMonth.atDay(1)
+        val firstDayOfWeekIndex = daysOfWeek.indexOf(firstDayOfMonth.dayOfWeek)
+        val prevMonth = currentMonth.minusMonths(1)
+        val nextMonth = currentMonth.plusMonths(1)
+        val daysInPrevMonth = prevMonth.lengthOfMonth()
+        val daysInCurrentMonth = currentMonth.lengthOfMonth()
 
-    for (i in 0 until firstDayOfWeekIndex) {
-        val day = (daysInPrevMonth - firstDayOfWeekIndex + 1) + i
-        visibleDays.add(prevMonth.atDay(day) to false)
-    }
+        // Días del mes anterior
+        for (i in 0 until firstDayOfWeekIndex) {
+            val day = (daysInPrevMonth - firstDayOfWeekIndex + 1) + i
+            days.add(prevMonth.atDay(day) to false)
+        }
+        // Días del mes actual
+        for (i in 1..daysInCurrentMonth) {
+            days.add(currentMonth.atDay(i) to true)
+        }
+        // Días del mes siguiente
+        val remainingCells = if (days.size % 7 == 0) 0 else 7 - (days.size % 7)
+        for (i in 1..remainingCells) {
+            days.add(nextMonth.atDay(i) to false)
+        }
 
-    for (i in 1..daysInCurrentMonth) {
-        visibleDays.add(currentMonth.atDay(i) to true)
-    }
-
-    val cellsSoFar = visibleDays.size
-    val remainingCellsInWeek = if (cellsSoFar % 7 == 0) 0 else 7 - (cellsSoFar % 7)
-    for (i in 1..remainingCellsInWeek) {
-        visibleDays.add(nextMonth.atDay(i) to false)
+        days.chunked(7).filter { week -> week.any { it.second } }
     }
 
     Column(
@@ -113,8 +115,8 @@ fun MonthlyCalendar(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        // MUESTREO POR POSICIÃ“N + SINCRONIZACIÃ“N MODO APP
-        val headerBg = run {
+        // --- COLORES DE CABECERA (MEMORIZADO) ---
+        val (headerBg, onHeaderColor) = remember(themeColors, effectType, isAppDark) {
             val startColor = themeColors.monthlyCalendarGridBackground
             val midColor = themeColors.monthlyCalendarGridEffect
             val endColor = if (effectType == "gradient") midColor else startColor
@@ -125,35 +127,28 @@ fun MonthlyCalendar(
                 else -> startColor
             }
             
-            // DecisiÃ³n basada en el Modo de la App (no en la luminancia local)
-            val isMainBgDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(colorBehind.toArgb(), hsl)
             
-            if (isMainBgDark) {
-                // Modo Oscuro: aclaramos cromÃ¡ticamente (+10% luz, +5% saturaciÃ³n)
+            if (isAppDark) {
                 hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
                 hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
             } else {
-                // Curva de Contraste Adaptativa v2 para Modo Claro
                 val darkenFactor = when {
-                    hsl[2] > 0.60f -> 0.20f // Atrapamos VolcÃ¡n, Amanecer, Verde Oliva, Grafito...
-                    hsl[2] > 0.45f -> 0.10f // Lavanda y similares
-                    else -> 0.05f          // OcÃ©ano y temas ya intensos
+                    hsl[2] > 0.60f -> 0.20f
+                    hsl[2] > 0.45f -> 0.10f
+                    else -> 0.05f
                 }
                 hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
                 hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
             }
-            Color(ColorUtils.HSLToColor(hsl))
-        }
+            val bg = Color(ColorUtils.HSLToColor(hsl))
 
-        // El color del texto se adapta con umbral al 75%
-        val onHeaderColor = run {
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(headerBg.toArgb(), hsl)
-            val isDark = hsl[2] < 0.75f
-            hsl[2] = if (isDark) 0.85f else 0.15f
-            Color(ColorUtils.HSLToColor(hsl))
+            val hslText = FloatArray(3)
+            ColorUtils.colorToHSL(bg.toArgb(), hslText)
+            val isBgDark = hslText[2] < 0.75f
+            hslText[2] = if (isBgDark) 0.85f else 0.15f
+            bg to Color(ColorUtils.HSLToColor(hslText))
         }
 
         // CABECERA: Restaurada FORMA EXACTA v1.8.943
@@ -188,10 +183,6 @@ fun MonthlyCalendar(
             }
         }
 
-        val weeksToDisplay = visibleDays.asSequence().chunked(7).filter { week ->
-            week.any { it.second }
-        }
-
         weeksToDisplay.forEach { week ->
             val weekContainsToday = week.any { it.first == today && it.second }
             Row(
@@ -206,17 +197,19 @@ fun MonthlyCalendar(
                     
                     val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
 
-                    val cellBackground = if (isInactive) {
-                        val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
-                        overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
-                    } else {
-                        baseCellBackground
+                    val cellBackground = remember(isInactive, baseCellBackground) {
+                        if (isInactive) {
+                            val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
+                            overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
+                        } else {
+                            baseCellBackground
+                        }
                     }
 
                     val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
-                    val dayHasEventsWithTitle = dayEvents.any { it.title.isNotBlank() }
+                    val dayHasEventsWithTitle = remember(dayEvents) { dayEvents.any { it.title.isNotBlank() } }
 
-                    val dayColor = run {
+                    val dayColor = remember(date, isInactive, dayEvents, workingDayDates, themeColors) {
                         val isForcedWorkingDay = workingDayDates.contains(date)
                         val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
                         val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
@@ -230,7 +223,9 @@ fun MonthlyCalendar(
                     }
 
                     // Determinamos el color del borde de "Hoy" según la luminancia del fondo de la celda
-                    val todayBorderColor = if (ColorUtils.calculateLuminance(cellBackground.toArgb()) > 0.5) Color.Black else Color.White
+                    val todayBorderColor = remember(cellBackground) { 
+                        if (ColorUtils.calculateLuminance(cellBackground.toArgb()) > 0.5) Color.Black else Color.White 
+                    }
 
                     Box(
                         modifier = Modifier
@@ -389,11 +384,15 @@ fun MonthlyCalendar(
                                 )
                             }
 
-                            val eventsForIndicators = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
-                            if (isCurrentMonth && eventsForIndicators.isNotEmpty()) {
-                                val indicatorColors = mutableListOf<Color>()
+                            val indicatorColors = remember(dayEvents, isCurrentMonth, isAppDark, normEvent1, normEvent2, themeColors) {
+                                if (!isCurrentMonth) return@remember emptyList()
+                                
+                                val indicators = mutableListOf<Color>()
+                                val filtered = dayEvents.filter { !it.isFromHolidaySource && it.title.isNotBlank() }
+                                
+                                if (filtered.isEmpty()) return@remember emptyList()
 
-                                val hasNormalEvent = eventsForIndicators.any { event ->
+                                val hasNormalEvent = filtered.any { event ->
                                     val normalizedTitle = event.title.unaccent().lowercase()
                                     !event.isBirthday &&
                                     !(normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)) &&
@@ -401,26 +400,25 @@ fun MonthlyCalendar(
                                 }
 
                                 if (hasNormalEvent) {
-                                    // En Modo Oscuro, usamos un gris claro para que el punto de eventos normales resalte
-                                    val normalIndicatorColor = if (isAppDark) Color(0xFFBDBDBD) else themeColors.cabecera
-                                    indicatorColors.add(normalIndicatorColor)
+                                    indicators.add(if (isAppDark) Color(0xFFBDBDBD) else themeColors.cabecera)
                                 }
 
-                                val hasBirthday = eventsForIndicators.any { it.isBirthday }
-                                if (hasBirthday) {
-                                    indicatorColors.add(themeColors.textBirthday)
+                                if (filtered.any { it.isBirthday }) {
+                                    indicators.add(themeColors.textBirthday)
                                 }
 
-                                val hasEvent1 = normEvent1.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normEvent1) }
-                                if (hasEvent1) {
-                                    indicatorColors.add(themeColors.textEvent1)
+                                if (normEvent1.isNotBlank() && filtered.any { it.title.unaccent().lowercase().contains(normEvent1) }) {
+                                    indicators.add(themeColors.textEvent1)
                                 }
 
-                                val hasEvent2 = normEvent2.isNotBlank() && eventsForIndicators.any { it.title.unaccent().lowercase().contains(normEvent2) }
-                                if (hasEvent2) {
-                                    indicatorColors.add(themeColors.textEvent2)
+                                if (normEvent2.isNotBlank() && filtered.any { it.title.unaccent().lowercase().contains(normEvent2) }) {
+                                    indicators.add(themeColors.textEvent2)
                                 }
+                                
+                                indicators
+                            }
 
+                            if (indicatorColors.isNotEmpty()) {
                                 Row(
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)

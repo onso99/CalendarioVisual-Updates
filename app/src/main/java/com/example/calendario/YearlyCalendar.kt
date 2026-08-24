@@ -212,18 +212,22 @@ fun MiniMonthCalendar(
                             Alignment.Center
                         ) {
                             if (date != null) {
-                                val dayEvents = eventsByDate[date].orEmpty()
                                 val isToday = date == today
-                                val isForcedWorkingDay = workingDayDates.contains(date)
-                                val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                                val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
+                                val themeColors = CalendarioTheme.colors
+                                val (textColor, fontWeightText) = remember(date, isToday, eventsByDate, workingDayDates, themeColors) {
+                                    val dayEvents = eventsByDate[date].orEmpty()
+                                    val isForcedWorkingDay = workingDayDates.contains(date)
+                                    val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
+                                    val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
 
-                                val textColor = when {
-                                    isToday -> CalendarioTheme.colors.textSystem
-                                    isHoliday || isSundayNonHoliday -> CalendarioTheme.colors.textSundayHoliday
-                                    else -> CalendarioTheme.colors.textSystem // Unificado con eventos normales
+                                    val color = when {
+                                        isToday -> themeColors.textSystem
+                                        isHoliday || isSundayNonHoliday -> themeColors.textSundayHoliday
+                                        else -> themeColors.textSystem
+                                    }
+                                    val weight = if (isToday) FontWeight.Bold else FontWeight.Normal
+                                    color to weight
                                 }
-                                val fontWeightText = if (isToday) FontWeight.Bold else FontWeight.Normal
 
                                 Box(Modifier.fillMaxSize(), Alignment.Center) {
                                     if (isToday) {
