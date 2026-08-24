@@ -269,6 +269,10 @@ fun readFestivosFromCalendarsSync(
             val birthdayKeywords = context.getString(R.string.birthday_keywords).split(",").map { it.trim().lowercase() }
             val greetingKeywords = context.getString(R.string.greeting_keywords).split(",").map { it.trim().lowercase() }
             
+            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            val event1Keyword = prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.unaccent()?.trim()?.lowercase() ?: ""
+            val event2Keyword = prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.unaccent()?.trim()?.lowercase() ?: ""
+
             // --- GESTIÓN DE CARRILES (Lanes) ---
             val laneAssignments = mutableMapOf<String, Int>()
             val laneOccupancy = mutableMapOf<LocalDate, BooleanArray>()
@@ -344,7 +348,13 @@ fun readFestivosFromCalendarsSync(
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
                 val hasBirthdayWord = birthdayKeywords.any { title.lowercase().contains(it) }
                 val hasGreetingWord = greetingKeywords.any { title.lowercase().contains(it) }
-                val finalIsBirthday = (isTechnicalBirthday || hasBirthdayWord || hasGreetingWord) && !isFromHoliday
+                
+                // DETECCCIÓN DE EVENTOS PROPIOS (Punto 1 Optimización + Etiquetas Editables)
+                val cleanTitleForMatch = title.unaccent().trim().lowercase()
+                val finalIsEvent1 = event1Keyword.isNotBlank() && cleanTitleForMatch.contains(event1Keyword)
+                val finalIsEvent2 = event2Keyword.isNotBlank() && cleanTitleForMatch.contains(event2Keyword)
+
+                val finalIsBirthday = (isTechnicalBirthday || hasBirthdayWord || hasGreetingWord) && !isFromHoliday && !finalIsEvent1 && !finalIsEvent2
                 var birthYear = birthYearMap[eventId]
                 
                 if (finalIsBirthday) {

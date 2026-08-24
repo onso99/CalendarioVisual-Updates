@@ -24,15 +24,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,6 +65,7 @@ fun ColorThemeScreen(
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.settingsBackground.toArgb()) < 0.5
     
     var showColorPicker by remember { mutableStateOf(value = false) }
+    var showRenameDialog by remember { mutableStateOf(value = false) }
     var pendingItem by remember { mutableStateOf<ColorThemeItem?>(null) }
     var updateTrigger by remember { mutableIntStateOf(0) }
     var showEffectExpand by remember { mutableStateOf(false) }
@@ -167,11 +168,27 @@ fun ColorThemeScreen(
                     val defaultColor = if (isAppDark) item.defaultDark else item.defaultLight
                     val currentColor = getThemeColor(prefs, key, defaultColor)
                     
+                    val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD 
+                                     else if (item.labelRes == R.string.event_2) AppConstants.KEY_EVENT_2_KEYWORD 
+                                     else null
+                    
+                    val currentLabel = keywordKey?.let { prefs.getString(it, "") }?.takeIf { it.isNotBlank() } 
+                                       ?: stringResource(id = item.labelRes)
+
                     SingleColorThemeRow(
-                        label = stringResource(id = item.labelRes),
+                        label = currentLabel,
                         color = currentColor,
+                        onLabelClick = if (keywordKey != null) { { 
+                            pendingItem = item
+                            showRenameDialog = true 
+                        } } else null,
                         onReset = {
-                            prefs.edit { remove(key) }
+                            prefs.edit { 
+                                remove(key)
+                                keywordKey?.let { remove(it) }
+                            }
+                            ThemePersistence.markThemeAsModified(prefs)
+                            onThemeModified()
                             updateTrigger++
                         },
                         onClick = {
@@ -185,6 +202,24 @@ fun ColorThemeScreen(
                 }
             }
         }
+    }
+
+    if (showRenameDialog && pendingItem != null) {
+        val item = pendingItem!!
+        val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
+        val currentVal = prefs.getString(keywordKey, "") ?: ""
+
+        RenameEventDialog(
+            initialName = currentVal,
+            onDismissRequest = { showRenameDialog = false },
+            onConfirm = { newName ->
+                prefs.edit { putString(keywordKey, newName.trim()) }
+                ThemePersistence.markThemeAsModified(prefs)
+                onThemeModified()
+                updateTrigger++
+                showRenameDialog = false
+            }
+        )
     }
 
     if (showColorPicker && pendingItem != null) {
@@ -233,6 +268,7 @@ private fun getThemeColor(prefs: SharedPreferences, key: String, default: Color)
 private fun SingleColorThemeRow(
     label: String,
     color: Color,
+    onLabelClick: (() -> Unit)? = null,
     onReset: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
@@ -242,7 +278,7 @@ private fun SingleColorThemeRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onLabelClick ?: onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -392,6 +428,29 @@ private fun EffectColorThemeRow(
             }
         }
     }
+}
+
+@Composable
+private fun RenameEventDialog(initialName: String, onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
+    var text by remember { mutableStateOf(initialName) }
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(id = R.string.customize_colors), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
+        text = { 
+            OutlinedTextField(
+                value = text, 
+                onValueChange = { text = it }, 
+                label = { Text(stringResource(id = R.string.title)) }, 
+                singleLine = true, 
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+            ) 
+        },
+        confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = { onConfirm(text) }) },
+        dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
+    )
 }
 
 @Composable
