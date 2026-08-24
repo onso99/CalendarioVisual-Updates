@@ -196,7 +196,9 @@ class ModernCalendarWidget : GlanceAppWidget() {
             Spacer(modifier = GlanceModifier.width(columnGap * 1.4f))
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
-            Text(text = "$timePart${event.title}$agePart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
+            val progressPart = if (event.isLongPeriod) " (${event.currentDay}/${event.totalDays})" else ""
+            
+            Text(text = "$timePart${event.title}$agePart$progressPart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
             
             if (event.alarmTimeStr != null) {
                 Spacer(modifier = GlanceModifier.width(3.dp))

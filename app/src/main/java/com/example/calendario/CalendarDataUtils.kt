@@ -269,6 +269,56 @@ fun readFestivosFromCalendarsSync(
             val birthdayKeywords = context.getString(R.string.birthday_keywords).split(",").map { it.trim().lowercase() }
             val greetingKeywords = context.getString(R.string.greeting_keywords).split(",").map { it.trim().lowercase() }
             
+            // --- GESTIÓN DE CARRILES (Lanes) ---
+            val laneAssignments = mutableMapOf<String, Int>()
+            val laneOccupancy = mutableMapOf<LocalDate, BooleanArray>()
+
+            val multiDayInstances = tempInstancesData.mapNotNull { data ->
+                val eventId = data["eventId"] as Long
+                val beginM = data["begin"] as Long
+                val endM = data["end"] as Long
+                val isAllDay = data["isAllDay"] as Boolean
+                
+                val startZ = if (isAllDay) Instant.ofEpochMilli(beginM).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(beginM).atZone(systemZoneId)
+                val endZ = if (isAllDay) Instant.ofEpochMilli(endM).atZone(java.time.ZoneOffset.UTC) else Instant.ofEpochMilli(endM).atZone(systemZoneId)
+                val startD = startZ.toLocalDate()
+                var endD = endZ.toLocalDate()
+                if (endM > beginM && endZ.toLocalTime() == LocalTime.MIDNIGHT) endD = endD.minusDays(1)
+
+                if (endD.isAfter(startD)) {
+                    val title = (data["title"] as String).lowercase()
+                    val organizer = data["organizer"] as String
+                    val isH = organizer.contains("#holiday") || organizer.contains("#festivo")
+                    val isB = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || (birthdayKeywords.any { title.contains(it) })
+                    
+                    if (!isH && !isB && !workingDayIds.contains(eventId) && !workingDayDates.contains(startD)) {
+                        val uniqueKey = "${eventId}_${beginM}"
+                        Triple(uniqueKey, startD, endD)
+                    } else null
+                } else null
+            }.sortedWith(compareBy({ it.second }, { it.third }, { it.first }))
+
+            multiDayInstances.forEach { (uniqueKey, start, end) ->
+                var chosenLane = -1
+                for (l in 0..4) {
+                    var isFree = true
+                    var d = start
+                    while (!d.isAfter(end)) {
+                        if (laneOccupancy[d]?.get(l) == true) { isFree = false; break }
+                        d = d.plusDays(1)
+                    }
+                    if (isFree) { chosenLane = l; break }
+                }
+                if (chosenLane != -1) {
+                    laneAssignments[uniqueKey] = chosenLane
+                    var d = start
+                    while (!d.isAfter(end)) {
+                        laneOccupancy.getOrPut(d) { BooleanArray(5) }[chosenLane] = true
+                        d = d.plusDays(1)
+                    }
+                }
+            }
+
             tempInstancesData.forEach { data ->
                 val eventId = data["eventId"] as Long
                 val calendarId = data["calendarId"] as Long
@@ -294,36 +344,59 @@ fun readFestivosFromCalendarsSync(
                 val isTechnicalBirthday = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com")
                 val hasBirthdayWord = birthdayKeywords.any { title.lowercase().contains(it) }
                 val hasGreetingWord = greetingKeywords.any { title.lowercase().contains(it) }
-
-                val festivo = Festivo(
-                    id = eventId,
-                    title = title,
-                    description = descMap[eventId],
-                    date = startDate,
-                    startTime = startTime,
-                    endTime = endTime,
-                    isAllDay = isAllDay,
-                    calendarId = calendarId,
-                    isFromHolidaySource = isFromHoliday,
-                    rrule = rruleMap[eventId],
-                    isBirthday = isTechnicalBirthday || hasBirthdayWord || hasGreetingWord,
-                    originalBirthDate = if (isTechnicalBirthday || hasBirthdayWord) birthYearMap[eventId]?.let { y -> startDate.withYear(y) } else null,
-                    isLongPeriod = endDate.isAfter(startDate),
-                    totalDays = if (endDate.isAfter(startDate)) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1,
-                    currentDay = 1,
-                    customColor = customColorMap[eventId],
-                    fullStartMillis = beginMillis,
-                    fullEndMillis = endMillis,
-                    adn = Festivo.generateAdn(startDate, title, startTime)
-                )
-
-                if (festivo.isLongPeriod) {
-                    for (i in 0 until festivo.totalDays) {
-                        val d = startDate.plusDays(i.toLong())
-                        finalMap.getOrPut(d) { mutableListOf() }.add(festivo.copy(date = d, currentDay = i + 1))
+                val finalIsBirthday = (isTechnicalBirthday || hasBirthdayWord || hasGreetingWord) && !isFromHoliday
+                var birthYear = birthYearMap[eventId]
+                
+                if (finalIsBirthday) {
+                    if (hasGreetingWord && !isTechnicalBirthday) birthYear = null
+                    if (birthYear == null) {
+                        val yearInTitle = Regex("\\b(19|20)\\d{2}\\b").find(title)?.value?.toIntOrNull()
+                        val yearInDesc = Regex("\\b(19|20)\\d{2}\\b").find(descMap[eventId] ?: "")?.value?.toIntOrNull()
+                        birthYear = yearInTitle ?: yearInDesc
                     }
-                } else {
-                    finalMap.getOrPut(startDate) { mutableListOf() }.add(festivo)
+                    if (birthYear != null && birthYear >= startDate.year) birthYear = null
+                }
+
+                val uniqueKey = "${eventId}_${beginMillis}"
+                val assignedLane = laneAssignments[uniqueKey]
+                
+                // REGLA DE ORO: Un evento solo es periodo largo si dura más de 24 horas y no es cumpleaños ni festivo
+                val duration = java.time.Duration.between(startZdt, endZdt)
+                val isLongPeriod = duration.toHours() > 24 && !finalIsBirthday && !isFromHoliday
+
+                val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
+                var currentLoopDate = startDate
+                var dayIndex = 1
+                
+                while (currentLoopDate.isBefore(endDate.plusDays(1))) {
+                    val age = if (finalIsBirthday && birthYear != null) (currentLoopDate.year - birthYear) else null
+                    val startTimeForAdn = if (currentLoopDate == startDate) startTime else null
+                    
+                    finalMap.getOrPut(currentLoopDate) { mutableListOf() }.add(Festivo(
+                        id = eventId,
+                        title = title,
+                        description = descMap[eventId],
+                        date = currentLoopDate,
+                        startTime = startTimeForAdn,
+                        endTime = if (currentLoopDate == endDate) endTime else null,
+                        isAllDay = isAllDay || (currentLoopDate != startDate && currentLoopDate != endDate),
+                        calendarId = calendarId,
+                        isFromHolidaySource = isFromHoliday,
+                        rrule = rruleMap[eventId],
+                        age = age,
+                        isBirthday = finalIsBirthday,
+                        originalBirthDate = if (finalIsBirthday) birthYear?.let { y -> startDate.withYear(y) } else null,
+                        isLongPeriod = isLongPeriod,
+                        lane = assignedLane,
+                        totalDays = totalDaysCount,
+                        currentDay = dayIndex,
+                        customColor = customColorMap[eventId],
+                        fullStartMillis = beginMillis,
+                        fullEndMillis = endMillis,
+                        adn = Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)
+                    ))
+                    currentLoopDate = currentLoopDate.plusDays(1)
+                    dayIndex++
                 }
             }
         }

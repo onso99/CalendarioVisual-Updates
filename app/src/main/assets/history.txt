@@ -1,3 +1,4 @@
+2026-08-23 - v3.0.14 Widget/Colores: círculos de color más grandes y borde adaptado a modo oscuro
 2026-08-23 - v3.0.13 Gestor de festivos: corregidos días locales. Los marcados como no festivos desaparecen de la vista mensual y lista de eventos
 2026-08-21 - v3.0.12 Fuente: desplegable con botón Negrita y nombre de fuente
 2026-08-21 - v3.0.11 Diálogo Optimizar datos: cambio de strings y propagación al resto de idiomas
