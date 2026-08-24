@@ -441,15 +441,14 @@ suspend fun mergeHistoryWithSystemData(
     val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
 
     val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
-    val fuzzySystemMap = systemEvents.associateBy { "${it.date}_${it.title.unaccent().trim().lowercase()}" }
+    val fuzzySystemMap = systemEvents.associateBy { it.fuzzyAdn }
     val systemIdMap = systemEvents.associateBy( { "${it.id}_${it.date}" }, { it.adn } )
 
     (systemEvents + cachedHistory).asSequence()
         .distinctBy { event ->
-            val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
             when {
                 event.id > 0 && systemIdMap.containsKey("${event.id}_${event.date}") -> systemIdMap["${event.id}_${event.date}"]
-                systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey) -> fuzzyKey
+                systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(event.fuzzyAdn) -> event.fuzzyAdn
                 else -> event.adn
             }
         }
@@ -461,7 +460,7 @@ suspend fun mergeHistoryWithSystemData(
             if (workingDayIds.contains(event.id) || workingDayDates.contains(event.date)) return@filter false
 
             // C) Saneamiento de huérfanos manuales
-            if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey("${event.date}_${event.title.unaccent().trim().lowercase()}")) {
+            if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey(event.fuzzyAdn)) {
                 if (event.id < 0) return@filter false
             }
             true

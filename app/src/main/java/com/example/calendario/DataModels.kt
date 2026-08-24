@@ -30,6 +30,11 @@ data class Festivo(
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
     val adn: String = "", // Huella digital única para deduplicación y refresco
+    
+    // --- Campos de Optimización Punto 1 ---
+    val cleanTitle: String = title.unaccent().trim().lowercase(),
+    val fuzzyAdn: String = "${date}_${cleanTitle}",
+
     // --- Campos para Sincronización Segura ---
     val lastModified: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
@@ -37,8 +42,8 @@ data class Festivo(
 ) {
     companion object {
         fun generateAdn(date: LocalDate, title: String, startTime: LocalTime?): String {
+            // Usamos una versión local para evitar depender de la inicialización si se llama desde fuera
             val cleanTitle = title.unaccent().trim().lowercase()
-            // Normalizamos la hora a HH:mm (sin segundos ni milisegundos) especificando Locale.US
             val timeStr = startTime?.let { String.format(Locale.US, "%02d:%02d", it.hour, it.minute) } ?: "null"
             return "${date}_${cleanTitle}_$timeStr"
         }
