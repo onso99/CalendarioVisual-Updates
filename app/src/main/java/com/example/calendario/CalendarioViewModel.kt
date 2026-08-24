@@ -57,9 +57,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     dailyNotes = notes
                 ) }
                 updateCleaningCandidates()
+                
                 // Notificar a los widgets
                 CalendarAppWidgetProvider.triggerWidgetUpdate(application)
                 WidgetStateManager.updateWidgetState(application, events)
+
+                // SINCRONIZACIÓN DE ALARMAS EN TIEMPO REAL:
+                // Pasamos la lista 'events' que ya tenemos para ahorrar una lectura de DB.
+                withContext(Dispatchers.IO) {
+                    AlarmUtils.rescheduleAllAlarms(application, events)
+                }
             }
         }
         loadAllData()

@@ -189,7 +189,13 @@ object AlarmUtils {
             val snoozeIntent = Intent(context, AlarmReceiver::class.java).apply {
                 action = "com.example.calendario.ALARM_DISPARO_${eventId}_SNOOZE"
             }
-            val snoozePendingIntent = PendingIntent.getBroadcast(context, snoozeRequestCode, snoozeIntent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+            // Eliminamos FLAG_IMMUTABLE aquí para asegurar que el sistema pueda encontrarlo para cancelar
+            val snoozePendingIntent = PendingIntent.getBroadcast(
+                context, 
+                snoozeRequestCode, 
+                snoozeIntent, 
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_MUTABLE
+            )
             if (snoozePendingIntent != null) {
                 alarmManager.cancel(snoozePendingIntent)
                 snoozePendingIntent.cancel()
@@ -210,9 +216,11 @@ object AlarmUtils {
         }
     }
 
-    fun rescheduleAllAlarms(context: Context): Int {
-        val database = AppDatabase.getDatabase(context)
-        val allEvents = database.calendarDao().getAllEventsSync().map { it.toFestivo() }
+    fun rescheduleAllAlarms(context: Context, providedEvents: List<Festivo>? = null): Int {
+        val allEvents = providedEvents ?: run {
+            val database = AppDatabase.getDatabase(context)
+            database.calendarDao().getAllEventsSync().map { it.toFestivo() }
+        }
         val allEventIds = allEvents.map { it.id.toString() }.toSet()
         
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)

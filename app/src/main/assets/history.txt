@@ -1,3 +1,4 @@
+2026-08-24 - v3.0.18 Optimización de rendimiento: Pre-cálculo de ADN y minimización de procesamiento de texto
 2026-08-24 - v3.0.17 Optimización de UI: Memorización de cuadrícula y cálculo eficiente de celdas
 2026-08-24 - v3.0.16 Optimización de room. SmartRefresh para reducir picos de CPU y escritura en disco
 2026-08-24 - v3.0.15 Eventos largos: recuperados los carriles en caelendario mensual y los wdigets (modero/clásico) muestran correctamente (Evento x/y)
