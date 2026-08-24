@@ -141,8 +141,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val currentEntities = dao.getAllEventsSync()
                     val cachedHistory = currentEntities.map { it.toFestivo() }
                     val merged = mergeHistoryWithSystemData(context, cachedHistory, systemEventsMap.values.flatten(), availableCalendars)
-                    // Usamos refreshEvents para purgar duplicados antiguos y ADN obsoletos
-                    dao.refreshEvents(merged.map { it.toEntity() })
+                    // Optimización: Usamos smartRefreshEvents para no borrar todo innecesariamente
+                    dao.smartRefreshEvents(merged.map { it.toEntity() })
                 }
 
                 _uiState.update { it.copy(
@@ -184,7 +184,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val mergedEvents = mergeHistoryWithSystemData(context, cachedHistory, newEvents.values.flatten(), newAvailable)
 
             withContext(Dispatchers.IO) {
-                dao.refreshEvents(mergedEvents.map { it.toEntity() })
+                // Optimización: Actualización quirúrgica
+                dao.smartRefreshEvents(mergedEvents.map { it.toEntity() })
             }
             saveSelectedCalendarIds(getApplication(), newSelectedIds)
             _uiState.update { it.copy(availableCalendars = newAvailable, selectedCalendarIds = newSelectedIds) }
@@ -229,7 +230,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val cachedHistory = currentEntities.map { it.toFestivo() }
                     val available = loadAvailableCalendarsSync(context)
                     val merged = mergeHistoryWithSystemData(context, cachedHistory, freshEvents.values.flatten(), available)
-                    dao.refreshEvents(merged.map { it.toEntity() })
+                    // Optimización: Sincronización ligera
+                    dao.smartRefreshEvents(merged.map { it.toEntity() })
 
                     val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(context)
                         ?: return@withContext SyncResult(0, 0, false, 0L)

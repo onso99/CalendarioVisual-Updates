@@ -21,8 +21,26 @@ interface CalendarDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvents(events: List<EventEntity>)
 
+    @Upsert
+    suspend fun upsertEvents(events: List<EventEntity>)
+
     @Query("DELETE FROM events")
     suspend fun clearAllEvents()
+
+    @Query("DELETE FROM events WHERE adn NOT IN (:validAdns) AND isGhost = 0")
+    suspend fun deleteOldEvents(validAdns: List<String>)
+
+    @Transaction
+    suspend fun smartRefreshEvents(events: List<EventEntity>) {
+        if (events.isEmpty()) {
+            clearAllEvents()
+        } else {
+            // 1. Insertamos o actualizamos los nuevos (Surgical Update)
+            upsertEvents(events)
+            // 2. Borramos los que ya no están en la lista (Cleanup)
+            deleteOldEvents(events.map { it.adn })
+        }
+    }
 
     @Transaction
     suspend fun refreshEvents(events: List<EventEntity>) {
