@@ -429,12 +429,16 @@ fun AddEventScreen(
                             selectedColorInt = 0xFF4C58D8.toInt()
                         }
                     } else {
-                        // Si desactivamos periodo largo, volvemos a la misma fecha para evitar el bug del dÃ­a extra
-                        if (endDate.toLocalDate() != startDate.toLocalDate()) {
-                            endDate = LocalDateTime.of(startDate.toLocalDate(), endDate.toLocalTime())
-                            if (endDate.isBefore(startDate)) {
-                                endDate = startDate.plusHours(1)
-                            }
+                        // DIRECCIÓN INTELIGENTE AL DESACTIVAR:
+                        // Si la hora de fin es posterior a la de inicio, forzamos mismo día.
+                        // Si es anterior, permitimos el cruce de medianoche (Día +1).
+                        val startTime = startDate.toLocalTime()
+                        val endTime = endDate.toLocalTime()
+                        
+                        if (endTime.isAfter(startTime)) {
+                            endDate = LocalDateTime.of(startDate.toLocalDate(), endTime)
+                        } else {
+                            endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), endTime)
                         }
                     }
                 },
@@ -676,7 +680,19 @@ fun AddEventScreen(
         TimePickerDialog(onDismissRequest = { showStartTimePickerDialog = false }, onConfirm = { hour, minute ->
             val newTime = LocalTime.of(hour, minute)
             startDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
-            if (startDate.isAfter(endDate)) endDate = startDate.plusHours(1)
+            
+            if (!isLongPeriod) {
+                // DIRECCIÓN INTELIGENTE: Al cambiar el inicio, ajustamos el fin para que mantenga 
+                // la lógica de un solo día o cruce de medianoche según la hora actual de fin.
+                val currentEndTime = endDate.toLocalTime()
+                if (currentEndTime.isAfter(newTime)) {
+                    endDate = LocalDateTime.of(startDate.toLocalDate(), currentEndTime)
+                } else {
+                    endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), currentEndTime)
+                }
+            } else {
+                if (startDate.isAfter(endDate)) endDate = startDate.plusHours(1)
+            }
             showStartTimePickerDialog = false
         }, initialHour = startDate.hour, initialMinute = startDate.minute)
     }
@@ -684,8 +700,23 @@ fun AddEventScreen(
     if (showEndTimePickerDialog) {
         TimePickerDialog(onDismissRequest = { showEndTimePickerDialog = false }, onConfirm = { hour, minute ->
             val newTime = LocalTime.of(hour, minute)
-            val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)
-            if (newEndDate.isAfter(startDate)) endDate = newEndDate else Toast.makeText(context, R.string.end_time_before_start_time_error, Toast.LENGTH_SHORT).show()
+            
+            if (!isLongPeriod) {
+                // DIRECCIÓN INTELIGENTE: Si la hora de fin es después de la de inicio -> Mismo día.
+                // Si la hora de fin es antes de la de inicio -> Día siguiente (Cruza medianoche).
+                if (newTime.isAfter(startDate.toLocalTime())) {
+                    endDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
+                } else {
+                    endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), newTime)
+                }
+            } else {
+                val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)
+                if (newEndDate.isAfter(startDate)) {
+                    endDate = newEndDate
+                } else {
+                    Toast.makeText(context, R.string.end_time_before_start_time_error, Toast.LENGTH_SHORT).show()
+                }
+            }
             showEndTimePickerDialog = false
         }, initialHour = endDate.hour, initialMinute = endDate.minute)
     }

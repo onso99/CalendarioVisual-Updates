@@ -24,7 +24,8 @@ fun createEvent(
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate? = null,
     repeatCount: Int? = null,
-    customColor: Int? = null
+    customColor: Int? = null,
+    isLongPeriod: Boolean = false
 ): Long? {
     if (calendarId == null) {
         Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
@@ -37,7 +38,7 @@ fun createEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod)
         
         val eventInsertOperation = ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI).withValues(values)
         operations.add(eventInsertOperation.build())
@@ -83,7 +84,8 @@ fun updateEvent(
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate? = null,
     repeatCount: Int? = null,
-    customColor: Int? = null
+    customColor: Int? = null,
+    isLongPeriod: Boolean = false
 ): Long? {
      if (calendarId == null) {
         Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
@@ -96,7 +98,7 @@ fun updateEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         operations.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build())
 
@@ -150,7 +152,7 @@ fun updateSingleEventInSeries(
             originalEvent.date.atTime(originalEvent.startTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
 
-        val values = createEventValues(startDate, endDate, isAllDay, title, originalEvent.calendarId, RepetitionRule.NONE).apply {
+        val values = createEventValues(startDate, endDate, isAllDay, title, originalEvent.calendarId, RepetitionRule.NONE, isLongPeriod = originalEvent.isLongPeriod).apply {
             put(CalendarContract.Events.ORIGINAL_ID, originalEvent.id)
             put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, originalInstanceStartTime)
         }
@@ -285,7 +287,8 @@ private fun createEventValues(
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate? = null,
     repeatCount: Int? = null,
-    customColor: Int? = null
+    customColor: Int? = null,
+    isLongPeriod: Boolean = false
 ): ContentValues {
     val timezone = if (isAllDay) TimeZone.getTimeZone("UTC").id else TimeZone.getDefault().id
     val startMillis = if (isAllDay) {
@@ -307,8 +310,9 @@ private fun createEventValues(
 
         if (repetitionRule == RepetitionRule.NONE) {
             val endMillis = if (isAllDay) {
-                // IMPORTANTE: Para eventos Todo el día, DTEND debe ser el día siguiente a las 00:00
-                endDate.toLocalDate().plusDays(1).atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
+                // BLINDAJE "UN DÍA": Si no es periodo largo, forzamos duración de 24h
+                val finalEndDate = if (!isLongPeriod) startDate.toLocalDate() else endDate.toLocalDate()
+                finalEndDate.plusDays(1).atStartOfDay(ZoneId.of(timezone)).toInstant().toEpochMilli()
             } else {
                 endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             }
@@ -318,7 +322,8 @@ private fun createEventValues(
         } else {
             if (isAllDay) {
                 val durationInDays = java.time.Duration.between(startDate.toLocalDate().atStartOfDay(), endDate.toLocalDate().atStartOfDay()).toDays()
-                val finalDurationDays = if (durationInDays < 1) 1L else durationInDays
+                // CORRECCIÓN DURACIÓN: Sumamos 1 día para incluir el día de fin en la repetición
+                val finalDurationDays = if (durationInDays < 0) 1L else durationInDays + 1
                 put(CalendarContract.Events.DURATION, "P${finalDurationDays}D")
             } else {
                 val durationInSeconds = java.time.Duration.between(startDate, endDate).seconds
