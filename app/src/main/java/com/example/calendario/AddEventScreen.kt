@@ -189,7 +189,7 @@ fun AddEventScreen(
     var selectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
     var showCalendarDialog by remember { mutableStateOf(false) }
     var startDate by remember { mutableStateOf(LocalDateTime.now()) }
-    var endDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
+    var endDate by remember { mutableStateOf(LocalDateTime.now().plusMinutes(30)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var repeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
     var repeatCount by remember { mutableStateOf<Int?>(null) }
@@ -210,7 +210,7 @@ fun AddEventScreen(
     var initialIsAllDay by remember { mutableStateOf(true) }
     var initialSelectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
     var initialStartDate by remember { mutableStateOf(LocalDateTime.now()) }
-    var initialEndDate by remember { mutableStateOf(LocalDateTime.now().plusHours(1)) }
+    var initialEndDate by remember { mutableStateOf(LocalDateTime.now().plusMinutes(30)) }
     var initialRepetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var initialRepeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
     var isLongPeriod by remember { mutableStateOf(false) }
@@ -293,7 +293,7 @@ fun AddEventScreen(
             title = ""
             isAllDay = true // Por defecto: Todo el día
             startDate = effectiveInitialDateTime
-            endDate = effectiveInitialDateTime.plusHours(2) // Margen de 2 horas si se quita Todo el día
+            endDate = effectiveInitialDateTime.plusMinutes(30) // Margen de 30 min (v3.0.24)
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
             repeatUntilDate = null
@@ -420,14 +420,14 @@ fun AddEventScreen(
                         startDate = LocalDateTime.of(eventStartDate, startT)
                         
                         if (!isLongPeriod) {
-                            // Si no es periodo largo, el fin es simplemente +2h desde el inicio
-                            endDate = startDate.plusHours(2)
+                            // Si no es periodo largo, el fin es simplemente +30 min desde el inicio
+                            endDate = startDate.plusMinutes(30)
                         } else {
                             // Si es periodo largo, mantenemos la fecha de fin pero ponemos hora lógica
-                            endDate = LocalDateTime.of(endDate.toLocalDate(), startT.plusHours(2))
+                            endDate = LocalDateTime.of(endDate.toLocalDate(), startT.plusMinutes(30))
                             // Seguridad
                             if (endDate.isBefore(startDate)) {
-                                endDate = startDate.plusHours(2)
+                                endDate = startDate.plusMinutes(30)
                             }
                         }
                     }
@@ -712,7 +712,7 @@ fun AddEventScreen(
                     endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), currentEndTime)
                 }
             } else {
-                if (startDate.isAfter(endDate)) endDate = startDate.plusHours(1)
+                if (startDate.isAfter(endDate)) endDate = startDate.plusMinutes(30)
             }
             showStartTimePickerDialog = false
         }, initialHour = startDate.hour, initialMinute = startDate.minute)

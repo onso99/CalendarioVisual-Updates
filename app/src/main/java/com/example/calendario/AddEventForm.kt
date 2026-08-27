@@ -492,7 +492,9 @@ fun AddEventForm(
 
                 val summaryFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy", locale) }
                 val timeOnlyFormatter = remember(locale) { DateTimeFormatter.ofPattern("HH:mm", locale) }
-                val isSameDay = startDate.toLocalDate() == endDate.toLocalDate()
+                
+                // FASE 3: LÓGICA DE DÍA ÚNICO: Si no es periodo largo, el resumen ignora el salto de fecha técnico
+                val isSameDay = !isLongPeriod || (startDate.toLocalDate() == endDate.toLocalDate())
 
                 if (isAllDay) {
                     if (!isSameDay) {
