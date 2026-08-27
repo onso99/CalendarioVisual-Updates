@@ -404,11 +404,32 @@ fun AddEventScreen(
             AddEventForm(
                 title = title, onTitleChange = { title = it },
                 selectedCalendar = selectedCalendar, onCalendarClick = { showCalendarDialog = true },
-                isAllDay = isAllDay, onAllDayChange = { 
-                    isAllDay = it
-                    // Si quitamos "Todo el dÃ­a" y no es un periodo largo, sincronizamos la fecha de fin con un margen de 2 horas
-                    if (!it && !isLongPeriod) {
-                        endDate = startDate.plusHours(2)
+                isAllDay = isAllDay, onAllDayChange = { newValue -> 
+                    isAllDay = newValue
+                    if (!newValue) {
+                        // FASE 2: LÓGICA DE HORA SUGERIDA AL QUITAR "TODO EL DÍA"
+                        val today = LocalDate.now()
+                        val eventStartDate = startDate.toLocalDate()
+                        
+                        val startT = if (eventStartDate == today) {
+                            LocalTime.now().withSecond(0).withNano(0)
+                        } else {
+                            LocalTime.of(9, 0)
+                        }
+                        
+                        startDate = LocalDateTime.of(eventStartDate, startT)
+                        
+                        if (!isLongPeriod) {
+                            // Si no es periodo largo, el fin es simplemente +2h desde el inicio
+                            endDate = startDate.plusHours(2)
+                        } else {
+                            // Si es periodo largo, mantenemos la fecha de fin pero ponemos hora lógica
+                            endDate = LocalDateTime.of(endDate.toLocalDate(), startT.plusHours(2))
+                            // Seguridad
+                            if (endDate.isBefore(startDate)) {
+                                endDate = startDate.plusHours(2)
+                            }
+                        }
                     }
                 },
                 startDate = startDate, onStartDateClick = { showStartDatePickerDialog = true }, onStartTimeClick = { showStartTimePickerDialog = true },

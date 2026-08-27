@@ -1,3 +1,4 @@
+2026-08-26 - v3.0.21 Corrección del bug del día extra y mejora en la lógica de fechas
 2026-08-24 - v3.0.20 Etiquetas propias editables: Sincronización entre nombre de categoría y palabra clave de búsqueda
 2026-08-24 - v3.0.19 Sincronización reactiva de alarmas: cancelación inmediata al ocultar eventos y mejoras de eficiencia en Room
 2026-08-24 - v3.0.18 Optimización de rendimiento: Pre-cálculo de ADN y minimización de procesamiento de texto
