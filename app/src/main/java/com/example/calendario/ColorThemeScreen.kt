@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -172,12 +173,23 @@ fun ColorThemeScreen(
                                      else if (item.labelRes == R.string.event_2) AppConstants.KEY_EVENT_2_KEYWORD 
                                      else null
                     
+                    val pulseKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_PULSE
+                                   else if (item.labelRes == R.string.event_2) AppConstants.KEY_EVENT_2_PULSE
+                                   else null
+                    
+                    val isPulsing = pulseKey?.let { prefs.getBoolean(it, false) } ?: false
+
                     val currentLabel = keywordKey?.let { prefs.getString(it, "") }?.takeIf { it.isNotBlank() } 
                                        ?: stringResource(id = item.labelRes)
 
                     SingleColorThemeRow(
                         label = currentLabel,
                         color = currentColor,
+                        isPulsing = isPulsing,
+                        onPulseClick = if (pulseKey != null) { {
+                            prefs.edit { putBoolean(pulseKey, !isPulsing) }
+                            updateTrigger++
+                        } } else null,
                         onLabelClick = if (keywordKey != null) { { 
                             pendingItem = item
                             showRenameDialog = true 
@@ -186,6 +198,7 @@ fun ColorThemeScreen(
                             prefs.edit { 
                                 remove(key)
                                 keywordKey?.let { remove(it) }
+                                pulseKey?.let { remove(it) }
                             }
                             ThemePersistence.markThemeAsModified(prefs)
                             onThemeModified()
@@ -268,6 +281,8 @@ private fun getThemeColor(prefs: SharedPreferences, key: String, default: Color)
 private fun SingleColorThemeRow(
     label: String,
     color: Color,
+    isPulsing: Boolean = false,
+    onPulseClick: (() -> Unit)? = null,
     onLabelClick: (() -> Unit)? = null,
     onReset: (() -> Unit)? = null,
     onClick: () -> Unit
@@ -297,6 +312,17 @@ private fun SingleColorThemeRow(
             }
         )
         
+        if (onPulseClick != null) {
+            IconButton(onClick = onPulseClick, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    imageVector = Icons.Default.WbSunny, 
+                    contentDescription = "Activar parpadeo",
+                    tint = if (isPulsing) CalendarioTheme.colors.cabecera else Color.Gray.copy(alpha = 0.4f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+
         if (onReset != null) {
             IconButton(onClick = onReset, modifier = Modifier.size(32.dp)) {
                 Icon(

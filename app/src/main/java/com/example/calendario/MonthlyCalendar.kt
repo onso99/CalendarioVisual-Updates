@@ -1,6 +1,11 @@
 package com.example.calendario
 
 import android.content.Context
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,11 +24,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
@@ -67,11 +74,32 @@ fun MonthlyCalendar(
     val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
     val normEvent1 = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
     val normEvent2 = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
+    val event1Pulse = remember(themeColors) { prefs.getBoolean(AppConstants.KEY_EVENT_1_PULSE, false) }
+    val event2Pulse = remember(themeColors) { prefs.getBoolean(AppConstants.KEY_EVENT_2_PULSE, false) }
+
     val effectType = remember(themeColors) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
     
     val showWeekNumber = remember(prefs) { prefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
     val weekFields = remember(locale) { WeekFields.of(locale) }
     val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
+
+    // --- ANIMACIÓN DE PARPADEO (v3.0.21-F4) ---
+    val infiniteTransition = rememberInfiniteTransition(label = "blink")
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1500
+                1f at 0
+                1f at 1000 // Visible 1 segundo
+                0f at 1001 // Desaparece al instante
+                0f at 1500 // Invisible medio segundo
+            },
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "alpha"
+    )
 
     val daysOfWeek = remember(startOfWeek) {
         val days = DayOfWeek.entries
@@ -426,10 +454,16 @@ fun MonthlyCalendar(
                                     horizontalArrangement = Arrangement.spacedBy(3.dp)
                                 ) {
                                     indicatorColors.forEach { color ->
+                                        val isPulsing = (color == themeColors.textEvent1 && event1Pulse) || 
+                                                        (color == themeColors.textEvent2 && event2Pulse)
+                                        
                                         Box(
                                             modifier = Modifier
                                                 .size(5.dp)
                                                 .clip(CircleShape)
+                                                .graphicsLayer {
+                                                    alpha = if (isPulsing) pulseAlpha else 1f
+                                                }
                                                 .background(color)
                                         )
                                     }

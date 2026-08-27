@@ -18,6 +18,8 @@ object AppConstants {
     const val KEY_DARK_THEME_NAME = "dark_theme_name_key"
     const val KEY_EVENT_1_KEYWORD = "event_1_keyword"
     const val KEY_EVENT_2_KEYWORD = "event_2_keyword"
+    const val KEY_EVENT_1_PULSE = "event_1_pulse"
+    const val KEY_EVENT_2_PULSE = "event_2_pulse"
     const val KEY_AUTO_BACKUP_DRIVE = "auto_backup_drive_key"
     const val KEY_BACKUP_FREQUENCY = "backup_frequency_key"
     const val KEY_LAST_BACKUP_TIME = "last_backup_timestamp_key"

@@ -1,3 +1,4 @@
+2026-08-28 - v3.0.21-F1 Integridad de datos y unificación de widgets sin afectar eventos largos
 2026-08-28 - v3.0.21-F3 Ajuste de margen a 30 min y mejora visual del resumen para eventos nocturnos de un solo día
 2026-08-28 - v3.0.21-F2 Sugerencia inteligente de horas
 2026-08-26 - v3.0.21 Corrección del bug del día extra y mejora en la lógica de fechas
