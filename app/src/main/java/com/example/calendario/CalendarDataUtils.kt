@@ -452,24 +452,30 @@ suspend fun mergeHistoryWithSystemData(
 
     val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
     val fuzzySystemMap = systemEvents.associateBy { it.fuzzyAdn }
-    val systemIdMap = systemEvents.associateBy( { "${it.id}_${it.date}" }, { it.adn } )
+    
+    // MAPA DE IDENTIDAD DEL SISTEMA: Para detectar si un registro de Room es obsoleto
+    val systemCurrentAdnMap = systemEvents.filter { it.id > 0 }.associateBy { "${it.id}_${it.date}" }
 
     (systemEvents + cachedHistory).asSequence()
-        .distinctBy { event ->
-            when {
-                event.id > 0 && systemIdMap.containsKey("${event.id}_${event.date}") -> systemIdMap["${event.id}_${event.date}"]
-                systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(event.fuzzyAdn) -> event.fuzzyAdn
-                else -> event.adn
-            }
-        }
+        .distinctBy { it.adn } // Cada día de evento largo mantiene su ADN único (Seguridad v3.0.21)
         .filter { event ->
-            // A) Filtro de Seguridad: No recuperar si está marcado como borrado (físico o lógico)
+            // A) Filtro de Seguridad
             if (event.isDeleted || (event.id in deletedIds)) return@filter false
             
-            // B) Filtro de Laborables: No recuperar si el ID o la fecha están marcados como laborables
+            // B) Filtro de Laborables
             if (workingDayIds.contains(event.id) || workingDayDates.contains(event.date)) return@filter false
 
-            // C) Saneamiento de huérfanos manuales
+            // C) SANEAMIENTO DE DUPLICADOS (FASE 1):
+            // Si el evento está en Room pero el sistema dice que para esa ID+Fecha ahora hay un ADN distinto
+            // (ej. has editado la hora), descartamos la versión vieja de Room inmediatamente.
+            if (event.id > 0) {
+                val currentSystemVersion = systemCurrentAdnMap["${event.id}_${event.date}"]
+                if (currentSystemVersion != null && currentSystemVersion.adn != event.adn) {
+                    return@filter false // Es una versión obsoleta (duplicado)
+                }
+            }
+
+            // D) Saneamiento de huérfanos manuales
             if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey(event.fuzzyAdn)) {
                 if (event.id < 0) return@filter false
             }

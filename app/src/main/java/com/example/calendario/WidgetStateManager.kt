@@ -110,7 +110,6 @@ object WidgetStateManager {
                 
                 true
             }
-            .distinctBy { "${it.date}_${it.title}" }
             .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
             .take(limit)
             .map { event ->
