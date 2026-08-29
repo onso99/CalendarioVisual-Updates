@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.BeachAccess
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -147,6 +148,7 @@ fun CalendarioScreen(
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
+    var showBackupScreen by remember { mutableStateOf(false) }
 
     val calendarPermissionsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -358,6 +360,23 @@ fun CalendarioScreen(
         return
     }
 
+    if (showBackupScreen) {
+        BackupScreen(
+            onBackPress = { showBackupScreen = false },
+            viewModel = viewModel,
+            onHistoryClick = { showBackupHistoryScreen = true },
+            onNavigateToDate = { date ->
+                val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.from(date)).toInt()
+                scope.launch {
+                    monthPagerState.scrollToPage(targetPage)
+                    selectedDateForDialog = date
+                    showDayEventsDialog = true
+                }
+            }
+        )
+        return
+    }
+
     if (showManageCalendarsScreen) {
         ManageCalendarsScreen(
             onBackPress = { showManageCalendarsScreen = false },
@@ -541,6 +560,18 @@ fun CalendarioScreen(
                             scope.launch { drawerState.close() }
                         },
                         icon = { Icon(Icons.Default.BeachAccess, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.backup_section_title_label)) },
+                        selected = false,
+                        onClick = { 
+                            showBackupScreen = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.CloudUpload, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )

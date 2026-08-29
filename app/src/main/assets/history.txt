@@ -1,4 +1,4 @@
-2026-08-29 - v3.1.07 Menú lateral: Gestor de festivos
+2026-08-29 - v3.1.07 Menú lateral: Gestor de festivos. Eliminado Gestor de festivos de los Ajustes
 2026-08-29 - v3.1.06 Menú lateral: Pantalla Calendarios. Eliminado Calendarios del menú 3 puntos
 2026-08-29 - v3.1.05 Menú lateral: Calendarios
 2026-08-29 - v3.1.04 Menú lateral: ajustes visuales de título y opacidad de opciones

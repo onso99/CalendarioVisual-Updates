@@ -36,6 +36,7 @@
     <string name="repeat_on_date">Hasta la fecha</string>
     <string name="repeat_after">Repeticiones</string>
 
+    <string name="maintenance_section">Mantenimiento</string>
     <string name="other_calendars">Todos los calendarios</string>
     <string name="monthly_view">Mensual</string>
     <string name="yearly_view">Anual</string>
