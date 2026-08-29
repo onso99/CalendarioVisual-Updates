@@ -1,3 +1,4 @@
+2026-08-29 - v3.1.12 Eliminada Copia de seguridad de los Ajustes
 2026-08-29 - v3.1.11 Copia de seguridad: Registro de actividad reubicada en sección Drive
 2026-08-29 - v3.1.10 Copia de seguridad: eliminada Copia local
 2026-08-29 - v3.1.09 Menú lateral: Copia de seguridad/Mantenimiento

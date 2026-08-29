@@ -8,10 +8,8 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
-import androidx.core.graphics.ColorUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
@@ -57,24 +55,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.core.graphics.ColorUtils
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.Scope
-import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -101,11 +91,8 @@ fun SettingsScreen(
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {},
-    onBackupHistoryClick: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val isSyncing = uiState.isSyncing
-    val isRestoring = uiState.isRestoring
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -126,16 +113,9 @@ fun SettingsScreen(
     var showFontFamilyDialog by remember { mutableStateOf(false) }
     var showWidgetCalendarDialog by remember { mutableStateOf(false) }
     var showPermissionsDialog by remember { mutableStateOf(false) }
-    var showUnlinkAccountDialog by remember { mutableStateOf(false) }
-    var showFrequencyDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var isChangingLanguage by remember { mutableStateOf(false) }
-    var showConfirmRestoreDialog by remember { mutableStateOf(false) }
-    var restoreSource by remember { mutableStateOf<String?>(null) }
-    var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
-    var showBackupActionsExpand by remember { mutableStateOf(false) }
-    var showLocalBackupExpand by remember { mutableStateOf(false) }
     var showFontExpand by remember { mutableStateOf(false) }
 
     // Estado para el tema cargado desde archivo (pero aún no aplicado)
@@ -185,7 +165,7 @@ fun SettingsScreen(
                                 putString(AppConstants.KEY_LIGHT_THEME_NAME, newName)
                                 putString(AppConstants.KEY_DARK_THEME_NAME, newName)
                             }
-                            importedThemeData = null // Limpiar memoria temporal al guardar
+                            importedThemeData = null 
                             onThemeImported()
                         }
                     } catch (e: Exception) {
@@ -197,65 +177,8 @@ fun SettingsScreen(
         }
     )
 
-    val exportFullBackupLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    try {
-                        val selIds = appPrefs.getString("temp_selected_ids", "")?.split(",")?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
-                        val favId = appPrefs.getString("temp_fav_id", null)?.toLongOrNull()
-                        BackupManager.exportFullBackup(context, uri, selIds, favId)
-                        Toast.makeText(context, R.string.backup_exported_successfully, Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        val errorMsg = context.applicationContext.getString(R.string.error_exporting_backup, e.message ?: "Unknown error")
-                        Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
-    )
-
-    val importFullBackupLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    pendingLocalUri = uri
-                    restoreSource = "local"
-                    showConfirmRestoreDialog = true
-                }
-            }
-        }
-    )
-
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                if (task.isSuccessful) {
-                    val account = task.result
-                    appPrefs.edit { putString("google_account_email", account?.email) }
-                    permissionsUpdateTrigger++
-                    Toast.makeText(context, R.string.account_linked_success, Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, R.string.account_linked_error, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    )
-
     // --- States ---
     val themeSetting by themeManager.themeSetting.collectAsState()
-    val lastBackupTimestamp = remember(permissionsUpdateTrigger) { 
-        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) } 
-        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_TIME] as? Number)?.toLong() ?: 0L }
-    }
-    val lastBackupSize = remember(permissionsUpdateTrigger) { 
-        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) } 
-        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_SIZE] as? Number)?.toLong() ?: 0L }
-    }
 
     var pendingShowWeekNumber by remember { 
         val v = try { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) } 
@@ -312,11 +235,6 @@ fun SettingsScreen(
         val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) } 
                 catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL]?.toString()?.toIntOrNull() ?: 10 }
         mutableFloatStateOf(v.toFloat()) 
-    }
-    var pendingBackupFreq by remember { 
-        val auto = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
-        val f = if (!auto) "manual" else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
-        mutableStateOf(f)
     }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
@@ -593,78 +511,6 @@ fun SettingsScreen(
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                SectionTitle(text = stringResource(id = R.string.backup_section_title_label), modifier = Modifier.weight(1f))
-                IconButton(onClick = onBackupHistoryClick, modifier = Modifier.padding(top = 16.dp).size(24.dp)) { 
-                    Icon(
-                        imageVector = Icons.Default.History, 
-                        contentDescription = null, 
-                        tint = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
-                    )
-                }
-            }
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                val email = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
-                if (email == null) {
-                    ActionRow(text = stringResource(id = R.string.link_google_account)) {
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build()
-                        googleSignInLauncher.launch(GoogleSignIn.getClient(context, gso).signInIntent)
-                    }
-                } else {
-                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(id = R.string.drive_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
-                        Text(text = email, color = CalendarioTheme.colors.textSystem, fontSize = 14.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }
-                    HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                    val freqLabel = when(pendingBackupFreq) { "manual" -> stringResource(R.string.frequency_manual); "daily" -> stringResource(R.string.frequency_daily); "weekly" -> stringResource(R.string.frequency_weekly); "monthly" -> stringResource(R.string.frequency_monthly); else -> pendingBackupFreq }
-                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showFrequencyDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(id = R.string.backup_frequency), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f), fontSize = 16.sp)
-                        Text(text = freqLabel, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                    }
-                    HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                    Column {
-                        var dateFontSize by remember { mutableStateOf(14.sp) }
-                        Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBackupActionsExpand = !showBackupActionsExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(id = R.string.last_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                            Spacer(modifier = Modifier.weight(1f))
-                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
-                            val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))}MB" else ""
-                            Text(text = "$lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = dateFontSize, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis, onTextLayout = { if (it.hasVisualOverflow && dateFontSize > 11.sp) dateFontSize = (dateFontSize.value - 1f).sp })
-                            Icon(if (showBackupActionsExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.padding(start = 8.dp).size(20.dp))
-                        }
-                        if (showBackupActionsExpand) {
-                            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                                SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { restoreSource = "drive"; showConfirmRestoreDialog = true })
-                                SettingsActionChip(text = stringResource(id = R.string.sincronizar_label), icon = Icons.Default.Sync, isIconRotating = isSyncing, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; Toast.makeText(context, context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG).show() } else { Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show() } } })
-                            }
-                        }
-                    }
-                }
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                Column {
-                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showLocalBackupExpand = !showLocalBackupExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(id = R.string.preferences_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
-                        Icon(if (showLocalBackupExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(20.dp))
-                    }
-                    if (showLocalBackupExpand) {
-                        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                            SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { importFullBackupLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) })
-                            SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { 
-                                val suggested = "calendariovisual_backup_${LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))}.json"
-                                appPrefs.edit { 
-                                    putString("temp_selected_ids", uiState.selectedCalendarIds.joinToString(","))
-                                    putString("temp_fav_id", uiState.favoriteCalendarId?.toString())
-                                }
-                                exportFullBackupLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, suggested) }) 
-                            })
-                        }
-                    }
-                }
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-            }
-
             Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(stringResource(id = R.string.about), style = typography.titleMedium, fontWeight = FontWeight.Bold, color = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f))
                 
@@ -730,7 +576,6 @@ fun SettingsScreen(
         if (showWeekConfigDialog) { WeekConfigDialog(currentSelectionKey = pendingStartOfWeekKey, showWeekNumber = pendingShowWeekNumber, onConfirm = { key, show -> pendingStartOfWeekKey = key; pendingShowWeekNumber = show; updateAppPrefs { putString(AppConstants.KEY_START_OF_WEEK, key); putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, show) }; showWeekConfigDialog = false }, onDismiss = { showWeekConfigDialog = false }) }
         if (showAlarmConfigDialog) { AlarmConfigDialog(anticipation = pendingAlarmOffset, snooze = pendingSnoozeInterval, onConfirm = { offset, interval -> pendingAlarmOffset = offset; pendingSnoozeInterval = interval; updateAppPrefs { putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset.roundToInt()); putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, interval.roundToInt()) }; showAlarmConfigDialog = false }, onDismiss = { showAlarmConfigDialog = false }) }
         if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onConfirm = { family -> pendingFontFamily = family; updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, family) }; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
-        if (showFrequencyDialog) { BackupFrequencyDialog(selection = pendingBackupFreq, onConfirm = { freq -> pendingBackupFreq = freq; updateAppPrefs { val enabled = freq != "manual"; putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, enabled); putString(AppConstants.KEY_BACKUP_FREQUENCY, freq) }; if (freq != "manual") BackupScheduler.scheduleBackup(context, freq) else BackupScheduler.cancelBackup(context); showFrequencyDialog = false }, onDismiss = { showFrequencyDialog = false }) }
         if (showBundledThemesDialog) { 
             BundledThemesDialog(
                 currentThemeId = lightThemeName, 
@@ -759,52 +604,7 @@ fun SettingsScreen(
         if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, it.toArgb()) }; showWidgetEventColorPalette = false }) }
         if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, it.toArgb()) }; showWidgetTodayEventColorPalette = false }) }
         if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, it.toArgb()) }; showWidgetBackgroundColorPalette = false }) }
-        if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }) }
-        if (showUnlinkAccountDialog) { AlertDialog(onDismissRequest = { showUnlinkAccountDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.unlink_account_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.unlink_action), onClick = { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build(); GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { appPrefs.edit { remove("google_account_email") }; permissionsUpdateTrigger++; showUnlinkAccountDialog = false } }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }) }
-        if (showPermissionsDialog) { LaunchedEffect(Unit) { permissionsUpdateTrigger++; delay(500.milliseconds); permissionsUpdateTrigger++ }; PermissionsDialog(calStatus = calStatus, notifStatus = notifStatus, alarmStatus = alarmStatus, driveStatus = driveStatus, batteryStatus = batteryStatus, onDismiss = { showPermissionsDialog = false }, onFix = { type -> when (type) { "drive" -> { val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build(); googleSignInLauncher.launch(GoogleSignIn.getClient(context, gso).signInIntent) }; "battery" -> context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)); else -> context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }) } }) }
-        if (showConfirmRestoreDialog) { 
-            ConfirmRestoreDialog(
-                onDismiss = { 
-                    showConfirmRestoreDialog = false
-                    restoreSource = null
-                    pendingLocalUri = null 
-                }, 
-                onConfirm = { 
-                    showConfirmRestoreDialog = false
-                    val callback: (Boolean) -> Unit = { success -> 
-                        if (success) { 
-                            Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
-                            (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
-                        } else {
-                            Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
-                        }
-                    }
-                    when (restoreSource) {
-                        "drive" -> viewModel.restoreHistoryFromDrive(
-                            context = context,
-                            restorePrefs = true,
-                            restoreHolidays = true,
-                            restoreNotes = true,
-                            restoreEvents = true,
-                            onComplete = callback
-                        )
-                        "local" -> {
-                            if (pendingLocalUri != null) {
-                                viewModel.restoreFromLocal(
-                                    context = context,
-                                    uri = pendingLocalUri!!,
-                                    restorePrefs = true,
-                                    restoreHolidays = true,
-                                    restoreNotes = true,
-                                    restoreEvents = true,
-                                    onComplete = callback
-                                )
-                            }
-                        }
-                    }
-                }
-            )
-        }
+        if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) } ) }
         if (showExportDialog) { ExportThemeDialog(onDismissRequest = { showExportDialog = false }, onConfirm = { newName -> showExportDialog = false; appPrefs.edit { putString("temp_export_name", newName) }; exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "${newName}.json") }) }) }
         if (showWidgetCalendarDialog) { 
             val appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }
@@ -835,39 +635,6 @@ fun SettingsScreen(
 private fun ExportThemeDialog(onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text(stringResource(id = R.string.theme_name)) }, singleLine = true, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.export), onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) }, enabled = text.isNotBlank()) }, dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) })
-}
-
-@Composable
-private fun ConfirmRestoreDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss, 
-        containerColor = CalendarioTheme.colors.fondoDialogos, 
-        title = { 
-            Text(
-                text = stringResource(id = R.string.confirm_restore_title), 
-                fontWeight = FontWeight.Bold, 
-                fontSize = 20.sp, 
-                modifier = Modifier.fillMaxWidth(), 
-                textAlign = TextAlign.Start
-            ) 
-        }, 
-        text = { 
-            Text(
-                text = stringResource(id = R.string.restore_total_confirmation),
-                color = CalendarioTheme.colors.textSystem,
-                fontSize = 16.sp
-            ) 
-        }, 
-        confirmButton = { 
-            DialogConfirmButton(
-                text = stringResource(id = R.string.accept), 
-                onClick = onConfirm
-            ) 
-        }, 
-        dismissButton = { 
-            DialogDismissButton(onDismiss = onDismiss) 
-        }
-    )
 }
 
 @Composable
@@ -978,25 +745,21 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
 @Composable
 private fun BundledThemesDialog(
     currentThemeId: String?,
-    importedTheme: Pair<ParsedTheme, String>?, // Nuevo: Tema cargado de archivo
+    importedTheme: Pair<ParsedTheme, String>?, 
     onDismiss: () -> Unit,
-    onThemeSelected: (ParsedTheme, String) -> Unit, // Cambiado: Ahora devuelve ParsedTheme + ID
+    onThemeSelected: (ParsedTheme, String) -> Unit, 
     onLoadClick: () -> Unit,
     onSaveClick: () -> Unit
 ) {
     val effectiveId = currentThemeId ?: "theme_1"
     val cleanId = effectiveId.removeSuffix("***")
     
-    // Verificar si el tema actual es uno de los predefinidos
     val isCurrentBundled = remember(cleanId) {
         BundledThemes.themes.any { (it["themeManifest"] as Map<*, *>)["id"] == cleanId }
     }
     
-    // El ID seleccionado puede ser un ID de tema bundled, el ID de un tema ya activo, o "imported_temp"
-    // Usamos cleanId como clave para que se resetee si el tema del sistema cambia (ej: al guardar)
     var tempSelectionId by remember(cleanId) { mutableStateOf(cleanId) }
     
-    // Si cargamos un archivo nuevo, lo seleccionamos automáticamente
     LaunchedEffect(importedTheme) {
         if (importedTheme != null) {
             tempSelectionId = "imported_temp"
@@ -1011,7 +774,6 @@ private fun BundledThemesDialog(
         title = { Text(text = stringResource(id = R.string.themes_v6), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // La celda personalizada aparece si hay un tema importado nuevo O si el tema actual ya es personalizado
                 val hasCustomEntry = importedTheme != null || !isCurrentBundled
                 val gridHeight = if (hasCustomEntry) 264.dp else 210.dp
 
@@ -1021,7 +783,6 @@ private fun BundledThemesDialog(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.height(gridHeight)
                 ) {
-                    // 1. Temas predefinidos
                     gridItems(BundledThemes.themes) { theme: Map<String, Any> ->
                         val themeManifest = theme["themeManifest"] as Map<*, *>
                         val themeId = themeManifest["id"] as String
@@ -1035,7 +796,6 @@ private fun BundledThemesDialog(
                         )
                     }
                     
-                    // 2. Celda Inteligente de Tema Personalizado
                     if (hasCustomEntry) {
                         item {
                             val customName = when {
@@ -1043,8 +803,6 @@ private fun BundledThemesDialog(
                                 !isCurrentBundled -> cleanId
                                 else -> ""
                             }
-                            // El ID de selección es "imported_temp" si es una carga fresca, 
-                            // o el cleanId original si es el tema ya activo.
                             val targetId = if (importedTheme != null) "imported_temp" else cleanId
                             
                             ThemeChip(
@@ -1075,10 +833,8 @@ private fun BundledThemesDialog(
                         }
                         cleanId -> {
                             if (!isCurrentBundled) {
-                                // El usuario ha vuelto a seleccionar el tema personalizado que ya tenía
                                 onDismiss()
                             } else {
-                                // Es el tema bundled que estaba activo
                                 BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == tempSelectionId }?.let { theme ->
                                     val manifestObj = theme["themeManifest"] as Map<*, *>
                                     val manifest = JSONObject(manifestObj)
@@ -1090,7 +846,6 @@ private fun BundledThemesDialog(
                             }
                         }
                         else -> {
-                            // Buscar y aplicar el tema predefinido seleccionado
                             BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == tempSelectionId }?.let { theme ->
                                 val manifestObj = theme["themeManifest"] as Map<*, *>
                                 val manifest = JSONObject(manifestObj)
@@ -1145,21 +900,6 @@ fun truncateThemeName(name: String, limit: Int): String = if (name.length > limi
 @Composable
 private fun WidgetColorChip(label: String, color: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val textColor = if (isColorDark(color, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black; val borderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f); Box(modifier = modifier.height(44.dp).clip(RoundedCornerShape(10.dp)).background(color).border(0.5.dp, borderColor, RoundedCornerShape(10.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = label, color = textColor, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 4.dp)) }
-}
-
-@Composable
-private fun PermissionsDialog(calStatus: PermissionStatus, notifStatus: PermissionStatus, alarmStatus: PermissionStatus, driveStatus: PermissionStatus, batteryStatus: PermissionStatus, onDismiss: () -> Unit, onFix: (String) -> Unit) {
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.permissions_dialog_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { PermissionRow(label = stringResource(id = R.string.calendar_permission_label), status = calStatus, fixLabel = if (calStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted) else stringResource(R.string.status_denied), onFix = { onFix("calendar") }); PermissionRow(label = stringResource(id = R.string.notifications_permission_label), status = notifStatus, fixLabel = if (notifStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted_f) else stringResource(R.string.status_denied), onFix = { onFix("notifications") }); PermissionRow(label = stringResource(id = R.string.alarms_permission_label), status = alarmStatus, fixLabel = if (alarmStatus == PermissionStatus.GRANTED) stringResource(R.string.status_full_screen) else stringResource(R.string.status_no_full_screen), onFix = { onFix("alarms") }); PermissionRow(label = stringResource(id = R.string.google_drive_permission_label), status = driveStatus, fixLabel = if (driveStatus == PermissionStatus.GRANTED) stringResource(R.string.status_linked) else stringResource(R.string.status_unlinked), onFix = { onFix("drive") }); PermissionRow(label = stringResource(id = R.string.battery_optimization_label), status = batteryStatus, fixLabel = if (batteryStatus == PermissionStatus.GRANTED) stringResource(R.string.status_unrestricted) else stringResource(R.string.status_optimized), onFix = { onFix("battery") }) } }, confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.close), color = CalendarioTheme.colors.textSystem) } })
-}
-
-@Composable
-private fun BackupFrequencyDialog(selection: String, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
-    var tempSelection by remember { mutableStateOf(selection) }; val options = listOf("manual" to R.string.frequency_manual, "daily" to R.string.frequency_daily, "weekly" to R.string.frequency_weekly, "monthly" to R.string.frequency_monthly); AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { options.forEach { (key, labelRes) -> Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = key == tempSelection; Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera) } } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempSelection) }, onDismiss = onDismiss) })
-}
-
-@Composable
-private fun PermissionRow(label: String, status: PermissionStatus, fixLabel: String, onFix: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) { Box(modifier = Modifier.padding(top = 6.dp).size(10.dp).background(if (status == PermissionStatus.GRANTED) Color.Green else Color.Red, CircleShape)); Column(modifier = Modifier.weight(1f)) { Text(text = label, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, lineHeight = 20.sp); Text(text = fixLabel, color = if (status == PermissionStatus.DENIED) MaterialTheme.colorScheme.primary else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontWeight = if (status == PermissionStatus.DENIED) FontWeight.Bold else FontWeight.Normal, fontSize = 13.sp, modifier = Modifier.clickable { onFix() }.padding(vertical = 2.dp)) } }
 }
 
 

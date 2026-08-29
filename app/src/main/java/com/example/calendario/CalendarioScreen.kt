@@ -393,7 +393,6 @@ fun CalendarioScreen(
             onColorThemeClick = { showColorThemeScreen = true },
             onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
-            onBackupHistoryClick = { showBackupHistoryScreen = true },
             onThemeUpdated = onThemeUpdated
         )
         return
