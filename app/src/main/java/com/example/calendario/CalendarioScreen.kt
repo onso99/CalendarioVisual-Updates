@@ -26,32 +26,18 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,6 +110,8 @@ fun CalendarioScreen(
     val yearPagerState = rememberPagerState(initialPage = initialYearPage, pageCount = { 201 })
 
     val currentYear by remember { derivedStateOf { startYear.plusYears(yearPagerState.currentPage.toLong()) } }
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     var menuExpanded by remember { mutableStateOf(false) }
     var showSelectCalendarsDialog by remember { mutableStateOf(false) }
@@ -420,355 +408,401 @@ fun CalendarioScreen(
             availableCalendars = uiState.availableCalendars
         )
     } else {
-        Scaffold(
-            topBar = {
-                Column(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primary)
-                        .statusBarsPadding()
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet(
+                    drawerContainerColor = CalendarioTheme.colors.settingsBackground,
+                    drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
                 ) {
-                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
-                        val showHomeButton = viewMode == CalendarViewMode.MONTHLY && currentMonth != YearMonth.from(today)
-                        Row(
-                            modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Left Group
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        stringResource(id = R.string.app_name),
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = CalendarioTheme.colors.cabecera
+                    )
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
+                    
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.monthly_view)) },
+                        selected = viewMode == CalendarViewMode.MONTHLY,
+                        onClick = { 
+                            viewMode = CalendarViewMode.MONTHLY
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.CalendarMonth, null) },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.yearly_view)) },
+                        selected = viewMode == CalendarViewMode.YEARLY,
+                        onClick = { 
+                            viewMode = CalendarViewMode.YEARLY
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.CalendarToday, null) },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+            }
+        ) {
+            Scaffold(
+                topBar = {
+                    Column(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.primary)
+                            .statusBarsPadding()
+                    ) {
+                        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
                             Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start
+                                modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (viewMode == CalendarViewMode.YEARLY || showHomeButton) {
-                                    IconButton(
-                                        onClick = {
-                                            if (viewMode == CalendarViewMode.YEARLY) {
-                                                scope.launch { monthPagerState.animateScrollToPage(initialPage) }
-                                                viewMode = CalendarViewMode.MONTHLY
-                                            } else if (showHomeButton) {
-                                                scope.launch { monthPagerState.animateScrollToPage(initialPage) }
+                                // Left Group: Menu + Dynamic Title
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Start
+                                ) {
+                                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                        Icon(Icons.Default.Menu, stringResource(id = R.string.menu))
+                                    }
+                                    
+                                    val titleText = remember(currentMonth, currentYear, viewMode, today, locale) {
+                                        if (viewMode == CalendarViewMode.YEARLY) {
+                                            currentYear.value.toString()
+                                        } else {
+                                            if (currentMonth.year == today.year) {
+                                                currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale)
+                                                    .replaceFirstChar { it.uppercase(locale) }
+                                            } else {
+                                                val monthShort = currentMonth.month.getDisplayName(java.time.format.TextStyle.SHORT, locale)
+                                                    .replaceFirstChar { it.uppercase(locale) }
+                                                "$monthShort ${currentMonth.year}"
                                             }
                                         }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = if (viewMode == CalendarViewMode.YEARLY) stringResource(id = R.string.back_to_monthly_view) else stringResource(id = R.string.back_to_current_month)
-                                        )
                                     }
-                                }
-                                if (viewMode == CalendarViewMode.MONTHLY) {
-                                    val monthNameColor = CalendarioTheme.colors.textLabel
+
                                     Text(
-                                        text = currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) },
+                                        text = titleText,
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        color = monthNameColor,
-                                        modifier = Modifier.padding(start = if (showHomeButton) 0.dp else 12.dp)
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        modifier = Modifier
+                                            .padding(start = 8.dp)
+                                            .clickable(enabled = viewMode == CalendarViewMode.YEARLY) {
+                                                showGoToYearDialog = true
+                                            }
                                     )
                                 }
-                            }
 
-                            // Center Group
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
-                                    .clickable {
-                                        if (viewMode == CalendarViewMode.MONTHLY) {
-                                            val targetYearPage = currentMonth.year - startYear.value
-                                            scope.launch { yearPagerState.scrollToPage(targetYearPage) }
-                                            viewMode = CalendarViewMode.YEARLY
-                                        } else {
-                                            showGoToYearDialog = true
+                                // Center Group: Go to Today
+                                Box(
+                                    modifier = Modifier.weight(0.4f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    val isAtToday = if (viewMode == CalendarViewMode.MONTHLY) {
+                                        currentMonth == YearMonth.from(today)
+                                    } else {
+                                        currentYear == Year.from(today)
+                                    }
+
+                                    if (!isAtToday) {
+                                        IconButton(onClick = {
+                                            scope.launch {
+                                                if (viewMode == CalendarViewMode.MONTHLY) {
+                                                    monthPagerState.animateScrollToPage(initialPage)
+                                                } else {
+                                                    yearPagerState.animateScrollToPage(initialYearPage)
+                                                }
+                                            }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.KeyboardDoubleArrowLeft,
+                                                contentDescription = stringResource(id = R.string.back_to_current_month),
+                                                modifier = Modifier.size(28.dp)
+                                            )
                                         }
                                     }
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
-                            ) {
-                                val yearButtonBackgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
-                                val yearButtonTextColor = if (isColorDark(yearButtonBackgroundColor, MaterialTheme.colorScheme.primary)) Color.White else Color.Black
-                                Text(
-                                    text = if (viewMode == CalendarViewMode.MONTHLY) "${currentMonth.year}" else "${currentYear.value}",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = yearButtonTextColor
-                                )
-                            }
+                                }
 
-                            // Right Group
-                            Row(
-                                modifier = Modifier.weight(1f),
-                                horizontalArrangement = Arrangement.End,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                IconButton(onClick = { launchAddEditScreen(null, null) }) {
-                                    Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
-                                }
-                                IconButton(onClick = { isSearchActive = true }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Search,
-                                        contentDescription = stringResource(id = R.string.search)
-                                    )
-                                }
-                                Box {
-                                    IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, stringResource(id = R.string.menu)) }
-                                    DropdownMenu(
-                                        expanded = menuExpanded,
-                                        onDismissRequest = { menuExpanded = false },
-                                        shape = RoundedCornerShape(12.dp),
-                                        modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
-                                    ) {
-                                        DropdownMenuItem(
-                                            text = { Text(stringResource(id = R.string.calendars), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                            onClick = {
-                                                menuExpanded = false
-                                                scope.launch {
-                                                    val hasRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-                                                    val hasWrite = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
-                                                    if (hasRead && hasWrite) {
-                                                        viewModel.refreshAvailableCalendars()
-                                                        showSelectCalendarsDialog = true
-                                                    } else {
-                                                        calendarPermissionsLauncher.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
+                                // Right Group: Add + Search + More
+                                Row(
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    IconButton(onClick = { launchAddEditScreen(null, null) }) {
+                                        Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
+                                    }
+                                    IconButton(onClick = { isSearchActive = true }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Search,
+                                            contentDescription = stringResource(id = R.string.search)
+                                        )
+                                    }
+                                    Box {
+                                        IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, stringResource(id = R.string.menu)) }
+                                        DropdownMenu(
+                                            expanded = menuExpanded,
+                                            onDismissRequest = { menuExpanded = false },
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text(stringResource(id = R.string.calendars), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                                onClick = {
+                                                    menuExpanded = false
+                                                    scope.launch {
+                                                        val hasRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                                                        val hasWrite = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                                                        if (hasRead && hasWrite) {
+                                                            viewModel.refreshAvailableCalendars()
+                                                            showSelectCalendarsDialog = true
+                                                        } else {
+                                                            calendarPermissionsLauncher.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
+                                                        }
                                                     }
-                                                }
-                                            },
-                                            leadingIcon = { Icon(Icons.Default.Event, contentDescription = stringResource(id = R.string.calendars), tint = CalendarioTheme.colors.textSystem) }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text(stringResource(id = R.string.settings), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                            onClick = { menuExpanded = false; showSettingsScreen = true },
-                                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings), tint = CalendarioTheme.colors.textSystem) }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text(stringResource(id = R.string.help), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                            onClick = { menuExpanded = false; showHelpScreen = true },
-                                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = stringResource(id = R.string.help), tint = CalendarioTheme.colors.textSystem) }
-                                        )
+                                                },
+                                                leadingIcon = { Icon(Icons.Default.Event, contentDescription = stringResource(id = R.string.calendars), tint = CalendarioTheme.colors.textSystem) }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text(stringResource(id = R.string.settings), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                                onClick = { menuExpanded = false; showSettingsScreen = true },
+                                                leadingIcon = { Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings), tint = CalendarioTheme.colors.textSystem) }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text(stringResource(id = R.string.help), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
+                                                onClick = { menuExpanded = false; showHelpScreen = true },
+                                                leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = stringResource(id = R.string.help), tint = CalendarioTheme.colors.textSystem) }
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            },
-            containerColor = CalendarioTheme.colors.settingsBackground
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (viewMode == CalendarViewMode.MONTHLY) {
-                    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                    val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
-                    
-                    val endColor = when (effectType) {
-                        "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
-                        else -> CalendarioTheme.colors.monthlyCalendarGridBackground
-                    }
-
-                    val monthlyCalendarGridBrush = when (effectType) {
-                        "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
-                        "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, endColor))
-                        else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
-                    }
-                    
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                brush = monthlyCalendarGridBrush
-                            )
-                            .padding(top = 16.dp, start = 12.dp, end = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        HorizontalPager(
-                            state = monthPagerState,
-                        ) { page ->
-                            val month = startMonth.plusMonths(page.toLong())
-                            val startOfWeek = getActualFirstDayOfWeek(context)
-                            MonthlyCalendar(
-                                currentMonth = month,
-                                today = today,
-                                eventsByDate = uiState.eventsByDate,
-                                onDayClick = { date, events ->
-                                    selectedDateForDialog = date
-                                    eventsForDialog = events
-                                    showDayEventsDialog = true
-                                },
-                                onEmptyDayClick = { date ->
-                                    selectedDateForDialog = date
-                                    eventsForDialog = emptyList()
-                                    showDayEventsDialog = true
-                                },
-                                startOfWeek = startOfWeek,
-                                availableCalendars = uiState.availableCalendars,
-                                dailyNotes = uiState.dailyNotes,
-                                workingDayDates = uiState.workingDayDates
-                            )
+                },
+                containerColor = CalendarioTheme.colors.settingsBackground
+            ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (viewMode == CalendarViewMode.MONTHLY) {
+                        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                        val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
+                        
+                        val endColor = when (effectType) {
+                            "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
+                            else -> CalendarioTheme.colors.monthlyCalendarGridBackground
                         }
-                        Spacer(Modifier.height(16.dp))
-                        Row(
+
+                        val monthlyCalendarGridBrush = when (effectType) {
+                            "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
+                            "sweep" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, CalendarioTheme.colors.monthlyCalendarGridEffect, endColor))
+                            else -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
+                        }
+                        
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                                .background(
+                                    brush = monthlyCalendarGridBrush
+                                )
+                                .padding(top = 16.dp, start = 12.dp, end = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Muestreo dinámico del fondo para elementos de la barra de título de la lista
-                            val colorBehindTitle = run {
-                                val startColor = CalendarioTheme.colors.monthlyCalendarGridBackground
-                                val midColor = CalendarioTheme.colors.monthlyCalendarGridEffect
-                                val sampledColors = when (effectType) {
-                                    "gradient", "none" -> {
-                                        listOf(0.91f, 0.95f, 0.99f).map { fraction ->
-                                            androidx.compose.ui.graphics.lerp(startColor, endColor, fraction)
+                            HorizontalPager(
+                                state = monthPagerState,
+                            ) { page ->
+                                val month = startMonth.plusMonths(page.toLong())
+                                val startOfWeek = getActualFirstDayOfWeek(context)
+                                MonthlyCalendar(
+                                    currentMonth = month,
+                                    today = today,
+                                    eventsByDate = uiState.eventsByDate,
+                                    onDayClick = { date, events ->
+                                        selectedDateForDialog = date
+                                        eventsForDialog = events
+                                        showDayEventsDialog = true
+                                    },
+                                    onEmptyDayClick = { date ->
+                                        selectedDateForDialog = date
+                                        eventsForDialog = emptyList()
+                                        showDayEventsDialog = true
+                                    },
+                                    startOfWeek = startOfWeek,
+                                    availableCalendars = uiState.availableCalendars,
+                                    dailyNotes = uiState.dailyNotes,
+                                    workingDayDates = uiState.workingDayDates
+                                )
+                            }
+                            Spacer(Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                // Muestreo dinámico del fondo para elementos de la barra de título de la lista
+                                val colorBehindTitle = run {
+                                    val startColor = CalendarioTheme.colors.monthlyCalendarGridBackground
+                                    val midColor = CalendarioTheme.colors.monthlyCalendarGridEffect
+                                    val sampledColors = when (effectType) {
+                                        "gradient", "none" -> {
+                                            listOf(0.91f, 0.95f, 0.99f).map { fraction ->
+                                                androidx.compose.ui.graphics.lerp(startColor, endColor, fraction)
+                                            }
                                         }
-                                    }
-                                    "sweep" -> {
-                                        listOf(0.82f, 0.90f, 0.98f).map { fraction ->
-                                            androidx.compose.ui.graphics.lerp(midColor, endColor, fraction)
+                                        "sweep" -> {
+                                            listOf(0.82f, 0.90f, 0.98f).map { fraction ->
+                                                androidx.compose.ui.graphics.lerp(midColor, endColor, fraction)
+                                            }
                                         }
+                                        else -> listOf(endColor)
                                     }
-                                    else -> listOf(endColor)
+                                    val r = sampledColors.map { it.red }.average()
+                                    val g = sampledColors.map { it.green }.average()
+                                    val b = sampledColors.map { it.blue }.average()
+                                    Color(red = r.toFloat(), green = g.toFloat(), blue = b.toFloat())
                                 }
-                                val r = sampledColors.map { it.red }.average()
-                                val g = sampledColors.map { it.green }.average()
-                                val b = sampledColors.map { it.blue }.average()
-                                Color(red = r.toFloat(), green = g.toFloat(), blue = b.toFloat())
-                            }
 
-                            val titleTextColor = run {
-                                val hsl = FloatArray(3)
-                                ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
-                                val isDarkRegion = hsl[2] < 0.65f
-                                hsl[2] = if (isDarkRegion) 0.85f else 0.25f
-                                Color(ColorUtils.HSLToColor(hsl))
-                            }
-
-                            Text(
-                                text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) }),
-                                fontSize = 18.sp,
-                                color = titleTextColor,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-
-                            if (isCurrentMonthView) {
-                                val buttonContainerColor = run<Color> {
+                                val titleTextColor = run {
                                     val hsl = FloatArray(3)
                                     ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
-                                    val isBgDark = hsl[2] < 0.5f
-                                    
-                                    if (isBgDark) {
-                                        // En fondos oscuros, aclaramos cromáticamente (+10% luz, +5% saturación)
-                                        hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
-                                        hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
-                                    } else {
-                                        // Curva de Contraste Adaptativa v2 para el botón
-                                        val darkenFactor = when {
-                                            hsl[2] > 0.60f -> 0.20f
-                                            hsl[2] > 0.45f -> 0.10f
-                                            else -> 0.05f
-                                        }
-                                        hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
-                                        hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
-                                    }
+                                    val isDarkRegion = hsl[2] < 0.65f
+                                    hsl[2] = if (isDarkRegion) 0.85f else 0.25f
                                     Color(ColorUtils.HSLToColor(hsl))
                                 }
 
-                                val textColor = if (isColorDark(buttonContainerColor, colorBehindTitle)) Color.White else Color.Black
+                                Text(
+                                    text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) }),
+                                    fontSize = 18.sp,
+                                    color = titleTextColor,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
 
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(buttonContainerColor)
-                                        .clickable { showAllEvents = !showAllEvents }
-                                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                                ) {
-                                    Text(
-                                        text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp,
-                                        color = textColor,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                if (isCurrentMonthView) {
+                                    val buttonContainerColor = run<Color> {
+                                        val hsl = FloatArray(3)
+                                        ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
+                                        val isBgDark = hsl[2] < 0.5f
+                                        
+                                        if (isBgDark) {
+                                            // En fondos oscuros, aclaramos cromáticamente (+10% luz, +5% saturación)
+                                            hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
+                                            hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
+                                        } else {
+                                            // Curva de Contraste Adaptativa v2 para el botón
+                                            val darkenFactor = when {
+                                                hsl[2] > 0.60f -> 0.20f
+                                                hsl[2] > 0.45f -> 0.10f
+                                                else -> 0.05f
+                                            }
+                                            hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
+                                            hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
+                                        }
+                                        Color(ColorUtils.HSLToColor(hsl))
+                                    }
+
+                                    val textColor = if (isColorDark(buttonContainerColor, colorBehindTitle)) Color.White else Color.Black
+
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(buttonContainerColor)
+                                            .clickable { showAllEvents = !showAllEvents }
+                                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            color = textColor,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(endColor) // Background for the clipping to reveal
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                    .background(CalendarioTheme.colors.settingsBackground)
+                            ) {
+                                MonthlyEventList(
+                                    modifier = Modifier.fillMaxSize(),
+                                    finalEventsToList = finalEventsToList,
+                                    lazyListState = lazyListState,
+                                    isCurrentMonthView = isCurrentMonthView,
+                                    showAllEvents = showAllEvents,
+                                    today = today,
+                                    onEventClick = onEventClickHandler,
+                                    availableCalendars = uiState.availableCalendars
+                                )
+
+                                val showTopShadow by remember {
+                                    derivedStateOf { lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0 }
+                                }
+
+                                if (showTopShadow) {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .align(Alignment.TopCenter)
+                                            .zIndex(1f)
+                                            .background(
+                                                brush = Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        CalendarioTheme.colors.settingsBackground,
+                                                        Color.Transparent
+                                                    )
+                                                )
+                                            )
                                     )
                                 }
                             }
                         }
-                    }
+                    } else { // Yearly view
+                        val startOfWeek = getActualFirstDayOfWeek(context)
+                        val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+                        val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
 
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(endColor) // Background for the clipping to reveal
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                                .background(CalendarioTheme.colors.settingsBackground)
-                        ) {
-                            MonthlyEventList(
-                                modifier = Modifier.fillMaxSize(),
-                                finalEventsToList = finalEventsToList,
-                                lazyListState = lazyListState,
-                                isCurrentMonthView = isCurrentMonthView,
-                                showAllEvents = showAllEvents,
+                        HorizontalPager(
+                            state = yearPagerState
+                        ) { page ->
+                            val year = startYear.plusYears(page.toLong())
+                            YearlyCalendar(
+                                currentYear = year,
                                 today = today,
-                                onEventClick = onEventClickHandler,
-                                availableCalendars = uiState.availableCalendars
+                                eventsByDate = uiState.eventsByDate,
+                                showWeekNumber = showWeekNumber,
+                                startOfWeek = startOfWeek,
+                                onMonthSelected = { selectedMonth ->
+                                    val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
+                                    scope.launch { monthPagerState.scrollToPage(targetPage) }
+                                    viewMode = CalendarViewMode.MONTHLY
+                                },
+                                workingDayDates = uiState.workingDayDates
                             )
-
-                            val showTopShadow by remember {
-                                derivedStateOf { lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0 }
-                            }
-
-                            if (showTopShadow) {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(80.dp)
-                                        .align(Alignment.TopCenter)
-                                        .zIndex(1f)
-                                        .background(
-                                            brush = Brush.verticalGradient(
-                                                colors = listOf(
-                                                    CalendarioTheme.colors.settingsBackground,
-                                                    Color.Transparent
-                                                )
-                                            )
-                                        )
-                                )
-                            }
                         }
-                    }
-                } else { // Yearly view
-                    val startOfWeek = getActualFirstDayOfWeek(context)
-                    val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                    val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
-
-                    HorizontalPager(
-                        state = yearPagerState
-                    ) { page ->
-                        val year = startYear.plusYears(page.toLong())
-                        YearlyCalendar(
-                            currentYear = year,
-                            today = today,
-                            eventsByDate = uiState.eventsByDate,
-                            showWeekNumber = showWeekNumber,
-                            startOfWeek = startOfWeek,
-                            onMonthSelected = { selectedMonth ->
-                                val targetPage = ChronoUnit.MONTHS.between(startMonth, selectedMonth).toInt()
-                                scope.launch { monthPagerState.scrollToPage(targetPage) }
-                                viewMode = CalendarViewMode.MONTHLY
-                            },
-                            workingDayDates = uiState.workingDayDates
-                        )
                     }
                 }
             }
