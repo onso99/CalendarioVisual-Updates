@@ -1,4 +1,5 @@
-2026-08-29 - v3.1.09 Copia de seguridad: eliminada Copia local
+2026-08-29 - v3.1.11 Copia de seguridad: Registro de actividad reubicada en sección Drive
+2026-08-29 - v3.1.10 Copia de seguridad: eliminada Copia local
 2026-08-29 - v3.1.09 Menú lateral: Copia de seguridad/Mantenimiento
 2026-08-29 - v3.1.08 Menú lateral: Copia de seguridad
 2026-08-29 - v3.1.07 Menú lateral: Gestor de festivos. Eliminado Gestor de festivos de los Ajustes

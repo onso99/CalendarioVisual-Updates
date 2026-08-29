@@ -139,11 +139,6 @@ fun BackupScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) 
                     } 
                 },
-                actions = {
-                    IconButton(onClick = onHistoryClick) {
-                        Icon(Icons.Default.History, null, tint = MaterialTheme.colorScheme.onPrimary)
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
@@ -156,7 +151,7 @@ fun BackupScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // --- SECCIÓN GOOGLE DRIVE (Única fuente de verdad v3.1.10) ---
+            // --- SECCIÓN GOOGLE DRIVE ---
             SectionTitle(text = stringResource(id = R.string.drive_label))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val email = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
@@ -204,6 +199,14 @@ fun BackupScreen(
                             isRotating = isRestoring,
                             reverseRotation = true,
                             onClick = { showConfirmRestoreDialog = true }
+                        )
+
+                        HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                        BackupActionRow(
+                            text = stringResource(id = R.string.activity_log),
+                            icon = Icons.Default.History,
+                            onClick = onHistoryClick
                         )
                     }
                 }

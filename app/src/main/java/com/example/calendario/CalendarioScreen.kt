@@ -360,6 +360,11 @@ fun CalendarioScreen(
         return
     }
 
+    if (showBackupHistoryScreen) {
+        BackupHistoryScreen(onBack = { showBackupHistoryScreen = false })
+        return
+    }
+
     if (showBackupScreen) {
         BackupScreen(
             onBackPress = { showBackupScreen = false },
@@ -374,28 +379,6 @@ fun CalendarioScreen(
                 }
             }
         )
-        return
-    }
-
-    if (showManageCalendarsScreen) {
-        ManageCalendarsScreen(
-            onBackPress = { showManageCalendarsScreen = false },
-            availableCalendars = uiState.availableCalendars,
-            initialSelectedIds = uiState.selectedCalendarIds,
-            favoriteCalendarId = uiState.favoriteCalendarId,
-            onApplySelection = { newlySelectedIds ->
-                scope.launch {
-                    val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds)
-                    viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
-                }
-            },
-            onSetFavorite = viewModel::setFavoriteCalendar
-        )
-        return
-    }
-
-    if (showBackupHistoryScreen) {
-        BackupHistoryScreen(onBack = { showBackupHistoryScreen = false })
         return
     }
 
