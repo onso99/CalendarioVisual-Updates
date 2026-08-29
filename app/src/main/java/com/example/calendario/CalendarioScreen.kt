@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,9 +44,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -55,9 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -646,6 +646,12 @@ fun CalendarioScreen(
                             }
                             Spacer(Modifier.height(4.dp))
                             if (isCurrentMonthView) {
+                                val rotation by animateFloatAsState(
+                                    targetValue = if (showAllEvents) 180f else 0f,
+                                    animationSpec = tween(durationMillis = 300),
+                                    label = "rotateArrow"
+                                )
+                                
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -657,12 +663,14 @@ fun CalendarioScreen(
                                             imageVector = Icons.Default.KeyboardDoubleArrowUp,
                                             contentDescription = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
                                             tint = if (showAllEvents) Color.White else Color.White.copy(alpha = 0.4f),
-                                            modifier = Modifier.size(28.dp)
+                                            modifier = Modifier
+                                                .size(28.dp)
+                                                .graphicsLayer { rotationZ = rotation }
                                         )
                                     }
                                 }
                             } else {
-                                Spacer(Modifier.height(16.dp))
+                                Spacer(Modifier.height(28.dp))
                             }
                         }
 
