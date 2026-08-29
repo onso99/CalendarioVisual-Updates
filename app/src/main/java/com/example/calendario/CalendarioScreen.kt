@@ -380,6 +380,23 @@ fun CalendarioScreen(
         return
     }
 
+    if (showManageCalendarsScreen) {
+        ManageCalendarsScreen(
+            onBackPress = { showManageCalendarsScreen = false },
+            availableCalendars = uiState.availableCalendars,
+            initialSelectedIds = uiState.selectedCalendarIds,
+            favoriteCalendarId = uiState.favoriteCalendarId,
+            onApplySelection = { newlySelectedIds ->
+                scope.launch {
+                    val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds)
+                    viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
+                }
+            },
+            onSetFavorite = viewModel::setFavoriteCalendar
+        )
+        return
+    }
+
     if (showSettingsScreen) {
         SettingsScreen(
             onBackPress = {

@@ -372,7 +372,7 @@ fun HolidayAdjustmentItem(
                 fontWeight = if (isPastYear) FontWeight.Normal else FontWeight.Medium,
                 fontStyle = if (isPastYear) FontStyle.Italic else FontStyle.Normal
             )
-            val sourceLegend = if (isGoogle) stringResource(id = R.string.read_only) else stringResource(id = R.string.holiday_manager_legend)
+            val sourceLegend = if (isGoogle) stringResource(id = R.string.read_only) else stringResource(id = R.string.holiday_manager_title)
             Text(
                 text = "[${stringResource(id = if (adjustment.type == HolidayAdjustmentType.HOLIDAY) R.string.festivo else R.string.laborable)}] - $sourceLegend",
                 fontSize = 10.sp,

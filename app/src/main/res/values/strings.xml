@@ -2,7 +2,6 @@
     <string name="app_name">Calendario Visual</string>
     <string name="calendar_widget_description">Muestra tus próximos eventos del calendario</string>
     <string name="permission_calendar_select">Permiso de calendario necesario para seleccionar calendarios.</string>
-    <string name="back_to_monthly_view">Volver a vista mensual</string>
     <string name="back_to_current_month">Volver al mes actual</string>
     <string name="create_event">Crear evento</string>
     <string name="search">Buscar</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Calendarios</string>
     <string name="settings">Ajustes</string>
     <string name="help">Ayuda</string>
-    <string name="events_of_month">Eventos %1$s</string>
     <string name="all">Todos</string>
     <string name="pending">Pendientes</string>
     <string name="delete_recurring_event_title">Eliminar evento recurrente</string>
@@ -20,6 +18,7 @@
     <string name="cancel">Cancelar</string>
     <string name="read_only">(Solo lectura)</string>
     <string name="apply">Aplicar</string>
+    <string name="custom_selected">Seleccionado</string>
     <string name="no_title">(Sin título)</string>
     <string name="close">Cerrar</string>
     <string name="year_selection_title">Año</string>
@@ -27,7 +26,6 @@
     <string name="next_year">Año siguiente</string>
     <string name="accept">Aceptar</string>
     <string name="select_mode_title">Modo</string>
-    <string name="custom_selected">Seleccionado</string>
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">¿Seguro que quieres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetir evento</string>
@@ -44,7 +42,7 @@
     <string name="long_period_switch">Periodo largo</string>
     <string name="date">Fecha</string>
     <string name="end_time">Fin</string>
-    <string name="lanes_full_error">El día %1$s ha excedido el límite de 5 eventos largos. Intente crear eventos normales con repetición.</string>
+    <string name="lanes_full_error">El día %1$s ha excedido el límite de 5 eventos largos.</string>
     <string name="select_calendar_title">Calendario</string>
     <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">No se repite</string>
@@ -94,15 +92,15 @@
     <string name="theme_name">Nombre del tema</string>
     <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vista de calendario</string>
-    <string name="help_calendar_views_1" tools:ignore="Typos">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas pulsando en el año de la cabecera.</string>
+    <string name="help_calendar_views_1">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas desde el menú lateral (3 líneas).</string>
     <string name="help_calendar_views_2">En la vista mensual, desliza a izquierda o derecha para cambiar de mes. La flecha superior izquierda de la cabecera volverá al mes actual.</string>
     <string name="help_section_event_management">Gestión de eventos</string>
     <string name="help_event_management_1">Pulsa en un día del calendario mensual para ver sus eventos o añadir uno nuevo. También se pueden crear eventos pulsando en el icono (+) de la cabecera.</string>
     <string name="help_event_management_2">Los eventos (únicos o repetidos) se pueden editar y borrar en cualquier calendario que sea editable.</string>
     <string name="help_section_event_list">Lista de eventos</string>
-    <string name="help_event_list_1">Debajo del calendario mensual se muestra la lista de los eventos del mes. Para el mes actual, puedes elegir entre ver los eventos Pendientes o Todos pulsando en el botón Pendientes-Todos. Cada evento de la lista puede ser editado y borrado.</string>
+    <string name="help_event_list_1">Debajo del calendario mensual se muestra la lista de los eventos del mes. En el mes actual, puedes alternar entre ver solo los eventos Pendientes o la lista completa de Todos pulsando el botón central de flechas situado en la cabecera de la lista. Cada evento puede ser editado y borrado pulsando sobre él.</string>
     <string name="help_section_customization">Personalización</string>
-    <string name="help_customization_1">Desde el menú Ajustes se puede elegir el modo Claro y Oscuro. También se pueden personalizar los colores de la interfaz e Importar y Exportar los temas de color para compartirlos.</string>
+    <string name="help_customization_1">Desde el menú lateral puedes gestionar tus calendarios y el mantenimiento de datos. En Ajustes puedes elegir el modo Claro/Oscuro y personalizar los colores de la interfaz.</string>
     <string name="help_section_holiday_manager">Gestor de Festivos</string>
     <string name="help_holiday_manager_1" tools:ignore="Typos">Esta función permite marcar días específicos como festivos o laborables de forma manual, independientemente de lo que indique el calendario del sistema o los eventos importados. Al marcar un día como festivo, su número se resaltará en el color correspondiente en las vistas mensual y anual.</string>
     <string name="help_section_widget">Widget</string>
@@ -183,7 +181,6 @@
     <string name="edit_recurring_event_dialog_all_events">Todos los eventos</string>
     <string name="copy_event">Copiar evento</string>
 
-    <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Festivos</string>
     <string name="festivo">Festivo</string>
     <string name="laborable">Laborable</string>
@@ -264,11 +261,11 @@
     <string name="sync_error_drive">Error de Drive. Verifica tu cuenta.</string>
     <string name="restore_success">Copia restaurada con éxito</string>
     <string name="restore_error">No se encontró una copia válida en Drive</string>
+    <string name="confirm_restore_title">Confirmar restauración</string>
     <string name="restore_prefs_label">Ajustes</string>
     <string name="restore_holidays_label">Festivos locales</string>
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Eventos</string>
-    <string name="confirm_restore_title">Confirmar restauración</string>
     <string name="restore_total_confirmation">Restauración de copia de seguridad total: notas, eventos y ajustes.</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Nunca</string>
@@ -278,7 +275,6 @@
 
     <string name="backup_section_title_label">Copia de seguridad</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Gestor de Festivos</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

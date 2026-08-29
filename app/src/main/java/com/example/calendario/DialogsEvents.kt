@@ -332,7 +332,7 @@ fun ReadOnlyEventDialog(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (festivo.isFromHolidaySource) {
                     TextButton(onClick = { onDismissRequest(); onOpenHolidayManager(festivo) }, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.cabecera)) { 
-                        Text(stringResource(id = R.string.holiday_manager)) 
+                        Text(stringResource(id = R.string.holiday_manager_title)) 
                     }
                     Spacer(Modifier.width(8.dp))
                 }
