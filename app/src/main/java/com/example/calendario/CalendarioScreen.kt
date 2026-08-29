@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
@@ -643,95 +644,25 @@ fun CalendarioScreen(
                                     workingDayDates = uiState.workingDayDates
                                 )
                             }
-                            Spacer(Modifier.height(16.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                // Muestreo dinámico del fondo para elementos de la barra de título de la lista
-                                val colorBehindTitle = run {
-                                    val startColor = CalendarioTheme.colors.monthlyCalendarGridBackground
-                                    val midColor = CalendarioTheme.colors.monthlyCalendarGridEffect
-                                    val sampledColors = when (effectType) {
-                                        "gradient", "none" -> {
-                                            listOf(0.91f, 0.95f, 0.99f).map { fraction ->
-                                                androidx.compose.ui.graphics.lerp(startColor, endColor, fraction)
-                                            }
-                                        }
-                                        "sweep" -> {
-                                            listOf(0.82f, 0.90f, 0.98f).map { fraction ->
-                                                androidx.compose.ui.graphics.lerp(midColor, endColor, fraction)
-                                            }
-                                        }
-                                        else -> listOf(endColor)
-                                    }
-                                    val r = sampledColors.map { it.red }.average()
-                                    val g = sampledColors.map { it.green }.average()
-                                    val b = sampledColors.map { it.blue }.average()
-                                    Color(red = r.toFloat(), green = g.toFloat(), blue = b.toFloat())
-                                }
-
-                                val titleTextColor = run {
-                                    val hsl = FloatArray(3)
-                                    ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
-                                    val isDarkRegion = hsl[2] < 0.65f
-                                    hsl[2] = if (isDarkRegion) 0.85f else 0.25f
-                                    Color(ColorUtils.HSLToColor(hsl))
-                                }
-
-                                Text(
-                                    text = stringResource(id = R.string.events_of_month, currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) }),
-                                    fontSize = 18.sp,
-                                    color = titleTextColor,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-
-                                if (isCurrentMonthView) {
-                                    val buttonContainerColor = run<Color> {
-                                        val hsl = FloatArray(3)
-                                        ColorUtils.colorToHSL(colorBehindTitle.toArgb(), hsl)
-                                        val isBgDark = hsl[2] < 0.5f
-                                        
-                                        if (isBgDark) {
-                                            // En fondos oscuros, aclaramos cromáticamente (+10% luz, +5% saturación)
-                                            hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
-                                            hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
-                                        } else {
-                                            // Curva de Contraste Adaptativa v2 para el botón
-                                            val darkenFactor = when {
-                                                hsl[2] > 0.60f -> 0.20f
-                                                hsl[2] > 0.45f -> 0.10f
-                                                else -> 0.05f
-                                            }
-                                            hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
-                                            hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
-                                        }
-                                        Color(ColorUtils.HSLToColor(hsl))
-                                    }
-
-                                    val textColor = if (isColorDark(buttonContainerColor, colorBehindTitle)) Color.White else Color.Black
-
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .background(buttonContainerColor)
-                                            .clickable { showAllEvents = !showAllEvents }
-                                            .padding(horizontal = 12.dp, vertical = 4.dp)
-                                    ) {
-                                        Text(
-                                            text = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            color = textColor,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                            Spacer(Modifier.height(4.dp))
+                            if (isCurrentMonthView) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 4.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    IconButton(onClick = { showAllEvents = !showAllEvents }) {
+                                        Icon(
+                                            imageVector = Icons.Default.KeyboardDoubleArrowUp,
+                                            contentDescription = if (showAllEvents) stringResource(id = R.string.all) else stringResource(id = R.string.pending),
+                                            tint = if (showAllEvents) Color.White else Color.White.copy(alpha = 0.4f),
+                                            modifier = Modifier.size(28.dp)
                                         )
                                     }
                                 }
+                            } else {
+                                Spacer(Modifier.height(16.dp))
                             }
                         }
 
