@@ -32,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
@@ -119,7 +118,6 @@ fun CalendarioScreen(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    var menuExpanded by remember { mutableStateOf(false) }
     var showSelectCalendarsDialog by remember { mutableStateOf(false) }
     var showHelpScreen by remember { mutableStateOf(false) }
     var viewMode by remember { mutableStateOf(CalendarViewMode.MONTHLY) }
@@ -677,26 +675,6 @@ fun CalendarioScreen(
                                             imageVector = Icons.Default.Search,
                                             contentDescription = stringResource(id = R.string.search)
                                         )
-                                    }
-                                    Box {
-                                        IconButton(onClick = { menuExpanded = true }) { Icon(Icons.Default.MoreVert, stringResource(id = R.string.menu)) }
-                                        DropdownMenu(
-                                            expanded = menuExpanded,
-                                            onDismissRequest = { menuExpanded = false },
-                                            shape = RoundedCornerShape(12.dp),
-                                            modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
-                                        ) {
-                                            DropdownMenuItem(
-                                                text = { Text(stringResource(id = R.string.settings), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                                onClick = { menuExpanded = false; showSettingsScreen = true },
-                                                leadingIcon = { Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings), tint = CalendarioTheme.colors.textSystem) }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text(stringResource(id = R.string.help), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                                onClick = { menuExpanded = false; showHelpScreen = true },
-                                                leadingIcon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = stringResource(id = R.string.help), tint = CalendarioTheme.colors.textSystem) }
-                                            )
-                                        }
                                     }
                                 }
                             }

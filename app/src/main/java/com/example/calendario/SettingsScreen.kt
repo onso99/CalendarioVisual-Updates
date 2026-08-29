@@ -96,7 +96,6 @@ fun SettingsScreen(
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val typography = MaterialTheme.typography
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
@@ -289,7 +288,7 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            SectionTitle(text = stringResource(id = R.string.general))
+            SectionTitle(text = stringResource(id = R.string.general), topPadding = 8.dp)
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showPermissionsDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.system_permissions), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
@@ -511,20 +510,26 @@ fun SettingsScreen(
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(id = R.string.about), style = typography.titleMedium, fontWeight = FontWeight.Bold, color = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f))
-                
-                IconButton(onClick = onHistoryClick, modifier = Modifier.size(24.dp)) {
-                    Icon(
-                        imageVector = Icons.Default.History, 
-                        contentDescription = null, 
-                        tint = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
-                    )
-                }
-            }
+            SectionTitle(text = stringResource(id = R.string.about))
             Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
-                Text("${stringResource(id = R.string.app_name)} ${AboutInfo.getVersionName(context)}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "${stringResource(id = R.string.app_name)} ${AboutInfo.getVersionName(context)}", 
+                        fontSize = 16.sp, 
+                        color = CalendarioTheme.colors.textSystem,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = onHistoryClick, modifier = Modifier.size(24.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.History, 
+                            contentDescription = null, 
+                            tint = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
+                        )
+                    }
+                }
                 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 val haptic = LocalHapticFeedback.current
                 var loggingEnabledInternal by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
                 var debugClickCount by remember { mutableIntStateOf(0) }

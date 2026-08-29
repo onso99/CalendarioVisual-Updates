@@ -164,7 +164,7 @@ fun AdaptiveDialogButtons(
 }
 
 @Composable
-fun SectionTitle(text: String, modifier: Modifier = Modifier) {
+fun SectionTitle(text: String, modifier: Modifier = Modifier, topPadding: androidx.compose.ui.unit.Dp = 24.dp) {
     val titleColor = lerp(
         start = CalendarioTheme.colors.cabecera,
         stop = CalendarioTheme.colors.textSystem,
@@ -173,7 +173,7 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        modifier = modifier.padding(bottom = 8.dp, top = 24.dp),
+        modifier = modifier.padding(bottom = 8.dp, top = topPadding),
         fontWeight = FontWeight.Bold,
         color = titleColor,
     )
