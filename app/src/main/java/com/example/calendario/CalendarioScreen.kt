@@ -549,6 +549,36 @@ fun CalendarioScreen(
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+                    )
+
+                    // --- SECCIÓN: OTROS (Ajustes, Ayuda, Acerca de) ---
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.settings)) },
+                        selected = false,
+                        onClick = { 
+                            showSettingsScreen = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.Settings, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.help)) },
+                        selected = false,
+                        onClick = { 
+                            showHelpScreen = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
                 }
             }
         ) {
