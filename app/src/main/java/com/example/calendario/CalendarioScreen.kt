@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.BeachAccess
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -388,10 +389,6 @@ fun CalendarioScreen(
             themeManager = themeManager,
             viewModel = viewModel,
             onColorThemeClick = { showColorThemeScreen = true },
-            onHolidayManagerClick = { 
-                holidayForManager = null
-                showHolidayManagerScreen = true 
-            },
             onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
             onBackupHistoryClick = { showBackupHistoryScreen = true },
@@ -526,6 +523,24 @@ fun CalendarioScreen(
                             scope.launch { drawerState.close() }
                         },
                         icon = { Icon(Icons.Default.Event, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+                    )
+
+                    // --- SECCIÓN: HERRAMIENTAS (Fase 1.7 - v3.1.06) ---
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.holiday_manager_title)) },
+                        selected = false,
+                        onClick = { 
+                            showHolidayManagerScreen = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.BeachAccess, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )

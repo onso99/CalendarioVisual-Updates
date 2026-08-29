@@ -104,7 +104,6 @@ fun SettingsScreen(
     themeManager: ThemeManager,
     viewModel: CalendarioViewModel,
     onColorThemeClick: () -> Unit,
-    onHolidayManagerClick: () -> Unit,
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {},
@@ -410,13 +409,6 @@ fun SettingsScreen(
                         Icon(painterResource(id = R.drawable.ic_alarm_snooze), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.size(18.dp))
                         Text(text = "${pendingSnoozeInterval.roundToInt()}'", modifier = Modifier.padding(start = 2.dp), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
-                }
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-
-                Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable(onClick = onHolidayManagerClick).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(id = R.string.holidays_section), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
                 }
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
