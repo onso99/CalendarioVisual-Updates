@@ -416,16 +416,22 @@ fun CalendarioScreen(
                     drawerContainerColor = CalendarioTheme.colors.settingsBackground,
                     drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
                 ) {
-                    Spacer(Modifier.height(12.dp))
                     Text(
                         stringResource(id = R.string.app_name),
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = CalendarioTheme.colors.cabecera
                     )
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
                     
+                    val drawerItemColors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.12f),
+                        selectedIconColor = CalendarioTheme.colors.textSystem,
+                        selectedTextColor = CalendarioTheme.colors.textSystem,
+                        unselectedIconColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.9f),
+                        unselectedTextColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.9f)
+                    )
+
                     NavigationDrawerItem(
                         label = { Text(stringResource(id = R.string.monthly_view)) },
                         selected = viewMode == CalendarViewMode.MONTHLY,
@@ -434,6 +440,7 @@ fun CalendarioScreen(
                             scope.launch { drawerState.close() }
                         },
                         icon = { Icon(Icons.Default.CalendarMonth, null) },
+                        colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
                     NavigationDrawerItem(
@@ -444,7 +451,13 @@ fun CalendarioScreen(
                             scope.launch { drawerState.close() }
                         },
                         icon = { Icon(Icons.Default.CalendarToday, null) },
+                        colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
                     )
                 }
             }
