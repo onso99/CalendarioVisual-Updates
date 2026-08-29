@@ -129,7 +129,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 } else {
                     validSelectedIds.ifEmpty { 
                         // REGLA FASE-1 (v3.1.05): En primera instalación, solo el principal/favorito seleccionado
-                        if (favoriteId != null) setOf(favoriteId!!)
+                        if (favoriteId != null) setOf(favoriteId)
                         else availableCalendars.filter { it.canModify }.map { it.id }.toSet() 
                     }
                 }

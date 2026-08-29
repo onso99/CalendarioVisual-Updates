@@ -42,8 +42,6 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -147,6 +145,7 @@ fun CalendarioScreen(
     var eventToDeleteOrphan by remember { mutableStateOf<Festivo?>(null) }
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
     var showHistoryScreen by remember { mutableStateOf(false) }
+    var showManageCalendarsScreen by remember { mutableStateOf(false) }
 
     val calendarPermissionsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -358,6 +357,23 @@ fun CalendarioScreen(
         return
     }
 
+    if (showManageCalendarsScreen) {
+        ManageCalendarsScreen(
+            onBackPress = { showManageCalendarsScreen = false },
+            availableCalendars = uiState.availableCalendars,
+            initialSelectedIds = uiState.selectedCalendarIds,
+            favoriteCalendarId = uiState.favoriteCalendarId,
+            onApplySelection = { newlySelectedIds ->
+                scope.launch {
+                    val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds)
+                    viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
+                }
+            },
+            onSetFavorite = viewModel::setFavoriteCalendar
+        )
+        return
+    }
+
     if (showBackupHistoryScreen) {
         BackupHistoryScreen(onBack = { showBackupHistoryScreen = false })
         return
@@ -479,7 +495,7 @@ fun CalendarioScreen(
                             isFavorite = true,
                             onToggle = { 
                                 // REGLA FASE-1 (Mejorada): Al pulsar el favorito, abrimos gestión
-                                showSelectCalendarsDialog = true
+                                showManageCalendarsScreen = true
                                 scope.launch { drawerState.close() }
                             }
                         )
@@ -501,12 +517,12 @@ fun CalendarioScreen(
                         )
                     }
 
-                    // 3. Opción "Otros calendarios" (Almacén)
+                    // 3. Opción "Todos los calendarios" (Almacén)
                     NavigationDrawerItem(
                         label = { Text(stringResource(id = R.string.other_calendars)) },
                         selected = false,
                         onClick = { 
-                            showSelectCalendarsDialog = true
+                            showManageCalendarsScreen = true
                             scope.launch { drawerState.close() }
                         },
                         icon = { Icon(Icons.Default.Event, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
@@ -620,23 +636,6 @@ fun CalendarioScreen(
                                             shape = RoundedCornerShape(12.dp),
                                             modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
                                         ) {
-                                            DropdownMenuItem(
-                                                text = { Text(stringResource(id = R.string.calendars), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
-                                                onClick = {
-                                                    menuExpanded = false
-                                                    scope.launch {
-                                                        val hasRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-                                                        val hasWrite = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
-                                                        if (hasRead && hasWrite) {
-                                                            viewModel.refreshAvailableCalendars()
-                                                            showSelectCalendarsDialog = true
-                                                        } else {
-                                                            calendarPermissionsLauncher.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
-                                                        }
-                                                    }
-                                                },
-                                                leadingIcon = { Icon(Icons.Default.Event, contentDescription = stringResource(id = R.string.calendars), tint = CalendarioTheme.colors.textSystem) }
-                                            )
                                             DropdownMenuItem(
                                                 text = { Text(stringResource(id = R.string.settings), fontSize = 18.sp, color = CalendarioTheme.colors.textSystem) },
                                                 onClick = { menuExpanded = false; showSettingsScreen = true },
