@@ -348,11 +348,21 @@ fun findBestCalendarCandidate(calendars: List<CalendarInfo>): CalendarInfo? {
     if (calendars.isEmpty()) return null
 
     return calendars
-        .filter { it.canModify } // Only consider editable calendars
+        .filter { it.canModify } // Solo consideramos calendarios donde se pueda escribir
         .maxByOrNull { calendar ->
             var score = 0
-            if (calendar.accountName.contains("com.google", ignoreCase = true)) score += 10
-            if (calendar.isPrimary) score += 5
+            val name = calendar.accountName.lowercase()
+            
+            // PRIORIDAD 1: Es una cuenta de Google (Gmail o Corporativa)
+            if (name.contains("@gmail.com") || name.contains("@google.com") || name.contains("com.google")) {
+                score += 10
+            }
+            
+            // PRIORIDAD 2: Es el calendario principal de la cuenta
+            if (calendar.isPrimary) {
+                score += 5
+            }
+            
             score
         }
 }

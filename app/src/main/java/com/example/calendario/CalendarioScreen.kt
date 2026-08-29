@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -39,6 +40,10 @@ import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -459,6 +464,55 @@ fun CalendarioScreen(
                         modifier = Modifier.padding(vertical = 8.dp),
                         color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
                     )
+
+                    // --- SECCIÓN: CALENDARIOS (Fase 1 - v3.1.05) ---
+                    val favoriteId = uiState.favoriteCalendarId
+                    val selectedIds = uiState.selectedCalendarIds
+                    val availableCalendars = uiState.availableCalendars
+
+                    // 1. Calendario Favorito (Google Principal) - SIEMPRE ARRIBA
+                    val favoriteCalendar = availableCalendars.find { it.id == favoriteId }
+                    if (favoriteCalendar != null) {
+                        CalendarDrawerItem(
+                            calendar = favoriteCalendar,
+                            isSelected = selectedIds.contains(favoriteCalendar.id),
+                            isFavorite = true,
+                            onToggle = { 
+                                // REGLA FASE-1 (Mejorada): Al pulsar el favorito, abrimos gestión
+                                showSelectCalendarsDialog = true
+                                scope.launch { drawerState.close() }
+                            }
+                        )
+                    }
+
+                    // 2. Resto de calendarios VISIBLES (Marcados por el usuario)
+                    val otherSelectedCalendars = availableCalendars.filter { 
+                        it.id != favoriteId && selectedIds.contains(it.id) 
+                    }
+                    otherSelectedCalendars.forEach { calendar ->
+                        CalendarDrawerItem(
+                            calendar = calendar,
+                            isSelected = true,
+                            isFavorite = false,
+                            onToggle = { 
+                                val newSet = selectedIds - it
+                                viewModel.updateCalendarData(uiState.eventsByDate, availableCalendars, newSet)
+                            }
+                        )
+                    }
+
+                    // 3. Opción "Otros calendarios" (Almacén)
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.other_calendars)) },
+                        selected = false,
+                        onClick = { 
+                            showSelectCalendarsDialog = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.Event, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
                 }
             }
         ) {
@@ -866,4 +920,48 @@ fun CalendarioScreen(
             onDismissRequest = { showGoToYearDialog = false }
         )
     }
+}
+
+@Composable
+private fun CalendarDrawerItem(
+    calendar: CalendarInfo,
+    isSelected: Boolean,
+    isFavorite: Boolean,
+    onToggle: (Long) -> Unit
+) {
+    NavigationDrawerItem(
+        label = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = calendar.displayName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                if (isFavorite) {
+                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.cabecera, 
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        },
+        selected = false,
+        onClick = { onToggle(calendar.id) },
+        icon = {
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.cabecera
+                )
+            } else {
+                Spacer(Modifier.size(24.dp)) // Espacio para mantener alineación si no hay check
+            }
+        },
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+    )
 }

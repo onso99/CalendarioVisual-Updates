@@ -110,9 +110,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 
                 BackupScheduler.ensureBackupScheduled(context)
 
-                // 2. AUTO-REPARACIÓN DE FAVORITO
+                // 2. AUTO-REPARACIÓN DE FAVORITO (Búsqueda inteligente v3.1.05)
                 if (favoriteId == null && availableCalendars.isNotEmpty()) {
-                    favoriteId = availableCalendars.find { it.isPrimary }?.id ?: availableCalendars.find { it.canModify }?.id
+                    val bestCandidate = findBestCalendarCandidate(availableCalendars)
+                    favoriteId = bestCandidate?.id
                     favoriteId?.let { setFavoriteCalendar(it) }
                 }
 
@@ -127,8 +128,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         .ifEmpty { availableCalendars.asSequence().take(1).map { it.id }.toSet() }
                 } else {
                     validSelectedIds.ifEmpty { 
-                        // Caso de primer arranque absoluto: seleccionar todo lo modificable
-                        availableCalendars.filter { it.canModify }.map { it.id }.toSet() 
+                        // REGLA FASE-1 (v3.1.05): En primera instalación, solo el principal/favorito seleccionado
+                        if (favoriteId != null) setOf(favoriteId!!)
+                        else availableCalendars.filter { it.canModify }.map { it.id }.toSet() 
                     }
                 }
                 

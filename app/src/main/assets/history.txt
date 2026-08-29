@@ -1,3 +1,4 @@
+2026-08-29 - v3.1.04 Menú lateral: ajustes visuales de título y opacidad de opciones
 2026-08-29 - v3.1.03 Ajuste animado de icono Todos los eventos y aumento de espacio entre Lista de eventos y Calendario
 2026-08-29 - v3.1.02 Menú lateral F-2: Reforma de lista de eventos: Eliminada cabecera redundante y sustituida por icono de doble flecha para alternar vista
 2026-08-29 - v3.1.01 Menú lateral F-1: Rediseño de cabecera con menú lateral, título dinámico inteligente y botón central de retorno a hoy
