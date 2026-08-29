@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.calendario
 
 import android.app.Activity
@@ -7,8 +9,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -26,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -343,8 +341,8 @@ fun BackupScreen(
                         onClick = { 
                             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
                             GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { 
-                                appPrefs.edit { remove("google_account_email") }; 
-                                permissionsUpdateTrigger++; 
+                                appPrefs.edit { remove("google_account_email") }
+                                permissionsUpdateTrigger++
                                 showUnlinkAccountDialog = false 
                             } 
                         }, 
@@ -359,13 +357,13 @@ fun BackupScreen(
             BackupFrequencyDialog(
                 selection = pendingBackupFreq, 
                 onConfirm = { freq -> 
-                    pendingBackupFreq = freq; 
+                    pendingBackupFreq = freq
                     appPrefs.edit { 
-                        val enabled = freq != "manual"; 
-                        putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, enabled); 
-                        putString(AppConstants.KEY_BACKUP_FREQUENCY, freq) 
-                    }; 
-                    if (freq != "manual") BackupScheduler.scheduleBackup(context, freq) else BackupScheduler.cancelBackup(context); 
+                        val enabled = freq != "manual"
+                        putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, enabled)
+                        putString(AppConstants.KEY_BACKUP_FREQUENCY, freq)
+                    }
+                    if (freq != "manual") BackupScheduler.scheduleBackup(context, freq) else BackupScheduler.cancelBackup(context)
                     showFrequencyDialog = false 
                 }, 
                 onDismiss = { showFrequencyDialog = false }
@@ -431,7 +429,7 @@ private fun InternalCleaningCandidateRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(CalendarioTheme.colors.settingsBackground) // Fondo más profundo
+            .background(CalendarioTheme.colors.settingsBackground) 
             .clickable { onClick() }
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
