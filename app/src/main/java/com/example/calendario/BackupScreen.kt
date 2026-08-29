@@ -4,11 +4,10 @@ package com.example.calendario
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -68,8 +69,6 @@ fun BackupScreen(
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showConfirmRestoreDialog by remember { mutableStateOf(false) }
-    var restoreSource by remember { mutableStateOf<String?>(null) }
-    var pendingLocalUri by remember { mutableStateOf<Uri?>(null) }
 
     // --- Mantenimiento States ---
     var isScanning by remember { mutableStateOf(false) }
@@ -98,38 +97,6 @@ fun BackupScreen(
     }
 
     // --- Launchers ---
-    val exportFullBackupLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    try {
-                        val selIds = uiState.selectedCalendarIds
-                        val favId = uiState.favoriteCalendarId
-                        BackupManager.exportFullBackup(context, uri, selIds, favId)
-                        Toast.makeText(context, R.string.backup_exported_successfully, Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        val errorMsg = context.applicationContext.getString(R.string.error_exporting_backup, e.message ?: "Unknown error")
-                        Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
-    )
-
-    val importFullBackupLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    pendingLocalUri = uri
-                    restoreSource = "local"
-                    showConfirmRestoreDialog = true
-                }
-            }
-        }
-    )
-
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -147,16 +114,18 @@ fun BackupScreen(
         }
     )
 
-    // --- States ---
+    // --- States (Con escudos de seguridad) ---
     val lastBackupTimestamp = remember(permissionsUpdateTrigger, isSyncing) { 
-        appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
+        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
+        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_TIME] as? Number)?.toLong() ?: 0L }
     }
     val lastBackupSize = remember(permissionsUpdateTrigger, isSyncing) { 
-        appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L)
+        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) }
+        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_SIZE] as? Number)?.toLong() ?: 0L }
     }
 
     var pendingBackupFreq by remember { 
-        val auto = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        val auto = try { appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) } catch (_: Exception) { false }
         val f = if (!auto) "manual" else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
         mutableStateOf(f)
     }
@@ -187,7 +156,7 @@ fun BackupScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // --- SECCIÓN GOOGLE DRIVE ---
+            // --- SECCIÓN GOOGLE DRIVE (Única fuente de verdad v3.1.10) ---
             SectionTitle(text = stringResource(id = R.string.drive_label))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val email = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
@@ -208,9 +177,9 @@ fun BackupScreen(
                         Text(text = freqLabel, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
                     HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(bottom = 8.dp)) {
                         var dateFontSize by remember { mutableStateOf(14.sp) }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
                             Text(stringResource(id = R.string.last_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                             Spacer(modifier = Modifier.weight(1f))
                             val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
@@ -218,35 +187,31 @@ fun BackupScreen(
                             Text(text = "$lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = dateFontSize, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis, onTextLayout = { if (it.hasVisualOverflow && dateFontSize > 11.sp) dateFontSize = (dateFontSize.value - 1f).sp })
                         }
                         
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                            SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { restoreSource = "drive"; showConfirmRestoreDialog = true })
-                            SettingsActionChip(text = stringResource(id = R.string.sincronizar_label), icon = Icons.Default.Sync, isIconRotating = isSyncing, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; Toast.makeText(context, context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG).show() } else { Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show() } } } )
-                        }
+                        HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                        BackupActionRow(
+                            text = stringResource(id = R.string.sincronizar_label),
+                            icon = Icons.Default.Sync,
+                            isRotating = isSyncing,
+                            onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; Toast.makeText(context, context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG).show() } else { Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show() } } }
+                        )
+
+                        HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                        BackupActionRow(
+                            text = stringResource(id = R.string.restaurar_label),
+                            icon = painterResource(id = R.drawable.ic_restore_custom),
+                            isRotating = isRestoring,
+                            reverseRotation = true,
+                            onClick = { showConfirmRestoreDialog = true }
+                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- SECCIÓN COPIA LOCAL (Acción Directa) ---
-            SectionTitle(text = stringResource(id = R.string.preferences_backup_label))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    val bg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                    SettingsActionChip(text = stringResource(id = R.string.restaurar_label), icon = painterResource(id = R.drawable.ic_restore_custom), isIconRotating = isRestoring, reverseRotation = true, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { importFullBackupLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json" }) })
-                    SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), containerColor = bg, onClick = { 
-                        val suggested = "calendariovisual_backup_${LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))}.json"
-                        exportFullBackupLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, suggested) }) 
-                    })
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // --- SECCIÓN MANTENIMIENTO (Integrada v3.1.09) ---
+            // --- SECCIÓN MANTENIMIENTO (Integrada) ---
             SectionTitle(text = stringResource(id = R.string.maintenance_section))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -292,7 +257,6 @@ fun BackupScreen(
                             Text(stringResource(id = R.string.no_cleaning_results), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 14.sp)
                         }
                     } else {
-                        // Lista de candidatos integrada (sin LazyColumn para evitar conflictos de scroll)
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             uiState.cleaningCandidates.take(10).forEach { item ->
                                 InternalCleaningCandidateRow(
@@ -372,11 +336,7 @@ fun BackupScreen(
 
         if (showConfirmRestoreDialog) { 
             ConfirmRestoreDialog(
-                onDismiss = { 
-                    showConfirmRestoreDialog = false
-                    restoreSource = null
-                    pendingLocalUri = null 
-                }, 
+                onDismiss = { showConfirmRestoreDialog = false }, 
                 onConfirm = { 
                     showConfirmRestoreDialog = false
                     val callback: (Boolean) -> Unit = { success -> 
@@ -387,31 +347,61 @@ fun BackupScreen(
                             Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
                         }
                     }
-                    when (restoreSource) {
-                        "drive" -> viewModel.restoreHistoryFromDrive(
-                            context = context,
-                            restorePrefs = true,
-                            restoreHolidays = true,
-                            restoreNotes = true,
-                            restoreEvents = true,
-                            onComplete = callback
-                        )
-                        "local" -> {
-                            if (pendingLocalUri != null) {
-                                viewModel.restoreFromLocal(
-                                    context = context,
-                                    uri = pendingLocalUri!!,
-                                    restorePrefs = true,
-                                    restoreHolidays = true,
-                                    restoreNotes = true,
-                                    restoreEvents = true,
-                                    onComplete = callback
-                                )
-                            }
-                        }
-                    }
+                    viewModel.restoreHistoryFromDrive(
+                        context = context,
+                        restorePrefs = true,
+                        restoreHolidays = true,
+                        restoreNotes = true,
+                        restoreEvents = true,
+                        onComplete = callback
+                    )
                 }
             )
+        }
+    }
+}
+
+@Composable
+private fun BackupActionRow(
+    text: String,
+    icon: Any,
+    isRotating: Boolean = false,
+    reverseRotation: Boolean = false,
+    onClick: () -> Unit
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearEasing)
+        ),
+        label = "angle"
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable(enabled = !isRotating, onClick = onClick)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = text, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
+        
+        val iconModifier = Modifier
+            .size(24.dp)
+            .graphicsLayer {
+                if (isRotating) rotationZ = if (reverseRotation) -rotation else rotation
+            }
+
+        when (icon) {
+            is androidx.compose.ui.graphics.vector.ImageVector -> {
+                Icon(imageVector = icon, contentDescription = null, modifier = iconModifier, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
+            }
+            is Painter -> {
+                Icon(painter = icon, contentDescription = null, modifier = iconModifier, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
+            }
         }
     }
 }
