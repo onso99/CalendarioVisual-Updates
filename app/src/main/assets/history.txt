@@ -1,3 +1,5 @@
+2026-08-30 - v3.1.20 Ajustes de color de fondo de celdas de meses pasados
+2026-08-30 - v3.1.19 Limpieza de strings en todos los idiomas
 2026-08-30 - v3.1.18 Restaurado el diálogo Permisos
 2026-08-30 - v3.1.17 Strings propagados al resto de idiomas
 2026-08-30 - v3.1.16 Corrección de warnings

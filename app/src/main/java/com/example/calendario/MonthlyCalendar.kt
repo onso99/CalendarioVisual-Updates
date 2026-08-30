@@ -138,6 +138,10 @@ fun MonthlyCalendar(
         days.chunked(7).filter { week -> week.any { it.second } }
     }
 
+    val isFullPastMonth = remember(currentMonth, today) {
+        currentMonth.isBefore(YearMonth.from(today))
+    }
+
     Column(
         Modifier
             .fillMaxWidth()
@@ -225,8 +229,13 @@ fun MonthlyCalendar(
                     
                     val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
 
-                    val cellBackground = remember(isInactive, baseCellBackground) {
-                        if (isInactive) {
+                    val cellBackground = remember(isInactive, isCurrentMonth, isFullPastMonth, baseCellBackground) {
+                        if (isFullPastMonth && isCurrentMonth) {
+                            // En meses pasados, los días del propio mes son ligeramente más claros que el "inactivo" normal
+                            val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
+                            val alpha = if (isColorDark(baseCellBackground, Color.Black)) 0.04f else 0.02f
+                            overlay.copy(alpha = alpha).compositeOver(baseCellBackground)
+                        } else if (isInactive) {
                             val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
                             overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
                         } else {
@@ -475,7 +484,8 @@ fun MonthlyCalendar(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .drawBehind {
-                                            val borderSize = 2.dp.toPx()
+                                            // En modo claro (borde negro) aumentamos el grosor para que destaque más
+                                            val borderSize = (if (todayBorderColor == Color.Black) 2.8.dp else 2.dp).toPx()
                                             // Si el borde es blanco (modo oscuro), le aplicamos un 80% de opacidad
                                             val finalAlpha = if (todayBorderColor == Color.White) 0.6f else 1.0f
                                             
