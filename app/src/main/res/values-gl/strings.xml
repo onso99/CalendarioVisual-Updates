@@ -2,7 +2,6 @@
     <string name="app_name">Calendario Visual</string>
     <string name="calendar_widget_description">Amosa os teus próximos eventos do calendario</string>
     <string name="permission_calendar_select">Precísase permiso de calendario para seleccionar calendarios.</string>
-    <string name="back_to_monthly_view">Volver á vista mensual</string>
     <string name="back_to_current_month">Volver ao mes actual</string>
     <string name="create_event">Crear evento</string>
     <string name="search">Buscar</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Calendarios</string>
     <string name="settings">Axustes</string>
     <string name="help">Axuda</string>
-    <string name="events_of_month">Eventos %1$s</string>
     <string name="all">Todos</string>
     <string name="pending">Pendentes</string>
     <string name="delete_recurring_event_title">Eliminar evento recorrente</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">Ata a data</string>
     <string name="repeat_after">Repeticións</string>
 
+    <string name="activity_log">Rexistro de actividade</string>
+    <string name="maintenance_section">Mantemento</string>
+
     <string name="long_period_switch">Período longo</string>
     <string name="date">Data</string>
     <string name="end_time">Fin</string>
-    <string name="lanes_full_error">O día %1$s excedeu o límite de 5 eventos longos. Tente crear eventos normais con repetición.</string>
+    <string name="lanes_full_error">O día %1$s excedeu o límite de 5 eventos longos.</string>
     <string name="select_calendar_title">Calendario</string>
     <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">Non se repite</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Nome do tema</string>
     <string name="export">Gardar</string>
     <string name="help_section_calendar_views">Vistas de calendario</string>
-    <string name="help_calendar_views_1">A aplicación ten dúas vistas principais: Mensual e Anual. Podes cambiar entre elas premendo no ano da cabeceira.</string>
+    <string name="help_calendar_views_1">A aplicación ten dúas vistas principais: Mensual e Anual. Podes cambiar entre elas desde o menú lateral (3 liñas).</string>
     <string name="help_calendar_views_2">Na vista mensual, desliza á esquerda ou dereita para cambiar de mes. A frecha superior esquerda da cabeceira volverá ao mes actual.</string>
     <string name="help_section_event_management">Xestión de eventos</string>
     <string name="help_event_management_1">Preme nun día do calendario mensual para ver os seus eventos ou engadir un novo. Tamén se poden crear eventos premendo na icona (+) da cabeceira.</string>
     <string name="help_event_management_2">Os eventos (únicos ou repetidos) pódense editar e borrar en calquera calendario que sexa editable.</string>
     <string name="help_section_event_list">Lista de eventos</string>
-    <string name="help_event_list_1">Debaixo do calendario mensual móstrase a lista dos eventos do mes. Para o mes actual, podes elixir entre ver os eventos Pendentes ou Todos premendo no botón Pendentes-Todos. Cada evento da lista pode ser editado e borrado.</string>
+    <string name="help_event_list_1">Debaixo do calendario mensual móstrase a lista dos eventos del mes. No mes actual, podes alternar entre ver só os eventos Pendentes ou a lista completa de Todos pulsando o botón central de frechas situado na cabeceira da lista. Cada evento pode ser editado e borrado pulsando sobre el.</string>
     <string name="help_section_customization">Personalización</string>
-    <string name="help_customization_1">Desde o menú Axustes pódese elixir o modo Claro e Escuro. Tamén se poden personalizar as cores da interface e Importar e Exportar os temas de color para compartilos.</string>
+    <string name="help_customization_1">Desde o menú lateral podes xestionar os teus calendarios e o mantemento de datos. En Axustes podes elixir o modo Claro/Escuro e personalizar as cores da interface.</string>
     <string name="help_section_holiday_manager">Xestor de Festivos</string>
     <string name="help_holiday_manager_1">Esta función permite marcar días específicos como festivos ou laborables de forma manual, independentemente do que indique o calendario do sistema ou os eventos importados. Ao marcar un día como festivo, o seu número resaltarase na cor correspondente nas vistas mensual e anual.</string>
     <string name="help_section_widget">Widget</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">Todos os eventos</string>
     <string name="copy_event">Copiar evento</string>
 
-    <string name="holiday_manager">Xestor</string>
     <string name="holiday_manager_title">Xestor de Festivos</string>
     <string name="festivo">Festivo</string>
     <string name="laborable">Laborable</string>
@@ -269,7 +269,6 @@
     <string name="restore_total_confirmation">Restauración de copia de seguridade total: notas, eventos e axustes.</string>
     <string name="backup_section_title_label">Copia de seguridade</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Gestor de Festivos</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,5 +332,8 @@
     <string name="lang_ru">Ruso (Русский)</string>
     <string name="lang_zh">Chinés (中文)</string>
     <string name="lang_ja">Xaponés (日本語)</string>
+    <string name="other_calendars">Todos os calendarios</string>
+    <string name="monthly_view">Mensual</string>
+    <string name="yearly_view">Anual</string>
 </resources>
 

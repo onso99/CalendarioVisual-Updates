@@ -1,3 +1,4 @@
+2026-08-30 - v3.1.17 Strings propagados al resto de idiomas
 2026-08-30 - v3.1.16 Corrección de warnings
 2026-08-30 - v3.1.15 Corregido Todos los calendarios (Menú lateral) y Ayuda
 2026-08-29 - v3.1.14 Eliminado menu 3 puntos

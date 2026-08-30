@@ -2,7 +2,6 @@
     <string name="app_name">Визуальный Календарь</string>
     <string name="calendar_widget_description">Показывает ваши ближайшие события в календаре</string>
     <string name="permission_calendar_select">Разрешение календаря необходимо для выбора календарей.</string>
-    <string name="back_to_monthly_view">Вернуться к месячному виду</string>
     <string name="back_to_current_month">Вернуться к текущему месяцу</string>
     <string name="create_event">Создать событие</string>
     <string name="search">Поиск</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Календари</string>
     <string name="settings">Настройки</string>
     <string name="help">Помощь</string>
-    <string name="events_of_month">События %1$s</string>
     <string name="all">Все</string>
     <string name="pending">Предстоящие</string>
     <string name="delete_recurring_event_title">Удалить серию</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">До даты</string>
     <string name="repeat_after">Повторы</string>
 
+    <string name="activity_log">Журнал активности</string>
+    <string name="maintenance_section">Обслуживание</string>
+
     <string name="long_period_switch">Длительный период</string>
     <string name="date">Дата</string>
     <string name="end_time">Конец</string>
-    <string name="lanes_full_error">День %1$s превысил лимит в 5 длительных событий. Попробуйте создать обычные события с повторением.</string>
+    <string name="lanes_full_error">В день %1$s превышен лимит в 5 длинных событий.</string>
     <string name="select_calendar_title">Календарь</string>
     <string name="select_time_title">Время</string>
     <string name="does_not_repeat">Не повторяется</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Название темы</string>
     <string name="export">Сохранить</string>
     <string name="help_section_calendar_views">Виды календаря</string>
-    <string name="help_calendar_views_1">Приложение имеет два основных вида: Месячный и Годовой. Вы можете переключаться между ними, нажимая на год в заголовке.</string>
+    <string name="help_calendar_views_1">В приложении есть два основных режима просмотра: Месячный и Годовой. Вы можете переключаться между ними в боковом меню (3 линии).</string>
     <string name="help_calendar_views_2">В месячном виде проведите пальцем влево или вправо, чтобы сменить месяц. Стрелка в верхнем левом углу заголовка вернет вас к текущему месяцу.</string>
     <string name="help_section_event_management">Управление событиями</string>
     <string name="help_event_management_1">Нажмите на день в месячном календаре, чтобы увидеть его события или добавить новое. События также можно создавать, нажимая на иконку (+) в заголовке.</string>
     <string name="help_event_management_2">События (одиночные или повторяющиеся) можно редактировать и удалять в любом редактируемом календаре.</string>
     <string name="help_section_event_list">Список событий</string>
-    <string name="help_event_list_1">Под месячным календарем отображается список событий месяца. Для текущего месяца вы можете выбрать просмотр предстоящих или всех событий, нажимая на кнопку Предстоящие-Все. Каждое событие в списке можно редактировать и удалять.</string>
+    <string name="help_event_list_1">Под месячным календарем отображается список событий месяца. Для текущего месяца вы можете переключаться между просмотром только Ожидающих событий или полным списком Всех, нажав на центральную кнопку со стрелками в заголовке списка. Каждое событие можно отредактировать или удалить, нажав на него.</string>
     <string name="help_section_customization">Персонализация</string>
-    <string name="help_customization_1">В меню настроек можно выбрать светлый или темный режим. Также можно настроить цвета интерфейса, а также импортировать и экспортировать цветовые темы.</string>
+    <string name="help_customization_1">В боковом меню вы можете управлять своими календарями и обслуживанием данных. В Настройках можно выбрать Светлую/Темную тему и настроить цвета интерфейса.</string>
     <string name="help_section_holiday_manager">Менеджер Праздников</string>
     <string name="help_holiday_manager_1">Эта функция позволяет вручную отмечать определенные дни как праздничные или рабочие, независимо от того, что указано в системном календаре. При отметке дня как праздничного его номер будет выделен соответствующим цветом.</string>
     <string name="help_section_widget">Виджет</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">Вся серия</string>
     <string name="copy_event">Копировать событие</string>
 
-    <string name="holiday_manager">Менеджер</string>
     <string name="holiday_manager_title">Менеджер Праздников</string>
     <string name="festivo">Праздник</string>
     <string name="laborable">Рабочий день</string>
@@ -268,7 +268,6 @@
     <string name="restore_total_confirmation">Полное восстановление резервной копии: заметки, события и настройки.</string>
     <string name="backup_section_title_label">Резервное копирование</string>
     <string name="drive_label">Диск</string>
-    <string name="holiday_manager_legend">Менеджер праздников</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -332,5 +331,8 @@
     <string name="lang_ru">Русский</string>
     <string name="lang_zh">Китайский (中文)</string>
     <string name="lang_ja">Японский (日本語)</string>
+    <string name="other_calendars">Все календари</string>
+    <string name="monthly_view">Ежемесячно</string>
+    <string name="yearly_view">Ежегодно</string>
 </resources>
 

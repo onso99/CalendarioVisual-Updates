@@ -2,7 +2,6 @@
     <string name="app_name">ビジュアルカレンダー</string>
     <string name="calendar_widget_description">今後のカレンダーイベントを表示します</string>
     <string name="permission_calendar_select">カレンダーを選択するにはカレンダーの権限が必要です。</string>
-    <string name="back_to_monthly_view">月間表示に戻る</string>
     <string name="back_to_current_month">今月に戻る</string>
     <string name="create_event">イベントを作成</string>
     <string name="search">検索</string>
@@ -10,7 +9,6 @@
     <string name="calendars">カレンダー</string>
     <string name="settings">設定</string>
     <string name="help">ヘルプ</string>
-    <string name="events_of_month">%1$sのイベント</string>
     <string name="all">すべて</string>
     <string name="pending">予定</string>
     <string name="delete_recurring_event_title">繰り返しイベントを削除</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">指定日まで</string>
     <string name="repeat_after">回数</string>
 
+    <string name="activity_log">アクティビティログ</string>
+    <string name="maintenance_section">メンテナンス</string>
+
     <string name="long_period_switch">長期期間</string>
     <string name="date">日付</string>
     <string name="end_time">終了</string>
-    <string name="lanes_full_error">%1$sは長期イベントの制限数（5件）を超えています。繰り返しの通常イベントを作成してください。</string>
+    <string name="lanes_full_error">%1$s日は、長いイベントの制限（5つ）を超えました。</string>
     <string name="select_calendar_title">カレンダー</string>
     <string name="select_time_title">時間</string>
     <string name="does_not_repeat">繰り返さない</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">テーマ名</string>
     <string name="export">保存</string>
     <string name="help_section_calendar_views">カレンダー表示</string>
-    <string name="help_calendar_views_1">アプリには「月間」と「年間」の2つのメイン表示があります。ヘッダーの年をタップして切り替えることができます。</string>
+    <string name="help_calendar_views_1">このアプリには「月間」と「年間」の2つのメインビューがあります。サイドメニュー（3本線）から切り替えることができます。</string>
     <string name="help_calendar_views_2">月間表示では、左右にスワイプして月を変更できます。ヘッダーの左上の矢印で今月に戻ります。</string>
     <string name="help_section_event_management">イベント管理</string>
     <string name="help_event_management_1">月間カレンダーの日付をタップして、イベントを表示したり新規追加したりできます。ヘッダーの（＋）アイコンからも作成可能です。</string>
     <string name="help_event_management_2">イベント（単発または繰り返し）は、編集可能なカレンダーであれば編集・削除が可能です。</string>
     <string name="help_section_event_list">イベントリスト</string>
-    <string name="help_event_list_1">月間カレンダーの下に、その月のイベントリストが表示されます。今月については、「予定のみ」または「すべて」の表示を切り替えられます。リスト内の各イベントは編集・削除が可能です。</string>
+    <string name="help_event_list_1">月間カレンダーの下に、その月のイベントリストが表示されます。当月では、リストヘッダーにある中央の矢印ボタンを押すことで、「保留中」のイベントのみと「すべて」のリストを切り替えることができます。各イベントは、タップすることで編集や削除が可能です。</string>
     <string name="help_section_customization">カスタマイズ</string>
-    <string name="help_customization_1">設定メニューからライトモードとダークモードを選択できます。また、インターフェースのカラーをカスタマイズしたり、テーマをインポート・エクスポートして共有したりできます。</string>
+    <string name="help_customization_1">サイドメニューから、カレンダーの管理やデータのメンテナンスが可能です。設定では、ライト/ダークモードの選択やインターフェースの色のカスタマイズができます。</string>
     <string name="help_section_holiday_manager">祝日管理</string>
     <string name="help_holiday_manager_1">この機能では、システムカレンダーの設定に関わらず、特定の日を祝日または営業日として手動で設定できます。祝日に設定すると、月間・年間表示で日付が対応する色で強調されます。</string>
     <string name="help_section_widget">ウィジェット</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">すべてのイベント</string>
     <string name="copy_event">イベントをコピー</string>
 
-    <string name="holiday_manager">管理</string>
     <string name="holiday_manager_title">祝日管理</string>
     <string name="festivo">祝日</string>
     <string name="laborable">平日</string>
@@ -268,7 +268,6 @@
     <string name="restore_total_confirmation">バックアップの完全復元：メモ、イベント、設定。</string>
     <string name="backup_section_title_label">バックアップ</string>
     <string name="drive_label">ドライブ</string>
-    <string name="holiday_manager_legend">祝日マネージャー</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -332,5 +331,8 @@
     <string name="lang_ru">ロシア語 (Русский)</string>
     <string name="lang_zh">中国語 (中文)</string>
     <string name="lang_ja">日本語</string>
+    <string name="other_calendars">すべてのカレンダー</string>
+    <string name="monthly_view">月間</string>
+    <string name="yearly_view">年間</string>
 </resources>
 

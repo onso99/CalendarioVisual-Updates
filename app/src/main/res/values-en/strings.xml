@@ -2,7 +2,6 @@
     <string name="app_name">Visual Calendar</string>
     <string name="calendar_widget_description">Displays your upcoming calendar events</string>
     <string name="permission_calendar_select">Calendar permission is required to select calendars.</string>
-    <string name="back_to_monthly_view">Back to monthly view</string>
     <string name="back_to_current_month">Back to current month</string>
     <string name="create_event">Create event</string>
     <string name="search">Search</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Calendars</string>
     <string name="settings">Settings</string>
     <string name="help">Help</string>
-    <string name="events_of_month">Events %1$s</string>
     <string name="all">All</string>
     <string name="pending">Pending</string>
     <string name="delete_recurring_event_title">Delete recurring event</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">Until date</string>
     <string name="repeat_after">Repetitions</string>
 
+    <string name="activity_log">Activity log</string>
+    <string name="maintenance_section">Maintenance</string>
+
     <string name="long_period_switch">Long period</string>
     <string name="date">Date</string>
     <string name="end_time">End</string>
-    <string name="lanes_full_error">Day %1$s has exceeded the limit of 5 long events. Try creating normal events with repetition.</string>
+    <string name="lanes_full_error">The day %1$s has exceeded the limit of 5 long events.</string>
     <string name="select_calendar_title">Calendar</string>
     <string name="select_time_title">Time</string>
     <string name="does_not_repeat">Does not repeat</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Theme name</string>
     <string name="export">Save</string>
     <string name="help_section_calendar_views">Calendar Views</string>
-    <string name="help_calendar_views_1">The application has two main views: Monthly and Yearly. You can switch between them by tapping on the year in the header.</string>
+    <string name="help_calendar_views_1">The application has two main views: Monthly and Yearly. You can switch between them from the side menu (3 lines).</string>
     <string name="help_calendar_views_2">In the monthly view, swipe left or right to change the month. The upper left arrow in the header will return to the current month.</string>
     <string name="help_section_event_management">Event Management</string>
     <string name="help_event_management_1">Tap on a day in the monthly calendar to see its events or add a new one. Events can also be created by tapping on the (+) icon in the header.</string>
     <string name="help_event_management_2">Events (single or repeated) can be edited and deleted in any calendar that is editable.</string>
     <string name="help_section_event_list">Event List</string>
-    <string name="help_event_list_1">Below the monthly calendar, the list of events for the month is displayed. For the current month, you can choose between seeing Pending or All events by tapping on the Pending-All button. Each event in the list can be edited and deleted.</string>
+    <string name="help_event_list_1">Below the monthly calendar, the list of events for the month is displayed. In the current month, you can toggle between seeing only Pending events or the full list of All by pressing the central arrow button located in the list header. Each event can be edited and deleted by clicking on it.</string>
     <string name="help_section_customization">Customization</string>
-    <string name="help_customization_1">From the Settings menu you can choose Light and Dark mode. You can also customize the interface colors and Import and Export color themes to share them.</string>
+    <string name="help_customization_1">From the side menu you can manage your calendars and data maintenance. In Settings you can choose Light/Dark mode and customize the interface colors.</string>
     <string name="help_section_holiday_manager">Holiday Manager</string>
     <string name="help_holiday_manager_1">This feature allows you to manually mark specific days as holidays or working days, regardless of what the system calendar or imported events indicate. When marking a day as a holiday, its number will be highlighted in the corresponding color in the monthly and yearly views.</string>
     <string name="help_section_widget">Widget</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">All events</string>
     <string name="copy_event">Copy event</string>
 
-    <string name="holiday_manager">Manager</string>
     <string name="holiday_manager_title">Holiday Manager</string>
     <string name="festivo">Holiday</string>
     <string name="laborable">Workday</string>
@@ -269,7 +269,6 @@
     <string name="restore_total_confirmation">Total backup restoration: notes, events and settings.</string>
     <string name="backup_section_title_label">Backup</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Holiday Manager</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,5 +332,8 @@
     <string name="lang_ru">Russian (Русский)</string>
     <string name="lang_zh">Chinese (中文)</string>
     <string name="lang_ja">Japanese (日本語)</string>
+    <string name="other_calendars">All calendars</string>
+    <string name="monthly_view">Monthly</string>
+    <string name="yearly_view">Yearly</string>
 </resources>
 

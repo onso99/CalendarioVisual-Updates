@@ -2,7 +2,6 @@
     <string name="app_name">Calendari Visual</string>
     <string name="calendar_widget_description">Mostra els teus propers esdeveniments del calendari</string>
     <string name="permission_calendar_select">Es requereix permís de calendari per seleccionar calendaris.</string>
-    <string name="back_to_monthly_view">Tornar a la vista mensual</string>
     <string name="back_to_current_month">Tornar al mes actual</string>
     <string name="create_event">Crear esdeveniment</string>
     <string name="search">Cercar</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Calendaris</string>
     <string name="settings">Ajustos</string>
     <string name="help">Ajuda</string>
-    <string name="events_of_month">Esdeveniments %1$s</string>
     <string name="all">Tots</string>
     <string name="pending">Pendents</string>
     <string name="delete_recurring_event_title">Eliminar esdeveniment recurrent</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">Fins a la data</string>
     <string name="repeat_after">Repeticions</string>
 
+    <string name="activity_log">Registre d\'activitat</string>
+    <string name="maintenance_section">Manteniment</string>
+
     <string name="long_period_switch">Període llarg</string>
     <string name="date">Data</string>
     <string name="end_time">Fi</string>
-    <string name="lanes_full_error">El dia %1$s ha superat el límit de 5 esdeveniments llargs. Intenta crear esdeveniments normals amb repetició.</string>
+    <string name="lanes_full_error">El dia %1$s ha excedit el límit de 5 esdeveniments llargs.</string>
     <string name="select_calendar_title">Calendari</string>
     <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">No es repeteix</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Nom del tema</string>
     <string name="export">Desar</string>
     <string name="help_section_calendar_views">Vista de calendari</string>
-    <string name="help_calendar_views_1">L\'aplicació té dues vistes principals: Mensual i Anual. Pots canviar entre elles prement l\'any de la capçalera.</string>
+    <string name="help_calendar_views_1">L\'aplicació té dues vistes principals: Mensual i Anual. Pots canviar entre elles des del menú lateral (3 línies).</string>
     <string name="help_calendar_views_2">En la vista mensual, llisca a esquerra o dreta per canviar de mes. La fletxa superior esquerra de la capçalera tornarà al mes actual.</string>
     <string name="help_section_event_management">Gestió d\'esdeveniments</string>
     <string name="help_event_management_1">Prem en un dia del calendari mensual per veure els seus esdeveniments o afegir-ne un de nou. També es poden crear esdeveniments prement la icona (+) de la capçalera.</string>
     <string name="help_event_management_2">Els esdeveniments (únics o repetits) es poden editar i esborrar en qualsevol calendari que sigui editable.</string>
     <string name="help_section_event_list">Llista d\'esdeveniments</string>
-    <string name="help_event_list_1">Sota el calendari mensual es mostra la llista dels esdeveniments del mes. Per al mes actual, pots triar entre veure els esdeveniments Pendents o Tots prement el botó Pendents-Tots. Cada esdeveniment de la llista pot ser editat i esborrat.</string>
+    <string name="help_event_list_1">A sota del calendari mensual es mostra la llista dels esdeveniments del mes. En el mes actual, pots alternar entre veure només els esdeveniments Pendents o la llista completa de Tots prement el botó central de fletxes situat a la capçalera de la llista. Cada esdeveniment pot ser editat i esborrat prement sobre ell.</string>
     <string name="help_section_customization">Personalització</string>
-    <string name="help_customization_1">Des del menú Ajustos es pot triar el mode Clar i Fosc. També es poden personalitzar els colors de la interfície i Importar i Exportar els temes de color per compartir-los.</string>
+    <string name="help_customization_1">Des del menú lateral pots gestionar els teus calendaris i el manteniment de dades. A Ajustos pots triar el mode Clar/Fosc i personalitzar els colors de la interfície.</string>
     <string name="help_section_holiday_manager">Gestor de Festius</string>
     <string name="help_holiday_manager_1">Aquesta funció permet marcar dies específics com a festius o laborables de forma manual, independentment del que indiqui el calendari del sistema o els esdeveniments importats. En marcar un dia com a festiu, el seu número es ressaltarà en el color corresponent en les vistes mensual i anual.</string>
     <string name="help_section_widget">Widget</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">Tots els esdeveniments</string>
     <string name="copy_event">Copiar esdeveniment</string>
 
-    <string name="holiday_manager">Gestor</string>
     <string name="holiday_manager_title">Gestor de Festius</string>
     <string name="festivo">Festiu</string>
     <string name="laborable">Laborable</string>
@@ -269,7 +269,6 @@
     <string name="restore_total_confirmation">Restauració de còpia de seguretat total: notes, esdeveniments i ajustos.</string>
     <string name="backup_section_title_label">Còpia de seguretat</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Gestor de Festius</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,5 +332,8 @@
     <string name="lang_ru">Rus (Русский)</string>
     <string name="lang_zh">Xinès (中文)</string>
     <string name="lang_ja">Japonès (日本語)</string>
+    <string name="other_calendars">Tots els calendaris</string>
+    <string name="monthly_view">Mensual</string>
+    <string name="yearly_view">Anual</string>
 </resources>
 

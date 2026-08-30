@@ -2,7 +2,6 @@
     <string name="app_name">Visueller Kalender</string>
     <string name="calendar_widget_description">Zeigt Ihre anstehenden Kalenderereignisse an</string>
     <string name="permission_calendar_select">Kalenderberechtigung ist erforderlich, um Kalender auszuwählen.</string>
-    <string name="back_to_monthly_view">Zurück zur Monatsansicht</string>
     <string name="back_to_current_month">Zurück zum aktuellen Monat</string>
     <string name="create_event">Ereignis erstellen</string>
     <string name="search">Suche</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Kalender</string>
     <string name="settings">Einstellungen</string>
     <string name="help">Hilfe</string>
-    <string name="events_of_month">Ereignisse %1$s</string>
     <string name="all">Alle</string>
     <string name="pending">Ausstehend</string>
     <string name="delete_recurring_event_title">Serientermin löschen</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">Bis zum Datum</string>
     <string name="repeat_after">Wiederholungen</string>
 
+    <string name="activity_log">Aktivitätsprotokoll</string>
+    <string name="maintenance_section">Wartung</string>
+
     <string name="long_period_switch">Langer Zeitraum</string>
     <string name="date">Datum</string>
     <string name="end_time">Ende</string>
-    <string name="lanes_full_error">Der Tag %1$s hat das Limit von 5 langen Ereignissen überschritten. Versuchen Sie, normale Ereignisse mit Wiederholung zu erstellen.</string>
+    <string name="lanes_full_error">Der Tag %1$s hat das Limit von 5 langen Ereignissen überschritten.</string>
     <string name="select_calendar_title">Kalender</string>
     <string name="select_time_title">Zeit</string>
     <string name="does_not_repeat">Wiederholt sich nicht</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Designname</string>
     <string name="export">Speichern</string>
     <string name="help_section_calendar_views">Kalenderansicht</string>
-    <string name="help_calendar_views_1">Die Anwendung verfügt über zwei Hauptansichten: Monats- und Jahresansicht. Sie können zwischen ihnen wechseln, indem Sie auf die Jahreszahl in der Kopfzeile tippen.</string>
+    <string name="help_calendar_views_1">Die Anwendung hat zwei Hauptansichten: Monatlich und Jährlich. Sie können über das Seitenmenü (3 Linien) zwischen ihnen wechseln.</string>
     <string name="help_calendar_views_2">Wischen Sie in der Monatsansicht nach links oder rechts, um den Monat zu wechseln. Der Pfeil oben links in der Kopfzeile führt Sie zum aktuellen Monat zurück.</string>
     <string name="help_section_event_management">Ereignisverwaltung</string>
     <string name="help_event_management_1">Tippen Sie auf einen Tag im Monatskalender, um dessen Ereignisse anzuzeigen oder ein neues hinzuzufügen. Ereignisse können auch durch Tippen auf das (+)-Symbol in der Kopfzeile erstellt werden.</string>
     <string name="help_event_management_2">Ereignisse (einzelne oder wiederkehrende) können in jedem bearbeitbaren Kalender bearbeitet und gelöscht werden.</string>
     <string name="help_section_event_list">Ereignisliste</string>
-    <string name="help_event_list_1">Unter dem Monatskalender wird die Liste der Ereignisse für den Monat angezeigt. Für den aktuellen Monat können Sie durch Tippen auf die Schaltfläche \"Ausstehend-Alle\" wählen, ob Sie alle Ereignisse oder nur die ausstehenden sehen möchten. Jedes Ereignis in der Liste kann bearbeitet und gelöscht werden.</string>
+    <string name="help_event_list_1">Unter dem Monatskalender wird die Liste der Ereignisse des Monats angezeigt. Im aktuellen Monat können Sie zwischen der Anzeige nur der anstehenden Ereignisse oder der vollständigen Liste aller Ereignisse wechseln, indem Sie auf die mittlere Pfeilschaltfläche im Listenkopf klicken. Jedes Ereignis kann durch Antippen bearbeitet und gelöscht werden.</string>
     <string name="help_section_customization">Personalisierung</string>
-    <string name="help_customization_1">Im Menü \"Einstellungen\" können Sie zwischen hellem und dunklem Modus wählen. Sie können auch die Farben der Benutzeroberfläche anpassen sowie Farbdesigns importieren und exportieren, um sie zu teilen.</string>
+    <string name="help_customization_1">Über das Seitenmenü können Sie Ihre Kalender und die Datenwartung verwalten. In den Einstellungen können Sie den Hell/Dunkel-Modus wählen und die Farben der Benutzeroberfläche anpassen.</string>
     <string name="help_section_holiday_manager">Feiertagsmanager</string>
     <string name="help_holiday_manager_1">Diese Funktion ermöglicht es Ihnen, bestimmte Tage manuell als Feiertage oder Werktage zu markieren, unabhängig davon, was der Systemkalender oder importierte Ereignisse angeben. Wenn Sie einen Tag als Feiertag markieren, wird seine Nummer in der entsprechenden Farbe in der Monats- und Jahresansicht hervorgehoben.</string>
     <string name="help_section_widget">Widget</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">Alle Ereignisse</string>
     <string name="copy_event">Ereignis kopieren</string>
 
-    <string name="holiday_manager">Manager</string>
     <string name="holiday_manager_title">Feiertagsmanager</string>
     <string name="festivo">Feiertag</string>
     <string name="laborable">Werktag</string>
@@ -268,7 +268,6 @@
     <string name="restore_total_confirmation">Vollständige Backup-Wiederherstellung: Notizen, Termine und Einstellungen.</string>
     <string name="backup_section_title_label">Backup</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Feiertagsmanager</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -332,5 +331,8 @@
     <string name="lang_ru">Russisch (Русский)</string>
     <string name="lang_zh">Chinesisch (中文)</string>
     <string name="lang_ja">Japanisch (日本語)</string>
+    <string name="other_calendars">Alle Kalender</string>
+    <string name="monthly_view">Monatlich</string>
+    <string name="yearly_view">Jährlich</string>
 </resources>
 

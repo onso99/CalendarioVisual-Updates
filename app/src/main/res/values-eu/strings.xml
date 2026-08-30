@@ -2,7 +2,6 @@
     <string name="app_name">Egutegi Bisuala</string>
     <string name="calendar_widget_description">Zure hurrengo egutegi-gertaerak erakusten ditu</string>
     <string name="permission_calendar_select">Egutegiaren baimena behar da egutegiak hautatzeko.</string>
-    <string name="back_to_monthly_view">Itzuli hileko ikuspegira</string>
     <string name="back_to_current_month">Itzuli uneko hilabetera</string>
     <string name="create_event">Sortu gertaera</string>
     <string name="search">Bilatu</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Egutegiak</string>
     <string name="settings">Ezarpenak</string>
     <string name="help">Laguntza</string>
-    <string name="events_of_month">%1$s(e)ko gertaerak</string>
     <string name="all">Guztiak</string>
     <string name="pending">Zain</string>
     <string name="delete_recurring_event_title">Ezabatu gertaera errepikakorra</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">Data arte</string>
     <string name="repeat_after">Errepikapenak</string>
 
+    <string name="activity_log">Jarduera-erregistroa</string>
+    <string name="maintenance_section">Mantentze-lana</string>
+
     <string name="long_period_switch">Aldi luzea</string>
     <string name="date">Data</string>
     <string name="end_time">Amaiera</string>
-    <string name="lanes_full_error">%1$s egunak 5 aldi luzeko gertaeren muga gainditu du. Saiatu errepikapena duten gertaera arruntak sortzen.</string>
+    <string name="lanes_full_error">%1$s egunak 5 ekitaldi luzeen muga gainditu du.</string>
     <string name="select_calendar_title">Egutegia</string>
     <string name="select_time_title">Ordua</string>
     <string name="does_not_repeat">Ez da errepikatzen</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Gaiaren izena</string>
     <string name="export">Gorde</string>
     <string name="help_section_calendar_views">Egutegiaren ikuspegiak</string>
-    <string name="help_calendar_views_1">Aplikazioak bi ikuspegi nagusi ditu: Hilekoa eta Urtekoa. Goiburuko urtean sakatuta alda dezakezu batetik bestera.</string>
+    <string name="help_calendar_views_1">Aplikazioak bi ikuspegi nagusi ditu: Hilerokoa eta Urterokoa. Albo-menutik (3 lerro) alda ditzakezu.</string>
     <string name="help_calendar_views_2">Hileko ikuspegian, lerratu hatza ezker-eskubi hilabetez aldatzeko. Goiburuko goiko ezkerreko geziak uneko hilabetera itzuliko zaitu.</string>
     <string name="help_section_event_management">Gertaeren kudeaketa</string>
     <string name="help_event_management_1">Sakatu hileko egutegiko egun batean bere gertaerak ikusteko edo berri bat gehitzeko. Goiburuko (+) ikonoan sakatuta ere sortu daitezke gertaerak.</string>
     <string name="help_event_management_2">Gertaerak (bakarrak edo errepikakorrak) editatu eta ezabatu daitezke editagarria den edozein egutegitan.</string>
     <string name="help_section_event_list">Gertaera zerrenda</string>
-    <string name="help_event_list_1">Hileko egutegiaren azpian hilabeteko gertaeren zerrenda agertzen da. Uneko hilabeterako, Zain daudenak edo Guztiak ikustea aukera dezakezu Zain-Guztiak botoia sakatuta. Zerrendako gertaera bakoitza editatu eta ezabatu daiteke.</string>
+    <string name="help_event_list_1">Hileko egutegiaren azpian hilabeteko ekitaldien zerrenda agertzen da. Uneko hilabetean, Zain dauden ekitaldiak soilik edo Guztien zerrenda osoa ikusteko aukera duzu, zerrendaren goiburuko erdiko gezi-botoia sakatuz. Ekitaldi bakoitza editatu eta ezabatu daiteke gainean sakatuta.</string>
     <string name="help_section_customization">Pertsonalizazioa</string>
-    <string name="help_customization_1">Ezarpenen menutik Argi eta Ilun moduak aukeratu daitezke. Interfazearen koloreak ere pertsonalizatu daitezke, eta kolore-gaiak Inportatu eta Esportatu ditzakezu partekatzeko.</string>
+    <string name="help_customization_1">Albo-menutik zure egutegiak eta datuen mantentze-lana kudea ditzakezu. Ezarpenetan Argi/Ilun modua hauta dezakezu eta interfazearen koloreak pertsonalizatu.</string>
     <string name="help_section_holiday_manager">Jai-egun kudeatzailea</string>
     <string name="help_holiday_manager_1">Funtzio honek egun zehatzak jaiegun edo lanegun gisa eskuz markatzeko aukera ematen du, sistemaren egutegiak edo inportatutako gertaerek diotena kontuan hartu gabe. Egun bat jaiegun gisa markatzean, bere zenbakia dagokion kolorean nabarmenduko da hileko eta urteko ikuspegietan.</string>
     <string name="help_section_widget">Widget-a</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">Gertaera guztiak</string>
     <string name="copy_event">Kopiatu gertaera</string>
 
-    <string name="holiday_manager">Kudeatzailea</string>
     <string name="holiday_manager_title">Jai-egun Kudeatzailea</string>
     <string name="festivo">Jaieguna</string>
     <string name="laborable">Laneguna</string>
@@ -267,7 +267,6 @@
     <string name="restore_total_confirmation">Segurtasun-kopia osoa berrezartzea: oharrak, gertaerak eta ezarpenak.</string>
     <string name="backup_section_title_label">Babeskopia</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Jai-egun kudeatzailea</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -331,5 +330,8 @@
     <string name="lang_ru">Errusiera (Русский)</string>
     <string name="lang_zh">Txinera (中文)</string>
     <string name="lang_ja">Japoniera (日本語)</string>
+    <string name="other_calendars">Egutegi guztiak</string>
+    <string name="monthly_view">Hilabetekoa</string>
+    <string name="yearly_view">Urtekoa</string>
 </resources>
 

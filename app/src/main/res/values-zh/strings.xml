@@ -2,7 +2,6 @@
     <string name="app_name">视觉日历</string>
     <string name="calendar_widget_description">显示您即将到来的日历事件</string>
     <string name="permission_calendar_select">选择日历需要日历权限。</string>
-    <string name="back_to_monthly_view">返回月视图</string>
     <string name="back_to_current_month">返回本月</string>
     <string name="create_event">创建事件</string>
     <string name="search">搜索</string>
@@ -10,7 +9,6 @@
     <string name="calendars">日历</string>
     <string name="settings">设置</string>
     <string name="help">帮助</string>
-    <string name="events_of_month">%1$s 事件</string>
     <string name="all">全部</string>
     <string name="pending">待办</string>
     <string name="delete_recurring_event_title">删除循环事件</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">直到日期</string>
     <string name="repeat_after">重复次数</string>
 
+    <string name="activity_log">活动日志</string>
+    <string name="maintenance_section">维护</string>
+
     <string name="long_period_switch">长期</string>
     <string name="date">日期</string>
     <string name="end_time">结束</string>
-    <string name="lanes_full_error">%1$s 已超过 5 个长期事件的限制。请尝试创建带重复的普通事件。</string>
+    <string name="lanes_full_error">%1$s 日已超过 5 个长事件的限制。</string>
     <string name="select_calendar_title">日历</string>
     <string name="select_time_title">时间</string>
     <string name="does_not_repeat">不重复</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">主题名称</string>
     <string name="export">保存</string>
     <string name="help_section_calendar_views">日历视图</string>
-    <string name="help_calendar_views_1">该应用有两个主要视图：月视图和年视图。您可以通过点击标题中的年份进行切换。</string>
+    <string name="help_calendar_views_1">应用程序有两个主要视图：月视图和年视图。您可以通过侧边菜单（3 条线）在它们之间进行切换。</string>
     <string name="help_calendar_views_2">在月视图中，左右滑动可更改月份。标题左上角的箭头将返回当前月份。</string>
     <string name="help_section_event_management">事件管理</string>
     <string name="help_event_management_1">点击月历中的某一天以查看其事件或添加新事件。也可以通过点击标题中的 (+) 图标来创建事件。</string>
     <string name="help_event_management_2">可以在任何可编辑的日历中编辑和删除事件（单个或重复）。</string>
     <string name="help_section_event_list">事件列表</string>
-    <string name="help_event_list_1">月历下方显示该月的事件列表。对于当前月份，您可以通过点击“待办-全部”按钮选择查看待办事件或全部事件。列表中的每个事件都可以进行编辑和删除。</string>
+    <string name="help_event_list_1">月历下方显示该月的事件列表。在当前月份中，您可以通过点击列表标题中央的箭头按钮，在仅查看“待办”事件或“全部”完整列表之间切换。点击每个事件即可进行编辑或删除。</string>
     <string name="help_section_customization">自定义</string>
-    <string name="help_customization_1">从设置菜单中可以选择浅色和深色模式。您还可以自定义界面的颜色，并导入和导出颜色主题以进行分享。</string>
+    <string name="help_customization_1">通过侧边菜单，您可以管理日历和数据维护。在“设置”中，您可以选择亮色/暗色模式并自定义界面颜色。</string>
     <string name="help_section_holiday_manager">节假日管理</string>
     <string name="help_holiday_manager_1">此功能允许您手动将特定日期标记为节假日或工作日，无论系统日历或导入的事件如何显示。标记为节假日后，其日期数字将在月视图和年视图中以相应的颜色突出显示。</string>
     <string name="help_section_widget">小组件</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">所有事件</string>
     <string name="copy_event">复制事件</string>
 
-    <string name="holiday_manager">管理</string>
     <string name="holiday_manager_title">节假日管理</string>
     <string name="festivo">节假日</string>
     <string name="laborable">工作日</string>
@@ -268,7 +268,6 @@
     <string name="restore_total_confirmation">完整备份恢复：备注、事件和设置。</string>
     <string name="backup_section_title_label">备份</string>
     <string name="drive_label">云端硬盘</string>
-    <string name="holiday_manager_legend">节假日管理</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -332,5 +331,8 @@
     <string name="lang_ru">俄语 (Русский)</string>
     <string name="lang_zh">中文</string>
     <string name="lang_ja">日语 (日本語)</string>
+    <string name="other_calendars">所有日历</string>
+    <string name="monthly_view">月视图</string>
+    <string name="yearly_view">年视图</string>
 </resources>
 

@@ -2,7 +2,6 @@
     <string name="app_name">Calendrier Visuel</string>
     <string name="calendar_widget_description">Affiche vos prochains événements du calendrier</string>
     <string name="permission_calendar_select">L\'autorisation du calendrier est requise pour sélectionner des calendriers.</string>
-    <string name="back_to_monthly_view">Retour à la vue mensuelle</string>
     <string name="back_to_current_month">Retour au mois en cours</string>
     <string name="create_event">Créer un événement</string>
     <string name="search">Rechercher</string>
@@ -10,7 +9,6 @@
     <string name="calendars">Calendriers</string>
     <string name="settings">Paramètres</string>
     <string name="help">Aide</string>
-    <string name="events_of_month">Événements %1$s</string>
     <string name="all">Tous</string>
     <string name="pending">En attente</string>
     <string name="delete_recurring_event_title">Supprimer l\'événement récurrent</string>
@@ -36,10 +34,13 @@
     <string name="repeat_on_date">Jusqu\'à la date</string>
     <string name="repeat_after">Répétitions</string>
 
+    <string name="activity_log">Journal d\'activité</string>
+    <string name="maintenance_section">Maintenance</string>
+
     <string name="long_period_switch">Longue période</string>
     <string name="date">Date</string>
     <string name="end_time">Fin</string>
-    <string name="lanes_full_error">Le jour %1$s a dépassé la limite de 5 événements longs. Essayez de créer des événements normaux avec répétition.</string>
+    <string name="lanes_full_error">Le jour %1$s a dépassé la limite de 5 événements longs.</string>
     <string name="select_calendar_title">Calendrier</string>
     <string name="select_time_title">Heure</string>
     <string name="does_not_repeat">Ne se répète pas</string>
@@ -89,15 +90,15 @@
     <string name="theme_name">Nom du thème</string>
     <string name="export">Enregistrer</string>
     <string name="help_section_calendar_views">Vues du calendrier</string>
-    <string name="help_calendar_views_1">L\'application dispose de deux vues principales : Mensuelle et Annuelle. Vous pouvez basculer entre elles en appuyant sur l\'année dans l\'en-tête.</string>
+    <string name="help_calendar_views_1">L\'application dispose de deux vues principales : Mensuelle et Annuelle. Vous pouvez basculer entre elles depuis le menu latéral (3 lignes).</string>
     <string name="help_calendar_views_2">Dans la vue mensuelle, balayez vers la gauche ou la droite pour changer de mois. La flèche en haut à gauche de l\'en-tête permet de revenir au mois en cours.</string>
     <string name="help_section_event_management">Gestion des événements</string>
     <string name="help_event_management_1">Appuyez sur un jour du calendrier mensuel pour voir ses événements ou en ajouter un nouveau. Des événements peuvent également être créés en appuyant sur l\'icône (+) de l\'en-tête.</string>
     <string name="help_event_management_2">Les événements (uniques ou répétés) peuvent être modifiés et supprimés dans n\'importe quel calendrier modifiable.</string>
     <string name="help_section_event_list">Liste des événements</string>
-    <string name="help_event_list_1">Sous le calendrier mensuel s\'affiche la liste des événements du mois. Pour le mois en cours, vous pouvez choisir d\'afficher les événements En attente ou Tous en appuyant sur le bouton En attente-Tous. Chaque événement de la liste peut être modifié et supprimé.</string>
+    <string name="help_event_list_1">Sous le calendrier mensuel s\'affiche la liste des événements du mois. Dans le mois en cours, vous pouvez alterner entre voir uniquement les événements en Attente ou la liste complète de Tous en appuyant sur le bouton fléché central situé dans l\'en-tête de la liste. Chaque événement peut être modifié et supprimé en cliquant dessus.</string>
     <string name="help_section_customization">Personnalisation</string>
-    <string name="help_customization_1">Depuis le menu Paramètres, vous pouvez choisir les modes Clair et Sombre. Vous pouvez également personnaliser les couleurs de l\'interface et Importer/Exporter les thèmes de couleur pour les partager.</string>
+    <string name="help_customization_1">Depuis le menu latéral, vous pouvez gérer vos calendriers et la maintenance des données. Dans Paramètres, vous pouvez choisir le mode Clair/Sombre et personnaliser les couleurs de l\'interface.</string>
     <string name="help_section_holiday_manager">Gestionnaire de jours fériés</string>
     <string name="help_holiday_manager_1">Cette fonction permet de marquer manuellement des jours spécifiques comme fériés ou ouvrés, indépendamment de ce qu\'indique le calendrier système ou les événements importés. En marquant un jour comme férié, son numéro sera mis en évidence dans la couleur correspondante sur les vues mensuelle et annuelle.</string>
     <string name="help_section_widget">Widget</string>
@@ -178,7 +179,6 @@
     <string name="edit_recurring_event_dialog_all_events">Toute la série</string>
     <string name="copy_event">Copier l\'événement</string>
 
-    <string name="holiday_manager">Gestionnaire</string>
     <string name="holiday_manager_title">Gestionnaire de jours fériés</string>
     <string name="festivo">Jour férié</string>
     <string name="laborable">Jour ouvré</string>
@@ -268,7 +268,6 @@
     <string name="restore_total_confirmation">Restauration complète de la sauvegarde : notes, événements et paramètres.</string>
     <string name="backup_section_title_label">Sauvegarde</string>
     <string name="drive_label">Drive</string>
-    <string name="holiday_manager_legend">Gestionnaire de jours fériés</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -332,5 +331,8 @@
     <string name="lang_ru">Russe (Русский)</string>
     <string name="lang_zh">Chinois (中文)</string>
     <string name="lang_ja">Japonais (日本語)</string>
+    <string name="other_calendars">Tous les calendriers</string>
+    <string name="monthly_view">Mensuel</string>
+    <string name="yearly_view">Annuel</string>
 </resources>
 
