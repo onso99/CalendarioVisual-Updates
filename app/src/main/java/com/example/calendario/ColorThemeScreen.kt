@@ -169,13 +169,17 @@ fun ColorThemeScreen(
                     val defaultColor = if (isAppDark) item.defaultDark else item.defaultLight
                     val currentColor = getThemeColor(prefs, key, defaultColor)
                     
-                    val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD 
-                                     else if (item.labelRes == R.string.event_2) AppConstants.KEY_EVENT_2_KEYWORD 
-                                     else null
+                    val keywordKey = when (item.labelRes) {
+                        R.string.event_1 -> AppConstants.KEY_EVENT_1_KEYWORD
+                        R.string.event_2 -> AppConstants.KEY_EVENT_2_KEYWORD
+                        else -> null
+                    }
                     
-                    val pulseKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_PULSE
-                                   else if (item.labelRes == R.string.event_2) AppConstants.KEY_EVENT_2_PULSE
-                                   else null
+                    val pulseKey = when (item.labelRes) {
+                        R.string.event_1 -> AppConstants.KEY_EVENT_1_PULSE
+                        R.string.event_2 -> AppConstants.KEY_EVENT_2_PULSE
+                        else -> null
+                    }
                     
                     val isPulsing = pulseKey?.let { prefs.getBoolean(it, false) } ?: false
 

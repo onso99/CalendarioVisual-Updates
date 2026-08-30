@@ -48,19 +48,6 @@ data class CustomColors(
             return if (isBgDark) Color(0xFFCCCCCC) else Color(0xFF404040)
         }
 
-    // Color para etiquetas estructurales (CONTRASTE REAL sobre el color del tema)
-    val textLabel: Color
-        get() {
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(cabecera.toArgb(), hsl)
-            // Umbral al 75% para forzar texto blanco incluso en colores muy claros
-            val isCabeceraDark = hsl[2] < 0.75f 
-            
-            // Aplicamos contraste: Si el fondo es <75%, texto muy claro; si es >75%, texto muy oscuro
-            hsl[2] = if (isCabeceraDark) 0.85f else 0.15f
-            return Color(ColorUtils.HSLToColor(hsl))
-        }
-
     // Cálculo automático del fondo de secciones (10% de variación respecto al fondo)
     val fondoSecciones: Color
         get() {

@@ -419,16 +419,13 @@ fun AddEventScreen(
                         
                         startDate = LocalDateTime.of(eventStartDate, startT)
                         
-                        if (!isLongPeriod) {
+                        endDate = if (!isLongPeriod) {
                             // Si no es periodo largo, el fin es simplemente +30 min desde el inicio
-                            endDate = startDate.plusMinutes(30)
+                            startDate.plusMinutes(30)
                         } else {
                             // Si es periodo largo, mantenemos la fecha de fin pero ponemos hora lógica
-                            endDate = LocalDateTime.of(endDate.toLocalDate(), startT.plusMinutes(30))
-                            // Seguridad
-                            if (endDate.isBefore(startDate)) {
-                                endDate = startDate.plusMinutes(30)
-                            }
+                            val calculatedEnd = LocalDateTime.of(endDate.toLocalDate(), startT.plusMinutes(30))
+                            if (calculatedEnd.isBefore(startDate)) startDate.plusMinutes(30) else calculatedEnd
                         }
                     }
                 },
@@ -456,10 +453,10 @@ fun AddEventScreen(
                         val startTime = startDate.toLocalTime()
                         val endTime = endDate.toLocalTime()
                         
-                        if (endTime.isAfter(startTime)) {
-                            endDate = LocalDateTime.of(startDate.toLocalDate(), endTime)
+                        endDate = if (endTime.isAfter(startTime)) {
+                            LocalDateTime.of(startDate.toLocalDate(), endTime)
                         } else {
-                            endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), endTime)
+                            LocalDateTime.of(startDate.toLocalDate().plusDays(1), endTime)
                         }
                     }
                 },
@@ -474,15 +471,15 @@ fun AddEventScreen(
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
                         
-                        if (isAllDay) {
+                        alarmTime = if (isAllDay) {
                             // Para todo el día, sugerimos las 09:00 AM
-                            alarmTime = LocalTime.of(9, 0)
+                            LocalTime.of(9, 0)
                         } else {
                             // Para eventos con hora, aplicamos la anticipación configurada
                             val calculatedTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
                             val now = LocalTime.now()
                             // Lógica Conservadora: Si la anticipación ya pasó, sugerimos la hora de inicio
-                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate().isEqual(LocalDate.now())) {
+                            if (calculatedTime.isBefore(now) && startDate.toLocalDate().isEqual(LocalDate.now())) {
                                 startDate.toLocalTime().withSecond(0).withNano(0)
                             } else {
                                 calculatedTime.withSecond(0).withNano(0)
@@ -498,13 +495,13 @@ fun AddEventScreen(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                        if (isAllDay) {
-                            alarmTime = LocalTime.of(9, 0)
+                        alarmTime = if (isAllDay) {
+                            LocalTime.of(9, 0)
                         } else {
                             val calculatedTime = startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
                             val now = LocalTime.now()
                             // Lógica Conservadora: Si la anticipación ya pasó, sugerimos la hora de inicio
-                            alarmTime = if (calculatedTime.isBefore(now) && startDate.toLocalDate().isEqual(LocalDate.now())) {
+                            if (calculatedTime.isBefore(now) && startDate.toLocalDate().isEqual(LocalDate.now())) {
                                 startDate.toLocalTime().withSecond(0).withNano(0)
                             } else {
                                 calculatedTime.withSecond(0).withNano(0)
@@ -706,10 +703,10 @@ fun AddEventScreen(
                 // DIRECCIÓN INTELIGENTE: Al cambiar el inicio, ajustamos el fin para que mantenga 
                 // la lógica de un solo día o cruce de medianoche según la hora actual de fin.
                 val currentEndTime = endDate.toLocalTime()
-                if (currentEndTime.isAfter(newTime)) {
-                    endDate = LocalDateTime.of(startDate.toLocalDate(), currentEndTime)
+                endDate = if (currentEndTime.isAfter(newTime)) {
+                    LocalDateTime.of(startDate.toLocalDate(), currentEndTime)
                 } else {
-                    endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), currentEndTime)
+                    LocalDateTime.of(startDate.toLocalDate().plusDays(1), currentEndTime)
                 }
             } else {
                 if (startDate.isAfter(endDate)) endDate = startDate.plusMinutes(30)
@@ -725,10 +722,10 @@ fun AddEventScreen(
             if (!isLongPeriod) {
                 // DIRECCIÓN INTELIGENTE: Si la hora de fin es después de la de inicio -> Mismo día.
                 // Si la hora de fin es antes de la de inicio -> Día siguiente (Cruza medianoche).
-                if (newTime.isAfter(startDate.toLocalTime())) {
-                    endDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
+                endDate = if (newTime.isAfter(startDate.toLocalTime())) {
+                    LocalDateTime.of(startDate.toLocalDate(), newTime)
                 } else {
-                    endDate = LocalDateTime.of(startDate.toLocalDate().plusDays(1), newTime)
+                    LocalDateTime.of(startDate.toLocalDate().plusDays(1), newTime)
                 }
             } else {
                 val newEndDate = LocalDateTime.of(endDate.toLocalDate(), newTime)

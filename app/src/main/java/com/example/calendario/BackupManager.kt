@@ -2,15 +2,11 @@ package com.example.calendario
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
-import android.util.Log
 import androidx.core.content.edit
 import androidx.core.graphics.toColorInt
 import com.example.calendario.database.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.time.LocalDate
 
 object BackupManager {
@@ -123,36 +119,6 @@ object BackupManager {
         root.put(KEY_DELETED_EVENTS, deletedArray)
 
         return root
-    }
-
-    fun exportFullBackup(context: Context, uri: Uri, selectedAppIds: Set<Long>, favoriteId: Long?) {
-        try {
-            val json = createFullBackupJson(context, selectedAppIds, favoriteId)
-            val jsonStr = json.toString(4)
-            val bytes = jsonStr.toByteArray()
-            context.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
-            
-            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
-                timestamp = System.currentTimeMillis(),
-                source = BackupSource.LOCAL,
-                action = BackupAction.SAVE,
-                isSuccess = true,
-                eventsCount = json.optJSONArray(KEY_CALENDAR_HISTORY)?.length() ?: 0,
-                notesCount = json.optJSONArray(KEY_DAILY_NOTES)?.length() ?: 0,
-                includePrefs = true,
-                sizeBytes = bytes.size.toLong()
-            ))
-        } catch (e: Exception) {
-            Log.e("BackupManager", "Export error", e)
-            BackupHistoryManager.addEntry(context, BackupHistoryEntry(
-                timestamp = System.currentTimeMillis(),
-                source = BackupSource.LOCAL,
-                action = BackupAction.SAVE,
-                isSuccess = false,
-                technicalError = e.message
-            ))
-            throw e
-        }
     }
 
     suspend fun importFullBackupFromJson(
@@ -347,13 +313,6 @@ object BackupManager {
             }
             false
         }
-    }
-
-    suspend fun importFullBackup(context: Context, uri: Uri, restorePrefs: Boolean, restoreHolidays: Boolean, restoreNotes: Boolean, restoreEvents: Boolean): Boolean {
-        return try {
-            val content = context.contentResolver.openInputStream(uri)?.use { BufferedReader(InputStreamReader(it)).readText() } ?: return false
-            importFullBackupFromJson(context, JSONObject(content), restorePrefs, restoreHolidays, restoreNotes, restoreEvents, BackupSource.LOCAL)
-        } catch (_: Exception) { false }
     }
 
     private fun restorePrefs(prefs: SharedPreferences, json: JSONObject?) {

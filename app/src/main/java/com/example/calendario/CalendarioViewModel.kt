@@ -5,7 +5,6 @@ package com.example.calendario
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -278,24 +277,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             if (success) {
                 // Al terminar con éxito, refreshData cargará los nuevos calendarios y Room 
                 // ya tendrá los eventos inyectados por el BackupManager.
-                refreshData()
-            }
-            _uiState.update { it.copy(isRestoring = false) }
-            onComplete(success)
-        }
-    }
-
-    fun restoreFromLocal(context: Context, uri: Uri, restorePrefs: Boolean, restoreHolidays: Boolean, restoreNotes: Boolean, restoreEvents: Boolean, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRestoring = true) }
-            val success = withContext(Dispatchers.IO) {
-                try {
-                    BackupManager.importFullBackup(context, uri, restorePrefs, restoreHolidays, restoreNotes, restoreEvents)
-                    true
-                } catch (_: Exception) { false }
-            }
-            if (success) {
-                // Al terminar con éxito, refreshData se encarga de re-sincronizar
                 refreshData()
             }
             _uiState.update { it.copy(isRestoring = false) }
