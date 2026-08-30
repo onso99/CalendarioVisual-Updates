@@ -1,3 +1,4 @@
+2026-08-30 - v3.1.18 Restaurado el diálogo Permisos
 2026-08-30 - v3.1.17 Strings propagados al resto de idiomas
 2026-08-30 - v3.1.16 Corrección de warnings
 2026-08-30 - v3.1.15 Corregido Todos los calendarios (Menú lateral) y Ayuda
