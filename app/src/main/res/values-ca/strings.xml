@@ -184,7 +184,6 @@
     <string name="laborable">Laborable</string>
     <string name="holiday_updated_successfully">Ajust de festiu actualitzat</string>
 
-    <string name="holidays_section">Festius</string>
     <string name="holiday_deleted_message">Eliminat %1$s %2$s</string>
     <string name="event_deleted_message">Eliminat %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">Vols eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
     <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
 
-    <string name="backup_exported_successfully">Còpia de seguretat creada amb èxit</string>
-    <string name="error_exporting_backup">Error en crear la còpia: %1$s</string>
 
     <string name="alarm">Alarma</string>
     <string name="stop_alarm">ATURAR</string>
@@ -262,7 +259,6 @@
     <string name="restore_success">Còpia restaurada amb èxit</string>
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
     <string name="restore_prefs_label">Ajustos</string>
-    <string name="restore_holidays_label">Festius locals</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Esdeveniments</string>
     <string name="confirm_restore_title">Confirmar restauració</string>
@@ -276,7 +272,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Mai</string>
-    <string name="error_updating_data">Error en actualitzar les dades.</string>
     <string name="confirm_delete_adjustment">Vols eliminar aquest ajust? Es restaurarà l\'estat original del calendari.</string>
     <string name="not_applicable">N/A</string>
 

@@ -184,7 +184,6 @@
     <string name="laborable">Jour ouvré</string>
     <string name="holiday_updated_successfully">Ajustement de jour férié mis à jour</string>
 
-    <string name="holidays_section">Jours fériés</string>
     <string name="holiday_deleted_message">Supprimé %1$s %2$s</string>
     <string name="event_deleted_message">Supprimé %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">Voulez-vous supprimer ces %1$d événements ? Cette action est irréversible.</string>
     <string name="events_deleted_count">%1$d événements supprimés.</string>
 
-    <string name="backup_exported_successfully">Sauvegarde créée avec succès</string>
-    <string name="error_exporting_backup">Erreur lors de la création de la sauvegarde : %1$s</string>
 
     <string name="alarm">Alarme</string>
     <string name="stop_alarm">ARRÊTER</string>
@@ -261,7 +258,6 @@
     <string name="restore_success">Copie restaurée avec succès</string>
     <string name="restore_error">Aucune copie valide trouvée sur Drive</string>
     <string name="restore_prefs_label">Paramètres</string>
-    <string name="restore_holidays_label">Jours fériés locaux</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Événements</string>
     <string name="confirm_restore_title">Confirmer la restauration</string>
@@ -275,7 +271,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Dernière</string>
     <string name="never">Jamais</string>
-    <string name="error_updating_data">Erreur lors de la mise à jour des données.</string>
     <string name="confirm_delete_adjustment">Voulez-vous supprimer ce réglage ? L\'état original du calendrier sera restauré.</string>
     <string name="not_applicable">N/A</string>
 

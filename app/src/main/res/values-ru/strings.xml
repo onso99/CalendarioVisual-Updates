@@ -184,7 +184,6 @@
     <string name="laborable">Рабочий день</string>
     <string name="holiday_updated_successfully">Настройка праздника обновлена</string>
 
-    <string name="holidays_section">Праздники</string>
     <string name="holiday_deleted_message">Удалено %1$s %2$s</string>
     <string name="event_deleted_message">Удалено %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">Удалить эти события (%1$d)? Это действие нельзя отменить.</string>
     <string name="events_deleted_count">Удалено событий: %1$d.</string>
 
-    <string name="backup_exported_successfully">Резервная копия создана</string>
-    <string name="error_exporting_backup">Ошибка при создании копии: %1$s</string>
 
     <string name="alarm">Будильник</string>
     <string name="stop_alarm">СТОП</string>
@@ -261,7 +258,6 @@
     <string name="restore_success">Копия успешно восстановлена</string>
     <string name="restore_error">Валидная копия на Диске не найдена</string>
     <string name="restore_prefs_label">Настройки</string>
-    <string name="restore_holidays_label">Местные праздники</string>
     <string name="restore_notes_label">Заметки</string>
     <string name="restore_events_label">События</string>
     <string name="confirm_restore_title">Подтвердите восстановление</string>
@@ -275,7 +271,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Последняя</string>
     <string name="never">Никогда</string>
-    <string name="error_updating_data">Ошибка обновления данных.</string>
     <string name="confirm_delete_adjustment">Удалить эту настройку? Будет восстановлено исходное состояние календаря.</string>
     <string name="not_applicable">Н/Д</string>
 

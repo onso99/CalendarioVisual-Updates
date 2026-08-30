@@ -184,7 +184,6 @@
     <string name="laborable">Laneguna</string>
     <string name="holiday_updated_successfully">Jaiegun doitzea eguneratu da</string>
 
-    <string name="holidays_section">Jaiegunak</string>
     <string name="holiday_deleted_message">Ezabatua %1$s %2$s</string>
     <string name="event_deleted_message">Ezabatua %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
 
-    <string name="backup_exported_successfully">Babeskopia ongi sortu da</string>
-    <string name="error_exporting_backup">Errorea kopia sortzean: %1$s</string>
 
     <string name="alarm">Alarma</string>
     <string name="stop_alarm">GELDITU</string>
@@ -260,7 +257,6 @@
     <string name="restore_success">Babeskopia ongi berrezarri da</string>
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
     <string name="restore_prefs_label">Ezarpenak</string>
-    <string name="restore_holidays_label">Tokiko jai-egunak</string>
     <string name="restore_notes_label">Oharrak</string>
     <string name="restore_events_label">Gertaerak</string>
     <string name="confirm_restore_title">Berrezarpena berretsi</string>
@@ -274,7 +270,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Azkena</string>
     <string name="never">Inoiz ez</string>
-    <string name="error_updating_data">Errorea datuak eguneratzean.</string>
     <string name="confirm_delete_adjustment">Doitzea ezabatu nahi duzu? Egutegiaren jatorrizko egoera berrezarriko da.</string>
     <string name="not_applicable">N/A</string>
 

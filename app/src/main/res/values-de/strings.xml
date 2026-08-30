@@ -184,7 +184,6 @@
     <string name="laborable">Werktag</string>
     <string name="holiday_updated_successfully">Feiertagsanpassung aktualisiert</string>
 
-    <string name="holidays_section">Feiertage</string>
     <string name="holiday_deleted_message">%1$s %2$s gelöscht</string>
     <string name="event_deleted_message">%1$s %2$s gelöscht</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">Möchten Sie diese %1$d Ereignisse löschen? Diese Aktion kann nicht rückgängig gemacht werden.</string>
     <string name="events_deleted_count">%1$d Ereignisse gelöscht.</string>
 
-    <string name="backup_exported_successfully">Backup erfolgreich erstellt</string>
-    <string name="error_exporting_backup">Fehler beim Erstellen des Backups: %1$s</string>
 
     <string name="alarm">Alarm</string>
     <string name="stop_alarm">STOPP</string>
@@ -261,7 +258,6 @@
     <string name="restore_success">Backup erfolgreich wiederhergestellt</string>
     <string name="restore_error">Kein gültiges Backup in Drive gefunden</string>
     <string name="restore_prefs_label">Einstellungen</string>
-    <string name="restore_holidays_label">Lokale Feiertage</string>
     <string name="restore_notes_label">Notizen</string>
     <string name="restore_events_label">Termine</string>
     <string name="confirm_restore_title">Wiederherstellung bestätigen</string>
@@ -275,7 +271,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Zuletzt</string>
     <string name="never">Nie</string>
-    <string name="error_updating_data">Fehler beim Aktualisieren der Daten.</string>
     <string name="confirm_delete_adjustment">Möchten Sie diese Anpassung löschen? Der ursprüngliche Zustand des Kalenders wird wiederhergestellt.</string>
     <string name="not_applicable">N. v.</string>
 

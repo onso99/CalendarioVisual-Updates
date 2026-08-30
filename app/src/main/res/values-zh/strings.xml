@@ -184,7 +184,6 @@
     <string name="laborable">工作日</string>
     <string name="holiday_updated_successfully">节假日设置已更新</string>
 
-    <string name="holidays_section">节假日</string>
     <string name="holiday_deleted_message">已删除 %1$s %2$s</string>
     <string name="event_deleted_message">已删除 %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">确定要删除这 %1$d 个事件吗？此操作无法撤销。</string>
     <string name="events_deleted_count">已删除 %1$d 个事件。</string>
 
-    <string name="backup_exported_successfully">备份创建成功</string>
-    <string name="error_exporting_backup">创建备份出错：%1$s</string>
 
     <string name="alarm">闹钟</string>
     <string name="stop_alarm">停止</string>
@@ -261,7 +258,6 @@
     <string name="restore_success">备份恢复成功</string>
     <string name="restore_error">在云端硬盘中未找到有效备份</string>
     <string name="restore_prefs_label">设置</string>
-    <string name="restore_holidays_label">本地节假日</string>
     <string name="restore_notes_label">备注</string>
     <string name="restore_events_label">事件</string>
     <string name="confirm_restore_title">确认恢复</string>
@@ -275,7 +271,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">上次</string>
     <string name="never">从未</string>
-    <string name="error_updating_data">更新数据出错。</string>
     <string name="confirm_delete_adjustment">要删除此调整吗？日历将恢复到原始状态。</string>
     <string name="not_applicable">无</string>
 

@@ -184,7 +184,6 @@
     <string name="laborable">Workday</string>
     <string name="holiday_updated_successfully">Holiday adjustment updated</string>
 
-    <string name="holidays_section">Holidays</string>
     <string name="holiday_deleted_message">Deleted %1$s %2$s</string>
     <string name="event_deleted_message">Deleted %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
     <string name="events_deleted_count">%1$d events deleted.</string>
 
-    <string name="backup_exported_successfully">Backup created successfully</string>
-    <string name="error_exporting_backup">Error creating backup: %1$s</string>
 
     <string name="alarm">Alarm</string>
     <string name="stop_alarm">STOP</string>
@@ -262,7 +259,6 @@
     <string name="restore_success">Backup restored successfully</string>
     <string name="restore_error">No valid backup found in Drive</string>
     <string name="restore_prefs_label">Settings</string>
-    <string name="restore_holidays_label">Local holidays</string>
     <string name="restore_notes_label">Notes</string>
     <string name="restore_events_label">Events</string>
     <string name="confirm_restore_title">Confirm restoration</string>
@@ -276,7 +272,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Last</string>
     <string name="never">Never</string>
-    <string name="error_updating_data">Error updating data.</string>
     <string name="confirm_delete_adjustment">Do you want to delete this adjustment? The original state of the calendar will be restored.</string>
     <string name="not_applicable">N/A</string>
 

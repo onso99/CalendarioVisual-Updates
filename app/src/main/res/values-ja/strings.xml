@@ -184,7 +184,6 @@
     <string name="laborable">平日</string>
     <string name="holiday_updated_successfully">祝日の設定を更新しました</string>
 
-    <string name="holidays_section">祝日</string>
     <string name="holiday_deleted_message">削除しました %1$s %2$s</string>
     <string name="event_deleted_message">削除しました %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">%1$d件のイベントを削除しますか？この操作は元に戻せません。</string>
     <string name="events_deleted_count">%1$d件のイベントを削除しました。</string>
 
-    <string name="backup_exported_successfully">バックアップを作成しました</string>
-    <string name="error_exporting_backup">バックアップ作成エラー: %1$s</string>
 
     <string name="alarm">アラーム</string>
     <string name="stop_alarm">停止</string>
@@ -261,7 +258,6 @@
     <string name="restore_success">バックアップを復元しました</string>
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="restore_prefs_label">設定</string>
-    <string name="restore_holidays_label">ローカルの祝日</string>
     <string name="restore_notes_label">メモ</string>
     <string name="restore_events_label">イベント</string>
     <string name="confirm_restore_title">復元の確認</string>
@@ -275,7 +271,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">最終</string>
     <string name="never">未実行</string>
-    <string name="error_updating_data">データ更新エラー。</string>
     <string name="confirm_delete_adjustment">この設定を削除しますか？カレンダーの元の状態に戻ります。</string>
     <string name="not_applicable">該当なし</string>
 

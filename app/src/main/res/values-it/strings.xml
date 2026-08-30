@@ -184,7 +184,6 @@
     <string name="laborable">Lavorativo</string>
     <string name="holiday_updated_successfully">Regolazione festività aggiornata</string>
 
-    <string name="holidays_section">Festività</string>
     <string name="holiday_deleted_message">Eliminato %1$s %2$s</string>
     <string name="event_deleted_message">Eliminato %1$s %2$s</string>
 
@@ -210,8 +209,6 @@
     <string name="delete_multiple_confirmation">Vuoi eliminare questi %1$d eventi? L\'azione è irreversibile.</string>
     <string name="events_deleted_count">%1$d eventi eliminati.</string>
 
-    <string name="backup_exported_successfully">Backup creato con successo</string>
-    <string name="error_exporting_backup">Errore durante la creazione del backup: %1$s</string>
 
     <string name="alarm">Allarme</string>
     <string name="stop_alarm">STOP</string>
@@ -262,7 +259,6 @@
     <string name="restore_success">Copia ripristinata con successo</string>
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
     <string name="restore_prefs_label">Impostazioni</string>
-    <string name="restore_holidays_label">Giorni festivi locali</string>
     <string name="restore_notes_label">Note</string>
     <string name="restore_events_label">Eventi</string>
     <string name="confirm_restore_title">Conferma ripristino</string>
@@ -276,7 +272,6 @@
     <string name="color_lightness_label">L</string>
     <string name="last_backup_label">Ultima</string>
     <string name="never">Mai</string>
-    <string name="error_updating_data">Errore durante l\'aggiornamento dei dati.</string>
     <string name="confirm_delete_adjustment">Vuoi eliminare questa regolazione? Verrà ripristinato lo stato originale del calendario.</string>
     <string name="not_applicable">N/A</string>
 
