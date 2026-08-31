@@ -689,13 +689,7 @@ fun CalendarioScreen(
                                                 showGoToYearDialog = true
                                             }
                                     )
-                                }
 
-                                // Center Group: Go to Today
-                                Box(
-                                    modifier = Modifier.weight(0.4f),
-                                    contentAlignment = Alignment.Center
-                                ) {
                                     val isAtToday = if (viewMode == CalendarViewMode.MONTHLY) {
                                         currentMonth == YearMonth.from(today)
                                     } else {
@@ -703,19 +697,23 @@ fun CalendarioScreen(
                                     }
 
                                     if (!isAtToday) {
-                                        IconButton(onClick = {
-                                            scope.launch {
-                                                if (viewMode == CalendarViewMode.MONTHLY) {
-                                                    monthPagerState.animateScrollToPage(initialPage)
-                                                } else {
-                                                    yearPagerState.animateScrollToPage(initialYearPage)
+                                        IconButton(
+                                            onClick = {
+                                                scope.launch {
+                                                    if (viewMode == CalendarViewMode.MONTHLY) {
+                                                        monthPagerState.animateScrollToPage(initialPage)
+                                                    } else {
+                                                        yearPagerState.animateScrollToPage(initialYearPage)
+                                                    }
                                                 }
-                                            }
-                                        }) {
+                                            },
+                                            modifier = Modifier.padding(start = 12.dp).size(32.dp)
+                                        ) {
                                             Icon(
-                                                imageVector = Icons.Default.KeyboardDoubleArrowLeft,
+                                                painter = painterResource(id = R.drawable.ic_undo_return),
                                                 contentDescription = stringResource(id = R.string.back_to_current_month),
-                                                modifier = Modifier.size(28.dp)
+                                                modifier = Modifier.size(24.dp),
+                                                tint = MaterialTheme.colorScheme.onPrimary
                                             )
                                         }
                                     }

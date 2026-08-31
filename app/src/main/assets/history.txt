@@ -1,3 +1,4 @@
+2026-08-31 - v3.1.22 Retoques visuales: Cal. Mensual unifica días pasados también en el mes actual
 2026-08-31 - v3.1.21 Retoques visuales: Punto de permisos en Ajustes. Iconos sin relleno. Fondo de selección en menú lateral
 2026-08-30 - v3.1.20 Cambios en color de fondo en días de meses pasados. Borde día actual reforzado en modo claro
 2026-08-30 - v3.1.19 Limpieza de strings en todos los idiomas
