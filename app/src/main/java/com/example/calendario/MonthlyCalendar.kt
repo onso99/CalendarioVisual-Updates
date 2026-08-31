@@ -138,10 +138,6 @@ fun MonthlyCalendar(
         days.chunked(7).filter { week -> week.any { it.second } }
     }
 
-    val isFullPastMonth = remember(currentMonth, today) {
-        currentMonth.isBefore(YearMonth.from(today))
-    }
-
     Column(
         Modifier
             .fillMaxWidth()
@@ -225,23 +221,30 @@ fun MonthlyCalendar(
                 week.forEachIndexed { indexInWeek, (date, isCurrentMonth) ->
                     val isToday = date == today && isCurrentMonth
                     val isPastDay = isCurrentMonth && date.isBefore(today)
-                    val isInactive = !isCurrentMonth || isPastDay
                     
                     val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
 
-                    val cellBackground = remember(isInactive, isCurrentMonth, isFullPastMonth, baseCellBackground) {
-                        if (isFullPastMonth && isCurrentMonth) {
-                            // En meses pasados, los días del propio mes son ligeramente más claros que el "inactivo" normal
-                            val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
-                            val alpha = if (isColorDark(baseCellBackground, Color.Black)) 0.04f else 0.02f
-                            overlay.copy(alpha = alpha).compositeOver(baseCellBackground)
-                        } else if (isInactive) {
-                            val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
-                            overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
-                        } else {
-                            baseCellBackground
+                    val cellBackground = remember(isPastDay, isCurrentMonth, baseCellBackground) {
+                        when {
+                            isPastDay -> {
+                                // Día pasado (del propio mes visualizado): Aplicamos el tono más claro
+                                val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
+                                val alpha = if (isColorDark(baseCellBackground, Color.Black)) 0.04f else 0.02f
+                                overlay.copy(alpha = alpha).compositeOver(baseCellBackground)
+                            }
+                            !isCurrentMonth -> {
+                                // Día de relleno (fuera del mes): Aplicamos el tono oscuro/inactivo normal
+                                val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
+                                overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
+                            }
+                            else -> {
+                                // Día presente o futuro del mes actual: Fondo normal
+                                baseCellBackground
+                            }
                         }
                     }
+
+                    val isInactive = !isCurrentMonth || isPastDay
 
                     val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
                     val dayHasEventsWithTitle = remember(dayEvents) { dayEvents.any { it.title.isNotBlank() } }
