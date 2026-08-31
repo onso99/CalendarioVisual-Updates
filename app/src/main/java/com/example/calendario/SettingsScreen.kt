@@ -661,9 +661,26 @@ fun SettingsScreen(
                             context.startActivity(intent)
                         }
                         "alarms" -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? android.app.AlarmManager
+                            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                alarmManager?.canScheduleExactAlarms() ?: false
+                            } else true
+
+                            if (!canScheduleExact) {
+                                // Caso 1: Falta permiso de alarmas exactas (Android 12+)
+                                @SuppressLint("NewApi")
                                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.fromParts("package", context.packageName, null) }
                                 context.startActivity(intent)
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                // Caso 2: Alarmas exactas OK, pero falta Full Screen Intent (Android 14+)
+                                try {
+                                    val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply { data = Uri.fromParts("package", context.packageName, null) }
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {
+                                    // Fallback preventivo a la info de la app
+                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }
+                                    context.startActivity(intent)
+                                }
                             }
                         }
                         "drive" -> {
