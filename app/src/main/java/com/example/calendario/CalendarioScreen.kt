@@ -27,22 +27,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.BeachAccess
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -61,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
@@ -147,6 +141,32 @@ fun CalendarioScreen(
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
+
+    // --- LÓGICA DE PUNTO DE PERMISOS (Sincronizada con SettingsScreen) ---
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) permissionsUpdateTrigger++ }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val permissionPointColor by remember(permissionsUpdateTrigger) {
+        derivedStateOf {
+            val calStatus = PermissionChecker.getCalendarStatus(context)
+            val notifStatus = PermissionChecker.getNotificationsStatus(context)
+            val alarmStatus = PermissionChecker.getAlarmsStatus(context)
+            val driveStatus = PermissionChecker.getGoogleDriveStatus(context)
+            val batteryStatus = PermissionChecker.getBatteryOptimizationStatus(context)
+
+            when {
+                calStatus == PermissionStatus.DENIED -> Color.Red
+                notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED || 
+                driveStatus == PermissionStatus.DENIED || batteryStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
+                else -> Color.Green
+            }
+        }
+    }
 
     val calendarPermissionsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -450,8 +470,20 @@ fun CalendarioScreen(
                         color = CalendarioTheme.colors.cabecera
                     )
                     
+                    val isBgDark = androidx.core.graphics.ColorUtils.calculateLuminance(CalendarioTheme.colors.settingsBackground.toArgb()) < 0.5
+                    val selectedAlpha = 0.12f
+
+                    val baseSelectedColor = if (isBgDark) {
+                        val hsl = FloatArray(3)
+                        androidx.core.graphics.ColorUtils.colorToHSL(CalendarioTheme.colors.cabecera.toArgb(), hsl)
+                        hsl[2] = (hsl[2] + 0.15f).coerceAtMost(1f) // Aumento del 15% en luminosidad
+                        Color(androidx.core.graphics.ColorUtils.HSLToColor(hsl))
+                    } else {
+                        CalendarioTheme.colors.cabecera
+                    }
+
                     val drawerItemColors = NavigationDrawerItemDefaults.colors(
-                        selectedContainerColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.12f),
+                        selectedContainerColor = baseSelectedColor.copy(alpha = selectedAlpha),
                         selectedIconColor = CalendarioTheme.colors.textSystem,
                         selectedTextColor = CalendarioTheme.colors.textSystem,
                         unselectedIconColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.9f),
@@ -465,7 +497,7 @@ fun CalendarioScreen(
                             viewMode = CalendarViewMode.MONTHLY
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Default.CalendarMonth, null) },
+                        icon = { Icon(Icons.Outlined.CalendarMonth, null) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -476,7 +508,7 @@ fun CalendarioScreen(
                             viewMode = CalendarViewMode.YEARLY
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Default.CalendarToday, null) },
+                        icon = { Icon(Icons.Outlined.CalendarToday, null) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -530,7 +562,7 @@ fun CalendarioScreen(
                             showManageCalendarsScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Default.Event, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.Event, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -548,7 +580,7 @@ fun CalendarioScreen(
                             showHolidayManagerScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Default.BeachAccess, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.BeachAccess, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -560,7 +592,7 @@ fun CalendarioScreen(
                             showBackupScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Default.CloudUpload, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(painter = painterResource(id = R.drawable.ic_cloud_backup_outlined), contentDescription = null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(24.dp)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -570,15 +602,25 @@ fun CalendarioScreen(
                         color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
                     )
 
-                    // --- SECCIÓN: OTROS (Ajustes, Ayuda, Acerca de) ---
+                    // --- SECCIÓN: OTROS (Ajustes, Ayuda) ---
                     NavigationDrawerItem(
-                        label = { Text(stringResource(id = R.string.settings)) },
+                        label = { 
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(id = R.string.settings), modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .size(8.dp)
+                                        .background(permissionPointColor, CircleShape)
+                                )
+                            }
+                        },
                         selected = false,
                         onClick = { 
                             showSettingsScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Default.Settings, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.Settings, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
