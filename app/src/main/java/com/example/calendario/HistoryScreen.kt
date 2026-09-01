@@ -103,7 +103,7 @@ fun HistoryScreen(onBack: () -> Unit) {
             val screenHeight = maxHeight
             val screenHeightPx = constraints.maxHeight.toFloat()
             
-            // OPTIMIZACIÃ“N DE ANCHO: Menos relleno lateral para dar mÃ¡s espacio al texto
+            // OPTIMIZACIÓN DE ANCHO: Menos relleno lateral para dar más espacio al texto
             Column(
                 modifier = Modifier
                     .fillMaxSize()

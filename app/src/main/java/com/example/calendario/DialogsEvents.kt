@@ -586,7 +586,7 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                             ) 
                         }
                         
-                        // Icono dinÃ¡mico a la derecha (Mutante)
+                        // Icono dinámico a la derecha (Mutante)
                         Box(
                             modifier = Modifier.size(32.dp).offset(y = (-2).dp),
                             contentAlignment = Alignment.Center
@@ -672,7 +672,7 @@ fun SelectWidgetCalendarsDialog(
                     text = stringResource(id = R.string.widget_min_calendar_error),
                     fontSize = 12.sp,
                     color = Color.Red.copy(alpha = errorAlpha),
-                    modifier = Modifier.offset(y = (-16).dp) // Imitamos el offset del diÃ¡logo global
+                    modifier = Modifier.offset(y = (-16).dp) // Imitamos el offset del diálogo global
                 )
             }
         },

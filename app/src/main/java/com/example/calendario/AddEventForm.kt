@@ -348,7 +348,7 @@ fun AddEventForm(
                         val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
                         Box(
                             modifier = Modifier
-                                .size(36.dp) // Un poco mÃ¡s grande para destacar
+                                .size(36.dp) // Un poco más grande para destacar
                                 .clip(CircleShape)
                                 .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
                                 .border(
