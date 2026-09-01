@@ -696,21 +696,14 @@ fun AddEventScreen(
 
     if (showStartTimePickerDialog) {
         TimePickerDialog(onDismissRequest = { showStartTimePickerDialog = false }, onConfirm = { hour, minute ->
+            val oldDuration = Duration.between(startDate, endDate)
             val newTime = LocalTime.of(hour, minute)
-            startDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
+            val newStartDate = LocalDateTime.of(startDate.toLocalDate(), newTime)
             
-            if (!isLongPeriod) {
-                // DIRECCIÓN INTELIGENTE: Al cambiar el inicio, ajustamos el fin para que mantenga 
-                // la lógica de un solo día o cruce de medianoche según la hora actual de fin.
-                val currentEndTime = endDate.toLocalTime()
-                endDate = if (currentEndTime.isAfter(newTime)) {
-                    LocalDateTime.of(startDate.toLocalDate(), currentEndTime)
-                } else {
-                    LocalDateTime.of(startDate.toLocalDate().plusDays(1), currentEndTime)
-                }
-            } else {
-                if (startDate.isAfter(endDate)) endDate = startDate.plusMinutes(30)
-            }
+            // LÓGICA DE MOVIMIENTO DE BLOQUE: Al cambiar el inicio, desplazamos el fin para mantener la duración
+            startDate = newStartDate
+            endDate = newStartDate.plus(oldDuration)
+            
             showStartTimePickerDialog = false
         }, initialHour = startDate.hour, initialMinute = startDate.minute)
     }
