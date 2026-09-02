@@ -628,7 +628,31 @@ fun SettingsScreen(
         if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, it.toArgb()) }; showWidgetTodayEventColorPalette = false }) }
         if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, it.toArgb()) }; showWidgetBackgroundColorPalette = false }) }
         if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) } ) }
-        if (showExportDialog) { ExportThemeDialog(onDismissRequest = { showExportDialog = false }, onConfirm = { newName -> showExportDialog = false; appPrefs.edit { putString("temp_export_name", newName) }; exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "application/json"; putExtra(Intent.EXTRA_TITLE, "${newName}.json") }) }) }
+        if (showExportDialog) { 
+            val cleanId = lightThemeName?.removeSuffix("***") ?: "theme_1"
+            val bundled = remember(cleanId) {
+                BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == cleanId }
+            }
+            val suggestedName = if (bundled != null) {
+                stringResource(id = (bundled["themeManifest"] as Map<*, *>)["nameRes"] as Int)
+            } else {
+                cleanId
+            }
+
+            ExportThemeDialog(
+                initialName = suggestedName,
+                onDismissRequest = { showExportDialog = false }, 
+                onConfirm = { newName -> 
+                    showExportDialog = false
+                    appPrefs.edit { putString("temp_export_name", newName) }
+                    exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "${newName}.json") 
+                    }) 
+                }
+            ) 
+        }
         if (showWidgetCalendarDialog) { 
             val appActiveCalendars = uiState.availableCalendars.filter { uiState.selectedCalendarIds.contains(it.id) }
             val sanitizedInitialIds = pendingWidgetCalendarIds.filter { id -> appActiveCalendars.any { it.id == id } }.toSet()
@@ -717,8 +741,8 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun ExportThemeDialog(onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
-    var text by remember { mutableStateOf("") }
+private fun ExportThemeDialog(initialName: String, onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
+    var text by remember { mutableStateOf(initialName) }
     AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.export_theme_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text(stringResource(id = R.string.theme_name)) }, singleLine = true, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.export), onClick = { onConfirm(text.ifBlank { "nuevo_tema" }) }, enabled = text.isNotBlank()) }, dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) })
 }
 
