@@ -449,6 +449,7 @@ suspend fun mergeHistoryWithSystemData(
     val holidayAdjustments = loadHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
     val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
+    val manualHolidaysAdns = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }.associate { it.date to Festivo.generateAdn(it.date, it.title, null) }
 
     val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
     val fuzzySystemMap = systemEvents.associateBy { it.fuzzyAdn }
@@ -457,7 +458,7 @@ suspend fun mergeHistoryWithSystemData(
     val systemCurrentAdnMap = systemEvents.filter { it.id > 0 }.associateBy { "${it.id}_${it.date}" }
 
     (systemEvents + cachedHistory).asSequence()
-        .distinctBy { it.adn } // Cada día de evento largo mantiene su ADN único (Seguridad v3.0.21)
+        .distinctBy { it.adn } // Cada día de evento largo o manual mantiene su ADN único
         .filter { event ->
             // A) Filtro de Seguridad
             if (event.isDeleted || (event.id in deletedIds)) return@filter false
@@ -467,15 +468,23 @@ suspend fun mergeHistoryWithSystemData(
 
             // C) SANEAMIENTO DE DUPLICADOS (FASE 1):
             // Si el evento está en Room pero el sistema dice que para esa ID+Fecha ahora hay un ADN distinto
-            // (ej. has editado la hora), descartamos la versión vieja de Room inmediatamente.
             if (event.id > 0) {
                 val currentSystemVersion = systemCurrentAdnMap["${event.id}_${event.date}"]
                 if (currentSystemVersion != null && currentSystemVersion.adn != event.adn) {
                     return@filter false // Es una versión obsoleta (duplicado)
                 }
             }
+            
+            // D) SANEAMIENTO DE FESTIVOS MANUALES (ID -1):
+            // Evitamos que queden "zombies" de festivos manuales si el ADN ha cambiado (ej. cambio de nombre)
+            if (event.id == -1L && event.isFromHolidaySource) {
+                val currentManualAdn = manualHolidaysAdns[event.date]
+                if (currentManualAdn != null && currentManualAdn != event.adn) {
+                    return@filter false
+                }
+            }
 
-            // D) Saneamiento de huérfanos manuales
+            // E) Saneamiento de huérfanos manuales
             if (!systemKeys.contains(event.adn) && !fuzzySystemMap.containsKey(event.fuzzyAdn)) {
                 if (event.id < 0) return@filter false
             }

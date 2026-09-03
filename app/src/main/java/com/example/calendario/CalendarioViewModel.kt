@@ -304,9 +304,22 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun updateCleaningCandidates() {
-        val ghosts = _uiState.value.eventsByDate.values.flatten().filter { it.isGhost }.map { SearchItem.Event(it) }
+        val allEvents = _uiState.value.eventsByDate.values.flatten()
+        val ghosts = allEvents.filter { it.isGhost }.map { SearchItem.Event(it) }
         val emptyNotes = _uiState.value.dailyNotes.values.filter { it.content.isBlank() }.map { SearchItem.Note(it) }
-        val candidates = (ghosts + emptyNotes).sortedBy { it.date }
+        
+        // Detectar duplicados de festivos manuales (ID -1) en el mismo día
+        val manualHolidayDuplicates = allEvents
+            .filter { it.id == -1L && it.isFromHolidaySource }
+            .groupBy { it.date }
+            .filter { it.value.size > 1 }
+            .flatMap { (_, list) -> 
+                // Sugerimos borrar todos excepto el que tenga el nombre más largo (probablemente el corregido)
+                list.sortedByDescending { it.title.length }.drop(1) 
+            }
+            .map { SearchItem.Event(it) }
+
+        val candidates = (ghosts + emptyNotes + manualHolidayDuplicates).sortedBy { it.date }
         _uiState.update { it.copy(cleaningCandidates = candidates) }
     }
 

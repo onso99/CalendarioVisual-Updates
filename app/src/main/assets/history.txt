@@ -1,3 +1,4 @@
+2026-09-02 - v3.1.27 Guardar Tema sugiere el nombre del tema actual en el diálogo
 2026-09-01 - v3.1.26 Consolidación de lógica temporal: Cambiar el inicio (fecha u hora) desplaza el bloque completo; cambiar el fin modifica la duración
 2026-09-01 - v3.1.25 Mejora de usabilidad: Al cambiar el inicio del evento se mantiene la duración desplazando automáticamente el fin
 2026-08-31 - v3.1.24 Permisos Alarmas: el enlace dirige al ajuste que falta según la versión de android

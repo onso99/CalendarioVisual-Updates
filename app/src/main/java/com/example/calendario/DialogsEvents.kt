@@ -220,7 +220,7 @@ fun DayEventsDialog(
                 // --- 2. LISTA DE EVENTOS (Ahora empieza inmediatamente) ---
                 if (events.isNotEmpty()) {
                     LazyColumn(Modifier.heightIn(max = 320.dp)) {
-                        items(events, key = { it.id.toString() + "_" + it.date.toString() + "_" + it.startTime }) { festivo ->
+                        items(events, key = { it.adn }) { festivo ->
                             val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                             val esCumpleanos = festivo.isBirthday && !esFestivo
                             val normalizedTitle = festivo.title.unaccent().lowercase()
