@@ -252,10 +252,10 @@ fun MonthlyCalendar(
                     val dayColor = remember(date, isInactive, dayEvents, workingDayDates, themeColors) {
                         val isForcedWorkingDay = workingDayDates.contains(date)
                         val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                        val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
+                        val isSunday = date.dayOfWeek == DayOfWeek.SUNDAY
 
                         val baseColor = when {
-                            isHoliday || isSundayNonHoliday -> themeColors.textSundayHoliday
+                            isHoliday || isSunday -> themeColors.textSundayHoliday
                             else -> themeColors.textSystem
                         }
 

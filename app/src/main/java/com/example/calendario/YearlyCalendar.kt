@@ -218,11 +218,11 @@ fun MiniMonthCalendar(
                                     val dayEvents = eventsByDate[date].orEmpty()
                                     val isForcedWorkingDay = workingDayDates.contains(date)
                                     val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                                    val isSundayNonHoliday = !isForcedWorkingDay && date.dayOfWeek == DayOfWeek.SUNDAY && !isHoliday
+                                    val isSunday = date.dayOfWeek == DayOfWeek.SUNDAY
 
                                     val color = when {
                                         isToday -> themeColors.textSystem
-                                        isHoliday || isSundayNonHoliday -> themeColors.textSundayHoliday
+                                        isHoliday || isSunday -> themeColors.textSundayHoliday
                                         else -> themeColors.textSystem
                                     }
                                     val weight = if (isToday) FontWeight.Bold else FontWeight.Normal
