@@ -1,3 +1,5 @@
+2026-09-03 - v3.1.31 Implementada importación y exportación de Festivos Locales mediante formato propietario .cvo
+2026-09-03 - v3.1.30 Rediseño del Gestor de Festivos: Nueva lista de dos líneas con prioridad semántica y formato de fecha descriptivo
 2026-09-03 - v3.1.29 Jerarquía visual: Los domingos mantienen su color aunque se marquen como laborables para permitir la limpieza de la lista de eventos
 2026-09-03 - v3.1.28 Corrección de duplicados y blindaje de interfaz: Sincronización real de festivos en la nube y eliminación de cierres por claves duplicadas
 2026-09-02 - v3.1.27 Guardar Tema sugiere el nombre del tema actual en el diálogo

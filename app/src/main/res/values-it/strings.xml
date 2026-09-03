@@ -330,5 +330,9 @@
     <string name="other_calendars">Tutti i calendari</string>
     <string name="monthly_view">Mensile</string>
     <string name="yearly_view">Annuale</string>
+    <string name="holidays_imported_successfully">Festività importate con successo.</string>
+    <string name="error_reading_holidays_file">Errore durante la lettura del file delle festività.</string>
+    <string name="error_saving_holidays_file">Errore durante il salvataggio del file delle festività.</string>
+    <string name="holidays_exported_successfully">Festività esportate con successo</string>
 </resources>
 

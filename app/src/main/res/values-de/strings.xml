@@ -329,5 +329,9 @@
     <string name="other_calendars">Alle Kalender</string>
     <string name="monthly_view">Monatlich</string>
     <string name="yearly_view">Jährlich</string>
+    <string name="holidays_imported_successfully">Feiertage erfolgreich importiert.</string>
+    <string name="error_reading_holidays_file">Fehler beim Lesen der Feiertagsdatei.</string>
+    <string name="error_saving_holidays_file">Fehler beim Speichern der Feiertagsdatei.</string>
+    <string name="holidays_exported_successfully">Feiertage erfolgreich exportiert</string>
 </resources>
 

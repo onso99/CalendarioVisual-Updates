@@ -67,6 +67,17 @@
                 <data android:pathPattern=".*\\.ics" />
             </intent-filter>
 
+            <!-- Filtro para abrir archivos .cvo (Calendario Visual Objeto) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.cvo" />
+            </intent-filter>
+
             <!-- Este filtro le dice al sistema que somos una app de alarmas -->
             <intent-filter>
                 <action android:name="android.intent.action.SET_ALARM" />

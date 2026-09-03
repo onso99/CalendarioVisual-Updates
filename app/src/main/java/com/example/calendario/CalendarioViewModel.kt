@@ -5,6 +5,7 @@ package com.example.calendario
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -309,7 +310,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val emptyNotes = _uiState.value.dailyNotes.values.filter { it.content.isBlank() }.map { SearchItem.Note(it) }
         
         // Detectar duplicados de festivos manuales (ID -1) en el mismo día
-        val manualHolidayDuplicates = allEvents
+        val manualHolidayDuplicates = allEvents.asSequence()
             .filter { it.id == -1L && it.isFromHolidaySource }
             .groupBy { it.date }
             .filter { it.value.size > 1 }
@@ -318,6 +319,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 list.sortedByDescending { it.title.length }.drop(1) 
             }
             .map { SearchItem.Event(it) }
+            .toList()
 
         val candidates = (ghosts + emptyNotes + manualHolidayDuplicates).sortedBy { it.date }
         _uiState.update { it.copy(cleaningCandidates = candidates) }
@@ -341,6 +343,47 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     is SearchItem.Note -> dao.insertNote(item.dailyNote.copy(content = "", isDeleted = true).toEntity())
                 }
             }
+        }
+    }
+
+    fun importHolidaysFromCvo(uri: Uri, onResult: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            val success = withContext(Dispatchers.IO) {
+                try {
+                    val content = context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() } ?: return@withContext false
+                    val json = org.json.JSONObject(content)
+                    if (json.optString("tipo") != "CVO_HOLIDAYS") return@withContext false
+                    
+                    val dataArray = json.getJSONArray("ajustes")
+                    val imported = mutableListOf<HolidayAdjustment>()
+                    for (i in 0 until dataArray.length()) {
+                        val obj = dataArray.getJSONObject(i)
+                        val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
+                        imported.add(HolidayAdjustment(
+                            date = LocalDate.parse(obj.getString("fecha")),
+                            title = obj.getString("titulo"),
+                            type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
+                            originalEventId = originalId
+                        ))
+                    }
+
+                    val current = loadHolidayAdjustments(context).toMutableList()
+                    imported.forEach { imp ->
+                        current.removeAll { it.date == imp.date }
+                        current.add(imp)
+                    }
+                    saveHolidayAdjustments(context, current)
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+            }
+            if (success) {
+                refreshAdjustments()
+                refreshData()
+            }
+            onResult(success, if (success) null else "Error al importar archivo")
         }
     }
 

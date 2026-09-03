@@ -330,5 +330,9 @@
     <string name="other_calendars">All calendars</string>
     <string name="monthly_view">Monthly</string>
     <string name="yearly_view">Yearly</string>
+    <string name="holidays_imported_successfully">Holidays imported successfully.</string>
+    <string name="error_reading_holidays_file">Error reading holidays file.</string>
+    <string name="error_saving_holidays_file">Error saving holidays file.</string>
+    <string name="holidays_exported_successfully">Holidays exported successfully</string>
 </resources>
 

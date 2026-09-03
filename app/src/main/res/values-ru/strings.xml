@@ -329,5 +329,9 @@
     <string name="other_calendars">Все календари</string>
     <string name="monthly_view">Ежемесячно</string>
     <string name="yearly_view">Ежегодно</string>
+    <string name="holidays_imported_successfully">Праздники успешно импортированы.</string>
+    <string name="error_reading_holidays_file">Ошибка при чтении файла праздников.</string>
+    <string name="error_saving_holidays_file">Ошибка при сохранении файла праздников.</string>
+    <string name="holidays_exported_successfully">Праздники успешно экспортированы</string>
 </resources>
 

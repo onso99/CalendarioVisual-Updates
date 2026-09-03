@@ -329,5 +329,9 @@
     <string name="other_calendars">Tous les calendriers</string>
     <string name="monthly_view">Mensuel</string>
     <string name="yearly_view">Annuel</string>
+    <string name="holidays_imported_successfully">Jours fériés importés avec succès.</string>
+    <string name="error_reading_holidays_file">Erreur lors de la lecture du fichier des jours fériés.</string>
+    <string name="error_saving_holidays_file">Erreur lors de l\'enregistrement du fichier des jours fériés.</string>
+    <string name="holidays_exported_successfully">Jours fériés exportés avec succès</string>
 </resources>
 

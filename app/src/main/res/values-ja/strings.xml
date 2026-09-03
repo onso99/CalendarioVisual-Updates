@@ -329,5 +329,9 @@
     <string name="other_calendars">すべてのカレンダー</string>
     <string name="monthly_view">月間</string>
     <string name="yearly_view">年間</string>
+    <string name="holidays_imported_successfully">祝日が正常にインポートされました。</string>
+    <string name="error_reading_holidays_file">祝日ファイルの読み込みエラー。</string>
+    <string name="error_saving_holidays_file">祝日ファイルの保存エラー。</string>
+    <string name="holidays_exported_successfully">祝日が正常にエクスポートされました</string>
 </resources>
 

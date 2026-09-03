@@ -328,5 +328,9 @@
     <string name="other_calendars">Egutegi guztiak</string>
     <string name="monthly_view">Hilabetekoa</string>
     <string name="yearly_view">Urtekoa</string>
+    <string name="holidays_imported_successfully">Jai-egunak ongi inportatu dira.</string>
+    <string name="error_reading_holidays_file">Errorea jai-egunen fitxategia irakurtzean.</string>
+    <string name="error_saving_holidays_file">Errorea jai-egunen fitxategia gordetzean.</string>
+    <string name="holidays_exported_successfully">Jai-egunak ongi esportatu dira</string>
 </resources>
 

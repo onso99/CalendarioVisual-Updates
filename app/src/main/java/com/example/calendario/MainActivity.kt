@@ -9,6 +9,7 @@ import android.content.res.Configuration
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
@@ -106,9 +107,20 @@ class MainActivity : AppCompatActivity() {
         val data: Uri? = intent?.data
 
         if (Intent.ACTION_VIEW == action && data != null) {
-            val event = IcsHelper.parseIcs(this, data)
-            if (event != null) {
-                calendarioViewModel.setImportedEvent(event)
+            val path = data.path ?: ""
+            if (path.endsWith(".cvo") || data.toString().contains(".cvo") || intent.type == "application/octet-stream") {
+                calendarioViewModel.importHolidaysFromCvo(data) { success, error ->
+                    if (success) {
+                        Toast.makeText(this, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, error ?: "Error al importar", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } else {
+                val event = IcsHelper.parseIcs(this, data)
+                if (event != null) {
+                    calendarioViewModel.setImportedEvent(event)
+                }
             }
         }
     }
