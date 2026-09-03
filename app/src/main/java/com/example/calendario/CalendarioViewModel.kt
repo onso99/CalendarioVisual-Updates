@@ -27,7 +27,7 @@ data class CalendarioUiState(
     val isRestoring: Boolean = false,
     val dailyNotes: Map<String, DailyNote> = emptyMap(),
     val cleaningCandidates: List<SearchItem> = emptyList(),
-    val workingDayDates: Set<LocalDate> = emptySet()
+    val workingDayDates: Set<LocalDate> = emptySet(),
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -49,7 +49,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             // OBSERVACIÓN REACTIVA: La UI se actualiza sola cuando cambia la DB
             combine(dao.getAllEvents(), dao.getAllNotes()) { entities, noteEntities ->
                 val events = entities.map { it.toFestivo() }
-                val notes = noteEntities.associate { it.dateStr to it.toDailyNote() }
+                val notes = noteEntities.associateBy { it.dateStr }.mapValues { it.value.toDailyNote() }
                 events to notes
             }.collect { (events, notes) ->
                 _uiState.update { state -> state.copy(
@@ -87,7 +87,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     fun refreshAdjustments() {
         val context = getApplication<Application>()
         val adjustments = loadHolidayAdjustments(context)
-        val workingDates = adjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
+        val workingDates = adjustments.asSequence()
+            .filter { (it.type == HolidayAdjustmentType.WORKING_DAY) && (it.originalEventId == null) }
+            .map { it.date }
+            .toSet()
         _uiState.update { it.copy(workingDayDates = workingDates) }
     }
 
@@ -119,7 +122,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 // 3. SINCRONIZACIÓN Y CURACIÓN DE SELECCIÓN
                 // Si la selección restaurada no es válida en este móvil, intentamos auto-reparar
-                val validSelectedIds = selectedIds.filter { sid -> availableCalendars.any { cal -> cal.id == sid } }.toSet()
+                val validSelectedIds = selectedIds.asSequence()
+                    .filter { sid -> availableCalendars.any { cal -> cal.id == sid } }
+                    .toSet()
                 
                 val finalSelectedIds = if (validSelectedIds.isEmpty() && selectedIds.isNotEmpty()) {
                     // SI ESTAMOS AQUÍ, ES QUE LOS IDs HAN CAMBIADO (POST-RESTAURACIÓN)
@@ -129,8 +134,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 } else {
                     validSelectedIds.ifEmpty { 
                         // REGLA FASE-1 (v3.1.05): En primera instalación, solo el principal/favorito seleccionado
-                        if (favoriteId != null) setOf(favoriteId)
-                        else availableCalendars.filter { it.canModify }.map { it.id }.toSet() 
+                        favoriteId?.let { setOf(it) } ?: availableCalendars.filter { it.canModify }.map { it.id }.toSet() 
                     }
                 }
                 
@@ -360,12 +364,14 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     for (i in 0 until dataArray.length()) {
                         val obj = dataArray.getJSONObject(i)
                         val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
-                        imported.add(HolidayAdjustment(
-                            date = LocalDate.parse(obj.getString("fecha")),
-                            title = obj.getString("titulo"),
-                            type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
-                            originalEventId = originalId
-                        ))
+                        imported.add(
+                            HolidayAdjustment(
+                                date = LocalDate.parse(obj.getString("fecha")),
+                                title = obj.getString("titulo"),
+                                type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
+                                originalEventId = originalId,
+                            )
+                        )
                     }
 
                     val current = loadHolidayAdjustments(context).toMutableList()

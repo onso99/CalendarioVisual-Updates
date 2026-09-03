@@ -90,44 +90,45 @@ fun HolidayManagerScreen(
     var adjustmentToDelete by remember { mutableStateOf<HolidayAdjustment?>(null) }
 
     val importLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri ->
-            uri?.let {
-                try {
-                    val content = context.contentResolver.openInputStream(it)?.use { r -> r.bufferedReader().readText() } ?: return@let
-                    val json = JSONObject(content)
-                    if (json.optString("tipo") != "CVO_HOLIDAYS") {
-                        Toast.makeText(context, R.string.incompatible_theme_file, Toast.LENGTH_SHORT).show()
-                        return@let
-                    }
-                    val dataArray = json.getJSONArray("ajustes")
-                    val importedAdjustments = mutableListOf<HolidayAdjustment>()
-                    for (i in 0 until dataArray.length()) {
-                        val obj = dataArray.getJSONObject(i)
-                        val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
-                        importedAdjustments.add(HolidayAdjustment(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            try {
+                val content = context.contentResolver.openInputStream(it)?.use { r -> r.bufferedReader().readText() } ?: return@let
+                val json = JSONObject(content)
+                if (json.optString("tipo") != "CVO_HOLIDAYS") {
+                    Toast.makeText(context, R.string.incompatible_theme_file, Toast.LENGTH_SHORT).show()
+                    return@let
+                }
+                val dataArray = json.getJSONArray("ajustes")
+                val importedAdjustments = mutableListOf<HolidayAdjustment>()
+                for (i in 0 until dataArray.length()) {
+                    val obj = dataArray.getJSONObject(i)
+                    val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
+                    importedAdjustments.add(
+                        HolidayAdjustment(
                             date = LocalDate.parse(obj.getString("fecha")),
                             title = obj.getString("titulo"),
                             type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
-                            originalEventId = originalId
-                        ))
-                    }
-
-                    val currentAdjustments = loadHolidayAdjustments(context).toMutableList()
-                    importedAdjustments.forEach { imported ->
-                        currentAdjustments.removeAll { adj -> adj.date == imported.date }
-                        currentAdjustments.add(imported)
-                    }
-                    saveHolidayAdjustments(context, currentAdjustments)
-                    adjustments = currentAdjustments
-                    onRefresh()
-                    Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-                } catch (_: Exception) {
-                    Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
+                            originalEventId = originalId,
+                        )
+                    )
                 }
+
+                val currentAdjustments = loadHolidayAdjustments(context).toMutableList()
+                importedAdjustments.forEach { imported ->
+                    currentAdjustments.removeAll { adj -> adj.date == imported.date }
+                    currentAdjustments.add(imported)
+                }
+                saveHolidayAdjustments(context, currentAdjustments)
+                adjustments = currentAdjustments
+                onRefresh()
+                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+            } catch (_: Exception) {
+                Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
             }
         }
-    )
+    }
 
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
