@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -350,41 +351,51 @@ fun HolidayAdjustmentItem(
 ) {
     val isGoogle = adjustment.originalEventId != null && adjustment.originalEventId >= 0L
     val isPastYear = adjustment.date.year < LocalDate.now().year
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    val dateFormatter = remember(locale) { DateTimeFormatter.ofPattern("EEEE, d MMM", locale) }
+    val formattedDate = remember(adjustment.date, locale) { 
+        adjustment.date.format(dateFormatter).replaceFirstChar { it.uppercase(locale) } 
+    }
     
+    val typeLabel = stringResource(id = if (adjustment.type == HolidayAdjustmentType.HOLIDAY) R.string.festivo else R.string.laborable)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(12.dp),
+            .padding(vertical = 10.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            val secondaryTextColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+            // Línea 1: Título del festivo
             Text(
-                text = "${adjustment.date.format(DateTimeFormatter.ofPattern("dd/MM/yy"))} ${adjustment.title}",
-                fontSize = 14.sp,
+                text = adjustment.title,
+                fontSize = 16.sp,
                 color = when {
-                    isGoogle -> secondaryTextColor
-                    isPastYear -> secondaryTextColor.copy(alpha = 0.4f)
+                    isPastYear -> CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
                     adjustment.type == HolidayAdjustmentType.HOLIDAY -> festivoColor
                     else -> CalendarioTheme.colors.textSystem
                 },
                 fontWeight = if (isPastYear) FontWeight.Normal else FontWeight.Medium,
-                fontStyle = if (isPastYear) FontStyle.Italic else FontStyle.Normal
+                fontStyle = if (isPastYear) FontStyle.Italic else FontStyle.Normal,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            val sourceLegend = if (isGoogle) stringResource(id = R.string.read_only) else stringResource(id = R.string.holiday_manager_title)
+            // Línea 2: Fecha descriptiva + Tipo (Festivo/Laborable)
             Text(
-                text = "[${stringResource(id = if (adjustment.type == HolidayAdjustmentType.HOLIDAY) R.string.festivo else R.string.laborable)}] - $sourceLegend",
-                fontSize = 10.sp,
-                color = secondaryTextColor
+                text = "$formattedDate • $typeLabel",
+                fontSize = 13.sp,
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         if (!isGoogle) {
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = null,
-                    tint = Color.Red, // Unificado a Rojo para consistencia de acciÃ³n
+                    tint = Color.Red.copy(alpha = 0.8f),
                     modifier = Modifier.size(20.dp)
                 )
             }
