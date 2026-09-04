@@ -447,6 +447,7 @@ fun CalendarioScreen(
             },
             onEventClick = onEventClickHandler,
             onNoteClick = onNoteClickHandler,
+            onDeleteNote = viewModel::deleteDailyNote,
             onOpenHolidayManager = { clicked ->
                 holidayForManager = clicked
                 showHolidayManagerScreen = true

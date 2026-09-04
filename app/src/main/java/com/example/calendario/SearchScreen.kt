@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -65,6 +67,7 @@ fun SearchScreen(
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
     onNoteClick: (DailyNote) -> Unit,
+    onDeleteNote: (LocalDate) -> Unit, // Nueva acción para Fase 2
     onOpenHolidayManager: (Festivo) -> Unit,
     onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>,
@@ -75,18 +78,25 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
     
-    // --- Lógica de Multiselección (Solo para eventos editables) ---
-    var selectedFestivos by remember { mutableStateOf(setOf<Festivo>()) }
+    // --- Lógica de Multiselección Unificada (v3.1.34) ---
+    var selectedItems by remember { mutableStateOf(setOf<SearchItem>()) }
     
-    // MODELO DRIVE (v3.1.34): Reiniciar selección si cambian los criterios de búsqueda (Fase 1 terminada)
+    // MODELO DRIVE (v3.1.34): Reiniciar selección si cambian los criterios de búsqueda
     LaunchedEffect(searchQuery, searchScope) {
-        selectedFestivos = emptySet()
+        selectedItems = emptySet()
     }
     
-    val isSelectionMode = selectedFestivos.isNotEmpty()
+    val isSelectionMode = selectedItems.isNotEmpty()
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
-    val shareMultipleMessage = stringResource(id = R.string.share_multiple_message, selectedFestivos.size)
+    val selectedFestivos = remember(selectedItems) { 
+        selectedItems.filterIsInstance<SearchItem.Event>().map { it.festivo }.toSet() 
+    }
+    val selectedNotes = remember(selectedItems) { 
+        selectedItems.filterIsInstance<SearchItem.Note>().map { it.dailyNote }.toSet() 
+    }
+
+    val shareMultipleMessage = stringResource(id = R.string.share_multiple_message, selectedItems.size)
     val calendarEventsSubject = stringResource(id = R.string.calendar_events_subject)
     val shareEventTitle = stringResource(id = R.string.share_event)
 
@@ -107,11 +117,11 @@ fun SearchScreen(
                         if (isSelectionMode) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = stringResource(id = R.string.selected_count_short, selectedFestivos.size),
+                                text = stringResource(id = R.string.selected_count_short, selectedItems.size),
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 18.sp
                             )
-                            IconButton(onClick = { selectedFestivos = emptySet() }) {
+                            IconButton(onClick = { selectedItems = emptySet() }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(id = R.string.clear_selection),
@@ -248,7 +258,7 @@ fun SearchScreen(
                             when (searchItem) {
                                 is SearchItem.Event -> {
                                     val festivo = searchItem.festivo
-                                    val isSelected = selectedFestivos.contains(festivo)
+                                    val isSelected = selectedItems.contains(searchItem)
                                     val isLocalHoliday = festivo.calendarId == -1L && festivo.isFromHolidaySource
                                     val calendar = availableCalendars.find { it.id == festivo.calendarId }
                                     val isReadOnlyCalendar = calendar != null && !calendar.canModify
@@ -262,7 +272,7 @@ fun SearchScreen(
                                         onEventClick = { clicked ->
                                             if (isSelectionMode) {
                                                 if (!isSpecial) {
-                                                    selectedFestivos = if (isSelected) selectedFestivos - clicked else selectedFestivos + clicked
+                                                    selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
                                                 }
                                             } else {
                                                 if (isLocalHoliday) {
@@ -272,9 +282,9 @@ fun SearchScreen(
                                                 }
                                             }
                                         },
-                                        onLongClick = { target ->
+                                        onLongClick = { 
                                             if (!isSpecial) {
-                                                selectedFestivos += target
+                                                selectedItems += searchItem
                                             }
                                         },
                                         searchScope = searchScope
@@ -282,13 +292,20 @@ fun SearchScreen(
                                 }
                                 is SearchItem.Note -> {
                                     val note = searchItem.dailyNote
+                                    val isSelected = selectedItems.contains(searchItem)
                                     NoteRow(
                                         note = note,
+                                        isSelected = isSelected,
                                         searchScope = searchScope,
                                         onClick = { 
-                                            if (!isSelectionMode) {
+                                            if (isSelectionMode) {
+                                                selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                            } else {
                                                 onNoteClick(note)
                                             }
+                                        },
+                                        onLongClick = {
+                                            selectedItems += searchItem
                                         }
                                     )
                                 }
@@ -302,7 +319,7 @@ fun SearchScreen(
 
     // --- Diálogo de Confirmación de Borrado ---
     if (showDeleteConfirmDialog) {
-        val deleteMultipleConfirmation = stringResource(id = R.string.delete_multiple_confirmation, selectedFestivos.size)
+        val deleteMultipleConfirmation = stringResource(id = R.string.delete_multiple_confirmation, selectedItems.size)
         val eventsDeletedTemplate = stringResource(id = R.string.events_deleted_count)
 
         AlertDialog(
@@ -316,35 +333,35 @@ fun SearchScreen(
                 DialogConfirmButton(
                     text = stringResource(id = R.string.delete),
                     onClick = {
-                        val eventsToDelete = selectedFestivos.filter { festivo ->
-                            availableCalendars.find { it.id == festivo.calendarId }?.canModify == true
-                        }
-                        
                         var deletedCount = 0
-                        eventsToDelete.forEach { festivo ->
+
+                        // 1. Borrar Eventos
+                        selectedFestivos.filter { festivo ->
+                            availableCalendars.find { it.id == festivo.calendarId }?.canModify == true
+                        }.forEach { festivo ->
                             try {
                                 val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, festivo.id)
                                 val rows = context.contentResolver.delete(deleteUri, null, null)
-                                
-                                // Si el sistema lo borró o si no lo encontró (fantasma), limpiamos historial
                                 if (rows > 0 || festivo.id > 0) {
                                     markEventAsDeleted(context, festivo.id)
-                                    // Limpiamos rastro total por si era una serie o excepción
                                     removeSeriesFromHistory(context, festivo.id)
                                     deletedCount++
                                 }
-                            } catch (_: Exception) {
-                                // Ignorar errores individuales
-                            }
+                            } catch (_: Exception) {}
+                        }
+
+                        // 2. Borrar Notas
+                        selectedNotes.forEach { note ->
+                            onDeleteNote(note.date)
+                            deletedCount++
                         }
                         
                         if (deletedCount > 0) {
-                            val msg = String.format(locale, eventsDeletedTemplate, deletedCount)
-                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                            onRefresh() // Refresca el calendario y la búsqueda
+                            Toast.makeText(context, R.string.holiday_updated_successfully, Toast.LENGTH_SHORT).show()
+                            onRefresh()
                         }
                         
-                        selectedFestivos = emptySet()
+                        selectedItems = emptySet()
                         showDeleteConfirmDialog = false
                     },
                     color = Color.Red
@@ -550,65 +567,98 @@ private fun EventRow(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NoteRow(
     note: DailyNote,
+    isSelected: Boolean,
     searchScope: SearchScope,
-    onClick: (DailyNote) -> Unit
+    onClick: (DailyNote) -> Unit,
+    onLongClick: (DailyNote) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     val locale = LocalConfiguration.current.locales[0]
     val neutralColor = CalendarioTheme.colors.textSystem
+    var isExpanded by remember { mutableStateOf(false) }
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 2.dp)
+            .then(
+                if (isSelected) Modifier.border(2.dp, CalendarioTheme.colors.cabecera, RoundedCornerShape(12.dp))
+                else Modifier
+            )
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick(note) }
-            .padding(horizontal = 8.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .background(if (isSelected) CalendarioTheme.colors.todayHighlightColor else Color.Transparent)
+            .combinedClickable(
+                onClick = { onClick(note) },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongClick(note)
+                }
+            )
+            .padding(horizontal = 8.dp, vertical = 10.dp)
     ) {
-        // 1. DÍA (Solo si no es vista de mes)
-        if (searchScope != SearchScope.MONTH) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // 1. DÍA (Solo si no es vista de mes)
+            if (searchScope != SearchScope.MONTH) {
+                Text(
+                    text = String.format(locale, "%02d", note.date.dayOfMonth),
+                    color = neutralColor,
+                    fontSize = 16.sp,
+                    modifier = Modifier.width(26.dp)
+                )
+            }
+
+            // 2. ICONO NOTA (Alineado con el indicador de eventos)
+            Box(
+                modifier = Modifier.width(26.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.StickyNote2,
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.6f),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+
+            Spacer(Modifier.width(1.dp))
+
+            // 3. TEXTO (Contenido de la nota resumido)
             Text(
-                text = String.format(locale, "%02d", note.date.dayOfMonth),
+                text = note.content.replace("\n", " "),
                 color = neutralColor,
                 fontSize = 16.sp,
-                modifier = Modifier.width(26.dp)
+                maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+
+            // 4. ICONO OJO (Previsualización v3.1.34)
+            IconButton(
+                onClick = { isExpanded = !isExpanded },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                    contentDescription = "Previsualizar nota",
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+        
+        // Texto expandido con scroll si es muy largo
+        if (isExpanded) {
+            Text(
+                text = note.content,
+                color = neutralColor.copy(alpha = 0.8f),
+                fontSize = 14.sp,
+                modifier = Modifier.padding(start = 26.dp, top = 8.dp, end = 32.dp)
             )
         }
-
-        // 2. ICONO NOTA (Alineado con el indicador de eventos)
-        Box(
-            modifier = Modifier.width(18.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.StickyNote2,
-                contentDescription = null,
-                tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.6f),
-                modifier = Modifier.size(14.dp)
-            )
-        }
-
-        Spacer(Modifier.width(1.dp))
-
-        // 3. TEXTO (Contenido de la nota)
-        Text(
-            text = note.content.replace("\n", " "),
-            color = neutralColor,
-            fontSize = 16.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-
-        // 4. ICONO CANDADO (Protección Opción C)
-        Icon(
-            imageVector = Icons.Default.Lock,
-            contentDescription = null,
-            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-            modifier = Modifier.padding(start = 8.dp).size(14.dp)
-        )
     }
 }
