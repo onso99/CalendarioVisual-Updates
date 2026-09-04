@@ -463,6 +463,7 @@ suspend fun mergeHistoryWithSystemData(
     
     // MAPA DE IDENTIDAD DEL SISTEMA: Para detectar si un registro de Room es obsoleto
     val systemCurrentAdnMap = systemEvents.filter { it.id > 0 }.associateBy { "${it.id}_${it.date}" }
+    val systemIds = systemEvents.filter { it.id > 0 }.map { it.id }.toSet()
 
     (systemEvents + cachedHistory).asSequence()
         .distinctBy { it.adn } // Cada día de evento largo o manual mantiene su ADN único
@@ -473,12 +474,17 @@ suspend fun mergeHistoryWithSystemData(
             // B) Filtro de Laborables
             if (workingDayIds.contains(event.id) || workingDayDates.contains(event.date)) return@filter false
 
-            // C) SANEAMIENTO DE DUPLICADOS (FASE 1):
-            // Si el evento está en Room pero el sistema dice que para esa ID+Fecha ahora hay un ADN distinto
+            // C) SANEAMIENTO DE DUPLICADOS Y SEGMENTOS (v3.1.34):
             if (event.id > 0) {
+                // Si el ID existe en el sistema pero este día/ADN concreto NO, es basura de Room (evento acortado)
+                if (systemIds.contains(event.id) && !systemKeys.contains(event.adn)) {
+                    return@filter false
+                }
+                
+                // Si la versión del sistema para hoy tiene un ADN distinto, Room es obsoleto
                 val currentSystemVersion = systemCurrentAdnMap["${event.id}_${event.date}"]
                 if (currentSystemVersion != null && currentSystemVersion.adn != event.adn) {
-                    return@filter false // Es una versión obsoleta (duplicado)
+                    return@filter false
                 }
             }
             

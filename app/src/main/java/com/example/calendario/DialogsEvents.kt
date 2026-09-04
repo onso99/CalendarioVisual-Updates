@@ -261,6 +261,16 @@ fun DayEventsDialog(
                                     withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) } + (if (festivo.age != null) " (${festivo.age})" else "")) }
                                     if (festivo.isLongPeriod) withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) { append(" (${festivo.currentDay}/${festivo.totalDays})") }
                                 }, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                                
+                                // ICONO ALARMA (v3.1.34)
+                                if (AlarmUtils.shouldShowAlarmIcon(context, festivo)) {
+                                    Icon(
+                                        imageVector = Icons.Default.NotificationsActive,
+                                        contentDescription = null,
+                                        tint = titleColor.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(16.dp).padding(top = 4.dp)
+                                    )
+                                }
                             }
                             Spacer(Modifier.height(4.dp))
                         }

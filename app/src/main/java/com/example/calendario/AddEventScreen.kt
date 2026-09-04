@@ -213,6 +213,8 @@ fun AddEventScreen(
     var initialEndDate by remember { mutableStateOf(LocalDateTime.now().plusMinutes(30)) }
     var initialRepetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var initialRepeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
+    var initialHasAlarm by remember { mutableStateOf(false) }
+    var initialAlarmTime by remember { mutableStateOf(LocalTime.of(9, 0)) }
     var isLongPeriod by remember { mutableStateOf(false) }
     var selectedColorInt by remember { mutableStateOf<Int?>(null) }
     var showCustomColorPicker by remember { mutableStateOf(false) }
@@ -264,20 +266,12 @@ fun AddEventScreen(
             hasAlarm = offset != null
             
             alarmTime = if (offset != null) {
-                if (localEventToEdit!!.isAllDay) {
-                    // Para todo el día, recuperamos desde la medianoche (ancla absoluta)
-                    LocalTime.MIDNIGHT.minusMinutes(offset.toLong())
-                } else {
-                    // Para eventos con hora, recuperamos restando el desfase al inicio
-                    startDate.toLocalTime().minusMinutes(offset.toLong())
-                }
+                // SINCRO INTELIGENTE (v3.1.34): Usamos 'isAllDay' (forzado para largos) para calcular la hora real
+                if (isAllDay) LocalTime.MIDNIGHT.minusMinutes(offset.toLong())
+                else startDate.toLocalTime().minusMinutes(offset.toLong())
             } else {
-                // Sugerencia inicial si no tenía alarma
-                if (localEventToEdit!!.isAllDay) {
-                    LocalTime.now().withSecond(0).withNano(0)
-                } else {
-                    startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
-                }
+                if (isAllDay) LocalTime.of(9, 0)
+                else startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())
             }
 
             initialTitle = title
@@ -287,6 +281,8 @@ fun AddEventScreen(
             initialEndDate = endDate
             initialRepetitionRule = repetitionRule
             initialRepeatUntilDate = repeatUntilDate
+            initialHasAlarm = hasAlarm
+            initialAlarmTime = alarmTime
         } else if (isCopying) {
             isCopying = false
         } else {
@@ -325,8 +321,8 @@ fun AddEventScreen(
             repeatCount != localEventToEdit?.repeatCount ||
             isLongPeriod != (localEventToEdit?.isLongPeriod ?: false) ||
             selectedColorInt != localEventToEdit?.customColor ||
-            hasAlarm != (AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) != null) ||
-            (hasAlarm && alarmTime != startDate.toLocalTime().minusMinutes((AlarmUtils.getAlarmOffset(context, localEventToEdit?.id ?: -1) ?: defaultAlarmOffset).toLong()))
+            hasAlarm != initialHasAlarm ||
+            (hasAlarm && alarmTime != initialAlarmTime)
         }
     }
 
@@ -687,7 +683,17 @@ fun AddEventScreen(
                     text = stringResource(R.string.accept),
                     onClick = { 
                         datePickerState.selectedDateMillis?.let { 
-                            endDate = LocalDateTime.of(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate(), endDate.toLocalTime()) 
+                            val selectedLocalDate = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                            
+                            // AUTO-DETECCIÓN DE PERIODO (v3.1.34):
+                            // Si el usuario elige la misma fecha, deja de ser periodo largo automáticamente
+                            if (isLongPeriod && (selectedLocalDate == startDate.toLocalDate())) {
+                                isLongPeriod = false
+                                // Forzamos margen de seguridad de 30 min por si desactiva 'Todo el día'
+                                endDate = startDate.plusMinutes(30)
+                            } else {
+                                endDate = LocalDateTime.of(selectedLocalDate, endDate.toLocalTime())
+                            }
                         }
                         showEndDatePickerDialog = false 
                     }

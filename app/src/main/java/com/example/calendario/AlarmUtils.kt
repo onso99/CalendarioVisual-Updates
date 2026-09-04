@@ -221,39 +221,47 @@ object AlarmUtils {
             val database = AppDatabase.getDatabase(context)
             database.calendarDao().getAllEventsSync().map { it.toFestivo() }
         }
-        val allEventIds = allEvents.map { it.id.toString() }.toSet()
+        
+        // SALVAGUARDA (v3.1.34): Si la lista está vacía, no limpiamos nada para evitar borrados accidentales 
+        // durante cargas intermedias o fallos de permisos.
+        if (allEvents.isEmpty()) {
+            LogCollector.addLog("ALARMA: Lista vacía. Abortando limpieza por seguridad.")
+            return 0
+        }
         
         val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
         val now = LocalDateTime.now()
         var purgedCount = 0
 
-        // 1. LIMPIEZA DE HUÉRFANOS Y HISTORIAL
-        LogCollector.addLog("ALARMA: Limpiando alarmas huérfanas...")
+        // 1. LIMPIEZA DE HISTORIAL Y AUTO-APAGADO
+        LogCollector.addLog("ALARMA: Sincronizando ventana...")
         prefs.edit(commit = true) {
-            // Buscamos IDs en las preferencias que ya no existan en el calendario real
             val keysInPrefs = prefs.all.keys.toList()
             keysInPrefs.forEach { eventIdStr ->
                 val eventId = eventIdStr.toLongOrNull() ?: return@forEach
+                val eventInstances = allEvents.filter { it.id == eventId }
                 
-                if (!allEventIds.contains(eventIdStr)) {
-                    // El evento ya no existe: Cancelamos en el sistema y borramos rastro
-                    cancelAlarm(context, eventId) 
+                if (eventInstances.isEmpty()) {
+                    // El evento REALMENTE ya no existe en el calendario (purgado)
+                    cancelAlarm(context, eventId)
                     remove(eventIdStr)
                     purgedCount++
-                    LogCollector.addLog("ALARMA: Purgado ID huérfano $eventId (Probablemente 'Prueba')")
                 } else {
-                    // El evento existe: Verificamos si ya pasó para auto-apagar el switch
-                    val event = allEvents.find { it.id == eventId }
-                    if (event != null && event.rrule == null) {
+                    // El evento existe: Verificamos si el bloque completo ya ha pasado
+                    val lastInstance = eventInstances.maxByOrNull { it.date }
+                    if (lastInstance != null && lastInstance.rrule == null) {
                         val offset = getAlarmOffset(context, eventId) ?: 20
-                        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
-                            event.date.atStartOfDay()
+                        val referenceDateTime = if (lastInstance.isAllDay || lastInstance.startTime == null) {
+                            lastInstance.date.atStartOfDay()
                         } else {
-                            LocalDateTime.of(event.date, event.startTime)
+                            LocalDateTime.of(lastInstance.date, lastInstance.startTime)
                         }
                         val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+                        
+                        // REGLA DE ORO (v3.1.34): Solo auto-apagamos si TODO el bloque ha quedado en el pasado
                         if (alarmDateTime.isBefore(now)) {
                             remove(eventIdStr)
+                            LogCollector.addLog("ALARMA: Auto-apagado tras fin de evento $eventId")
                         }
                     }
                 }
@@ -292,7 +300,11 @@ object AlarmUtils {
     fun shouldShowAlarmIcon(context: Context, event: Festivo): Boolean {
         val offset = getAlarmOffset(context, event.id) ?: return false
         
-        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+        // SINCRO INTELIGENTE (v3.1.34): En periodos largos, si el ajuste existe en Prefs, 
+        // mostramos la campana en todos los días del bloque para dar confianza al usuario.
+        if (event.isLongPeriod) return true
+
+        val referenceDateTime = if ((event.isAllDay) || (event.startTime == null)) {
             event.date.atStartOfDay()
         } else {
             LocalDateTime.of(event.date, event.startTime)

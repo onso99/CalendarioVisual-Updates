@@ -409,22 +409,24 @@ fun AddEventForm(
                         
                         Spacer(modifier = Modifier.width(16.dp))
                         
-                        // Valor de la hora
+                        // Valor de la hora (v3.1.34)
                         Text(
                             text = alarmTime.format(timeFormatter),
                             color = CalendarioTheme.colors.textSystem,
                             fontWeight = FontWeight.Medium,
                             fontSize = 16.sp
                         )
-                    } else {
-                        // Solo flecha si no hay valor
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                            modifier = Modifier.size(24.dp)
-                        )
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
+
+                    // Flecha indicadora (v3.1.34: Siempre visible como en otras secciones)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
 
                 // Aviso de Alarma Posterior (Solo para eventos con hora)
