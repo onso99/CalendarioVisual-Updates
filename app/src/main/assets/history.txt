@@ -1,3 +1,4 @@
+2026-09-03 - v3.1.32 Limpieza técnica y optimización: Uso de Sequences en el ViewModel y refinamiento de sintaxis en Kotlin
 2026-09-03 - v3.1.31 Implementada importación y exportación de Festivos Locales mediante formato propietario .cvo
 2026-09-03 - v3.1.30 Rediseño del Gestor de Festivos: Nueva lista de dos líneas con prioridad semántica y formato de fecha descriptivo
 2026-09-03 - v3.1.29 Jerarquía visual: Los domingos mantienen su color aunque se marquen como laborables para permitir la limpieza de la lista de eventos

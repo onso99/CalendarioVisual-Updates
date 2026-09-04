@@ -341,9 +341,9 @@ fun AddEventScreen(
                 saveError = SaveEventError.LANES_FULL
             } else {
                 val createdEventId = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
-                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt)
+                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, isLongPeriod)
                 } else {
-                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt)
+                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, isLongPeriod)
                 }
 
                 if (createdEventId != null) {
@@ -380,12 +380,24 @@ fun AddEventScreen(
                                 }
                             }
                             IconButton(onClick = {
+                                val currentEvent = localEventToEdit ?: return@IconButton
                                 isCopying = true 
+                                
+                                // 1. Preparar nuevas fechas (Hoy + duración original)
                                 val today = LocalDate.now()
                                 val duration = Duration.between(startDate, endDate)
                                 val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
+                                
                                 startDate = newStartDate
                                 endDate = newStartDate.plus(duration)
+                                
+                                // 2. Protección de Calendario: Si el original es de solo lectura, usamos el favorito
+                                val originalCalendar = editableCalendars.find { it.id == currentEvent.calendarId }
+                                if (originalCalendar?.canModify == false) {
+                                    selectedCalendar = initialCalendar // El calendario inicial es el favorito/por defecto
+                                }
+                                
+                                // 3. Soltar el ancla del evento anterior para que sea uno NUEVO
                                 localEventToEdit = null
                             }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
                             
