@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,7 +42,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.ImeAction
@@ -77,6 +77,12 @@ fun SearchScreen(
     
     // --- Lógica de Multiselección (Solo para eventos editables) ---
     var selectedFestivos by remember { mutableStateOf(setOf<Festivo>()) }
+    
+    // MODELO DRIVE (v3.1.34): Reiniciar selección si cambian los criterios de búsqueda (Fase 1 terminada)
+    LaunchedEffect(searchQuery, searchScope) {
+        selectedFestivos = emptySet()
+    }
+    
     val isSelectionMode = selectedFestivos.isNotEmpty()
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
@@ -90,111 +96,124 @@ fun SearchScreen(
 
     Scaffold(
         topBar = {
-            Column(
-                modifier = Modifier
-                    .background(CalendarioTheme.colors.cabecera)
-                    .statusBarsPadding()
-            ) {
-                if (isSelectionMode) {
-                    TopAppBar(
-                        title = { 
+            TopAppBar(
+                title = { 
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.search),
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                        if (isSelectionMode) {
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = stringResource(id = R.string.selected_count, selectedFestivos.size), 
-                                color = Color.White,
-                                fontSize = 20.sp
-                            ) 
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { selectedFestivos = emptySet() }) {
-                                Icon(Icons.Default.Close, stringResource(id = R.string.close), tint = Color.White)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { 
-                                IcsHelper.shareEvents(
-                                    context = context,
-                                    events = selectedFestivos,
-                                    shareMultipleMessage = shareMultipleMessage,
-                                    calendarEventsSubject = calendarEventsSubject,
-                                    shareEventTitle = shareEventTitle
-                                )
-                            }) {
-                                Icon(Icons.Default.Share, stringResource(id = R.string.share_event), tint = Color.White)
-                            }
-                            IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                                Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
-                    )
-                } else {
-                    TopAppBar(
-                        title = {
-                            TextField(
-                                value = searchQuery,
-                                onValueChange = onSearchQueryChange,
-                                placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)) },
-                                textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontSize = 18.sp),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                                keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    disabledContainerColor = Color.Transparent,
-                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    errorIndicatorColor = Color.Transparent
-                                ),
-                                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                                text = stringResource(id = R.string.selected_count_short, selectedFestivos.size),
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 18.sp
                             )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = onClose) {
+                            IconButton(onClick = { selectedFestivos = emptySet() }) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(id = R.string.close_search),
-                                    tint = MaterialTheme.colorScheme.onPrimary
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(id = R.string.clear_selection),
+                                    tint = Color.White.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
-                        },
-                        actions = {
-                            if (searchQuery.isNotEmpty()) {
-                                IconButton(onClick = { onSearchQueryChange("") }) {
-                                    Icon(Icons.Default.Close, stringResource(id = R.string.clear_search), tint = MaterialTheme.colorScheme.onPrimary)
-                                }
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
-                    )
-                }
-            }
+                        }
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onClose) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back),
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    if (isSelectionMode) {
+                        IconButton(onClick = { 
+                            IcsHelper.shareEvents(
+                                context = context,
+                                events = selectedFestivos,
+                                shareMultipleMessage = shareMultipleMessage,
+                                calendarEventsSubject = calendarEventsSubject,
+                                shareEventTitle = shareEventTitle
+                            )
+                        }) {
+                            Icon(Icons.Default.Share, stringResource(id = R.string.share_event), tint = Color.White)
+                        }
+                        IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                            Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
+            )
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(CalendarioTheme.colors.settingsBackground),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (!isSelectionMode) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    val scopeOptions = listOf(stringResource(id = R.string.current_month), stringResource(id = R.string.current_year), stringResource(id = R.string.all))
-                    scopeOptions.forEachIndexed { index, text ->
-                        val scopeValue = SearchScope.entries[index]
-                        val isSelected = searchScope == scopeValue
-                        TextButton(
-                            onClick = { onSearchScopeChange(scopeValue) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.2f) else Color.Transparent,
-                                contentColor = CalendarioTheme.colors.textSystem
-                            )
-                        ) { 
-                            Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+            // FASE 1 corregida: Cuadro de búsqueda integrado en el cuerpo, no en la cabecera
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .focusRequester(focusRequester),
+                placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.7f)
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { onSearchQueryChange("") }) {
+                            Icon(Icons.Default.Close, stringResource(id = R.string.clear_search), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
                         }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = CalendarioTheme.colors.cabecera,
+                    unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f),
+                    cursorColor = CalendarioTheme.colors.cabecera,
+                    focusedTextColor = CalendarioTheme.colors.textSystem,
+                    unfocusedTextColor = CalendarioTheme.colors.textSystem,
+                    focusedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    unfocusedContainerColor = CalendarioTheme.colors.fondoSecciones
+                )
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                val scopeOptions = listOf(stringResource(id = R.string.current_month), stringResource(id = R.string.current_year), stringResource(id = R.string.all))
+                scopeOptions.forEachIndexed { index, text ->
+                    val scopeValue = SearchScope.entries[index]
+                    val isSelected = searchScope == scopeValue
+                    TextButton(
+                        onClick = { onSearchScopeChange(scopeValue) },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = if (isSelected) CalendarioTheme.colors.cabecera.copy(alpha = 0.2f) else Color.Transparent,
+                            contentColor = CalendarioTheme.colors.textSystem
+                        )
+                    ) { 
+                        Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
             }

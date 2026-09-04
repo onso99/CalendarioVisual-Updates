@@ -334,5 +334,7 @@
     <string name="error_reading_holidays_file">Error en llegir el fitxer de festius.</string>
     <string name="error_saving_holidays_file">Error en desar el fitxer de festius.</string>
     <string name="holidays_exported_successfully">Festius exportats amb èxit</string>
+    <string name="selected_count_short">(%1$d)</string>
+    <string name="clear_selection">Reiniciar selecció</string>
 </resources>
 

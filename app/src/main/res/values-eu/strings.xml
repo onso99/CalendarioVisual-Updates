@@ -332,5 +332,7 @@
     <string name="error_reading_holidays_file">Errorea jai-egunen fitxategia irakurtzean.</string>
     <string name="error_saving_holidays_file">Errorea jai-egunen fitxategia gordetzean.</string>
     <string name="holidays_exported_successfully">Jai-egunak ongi esportatu dira</string>
+    <string name="selected_count_short">(%1$d)</string>
+    <string name="clear_selection">Garbitu hautapena</string>
 </resources>
 
