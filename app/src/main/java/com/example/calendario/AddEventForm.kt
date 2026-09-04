@@ -40,7 +40,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -176,6 +175,7 @@ fun AddEventForm(
                     iconResId = R.drawable.ic_all_day_24,
                     isSelected = isAllDay,
                     onClick = { onAllDayChange(!isAllDay) },
+                    enabled = !isLongPeriod, // Bloqueado si es periodo largo
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -189,7 +189,7 @@ fun AddEventForm(
                 AdaptiveDateTimeRow(
                     label = stringResource(id = R.string.start),
                     date = startDate,
-                    isAllDay = isAllDay,
+                    isAllDay = true, // Forzado visualmente
                     onDateClick = onStartDateClick,
                     onTimeClick = onStartTimeClick,
                     fontScale = fontScale
@@ -198,7 +198,7 @@ fun AddEventForm(
                 AdaptiveDateTimeRow(
                     label = stringResource(id = R.string.end),
                     date = endDate,
-                    isAllDay = isAllDay,
+                    isAllDay = true, // Forzado visualmente
                     onDateClick = onEndDateClick,
                     onTimeClick = onEndTimeClick,
                     fontScale = fontScale
@@ -564,7 +564,8 @@ private fun EventModeChip(
     iconResId: Int,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -572,6 +573,7 @@ private fun EventModeChip(
     // AnimaciÃ³n de color para el flash parpadeante
     val backgroundColor by animateColorAsState(
         targetValue = when {
+            !enabled -> Color.Transparent
             isPressed -> CalendarioTheme.colors.cabecera.copy(alpha = 0.28f)
             isSelected -> CalendarioTheme.colors.cabecera.copy(alpha = 0.12f)
             else -> Color.Transparent
@@ -580,8 +582,17 @@ private fun EventModeChip(
         label = "chipFlash"
     )
 
-    val contentColor = if (isSelected) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem
-    val borderColor = if (isSelected) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+    val contentColor = when {
+        !enabled -> CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
+        isSelected -> CalendarioTheme.colors.cabecera
+        else -> CalendarioTheme.colors.textSystem
+    }
+
+    val borderColor = when {
+        !enabled -> CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+        isSelected -> CalendarioTheme.colors.cabecera
+        else -> CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+    }
 
     Box(
         modifier = modifier
@@ -592,6 +603,7 @@ private fun EventModeChip(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
+                enabled = enabled,
                 onClick = onClick
             ),
         contentAlignment = Alignment.Center
@@ -677,16 +689,17 @@ private fun AdaptiveDateTimeRow(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Text(
-                    text = date.format(timeFormatter),
-                    modifier = Modifier
-                        .alpha(if (isAllDay) 0.5f else 1f)
-                        .clickable(!isAllDay, onClick = onTimeClick),
-                    color = CalendarioTheme.colors.textSystem,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                
+                if (!isAllDay) {
+                    Text(
+                        text = date.format(timeFormatter),
+                        modifier = Modifier.clickable(onClick = onTimeClick),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     } else {
@@ -707,18 +720,21 @@ private fun AdaptiveDateTimeRow(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+                    if (!isAllDay) {
+                        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+                    }
                 }
-                Text(
-                    text = date.format(timeFormatter),
-                    modifier = Modifier
-                        .alpha(if (isAllDay) 0.5f else 1f)
-                        .clickable(!isAllDay, onClick = onTimeClick),
-                    color = CalendarioTheme.colors.textSystem,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                
+                if (!isAllDay) {
+                    Text(
+                        text = date.format(timeFormatter),
+                        modifier = Modifier.clickable(onClick = onTimeClick),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }

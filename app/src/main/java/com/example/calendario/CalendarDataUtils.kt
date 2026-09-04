@@ -289,7 +289,11 @@ fun readFestivosFromCalendarsSync(
                 var endD = endZ.toLocalDate()
                 if (endM > beginM && endZ.toLocalTime() == LocalTime.MIDNIGHT) endD = endD.minusDays(1)
 
-                if (endD.isAfter(startD)) {
+                // Lógica de Carriles Unificada (v3.1.34): Solo asignamos carril si el evento es >= 24h
+                val duration = java.time.Duration.between(startZ, endZ)
+                val isLong = duration.toHours() >= 24
+
+                if (isLong && endD.isAfter(startD)) {
                     val title = (data["title"] as String).lowercase()
                     val organizer = data["organizer"] as String
                     val isH = organizer.contains("#holiday") || organizer.contains("#festivo")
@@ -368,11 +372,14 @@ fun readFestivosFromCalendarsSync(
                 }
 
                 val uniqueKey = "${eventId}_${beginMillis}"
-                val assignedLane = laneAssignments[uniqueKey]
                 
-                // REGLA DE ORO: Un evento solo es periodo largo si dura más de 24 horas y no es cumpleaños ni festivo
+                // REGLA DE ORO (Corregida v3.1.34): Un evento es periodo largo si dura 24h o más,
+                // atraviesa al menos dos días diferentes y no es especial (cumple/festivo)
                 val duration = java.time.Duration.between(startZdt, endZdt)
-                val isLongPeriod = duration.toHours() > 24 && !finalIsBirthday && !isFromHoliday
+                val isLongPeriod = duration.toHours() >= 24 && endDate.isAfter(startDate) && !finalIsBirthday && !isFromHoliday
+                
+                // El carril solo se asigna si realmente es un periodo largo
+                val assignedLane = if (isLongPeriod) laneAssignments[uniqueKey] else null
 
                 val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
                 var currentLoopDate = startDate

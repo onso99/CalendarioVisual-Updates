@@ -388,9 +388,15 @@ private fun EventRow(
     val noTitle = stringResource(id = R.string.no_title)
     val allDayEvent = stringResource(id = R.string.all_day_event)
 
-    val timeText = if (!festivo.isAllDay && festivo.startTime != null) {
-        festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-    } else null
+    // LÓGICA DE HORA INTELIGENTE (v3.1.34):
+    // Primer día -> Hora Inicio | Último día -> Hora Fin | Resto -> Sin hora (Todo el día)
+    val displayTime = when {
+        festivo.isAllDay -> null
+        festivo.currentDay == 1 -> festivo.startTime
+        festivo.currentDay == festivo.totalDays -> festivo.endTime
+        else -> null
+    }
+    val timeText = displayTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
 
     val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
     val ageText = if (festivo.age != null && festivo.age > 0) " (${festivo.age})" else ""

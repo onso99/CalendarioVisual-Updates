@@ -219,8 +219,10 @@ fun AddEventScreen(
 
     LaunchedEffect(key1 = localEventToEdit, key2 = editableCalendars) {
         if (localEventToEdit != null && !isCopying) {
+            isLongPeriod = localEventToEdit!!.isLongPeriod
             title = localEventToEdit!!.title
-            isAllDay = localEventToEdit!!.isAllDay
+            // REGLA DE HIERRO (v3.1.34): Al editar, si es periodo largo forzamos Todo el día
+            isAllDay = localEventToEdit!!.isAllDay || isLongPeriod
             selectedCalendar = editableCalendars.find { it.id == localEventToEdit!!.calendarId }
             
             if (localEventToEdit!!.fullStartMillis != null && localEventToEdit!!.fullEndMillis != null) {
@@ -451,6 +453,7 @@ fun AddEventScreen(
                     isLongPeriod = it 
                     if (it) {
                         repetitionRule = RepetitionRule.NONE
+                        isAllDay = true // REGLA: Periodo largo SIEMPRE es todo el día
                         if (endDate.toLocalDate() == startDate.toLocalDate()) {
                             endDate = endDate.plusDays(1)
                         }
@@ -459,17 +462,8 @@ fun AddEventScreen(
                             selectedColorInt = 0xFF4C58D8.toInt()
                         }
                     } else {
-                        // DIRECCIÓN INTELIGENTE AL DESACTIVAR:
-                        // Si la hora de fin es posterior a la de inicio, forzamos mismo día.
-                        // Si es anterior, permitimos el cruce de medianoche (Día +1).
-                        val startTime = startDate.toLocalTime()
-                        val endTime = endDate.toLocalTime()
-                        
-                        endDate = if (endTime.isAfter(startTime)) {
-                            LocalDateTime.of(startDate.toLocalDate(), endTime)
-                        } else {
-                            LocalDateTime.of(startDate.toLocalDate().plusDays(1), endTime)
-                        }
+                        // Al desactivar, el evento se encoge a un solo día para evitar errores
+                        endDate = startDate.plusMinutes(30)
                     }
                 },
                 selectedColorInt = selectedColorInt,

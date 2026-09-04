@@ -1,3 +1,5 @@
+2026-09-04 - v3.1.34 Simplificación de Periodos Largos: Ahora son exclusivos de "Todo el día", con interfaz bloqueada para horas y gestión automática de duración
+2026-09-04 - v3.1.33 Reparación de la función Copia: Los eventos duplicados ahora mantienen su integridad visual y permiten el guardado inmediato en calendarios editables
 2026-09-03 - v3.1.32 Limpieza técnica y optimización: Uso de Sequences en el ViewModel y refinamiento de sintaxis en Kotlin
 2026-09-03 - v3.1.31 Implementada importación y exportación de Festivos Locales mediante formato propietario .cvo
 2026-09-03 - v3.1.30 Rediseño del Gestor de Festivos: Nueva lista de dos líneas con prioridad semántica y formato de fecha descriptivo

@@ -237,7 +237,16 @@ fun DayEventsDialog(
                             
                             val neutralColor = if (isToday) (if (isColorDark(CalendarioTheme.colors.todayHighlightColor, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black) else CalendarioTheme.colors.textSystem
                             val titleColor = if (isToday) (if (ColorUtils.calculateContrast(ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255), ColorUtils.setAlphaComponent(CalendarioTheme.colors.todayHighlightColor.toArgb(), 255)) > 1.5) eventSpecificColor else neutralColor) else eventSpecificColor
-                            val timeText = if (!festivo.isAllDay && festivo.startTime != null) festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm")) else null
+                            
+                            // LÓGICA DE HORA INTELIGENTE (v3.1.34):
+                            // Primer día -> Hora Inicio | Último día -> Hora Fin | Resto -> Sin hora (Todo el día)
+                            val displayTime = when {
+                                festivo.isAllDay -> null
+                                festivo.currentDay == 1 -> festivo.startTime
+                                festivo.currentDay == festivo.totalDays -> festivo.endTime
+                                else -> null
+                            }
+                            val timeText = displayTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
                             
                             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {
                                 Box(Modifier.padding(top = 8.dp, start = 2.dp)) {
