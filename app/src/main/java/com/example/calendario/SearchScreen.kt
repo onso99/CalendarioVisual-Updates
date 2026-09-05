@@ -578,6 +578,13 @@ private fun NoteRow(
     val locale = LocalConfiguration.current.locales[0]
     val neutralColor = CalendarioTheme.colors.textSystem
     var isExpanded by remember { mutableStateOf(false) }
+    
+    // Almacenamos el índice donde el texto se corta naturalmente en una línea
+    var cutIndex by remember { mutableIntStateOf(-1) }
+
+    LaunchedEffect(isSelected) {
+        if (isSelected) isExpanded = false
+    }
 
     Column(
         modifier = Modifier
@@ -590,8 +597,12 @@ private fun NoteRow(
             .clip(RoundedCornerShape(12.dp))
             .background(if (isSelected) CalendarioTheme.colors.todayHighlightColor else Color.Transparent)
             .combinedClickable(
-                onClick = { onClick(note) },
+                onClick = { 
+                    if (isExpanded) isExpanded = false
+                    onClick(note) 
+                },
                 onLongClick = {
+                    isExpanded = false
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     onLongClick(note)
                 }
@@ -599,7 +610,6 @@ private fun NoteRow(
             .padding(horizontal = 8.dp, vertical = 10.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // 1. DÍA (Solo si no es vista de mes)
             if (searchScope != SearchScope.MONTH) {
                 Text(
                     text = String.format(locale, "%02d", note.date.dayOfMonth),
@@ -609,7 +619,6 @@ private fun NoteRow(
                 )
             }
 
-            // 2. ICONO NOTA (Alineado con el indicador de eventos)
             Box(
                 modifier = Modifier.width(26.dp),
                 contentAlignment = Alignment.CenterStart
@@ -622,20 +631,32 @@ private fun NoteRow(
                 )
             }
 
-            Spacer(Modifier.width(1.dp))
+            // TEXTO SUPERIOR: Lógica de continuidad (v3.1.34)
+            // Si está expandida, quitamos los puntos suspensivos (Punto 5)
+            val topText = if (isExpanded && cutIndex != -1) {
+                note.content.take(cutIndex).replace("\n", " ")
+            } else {
+                note.content.replace("\n", " ")
+            }
 
-            // 3. TEXTO (Contenido de la nota resumido)
             Text(
-                text = note.content.replace("\n", " "),
+                text = topText,
                 color = neutralColor,
                 fontSize = 16.sp,
-                maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                overflow = if (isExpanded) TextOverflow.Clip else TextOverflow.Ellipsis,
+                onTextLayout = { layoutResult ->
+                    if (cutIndex == -1) {
+                        val end = layoutResult.getLineEnd(0, visibleEnd = true)
+                        val textBeforeCut = note.content.take(end)
+                        val lastSpace = textBeforeCut.lastIndexOf(' ')
+                        cutIndex = if (lastSpace > 0) lastSpace + 1 else end
+                    }
+                },
                 modifier = Modifier.weight(1f),
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             )
 
-            // 4. ICONO OJO (Previsualización v3.1.34)
             IconButton(
                 onClick = { isExpanded = !isExpanded },
                 modifier = Modifier.size(32.dp)
@@ -649,13 +670,17 @@ private fun NoteRow(
             }
         }
         
-        // Texto expandido con scroll si es muy largo
-        if (isExpanded) {
+        // TEXTO DESPLEGADO: Continúa exactamente donde terminó la primera línea
+        if (isExpanded && cutIndex != -1 && cutIndex < note.content.length) {
             Text(
-                text = note.content,
+                text = note.content.substring(cutIndex),
                 color = neutralColor.copy(alpha = 0.8f),
                 fontSize = 14.sp,
-                modifier = Modifier.padding(start = 26.dp, top = 8.dp, end = 32.dp)
+                modifier = Modifier.padding(
+                    top = 4.dp, 
+                    start = if (searchScope != SearchScope.MONTH) 26.dp else 0.dp,
+                    end = 8.dp // Reducido al mínimo para aprovechar el espacio bajo el ojo
+                )
             )
         }
     }
