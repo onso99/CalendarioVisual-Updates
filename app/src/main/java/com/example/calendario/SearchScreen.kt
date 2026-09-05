@@ -19,12 +19,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
@@ -95,10 +95,6 @@ fun SearchScreen(
         selectedItems.filterIsInstance<SearchItem.Note>().map { it.dailyNote }.toSet() 
     }
 
-    val shareMultipleMessage = stringResource(id = R.string.share_multiple_message, selectedItems.size)
-    val calendarEventsSubject = stringResource(id = R.string.calendar_events_subject)
-    val shareEventTitle = stringResource(id = R.string.share_event)
-
     LaunchedEffect(Unit) {
         if (!isSelectionMode) focusRequester.requestFocus()
     }
@@ -140,24 +136,24 @@ fun SearchScreen(
                         )
                     }
                 },
-                actions = {
-                    if (isSelectionMode) {
-                        IconButton(onClick = { 
-                            IcsHelper.shareEvents(
-                                context = context,
-                                events = selectedFestivos,
-                                shareMultipleMessage = shareMultipleMessage,
-                                calendarEventsSubject = calendarEventsSubject,
-                                shareEventTitle = shareEventTitle
-                            )
-                        }) {
-                            Icon(Icons.Default.Share, stringResource(id = R.string.share_event), tint = Color.White)
-                        }
-                        IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                            Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
-                        }
-                    }
-                },
+                        actions = {
+                            if (isSelectionMode) {
+                                // ICONO EXPORTAR CVO (v3.1.34)
+                                IconButton(onClick = { 
+                                    CvoHelper.shareAgendaPackage(context, selectedFestivos, selectedNotes) 
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Outlined.Send, 
+                                        contentDescription = stringResource(id = R.string.share_event), 
+                                        tint = Color.White
+                                    )
+                                }
+
+                                IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                                    Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
+                                }
+                            }
+                        },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
             )
         }

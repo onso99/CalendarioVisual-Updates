@@ -1,3 +1,5 @@
+2026-09-05 - v3.1.40 Implementación de la Exportación de Agenda (.cvo): Notas integradas en multiselección, icono distintivo (Send) y limpieza técnica de la cabecera
+2026-09-05 - v3.1.39 Refinamiento de previsualización de notas: Continuidad perfecta por palabra, eliminación de puntos suspensivos al expandir y optimización del espacio bajo el icono del ojo
 2026-09-04 - v3.1.38 Limpieza de código en SearchScreen: eliminación de imports y variables no utilizadas
 2026-09-04 - v3.1.37 Mejora de la Búsqueda (Fase 2): Notas seleccionables y previsualizables con icono de expansión (ojo 👁) y borrado masivo unificado
 2026-09-04 - v3.1.36 Rediseño de la Búsqueda (Fase 1): Buscador independiente del título, cabecera con contador compacto (X) y lógica de selección segura tipo Drive
