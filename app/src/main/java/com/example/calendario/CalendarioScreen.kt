@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -141,6 +142,9 @@ fun CalendarioScreen(
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
+    var showAgendaExchangeScreen by remember { mutableStateOf(false) }
+    var agendaSearchQuery by remember { mutableStateOf("") }
+    var agendaSearchResults by remember { mutableStateOf<Map<LocalDate, List<SearchItem>>>(emptyMap()) }
 
     // --- LÓGICA DE PUNTO DE PERMISOS (Sincronizada con SettingsScreen) ---
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -180,6 +184,18 @@ fun CalendarioScreen(
             }
         } else {
             Toast.makeText(context, R.string.permission_calendar_select, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    val importCvoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            viewModel.importHolidaysFromCvo(it) { success, error ->
+                if (!success && error != null) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -353,8 +369,54 @@ fun CalendarioScreen(
         return
     }
 
-    if (showHelpScreen) {
-        HelpScreen(onBackPress = { showHelpScreen = false })
+    LaunchedEffect(agendaSearchQuery, uiState.eventsByDate, uiState.dailyNotes) {
+        if (agendaSearchQuery.isNotBlank()) {
+            delay(300.milliseconds)
+            val normalizedQuery = agendaSearchQuery.unaccent().lowercase(locale)
+            
+            val filteredEvents = uiState.eventsByDate.values.flatten()
+                .filter { it.title.unaccent().lowercase(locale).contains(normalizedQuery) }
+                .map { SearchItem.Event(it) }
+            
+            val filteredNotes = uiState.dailyNotes.values
+                .filter { it.content.unaccent().lowercase(locale).contains(normalizedQuery) }
+                .map { SearchItem.Note(it) }
+                
+            agendaSearchResults = (filteredEvents + filteredNotes).groupBy { it.date }.toSortedMap(compareByDescending { it })
+        } else {
+            // Si está vacío, en esta pantalla mostramos TODO el año actual por defecto para facilitar exportar (v3.1.42)
+            val currentYear = LocalDate.now().year
+            val allEvents = uiState.eventsByDate.values.flatten()
+                .filter { it.date.year == currentYear }
+                .map { SearchItem.Event(it) }
+            val allNotes = uiState.dailyNotes.values
+                .filter { it.date.year == currentYear }
+                .map { SearchItem.Note(it) }
+            agendaSearchResults = (allEvents + allNotes).groupBy { it.date }.toSortedMap(compareByDescending { it })
+        }
+    }
+
+    if (showAgendaExchangeScreen) {
+        AgendaExchangeScreen(
+            searchQuery = agendaSearchQuery,
+            onSearchQueryChange = { agendaSearchQuery = it },
+            searchResults = agendaSearchResults,
+            onClose = {
+                showAgendaExchangeScreen = false
+                agendaSearchQuery = ""
+                agendaSearchResults = emptyMap()
+            },
+            onImportClick = {
+                // El importador de carpeta ya está conectado al CvoHelper/VM
+                importCvoLauncher.launch(arrayOf("*/*"))
+            },
+            onExportClick = { selectedSet ->
+                val events = selectedSet.filterIsInstance<SearchItem.Event>().map { it.festivo }
+                val notes = selectedSet.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
+                CvoHelper.shareAgendaPackage(context, events, notes)
+            },
+            availableCalendars = uiState.availableCalendars
+        )
         return
     }
 
@@ -574,6 +636,18 @@ fun CalendarioScreen(
                     )
 
                     // --- SECCIÓN: HERRAMIENTAS (Fase 1.7 - v3.1.06) ---
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.import_agenda_title)) },
+                        selected = showAgendaExchangeScreen,
+                        onClick = {
+                            showAgendaExchangeScreen = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.AutoMirrored.Outlined.Send, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
                     NavigationDrawerItem(
                         label = { Text(stringResource(id = R.string.holiday_manager_title)) },
                         selected = false,

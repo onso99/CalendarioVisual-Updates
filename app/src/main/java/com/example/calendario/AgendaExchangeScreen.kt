@@ -1,0 +1,199 @@
+package com.example.calendario
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Send
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AgendaExchangeScreen(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    searchResults: Map<LocalDate, List<SearchItem>>,
+    onClose: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: (Set<SearchItem>) -> Unit,
+    availableCalendars: List<CalendarInfo>,
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val lazyListState = rememberLazyListState()
+
+    // En esta pantalla la selección es el modo principal (v3.1.42)
+    var selectedItems by remember { mutableStateOf(setOf<SearchItem>()) }
+    
+    // Reiniciar selección si la búsqueda cambia
+    LaunchedEffect(searchQuery) {
+        selectedItems = emptySet()
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.import_agenda_title), // "Importar/Exportar Agenda"
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                        if (selectedItems.isNotEmpty()) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.selected_count_short, selectedItems.size),
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 18.sp
+                            )
+                            IconButton(onClick = { selectedItems = emptySet() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(id = R.string.clear_selection),
+                                    tint = Color.White.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = Color.White)
+                    }
+                },
+                actions = {
+                    // Acción de Importar (Carpeta)
+                    IconButton(onClick = onImportClick) {
+                        Icon(Icons.Outlined.FolderOpen, stringResource(id = R.string.cargar_label), tint = Color.White)
+                    }
+                    // Acción de Exportar (Avión) - Solo si hay selección
+                    if (selectedItems.isNotEmpty()) {
+                        IconButton(onClick = { onExportClick(selectedItems) }) {
+                            Icon(Icons.AutoMirrored.Outlined.Send, stringResource(id = R.string.share_event), tint = Color.White)
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(CalendarioTheme.colors.settingsBackground),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Buscador
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .focusRequester(focusRequester),
+                placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                leadingIcon = { Icon(Icons.Default.Search, null, tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.7f)) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { onSearchQueryChange("") }) {
+                            Icon(Icons.Default.Close, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = CalendarioTheme.colors.cabecera,
+                    unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f),
+                    focusedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    unfocusedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    focusedTextColor = CalendarioTheme.colors.textSystem,
+                    unfocusedTextColor = CalendarioTheme.colors.textSystem
+                )
+            )
+
+            // TODO: Añadir filtros de categoría (Fase 3)
+
+            if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(stringResource(id = R.string.no_results_found), color = CalendarioTheme.colors.textSystem)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
+                    searchResults.forEach { (date, items) ->
+                        stickyHeader {
+                            Text(
+                                text = date.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale)).replaceFirstChar { it.titlecase(locale) },
+                                modifier = Modifier.fillMaxWidth().background(CalendarioTheme.colors.fondoSecciones).padding(8.dp),
+                                fontWeight = FontWeight.Bold,
+                                color = CalendarioTheme.colors.textSystem
+                            )
+                        }
+
+                        items(items, key = { it.adn }) { searchItem ->
+                            when (searchItem) {
+                                is SearchItem.Event -> {
+                                    val isSelected = selectedItems.contains(searchItem)
+                                    EventRow(
+                                        festivo = searchItem.festivo,
+                                        availableCalendars = availableCalendars,
+                                        isSelected = isSelected,
+                                        isSpecial = false, // En exportación permitimos todo
+                                        onEventClick = { _ ->
+                                            selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                        },
+                                        onLongClick = { }, // Ya está en modo selección
+                                        searchScope = SearchScope.YEAR
+                                    )
+                                }
+                                is SearchItem.Note -> {
+                                    val isSelected = selectedItems.contains(searchItem)
+                                    NoteRow(
+                                        note = searchItem.dailyNote,
+                                        isSelected = isSelected,
+                                        searchScope = SearchScope.YEAR,
+                                        onClick = {
+                                            selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                        },
+                                        onLongClick = { }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
