@@ -33,6 +33,13 @@ data class CalendarioUiState(
     val agendaImportEvents: List<Festivo> = emptyList(),
     val agendaImportNotes: List<DailyNote> = emptyList(),
     val showAgendaImportPreview: Boolean = false,
+    
+    // --- ESTADOS FASE 3: Filtros de Agenda Compartida PERSISTENTES ---
+    val agendaSearchQuery: String = "",
+    val agendaStartDate: LocalDate = LocalDate.now(),
+    val agendaEndDate: LocalDate = LocalDate.now().plusMonths(1),
+    val agendaActiveFilters: Set<String> = emptySet(),
+    val agendaSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap()
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -62,6 +69,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     dailyNotes = notes
                 ) }
                 updateCleaningCandidates()
+                updateAgendaSearchResults() // Sincronizar resultados de agenda
                 
                 // Notificar a los widgets
                 CalendarAppWidgetProvider.triggerWidgetUpdate(application)
@@ -75,6 +83,76 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
         loadAllData()
+    }
+
+    // --- ACCIONES AGENDA COMPARTIDA (FASE 3) ---
+    fun updateAgendaSearchQuery(query: String) {
+        _uiState.update { it.copy(agendaSearchQuery = query) }
+        updateAgendaSearchResults()
+    }
+
+    fun updateAgendaStartDate(date: LocalDate) {
+        _uiState.update { state ->
+            // REGLA FASE 3 (v3.1.34): Si el inicio supera al fin, movemos el fin 1 mes adelante (como al inicio)
+            val newEndDate = if (state.agendaEndDate.isBefore(date)) date.plusMonths(1) else state.agendaEndDate
+            state.copy(agendaStartDate = date, agendaEndDate = newEndDate)
+        }
+        updateAgendaSearchResults()
+    }
+
+    fun updateAgendaEndDate(date: LocalDate) {
+        _uiState.update { it.copy(agendaEndDate = date) }
+        updateAgendaSearchResults()
+    }
+
+    fun toggleAgendaFilter(filter: String) {
+        _uiState.update { state ->
+            val newFilters = if (state.agendaActiveFilters.contains(filter)) state.agendaActiveFilters - filter else state.agendaActiveFilters + filter
+            state.copy(agendaActiveFilters = newFilters)
+        }
+        updateAgendaSearchResults()
+    }
+
+    private fun updateAgendaSearchResults() {
+        val state = _uiState.value
+        val context = getApplication<Application>()
+        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        
+        val normalizedQuery = state.agendaSearchQuery.unaccent().lowercase()
+        val event1Kw = prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.unaccent()?.lowercase() ?: ""
+        val event2Kw = prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.unaccent()?.lowercase() ?: ""
+
+        val filteredEvents = state.eventsByDate.values.flatten()
+            .filter { event ->
+                val inRange = !event.date.isBefore(state.agendaStartDate) && !event.date.isAfter(state.agendaEndDate)
+                if (!inRange) return@filter false
+                val matchesQuery = normalizedQuery.isBlank() || event.title.unaccent().lowercase().contains(normalizedQuery)
+                if (!matchesQuery) return@filter false
+                if (state.agendaActiveFilters.isNotEmpty()) {
+                    val normalizedTitle = event.title.unaccent().lowercase()
+                    val isE1 = event1Kw.isNotBlank() && normalizedTitle.contains(event1Kw)
+                    val isE2 = event2Kw.isNotBlank() && normalizedTitle.contains(event2Kw)
+                    return@filter (state.agendaActiveFilters.contains("EVENT1") && isE1) ||
+                                 (state.agendaActiveFilters.contains("EVENT2") && isE2) ||
+                                 (state.agendaActiveFilters.contains("BIRTHDAY") && event.isBirthday)
+                }
+                true
+            }
+            .map { SearchItem.Event(it) }
+
+        val filteredNotes = state.dailyNotes.values
+            .filter { note ->
+                val inRange = !note.date.isBefore(state.agendaStartDate) && !note.date.isAfter(state.agendaEndDate)
+                if (!inRange) return@filter false
+                val matchesQuery = normalizedQuery.isBlank() || note.content.unaccent().lowercase().contains(normalizedQuery)
+                if (!matchesQuery) return@filter false
+                if (state.agendaActiveFilters.isNotEmpty() && !state.agendaActiveFilters.contains("NOTE")) return@filter false
+                true
+            }
+            .map { SearchItem.Note(it) }
+
+        val sortedResults = (filteredEvents + filteredNotes).groupBy { it.date }.toSortedMap(compareByDescending { it })
+        _uiState.update { it.copy(agendaSearchResults = sortedResults) }
     }
 
     fun onPermissionResult(isGranted: Boolean) {

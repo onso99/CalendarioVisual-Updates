@@ -9,11 +9,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.Send
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.automirrored.filled.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Cake
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.LooksOne
+import androidx.compose.material.icons.outlined.LooksTwo
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,13 +24,16 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +41,12 @@ import java.time.format.DateTimeFormatter
 fun AgendaExchangeScreen(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    startDate: LocalDate,
+    onStartDateChange: (LocalDate) -> Unit,
+    endDate: LocalDate,
+    onEndDateChange: (LocalDate) -> Unit,
+    activeFilters: Set<String>,
+    onToggleFilter: (String) -> Unit,
     searchResults: Map<LocalDate, List<SearchItem>>,
     onClose: () -> Unit,
     onImportClick: () -> Unit,
@@ -48,11 +58,14 @@ fun AgendaExchangeScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
 
+    var showStartDatePicker by remember { mutableStateOf(false) }
+    var showEndDatePickerDialog by remember { mutableStateOf(false) }
+
     // En esta pantalla la selección es el modo principal (v3.1.42)
     var selectedItems by remember { mutableStateOf(setOf<SearchItem>()) }
     
-    // Reiniciar selección si la búsqueda cambia
-    LaunchedEffect(searchQuery) {
+    // Reiniciar selección si la búsqueda o filtros cambian (Modelo Drive)
+    LaunchedEffect(searchQuery, startDate, endDate, activeFilters) {
         selectedItems = emptySet()
     }
 
@@ -90,15 +103,25 @@ fun AgendaExchangeScreen(
                     }
                 },
                 actions = {
-                    // Acción de Importar (Carpeta)
-                    IconButton(onClick = onImportClick) {
-                        Icon(Icons.Outlined.FolderOpen, stringResource(id = R.string.cargar_label), tint = Color.White)
-                    }
-                    // Acción de Exportar (Avión) - Solo si hay selección
+                    // Acción de Exportar (Avión) - Solo si hay selección (v3.1.34: Aparece a la izquierda para no desplazar la carpeta)
                     if (selectedItems.isNotEmpty()) {
                         IconButton(onClick = { onExportClick(selectedItems) }) {
-                            Icon(Icons.AutoMirrored.Outlined.Send, stringResource(id = R.string.share_event), tint = Color.White)
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_send_custom), 
+                                contentDescription = stringResource(id = R.string.share_event), 
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
+                    }
+                    // Acción de Importar (Carpeta Custom) - Siempre en el extremo derecho para estabilidad visual
+                    IconButton(onClick = onImportClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_folder_open_custom), 
+                            contentDescription = stringResource(id = R.string.cargar_label), 
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
@@ -143,9 +166,74 @@ fun AgendaExchangeScreen(
                 )
             )
 
-            // TODO: Añadir filtros de categoría (Fase 3)
+            // --- FILTROS FASE 3: Rango y Categorías ---
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                // Fila 1: Rango de Fechas
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val dateFmt = DateTimeFormatter.ofPattern("dd/MM/yy", locale)
+                    
+                    TextButton(onClick = { showStartDatePicker = true }) {
+                        Icon(Icons.Outlined.CalendarMonth, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(startDate.format(dateFmt), color = CalendarioTheme.colors.textSystem)
+                    }
+                    
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(16.dp))
+                    
+                    TextButton(onClick = { showEndDatePickerDialog = true }) {
+                        Icon(Icons.Outlined.CalendarMonth, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(endDate.format(dateFmt), color = CalendarioTheme.colors.textSystem)
+                    }
+                }
 
-            if (searchResults.isEmpty() && searchQuery.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Fila 2: Atajos de Categoría
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    FilterShortcutChip(
+                        icon = Icons.Outlined.LooksOne,
+                        label = "",
+                        isSelected = activeFilters.contains("EVENT1"),
+                        color = CalendarioTheme.colors.textEvent1,
+                        onClick = { onToggleFilter("EVENT1") }
+                    )
+                    FilterShortcutChip(
+                        icon = Icons.Outlined.LooksTwo,
+                        label = "",
+                        isSelected = activeFilters.contains("EVENT2"),
+                        color = CalendarioTheme.colors.textEvent2,
+                        onClick = { onToggleFilter("EVENT2") }
+                    )
+                    FilterShortcutChip(
+                        icon = Icons.Outlined.Cake,
+                        label = "",
+                        isSelected = activeFilters.contains("BIRTHDAY"),
+                        color = CalendarioTheme.colors.textBirthday,
+                        onClick = { onToggleFilter("BIRTHDAY") }
+                    )
+                    FilterShortcutChip(
+                        icon = Icons.AutoMirrored.Filled.StickyNote2,
+                        label = "",
+                        isSelected = activeFilters.contains("NOTE"),
+                        color = CalendarioTheme.colors.cabecera,
+                        onClick = { onToggleFilter("NOTE") }
+                    )
+                }
+            }
+
+            if (searchResults.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(stringResource(id = R.string.no_results_found), color = CalendarioTheme.colors.textSystem)
                 }
@@ -193,6 +281,84 @@ fun AgendaExchangeScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // --- Diálogos de Selección de Fecha ---
+    if (showStartDatePicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = startDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
+        DatePickerDialog(
+            onDismissRequest = { showStartDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { onStartDateChange(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()) }
+                    showStartDatePicker = false
+                }) { Text(stringResource(id = R.string.accept)) }
+            }
+        ) { DatePicker(state = datePickerState) }
+    }
+
+    if (showEndDatePickerDialog) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = endDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
+            selectableDates = object : SelectableDates {
+                // Restricción de Cronología Segura (v3.1.34)
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val startMillis = startDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                    return utcTimeMillis >= startMillis
+                }
+            }
+        )
+        DatePickerDialog(
+            onDismissRequest = { showEndDatePickerDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { onEndDateChange(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()) }
+                    showEndDatePickerDialog = false
+                }) { Text(stringResource(id = R.string.accept)) }
+            }
+        ) { DatePicker(state = datePickerState) }
+    }
+}
+
+@Composable
+private fun FilterShortcutChip(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    isSelected: Boolean,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = if (isSelected) color.copy(alpha = 0.15f) else Color.Transparent,
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = if (isSelected) color else CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+        ),
+        modifier = Modifier.height(36.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isSelected) color else CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                modifier = Modifier.size(22.dp)
+            )
+            if (label.isNotEmpty()) {
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = label,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isSelected) color else CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
+                )
             }
         }
     }
