@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
-import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 import java.time.LocalDate
@@ -129,41 +127,6 @@ fun HolidayManagerScreen(
             }
         }
     }
-
-    val exportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == android.app.Activity.RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    try {
-                        val currentYear = LocalDate.now().year
-                        val exportable = adjustments.filter { it.date.year >= currentYear }
-                        
-                        val root = JSONObject()
-                        root.put("tipo", "CVO_HOLIDAYS")
-                        root.put("version", 1)
-                        root.put("fecha_creacion", System.currentTimeMillis())
-                        
-                        val dataArray = JSONArray()
-                        exportable.forEach { adj ->
-                            dataArray.put(JSONObject().apply {
-                                put("fecha", adj.date.toString())
-                                put("titulo", adj.title)
-                                put("tipo", adj.type.name)
-                                adj.originalEventId?.let { put("originalEventId", it) }
-                            })
-                        }
-                        root.put("ajustes", dataArray)
-                        
-                        context.contentResolver.openOutputStream(uri)?.use { it.write(root.toString(4).toByteArray()) }
-                        Toast.makeText(context, R.string.holidays_exported_successfully, Toast.LENGTH_SHORT).show()
-                    } catch (_: Exception) {
-                        Toast.makeText(context, R.string.error_saving_holidays_file, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-    )
     
     // Logic to store reference values to detect changes
     var refTitle by remember { mutableStateOf(initialFestivo?.title ?: "") }
@@ -305,12 +268,7 @@ fun HolidayManagerScreen(
                 // 2. Exportar (Compartir - Siempre al extremo derecho)
                 IconButton(
                     onClick = { 
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/octet-stream"
-                            putExtra(Intent.EXTRA_TITLE, "FestivosLocales.cvo")
-                        }
-                        exportLauncher.launch(intent)
+                        CvoHelper.shareHolidaysPackage(context, adjustments)
                     }, 
                     modifier = Modifier.size(32.dp)
                 ) {

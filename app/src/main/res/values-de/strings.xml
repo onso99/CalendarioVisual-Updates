@@ -335,5 +335,10 @@
     <string name="holidays_exported_successfully">Feiertage erfolgreich exportiert</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">Auswahl zurücksetzen</string>
+    <string name="import_agenda_title">Agenda importieren</string>
+    <string name="select_target_calendar">Zielkalender</string>
+    <string name="import_summary">%1$d Ereignisse und %2$d Notizen werden importiert.</string>
+    <string name="import_button">Importieren</string>
+
 </resources>
 

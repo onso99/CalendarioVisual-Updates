@@ -37,7 +37,6 @@ object CvoHelper {
                     put("es_todo_el_dia", event.isAllDay)
                     put("es_periodo_largo", event.isLongPeriod)
                     put("rrule", event.rrule)
-                    // No incluimos colores ni alarmas por privacidad/soberanía del receptor
                 })
             }
             root.put("eventos", eventsArray)
@@ -52,27 +51,77 @@ object CvoHelper {
             }
             root.put("notas", notesArray)
 
-            // 3. Generar archivo temporal
             val fileName = "AgendaVisual_${System.currentTimeMillis()}.cvo"
             val file = File(context.cacheDir, fileName)
             FileOutputStream(file).use { it.write(root.toString(4).toByteArray()) }
 
-            // 4. Compartir
-            val contentUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-            
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "application/octet-stream"
-                putExtra(Intent.EXTRA_STREAM, contentUri)
-                putExtra(Intent.EXTRA_SUBJECT, "Agenda Visual Compartida")
-                putExtra(Intent.EXTRA_TEXT, "Te comparto una selección de mi Agenda Visual (${events.size} eventos, ${notes.size} notas).")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            context.startActivity(Intent.createChooser(shareIntent, "Exportar Agenda"))
+            shareFile(context, file, "Exportar Agenda", "Te comparto una selección de mi Agenda Visual (${events.size} eventos, ${notes.size} notas).")
 
         } catch (e: Exception) {
             Log.e("CvoHelper", "Error generando paquete CVO: ${e.message}")
             Toast.makeText(context, "Error al generar el archivo de agenda", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    /**
+     * Empaqueta festivos locales seleccionados en un archivo .cvo y abre el selector de compartir.
+     */
+    fun shareHolidaysPackage(
+        context: Context,
+        adjustments: List<HolidayAdjustment>
+    ) {
+        if (adjustments.isEmpty()) return
+
+        try {
+            val currentYear = java.time.LocalDate.now().year
+            val exportable = adjustments.filter { it.date.year >= currentYear }
+            
+            val root = JSONObject()
+            root.put("tipo", "CVO_HOLIDAYS")
+            root.put("version", 1)
+            root.put("fecha_creacion", System.currentTimeMillis())
+            
+            val dataArray = JSONArray()
+            exportable.forEach { adj ->
+                dataArray.put(JSONObject().apply {
+                    put("fecha", adj.date.toString())
+                    put("titulo", adj.title)
+                    put("tipo", adj.type.name)
+                    adj.originalEventId?.let { put("originalEventId", it) }
+                })
+            }
+            root.put("ajustes", dataArray)
+
+            val fileName = "FestivosLocales_${System.currentTimeMillis()}.cvo"
+            val file = File(context.cacheDir, fileName)
+            FileOutputStream(file).use { it.write(root.toString(4).toByteArray()) }
+
+            shareFile(context, file, "Exportar Festivos", "Te comparto mis festivos locales (${exportable.size} ajustes).")
+
+        } catch (e: Exception) {
+            Log.e("CvoHelper", "Error generando paquete CVO: ${e.message}")
+            Toast.makeText(context, "Error al generar el archivo de festivos", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun shareFile(context: Context, file: File, chooserTitle: String, text: String) {
+        val contentUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+        
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            // Regresamos a */* para recuperar WhatsApp/Telegram
+            type = "*/*" 
+            putExtra(Intent.EXTRA_STREAM, contentUri)
+            putExtra(Intent.EXTRA_SUBJECT, chooserTitle)
+            putExtra(Intent.EXTRA_TEXT, text)
+            
+            // CRUCIAL: Añadimos el título para que aparezca "Guardar en Drive" o "Copiar a carpeta"
+            putExtra(Intent.EXTRA_TITLE, file.name)
+            
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            clipData = android.content.ClipData.newRawUri(chooserTitle, contentUri)
+        }
+
+        val chooser = Intent.createChooser(shareIntent, chooserTitle)
+        context.startActivity(chooser)
     }
 }

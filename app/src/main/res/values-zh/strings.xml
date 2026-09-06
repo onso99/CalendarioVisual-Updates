@@ -335,5 +335,10 @@
     <string name="holidays_exported_successfully">节假日导出成功</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">清除选择</string>
+    <string name="import_agenda_title">导入日程</string>
+    <string name="select_target_calendar">目标日历</string>
+    <string name="import_summary">将导入 %1$d 个事件和 %2$d 条备注。</string>
+    <string name="import_button">导入</string>
+
 </resources>
 

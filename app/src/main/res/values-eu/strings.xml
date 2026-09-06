@@ -334,5 +334,10 @@
     <string name="holidays_exported_successfully">Jai-egunak ongi esportatu dira</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">Garbitu hautapena</string>
+    <string name="import_agenda_title">Agenda inportatu</string>
+    <string name="select_target_calendar">Helburuko egutegia</string>
+    <string name="import_summary">%1$d ekitaldi eta %2$d ohar inportatuko dira.</string>
+    <string name="import_button">Inportatu</string>
+
 </resources>
 

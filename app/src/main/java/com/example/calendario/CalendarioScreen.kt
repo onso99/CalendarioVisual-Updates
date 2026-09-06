@@ -918,6 +918,17 @@ fun CalendarioScreen(
         )
     }
 
+    if (uiState.showAgendaImportPreview) {
+        AgendaImportPreviewDialog(
+            events = uiState.agendaImportEvents,
+            notes = uiState.agendaImportNotes,
+            availableCalendars = uiState.availableCalendars,
+            favoriteCalendarId = uiState.favoriteCalendarId,
+            onConfirm = viewModel::applyAgendaImport,
+            onDismiss = viewModel::cancelAgendaImport
+        )
+    }
+
     if (showDayEventsDialog && selectedDateForDialog != null) {
         DayEventsDialog(
             date = selectedDateForDialog!!,

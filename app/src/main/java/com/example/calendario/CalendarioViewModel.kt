@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -28,6 +29,10 @@ data class CalendarioUiState(
     val dailyNotes: Map<String, DailyNote> = emptyMap(),
     val cleaningCandidates: List<SearchItem> = emptyList(),
     val workingDayDates: Set<LocalDate> = emptySet(),
+    // --- Estado para Importación de Agenda (.cvo) ---
+    val agendaImportEvents: List<Festivo> = emptyList(),
+    val agendaImportNotes: List<DailyNote> = emptyList(),
+    val showAgendaImportPreview: Boolean = false,
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -228,6 +233,14 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     fun setImportedEvent(event: Festivo?) { _uiState.update { it.copy(importedEvent = event) } }
     fun consumeImportedEvent() { _uiState.update { it.copy(importedEvent = null) } }
 
+    fun cancelAgendaImport() {
+        _uiState.update { it.copy(
+            showAgendaImportPreview = false,
+            agendaImportEvents = emptyList(),
+            agendaImportNotes = emptyList()
+        ) }
+    }
+
     fun syncHistoryToDrive(context: Context, onComplete: (SyncResult) -> Unit) {
         if (_uiState.value.isSyncing) return
         viewModelScope.launch {
@@ -357,30 +370,74 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 try {
                     val content = context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() } ?: return@withContext false
                     val json = org.json.JSONObject(content)
-                    if (json.optString("tipo") != "CVO_HOLIDAYS") return@withContext false
+                    val tipo = json.optString("tipo")
                     
-                    val dataArray = json.getJSONArray("ajustes")
-                    val imported = mutableListOf<HolidayAdjustment>()
-                    for (i in 0 until dataArray.length()) {
-                        val obj = dataArray.getJSONObject(i)
-                        val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
-                        imported.add(
-                            HolidayAdjustment(
-                                date = LocalDate.parse(obj.getString("fecha")),
-                                title = obj.getString("titulo"),
-                                type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
-                                originalEventId = originalId,
-                            )
-                        )
-                    }
+                    if (tipo == "CVO_AGENDA") {
+                        // MODO AGENDA: Preparar previsualización (v3.1.34)
+                        val eventsArray = json.optJSONArray("eventos")
+                        val notesArray = json.optJSONArray("notas")
+                        
+                        val importedEvents = mutableListOf<Festivo>()
+                        if (eventsArray != null) {
+                            for (i in 0 until eventsArray.length()) {
+                                val obj = eventsArray.getJSONObject(i)
+                                importedEvents.add(Festivo(
+                                    id = 0, 
+                                    title = obj.getString("titulo"),
+                                    description = null,
+                                    date = LocalDate.parse(obj.getString("fecha")),
+                                    startTime = null, 
+                                    endTime = null,
+                                    isAllDay = obj.optBoolean("es_todo_el_dia", true),
+                                    calendarId = 0,
+                                    isFromHolidaySource = false,
+                                    rrule = obj.optString("rrule").takeIf { it.isNotEmpty() && it != "null" },
+                                    isLongPeriod = obj.optBoolean("es_periodo_largo", false)
+                                ))
+                            }
+                        }
 
-                    val current = loadHolidayAdjustments(context).toMutableList()
-                    imported.forEach { imp ->
-                        current.removeAll { it.date == imp.date }
-                        current.add(imp)
-                    }
-                    saveHolidayAdjustments(context, current)
-                    true
+                        val importedNotes = mutableListOf<DailyNote>()
+                        if (notesArray != null) {
+                            for (i in 0 until notesArray.length()) {
+                                val obj = notesArray.getJSONObject(i)
+                                importedNotes.add(DailyNote(
+                                    dateStr = obj.getString("fecha"),
+                                    content = obj.getString("contenido")
+                                ))
+                            }
+                        }
+
+                        _uiState.update { it.copy(
+                            agendaImportEvents = importedEvents,
+                            agendaImportNotes = importedNotes,
+                            showAgendaImportPreview = true
+                        ) }
+                        return@withContext true
+                    } else if (tipo == "CVO_HOLIDAYS") {
+                        val dataArray = json.getJSONArray("ajustes")
+                        val imported = mutableListOf<HolidayAdjustment>()
+                        for (i in 0 until dataArray.length()) {
+                            val obj = dataArray.getJSONObject(i)
+                            val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
+                            imported.add(
+                                HolidayAdjustment(
+                                    date = LocalDate.parse(obj.getString("fecha")),
+                                    title = obj.getString("titulo"),
+                                    type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
+                                    originalEventId = originalId,
+                                )
+                            )
+                        }
+
+                        val current = loadHolidayAdjustments(context).toMutableList()
+                        imported.forEach { imp ->
+                            current.removeAll { adj -> adj.date == imp.date }
+                            current.add(imp)
+                        }
+                        saveHolidayAdjustments(context, current)
+                        true
+                    } else false
                 } catch (_: Exception) {
                     false
                 }
@@ -389,7 +446,46 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 refreshAdjustments()
                 refreshData()
             }
-            onResult(success, if (success) null else "Error al importar archivo")
+            onResult(success, if (success) null else "Error al procesar archivo")
+        }
+    }
+
+    fun applyAgendaImport(targetCalendarId: Long) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            val eventsToImport = _uiState.value.agendaImportEvents
+            val notesToImport = _uiState.value.agendaImportNotes
+            
+            withContext(Dispatchers.IO) {
+                // 1. Importar Eventos
+                eventsToImport.forEach { event ->
+                    createEvent(
+                        context = context,
+                        title = event.title,
+                        calendarId = targetCalendarId,
+                        startDate = event.date.atStartOfDay(),
+                        endDate = if (event.isLongPeriod) event.date.plusDays(1).atStartOfDay() else event.date.atStartOfDay(),
+                        isAllDay = event.isAllDay,
+                        repetitionRule = RepetitionRule.entries.find { it.rrule == event.rrule } ?: RepetitionRule.NONE,
+                        isLongPeriod = event.isLongPeriod
+                    )
+                }
+
+                // 2. Importar Notas (Lógica de Fusión)
+                notesToImport.forEach { importedNote ->
+                    val existingNote = dao.getNoteByDate(importedNote.dateStr)
+                    val newContent = if (existingNote != null && existingNote.content.isNotBlank()) {
+                        "${existingNote.content}\n---\n${importedNote.content}"
+                    } else {
+                        importedNote.content
+                    }
+                    dao.insertNote(NoteEntity(importedNote.dateStr, newContent, System.currentTimeMillis(), false))
+                }
+            }
+            
+            cancelAgendaImport()
+            refreshData()
+            Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
         }
     }
 

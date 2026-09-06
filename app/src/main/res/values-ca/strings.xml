@@ -336,5 +336,10 @@
     <string name="holidays_exported_successfully">Festius exportats amb èxit</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">Reiniciar selecció</string>
+    <string name="import_agenda_title">Importar Agenda</string>
+    <string name="select_target_calendar">Calendari de destí</string>
+    <string name="import_summary">S\'importaran %1$d esdeveniments i %2$d notes.</string>
+    <string name="import_button">Importar</string>
+
 </resources>
 
