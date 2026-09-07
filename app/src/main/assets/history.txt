@@ -1,3 +1,5 @@
+2026-09-07 - v3.1.49 Selección masiva inteligente en pantalla Compartir: Implementado botón "Seleccionar todo" dinámico que actúa solo sobre elementos visibles filtrados para una exportación ágil
+2026-09-07 - v3.1.48 Unificación de cabeceras en pantalla Compartir y Buscar
 2026-09-07 - v3.1.47 Refinamiento de diálogos informativos e importación inteligente: Fecha como cabecera abreviada, títulos coloreados, jerarquía visual mejorada y prevención de duplicados por contenido
 2026-09-07 - v3.1.46 Refinamiento visual de Compartir: Agrupación de elementos por meses y diseño de cabeceras redondeadas para una mejor organización de la agenda
 2026-09-07 - v3.1.45 Refinamiento de la Importación de Agenda: Asistente instantáneo, mensaje de éxito unificado y motor de fusión inteligente para evitar duplicados en notas y eventos

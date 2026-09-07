@@ -333,6 +333,7 @@
     <string name="error_reading_holidays_file">读取节假日文件出错。</string>
     <string name="error_saving_holidays_file">保存节假日文件出错。</string>
     <string name="holidays_exported_successfully">节假日导出成功</string>
+    <string name="file_saved_successfully">文件保存成功</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">清除选择</string>
     <string name="import_agenda_title">分享</string>

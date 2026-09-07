@@ -57,8 +57,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
@@ -142,6 +144,7 @@ fun CalendarioScreen(
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
     var showAgendaExchangeScreen by remember { mutableStateOf(false) }
+    var itemsToExportLocally by remember { mutableStateOf<Set<SearchItem>>(emptySet()) }
 
     // --- LÓGICA DE PUNTO DE PERMISOS (Sincronizada con SettingsScreen) ---
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -187,14 +190,38 @@ fun CalendarioScreen(
     val importCvoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let {
-            viewModel.importHolidaysFromCvo(it) { success, error, isAgenda ->
+        uri?.let { selectedUri ->
+            viewModel.processExternalCvo(selectedUri) { success, error, isAgenda ->
                 if (success) {
                     if (!isAgenda) {
                         Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
                     }
                 } else if (error != null) {
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    val exportCvoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri ->
+        uri?.let { selectedUri ->
+            scope.launch(Dispatchers.IO) {
+                try {
+                    val events = itemsToExportLocally.filterIsInstance<SearchItem.Event>().map { it.festivo }
+                    val notes = itemsToExportLocally.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
+                    val json = CvoHelper.generateAgendaJson(events, notes)
+                    context.contentResolver.openOutputStream(selectedUri)?.use { stream ->
+                        stream.write(json.toByteArray())
+                    }
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, R.string.file_saved_successfully, Toast.LENGTH_SHORT).show()
+                    }
+                } catch (_: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Error al guardar localmente", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -523,6 +550,10 @@ fun CalendarioScreen(
                 val events = selectedSet.filterIsInstance<SearchItem.Event>().map { it.festivo }
                 val notes = selectedSet.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
                 CvoHelper.shareAgendaPackage(context, events, notes)
+            },
+            onSaveLocalClick = { selectedSet ->
+                itemsToExportLocally = selectedSet
+                exportCvoLauncher.launch("AgendaVisual.cvo")
             },
             availableCalendars = uiState.availableCalendars
         )

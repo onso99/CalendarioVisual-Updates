@@ -441,7 +441,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun importHolidaysFromCvo(uri: Uri, onResult: (Boolean, String?, Boolean) -> Unit) {
+    /**
+     * Motor de procesamiento para archivos .cvo externos (v3.1.34)
+     * Soporta tanto CVO_AGENDA (con previsualización) como CVO_HOLIDAYS (directo)
+     */
+    fun processExternalCvo(uri: Uri, onResult: (Boolean, String?, Boolean) -> Unit) {
         viewModelScope.launch {
             val context = getApplication<Application>()
             var isAgenda = false
@@ -453,7 +457,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     
                     if (tipo == "CVO_AGENDA") {
                         isAgenda = true
-                        // MODO AGENDA: Preparar previsualización (v3.1.34)
+                        // MODO AGENDA: Preparar previsualización
                         val eventsArray = json.optJSONArray("eventos")
                         val notesArray = json.optJSONArray("notas")
                         
@@ -495,6 +499,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         ) }
                         return@withContext true
                     } else if (tipo == "CVO_HOLIDAYS") {
+                        // MODO FESTIVOS: Importación directa
                         val dataArray = json.getJSONArray("ajustes")
                         val imported = mutableListOf<HolidayAdjustment>()
                         for (i in 0 until dataArray.length()) {
@@ -518,7 +523,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         saveHolidayAdjustments(context, current)
                         true
                     } else false
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Log.e("CalendarioVM", "Error procesando CVO externo: ${e.message}")
                     false
                 }
             }

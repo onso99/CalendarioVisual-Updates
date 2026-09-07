@@ -131,6 +131,7 @@
     <string name="reset_color">Restablecer</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="holidays_exported_successfully">Festivos exportados con éxito</string>
+    <string name="file_saved_successfully">Archivo guardado con éxito</string>
     <string name="import_success">Importación realizada con éxito</string>
     <string name="error_exporting_theme">Error al exportar el tema: %1$s</string>
     <string name="widget">Widget</string>

@@ -41,6 +41,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -927,8 +928,22 @@ private fun BundledThemesDialog(
                 
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                    SettingsActionChip(text = stringResource(id = R.string.cargar_label), icon = Icons.Default.FolderOpen, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onLoadClick)
-                    SettingsActionChip(text = stringResource(id = R.string.guardar_label), icon = Icons.Default.Save, modifier = Modifier.weight(1f).height(44.dp), shape = RoundedCornerShape(12.dp), containerColor = backupButtonBg, onClick = onSaveClick)
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.cargar_label), 
+                        icon = painterResource(id = R.drawable.ic_folder_open_custom), 
+                        modifier = Modifier.weight(1f).height(44.dp), 
+                        shape = RoundedCornerShape(12.dp), 
+                        containerColor = backupButtonBg, 
+                        onClick = onLoadClick
+                    )
+                    SettingsActionChip(
+                        text = stringResource(id = R.string.guardar_label), 
+                        icon = Icons.Outlined.Save, 
+                        modifier = Modifier.weight(1f).height(44.dp), 
+                        shape = RoundedCornerShape(12.dp), 
+                        containerColor = backupButtonBg, 
+                        onClick = onSaveClick
+                    )
                 }
             }
         },

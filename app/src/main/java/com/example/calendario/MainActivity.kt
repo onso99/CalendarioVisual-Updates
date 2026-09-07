@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -104,12 +105,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: Intent?) {
         val action = intent?.action
-        val data: Uri? = intent?.data
+        val data: Uri? = if (action == Intent.ACTION_SEND) {
+            IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+        } else {
+            intent?.data
+        }
 
-        if (Intent.ACTION_VIEW == action && data != null) {
+        if ((Intent.ACTION_VIEW == action || Intent.ACTION_SEND == action) && data != null) {
             val path = data.path ?: ""
-            if (path.endsWith(".cvo") || data.toString().contains(".cvo") || intent.type == "application/octet-stream") {
-                calendarioViewModel.importHolidaysFromCvo(data) { success, error, isAgenda ->
+            val isCvo = path.endsWith(".cvo") || data.toString().contains(".cvo") || intent.type == "application/octet-stream"
+            
+            if (isCvo) {
+                calendarioViewModel.processExternalCvo(data) { success, error, isAgenda ->
                     if (success) {
                         if (!isAgenda) {
                             Toast.makeText(this, R.string.import_success, Toast.LENGTH_SHORT).show()

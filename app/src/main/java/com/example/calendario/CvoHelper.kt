@@ -13,6 +13,39 @@ import java.io.FileOutputStream
 object CvoHelper {
 
     /**
+     * Genera el contenido JSON de un paquete de agenda (v3.1.34)
+     */
+    fun generateAgendaJson(events: Collection<Festivo>, notes: Collection<DailyNote>): String {
+        val root = JSONObject()
+        root.put("tipo", "CVO_AGENDA")
+        root.put("version", 1)
+        root.put("fecha_creacion", System.currentTimeMillis())
+
+        val eventsArray = JSONArray()
+        events.forEach { event ->
+            eventsArray.put(JSONObject().apply {
+                put("titulo", event.title)
+                put("fecha", event.date.toString())
+                put("es_todo_el_dia", event.isAllDay)
+                put("es_periodo_largo", event.isLongPeriod)
+                put("rrule", event.rrule)
+            })
+        }
+        root.put("eventos", eventsArray)
+
+        val notesArray = JSONArray()
+        notes.forEach { note ->
+            notesArray.put(JSONObject().apply {
+                put("fecha", note.dateStr)
+                put("contenido", note.content)
+            })
+        }
+        root.put("notas", notesArray)
+        
+        return root.toString(4)
+    }
+
+    /**
      * Empaqueta eventos y notas seleccionados en un archivo .cvo y abre el selector de compartir.
      */
     fun shareAgendaPackage(
@@ -23,37 +56,10 @@ object CvoHelper {
         if (events.isEmpty() && notes.isEmpty()) return
 
         try {
-            val root = JSONObject()
-            root.put("tipo", "CVO_AGENDA")
-            root.put("version", 1)
-            root.put("fecha_creacion", System.currentTimeMillis())
-
-            // 1. Empaquetar Eventos
-            val eventsArray = JSONArray()
-            events.forEach { event ->
-                eventsArray.put(JSONObject().apply {
-                    put("titulo", event.title)
-                    put("fecha", event.date.toString())
-                    put("es_todo_el_dia", event.isAllDay)
-                    put("es_periodo_largo", event.isLongPeriod)
-                    put("rrule", event.rrule)
-                })
-            }
-            root.put("eventos", eventsArray)
-
-            // 2. Empaquetar Notas
-            val notesArray = JSONArray()
-            notes.forEach { note ->
-                notesArray.put(JSONObject().apply {
-                    put("fecha", note.dateStr)
-                    put("contenido", note.content)
-                })
-            }
-            root.put("notas", notesArray)
-
-            val fileName = "AgendaVisual_${System.currentTimeMillis()}.cvo"
+            val jsonContent = generateAgendaJson(events, notes)
+            val fileName = "AgendaVisual.cvo"
             val file = File(context.cacheDir, fileName)
-            FileOutputStream(file).use { it.write(root.toString(4).toByteArray()) }
+            FileOutputStream(file).use { it.write(jsonContent.toByteArray()) }
 
             shareFile(context, file, "Exportar Agenda", "Te comparto una selección de mi Agenda Visual (${events.size} eventos, ${notes.size} notas).")
 
@@ -92,7 +98,7 @@ object CvoHelper {
             }
             root.put("ajustes", dataArray)
 
-            val fileName = "FestivosLocales_${System.currentTimeMillis()}.cvo"
+            val fileName = "FestivosLocales.cvo"
             val file = File(context.cacheDir, fileName)
             FileOutputStream(file).use { it.write(root.toString(4).toByteArray()) }
 
@@ -108,15 +114,12 @@ object CvoHelper {
         val contentUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
         
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            // Regresamos a */* para recuperar WhatsApp/Telegram
-            type = "*/*" 
+            // Usamos application/json para que Drive respete la extensión del archivo (v3.1.34)
+            type = "application/json" 
             putExtra(Intent.EXTRA_STREAM, contentUri)
             putExtra(Intent.EXTRA_SUBJECT, chooserTitle)
             putExtra(Intent.EXTRA_TEXT, text)
-            
-            // CRUCIAL: Añadimos el título para que aparezca "Guardar en Drive" o "Copiar a carpeta"
             putExtra(Intent.EXTRA_TITLE, file.name)
-            
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             clipData = android.content.ClipData.newRawUri(chooserTitle, contentUri)
         }

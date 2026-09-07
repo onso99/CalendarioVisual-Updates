@@ -334,6 +334,7 @@
     <string name="error_reading_holidays_file">Error reading holidays file.</string>
     <string name="error_saving_holidays_file">Error saving holidays file.</string>
     <string name="holidays_exported_successfully">Holidays exported successfully</string>
+    <string name="file_saved_successfully">File saved successfully</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">Clear selection</string>
     <string name="import_agenda_title">Share</string>

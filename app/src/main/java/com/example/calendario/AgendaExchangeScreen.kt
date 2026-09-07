@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.LooksOne
 import androidx.compose.material.icons.outlined.LooksTwo
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -52,10 +53,11 @@ fun AgendaExchangeScreen(
     onToggleFilter: (String) -> Unit,
     searchResults: Map<LocalDate, List<SearchItem>>,
     onClose: () -> Unit,
-    onEventClick: (Festivo) -> Unit, // Nuevo (v3.1.34)
-    onNoteClick: (DailyNote) -> Unit,   // Nuevo (v3.1.34)
+    onEventClick: (Festivo) -> Unit, 
+    onNoteClick: (DailyNote) -> Unit,
     onImportClick: () -> Unit,
     onExportClick: (Set<SearchItem>) -> Unit,
+    onSaveLocalClick: (Set<SearchItem>) -> Unit, // Nuevo para modo pruebas (v3.1.34)
     availableCalendars: List<CalendarInfo>,
 ) {
     val locale = LocalConfiguration.current.locales[0]
@@ -110,7 +112,7 @@ fun AgendaExchangeScreen(
                     }
                 },
                 actions = {
-                    // Acción de Exportar (Avión) - Solo si hay selección (v3.1.34: Aparece a la izquierda para no desplazar la carpeta)
+                    // 1. Acción de Exportar (Avión) - Solo si hay selección
                     if (isSelectionMode) {
                         IconButton(onClick = { onExportClick(selectedItems) }) {
                             Icon(
@@ -121,7 +123,15 @@ fun AgendaExchangeScreen(
                             )
                         }
                     }
-                    // Acción de Importar (Carpeta Custom) - Siempre en el extremo derecho para estabilidad visual
+
+                    // 2. Acción de Guardar Local (Disquete Outlined) - Modo Pruebas
+                    if (isSelectionMode) {
+                        IconButton(onClick = { onSaveLocalClick(selectedItems) }) {
+                            Icon(Icons.Outlined.Save, null, tint = Color.White)
+                        }
+                    }
+
+                    // 3. Acción de Importar (Carpeta Custom) - Siempre en el extremo derecho
                     IconButton(onClick = onImportClick) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_folder_open_custom), 
@@ -236,6 +246,28 @@ fun AgendaExchangeScreen(
                         isSelected = activeFilters.contains("NOTE"),
                         color = CalendarioTheme.colors.cabecera,
                         onClick = { onToggleFilter("NOTE") }
+                    )
+                    
+                    Spacer(Modifier.width(4.dp))
+                    
+                    // BOTÓN SELECCIONAR TODO (v3.1.34: Solo elementos visibles)
+                    val visibleItems = remember(searchResults) { searchResults.values.flatten().toSet() }
+                    val allVisibleSelected = remember(selectedItems, visibleItems) { 
+                        visibleItems.isNotEmpty() && visibleItems.all { it in selectedItems } 
+                    }
+                    
+                    FilterShortcutChip(
+                        icon = if (allVisibleSelected) Icons.Default.LibraryAddCheck else Icons.Default.SelectAll,
+                        label = "",
+                        isSelected = allVisibleSelected,
+                        color = CalendarioTheme.colors.cabecera,
+                        onClick = {
+                            if (allVisibleSelected) {
+                                selectedItems = selectedItems - visibleItems
+                            } else {
+                                selectedItems = selectedItems + visibleItems
+                            }
+                        }
                     )
                 }
             }
