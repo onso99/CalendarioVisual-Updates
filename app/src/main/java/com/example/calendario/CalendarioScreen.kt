@@ -328,6 +328,123 @@ fun CalendarioScreen(
         }
     }
 
+    // --- DIÁLOGOS GLOBALES (Reubicados para visibilidad sobre cualquier pantalla v3.1.34) ---
+    if (showSelectCalendarsDialog) {
+        SelectCalendarsDialog(
+            initialSelectedIds = uiState.selectedCalendarIds,
+            availableCalendars = uiState.availableCalendars,
+            favoriteCalendarId = uiState.favoriteCalendarId,
+            onDismissRequest = { showSelectCalendarsDialog = false },
+            onApplySelection = { newlySelectedIds ->
+                showSelectCalendarsDialog = false
+                scope.launch {
+                    val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds)
+                    viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
+                }
+            },
+            onSetFavorite = viewModel::setFavoriteCalendar
+        )
+    }
+
+    if (showDayEventsDialog && selectedDateForDialog != null) {
+        DayEventsDialog(
+            date = selectedDateForDialog!!,
+            events = eventsForDialog,
+            note = uiState.dailyNotes[selectedDateForDialog.toString()],
+            onSaveNote = { content ->
+                viewModel.saveDailyNote(selectedDateForDialog!!, content)
+            },
+            onDeleteNote = {
+                viewModel.deleteDailyNote(selectedDateForDialog!!)
+            },
+            availableCalendars = uiState.availableCalendars,
+            onDismissRequest = {
+                showDayEventsDialog = false
+                selectedDateForDialog = null
+                eventsForDialog = emptyList()
+            },
+            onAddEventClick = { date ->
+                showDayEventsDialog = false
+                launchAddEditScreen(date, null)
+            },
+            onEventClick = { event ->
+                showDayEventsDialog = false
+                onEventClickHandler(event)
+            }
+        )
+    }
+
+    if (showReadOnlyDialog && eventForReadOnlyDialog != null) {
+        ReadOnlyEventDialog(
+            onDismissRequest = { showReadOnlyDialog = false },
+            festivo = eventForReadOnlyDialog!!,
+            calendar = uiState.availableCalendars.find { it.id == eventForReadOnlyDialog!!.calendarId },
+            onOpenHolidayManager = { festivo ->
+                holidayForManager = festivo
+                showHolidayManagerScreen = true
+            },
+            onRemoveFromHistory = { festivo ->
+                eventToDeleteOrphan = festivo
+                showDeleteOrphanDialog = true
+            }
+        )
+    }
+
+    if (showDeleteOrphanDialog && eventToDeleteOrphan != null) {
+        ConfirmDeleteDialog(
+            onDismissRequest = { 
+                showDeleteOrphanDialog = false
+                eventToDeleteOrphan = null
+            },
+            onConfirm = {
+                val event = eventToDeleteOrphan!!
+                viewModel.removeOrphanEvent(event)
+                
+                // Mostrar Toast unificado
+                val fmt = DateTimeFormatter.ofPattern("d/M/yy")
+                val dateStr = event.date.format(fmt)
+                val displayTitle = if (event.title.length > 60) event.title.take(57) + "..." else event.title
+                val message = context.applicationContext.getString(R.string.event_deleted_message, dateStr, displayTitle)
+                Toast.makeText(context.applicationContext, message, Toast.LENGTH_SHORT).show()
+
+                showDeleteOrphanDialog = false
+                eventToDeleteOrphan = null
+                showReadOnlyDialog = false // Cerrar también la ficha
+            },
+            title = eventToDeleteOrphan!!.title,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_ghost_24),
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+        )
+    }
+
+    if (showGoToYearDialog) {
+        GoToYearDialog(
+            initialYear = currentYear.value,
+            onYearSelected = {
+                val targetYearPage = it - startYear.value
+                scope.launch { yearPagerState.scrollToPage(targetYearPage) }
+            },
+            onDismissRequest = { showGoToYearDialog = false }
+        )
+    }
+
+    if (uiState.showAgendaImportPreview) {
+        AgendaImportPreviewDialog(
+            events = uiState.agendaImportEvents,
+            notes = uiState.agendaImportNotes,
+            availableCalendars = uiState.availableCalendars,
+            favoriteCalendarId = uiState.favoriteCalendarId,
+            onConfirm = viewModel::applyAgendaImport,
+            onDismiss = viewModel::cancelAgendaImport
+        )
+    }
+
     if (showHolidayManagerScreen) {
         HolidayManagerScreen(
             onBackPress = { 
@@ -393,6 +510,14 @@ fun CalendarioScreen(
             onToggleFilter = viewModel::toggleAgendaFilter,
             searchResults = uiState.agendaSearchResults,
             onClose = { showAgendaExchangeScreen = false },
+            onEventClick = { event ->
+                eventForReadOnlyDialog = event
+                showReadOnlyDialog = true
+            },
+            onNoteClick = { note ->
+                selectedDateForDialog = note.date
+                showDayEventsDialog = true
+            },
             onImportClick = { importCvoLauncher.launch(arrayOf("*/*")) },
             onExportClick = { selectedSet ->
                 val events = selectedSet.filterIsInstance<SearchItem.Event>().map { it.festivo }
@@ -956,101 +1081,6 @@ fun CalendarioScreen(
                 }
             }
         }
-    }
-
-    // --- DIÁLOGOS GLOBALES (Disponibles tanto en calendario como en búsqueda) ---
-    if (showSelectCalendarsDialog) {
-        SelectCalendarsDialog(
-            initialSelectedIds = uiState.selectedCalendarIds,
-            availableCalendars = uiState.availableCalendars,
-            favoriteCalendarId = uiState.favoriteCalendarId,
-            onDismissRequest = { showSelectCalendarsDialog = false },
-            onApplySelection = { newlySelectedIds ->
-                showSelectCalendarsDialog = false
-                scope.launch {
-                    val updatedFestivosMap = readFestivosFromCalendarsSuspend(context, newlySelectedIds)
-                    viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
-                }
-            },
-            onSetFavorite = viewModel::setFavoriteCalendar
-        )
-    }
-
-    if (showDayEventsDialog && selectedDateForDialog != null) {
-        DayEventsDialog(
-            date = selectedDateForDialog!!,
-            events = eventsForDialog,
-            note = uiState.dailyNotes[selectedDateForDialog.toString()],
-            onSaveNote = { content ->
-                viewModel.saveDailyNote(selectedDateForDialog!!, content)
-            },
-            onDeleteNote = {
-                viewModel.deleteDailyNote(selectedDateForDialog!!)
-            },
-            availableCalendars = uiState.availableCalendars,
-            onDismissRequest = {
-                showDayEventsDialog = false
-                selectedDateForDialog = null
-                eventsForDialog = emptyList()
-            },
-            onAddEventClick = { date ->
-                showDayEventsDialog = false
-                launchAddEditScreen(date, null)
-            },
-            onEventClick = { event ->
-                showDayEventsDialog = false
-                onEventClickHandler(event)
-            }
-        )
-    }
-
-    if (showReadOnlyDialog && eventForReadOnlyDialog != null) {
-        ReadOnlyEventDialog(
-            onDismissRequest = { showReadOnlyDialog = false },
-            festivo = eventForReadOnlyDialog!!,
-            calendar = uiState.availableCalendars.find { it.id == eventForReadOnlyDialog!!.calendarId },
-            onOpenHolidayManager = { festivo ->
-                holidayForManager = festivo
-                showHolidayManagerScreen = true
-            },
-            onRemoveFromHistory = { festivo ->
-                eventToDeleteOrphan = festivo
-                showDeleteOrphanDialog = true
-            }
-        )
-    }
-
-    if (showDeleteOrphanDialog && eventToDeleteOrphan != null) {
-        ConfirmDeleteDialog(
-            onDismissRequest = { 
-                showDeleteOrphanDialog = false
-                eventToDeleteOrphan = null
-            },
-            onConfirm = {
-                val event = eventToDeleteOrphan!!
-                viewModel.removeOrphanEvent(event)
-                
-                // Mostrar Toast unificado
-                val fmt = DateTimeFormatter.ofPattern("d/M/yy")
-                val dateStr = event.date.format(fmt)
-                val displayTitle = if (event.title.length > 60) event.title.take(57) + "..." else event.title
-                val message = context.applicationContext.getString(R.string.event_deleted_message, dateStr, displayTitle)
-                Toast.makeText(context.applicationContext, message, Toast.LENGTH_SHORT).show()
-
-                showDeleteOrphanDialog = false
-                eventToDeleteOrphan = null
-                showReadOnlyDialog = false // Cerrar también la ficha
-            },
-            title = eventToDeleteOrphan!!.title,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_ghost_24),
-                    contentDescription = null,
-                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                    modifier = Modifier.size(36.dp)
-                )
-            }
-        )
     }
 
     if (showGoToYearDialog) {

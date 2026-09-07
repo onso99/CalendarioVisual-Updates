@@ -318,35 +318,97 @@ fun ReadOnlyEventDialog(
     onOpenHolidayManager: (Festivo) -> Unit,
     onRemoveFromHistory: (Festivo) -> Unit // Nueva acción
 ) {
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("E, dd MMM yyyy") }
-    AlertDialog(onDismissRequest = onDismissRequest, containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(festivo.title.ifBlank { stringResource(id = R.string.no_title) }, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start, color = CalendarioTheme.colors.textSystem) },
-        text = { SelectionContainer { Column {
-            Text(festivo.date.format(dateFormatter).replaceFirstChar(Char::titlecase), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
-            if (!festivo.isAllDay) Text("${festivo.startTime?.format(timeFormatter) ?: "--:--"} - ${festivo.endTime?.format(timeFormatter) ?: "--:--"}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f))
-            Spacer(Modifier.height(16.dp))
-            Spacer(Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (festivo.isGhost || (calendar == null && festivo.calendarId > 0)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_ghost_24),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                        modifier = Modifier.size(20.dp).padding(end = 8.dp)
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEE, d MMM yyyy", locale) }
+    
+    // Lógica de color original del evento (v3.1.34)
+    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
+    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+
+    val normalizedTitle = festivo.title.unaccent().lowercase()
+    val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
+    val esCumpleanos = festivo.isBirthday && !esFestivo
+    val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
+    val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
+
+    val eventColor = when {
+        esEvento1 -> CalendarioTheme.colors.textEvent1
+        esEvento2 -> CalendarioTheme.colors.textEvent2
+        esFestivo -> CalendarioTheme.colors.textSundayHoliday
+        esCumpleanos -> CalendarioTheme.colors.textBirthday
+        else -> CalendarioTheme.colors.textSystem
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest, 
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        title = { 
+            // LA FECHA COMO CABECERA ABREVIADA (v3.1.34)
+            Text(
+                text = festivo.date.format(dateFormatter).replaceFirstChar { it.titlecase(locale) }, 
+                fontWeight = FontWeight.Bold, 
+                fontSize = 18.sp,
+                color = CalendarioTheme.colors.cabecera 
+            ) 
+        },
+        text = { 
+            SelectionContainer { 
+                Column {
+                    // EL TÍTULO DEL EVENTO CON SU COLOR ORIGINAL (v3.1.34: Incluye edad para cumpleaños)
+                    val ageText = if (festivo.age != null && festivo.age > 0) " (${festivo.age})" else ""
+                    Text(
+                        text = (festivo.title.ifBlank { stringResource(id = R.string.no_title) }) + ageText,
+                        fontSize = 16.sp,
+                        color = eventColor
                     )
+                    
+                    Spacer(Modifier.height(8.dp))
+
+                    if (!festivo.isAllDay) {
+                        Text(
+                            text = "${festivo.startTime?.format(timeFormatter) ?: "--:--"} - ${festivo.endTime?.format(timeFormatter) ?: "--:--"}", 
+                            fontSize = 14.sp, 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.all_day_switch),
+                            fontSize = 14.sp, 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+                        )
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+                    
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (festivo.isGhost || (calendar == null && festivo.calendarId > 0)) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_ghost_24),
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                                modifier = Modifier.size(20.dp).padding(end = 8.dp)
+                            )
+                        }
+                        Text(
+                            text = stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), 
+                            fontSize = 14.sp, 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                        )
+                    }
+                    if (calendar?.canModify == false) {
+                        Text(
+                            text = stringResource(id = R.string.calendar_read_only_error),
+                            fontSize = 12.sp,
+                            color = CalendarioTheme.colors.textSundayHoliday.copy(alpha = 0.8f),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
-                Text(stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
             }
-            if (calendar?.canModify == false) {
-                Text(
-                    text = stringResource(id = R.string.calendar_read_only_error),
-                    fontSize = 13.sp,
-                    color = CalendarioTheme.colors.textSundayHoliday.copy(alpha = 0.8f),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-        }}},
+        },
         confirmButton = { 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (festivo.isFromHolidaySource) {

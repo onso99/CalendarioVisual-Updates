@@ -1,3 +1,5 @@
+2026-09-07 - v3.1.47 Refinamiento de diálogos informativos e importación inteligente: Fecha como cabecera abreviada, títulos coloreados, jerarquía visual mejorada y prevención de duplicados por contenido
+2026-09-07 - v3.1.46 Refinamiento visual de Compartir: Agrupación de elementos por meses y diseño de cabeceras redondeadas para una mejor organización de la agenda
 2026-09-07 - v3.1.45 Refinamiento de la Importación de Agenda: Asistente instantáneo, mensaje de éxito unificado y motor de fusión inteligente para evitar duplicados en notas y eventos
 2026-09-06 - v3.1.44 Especialización de Compartir (Fase 3): Filtros avanzados de rango/categoría, iconos premium, persistencia en ViewModel y estabilidad visual de la cabecera
 2026-09-06 - v3.1.43 Centro de Gestión de Agenda (Fase 2): Nueva pantalla "Compartir" integrada en el menú lateral para la gestión exclusiva de archivos .cvo

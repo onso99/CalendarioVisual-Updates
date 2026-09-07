@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +52,8 @@ fun AgendaExchangeScreen(
     onToggleFilter: (String) -> Unit,
     searchResults: Map<LocalDate, List<SearchItem>>,
     onClose: () -> Unit,
+    onEventClick: (Festivo) -> Unit, // Nuevo (v3.1.34)
+    onNoteClick: (DailyNote) -> Unit,   // Nuevo (v3.1.34)
     onImportClick: () -> Unit,
     onExportClick: (Set<SearchItem>) -> Unit,
     availableCalendars: List<CalendarInfo>,
@@ -57,13 +61,15 @@ fun AgendaExchangeScreen(
     val locale = LocalConfiguration.current.locales[0]
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val haptic = LocalHapticFeedback.current
     val lazyListState = rememberLazyListState()
 
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePickerDialog by remember { mutableStateOf(false) }
 
-    // En esta pantalla la selección es el modo principal (v3.1.42)
+    // En esta pantalla la selección ahora es opcional como en búsqueda (v3.1.34)
     var selectedItems by remember { mutableStateOf(setOf<SearchItem>()) }
+    val isSelectionMode = selectedItems.isNotEmpty()
     
     // Reiniciar selección si la búsqueda o filtros cambian (Modelo Drive)
     LaunchedEffect(searchQuery, startDate, endDate, activeFilters) {
@@ -76,11 +82,11 @@ fun AgendaExchangeScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = stringResource(id = R.string.import_agenda_title), // "Importar/Exportar Agenda"
+                            text = stringResource(id = R.string.import_agenda_title),
                             color = Color.White,
                             fontSize = 20.sp
                         )
-                        if (selectedItems.isNotEmpty()) {
+                        if (isSelectionMode) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = stringResource(id = R.string.selected_count_short, selectedItems.size),
@@ -105,7 +111,7 @@ fun AgendaExchangeScreen(
                 },
                 actions = {
                     // Acción de Exportar (Avión) - Solo si hay selección (v3.1.34: Aparece a la izquierda para no desplazar la carpeta)
-                    if (selectedItems.isNotEmpty()) {
+                    if (isSelectionMode) {
                         IconButton(onClick = { onExportClick(selectedItems) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_send_custom), 
@@ -274,10 +280,19 @@ fun AgendaExchangeScreen(
                                             availableCalendars = availableCalendars,
                                             isSelected = isSelected,
                                             isSpecial = false,
-                                            onEventClick = { _ ->
-                                                selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                            onEventClick = { clicked ->
+                                                if (isSelectionMode) {
+                                                    selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                                } else {
+                                                    onEventClick(clicked)
+                                                }
                                             },
-                                            onLongClick = { },
+                                            onLongClick = {
+                                                if (!isSelectionMode) {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    selectedItems += searchItem
+                                                }
+                                            },
                                             searchScope = SearchScope.YEAR
                                         )
                                     }
@@ -288,9 +303,18 @@ fun AgendaExchangeScreen(
                                             isSelected = isSelected,
                                             searchScope = SearchScope.YEAR,
                                             onClick = {
-                                                selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                                if (isSelectionMode) {
+                                                    selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                                } else {
+                                                    onNoteClick(searchItem.dailyNote)
+                                                }
                                             },
-                                            onLongClick = { }
+                                            onLongClick = {
+                                                if (!isSelectionMode) {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    selectedItems += searchItem
+                                                }
+                                            }
                                         )
                                     }
                                 }
