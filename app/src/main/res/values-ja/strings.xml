@@ -339,6 +339,7 @@
     <string name="select_target_calendar">ターゲットカレンダー</string>
     <string name="import_summary">%1$d 個のイベントと %2$d 個のメモがインポートされます。</string>
     <string name="import_button">インポート</string>
+    <string name="import_success">インポートに成功しました</string>
 
 </resources>
 

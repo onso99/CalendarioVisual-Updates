@@ -340,6 +340,7 @@
     <string name="select_target_calendar">Calendari de destí</string>
     <string name="import_summary">S\'importaran %1$d esdeveniments i %2$d notes.</string>
     <string name="import_button">Importar</string>
+    <string name="import_success">Importació realitzada amb èxit</string>
 
 </resources>
 

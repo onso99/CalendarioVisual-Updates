@@ -339,6 +339,7 @@
     <string name="select_target_calendar">Zielkalender</string>
     <string name="import_summary">%1$d Ereignisse und %2$d Notizen werden importiert.</string>
     <string name="import_button">Importieren</string>
+    <string name="import_success">Import erfolgreich</string>
 
 </resources>
 

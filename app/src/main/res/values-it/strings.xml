@@ -340,6 +340,7 @@
     <string name="select_target_calendar">Calendario di destinazione</string>
     <string name="import_summary">Verranno importati %1$d eventi e %2$d note.</string>
     <string name="import_button">Importa</string>
+    <string name="import_success">Importazione completata con successo</string>
 
 </resources>
 

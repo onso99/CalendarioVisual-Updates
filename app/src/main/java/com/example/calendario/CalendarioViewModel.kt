@@ -441,9 +441,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun importHolidaysFromCvo(uri: Uri, onResult: (Boolean, String?) -> Unit) {
+    fun importHolidaysFromCvo(uri: Uri, onResult: (Boolean, String?, Boolean) -> Unit) {
         viewModelScope.launch {
             val context = getApplication<Application>()
+            var isAgenda = false
             val success = withContext(Dispatchers.IO) {
                 try {
                     val content = context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() } ?: return@withContext false
@@ -451,6 +452,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val tipo = json.optString("tipo")
                     
                     if (tipo == "CVO_AGENDA") {
+                        isAgenda = true
                         // MODO AGENDA: Preparar previsualización (v3.1.34)
                         val eventsArray = json.optJSONArray("eventos")
                         val notesArray = json.optJSONArray("notas")
@@ -524,7 +526,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 refreshAdjustments()
                 refreshData()
             }
-            onResult(success, if (success) null else "Error al procesar archivo")
+            onResult(success, if (success) null else "Error al procesar archivo", isAgenda)
         }
     }
 
@@ -535,35 +537,59 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val notesToImport = _uiState.value.agendaImportNotes
             
             withContext(Dispatchers.IO) {
-                // 1. Importar Eventos
+                // 1. Importar Eventos (Evitando duplicados exactos en el mismo calendario) v3.1.34
+                val currentEvents = readFestivosFromCalendarsSync(context, setOf(targetCalendarId)).values.flatten()
+                val currentAdns = currentEvents.map { it.adn }.toSet()
+
                 eventsToImport.forEach { event ->
-                    createEvent(
-                        context = context,
-                        title = event.title,
-                        calendarId = targetCalendarId,
-                        startDate = event.date.atStartOfDay(),
-                        endDate = if (event.isLongPeriod) event.date.plusDays(1).atStartOfDay() else event.date.atStartOfDay(),
-                        isAllDay = event.isAllDay,
-                        repetitionRule = RepetitionRule.entries.find { it.rrule == event.rrule } ?: RepetitionRule.NONE,
-                        isLongPeriod = event.isLongPeriod
-                    )
+                    val targetAdn = Festivo.generateAdn(event.date, event.title, null)
+                    
+                    if (!currentAdns.contains(targetAdn)) {
+                        createEvent(
+                            context = context,
+                            title = event.title,
+                            calendarId = targetCalendarId,
+                            startDate = event.date.atStartOfDay(),
+                            endDate = if (event.isLongPeriod) event.date.plusDays(1).atStartOfDay() else event.date.atStartOfDay(),
+                            isAllDay = event.isAllDay,
+                            repetitionRule = RepetitionRule.entries.find { it.rrule == event.rrule } ?: RepetitionRule.NONE,
+                            isLongPeriod = event.isLongPeriod
+                        )
+                    }
                 }
 
-                // 2. Importar Notas (Lógica de Fusión)
+                // 2. Importar Notas (Lógica de Fusión Inteligente por Contención v3.1.34)
                 notesToImport.forEach { importedNote ->
                     val existingNote = dao.getNoteByDate(importedNote.dateStr)
-                    val newContent = if (existingNote != null && existingNote.content.isNotBlank()) {
-                        "${existingNote.content}\n---\n${importedNote.content}"
+                    
+                    if (existingNote == null || existingNote.content.isBlank()) {
+                        dao.insertNote(NoteEntity(importedNote.dateStr, importedNote.content, System.currentTimeMillis(), false))
                     } else {
-                        importedNote.content
+                        val localContent = existingNote.content.trim()
+                        val impContent = importedNote.content.trim()
+
+                        when {
+                            localContent.contains(impContent) -> {
+                                // Caso B: Ya está incluido. No hacer nada.
+                                Log.d("CalendarioVM", "Nota ignorada por duplicado en ${importedNote.dateStr}")
+                            }
+                            impContent.contains(localContent) -> {
+                                // Caso C: La importada es más completa. Sustituir.
+                                dao.insertNote(NoteEntity(importedNote.dateStr, importedNote.content, System.currentTimeMillis(), false))
+                            }
+                            else -> {
+                                // Caso D: Son diferentes. Añadir al final.
+                                val combined = "${existingNote.content}\n---\n${importedNote.content}"
+                                dao.insertNote(NoteEntity(importedNote.dateStr, combined, System.currentTimeMillis(), false))
+                            }
+                        }
                     }
-                    dao.insertNote(NoteEntity(importedNote.dateStr, newContent, System.currentTimeMillis(), false))
                 }
             }
             
             cancelAgendaImport()
             refreshData()
-            Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
         }
     }
 

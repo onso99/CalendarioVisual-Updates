@@ -339,6 +339,7 @@
     <string name="select_target_calendar">目标日历</string>
     <string name="import_summary">将导入 %1$d 个事件和 %2$d 条备注。</string>
     <string name="import_button">导入</string>
+    <string name="import_success">导入成功</string>
 
 </resources>
 

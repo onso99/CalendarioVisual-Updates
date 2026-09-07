@@ -1,3 +1,4 @@
+2026-09-07 - v3.1.45 Refinamiento de la Importación de Agenda: Asistente instantáneo, mensaje de éxito unificado y motor de fusión inteligente para evitar duplicados en notas y eventos
 2026-09-06 - v3.1.44 Especialización de Compartir (Fase 3): Filtros avanzados de rango/categoría, iconos premium, persistencia en ViewModel y estabilidad visual de la cabecera
 2026-09-06 - v3.1.43 Centro de Gestión de Agenda (Fase 2): Nueva pantalla "Compartir" integrada en el menú lateral para la gestión exclusiva de archivos .cvo
 2026-09-06 - v3.1.42 Refactorización de Búsqueda (Fase 1): Extracción de componentes a SearchComponents y especialización de la pantalla para navegación y borrado

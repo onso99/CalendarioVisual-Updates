@@ -188,8 +188,12 @@ fun CalendarioScreen(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            viewModel.importHolidaysFromCvo(it) { success, error ->
-                if (!success && error != null) {
+            viewModel.importHolidaysFromCvo(it) { success, error, isAgenda ->
+                if (success) {
+                    if (!isAgenda) {
+                        Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
+                    }
+                } else if (error != null) {
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -336,6 +340,17 @@ fun CalendarioScreen(
             initialFestivo = holidayForManager
         )
         return
+    }
+
+    if (uiState.showAgendaImportPreview) {
+        AgendaImportPreviewDialog(
+            events = uiState.agendaImportEvents,
+            notes = uiState.agendaImportNotes,
+            availableCalendars = uiState.availableCalendars,
+            favoriteCalendarId = uiState.favoriteCalendarId,
+            onConfirm = viewModel::applyAgendaImport,
+            onDismiss = viewModel::cancelAgendaImport
+        )
     }
 
     if (showAddEventScreen) {
@@ -958,17 +973,6 @@ fun CalendarioScreen(
                 }
             },
             onSetFavorite = viewModel::setFavoriteCalendar
-        )
-    }
-
-    if (uiState.showAgendaImportPreview) {
-        AgendaImportPreviewDialog(
-            events = uiState.agendaImportEvents,
-            notes = uiState.agendaImportNotes,
-            availableCalendars = uiState.availableCalendars,
-            favoriteCalendarId = uiState.favoriteCalendarId,
-            onConfirm = viewModel::applyAgendaImport,
-            onDismiss = viewModel::cancelAgendaImport
         )
     }
 

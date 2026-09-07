@@ -338,6 +338,7 @@
     <string name="select_target_calendar">Helburuko egutegia</string>
     <string name="import_summary">%1$d ekitaldi eta %2$d ohar inportatuko dira.</string>
     <string name="import_button">Inportatu</string>
+    <string name="import_success">Inportazioa ongi burutu da</string>
 
 </resources>
 

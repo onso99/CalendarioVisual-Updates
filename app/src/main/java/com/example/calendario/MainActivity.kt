@@ -109,9 +109,11 @@ class MainActivity : AppCompatActivity() {
         if (Intent.ACTION_VIEW == action && data != null) {
             val path = data.path ?: ""
             if (path.endsWith(".cvo") || data.toString().contains(".cvo") || intent.type == "application/octet-stream") {
-                calendarioViewModel.importHolidaysFromCvo(data) { success, error ->
+                calendarioViewModel.importHolidaysFromCvo(data) { success, error, isAgenda ->
                     if (success) {
-                        Toast.makeText(this, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
+                        if (!isAgenda) {
+                            Toast.makeText(this, R.string.import_success, Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(this, error ?: "Error al importar", Toast.LENGTH_LONG).show()
                     }

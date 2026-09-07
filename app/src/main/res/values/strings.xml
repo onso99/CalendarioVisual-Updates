@@ -38,7 +38,7 @@
     <string name="maintenance_section">Mantenimiento</string>
     <string name="other_calendars">Todos los calendarios</string>
     <string name="monthly_view">Mensual</string>
-    <string name="yearly_view">Anual</string>
+    <string name="yearly_view" tools:ignore="Typos">Anual</string>
     <string name="long_period_switch">Periodo largo</string>
     <string name="date">Fecha</string>
     <string name="end_time">Fin</string>
@@ -95,7 +95,7 @@
     <string name="theme_name">Nombre del tema</string>
     <string name="export">Guardar</string>
     <string name="help_section_calendar_views">Vista de calendario</string>
-    <string name="help_calendar_views_1">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas desde el menú lateral (3 líneas).</string>
+    <string name="help_calendar_views_1" tools:ignore="Typos">La aplicación tiene dos vistas principales: Mensual y Anual. Puedes cambiar entre ellas desde el menú lateral (3 líneas).</string>
     <string name="help_calendar_views_2">En la vista mensual, desliza a izquierda o derecha para cambiar de mes. La flecha superior izquierda de la cabecera volverá al mes actual.</string>
     <string name="help_section_event_management">Gestión de eventos</string>
     <string name="help_event_management_1">Pulsa en un día del calendario mensual para ver sus eventos o añadir uno nuevo. También se pueden crear eventos pulsando en el icono (+) de la cabecera.</string>
@@ -131,6 +131,7 @@
     <string name="reset_color">Restablecer</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="holidays_exported_successfully">Festivos exportados con éxito</string>
+    <string name="import_success">Importación realizada con éxito</string>
     <string name="error_exporting_theme">Error al exportar el tema: %1$s</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">No se pudo leer el archivo.</string>
