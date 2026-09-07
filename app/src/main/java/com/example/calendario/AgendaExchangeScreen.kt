@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.Instant
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
@@ -238,44 +239,60 @@ fun AgendaExchangeScreen(
                     Text(stringResource(id = R.string.no_results_found), color = CalendarioTheme.colors.textSystem)
                 }
             } else {
+                val groupedByMonth = remember(searchResults) {
+                    searchResults.keys.groupBy { YearMonth.from(it) }
+                        .toSortedMap(compareByDescending { it })
+                }
+
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
-                    searchResults.forEach { (date, items) ->
+                    groupedByMonth.forEach { (month, daysInMonth) ->
                         stickyHeader {
-                            Text(
-                                text = date.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale)).replaceFirstChar { it.titlecase(locale) },
-                                modifier = Modifier.fillMaxWidth().background(CalendarioTheme.colors.fondoSecciones).padding(8.dp),
-                                fontWeight = FontWeight.Bold,
-                                color = CalendarioTheme.colors.textSystem
-                            )
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = CalendarioTheme.colors.fondoSecciones,
+                                shadowElevation = 1.dp
+                            ) {
+                                Text(
+                                    text = month.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale)).replaceFirstChar { it.titlecase(locale) },
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                    fontWeight = FontWeight.Bold,
+                                    color = CalendarioTheme.colors.cabecera
+                                )
+                            }
                         }
 
-                        items(items, key = { it.adn }) { searchItem ->
-                            when (searchItem) {
-                                is SearchItem.Event -> {
-                                    val isSelected = selectedItems.contains(searchItem)
-                                    EventRow(
-                                        festivo = searchItem.festivo,
-                                        availableCalendars = availableCalendars,
-                                        isSelected = isSelected,
-                                        isSpecial = false, // En exportación permitimos todo
-                                        onEventClick = { _ ->
-                                            selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
-                                        },
-                                        onLongClick = { }, // Ya está en modo selección
-                                        searchScope = SearchScope.YEAR
-                                    )
-                                }
-                                is SearchItem.Note -> {
-                                    val isSelected = selectedItems.contains(searchItem)
-                                    NoteRow(
-                                        note = searchItem.dailyNote,
-                                        isSelected = isSelected,
-                                        searchScope = SearchScope.YEAR,
-                                        onClick = {
-                                            selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
-                                        },
-                                        onLongClick = { }
-                                    )
+                        daysInMonth.forEach { day ->
+                            items(searchResults[day] ?: emptyList(), key = { it.adn }) { searchItem ->
+                                when (searchItem) {
+                                    is SearchItem.Event -> {
+                                        val isSelected = selectedItems.contains(searchItem)
+                                        EventRow(
+                                            festivo = searchItem.festivo,
+                                            availableCalendars = availableCalendars,
+                                            isSelected = isSelected,
+                                            isSpecial = false,
+                                            onEventClick = { _ ->
+                                                selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                            },
+                                            onLongClick = { },
+                                            searchScope = SearchScope.YEAR
+                                        )
+                                    }
+                                    is SearchItem.Note -> {
+                                        val isSelected = selectedItems.contains(searchItem)
+                                        NoteRow(
+                                            note = searchItem.dailyNote,
+                                            isSelected = isSelected,
+                                            searchScope = SearchScope.YEAR,
+                                            onClick = {
+                                                selectedItems = if (isSelected) selectedItems - searchItem else selectedItems + searchItem
+                                            },
+                                            onLongClick = { }
+                                        )
+                                    }
                                 }
                             }
                         }
