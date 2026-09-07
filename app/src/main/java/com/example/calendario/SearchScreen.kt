@@ -212,12 +212,21 @@ fun SearchScreen(
                                 SearchScope.ALL -> date.format(DateTimeFormatter.ofPattern("yyyy", locale))
                             }.replaceFirstChar { it.titlecase(locale) }
 
-                            Text(
-                                text = headerText,
-                                modifier = Modifier.fillMaxWidth().background(CalendarioTheme.colors.fondoSecciones).padding(8.dp),
-                                fontWeight = FontWeight.Bold,
-                                color = CalendarioTheme.colors.textSystem
-                            )
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = CalendarioTheme.colors.fondoSecciones,
+                                shadowElevation = 1.dp
+                            ) {
+                                Text(
+                                    text = headerText,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                    fontWeight = FontWeight.Bold,
+                                    color = CalendarioTheme.colors.cabecera
+                                )
+                            }
                         }
                         
                         items(events, key = { it.adn }) { searchItem ->
