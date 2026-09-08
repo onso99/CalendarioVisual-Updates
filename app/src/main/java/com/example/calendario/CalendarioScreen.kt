@@ -759,7 +759,7 @@ fun CalendarioScreen(
                             showManageCalendarsScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.Event, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(painter = painterResource(id = R.drawable.ic_select_window_custom), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(24.dp)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -777,7 +777,7 @@ fun CalendarioScreen(
                             showAgendaExchangeScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(painter = painterResource(id = R.drawable.ic_send_custom), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(24.dp)) },
+                        icon = { Icon(Icons.Outlined.Share, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -785,11 +785,11 @@ fun CalendarioScreen(
                     NavigationDrawerItem(
                         label = { Text(stringResource(id = R.string.holiday_manager_title)) },
                         selected = false,
-                        onClick = { 
+                        onClick = {
                             showHolidayManagerScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.BeachAccess, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.Celebration, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )

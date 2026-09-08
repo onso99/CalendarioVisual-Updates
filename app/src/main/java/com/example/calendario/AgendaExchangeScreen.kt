@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.LooksOne
 import androidx.compose.material.icons.outlined.LooksTwo
 import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -112,14 +113,13 @@ fun AgendaExchangeScreen(
                     }
                 },
                 actions = {
-                    // 1. Acción de Exportar (Avión) - Solo si hay selección
+                    // 1. Acción de Exportar (Compartir Clásico - v3.1.34)
                     if (isSelectionMode) {
                         IconButton(onClick = { onExportClick(selectedItems) }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_send_custom), 
+                                imageVector = Icons.Outlined.Share, 
                                 contentDescription = stringResource(id = R.string.share_event), 
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                                tint = Color.White
                             )
                         }
                     }
