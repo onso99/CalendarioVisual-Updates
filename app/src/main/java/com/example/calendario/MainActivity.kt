@@ -116,13 +116,9 @@ class MainActivity : AppCompatActivity() {
             val isCvo = path.endsWith(".cvo") || data.toString().contains(".cvo") || intent.type == "application/octet-stream"
             
             if (isCvo) {
-                calendarioViewModel.processExternalCvo(data) { success, error, isAgenda ->
-                    if (success) {
-                        if (!isAgenda) {
-                            Toast.makeText(this, R.string.import_success, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(this, error ?: "Error al importar", Toast.LENGTH_LONG).show()
+                calendarioViewModel.processExternalCvo(data) { success, error, _ ->
+                    if (!success && error != null) {
+                        Toast.makeText(this, error, Toast.LENGTH_LONG).show()
                     }
                 }
             } else {

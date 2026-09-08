@@ -70,10 +70,17 @@ fun HolidayManagerScreen(
     onBackPress: () -> Unit,
     onRefresh: () -> Unit,
     initialFestivo: Festivo? = null,
-    viewModel: CalendarioViewModel // Añadido para unificar importación (v3.1.34)
+    viewModel: CalendarioViewModel
 ) {
     val context = LocalContext.current
+    
+    // REACTIVIDAD (v3.1.34): Recargamos la lista local cada vez que el estado global de festivos cambie
+    val workingDayDates by viewModel.uiState.collectAsState()
     var adjustments by remember { mutableStateOf(loadHolidayAdjustments(context)) }
+    
+    LaunchedEffect(workingDayDates) {
+        adjustments = loadHolidayAdjustments(context)
+    }
     
     // Internal state for the current edit
     var editingAdjustment by remember { mutableStateOf<HolidayAdjustment?>(null) }

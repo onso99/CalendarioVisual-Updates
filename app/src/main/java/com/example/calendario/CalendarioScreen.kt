@@ -191,12 +191,8 @@ fun CalendarioScreen(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let { selectedUri ->
-            viewModel.processExternalCvo(selectedUri) { success, error, isAgenda ->
-                if (success) {
-                    if (!isAgenda) {
-                        Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
-                    }
-                } else if (error != null) {
+            viewModel.processExternalCvo(selectedUri) { success, error, _ ->
+                if (!success && error != null) {
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
             }
