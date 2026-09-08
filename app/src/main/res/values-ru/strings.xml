@@ -341,6 +341,9 @@
     <string name="import_summary">Будет импортировано %1$d событий и %2$d заметок.</string>
     <string name="import_button">Импортировать</string>
     <string name="import_success">Импорт успешно завершен</string>
+    <string name="agenda_file_detected_title">Тип файла: Повестка дня</string>
+    <string name="agenda_file_detected_message">Этот файл содержит события и заметки вместо праздников. Продолжить импорт?</string>
+    <string name="continue_button">Продолжить</string>
 
 </resources>
 

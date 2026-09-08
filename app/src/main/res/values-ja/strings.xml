@@ -341,6 +341,9 @@
     <string name="import_summary">%1$d 個のイベントと %2$d 個のメモがインポートされます。</string>
     <string name="import_button">インポート</string>
     <string name="import_success">インポートに成功しました</string>
+    <string name="agenda_file_detected_title">ファイル形式: 予定表</string>
+    <string name="agenda_file_detected_message">このファイルには祝日の代わりにイベントとメモが含まれています。インポートを続行しますか？</string>
+    <string name="continue_button">続行</string>
 
 </resources>
 

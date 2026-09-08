@@ -133,6 +133,9 @@
     <string name="holidays_exported_successfully">Festivos exportados con éxito</string>
     <string name="file_saved_successfully">Archivo guardado con éxito</string>
     <string name="import_success">Importación realizada con éxito</string>
+    <string name="agenda_file_detected_title">Tipo de archivo: Agenda</string>
+    <string name="agenda_file_detected_message">El archivo contiene eventos y notas en lugar de festivos. ¿Continuar con la importación?</string>
+    <string name="continue_button">Continuar</string>
     <string name="error_exporting_theme">Error al exportar el tema: %1$s</string>
     <string name="widget">Widget</string>
     <string name="could_not_read_file">No se pudo leer el archivo.</string>

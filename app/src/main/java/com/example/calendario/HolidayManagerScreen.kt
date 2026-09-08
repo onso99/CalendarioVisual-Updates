@@ -93,14 +93,20 @@ fun HolidayManagerScreen(
 
     var showDatePicker by remember { mutableStateOf(value = false) }
     var adjustmentToDelete by remember { mutableStateOf<HolidayAdjustment?>(null) }
+    var showAgendaContextWarning by remember { mutableStateOf(false) } // Nuevo (v3.1.34)
 
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            // UNIFICACIÓN (v3.1.34): Usamos el motor del ViewModel para lanzar la previsualización
-            viewModel.processExternalCvo(it) { success, error, _ ->
-                if (!success && error != null) {
+            // UNIFICACIÓN CON AVISO (v3.1.34): No mostramos la agenda directamente
+            viewModel.processExternalCvo(it, autoShowAgendaPreview = false) { success, error, isAgenda ->
+                if (success) {
+                    if (isAgenda) {
+                        // Saltamos el aviso si detectamos agenda en lugar de festivos
+                        showAgendaContextWarning = true
+                    }
+                } else if (error != null) {
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -336,6 +342,32 @@ fun HolidayManagerScreen(
                 )
             },
             dismissButton = { DialogDismissButton(onDismiss = { adjustmentToDelete = null }) }
+        )
+    }
+
+    if (showAgendaContextWarning) {
+        AlertDialog(
+            onDismissRequest = { showAgendaContextWarning = false },
+            containerColor = CalendarioTheme.colors.fondoDialogos,
+            titleContentColor = CalendarioTheme.colors.textSystem,
+            textContentColor = CalendarioTheme.colors.textSystem,
+            title = { Text(stringResource(R.string.agenda_file_detected_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+            text = { Text(stringResource(R.string.agenda_file_detected_message)) },
+            confirmButton = {
+                DialogConfirmButton(
+                    text = stringResource(R.string.continue_button),
+                    onClick = {
+                        showAgendaContextWarning = false
+                        viewModel.showAgendaImportPreview()
+                    }
+                )
+            },
+            dismissButton = {
+                DialogDismissButton(
+                    text = stringResource(R.string.cancel),
+                    onDismiss = { showAgendaContextWarning = false }
+                )
+            }
         )
     }
 }

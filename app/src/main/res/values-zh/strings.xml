@@ -341,6 +341,9 @@
     <string name="import_summary">将导入 %1$d 个事件和 %2$d 条备注。</string>
     <string name="import_button">导入</string>
     <string name="import_success">导入成功</string>
+    <string name="agenda_file_detected_title">文件类型：日程</string>
+    <string name="agenda_file_detected_message">此文件包含事件和备注，而不是节假日。是否继续导入？</string>
+    <string name="continue_button">继续</string>
 
 </resources>
 

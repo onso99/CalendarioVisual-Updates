@@ -342,6 +342,9 @@
     <string name="import_summary">Importaranse %1$d eventos e %2$d notas.</string>
     <string name="import_button">Importar</string>
     <string name="import_success">Importación realizada con éxito</string>
+    <string name="agenda_file_detected_title">Tipo de ficheiro: Axenda</string>
+    <string name="agenda_file_detected_message">O ficheiro contén eventos e notas en lugar de festivos. Continuar coa importación?</string>
+    <string name="continue_button">Continuar</string>
 
 </resources>
 

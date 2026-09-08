@@ -342,6 +342,9 @@
     <string name="import_summary">S\'importaran %1$d esdeveniments i %2$d notes.</string>
     <string name="import_button">Importar</string>
     <string name="import_success">Importació realitzada amb èxit</string>
+    <string name="agenda_file_detected_title">Tipus de fitxer: Agenda</string>
+    <string name="agenda_file_detected_message">El fitxer conté esdeveniments i notes en lloc de festius. Voleu continuar amb la importació?</string>
+    <string name="continue_button">Continuar</string>
 
 </resources>
 

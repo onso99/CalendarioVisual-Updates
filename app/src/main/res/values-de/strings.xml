@@ -341,6 +341,9 @@
     <string name="import_summary">%1$d Ereignisse und %2$d Notizen werden importiert.</string>
     <string name="import_button">Importieren</string>
     <string name="import_success">Import erfolgreich</string>
+    <string name="agenda_file_detected_title">Dateityp: Terminkalender</string>
+    <string name="agenda_file_detected_message">Diese Datei enthält Ereignisse und Notizen anstelle von Feiertagen. Import fortsetzen?</string>
+    <string name="continue_button">Weiter</string>
 
 </resources>
 

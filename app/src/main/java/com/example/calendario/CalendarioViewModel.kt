@@ -330,6 +330,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         ) }
     }
 
+    /**
+     * Fuerza la visualización del asistente de agenda tras una confirmación manual (v3.1.34)
+     */
+    fun showAgendaImportPreview() {
+        _uiState.update { it.copy(showAgendaImportPreview = true) }
+    }
+
     fun syncHistoryToDrive(context: Context, onComplete: (SyncResult) -> Unit) {
         if (_uiState.value.isSyncing) return
         viewModelScope.launch {
@@ -456,7 +463,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
      * Motor de procesamiento para archivos .cvo externos (v3.1.34)
      * Soporta tanto CVO_AGENDA (con previsualización) como CVO_HOLIDAYS (directo)
      */
-    fun processExternalCvo(uri: Uri, onResult: (Boolean, String?, Boolean) -> Unit) {
+    fun processExternalCvo(
+        uri: Uri, 
+        autoShowAgendaPreview: Boolean = true, // Nuevo parámetro (v3.1.34)
+        onResult: (Boolean, String?, Boolean) -> Unit
+    ) {
         viewModelScope.launch {
             val context = getApplication<Application>()
             var isAgenda = false
@@ -468,7 +479,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     
                     if (tipo == "CVO_AGENDA") {
                         isAgenda = true
-                        // MODO AGENDA: Preparar previsualización
+                        // MODO AGENDA: Cargar datos
                         val eventsArray = json.optJSONArray("eventos")
                         val notesArray = json.optJSONArray("notas")
                         
@@ -506,7 +517,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         _uiState.update { it.copy(
                             agendaImportEvents = importedEvents,
                             agendaImportNotes = importedNotes,
-                            showAgendaImportPreview = true
+                            showAgendaImportPreview = autoShowAgendaPreview // Activamos solo si se solicita (v3.1.34)
                         ) }
                         return@withContext true
                     } else if (tipo == "CVO_HOLIDAYS") {

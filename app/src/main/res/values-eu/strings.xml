@@ -340,6 +340,9 @@
     <string name="import_summary">%1$d ekitaldi eta %2$d ohar inportatuko dira.</string>
     <string name="import_button">Inportatu</string>
     <string name="import_success">Inportazioa ongi burutu da</string>
+    <string name="agenda_file_detected_title">Fitxategi mota: Agenda</string>
+    <string name="agenda_file_detected_message">Fitxategiak gertaerak eta oharrak ditu jaiegunen ordez. Inportazioarekin jarraitu?</string>
+    <string name="continue_button">Jarraitu</string>
 
 </resources>
 

@@ -1,3 +1,4 @@
+2026-09-08 - v3.1.51 Optimización de importación: Refresco automático de la lista de festivos, motor omnicanal inteligente y corrección de avisos prematuros de éxito
 2026-09-08 - v3.1.50 Unificación de importación con previsualización selectiva en toda la App y limpieza técnica del Gestor de Festivos
 2026-09-07 - v3.1.49 Selección masiva inteligente en pantalla Compartir: Implementado botón "Seleccionar todo" dinámico que actúa solo sobre elementos visibles filtrados para una exportación ágil
 2026-09-07 - v3.1.48 Unificación de cabeceras en pantalla Compartir y Buscar

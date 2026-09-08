@@ -342,6 +342,9 @@
     <string name="import_summary">Serão importados %1$d eventos e %2$d notas.</string>
     <string name="import_button">Importar</string>
     <string name="import_success">Importação realizada com sucesso</string>
+    <string name="agenda_file_detected_title">Tipo de arquivo: Agenda</string>
+    <string name="agenda_file_detected_message">O arquivo contém eventos e notas em vez de feriados. Continuar com a importação?</string>
+    <string name="continue_button">Continuar</string>
 
 </resources>
 
