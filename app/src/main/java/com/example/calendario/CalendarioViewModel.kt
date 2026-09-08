@@ -34,6 +34,10 @@ data class CalendarioUiState(
     val agendaImportNotes: List<DailyNote> = emptyList(),
     val showAgendaImportPreview: Boolean = false,
     
+    // --- Estado para Importación de Festivos (.cvo) v3.1.34 ---
+    val holidayImportItems: List<HolidayAdjustment> = emptyList(),
+    val showHolidayImportPreview: Boolean = false,
+    
     // --- ESTADOS FASE 3: Filtros de Agenda Compartida PERSISTENTES ---
     val agendaSearchQuery: String = "",
     val agendaStartDate: LocalDate = LocalDate.now(),
@@ -319,6 +323,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         ) }
     }
 
+    fun cancelHolidayImport() {
+        _uiState.update { it.copy(
+            showHolidayImportPreview = false,
+            holidayImportItems = emptyList()
+        ) }
+    }
+
     fun syncHistoryToDrive(context: Context, onComplete: (SyncResult) -> Unit) {
         if (_uiState.value.isSyncing) return
         viewModelScope.launch {
@@ -499,7 +510,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         ) }
                         return@withContext true
                     } else if (tipo == "CVO_HOLIDAYS") {
-                        // MODO FESTIVOS: Importación directa
+                        // MODO FESTIVOS: Preparar previsualización (v3.1.34)
                         val dataArray = json.getJSONArray("ajustes")
                         val imported = mutableListOf<HolidayAdjustment>()
                         for (i in 0 until dataArray.length()) {
@@ -515,24 +526,41 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                             )
                         }
 
-                        val current = loadHolidayAdjustments(context).toMutableList()
-                        imported.forEach { imp ->
-                            current.removeAll { adj -> adj.date == imp.date }
-                            current.add(imp)
-                        }
-                        saveHolidayAdjustments(context, current)
-                        true
+                        _uiState.update { it.copy(
+                            holidayImportItems = imported,
+                            showHolidayImportPreview = true
+                        ) }
+                        return@withContext true
                     } else false
                 } catch (e: Exception) {
                     Log.e("CalendarioVM", "Error procesando CVO externo: ${e.message}")
                     false
                 }
             }
-            if (success) {
-                refreshAdjustments()
-                refreshData()
-            }
+            // Importante: No refrescamos datos aquí, esperamos a la confirmación del diálogo (v3.1.34)
             onResult(success, if (success) null else "Error al procesar archivo", isAgenda)
+        }
+    }
+
+    /**
+     * Aplica la importación de festivos seleccionados (v3.1.34)
+     */
+    fun applyHolidayImport(selectedItems: List<HolidayAdjustment>) {
+        viewModelScope.launch {
+            val context = getApplication<Application>()
+            withContext(Dispatchers.IO) {
+                val current = loadHolidayAdjustments(context).toMutableList()
+                selectedItems.forEach { imp ->
+                    current.removeAll { adj -> adj.date == imp.date }
+                    current.add(imp)
+                }
+                saveHolidayAdjustments(context, current)
+            }
+            
+            cancelHolidayImport()
+            refreshAdjustments()
+            refreshData()
+            Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -126,3 +126,80 @@ fun AgendaImportPreviewDialog(
         dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     )
 }
+
+@Composable
+fun HolidayImportPreviewDialog(
+    adjustments: List<HolidayAdjustment>,
+    onConfirm: (List<HolidayAdjustment>) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var selectedItems by remember { mutableStateOf(adjustments.toSet()) }
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEE, d MMM yyyy") }
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.textSystem,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        title = { Text(stringResource(R.string.holiday_manager_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.import_summary, adjustments.size, 0).replace("0 notas.", ""),
+                    fontSize = 14.sp,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
+                    items(adjustments) { adj ->
+                        val isSelected = selectedItems.contains(adj)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { 
+                                    selectedItems = if (isSelected) selectedItems - adj else selectedItems + adj 
+                                }
+                                .padding(vertical = 4.dp), 
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = isSelected,
+                                onCheckedChange = { 
+                                    selectedItems = if (it) selectedItems + adj else selectedItems - adj 
+                                },
+                                colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
+                            )
+                            
+                            Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                                Text(
+                                    text = adj.title, 
+                                    fontSize = 14.sp, 
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (adj.type == HolidayAdjustmentType.HOLIDAY) CalendarioTheme.colors.textSundayHoliday else CalendarioTheme.colors.textSystem,
+                                    maxLines = 1, 
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = adj.date.format(dateFormatter).replaceFirstChar { it.titlecase(locale) }, 
+                                    fontSize = 12.sp, 
+                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            DialogConfirmButton(
+                text = stringResource(R.string.import_button),
+                onClick = { onConfirm(selectedItems.toList()) },
+                enabled = selectedItems.isNotEmpty()
+            )
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
+    )
+}

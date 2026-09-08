@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
-import org.json.JSONObject
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -71,6 +70,7 @@ fun HolidayManagerScreen(
     onBackPress: () -> Unit,
     onRefresh: () -> Unit,
     initialFestivo: Festivo? = null,
+    viewModel: CalendarioViewModel // Añadido para unificar importación (v3.1.34)
 ) {
     val context = LocalContext.current
     var adjustments by remember { mutableStateOf(loadHolidayAdjustments(context)) }
@@ -91,39 +91,11 @@ fun HolidayManagerScreen(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            try {
-                val content = context.contentResolver.openInputStream(it)?.use { r -> r.bufferedReader().readText() } ?: return@let
-                val json = JSONObject(content)
-                if (json.optString("tipo") != "CVO_HOLIDAYS") {
-                    Toast.makeText(context, R.string.incompatible_theme_file, Toast.LENGTH_SHORT).show()
-                    return@let
+            // UNIFICACIÓN (v3.1.34): Usamos el motor del ViewModel para lanzar la previsualización
+            viewModel.processExternalCvo(it) { success, error, _ ->
+                if (!success && error != null) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
-                val dataArray = json.getJSONArray("ajustes")
-                val importedAdjustments = mutableListOf<HolidayAdjustment>()
-                for (i in 0 until dataArray.length()) {
-                    val obj = dataArray.getJSONObject(i)
-                    val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
-                    importedAdjustments.add(
-                        HolidayAdjustment(
-                            date = LocalDate.parse(obj.getString("fecha")),
-                            title = obj.getString("titulo"),
-                            type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
-                            originalEventId = originalId,
-                        )
-                    )
-                }
-
-                val currentAdjustments = loadHolidayAdjustments(context).toMutableList()
-                importedAdjustments.forEach { imported ->
-                    currentAdjustments.removeAll { adj -> adj.date == imported.date }
-                    currentAdjustments.add(imported)
-                }
-                saveHolidayAdjustments(context, currentAdjustments)
-                adjustments = currentAdjustments
-                onRefresh()
-                Toast.makeText(context, R.string.holidays_imported_successfully, Toast.LENGTH_SHORT).show()
-            } catch (_: Exception) {
-                Toast.makeText(context, R.string.error_reading_holidays_file, Toast.LENGTH_LONG).show()
             }
         }
     }

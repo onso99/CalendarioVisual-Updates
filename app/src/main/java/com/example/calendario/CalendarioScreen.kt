@@ -472,6 +472,14 @@ fun CalendarioScreen(
         )
     }
 
+    if (uiState.showHolidayImportPreview) {
+        HolidayImportPreviewDialog(
+            adjustments = uiState.holidayImportItems,
+            onConfirm = viewModel::applyHolidayImport,
+            onDismiss = viewModel::cancelHolidayImport
+        )
+    }
+
     if (showHolidayManagerScreen) {
         HolidayManagerScreen(
             onBackPress = { 
@@ -481,20 +489,10 @@ fun CalendarioScreen(
             onRefresh = {
                 viewModel.refreshData()
             },
-            initialFestivo = holidayForManager
+            initialFestivo = holidayForManager,
+            viewModel = viewModel // Pasamos el ViewModel para unificar importación (v3.1.34)
         )
         return
-    }
-
-    if (uiState.showAgendaImportPreview) {
-        AgendaImportPreviewDialog(
-            events = uiState.agendaImportEvents,
-            notes = uiState.agendaImportNotes,
-            availableCalendars = uiState.availableCalendars,
-            favoriteCalendarId = uiState.favoriteCalendarId,
-            onConfirm = viewModel::applyAgendaImport,
-            onDismiss = viewModel::cancelAgendaImport
-        )
     }
 
     if (showAddEventScreen) {
