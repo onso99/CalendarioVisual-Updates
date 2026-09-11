@@ -71,7 +71,6 @@
     <string name="sunday">Sunday</string>
     <string name="saturday">Saturday</string>
     <string name="theme_imported_successfully">Theme imported successfully.</string>
-    <string name="error_reading_theme_file">Error reading theme file.</string>
     <string name="error_saving_theme_file">Error saving theme file.</string>
     <string name="general">General</string>
     <string name="language">Language</string>

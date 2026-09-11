@@ -71,7 +71,6 @@
     <string name="sunday">Domingo</string>
     <string name="saturday">Sábado</string>
     <string name="theme_imported_successfully">Tema importado con éxito.</string>
-    <string name="error_reading_theme_file">Erro ao ler o ficheiro do tema.</string>
     <string name="error_saving_theme_file">Erro ao gardar o ficheiro do tema.</string>
     <string name="general">Xeral</string>
     <string name="language">Idioma</string>

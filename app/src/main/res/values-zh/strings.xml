@@ -71,7 +71,6 @@
     <string name="sunday">周日</string>
     <string name="saturday">周六</string>
     <string name="theme_imported_successfully">主题导入成功。</string>
-    <string name="error_reading_theme_file">读取主题文件出错。</string>
     <string name="error_saving_theme_file">保存主题文件出错。</string>
     <string name="general">常规</string>
     <string name="language">语言</string>

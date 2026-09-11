@@ -71,7 +71,6 @@
     <string name="sunday">Sonntag</string>
     <string name="saturday">Samstag</string>
     <string name="theme_imported_successfully">Design erfolgreich importiert.</string>
-    <string name="error_reading_theme_file">Fehler beim Lesen der Designdatei.</string>
     <string name="error_saving_theme_file">Fehler beim Speichern der Designdatei.</string>
     <string name="general">Allgemein</string>
     <string name="language">Sprache</string>

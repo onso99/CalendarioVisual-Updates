@@ -71,7 +71,6 @@
     <string name="sunday">Domenica</string>
     <string name="saturday">Sabato</string>
     <string name="theme_imported_successfully">Tema importato con successo.</string>
-    <string name="error_reading_theme_file">Errore durante la lettura del file del tema.</string>
     <string name="error_saving_theme_file">Errore durante il salvataggio del file del tema.</string>
     <string name="general">Generale</string>
     <string name="language">Lingua</string>

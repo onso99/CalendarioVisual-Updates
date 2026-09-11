@@ -71,7 +71,6 @@
     <string name="sunday">Воскресенье</string>
     <string name="saturday">Суббота</string>
     <string name="theme_imported_successfully">Тема успешно импортирована.</string>
-    <string name="error_reading_theme_file">Ошибка при чтении файла темы.</string>
     <string name="error_saving_theme_file">Ошибка при сохранении файла темы.</string>
     <string name="general">Общие</string>
     <string name="language">Язык</string>

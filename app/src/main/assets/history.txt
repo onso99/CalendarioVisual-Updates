@@ -1,4 +1,4 @@
-2026-09-08 - v3.1.53 Blindaje de identidad de archivos .cvo: Refuerzo del AndroidManifest con filtros independientes por extensión y MIME type para asegurar la apertura directa en Android 13+
+2026-09-08 - v3.1.54 Cambio de iconos en el menú lateral
 2026-09-08 - v3.1.52 Inteligencia de contexto en importación: Implementado aviso de discrepancia al cargar agendas desde festivos y unificación visual de iconos de gestión de archivos
 2026-09-08 - v3.1.51 Optimización de importación: Refresco automático de la lista de festivos, motor omnicanal inteligente y corrección de avisos prematuros de éxito
 2026-09-08 - v3.1.50 Unificación de importación con previsualización selectiva en toda la App y limpieza técnica del Gestor de Festivos

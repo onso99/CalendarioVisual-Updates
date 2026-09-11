@@ -71,7 +71,6 @@
     <string name="sunday">Diumenge</string>
     <string name="saturday">Dissabte</string>
     <string name="theme_imported_successfully">Tema importat amb èxit.</string>
-    <string name="error_reading_theme_file">Error en llegir el fitxer del tema.</string>
     <string name="error_saving_theme_file">Error en desar el fitxer del tema.</string>
     <string name="general">General</string>
     <string name="language">Idioma</string>

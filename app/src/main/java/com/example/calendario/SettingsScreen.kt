@@ -164,7 +164,7 @@ fun SettingsScreen(
                         }
                     } catch (e: Exception) {
                         Log.e("SettingsScreen", "Error processing theme import", e)
-                        Toast.makeText(context, R.string.error_reading_theme_file, Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, R.string.could_not_read_file, Toast.LENGTH_LONG).show()
                     }
                 }
             }

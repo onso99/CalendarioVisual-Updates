@@ -71,7 +71,6 @@
     <string name="sunday">日曜日</string>
     <string name="saturday">土曜日</string>
     <string name="theme_imported_successfully">テーマが正常にインポートされました。</string>
-    <string name="error_reading_theme_file">テーマファイルの読み込みエラー。</string>
     <string name="error_saving_theme_file">テーマファイルの保存エラー。</string>
     <string name="general">一般</string>
     <string name="language">言語</string>

@@ -71,7 +71,6 @@
     <string name="sunday">Igandea</string>
     <string name="saturday">Larunbata</string>
     <string name="theme_imported_successfully">Gaia ongi inportatu da.</string>
-    <string name="error_reading_theme_file">Errorea gaiaren fitxategia irakurtzean.</string>
     <string name="error_saving_theme_file">Errorea gaiaren fitxategia gordetzean.</string>
     <string name="general">Orokorra</string>
     <string name="language">Hizkuntza</string>
