@@ -3,7 +3,6 @@ package com.example.calendario
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.core.content.FileProvider
 import org.json.JSONArray
 import org.json.JSONObject

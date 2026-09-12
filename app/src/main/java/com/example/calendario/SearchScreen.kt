@@ -2,7 +2,6 @@ package com.example.calendario
 
 import android.content.ContentUris
 import android.provider.CalendarContract
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
