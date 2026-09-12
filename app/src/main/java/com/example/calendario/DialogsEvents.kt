@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -123,7 +122,7 @@ fun DayEventsDialog(
                 val hasNote = note != null || noteText.isNotBlank()
                 val noteOpacity = if (showNoteField || hasNote) 1f else 0.5f
                 val circleColor = CalendarioTheme.colors.cabecera
-                val contentColor = if (isColorDark(circleColor, Color.White)) Color.White else Color.Black
+                val contentColor = circleColor.getContrastColor(Color.White)
 
                 Box(
                     modifier = Modifier
@@ -234,7 +233,7 @@ fun DayEventsDialog(
                                 else -> CalendarioTheme.colors.textSystem
                             }
                             
-                            val neutralColor = if (isToday) (if (isColorDark(CalendarioTheme.colors.todayHighlightColor, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black) else CalendarioTheme.colors.textSystem
+                            val neutralColor = if (isToday) CalendarioTheme.colors.todayHighlightColor.getContrastColor(CalendarioTheme.colors.fondoDialogos) else CalendarioTheme.colors.textSystem
                             val titleColor = if (isToday) (if (ColorUtils.calculateContrast(ColorUtils.setAlphaComponent(eventSpecificColor.toArgb(), 255), ColorUtils.setAlphaComponent(CalendarioTheme.colors.todayHighlightColor.toArgb(), 255)) > 1.5) eventSpecificColor else neutralColor) else eventSpecificColor
                             
                             // LÓGICA DE HORA INTELIGENTE (v3.1.34):
@@ -1084,7 +1083,7 @@ fun RepetitionSelectionDialog(
                     headlineContentColor = CalendarioTheme.colors.textSystem,
                     weekdayContentColor = CalendarioTheme.colors.textSystem,
                     dayContentColor = CalendarioTheme.colors.textSystem,
-                    selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black,
+                    selectedDayContentColor = CalendarioTheme.colors.cabecera.getContrastColor(CalendarioTheme.colors.fondoDialogos),
                     selectedDayContainerColor = CalendarioTheme.colors.cabecera,
                     todayContentColor = CalendarioTheme.colors.cabecera,
                     todayDateBorderColor = CalendarioTheme.colors.cabecera

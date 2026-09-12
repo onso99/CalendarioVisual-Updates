@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -228,13 +227,13 @@ fun MonthlyCalendar(
                         when {
                             isPastDay -> {
                                 // Día pasado (del propio mes visualizado): Aplicamos el tono más claro
-                                val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
-                                val alpha = if (isColorDark(baseCellBackground, Color.Black)) 0.04f else 0.02f
+                                val overlay = baseCellBackground.getContrastColor(Color.Black)
+                                val alpha = if (overlay == Color.White) 0.04f else 0.02f
                                 overlay.copy(alpha = alpha).compositeOver(baseCellBackground)
                             }
                             !isCurrentMonth -> {
                                 // Día de relleno (fuera del mes): Aplicamos el tono oscuro/inactivo normal
-                                val overlay = if (isColorDark(baseCellBackground, Color.Black)) Color.White else Color.Black
+                                val overlay = baseCellBackground.getContrastColor(Color.Black)
                                 overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
                             }
                             else -> {

@@ -123,10 +123,10 @@ object ThemePersistence {
             context.contentResolver.openOutputStream(uri)?.use {
                 it.write(themeJson.toString(4).toByteArray())
             }
-            Toast.makeText(context, R.string.theme_exported_successfully, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.theme_exported_successfully)
             return true
         } catch (e: Exception) {
-            Toast.makeText(context, context.getString(R.string.error_exporting_theme, e.message), Toast.LENGTH_LONG).show()
+            context.showToast(context.getString(R.string.error_exporting_theme, e.message), Toast.LENGTH_LONG)
             return false
         }
     }

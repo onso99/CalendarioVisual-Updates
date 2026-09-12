@@ -65,7 +65,7 @@ object CvoHelper {
 
         } catch (e: Exception) {
             Log.e("CvoHelper", "Error generando paquete CVO: ${e.message}")
-            Toast.makeText(context, "Error al generar el archivo de agenda", Toast.LENGTH_SHORT).show()
+            context.showToast("Error al generar el archivo de agenda")
         }
     }
 
@@ -106,7 +106,7 @@ object CvoHelper {
 
         } catch (e: Exception) {
             Log.e("CvoHelper", "Error generando paquete CVO: ${e.message}")
-            Toast.makeText(context, "Error al generar el archivo de festivos", Toast.LENGTH_SHORT).show()
+            context.showToast("Error al generar el archivo de festivos")
         }
     }
 

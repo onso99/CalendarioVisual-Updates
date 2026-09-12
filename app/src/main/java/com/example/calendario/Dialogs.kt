@@ -42,7 +42,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -177,11 +176,7 @@ fun LanguageSelectionDialog(
                             fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                         )
                         if (isSelected) {
-                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
-                                CalendarioTheme.colors.textSystem
-                            } else {
-                                CalendarioTheme.colors.cabecera
-                            }
+                            val checkColor = CalendarioTheme.colors.fondoDialogos.getContrastColor(MaterialTheme.colorScheme.background)
                             Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
                         }
                     }
@@ -230,11 +225,7 @@ fun ThemeSelectionDialog(
                             fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                         )
                         if (isSelected) {
-                            val checkColor = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) {
-                                CalendarioTheme.colors.textSystem
-                            } else {
-                                CalendarioTheme.colors.cabecera
-                            }
+                            val checkColor = CalendarioTheme.colors.fondoDialogos.getContrastColor(MaterialTheme.colorScheme.background)
                             Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
                         }
                     }
@@ -304,7 +295,7 @@ fun TimePickerDialog(
                     clockDialColor = CalendarioTheme.colors.fondoSecciones,
                     timeSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera,
                     timeSelectorUnselectedContainerColor = CalendarioTheme.colors.fondoSecciones,
-                    timeSelectorSelectedContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoSecciones)) Color.White else Color.Black,
+                    timeSelectorSelectedContentColor = CalendarioTheme.colors.cabecera.getContrastColor(CalendarioTheme.colors.fondoSecciones),
                     periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
                 )
             )

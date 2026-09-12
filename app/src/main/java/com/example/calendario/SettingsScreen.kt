@@ -70,7 +70,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -135,7 +134,7 @@ fun SettingsScreen(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 permissionsUpdateTrigger++
-                Toast.makeText(context, R.string.account_linked_success, Toast.LENGTH_SHORT).show()
+                context.showToast(R.string.account_linked_success)
             }
         }
     )
@@ -156,15 +155,15 @@ fun SettingsScreen(
                             is ImportResult.Success -> {
                                 // En lugar de aplicar, guardamos en el estado temporal
                                 importedThemeData = importResult.parsedTheme to fileName
-                                Toast.makeText(context, R.string.theme_imported_successfully, Toast.LENGTH_SHORT).show()
+                                context.showToast(R.string.theme_imported_successfully)
                             }
                             is ImportResult.Failure -> {
-                                Toast.makeText(context, importResult.errorMessage, Toast.LENGTH_LONG).show()
+                                context.showToast(importResult.errorMessage, Toast.LENGTH_LONG)
                             }
                         }
                     } catch (e: Exception) {
                         Log.e("SettingsScreen", "Error processing theme import", e)
-                        Toast.makeText(context, R.string.could_not_read_file, Toast.LENGTH_LONG).show()
+                        context.showToast(R.string.could_not_read_file, Toast.LENGTH_LONG)
                     }
                 }
             }
@@ -188,7 +187,7 @@ fun SettingsScreen(
                         }
                     } catch (e: Exception) {
                         Log.e("SettingsScreen", "Error exporting theme", e)
-                        Toast.makeText(context, R.string.error_saving_theme_file, Toast.LENGTH_LONG).show()
+                        context.showToast(R.string.error_saving_theme_file, Toast.LENGTH_LONG)
                     }
                 }
             }
@@ -751,7 +750,7 @@ private fun ExportThemeDialog(initialName: String, onDismissRequest: () -> Unit,
 private fun FontFamilySelectionDialog(currentSelection: String, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
     var tempSelection by remember { mutableStateOf(currentSelection) }
     val options = listOf(WidgetConstants.FONT_FAMILY_SYSTEM to R.string.font_system, WidgetConstants.FONT_FAMILY_SANS_SERIF to R.string.font_sans_serif, WidgetConstants.FONT_FAMILY_SERIF to R.string.font_serif, WidgetConstants.FONT_FAMILY_MONOSPACE to R.string.font_monospace, WidgetConstants.FONT_FAMILY_CONDENSED to R.string.font_condensed)
-    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { options.forEach { (key, labelRes) -> val family = when(key) { WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif; WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace; WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL)); WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif; else -> FontFamily.Default }; Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = key == tempSelection; Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontFamily = family, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) { Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) } } } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempSelection) }, onDismiss = onDismiss) })
+    AlertDialog(onDismissRequest = onDismiss, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.font), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Column { options.forEach { (key, labelRes) -> val family = when(key) { WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif; WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace; WidgetConstants.FONT_FAMILY_CONDENSED -> FontFamily(Typeface.create("sans-serif-condensed", Typeface.NORMAL)); WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif; else -> FontFamily.Default }; Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { val isSelected = key == tempSelection; Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontFamily = family, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal); if (isSelected) { Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.fondoDialogos.getContrastColor(MaterialTheme.colorScheme.background)) } } } } }, confirmButton = { AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempSelection) }, onDismiss = onDismiss) })
 }
 
 @Composable
@@ -824,7 +823,7 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
                         val isSelected = option.key == tempKey
                         Text(text = stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
                         if (isSelected) { 
-                            Icon(Icons.Default.Check, null, tint = if (isColorDark(CalendarioTheme.colors.fondoDialogos, MaterialTheme.colorScheme.background)) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.cabecera) 
+                            Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.fondoDialogos.getContrastColor(MaterialTheme.colorScheme.background)) 
                         } 
                     } 
                 }
@@ -1023,7 +1022,9 @@ fun truncateThemeName(name: String, limit: Int): String = if (name.length > limi
 
 @Composable
 private fun WidgetColorChip(label: String, color: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val textColor = if (isColorDark(color, CalendarioTheme.colors.settingsBackground)) Color.White else Color.Black; val borderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f);    Box(modifier = modifier.height(44.dp).clip(RoundedCornerShape(10.dp)).background(color).border(0.5.dp, borderColor, RoundedCornerShape(10.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = label, color = textColor, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 4.dp)) }
+    val textColor = color.getContrastColor(CalendarioTheme.colors.settingsBackground)
+    val borderColor = CalendarioTheme.colors.fondoSecciones.getContrastColor(Color.White).copy(alpha = 0.2f)
+    Box(modifier = modifier.height(44.dp).clip(RoundedCornerShape(10.dp)).background(color).border(0.5.dp, borderColor, RoundedCornerShape(10.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = label, color = textColor, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 4.dp)) }
 }
 
 @Composable

@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
 
 @Composable
@@ -108,7 +107,7 @@ fun MonthlyEventList(
 
                                 // Color para el día y la hora (neutro)
                                 val neutralColor = if (isTodayEvents) {
-                                    if (isColorDark(CalendarioTheme.colors.todayHighlightColor, MaterialTheme.colorScheme.background)) Color.White else Color.Black
+                                    CalendarioTheme.colors.todayHighlightColor.getContrastColor(MaterialTheme.colorScheme.background)
                                 } else {
                                     CalendarioTheme.colors.textSystem
                                 }
@@ -134,7 +133,7 @@ fun MonthlyEventList(
                                             hsl[2] = 0.90f // Forzamos mucha luz para que brille sobre el fondo oscuro
                                             Color(ColorUtils.HSLToColor(hsl))
                                         } else {
-                                            if (isColorDark(highlightColor, MaterialTheme.colorScheme.background)) Color.White else Color.Black
+                                            highlightColor.getContrastColor(MaterialTheme.colorScheme.background)
                                         }
                                     }
                                 } else {

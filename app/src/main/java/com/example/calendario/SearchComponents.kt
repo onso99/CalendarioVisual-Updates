@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 
 /**
  * Componente visual para una fila de evento en las pantallas de búsqueda y exportación.
@@ -79,7 +78,7 @@ internal fun EventRow(
         if (ColorUtils.calculateContrast(opaqueEventColorInt, opaqueHighlightInt) > 1.5) {
             eventSpecificColor
         } else {
-            if (isColorDark(highlightColor, Color.Black)) Color.White else Color.Black
+            highlightColor.getContrastColor(Color.Black)
         }
     } else {
         eventSpecificColor

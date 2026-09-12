@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -408,7 +407,7 @@ private fun EffectColorThemeRow(
                         val isSelected = effectType == type
                         val containerColor = if (isSelected) activeColor else Color.Transparent
                         val textColor = if (isSelected) {
-                            if (isColorDark(activeColor, baseColor)) Color.White else Color.Black
+                            activeColor.getContrastColor(baseColor)
                         } else {
                             CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                         }
@@ -485,7 +484,7 @@ private fun RenameEventDialog(initialName: String, onDismissRequest: () -> Unit,
 
 @Composable
 private fun ColorBox(color: Color, onClick: () -> Unit) {
-    val borderColor = if (isColorDark(CalendarioTheme.colors.fondoSecciones, Color.White)) Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f)
+    val borderColor = CalendarioTheme.colors.fondoSecciones.getContrastColor(Color.White).copy(alpha = 0.2f)
     Box(
         modifier = Modifier
             .size(24.dp)

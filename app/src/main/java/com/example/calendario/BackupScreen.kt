@@ -106,9 +106,9 @@ fun BackupScreen(
                     val account = task.result
                     appPrefs.edit { putString("google_account_email", account?.email) }
                     permissionsUpdateTrigger++
-                    Toast.makeText(context, R.string.account_linked_success, Toast.LENGTH_SHORT).show()
+                    context.showToast(R.string.account_linked_success)
                 } else {
-                    Toast.makeText(context, R.string.account_linked_error, Toast.LENGTH_SHORT).show()
+                    context.showToast(R.string.account_linked_error)
                 }
             }
         }
@@ -188,7 +188,7 @@ fun BackupScreen(
                             text = stringResource(id = R.string.sincronizar_label),
                             icon = Icons.Default.Sync,
                             isRotating = isSyncing,
-                            onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; Toast.makeText(context, context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG).show() } else { Toast.makeText(context, R.string.sync_error_drive, Toast.LENGTH_SHORT).show() } } }
+                            onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; context.showToast(context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG) } else { context.showToast(R.string.sync_error_drive) } } }
                         )
 
                         HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
@@ -344,10 +344,10 @@ fun BackupScreen(
                     showConfirmRestoreDialog = false
                     val callback: (Boolean) -> Unit = { success -> 
                         if (success) { 
-                            Toast.makeText(context.applicationContext, R.string.restore_success, Toast.LENGTH_SHORT).show()
+                            context.applicationContext.showToast(R.string.restore_success)
                             (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
                         } else {
-                            Toast.makeText(context, R.string.restore_error, Toast.LENGTH_LONG).show() 
+                            context.showToast(R.string.restore_error, Toast.LENGTH_LONG) 
                         }
                     }
                     viewModel.restoreHistoryFromDrive(

@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import com.example.calendario.AppConstants
+import com.example.calendario.getContrastColor
 
 data class CustomColors(
     val cabecera: Color,
@@ -101,7 +102,7 @@ fun CalendarioTheme(
         getThemeColors(context, darkTheme)
     }
 
-    val onPrimaryColor = if (isColorDark(customColors.cabecera, customColors.settingsBackground)) Color.White else Color.Black
+    val onPrimaryColor = customColors.cabecera.getContrastColor(customColors.settingsBackground)
     val surfaceVariantColor = customColors.fondoSecciones
     val outlineColor = customColors.textSystem.copy(alpha = 0.5f)
 
@@ -145,7 +146,7 @@ fun CalendarioTheme(
             val window = (view.context as Activity).window
             @Suppress("DEPRECATION")
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isColorDark(colorScheme.primary, customColors.settingsBackground)
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = colorScheme.primary.getContrastColor(customColors.settingsBackground) != Color.White
         }
     }
 

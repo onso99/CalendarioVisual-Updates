@@ -182,7 +182,7 @@ fun CalendarioScreen(
                 showSelectCalendarsDialog = true
             }
         } else {
-            Toast.makeText(context, R.string.permission_calendar_select, Toast.LENGTH_LONG).show()
+            context.showToast(R.string.permission_calendar_select, Toast.LENGTH_LONG)
         }
     }
 
@@ -192,7 +192,7 @@ fun CalendarioScreen(
         uri?.let { selectedUri ->
             viewModel.processExternalCvo(selectedUri) { success, error, _ ->
                 if (!success && error != null) {
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    context.showToast(error)
                 }
             }
         }
@@ -211,11 +211,11 @@ fun CalendarioScreen(
                         stream.write(json.toByteArray())
                     }
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, R.string.file_saved_successfully, Toast.LENGTH_SHORT).show()
+                        context.showToast(R.string.file_saved_successfully)
                     }
                 } catch (_: Exception) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Error al guardar localmente", Toast.LENGTH_SHORT).show()
+                        context.showToast("Error al guardar localmente")
                     }
                 }
             }
@@ -427,7 +427,7 @@ fun CalendarioScreen(
                 val dateStr = event.date.format(fmt)
                 val displayTitle = if (event.title.length > 60) event.title.take(57) + "..." else event.title
                 val message = context.applicationContext.getString(R.string.event_deleted_message, dateStr, displayTitle)
-                Toast.makeText(context.applicationContext, message, Toast.LENGTH_SHORT).show()
+                context.showToast(message)
 
                 showDeleteOrphanDialog = false
                 eventToDeleteOrphan = null

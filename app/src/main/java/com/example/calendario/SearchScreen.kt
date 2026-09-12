@@ -330,7 +330,7 @@ fun SearchScreen(
                         }
                         
                         if (deletedCount > 0) {
-                            Toast.makeText(context, R.string.holiday_updated_successfully, Toast.LENGTH_SHORT).show()
+                            context.showToast(R.string.holiday_updated_successfully)
                             onRefresh()
                         }
                         

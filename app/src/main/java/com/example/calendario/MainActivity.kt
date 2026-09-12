@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             if (isCvo) {
                 calendarioViewModel.processExternalCvo(data) { success, error, _ ->
                     if (!success && error != null) {
-                        Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+                        this.showToast(error, Toast.LENGTH_LONG)
                     }
                 }
             } else {

@@ -67,7 +67,7 @@ fun LogScreen(onBack: () -> Unit) {
                             val purged = AlarmUtils.rescheduleAllAlarms(context)
                             logText = LogCollector.getLogs() // Refrescar pantalla
                             val msg = context.applicationContext.getString(R.string.sync_alarms_success, purged)
-                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                    context.showToast(msg, Toast.LENGTH_LONG)
                         },
                     ) {
                         Icon(

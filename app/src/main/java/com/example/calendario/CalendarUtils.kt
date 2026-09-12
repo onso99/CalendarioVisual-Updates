@@ -27,11 +27,11 @@ fun createEvent(
     isLongPeriod: Boolean = false
 ): Long? {
     if (calendarId == null) {
-        Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.no_calendar_selected_error, Toast.LENGTH_LONG)
         return null
     }
     if (title.isBlank()) {
-        Toast.makeText(context, R.string.title_empty_error, Toast.LENGTH_SHORT).show()
+        context.showToast(R.string.title_empty_error)
         return null
     }
 
@@ -57,17 +57,17 @@ fun createEvent(
             if (customColor != null) {
                 savePeriodColor(context, eventId, customColor)
             }
-            Toast.makeText(context, R.string.event_saved_successfully, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.event_saved_successfully)
             eventId
         } else {
-            Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
+            context.showToast(R.string.error_saving_event, Toast.LENGTH_LONG)
             null
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
         null
     } catch (e: Exception) {
-        Toast.makeText(context, context.getString(R.string.unexpected_error_create, e.message), Toast.LENGTH_LONG).show()
+        context.showToast(context.getString(R.string.unexpected_error_create, e.message), Toast.LENGTH_LONG)
         null
     }
 }
@@ -87,11 +87,11 @@ fun updateEvent(
     isLongPeriod: Boolean = false
 ): Long? {
      if (calendarId == null) {
-        Toast.makeText(context, R.string.no_calendar_selected_error, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.no_calendar_selected_error, Toast.LENGTH_LONG)
         return null
     }
     if (title.isBlank()) {
-        Toast.makeText(context, R.string.title_empty_error, Toast.LENGTH_SHORT).show()
+        context.showToast(R.string.title_empty_error)
         return null
     }
 
@@ -124,14 +124,14 @@ fun updateEvent(
         // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
         CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         
-        Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
+        context.showToast(R.string.event_updated_successfully)
         eventId
 
     } catch (_: SecurityException) {
-        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
         null
     } catch (e: Exception) {
-        Toast.makeText(context, context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG).show()
+        context.showToast(context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG)
         null
     }
 }
@@ -162,17 +162,17 @@ fun updateSingleEventInSeries(
             // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
             CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             
-            Toast.makeText(context, R.string.event_updated_successfully, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.event_updated_successfully)
             ContentUris.parseId(uri)
         } else {
-            Toast.makeText(context, R.string.error_saving_event, Toast.LENGTH_LONG).show()
+            context.showToast(R.string.error_saving_event, Toast.LENGTH_LONG)
             null
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
         null
     } catch (e: Exception) {
-        Toast.makeText(context, context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG).show()
+        context.showToast(context.getString(R.string.unexpected_error_update, e.message), Toast.LENGTH_LONG)
         null
     }
 }
@@ -206,14 +206,14 @@ fun deleteEvent(context: Context, event: Festivo) {
             val dateStr = eventDate.format(AppFormats.DateAbbr)
             val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            context.showToast(message)
         } else {
-            Toast.makeText(context, R.string.error_deleting_event, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.error_deleting_event)
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
     } catch (e: Exception) {
-        Toast.makeText(context, context.getString(R.string.unexpected_error_delete, e.message), Toast.LENGTH_LONG).show()
+        context.showToast(context.getString(R.string.unexpected_error_delete, e.message), Toast.LENGTH_LONG)
     }
 }
 
@@ -266,14 +266,14 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
             val dateStr = eventToCancel.date.format(AppFormats.DateAbbr)
             val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            context.showToast(message)
         } else {
-            Toast.makeText(context, R.string.error_canceling_event_instance, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.error_canceling_event_instance)
         }
     } catch (_: SecurityException) {
-        Toast.makeText(context, R.string.permission_denied_calendar, Toast.LENGTH_LONG).show()
+        context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
     } catch (e: Exception) {
-        Toast.makeText(context, context.getString(R.string.unexpected_error_cancel, e.message), Toast.LENGTH_LONG).show()
+        context.showToast(context.getString(R.string.unexpected_error_cancel, e.message), Toast.LENGTH_LONG)
     }
 }
 

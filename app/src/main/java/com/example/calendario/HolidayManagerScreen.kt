@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -58,7 +57,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -106,7 +104,7 @@ fun HolidayManagerScreen(
                         showAgendaContextWarning = true
                     }
                 } else if (error != null) {
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    context.showToast(error)
                 }
             }
         }
@@ -153,7 +151,7 @@ fun HolidayManagerScreen(
         saveHolidayAdjustments(context, currentAdjustments)
         adjustments = currentAdjustments
         resetForm()
-        Toast.makeText(context, R.string.holiday_updated_successfully, Toast.LENGTH_SHORT).show()
+        context.showToast(R.string.holiday_updated_successfully)
         onRefresh() 
     }
 
@@ -308,7 +306,7 @@ fun HolidayManagerScreen(
             dismissButton = { DialogDismissButton { showDatePicker = false } },
             colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos)
         ) {
-            DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, headlineContentColor = CalendarioTheme.colors.textSystem, weekdayContentColor = CalendarioTheme.colors.textSystem, dayContentColor = CalendarioTheme.colors.textSystem, selectedDayContentColor = if (isColorDark(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.fondoDialogos)) Color.White else Color.Black, selectedDayContainerColor = CalendarioTheme.colors.cabecera, todayContentColor = CalendarioTheme.colors.cabecera, todayDateBorderColor = CalendarioTheme.colors.cabecera))
+            DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, headlineContentColor = CalendarioTheme.colors.textSystem, weekdayContentColor = CalendarioTheme.colors.textSystem, dayContentColor = CalendarioTheme.colors.textSystem, selectedDayContentColor = CalendarioTheme.colors.cabecera.getContrastColor(CalendarioTheme.colors.fondoDialogos), selectedDayContainerColor = CalendarioTheme.colors.cabecera, todayContentColor = CalendarioTheme.colors.cabecera, todayDateBorderColor = CalendarioTheme.colors.cabecera))
         }
     }
 
@@ -330,9 +328,9 @@ fun HolidayManagerScreen(
                     onClick = {
                         val newList = adjustments.toMutableList()
                         newList.remove(toDelete)
-                        saveHolidayAdjustments(context, newList)
+                                saveHolidayAdjustments(context, newList)
                         adjustments = newList
-                        Toast.makeText(context, holidayDeletedMsg, Toast.LENGTH_SHORT).show()
+                        context.showToast(holidayDeletedMsg)
                         onRefresh()
                         resetForm()
                         adjustmentToDelete = null

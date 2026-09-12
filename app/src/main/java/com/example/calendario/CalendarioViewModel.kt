@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -571,7 +570,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             cancelHolidayImport()
             refreshAdjustments()
             refreshData()
-            Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.import_success)
         }
     }
 
@@ -634,7 +633,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             
             cancelAgendaImport()
             refreshData()
-            Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
+            context.showToast(R.string.import_success)
         }
     }
 

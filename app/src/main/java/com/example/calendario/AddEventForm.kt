@@ -52,7 +52,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -364,7 +363,7 @@ fun AddEventForm(
                                 contentDescription = null,
                                 modifier = Modifier.size(22.dp),
                                 tint = if (isCustomColor) {
-                                    if (isColorDark(Color(selectedColorInt), Color.White)) Color.White else Color.Black
+                                    Color(selectedColorInt).getContrastColor(Color.White)
                                 } else {
                                     CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                                 }
@@ -444,10 +443,8 @@ fun AddEventForm(
                     val isAfterStart = finalAlarmDateTime.isAfter(startDate)
                     
                     if (isAfterStart) {
-                        val warningColor = if (isColorDark(CalendarioTheme.colors.settingsBackground, Color.White)) {
-                            Color(0xFFFFA500) // Naranja brillante para modo oscuro
-                        } else {
-                            Color(0xFFC45100) // Naranja tostado más oscuro para modo claro
+                        val warningColor = CalendarioTheme.colors.settingsBackground.getContrastColor(Color.White).let {
+                            if (it == Color.White) Color(0xFFFFA500) else Color(0xFFC45100)
                         }
 
                         Row(
