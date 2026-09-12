@@ -148,11 +148,11 @@ class CalendarWidgetFactory(
         val dayOfWeekFormatted = dayOfWeekFullName.take(3).replaceFirstChar { it.titlecase(Locale.getDefault()) }
         views.setTextViewText(R.id.widget_item_day_of_week, applyFontStyles(dayOfWeekFormatted))
 
-        val dateOnlyFormatter = DateTimeFormatter.ofPattern("dd/MM", Locale.getDefault())
+        val dateOnlyFormatter = AppFormats.DateDayMonth
         views.setTextViewText(R.id.widget_item_date_formatted, applyFontStyles(actualEvent.date.format(dateOnlyFormatter)))
 
         // --- Description ---
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        val timeFormatter = AppFormats.TimeShort
         val baseDesc = if (!actualEvent.isAllDay && (actualEvent.startTime != null)) {
             "${actualEvent.startTime.format(timeFormatter)} ${actualEvent.title}"
         } else {

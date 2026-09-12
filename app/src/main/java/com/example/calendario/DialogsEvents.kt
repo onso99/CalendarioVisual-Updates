@@ -85,7 +85,7 @@ fun DayEventsDialog(
     val locale = LocalConfiguration.current.locales[0]
 
     // Formato: Dia dd/mm/aa (ej: Lun 22/05/26)
-    val formatter = remember { DateTimeFormatter.ofPattern("E dd/MM/yy", locale) }
+    val formatter = remember { AppFormats.dayDateAbbr(locale) }
     val formattedDate = remember(date) { date.format(formatter).replaceFirstChar(Char::titlecase) }
     val isToday = date == LocalDate.now()
 
@@ -246,7 +246,7 @@ fun DayEventsDialog(
                                 festivo.currentDay == festivo.totalDays -> festivo.endTime
                                 else -> null
                             }
-                            val timeText = displayTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+                            val timeText = displayTime?.format(AppFormats.TimeShort)
                             
                             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {
                                 Box(Modifier.padding(top = 8.dp, start = 2.dp)) {
@@ -320,8 +320,8 @@ fun ReadOnlyEventDialog(
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
-    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEE, d MMM yyyy", locale) }
+    val timeFormatter = remember { AppFormats.TimeShort }
+    val dateFormatter = remember { AppFormats.dayDateAbbr(locale) }
     
     // Lógica de color original del evento (v3.1.34)
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
@@ -981,7 +981,7 @@ fun RepetitionSelectionDialog(
                         .padding(vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(DateTimeFormatter.ofPattern("EEEE, d/MM/yyyy", locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
+                    val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(AppFormats.dayDateFull(locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
                     Text(
                         text = textToShow, 
                         modifier = Modifier.weight(1f),

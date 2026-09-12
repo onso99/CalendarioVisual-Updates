@@ -1,3 +1,4 @@
+2026-09-11 - v3.1.55 Depuración de código
 2026-09-08 - v3.1.54 Cambio de iconos en el menú lateral
 2026-09-08 - v3.1.52 Inteligencia de contexto en importación: Implementado aviso de discrepancia al cargar agendas desde festivos y unificación visual de iconos de gestión de archivos
 2026-09-08 - v3.1.51 Optimización de importación: Refresco automático de la lista de festivos, motor omnicanal inteligente y corrección de avisos prematuros de éxito

@@ -207,9 +207,9 @@ fun SearchScreen(
                     searchResults.forEach { (date, events) ->
                         stickyHeader {
                             val headerText = when (searchScope) {
-                                SearchScope.MONTH -> date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", locale))
-                                SearchScope.YEAR -> date.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale))
-                                SearchScope.ALL -> date.format(DateTimeFormatter.ofPattern("yyyy", locale))
+                                SearchScope.MONTH -> date.format(AppFormats.dayDateFull(locale))
+                                SearchScope.YEAR -> date.format(AppFormats.monthYear(locale))
+                                SearchScope.ALL -> date.format(AppFormats.yearOnly(locale))
                             }.replaceFirstChar { it.titlecase(locale) }
 
                             Surface(

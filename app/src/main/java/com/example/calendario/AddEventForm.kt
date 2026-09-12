@@ -57,8 +57,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 
-private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+private val dateFormatter: DateTimeFormatter = AppFormats.DateFull
+private val timeFormatter: DateTimeFormatter = AppFormats.TimeShort
 
 @Composable
 fun AddEventForm(
@@ -492,8 +492,8 @@ fun AddEventForm(
                 val calendarName = selectedCalendar?.displayName ?: stringResource(id = R.string.not_applicable)
                 Text(stringResource(id = R.string.summary_calendar, calendarName))
 
-                val summaryFormatter = remember(locale) { DateTimeFormatter.ofPattern("E dd/MM/yyyy", locale) }
-                val timeOnlyFormatter = remember(locale) { DateTimeFormatter.ofPattern("HH:mm", locale) }
+                val summaryFormatter = remember(locale) { AppFormats.dayDateAbbr(locale) }
+    val timeOnlyFormatter = remember(locale) { AppFormats.TimeShort }
                 
                 // FASE 3: LÓGICA DE DÍA ÚNICO: Si no es periodo largo, el resumen ignora el salto de fecha técnico
                 val isSameDay = !isLongPeriod || (startDate.toLocalDate() == endDate.toLocalDate())

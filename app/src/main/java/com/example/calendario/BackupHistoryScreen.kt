@@ -24,7 +24,7 @@ import java.util.Locale
 fun BackupHistoryScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val history = remember { BackupHistoryManager.loadEntries(context) }
-    val formatter = remember { DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm", Locale.getDefault()) }
+    val formatter = remember { AppFormats.dateTimeWithMinutes(Locale.getDefault()) }
 
     Scaffold(
         topBar = {

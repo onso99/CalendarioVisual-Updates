@@ -62,7 +62,6 @@ import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -219,7 +218,7 @@ fun HolidayManagerScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        text = date.format(AppFormats.DateFull),
                         modifier = Modifier.weight(1f),
                         color = if (isFromExistingGoogleEvent) Color.Gray else CalendarioTheme.colors.textSystem,
                         fontSize = 18.sp
@@ -315,7 +314,7 @@ fun HolidayManagerScreen(
 
     if (adjustmentToDelete != null) {
         val toDelete = adjustmentToDelete!!
-        val dateStr = toDelete.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
+        val dateStr = toDelete.date.format(AppFormats.DateAbbr)
         val holidayDeletedMsg = stringResource(id = R.string.holiday_deleted_message, dateStr, toDelete.title)
 
         AlertDialog(
@@ -382,7 +381,7 @@ fun HolidayAdjustmentItem(
     val isGoogle = adjustment.originalEventId != null && adjustment.originalEventId >= 0L
     val isPastYear = adjustment.date.year < LocalDate.now().year
     val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
-    val dateFormatter = remember(locale) { DateTimeFormatter.ofPattern("EEEE, d MMM", locale) }
+    val dateFormatter = remember(locale) { AppFormats.dayDateFull(locale) }
     val formattedDate = remember(adjustment.date, locale) { 
         adjustment.date.format(dateFormatter).replaceFirstChar { it.uppercase(locale) } 
     }

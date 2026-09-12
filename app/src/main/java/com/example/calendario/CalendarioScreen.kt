@@ -424,7 +424,7 @@ fun CalendarioScreen(
                 viewModel.removeOrphanEvent(event)
                 
                 // Mostrar Toast unificado
-                val fmt = DateTimeFormatter.ofPattern("d/M/yy")
+                val fmt = AppFormats.DateAbbr
                 val dateStr = event.date.format(fmt)
                 val displayTitle = if (event.title.length > 60) event.title.take(57) + "..." else event.title
                 val message = context.applicationContext.getString(R.string.event_deleted_message, dateStr, displayTitle)

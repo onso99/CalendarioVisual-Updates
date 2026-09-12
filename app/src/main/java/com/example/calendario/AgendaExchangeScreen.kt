@@ -195,7 +195,7 @@ fun AgendaExchangeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    val dateFmt = DateTimeFormatter.ofPattern("dd/MM/yy", locale)
+                    val dateFmt = AppFormats.DateAbbr
                     
                     TextButton(onClick = { showStartDatePicker = true }) {
                         Icon(Icons.Outlined.CalendarMonth, null, modifier = Modifier.size(16.dp))
@@ -294,7 +294,7 @@ fun AgendaExchangeScreen(
                                 shadowElevation = 1.dp
                             ) {
                                 Text(
-                                    text = month.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale)).replaceFirstChar { it.titlecase(locale) },
+                                    text = month.format(AppFormats.monthYear(locale)).replaceFirstChar { it.titlecase(locale) },
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                                     fontWeight = FontWeight.Bold,
                                     color = CalendarioTheme.colors.cabecera

@@ -163,7 +163,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
         val color = if (isToday) todayColor else defaultColor
         val colorProvider = ColorProvider(color)
         
-        val dateStr = eventDate.format(DateTimeFormatter.ofPattern("dd/MM"))
+        val dateStr = eventDate.format(AppFormats.DateDayMonth)
         val locale = LocalContext.current.resources.configuration.locales[0]
         val dayName = eventDate.dayOfWeek.getDisplayName(JTextStyle.SHORT, locale).replaceFirstChar { it.titlecase(locale) }
 

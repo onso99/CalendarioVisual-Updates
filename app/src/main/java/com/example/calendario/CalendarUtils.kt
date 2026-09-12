@@ -11,7 +11,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.TimeZone
 
 fun createEvent(
@@ -204,7 +203,7 @@ fun deleteEvent(context: Context, event: Festivo) {
             AlarmUtils.saveAlarmSetting(context, eventId, null)
             savePeriodColor(context, eventId, null)
 
-            val dateStr = eventDate.format(DateTimeFormatter.ofPattern("d/M/yy"))
+            val dateStr = eventDate.format(AppFormats.DateAbbr)
             val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -264,7 +263,7 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
             AlarmUtils.cancelAlarm(context, eventToCancel.id)
             AlarmUtils.saveAlarmSetting(context, eventToCancel.id, null)
 
-            val dateStr = eventToCancel.date.format(DateTimeFormatter.ofPattern("d/M/yy"))
+            val dateStr = eventToCancel.date.format(AppFormats.DateAbbr)
             val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title
             val message = context.getString(R.string.event_deleted_message, dateStr, displayTitle)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -331,7 +330,7 @@ private fun createEventValues(
             }
             
             val finalRrule = if (repeatUntil != null) {
-                val untilStr = repeatUntil.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'235959'Z'"))
+                val untilStr = repeatUntil.format(AppFormats.IcsDateTime)
                 "${repetitionRule.rrule};UNTIL=$untilStr"
             } else if (repeatCount != null && repeatCount > 0) {
                 "${repetitionRule.rrule};COUNT=$repeatCount"

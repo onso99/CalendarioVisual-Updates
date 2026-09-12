@@ -149,7 +149,7 @@ fun MonthlyEventList(
                                 
                                 // Separamos la hora del título para colorearlos de forma distinta
                                 val timePrefix = if (!festivo.isAllDay && festivo.startTime != null) {
-                                    festivo.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                                    festivo.startTime.format(AppFormats.TimeShort)
                                 } else null
                                 
                                 val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }

@@ -4,14 +4,13 @@ import android.content.Context
 import androidx.core.content.edit
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
 
 object LogCollector {
     private val logs = ConcurrentLinkedQueue<String>()
     private const val MAX_LOGS = 200
-    private val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+    private val formatter = AppFormats.TimeWithSeconds
     private const val PREFS_NAME = "widget_log_prefs"
     private const val KEY_NEXT_REFRESH = "next_refresh_time"
     

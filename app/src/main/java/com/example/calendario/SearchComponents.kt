@@ -95,7 +95,7 @@ internal fun EventRow(
         festivo.currentDay == festivo.totalDays -> festivo.endTime
         else -> null
     }
-    val timeText = displayTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+    val timeText = displayTime?.format(AppFormats.TimeShort)
 
     val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
     val ageText = if (festivo.age != null && festivo.age > 0) " (${festivo.age})" else ""

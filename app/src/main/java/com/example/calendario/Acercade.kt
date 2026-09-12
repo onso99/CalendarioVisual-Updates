@@ -12,7 +12,7 @@ object AboutInfo {
     private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 8, 1)
 
     fun getFormattedDate(): String {
-        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
+        val formatter = AppFormats.monthYear(Locale.getDefault())
         return RELEASE_DATE.format(formatter).replaceFirstChar { 
             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
         }

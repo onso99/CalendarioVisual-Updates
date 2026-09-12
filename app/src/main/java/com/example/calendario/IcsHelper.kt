@@ -90,8 +90,8 @@ object IcsHelper {
             var isAllDay = false
             var rrule: String? = null
 
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss")
+            val dateFormatter = AppFormats.IcsDate
+            val dateTimeFormatter = AppFormats.IcsDateTime
 
             reader.forEachLine { line ->
                 val parts = line.split(":", limit = 2)
@@ -167,8 +167,8 @@ object IcsHelper {
                 sb.append("DESCRIPTION:${escapeIcs(event.description)}\n")
             }
 
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss")
+            val dateFormatter = AppFormats.IcsDate
+            val dateTimeFormatter = AppFormats.IcsDateTime
 
             if (event.isAllDay) {
                 sb.append("DTSTART;VALUE=DATE:${event.date.format(dateFormatter)}\n")

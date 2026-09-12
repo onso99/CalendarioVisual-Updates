@@ -81,7 +81,7 @@ private fun processAlarmForEvent(
 ) {
     if (hasAlarm) {
         val finalRrule = if (repetitionRule != RepetitionRule.NONE && repeatUntil != null) {
-            val untilStr = repeatUntil.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'235959'Z'"))
+            val untilStr = repeatUntil.format(AppFormats.IcsDateTime)
             "${repetitionRule.rrule};UNTIL=$untilStr"
         } else repetitionRule.rrule
 
@@ -257,7 +257,7 @@ fun AddEventScreen(
                     val untilPart = rrule.substringAfter("UNTIL=").substringBefore(";")
                     try {
                         // Formato esperado: yyyyMMddT...Z o yyyyMMdd
-                        LocalDate.parse(untilPart.take(8), DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        LocalDate.parse(untilPart.take(8), AppFormats.IcsDate)
                     } catch (_: Exception) { null }
                 } else null
             }
@@ -568,7 +568,7 @@ fun AddEventScreen(
             SaveEventError.TITLE_EMPTY -> Triple(stringResource(R.string.error), stringResource(R.string.title_empty_error), false)
             SaveEventError.END_BEFORE_START -> Triple(stringResource(R.string.error), stringResource(R.string.end_time_before_start_time_error), false)
             SaveEventError.LANES_FULL -> {
-                val dateStr = conflictingDate?.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy")) ?: ""
+                val dateStr = conflictingDate?.format(AppFormats.DateFull) ?: ""
                 Triple(stringResource(R.string.error), stringResource(R.string.lanes_full_error, dateStr), false)
             }
         }

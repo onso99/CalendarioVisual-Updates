@@ -326,6 +326,6 @@ object AlarmUtils {
         }.withSecond(0).withNano(0)
 
         val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
-        return alarmDateTime.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+        return alarmDateTime.toLocalTime().format(AppFormats.TimeShort)
     }
 }

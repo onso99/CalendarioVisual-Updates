@@ -45,7 +45,6 @@ import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -62,6 +61,7 @@ fun BackupScreen(
     val isRestoring = uiState.isRestoring
 
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
 
@@ -177,7 +177,7 @@ fun BackupScreen(
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
                             Text(stringResource(id = R.string.last_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                             Spacer(modifier = Modifier.weight(1f))
-                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) else DateTimeFormatter.ofPattern("dd/MM/yy HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
+                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) else AppFormats.dateTimeShort(locale).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
                             val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))}MB" else ""
                             Text(text = "$lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = dateFontSize, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis, onTextLayout = { if (it.hasVisualOverflow && dateFontSize > 11.sp) dateFontSize = (dateFontSize.value - 1f).sp })
                         }
@@ -416,7 +416,7 @@ private fun InternalCleaningCandidateRow(
     onDelete: () -> Unit
 ) {
     val locale = LocalConfiguration.current.locales[0]
-    val fmt = remember { DateTimeFormatter.ofPattern("d MMM yyyy", locale) }
+    val fmt = remember { AppFormats.dayDateAbbr(locale) }
     
     Row(
         modifier = Modifier

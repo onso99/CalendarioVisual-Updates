@@ -179,7 +179,7 @@ class AlarmActivity : ComponentActivity() {
 
 @Composable
 fun AlarmScreen(title: String, onStop: () -> Unit, onSnooze: () -> Unit) {
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    val timeFormatter = AppFormats.TimeShort
     val currentTime = remember { LocalTime.now().format(timeFormatter) }
 
     Column(

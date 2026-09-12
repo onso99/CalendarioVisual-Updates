@@ -39,7 +39,7 @@ fun AgendaImportPreviewDialog(
         mutableStateOf(editableCalendars.find { it.id == favoriteCalendarId } ?: editableCalendars.firstOrNull()) 
     }
     var showCalendarDropdown by remember { mutableStateOf(false) }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM/yy") }
+    val dateFormatter = remember { AppFormats.DateAbbr }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -133,9 +133,9 @@ fun HolidayImportPreviewDialog(
     onConfirm: (List<HolidayAdjustment>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var selectedItems by remember { mutableStateOf(adjustments.toSet()) }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEE, d MMM yyyy") }
     val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    var selectedItems by remember { mutableStateOf(adjustments.toSet()) }
+    val dateFormatter = remember { AppFormats.dayDateAbbr(locale) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
