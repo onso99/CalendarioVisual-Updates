@@ -45,7 +45,6 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.datastore.preferences.core.Preferences
 import com.google.gson.Gson
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle as JTextStyle
 
 class ModernCalendarWidget : GlanceAppWidget() {

@@ -1,3 +1,4 @@
+2026-09-12 - v3.1.56 Refactorización y centralización de formatos: Implementado el módulo AppFormats para unificar la lógica de fechas y horas en toda la App, limpieza de recursos redundantes y optimización de la estabilidad técnica
 2026-09-11 - v3.1.55 Depuración de código
 2026-09-08 - v3.1.54 Cambio de iconos en el menú lateral
 2026-09-08 - v3.1.52 Inteligencia de contexto en importación: Implementado aviso de discrepancia al cargar agendas desde festivos y unificación visual de iconos de gestión de archivos

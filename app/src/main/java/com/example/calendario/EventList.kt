@@ -42,7 +42,6 @@ import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MonthlyEventList(

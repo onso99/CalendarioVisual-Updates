@@ -57,7 +57,6 @@ import com.example.calendario.ui.theme.isColorDark
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.example.calendario.ui.theme.isColorDark
-import java.time.format.DateTimeFormatter
 
 /**
  * Componente visual para una fila de evento en las pantallas de búsqueda y exportación.

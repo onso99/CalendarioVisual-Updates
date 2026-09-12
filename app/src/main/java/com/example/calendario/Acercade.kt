@@ -3,7 +3,6 @@ package com.example.calendario
 import android.content.Context
 import android.content.pm.PackageManager
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object AboutInfo {

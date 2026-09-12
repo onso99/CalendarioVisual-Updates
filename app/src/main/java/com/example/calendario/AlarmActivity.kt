@@ -33,7 +33,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 class AlarmActivity : ComponentActivity() {
     private var ringtone: Ringtone? = null

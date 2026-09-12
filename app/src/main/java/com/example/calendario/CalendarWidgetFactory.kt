@@ -15,7 +15,6 @@ import android.widget.RemoteViewsService
 import com.example.calendario.database.AppDatabase
 import com.example.calendario.database.toFestivo
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
