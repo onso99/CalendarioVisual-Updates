@@ -51,7 +51,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,10 +58,11 @@ import com.example.calendario.ui.theme.CalendarioTheme
 fun ColorThemeScreen(
     onBackPress: () -> Unit,
     onThemeModified: () -> Unit,
+    darkTheme: Boolean
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.settingsBackground.toArgb()) < 0.5
+    val isAppDark = darkTheme
     
     var showColorPicker by remember { mutableStateOf(value = false) }
     var showRenameDialog by remember { mutableStateOf(value = false) }
@@ -250,8 +250,9 @@ fun ColorThemeScreen(
                 prefs.edit { putInt(key, newColor.toArgb()) }
                 if (!item.isIndependent) {
                     ThemePersistence.markThemeAsModified(prefs)
-                    onThemeModified()
                 }
+                // SIEMPRE notificamos la modificación para refrescar la App (v3.1.34)
+                onThemeModified()
                 updateTrigger++
                 showColorPicker = false
             }

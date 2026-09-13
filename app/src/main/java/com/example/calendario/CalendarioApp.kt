@@ -6,11 +6,13 @@ import androidx.compose.runtime.Composable
 fun CalendarioApp(
     themeManager: ThemeManager,
     onThemeUpdated: () -> Unit,
-    viewModel: CalendarioViewModel
+    viewModel: CalendarioViewModel,
+    darkTheme: Boolean
 ) {
     CalendarioScreen(
         themeManager = themeManager,
         onThemeUpdated = onThemeUpdated,
-        viewModel = viewModel
+        viewModel = viewModel,
+        darkTheme = darkTheme
     )
 }

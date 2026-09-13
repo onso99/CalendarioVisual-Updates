@@ -90,7 +90,8 @@ private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {
 fun CalendarioScreen(
     themeManager: ThemeManager,
     onThemeUpdated: () -> Unit,
-    viewModel: CalendarioViewModel
+    viewModel: CalendarioViewModel,
+    darkTheme: Boolean
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -565,7 +566,8 @@ fun CalendarioScreen(
     if (showColorThemeScreen) {
         ColorThemeScreen(
             onBackPress = { showColorThemeScreen = false },
-            onThemeModified = onThemeUpdated
+            onThemeModified = onThemeUpdated,
+            darkTheme = darkTheme
         )
         return
     }

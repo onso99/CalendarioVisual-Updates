@@ -70,7 +70,8 @@ class MainActivity : AppCompatActivity() {
                 CalendarioApp(
                     themeManager = themeManager,
                     onThemeUpdated = onThemeUpdated,
-                    viewModel = calendarioViewModel
+                    viewModel = calendarioViewModel,
+                    darkTheme = useDarkTheme
                 )
             }
         }
