@@ -664,12 +664,15 @@ fun CalendarioScreen(
                     drawerContainerColor = CalendarioTheme.colors.settingsBackground,
                     drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
                 ) {
+                    val iconColor = CalendarioTheme.colors.settingsBackground.getContrastColor(Color.White).copy(alpha = 0.6f)
+                    val brandColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.settingsBackground)
+
                     Text(
                         stringResource(id = R.string.app_name),
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = CalendarioTheme.colors.cabecera
+                        color = brandColor
                     )
                     
                     val isBgDark = androidx.core.graphics.ColorUtils.calculateLuminance(CalendarioTheme.colors.settingsBackground.toArgb()) < 0.5
@@ -699,7 +702,7 @@ fun CalendarioScreen(
                             viewMode = CalendarViewMode.MONTHLY
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.CalendarMonth, null) },
+                        icon = { Icon(Icons.Outlined.CalendarMonth, null, tint = iconColor) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -710,7 +713,7 @@ fun CalendarioScreen(
                             viewMode = CalendarViewMode.YEARLY
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.CalendarToday, null) },
+                        icon = { Icon(Icons.Outlined.CalendarToday, null, tint = iconColor) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -764,7 +767,7 @@ fun CalendarioScreen(
                             showManageCalendarsScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(painter = painterResource(id = R.drawable.ic_select_window_custom), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(24.dp)) },
+                        icon = { Icon(painter = painterResource(id = R.drawable.ic_select_window_custom), null, tint = iconColor, modifier = Modifier.size(24.dp)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -782,7 +785,7 @@ fun CalendarioScreen(
                             showAgendaExchangeScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.Share, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.Share, null, tint = iconColor) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -794,7 +797,7 @@ fun CalendarioScreen(
                             showHolidayManagerScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.Celebration, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.Celebration, null, tint = iconColor) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -806,7 +809,7 @@ fun CalendarioScreen(
                             showBackupScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(painter = painterResource(id = R.drawable.ic_cloud_backup_outlined), contentDescription = null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), modifier = Modifier.size(24.dp)) },
+                        icon = { Icon(painter = painterResource(id = R.drawable.ic_cloud_backup_outlined), contentDescription = null, tint = iconColor, modifier = Modifier.size(24.dp)) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -834,7 +837,7 @@ fun CalendarioScreen(
                             showSettingsScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.Outlined.Settings, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.Outlined.Settings, null, tint = iconColor) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -846,7 +849,7 @@ fun CalendarioScreen(
                             showHelpScreen = true
                             scope.launch { drawerState.close() }
                         },
-                        icon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                        icon = { Icon(Icons.AutoMirrored.Filled.HelpOutline, null, tint = iconColor) },
                         colors = drawerItemColors,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -1132,6 +1135,8 @@ private fun CalendarDrawerItem(
     isFavorite: Boolean,
     onToggle: (Long) -> Unit
 ) {
+    val brandColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.settingsBackground)
+
     NavigationDrawerItem(
         label = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1146,7 +1151,7 @@ private fun CalendarDrawerItem(
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
-                        tint = CalendarioTheme.colors.cabecera, 
+                        tint = brandColor, 
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -1159,7 +1164,7 @@ private fun CalendarDrawerItem(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = CalendarioTheme.colors.cabecera
+                    tint = brandColor
                 )
             } else {
                 Spacer(Modifier.size(24.dp)) // Espacio para mantener alineación si no hay check
