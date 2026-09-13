@@ -133,13 +133,18 @@ fun BackupScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.backup_section_title_label), color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(stringResource(id = R.string.backup_section_title_label), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                 navigationIcon = { 
                     IconButton(onClick = onBackPress) { 
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary) 
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) 
                     } 
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
             )
         },
         containerColor = CalendarioTheme.colors.settingsBackground

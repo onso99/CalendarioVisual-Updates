@@ -86,7 +86,8 @@ fun AgendaExchangeScreen(
                         Text(
                             text = stringResource(id = R.string.import_agenda_title),
                             color = Color.White,
-                            fontSize = 20.sp
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
                         )
                         if (isSelectionMode) {
                             Spacer(modifier = Modifier.width(8.dp))
@@ -140,7 +141,12 @@ fun AgendaExchangeScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
             )
         }
     ) { paddingValues ->

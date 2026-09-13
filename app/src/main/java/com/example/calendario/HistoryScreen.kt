@@ -23,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,9 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,13 +78,17 @@ fun HistoryScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.history), color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(stringResource(id = R.string.history), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back))
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                )
             )
         },
         floatingActionButton = {
@@ -91,7 +96,7 @@ fun HistoryScreen(onBack: () -> Unit) {
                 FloatingActionButton(
                     onClick = { scope.launch { scrollState.animateScrollTo(0) } },
                     containerColor = CalendarioTheme.colors.cabecera,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    contentColor = Color.White,
                     shape = CircleShape,
                     modifier = Modifier.size(48.dp)
                 ) { Icon(Icons.Default.ArrowUpward, null) }
@@ -113,8 +118,8 @@ fun HistoryScreen(onBack: () -> Unit) {
                 Text(
                     text = historyText,
                     color = CalendarioTheme.colors.textSystem,
-                    fontSize = 14.sp, // Texto ligeramente mÃ¡s pequeÃ±o para ganar ancho
-                    lineHeight = 20.sp
+                    fontSize = 13.sp, // Texto reducido para mejor ajuste (v3.1.34)
+                    lineHeight = 18.sp
                 )
                 Box(modifier = Modifier.height(120.dp))
             }

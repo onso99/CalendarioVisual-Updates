@@ -145,7 +145,16 @@ fun CalendarioScreen(
     var showAgendaExchangeScreen by remember { mutableStateOf(false) }
     var itemsToExportLocally by remember { mutableStateOf<Set<SearchItem>>(emptySet()) }
 
-    // --- LÓGICA DE PUNTO DE PERMISOS (Sincronizada con SettingsScreen) ---
+    // --- MANEJO DE PANTALLAS (Fase 4 - Optimización) ---
+    if (showHelpScreen) {
+        HelpScreen(onBackPress = { showHelpScreen = false })
+        return
+    }
+
+    if (showHistoryScreen) {
+        HistoryScreen(onBack = { showHistoryScreen = false })
+        return
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
     DisposableEffect(lifecycleOwner) {
@@ -568,11 +577,6 @@ fun CalendarioScreen(
         return
     }
 
-    if (showHistoryScreen) {
-        HistoryScreen(onBack = { showHistoryScreen = false })
-        return
-    }
-
     if (showBackupHistoryScreen) {
         BackupHistoryScreen(onBack = { showBackupHistoryScreen = false })
         return
@@ -851,10 +855,10 @@ fun CalendarioScreen(
                 topBar = {
                     Column(
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primary)
+                            .background(CalendarioTheme.colors.cabecera)
                             .statusBarsPadding()
                     ) {
-                        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
+                        CompositionLocalProvider(LocalContentColor provides Color.White) {
                             Row(
                                 modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -890,7 +894,7 @@ fun CalendarioScreen(
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        color = Color.White,
                                         modifier = Modifier
                                             .padding(start = 8.dp)
                                             .clickable(enabled = viewMode == CalendarViewMode.YEARLY) {
@@ -921,7 +925,7 @@ fun CalendarioScreen(
                                                 painter = painterResource(id = R.drawable.ic_undo_return),
                                                 contentDescription = stringResource(id = R.string.back_to_current_month),
                                                 modifier = Modifier.size(24.dp),
-                                                tint = MaterialTheme.colorScheme.onPrimary
+                                                tint = Color.White
                                             )
                                         }
                                     }

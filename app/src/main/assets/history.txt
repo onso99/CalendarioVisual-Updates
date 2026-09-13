@@ -1,3 +1,6 @@
+2026-09-13 - v3.1.58 Unificación tipográfica y visual de cabeceras: Estandarizado tamaño (20.sp) y estilo (Bold) de títulos en todas las pantallas, refinamiento de textos en Ayuda/Historial y corrección del acceso a Ayuda
+2026-09-12 - v3.1.57.1 Corrección de warnings
+2026-09-12 - v3.1.57 Optimización de la capa de interfaz: Implementado el módulo UIExtensions para simplificar avisos (Toasts) y lógica de contraste de color, eliminando redundancia en más de 20 archivos
 2026-09-12 - v3.1.56.1 Corrección de warnings
 2026-09-12 - v3.1.56 Refactorización y centralización de formatos: Implementado el módulo AppFormats para unificar la lógica de fechas y horas en toda la App, limpieza de recursos redundantes y optimización de la estabilidad técnica
 2026-09-11 - v3.1.55 Depuración de código

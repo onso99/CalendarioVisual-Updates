@@ -12,13 +12,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,12 +32,12 @@ fun HelpScreen(onBackPress: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.help)) },
+                title = { Text(stringResource(id = R.string.help), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                 navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
                 )
             )
         },
@@ -52,26 +52,26 @@ fun HelpScreen(onBackPress: () -> Unit) {
                 .padding(16.dp) 
         ) {
             HelpSection(title = stringResource(id = R.string.help_section_calendar_views)) {
-                Text(stringResource(id = R.string.help_calendar_views_1))
+                Text(stringResource(id = R.string.help_calendar_views_1), fontSize = 14.sp, lineHeight = 20.sp)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(id = R.string.help_calendar_views_2))
+                Text(stringResource(id = R.string.help_calendar_views_2), fontSize = 14.sp, lineHeight = 20.sp)
             }
             HelpSection(title = stringResource(id = R.string.help_section_event_management)) {
-                Text(stringResource(id = R.string.help_event_management_1))
+                Text(stringResource(id = R.string.help_event_management_1), fontSize = 14.sp, lineHeight = 20.sp)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(id = R.string.help_event_management_2))
+                Text(stringResource(id = R.string.help_event_management_2), fontSize = 14.sp, lineHeight = 20.sp)
             }
             HelpSection(title = stringResource(id = R.string.help_section_event_list)) {
-                Text(stringResource(id = R.string.help_event_list_1))
+                Text(stringResource(id = R.string.help_event_list_1), fontSize = 14.sp, lineHeight = 20.sp)
             }
             HelpSection(title = stringResource(id = R.string.help_section_customization)) {
-                Text(stringResource(id = R.string.help_customization_1))
+                Text(stringResource(id = R.string.help_customization_1), fontSize = 14.sp, lineHeight = 20.sp)
             }
             HelpSection(title = stringResource(id = R.string.help_section_holiday_manager)) {
-                Text(stringResource(id = R.string.help_holiday_manager_1))
+                Text(stringResource(id = R.string.help_holiday_manager_1), fontSize = 14.sp, lineHeight = 20.sp)
             }
             HelpSection(title = stringResource(id = R.string.help_section_widget)) {
-                Text(stringResource(id = R.string.help_widget_1))
+                Text(stringResource(id = R.string.help_widget_1), fontSize = 14.sp, lineHeight = 20.sp)
             }
         }
     }
@@ -88,7 +88,7 @@ private fun HelpSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 24.dp)) {
         Text(
             text = title,
-            fontSize = 20.sp,
+            fontSize = 17.sp, // TÃ­tulo mÃ¡s discreto (v3.1.34)
             fontWeight = FontWeight.Bold,
             color = titleColor,
             modifier = Modifier.padding(bottom = 8.dp)

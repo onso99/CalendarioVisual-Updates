@@ -88,7 +88,7 @@ fun ManageCalendarsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                 navigationIcon = {
                     IconButton(onClick = { 
                         onApplySelection(currentIds)

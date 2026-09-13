@@ -28,7 +28,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
@@ -361,7 +360,13 @@ fun AddEventScreen(
         topBar = {
             val isImported = localEventToEdit?.id == 0L
             TopAppBar(
-                title = { Text(if (localEventToEdit != null && !isImported) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event)) },
+                title = { 
+                    Text(
+                        text = if (localEventToEdit != null && !isImported) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    ) 
+                },
                 navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
                 actions = {
                     if (hasChanges || isImported) {
@@ -402,7 +407,12 @@ fun AddEventScreen(
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera, titleContentColor = MaterialTheme.colorScheme.onPrimary, navigationIconContentColor = MaterialTheme.colorScheme.onPrimary, actionIconContentColor = MaterialTheme.colorScheme.onPrimary)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
             )
         },
         containerColor = CalendarioTheme.colors.settingsBackground
