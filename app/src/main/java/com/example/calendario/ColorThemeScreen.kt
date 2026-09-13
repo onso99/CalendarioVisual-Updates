@@ -40,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -258,18 +257,6 @@ fun ColorThemeScreen(
             }
         )
     }
-}
-
-@Composable
-private fun SectionTitle(text: String) {
-    val titleColor = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp),
-        fontWeight = FontWeight.Bold,
-        color = titleColor
-    )
 }
 
 private fun getThemeColor(prefs: SharedPreferences, key: String, default: Color): Color {

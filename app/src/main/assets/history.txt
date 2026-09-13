@@ -1,3 +1,4 @@
+2026-09-13 - v3.1.59 Blindaje visual del menú lateral y corrección de colores: Implementada la Regla de Coherencia para garantizar legibilidad total en el Drawer ante cualquier fondo, unificación de iconos Outlined y solución definitiva al refresco instantáneo en la personalización de colores
 2026-09-13 - v3.1.58.1 Correcciones: Personalizar color corregido
 2026-09-13 - v3.1.58 Unificación tipográfica y visual de cabeceras: Estandarizado tamaño (20.sp) y estilo (Bold) de títulos en todas las pantallas, refinamiento de textos en Ayuda/Historial y corrección del acceso a Ayuda
 2026-09-12 - v3.1.57.1 Corrección de warnings

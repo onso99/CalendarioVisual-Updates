@@ -932,7 +932,7 @@ private fun BundledThemesDialog(
                 
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val backupButtonBg = CalendarioTheme.colors.textSystem.copy(alpha = 0.05f)
-                    SettingsActionChip(
+                    AppActionChip(
                         text = stringResource(id = R.string.cargar_label), 
                         icon = painterResource(id = R.drawable.ic_folder_open_custom), 
                         modifier = Modifier.weight(1f).height(44.dp), 
@@ -940,7 +940,7 @@ private fun BundledThemesDialog(
                         containerColor = backupButtonBg, 
                         onClick = onLoadClick
                     )
-                    SettingsActionChip(
+                    AppActionChip(
                         text = stringResource(id = R.string.guardar_label), 
                         icon = Icons.Outlined.Save, 
                         modifier = Modifier.weight(1f).height(44.dp), 

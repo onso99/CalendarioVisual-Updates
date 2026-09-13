@@ -1,0 +1,312 @@
+package com.example.calendario
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.calendario.ui.theme.CalendarioTheme
+
+/**
+ * Librería de Componentes Comunes (Fase 4 - Optimización v3.1.34)
+ * Centralización de piezas visuales repetidas para asegurar consistencia.
+ */
+
+@Composable
+fun AdaptiveButtonText(
+    text: String,
+    fontSize: TextUnit,
+    onOverflow: () -> Unit,
+    color: Color = Color.Unspecified
+) {
+    Text(
+        text = text,
+        fontSize = fontSize,
+        fontWeight = FontWeight.Medium,
+        maxLines = 1,
+        softWrap = false,
+        overflow = TextOverflow.Visible,
+        color = color,
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.hasVisualOverflow && fontSize > 10.sp) {
+                onOverflow()
+            }
+        }
+    )
+}
+
+@Composable
+fun DialogConfirmButton(
+    text: String,
+    fontSize: TextUnit = 14.sp,
+    onOverflow: () -> Unit = {},
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    color: Color = CalendarioTheme.colors.cabecera
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(24.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = color,
+            disabledContainerColor = Color.Gray.copy(alpha = 0.3f)
+        )
+    ) {
+        AdaptiveButtonText(
+            text = text,
+            fontSize = fontSize,
+            onOverflow = onOverflow
+        )
+    }
+}
+
+@Composable
+fun DialogDismissButton(
+    text: String = stringResource(id = R.string.cancel),
+    fontSize: TextUnit = 14.sp,
+    onOverflow: () -> Unit = {},
+    onDismiss: () -> Unit
+) {
+    TextButton(
+        onClick = onDismiss,
+        colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.textSystem)
+    ) {
+        AdaptiveButtonText(
+            text = text,
+            fontSize = fontSize,
+            onOverflow = onOverflow,
+            color = CalendarioTheme.colors.textSystem
+        )
+    }
+}
+
+@Composable
+fun AdaptiveDialogButtons(
+    confirmText: String,
+    onConfirm: () -> Unit,
+    dismissText: String = stringResource(id = R.string.cancel),
+    onDismiss: () -> Unit,
+    confirmColor: Color = CalendarioTheme.colors.cabecera,
+    confirmEnabled: Boolean = true
+) {
+    var fontSize by remember { mutableStateOf(14.sp) }
+    val decreaseSize = {
+        if (fontSize > 10.sp) {
+            fontSize = (fontSize.value - 0.5f).sp
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        DialogDismissButton(
+            text = dismissText,
+            fontSize = fontSize,
+            onOverflow = decreaseSize,
+            onDismiss = onDismiss
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        DialogConfirmButton(
+            text = confirmText,
+            fontSize = fontSize,
+            onOverflow = decreaseSize,
+            onClick = onConfirm,
+            color = confirmColor,
+            enabled = confirmEnabled
+        )
+    }
+}
+
+@Composable
+fun SectionTitle(
+    text: String, 
+    modifier: Modifier = Modifier, 
+    topPadding: androidx.compose.ui.unit.Dp = 24.dp
+) {
+    val titleColor = lerp(
+        start = CalendarioTheme.colors.cabecera,
+        stop = CalendarioTheme.colors.textSystem,
+        fraction = 0.4f,
+    )
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = modifier.padding(bottom = 8.dp, top = topPadding),
+        fontWeight = FontWeight.Bold,
+        color = titleColor,
+    )
+}
+
+@Composable
+fun WidgetSectionTitle() {
+    SectionTitle(
+        text = stringResource(id = R.string.widget),
+        topPadding = 24.dp
+    )
+}
+
+@Composable
+fun ActionRow(
+    text: String, 
+    detail: String? = null, 
+    isLoading: Boolean = false, 
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 52.dp)
+            .clickable(enabled = !isLoading, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+            Text(
+                text = text, 
+                color = if (isLoading) CalendarioTheme.colors.textSystem.copy(alpha = 0.4f) else CalendarioTheme.colors.textSystem, 
+                fontSize = 16.sp
+            )
+            detail?.let {
+                Text(
+                    text = it,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                    fontSize = 13.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = CalendarioTheme.colors.cabecera,
+                strokeWidth = 2.5.dp,
+                strokeCap = StrokeCap.Round
+            )
+        } else {
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun AppActionChip(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(10.dp),
+    containerColor: Color = Color.Transparent,
+    icon: Any? = null, // Puede ser ImageVector o Painter
+    isIconRotating: Boolean = false,
+    reverseRotation: Boolean = false
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isPressed) CalendarioTheme.colors.cabecera.copy(alpha = 0.28f) else containerColor,
+        animationSpec = if (isPressed) repeatable(3, tween(60)) else tween(500),
+        label = "flash"
+    )
+
+    val borderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+
+    // Animación de rotación infinita
+    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearEasing)
+        ),
+        label = "angle"
+    )
+
+    Box(
+        modifier = modifier
+            .clip(shape)
+            .background(backgroundColor)
+            .border(1.dp, borderColor, shape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = !isIconRotating,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        ) {
+            if (icon != null) {
+                val iconModifier = Modifier
+                    .size(18.dp)
+                    .graphicsLayer {
+                        if (isIconRotating) rotationZ = if (reverseRotation) -rotation else rotation
+                    }
+
+                when (icon) {
+                    is androidx.compose.ui.graphics.vector.ImageVector -> {
+                        Icon(
+                            imageVector = icon, 
+                            contentDescription = null, 
+                            modifier = iconModifier,
+                            tint = CalendarioTheme.colors.textSystem
+                        )
+                    }
+                    is Painter -> {
+                        Icon(
+                            painter = icon, 
+                            contentDescription = null, 
+                            modifier = iconModifier,
+                            tint = CalendarioTheme.colors.textSystem
+                        )
+                    }
+                }
+                Spacer(Modifier.width(4.dp))
+            }
+            Text(
+                text = text,
+                color = if (isIconRotating) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
