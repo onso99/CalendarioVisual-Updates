@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Locale
@@ -40,12 +41,71 @@ data class Festivo(
     val isDeleted: Boolean = false,
     val isGhost: Boolean = false
 ) {
+    /**
+     * Serializa el objeto a JSON para Copias de Seguridad e Intercambio (Fase 4 v3.1.34)
+     */
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("id", id)
+        put("title", title)
+        put("description", description)
+        put("dateStr", date.toString())
+        put("startTimeStr", startTime?.toString())
+        put("endTimeStr", endTime?.toString())
+        put("isAllDay", isAllDay)
+        put("calendarId", calendarId)
+        put("isFromHolidaySource", isFromHolidaySource)
+        put("rrule", rrule)
+        put("age", age)
+        put("isBirthday", isBirthday)
+        put("isLongPeriod", isLongPeriod)
+        put("lane", lane)
+        put("totalDays", totalDays)
+        put("currentDay", currentDay)
+        put("customColor", customColor)
+        put("lastModified", lastModified)
+        put("isDeleted", isDeleted)
+        put("isGhost", isGhost)
+        put("adn", adn)
+    }
+
     companion object {
         fun generateAdn(date: LocalDate, title: String, startTime: LocalTime?): String {
             // Usamos una versión local para evitar depender de la inicialización si se llama desde fuera
             val cleanTitle = title.unaccent().trim().lowercase()
             val timeStr = startTime?.let { String.format(Locale.US, "%02d:%02d", it.hour, it.minute) } ?: "null"
             return "${date}_${cleanTitle}_$timeStr"
+        }
+
+        /**
+         * Crea un objeto Festivo desde un JSON con seguridad ante nulos (Fase 4 v3.1.34)
+         */
+        fun fromJson(obj: JSONObject): Festivo {
+            return Festivo(
+                id = obj.optLong("id", 0L),
+                title = obj.optString("title", ""),
+                description = if (obj.isNull("description")) null else obj.optString("description"),
+                date = LocalDate.parse(obj.getString("dateStr")),
+                startTime = if (obj.isNull("startTimeStr")) null else try { LocalTime.parse(obj.getString("startTimeStr")) } catch(_:Exception) { null },
+                endTime = if (obj.isNull("endTimeStr")) null else try { LocalTime.parse(obj.getString("endTimeStr")) } catch(_:Exception) { null },
+                isAllDay = obj.optBoolean("isAllDay", true),
+                calendarId = obj.optLong("calendarId", 0L),
+                isFromHolidaySource = obj.optBoolean("isFromHolidaySource", false),
+                rrule = if (obj.isNull("rrule")) null else obj.optString("rrule"),
+                age = if (obj.has("age") && !obj.isNull("age")) obj.getInt("age") else null,
+                isBirthday = obj.optBoolean("isBirthday", false),
+                isLongPeriod = obj.optBoolean("isLongPeriod", false),
+                lane = if (obj.has("lane") && !obj.isNull("lane")) obj.getInt("lane") else null,
+                totalDays = obj.optInt("totalDays", 1),
+                currentDay = obj.optInt("currentDay", 1),
+                customColor = if (obj.has("customColor") && !obj.isNull("customColor")) obj.getInt("customColor") else null,
+                fullStartMillis = if (obj.has("fullStartMillis")) obj.getLong("fullStartMillis") else null,
+                fullEndMillis = if (obj.has("fullEndMillis")) obj.getLong("fullEndMillis") else null,
+                repeatCount = if (obj.has("repeatCount")) obj.getInt("repeatCount") else null,
+                lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
+                isDeleted = obj.optBoolean("isDeleted", false),
+                isGhost = obj.optBoolean("isGhost", false),
+                adn = obj.optString("adn", "")
+            )
         }
     }
 }
@@ -100,6 +160,27 @@ data class DailyNote(
 ) {
     // Propiedad para facilitar la ordenación y búsqueda
     val date: LocalDate get() = try { LocalDate.parse(dateStr) } catch(_: Exception) { LocalDate.now() }
+
+    /**
+     * Serializa la nota a JSON (Fase 4 v3.1.34)
+     */
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("dateStr", dateStr)
+        put("content", content)
+        put("lastModified", lastModified)
+        put("isDeleted", isDeleted)
+    }
+
+    companion object {
+        fun fromJson(obj: JSONObject): DailyNote {
+            return DailyNote(
+                dateStr = obj.getString("dateStr"),
+                content = obj.getString("content"),
+                lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
+                isDeleted = obj.optBoolean("isDeleted", false)
+            )
+        }
+    }
 }
 
 

@@ -1,3 +1,4 @@
+2026-09-14 - v3.1.61.2.dev Refinamiento de la sección de Backup: Integrada la opción Última con el historial de actividad, eliminación de redundancias visuales y compactación tipográfica del log de copias
 2026-09-14 - v3.1.61.1.dev Corrección de warnings
 2026-09-14 - v3.1.61.dev Reingeniería de la gestión de ajustes: Implementado SettingsManager para centralizar y proteger el acceso a SharedPreferences, eliminando llamadas manuales en más de 25 archivos y reforzando la integridad de los datos
 2026-09-13 - v3.1.60.dev Refactorización de Componentes UI: Implementada la librería CommonComponents.kt para centralizar SectionTitle, ActionRow y AppActionChip, eliminando redundancias en Ajustes, Temas y Copias de Seguridad
