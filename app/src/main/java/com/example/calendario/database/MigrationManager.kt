@@ -2,8 +2,6 @@ package com.example.calendario.database
 
 import android.content.Context
 import android.util.Log
-import androidx.core.content.edit
-import com.example.calendario.AppConstants
 import com.example.calendario.BackupManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,11 +10,9 @@ import kotlinx.coroutines.withContext
  * Encargado de trasvasar los datos del antiguo sistema JSON a la nueva base de datos Room.
  */
 object MigrationManager {
-    private const val KEY_JSON_TO_ROOM_MIGRATED = "json_to_room_migrated"
 
     suspend fun checkAndMigrate(context: Context, database: AppDatabase) = withContext(Dispatchers.IO) {
-        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val isMigrated = prefs.getBoolean(KEY_JSON_TO_ROOM_MIGRATED, false)
+        val isMigrated = com.example.calendario.SettingsManager.isJsonToRoomMigrated(context)
 
         if (!isMigrated) {
             Log.d("MigrationManager", "Iniciando trasvase de datos JSON a Room...")
@@ -74,9 +70,7 @@ object MigrationManager {
                 }
 
                 // 3. Marcar como completado
-                prefs.edit(commit = true) {
-                    putBoolean(KEY_JSON_TO_ROOM_MIGRATED, true)
-                }
+                com.example.calendario.SettingsManager.setJsonToRoomMigrated(context)
                 Log.d("MigrationManager", "Trasvase finalizado con éxito.")
 
             } catch (e: Exception) {

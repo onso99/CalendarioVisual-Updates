@@ -2,7 +2,6 @@ package com.example.calendario
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -12,6 +11,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import androidx.compose.ui.graphics.toArgb
 import com.example.calendario.database.AppDatabase
 import com.example.calendario.database.toFestivo
 import java.time.LocalDate
@@ -45,56 +45,12 @@ class CalendarWidgetFactory(
     }
 
     private fun loadWidgetSettings() {
-        val prefs: SharedPreferences = context.getSharedPreferences(
-            WidgetConstants.GLOBAL_WIDGET_PREFS_NAME,
-            Context.MODE_PRIVATE,
-        )
-        val allPrefs = prefs.all
-
-        eventCountToShow = try {
-            prefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT)
-        } catch (_: ClassCastException) {
-            (allPrefs[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() 
-                ?: allPrefs[WidgetConstants.KEY_EVENT_COUNT]?.toString()?.toIntOrNull() 
-                ?: WidgetConstants.DEFAULT_EVENT_COUNT
-        }
-
-        textBoost = try {
-            prefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f)
-        } catch (_: ClassCastException) {
-            (allPrefs[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() 
-                ?: allPrefs[WidgetConstants.KEY_WIDGET_TEXT_BOOST]?.toString()?.toFloatOrNull() 
-                ?: 0f
-        }
-        
-        widgetFontFamily = try {
-            prefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY)
-        } catch (_: ClassCastException) {
-            allPrefs[WidgetConstants.KEY_WIDGET_FONT_FAMILY]?.toString()
-        } ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
-        
-        widgetFontBold = try {
-            prefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD)
-        } catch (_: ClassCastException) {
-            val v = allPrefs[WidgetConstants.KEY_WIDGET_FONT_BOLD]
-            (v as? Boolean) ?: v?.toString()?.toBooleanStrictOrNull() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD
-        }
-
-        widgetEventColor = try {
-            prefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB)
-        } catch (_: ClassCastException) {
-            (allPrefs[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() 
-                ?: allPrefs[WidgetConstants.KEY_WIDGET_EVENT_COLOR]?.toString()?.toLongOrNull()?.toInt()
-                ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB
-        }
-
-        widgetTodayEventColor = try {
-            prefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB)
-        } catch (_: ClassCastException) {
-            (allPrefs[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() 
-                ?: allPrefs[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR]?.toString()?.toLongOrNull()?.toInt()
-                ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB
-        }
+        eventCountToShow = SettingsManager.getWidgetEventCount(context)
+        textBoost = SettingsManager.getWidgetTextBoost(context)
+        widgetFontFamily = SettingsManager.getWidgetFontFamily(context)
+        widgetFontBold = SettingsManager.isWidgetFontBold(context)
+        widgetEventColor = SettingsManager.getWidgetEventColor(context).toArgb()
+        widgetTodayEventColor = SettingsManager.getWidgetTodayEventColor(context).toArgb()
     }
 
     override fun onDestroy() {
@@ -231,13 +187,7 @@ class CalendarWidgetFactory(
 
     private fun loadCalendarEvents() {
         val appActiveIds = loadSelectedCalendarIds(context)
-        val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        
-        val widgetSelectedIds = try {
-            widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-        } catch (_: ClassCastException) {
-            emptySet()
-        }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+        val widgetSelectedIds = SettingsManager.getWidgetSelectedCalendarIds(context)
 
         // 1. Verificamos qué IDs de la App existen realmente en el sistema actual
         val availableIds = loadAvailableCalendarsSync(context).map { it.id }.toSet()

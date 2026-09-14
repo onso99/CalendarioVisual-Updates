@@ -23,23 +23,11 @@ object AlarmUtils {
     }
 
     fun saveAlarmSetting(context: Context, eventId: Long, offsetMinutes: Int?) {
-        val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit(commit = true) {
-            if (offsetMinutes == null) {
-                remove(eventId.toString())
-            } else {
-                putInt(eventId.toString(), offsetMinutes)
-            }
-        }
+        SettingsManager.saveEventAlarmOffset(context, eventId, offsetMinutes)
     }
 
     fun getAlarmOffset(context: Context, eventId: Long): Int? {
-        val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
-        return if (prefs.contains(eventId.toString())) {
-            prefs.getInt(eventId.toString(), 20)
-        } else {
-            null
-        }
+        return SettingsManager.getEventAlarmOffset(context, eventId)
     }
 
     @SuppressLint("ScheduleExactAlarm")
@@ -129,8 +117,7 @@ object AlarmUtils {
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleSnooze(context: Context, eventId: Long, title: String) {
         try {
-            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            val snoozeMinutes = prefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10)
+            val snoozeMinutes = SettingsManager.getDefaultSnoozeInterval(context)
             
             val snoozeTime = System.currentTimeMillis() + (snoozeMinutes.toLong() * 60 * 1000)
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -229,7 +216,7 @@ object AlarmUtils {
             return 0
         }
         
-        val prefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = SettingsManager.getPrefs(context, AppConstants.ALARM_PREFS_NAME)
         val now = LocalDateTime.now()
         var purgedCount = 0
 

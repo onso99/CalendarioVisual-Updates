@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.net.toUri
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -186,8 +187,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.calendar_widget_layout)
 
             // Leer preferencias y aplicar color de fondo
-            val prefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-            val backgroundColor = prefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB)
+            val backgroundColor = SettingsManager.getWidgetBackgroundColor(context).toArgb()
             views.setInt(R.id.widget_root_layout, "setBackgroundColor", backgroundColor)
 
             val launchAppIntent = Intent(context, MainActivity::class.java).apply {

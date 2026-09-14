@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import android.content.Context
+import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -15,7 +16,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Motor de datos del Widget Moderno.
@@ -34,14 +34,6 @@ object WidgetStateManager {
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var updateJob: Job? = null
 
-    fun updateWidgetState(context: Context, events: List<Festivo>) {
-        updateJob?.cancel()
-        updateJob = scope.launch {
-            delay(300.milliseconds)
-            performUpdate(context, events)
-        }
-    }
-
     fun refreshWithCurrentEvents(context: Context) {
         updateJob?.cancel()
         updateJob = scope.launch {
@@ -54,22 +46,10 @@ object WidgetStateManager {
     }
 
     private fun cleanAndFilterEvents(context: Context, events: List<Festivo>): List<WidgetEvent> {
-        val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val limit = try { 
-            widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) 
-        } catch (_: ClassCastException) { 
-            (widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT] as? Number)?.toInt() 
-                ?: widgetPrefs.all[WidgetConstants.KEY_EVENT_COUNT]?.toString()?.toIntOrNull() 
-                ?: WidgetConstants.DEFAULT_EVENT_COUNT 
-        }
+        val limit = SettingsManager.getWidgetEventCount(context)
         
         // 1. Obtener IDs seleccionados del Widget y activos de la App
-        val widgetSelectedIds = try {
-            widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-        } catch (_: ClassCastException) {
-            emptySet()
-        }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
-        
+        val widgetSelectedIds = SettingsManager.getWidgetSelectedCalendarIds(context)
         val appActiveIds = loadSelectedCalendarIds(context)
 
         // Usamos la fecha de hoy a medianoche para una comparación limpia
@@ -82,11 +62,7 @@ object WidgetStateManager {
                 // 1. Si el widget tiene selección propia, debe ser respetada.
                 // 2. Si esa selección es "basura" (IDs viejos de backup), detectamos la falta de intersección.
                 if (widgetSelectedIds.isNotEmpty()) {
-                    // Si el ID del evento no está en la selección del widget -> Ocultar
-                    // EXCEPCIÓN: Si la selección del widget no tiene NADA que ver con los calendarios activos de la App,
-                    // es una señal clara de que los IDs han cambiado (Backup). En ese caso, mostramos todo por seguridad.
                     val hasValidOverlap = widgetSelectedIds.any { id -> appActiveIds.contains(id) || id == -1L }
-                    
                     if (hasValidOverlap) {
                         val isCalendarSelectedInWidget = widgetSelectedIds.contains(event.calendarId)
                         if (!isCalendarSelectedInWidget) return@filter false
@@ -98,7 +74,6 @@ object WidgetStateManager {
                 if (!isCalendarActiveInApp) return@filter false
 
                 // REGLA DE ORO: Si es hoy, se queda. Si es futuro, se queda.
-                // Usamos la misma lógica que el widget clásico para evitar discrepancias.
                 if (event.date.isBefore(today)) return@filter false
                 
                 // Si es hoy, verificamos si ya terminó (solo para eventos con hora)
@@ -120,37 +95,16 @@ object WidgetStateManager {
 
     private suspend fun performUpdate(context: Context, events: List<Festivo>) {
         val (json, prefsMap) = withContext(Dispatchers.Default) {
-            val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
             val cleaned = cleanAndFilterEvents(context, events)
             val jsonStr = gson.toJson(cleaned)
 
-            val all = widgetPrefs.all
-            val fontVal = try { 
-                widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) 
-            } catch (_: Exception) { all[WidgetConstants.KEY_WIDGET_FONT_FAMILY]?.toString() } ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY
-
             val map = mapOf(
-                "bg" to try { 
-                    widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB) 
-                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB },
-                
-                "event" to try { 
-                    widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB) 
-                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB },
-                
-                "today" to try { 
-                    widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB) 
-                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR] as? Number)?.toInt() ?: WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB },
-                
-                "boost" to try { 
-                    widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) 
-                } catch (_: Exception) { (all[WidgetConstants.KEY_WIDGET_TEXT_BOOST] as? Number)?.toFloat() ?: 0f },
-                
-                "font" to fontVal,
-                
-                "bold" to try { 
-                    widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) 
-                } catch (_: Exception) { all[WidgetConstants.KEY_WIDGET_FONT_BOLD]?.toString()?.toBoolean() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD }
+                "bg" to SettingsManager.getWidgetBackgroundColor(context).toArgb(),
+                "event" to SettingsManager.getWidgetEventColor(context).toArgb(),
+                "today" to SettingsManager.getWidgetTodayEventColor(context).toArgb(),
+                "boost" to SettingsManager.getWidgetTextBoost(context),
+                "font" to SettingsManager.getWidgetFontFamily(context),
+                "bold" to SettingsManager.isWidgetFontBold(context)
             )
             jsonStr to map
         }

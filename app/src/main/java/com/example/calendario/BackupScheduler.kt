@@ -38,14 +38,13 @@ object BackupScheduler {
     fun ensureBackupScheduled(context: Context) {
         scope.launch {
             try {
-                val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                val frequency = appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
-                val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) && (frequency != "manual")
+                val isAutoBackupEnabled = SettingsManager.isAutoBackupEnabled(context)
+                val frequency = SettingsManager.getBackupFrequency(context)
                 
-                if (!isAutoBackupEnabled) return@launch
+                if (!isAutoBackupEnabled || frequency == "manual") return@launch
 
                 val workManager = WorkManager.getInstance(context)
-                val lastBackup = appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
+                val lastBackup = SettingsManager.getLastBackupTime(context)
                 val intervalMillis = TimeUnit.DAYS.toMillis(getInterval(frequency))
                 
                 // Si hay retraso grave, lanzamos copia de rescate

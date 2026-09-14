@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.compose.foundation.background
@@ -60,7 +59,7 @@ fun ColorThemeScreen(
     darkTheme: Boolean
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
+    val prefs = remember { SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME) }
     val isAppDark = darkTheme
     
     var showColorPicker by remember { mutableStateOf(value = false) }

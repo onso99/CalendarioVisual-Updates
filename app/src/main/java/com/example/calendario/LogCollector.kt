@@ -1,7 +1,6 @@
 package com.example.calendario
 
 import android.content.Context
-import androidx.core.content.edit
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.time.LocalTime
 import java.time.Instant
@@ -11,8 +10,6 @@ object LogCollector {
     private val logs = ConcurrentLinkedQueue<String>()
     private const val MAX_LOGS = 200
     private val formatter = AppFormats.TimeWithSeconds
-    private const val PREFS_NAME = "widget_log_prefs"
-    private const val KEY_NEXT_REFRESH = "next_refresh_time"
     
     // Cache del estado para evitar lecturas constantes de disco
     private var isEnabledCache: Boolean? = null
@@ -23,8 +20,7 @@ object LogCollector {
      */
     fun init(context: Context) {
         if (isEnabledCache == null) {
-            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            isEnabledCache = prefs.getBoolean(AppConstants.KEY_LOGGING_ENABLED, false)
+            isEnabledCache = SettingsManager.isLoggingEnabled(context)
         }
     }
 
@@ -34,15 +30,13 @@ object LogCollector {
     }
 
     fun setLoggingEnabled(context: Context, enabled: Boolean) {
-        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putBoolean(AppConstants.KEY_LOGGING_ENABLED, enabled) }
+        SettingsManager.saveLoggingEnabled(context, enabled)
         isEnabledCache = enabled
         if (!enabled) {
             clear()
         } else {
             // Al activar, ponemos un estado pendiente hasta que llegue la primera alarma real
-            val logPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            logPrefs.edit { putString(KEY_NEXT_REFRESH, "PENDING") }
+            SettingsManager.saveNextRefreshTime(context, "PENDING")
         }
     }
 
@@ -54,14 +48,12 @@ object LogCollector {
             .toLocalTime()
             .format(formatter)
             
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(KEY_NEXT_REFRESH, timeStr) }
+        SettingsManager.saveNextRefreshTime(context, timeStr)
     }
 
     fun getNextRefreshTime(context: Context): String {
         if (!isLoggingEnabled(context)) return "OFF"
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_NEXT_REFRESH, "NOT_SCHEDULED") ?: "NOT_SCHEDULED"
+        return SettingsManager.getNextRefreshTime(context)
     }
 
     fun addLog(message: String) {

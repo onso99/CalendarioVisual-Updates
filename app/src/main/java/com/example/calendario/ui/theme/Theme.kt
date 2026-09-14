@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import com.example.calendario.AppConstants
+import com.example.calendario.SettingsManager
 import com.example.calendario.getContrastColor
 
 data class CustomColors(
@@ -166,18 +167,9 @@ object CalendarioTheme {
 }
 
 fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
-    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+    val prefs = SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME)
 
-    fun getSafeInt(key: String, default: Int): Int {
-        return try {
-            prefs.getInt(key, default)
-        } catch (_: ClassCastException) {
-            val all = prefs.all[key]
-            (all as? Number)?.toInt() 
-                ?: all?.toString()?.toLongOrNull()?.toInt() 
-                ?: default
-        }
-    }
+    fun getSafeInt(key: String, default: Int): Int = SettingsManager.getSafeInt(prefs, key, default)
 
     return if (darkTheme) {
         CustomColors(

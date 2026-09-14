@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calendario.database.*
@@ -76,7 +75,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 
                 // Notificar a los widgets
                 CalendarAppWidgetProvider.triggerWidgetUpdate(application)
-                WidgetStateManager.updateWidgetState(application, events)
+                WidgetStateManager.refreshWithCurrentEvents(application)
 
                 // SINCRONIZACIÓN DE ALARMAS EN TIEMPO REAL:
                 // Pasamos la lista 'events' que ya tenemos para ahorrar una lectura de DB.
@@ -119,11 +118,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     private fun updateAgendaSearchResults() {
         val state = _uiState.value
         val context = getApplication<Application>()
-        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         
         val normalizedQuery = state.agendaSearchQuery.unaccent().lowercase()
-        val event1Kw = prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.unaccent()?.lowercase() ?: ""
-        val event2Kw = prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.unaccent()?.lowercase() ?: ""
+        val event1Kw = SettingsManager.getEvent1Keyword(context).unaccent().lowercase()
+        val event2Kw = SettingsManager.getEvent2Keyword(context).unaccent().lowercase()
 
         val filteredEvents = state.eventsByDate.values.flatten()
             .filter { event ->
@@ -293,22 +291,17 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     fun setFavoriteCalendar(calendarId: Long?) {
         viewModelScope.launch {
-            val context = getApplication<Application>()
-            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            prefs.edit {
-                if (calendarId == null) remove(AppConstants.KEY_FAVORITE_CALENDAR_ID)
-                else putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, calendarId)
+            if (calendarId == null) {
+                SettingsManager.removeFavoriteCalendarId(getApplication())
+            } else {
+                SettingsManager.saveFavoriteCalendarId(getApplication(), calendarId)
             }
             _uiState.update { it.copy(favoriteCalendarId = calendarId) }
         }
     }
 
     private fun getFavoriteCalendarId(context: Context): Long? {
-        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        return try {
-            val favoriteId = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
-            if (favoriteId != -1L) favoriteId else null
-        } catch (_: Exception) { null }
+        return SettingsManager.getFavoriteCalendarId(context)
     }
 
     fun setImportedEvent(event: Festivo?) { _uiState.update { it.copy(importedEvent = event) } }
@@ -364,12 +357,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 } catch (_: Exception) { SyncResult(0, 0, false, 0L) }
             }
             if (result.success) {
-                val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                prefs.edit { 
-                    putLong(AppConstants.KEY_LAST_BACKUP_TIME, System.currentTimeMillis()) 
-                    putInt(AppConstants.KEY_LAST_BACKUP_COUNT, result.totalEvents)
-                    putLong(AppConstants.KEY_LAST_BACKUP_SIZE, result.sizeBytes)
-                }
+                SettingsManager.saveLastBackupMetadata(context, result.totalEvents, result.sizeBytes)
             }
             _uiState.update { it.copy(isSyncing = false) }
             onComplete(result)

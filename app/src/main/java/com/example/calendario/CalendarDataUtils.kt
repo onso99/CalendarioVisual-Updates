@@ -2,7 +2,6 @@ package com.example.calendario
 
 import android.content.ContentUris
 import android.content.Context
-import androidx.core.content.edit
 import android.provider.CalendarContract
 import androidx.core.database.getStringOrNull
 import kotlinx.coroutines.Dispatchers
@@ -15,20 +14,16 @@ import java.time.ZoneId
 
 // --- GESTIÓN DE BORRADOS (Tombstones) ---
 
-private const val DELETED_EVENTS_PREFS = "deleted_events_prefs"
-
 fun markEventAsDeleted(context: Context, eventId: Long) {
-    val prefs = context.getSharedPreferences(DELETED_EVENTS_PREFS, Context.MODE_PRIVATE)
-    prefs.edit { putBoolean(eventId.toString(), true) }
+    SettingsManager.markEventAsDeleted(context, eventId)
 }
 
 fun getDeletedEventIds(context: Context): Set<Long> {
-    val prefs = context.getSharedPreferences(DELETED_EVENTS_PREFS, Context.MODE_PRIVATE)
-    return prefs.all.keys.mapNotNull { it.toLongOrNull() }.toSet()
+    return SettingsManager.getDeletedEventIds(context)
 }
 
 fun clearDeletedEventIds(context: Context) {
-    context.getSharedPreferences(DELETED_EVENTS_PREFS, Context.MODE_PRIVATE).edit { clear() }
+    SettingsManager.clearDeletedEventIds(context)
 }
 
 fun removeEventFromHistory(context: Context, eventAdn: String) {
@@ -52,29 +47,15 @@ fun removeSeriesFromHistory(context: Context, eventId: Long) {
 }
 
 fun saveSelectedCalendarIds(context: Context, ids: Set<Long>) {
-    val prefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
-    prefs.edit { putStringSet("selected_ids", ids.map { it.toString() }.toSet()) }
+    SettingsManager.saveSelectedCalendarIds(context, ids)
 }
 
 fun loadSelectedCalendarIds(context: Context): Set<Long> {
-    val prefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
-    val rawSet = try {
-        prefs.getStringSet("selected_ids", emptySet())
-    } catch (_: ClassCastException) {
-        val all = prefs.all["selected_ids"]
-        if (all is String) {
-            all.removeSurrounding("[", "]").split(",").map { it.trim() }.toSet()
-        } else emptySet()
-    } ?: emptySet()
-    return rawSet.mapNotNull { it.toLongOrNull() }.toSet()
+    return SettingsManager.getSelectedCalendarIds(context)
 }
 
 fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?) {
-    val prefs = context.getSharedPreferences(AppConstants.PERIOD_COLOR_PREFS_NAME, Context.MODE_PRIVATE)
-    prefs.edit {
-        if (colorInt == null) remove(eventId.toString())
-        else putInt(eventId.toString(), colorInt)
-    }
+    SettingsManager.savePeriodColor(context, eventId, colorInt)
 }
 
 fun loadAvailableCalendarsSync(context: Context): List<CalendarInfo> {
@@ -136,19 +117,11 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 }
 
 fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
-    val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_ADJUSTMENTS_PREFS_NAME, Context.MODE_PRIVATE)
-    val gson = com.google.gson.Gson()
-    val json = gson.toJson(adjustments.map { HolidayAdjustmentDto(it.date.toString(), it.title, it.type.name, it.originalEventId) })
-    prefs.edit { putString("adjustments", json) }
+    SettingsManager.saveHolidayAdjustments(context, adjustments)
 }
 
 fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
-    val prefs = context.getSharedPreferences(AppConstants.HOLIDAY_ADJUSTMENTS_PREFS_NAME, Context.MODE_PRIVATE)
-    val json = prefs.getString("adjustments", null) ?: return emptyList()
-    val gson = com.google.gson.Gson()
-    val type = object : com.google.gson.reflect.TypeToken<List<HolidayAdjustmentDto>>() {}.type
-    val dtoList: List<HolidayAdjustmentDto> = try { gson.fromJson(json, type) } catch (_: Exception) { emptyList() }
-    return dtoList.map { HolidayAdjustment(LocalDate.parse(it.dateStr), it.title, HolidayAdjustmentType.valueOf(it.type), it.originalEventId) }
+    return SettingsManager.getHolidayAdjustments(context)
 }
 
 fun readFestivosFromCalendarsSync(
@@ -225,7 +198,7 @@ fun readFestivosFromCalendarsSync(
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
             val customColorMap = mutableMapOf<Long, Int?>()
-            val internalColorsPrefs = context.getSharedPreferences(AppConstants.PERIOD_COLOR_PREFS_NAME, Context.MODE_PRIVATE)
+            val internalColorsPrefs = SettingsManager.getPrefs(context, AppConstants.PERIOD_COLOR_PREFS_NAME)
 
             uniqueEventIds.chunked(400).forEach { chunk ->
                 val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
@@ -269,9 +242,8 @@ fun readFestivosFromCalendarsSync(
             val birthdayKeywords = context.getString(R.string.birthday_keywords).split(",").map { it.trim().lowercase() }
             val greetingKeywords = context.getString(R.string.greeting_keywords).split(",").map { it.trim().lowercase() }
             
-            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            val event1Keyword = prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.unaccent()?.trim()?.lowercase() ?: ""
-            val event2Keyword = prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.unaccent()?.trim()?.lowercase() ?: ""
+            val event1Keyword = SettingsManager.getEvent1Keyword(context).unaccent().trim().lowercase()
+            val event2Keyword = SettingsManager.getEvent2Keyword(context).unaccent().trim().lowercase()
 
             // --- GESTIÓN DE CARRILES (Lanes) ---
             val laneAssignments = mutableMapOf<String, Int>()

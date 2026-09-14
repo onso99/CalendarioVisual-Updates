@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -55,10 +54,9 @@ fun MonthlyEventList(
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
-    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val themeColors = CalendarioTheme.colors
-    val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
-    val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val event1Keyword = remember(themeColors) { SettingsManager.getEvent1Keyword(context) }
+    val event2Keyword = remember(themeColors) { SettingsManager.getEvent2Keyword(context) }
     val normEvent1 = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
     val normEvent2 = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
 

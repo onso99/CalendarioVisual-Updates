@@ -57,12 +57,8 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             }
 
             // Creamos el nuevo paquete con los datos fusionados (o nuevos si no había remotos)
-            val selectedIds = loadSelectedCalendarIds(context)
-            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-            val favoriteId = if (prefs.contains(AppConstants.KEY_FAVORITE_CALENDAR_ID)) {
-                val id = prefs.getLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, -1L)
-                if (id != -1L) id else null
-            } else null
+            val selectedIds = SettingsManager.getSelectedCalendarIds(context)
+            val favoriteId = SettingsManager.getFavoriteCalendarId(context)
 
             val fullBackupJson = BackupManager.createFullBackupJson(context, selectedIds, favoriteId)
             

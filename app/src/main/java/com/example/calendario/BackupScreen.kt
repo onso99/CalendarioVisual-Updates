@@ -3,7 +3,6 @@
 package com.example.calendario
 
 import android.app.Activity
-import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,7 +34,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.edit
 import com.example.calendario.ui.theme.CalendarioTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -62,7 +60,6 @@ fun BackupScreen(
 
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
-    val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
 
     // --- Dialog States ---
@@ -104,7 +101,7 @@ fun BackupScreen(
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 if (task.isSuccessful) {
                     val account = task.result
-                    appPrefs.edit { putString("google_account_email", account?.email) }
+                    SettingsManager.saveGoogleAccountEmail(context, account?.email)
                     permissionsUpdateTrigger++
                     context.showToast(R.string.account_linked_success)
                 } else {
@@ -116,17 +113,15 @@ fun BackupScreen(
 
     // --- States (Con escudos de seguridad) ---
     val lastBackupTimestamp = remember(permissionsUpdateTrigger, isSyncing) { 
-        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L) }
-        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_TIME] as? Number)?.toLong() ?: 0L }
+        SettingsManager.getLastBackupTime(context)
     }
     val lastBackupSize = remember(permissionsUpdateTrigger, isSyncing) { 
-        try { appPrefs.getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L) }
-        catch (_: Exception) { (appPrefs.all[AppConstants.KEY_LAST_BACKUP_SIZE] as? Number)?.toLong() ?: 0L }
+        SettingsManager.getLastBackupSize(context)
     }
 
     var pendingBackupFreq by remember { 
-        val auto = try { appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false) } catch (_: Exception) { false }
-        val f = if (!auto) "manual" else appPrefs.getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
+        val auto = SettingsManager.isAutoBackupEnabled(context)
+        val f = if (!auto) "manual" else SettingsManager.getBackupFrequency(context)
         mutableStateOf(f)
     }
 
@@ -159,7 +154,7 @@ fun BackupScreen(
             // --- SECCIÓN GOOGLE DRIVE ---
             SectionTitle(text = stringResource(id = R.string.drive_label))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                val email = remember(permissionsUpdateTrigger) { appPrefs.getString("google_account_email", null) }
+                val email = remember(permissionsUpdateTrigger) { SettingsManager.getGoogleAccountEmail(context) }
                 if (email == null) {
                     ActionRow(text = stringResource(id = R.string.link_google_account)) {
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestScopes(Scope(DriveScopes.DRIVE_APPDATA)).build()
@@ -168,7 +163,7 @@ fun BackupScreen(
                 } else {
                     Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showUnlinkAccountDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(id = R.string.drive_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
-                        Text(text = email, color = CalendarioTheme.colors.textSystem, fontSize = 14.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(text = email ?: "", color = CalendarioTheme.colors.textSystem, fontSize = 14.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                     val freqLabel = when(pendingBackupFreq) { "manual" -> stringResource(R.string.frequency_manual); "daily" -> stringResource(R.string.frequency_daily); "weekly" -> stringResource(R.string.frequency_weekly); "monthly" -> stringResource(R.string.frequency_monthly); else -> pendingBackupFreq }
@@ -313,7 +308,7 @@ fun BackupScreen(
                         onClick = { 
                             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
                             GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { 
-                                appPrefs.edit { remove("google_account_email") }
+                                SettingsManager.saveGoogleAccountEmail(context, null)
                                 permissionsUpdateTrigger++
                                 showUnlinkAccountDialog = false 
                             } 
@@ -330,11 +325,7 @@ fun BackupScreen(
                 selection = pendingBackupFreq, 
                 onConfirm = { freq -> 
                     pendingBackupFreq = freq
-                    appPrefs.edit { 
-                        val enabled = freq != "manual"
-                        putBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, enabled)
-                        putString(AppConstants.KEY_BACKUP_FREQUENCY, freq)
-                    }
+                    SettingsManager.saveBackupFrequency(context, freq)
                     if (freq != "manual") BackupScheduler.scheduleBackup(context, freq) else BackupScheduler.cancelBackup(context)
                     showFrequencyDialog = false 
                 }, 

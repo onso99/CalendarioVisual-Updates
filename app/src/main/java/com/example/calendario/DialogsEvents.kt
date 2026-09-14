@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -77,9 +76,8 @@ fun DayEventsDialog(
     onEventClick: (Festivo) -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
-    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val event1Keyword = remember { SettingsManager.getEvent1Keyword(context) }
+    val event2Keyword = remember { SettingsManager.getEvent2Keyword(context) }
     val locale = LocalConfiguration.current.locales[0]
 
     // Formato: Dia dd/mm/aa (ej: Lun 22/05/26)
@@ -322,9 +320,8 @@ fun ReadOnlyEventDialog(
     val dateFormatter = remember { AppFormats.dayDateAbbr(locale) }
     
     // Lógica de color original del evento (v3.1.34)
-    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
-    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val event1Keyword = remember { SettingsManager.getEvent1Keyword(context) }
+    val event2Keyword = remember { SettingsManager.getEvent2Keyword(context) }
 
     val normalizedTitle = festivo.title.unaccent().lowercase()
     val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()

@@ -3,7 +3,6 @@
 package com.example.calendario
 
 import android.content.Context
-import androidx.core.content.edit
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -17,10 +16,9 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     override suspend fun doWork(): Result {
         val context = applicationContext
         LogCollector.addLog(">>> TRABAJADOR: Iniciando respaldo automático...")
-        val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
         
         // 1. Verificar si el autoguardado está activo
-        val isAutoBackupEnabled = appPrefs.getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        val isAutoBackupEnabled = SettingsManager.isAutoBackupEnabled(context)
         if (!isAutoBackupEnabled) {
             LogCollector.addLog(">>> TRABAJADOR: Respaldo desactivado en ajustes. Abortando.")
             return Result.success()
@@ -53,11 +51,7 @@ class BackupWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         val result = driveHelper.syncHistoryWithDrive()
 
         return if (result.success) {
-            val now = System.currentTimeMillis()
-            appPrefs.edit { 
-                putLong(AppConstants.KEY_LAST_BACKUP_TIME, now) 
-                putInt(AppConstants.KEY_LAST_BACKUP_COUNT, result.totalEvents)
-            }
+            SettingsManager.saveLastBackupMetadata(context, result.totalEvents, result.sizeBytes)
             LogCollector.addLog(">>> TRABAJADOR: ¡ÉXITO! (${result.totalEvents} eventos sincronizados).")
             Result.success()
         } else {

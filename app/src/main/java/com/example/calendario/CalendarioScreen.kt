@@ -75,9 +75,7 @@ enum class SearchScope { MONTH, YEAR, ALL }
 @Composable
 private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {
     val locale = LocalConfiguration.current.locales[0]
-    val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-    val startOfWeekKey = prefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
-    return when (StartOfWeekOption.fromKey(startOfWeekKey)) {
+    return when (SettingsManager.getStartOfWeek(context)) {
         StartOfWeekOption.SYSTEM -> WeekFields.of(locale).firstDayOfWeek
         StartOfWeekOption.MONDAY -> DayOfWeek.MONDAY
         StartOfWeekOption.SUNDAY -> DayOfWeek.SUNDAY
@@ -964,8 +962,7 @@ fun CalendarioScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (viewMode == CalendarViewMode.MONTHLY) {
-                        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                        val effectType = prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient")
+                        val effectType = SettingsManager.getMonthlyEffectType(context)
                         
                         val endColor = when (effectType) {
                             "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
@@ -1089,8 +1086,7 @@ fun CalendarioScreen(
                         }
                     } else { // Yearly view
                         val startOfWeek = getActualFirstDayOfWeek(context)
-                        val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-                        val showWeekNumber = appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
+                        val showWeekNumber = SettingsManager.isWeekNumberVisible(context)
 
                         HorizontalPager(
                             state = yearPagerState

@@ -11,7 +11,7 @@ import org.json.JSONObject
 object ThemePersistence {
 
     fun applyTheme(context: Context, parsedTheme: ParsedTheme, fileName: String) {
-        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME)
         prefs.edit {
             // Limpiar nombres de temas anteriores para evitar inconsistencias
             remove(AppConstants.KEY_LIGHT_THEME_NAME)
@@ -83,7 +83,7 @@ object ThemePersistence {
 
     fun exportThemeToJson(context: Context, uri: Uri, newName: String): Boolean {
         try {
-            val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+            val prefs = SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME)
             val themeJson = JSONObject()
 
             // Manifest

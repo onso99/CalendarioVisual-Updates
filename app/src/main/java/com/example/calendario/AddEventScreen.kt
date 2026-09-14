@@ -172,8 +172,7 @@ fun AddEventScreen(
     eventsByDate: Map<LocalDate, List<Festivo>>
 ) {
     val context = LocalContext.current
-    val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val defaultAlarmOffset = remember { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 30) }
+    val defaultAlarmOffset = remember { SettingsManager.getDefaultAlarmOffset(context) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),

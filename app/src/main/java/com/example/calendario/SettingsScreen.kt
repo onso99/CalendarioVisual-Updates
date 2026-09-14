@@ -104,11 +104,9 @@ fun SettingsScreen(
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val appPrefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val widgetPrefs = remember { context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE) }
     var permissionsUpdateTrigger by remember { mutableIntStateOf(0) }
 
-    var lightThemeName by remember { mutableStateOf(appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, "theme_1")) }
+    var lightThemeName by remember { mutableStateOf(SettingsManager.getLightThemeName(context) ?: "theme_1") }
 
     // --- Dialog States ---
     var showThemeDialog by remember { mutableStateOf(false) }
@@ -140,7 +138,7 @@ fun SettingsScreen(
     )
 
     val onThemeImported = {
-        lightThemeName = appPrefs.getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
+        lightThemeName = SettingsManager.getLightThemeName(context) ?: "theme_1"
         onThemeUpdated()
     }
 
@@ -176,12 +174,10 @@ fun SettingsScreen(
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     try {
-                        val newName = appPrefs.getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
+                        val newName = SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME).getString("temp_export_name", "nuevo_tema") ?: "nuevo_tema"
                         if (ThemePersistence.exportThemeToJson(context, uri, newName)) {
-                            appPrefs.edit {
-                                putString(AppConstants.KEY_LIGHT_THEME_NAME, newName)
-                                putString(AppConstants.KEY_DARK_THEME_NAME, newName)
-                            }
+                            SettingsManager.saveLightThemeName(context, newName)
+                            SettingsManager.saveDarkThemeName(context, newName)
                             importedThemeData = null 
                             onThemeImported()
                         }
@@ -198,60 +194,41 @@ fun SettingsScreen(
     val themeSetting by themeManager.themeSetting.collectAsState()
 
     var pendingShowWeekNumber by remember { 
-        val v = try { appPrefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) } 
-                catch (_: Exception) { appPrefs.all[AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW]?.toString()?.toBoolean() ?: false }
-        mutableStateOf(v) 
+        mutableStateOf(SettingsManager.isWeekNumberVisible(context)) 
     }
     var pendingStartOfWeekKey by remember { 
-        val raw = appPrefs.getString(AppConstants.KEY_START_OF_WEEK, StartOfWeekOption.SYSTEM.key) ?: StartOfWeekOption.SYSTEM.key
-        mutableStateOf(StartOfWeekOption.fromKey(raw).key)
+        mutableStateOf(SettingsManager.getStartOfWeek(context).key)
     }
     var pendingEventCount by remember { 
-        val v = try { widgetPrefs.getInt(WidgetConstants.KEY_EVENT_COUNT, WidgetConstants.DEFAULT_EVENT_COUNT) } catch (_: Exception) { WidgetConstants.DEFAULT_EVENT_COUNT }
-        mutableFloatStateOf(v.toFloat())
+        mutableFloatStateOf(SettingsManager.getWidgetEventCount(context).toFloat())
     }
     var pendingTextBoost by remember {
-        val v = try { widgetPrefs.getFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, 0f) } catch (_: Exception) { 0f }
-        mutableFloatStateOf(v)
+        mutableFloatStateOf(SettingsManager.getWidgetTextBoost(context))
     }
     var pendingEventColor by remember { 
-        val c = try { widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB) } catch (_: Exception) { WidgetConstants.DEFAULT_WIDGET_EVENT_COLOR_ARGB }
-        mutableStateOf(Color(c))
+        mutableStateOf(SettingsManager.getWidgetEventColor(context))
     }
     var pendingTodayEventColor by remember {
-        val c = try { widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB) } catch (_: Exception) { WidgetConstants.DEFAULT_WIDGET_TODAY_EVENT_COLOR_ARGB }
-        mutableStateOf(Color(c))
+        mutableStateOf(SettingsManager.getWidgetTodayEventColor(context))
     }
     var pendingWidgetBackgroundColor by remember {
-        val c = try { widgetPrefs.getInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB) } catch (_: Exception) { WidgetConstants.DEFAULT_WIDGET_BACKGROUND_COLOR_ARGB }
-        mutableStateOf(Color(c))
+        mutableStateOf(SettingsManager.getWidgetBackgroundColor(context))
     }
-    var pendingFontFamily by remember { mutableStateOf(widgetPrefs.getString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) ?: WidgetConstants.DEFAULT_WIDGET_FONT_FAMILY) }
+    var pendingFontFamily by remember { mutableStateOf(SettingsManager.getWidgetFontFamily(context)) }
     var pendingFontBold by remember { 
-        val v = try { widgetPrefs.getBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, WidgetConstants.DEFAULT_WIDGET_FONT_BOLD) } 
-                catch (_: Exception) { widgetPrefs.all[WidgetConstants.KEY_WIDGET_FONT_BOLD]?.toString()?.toBoolean() ?: WidgetConstants.DEFAULT_WIDGET_FONT_BOLD }
-        mutableStateOf(v) 
+        mutableStateOf(SettingsManager.isWidgetFontBold(context)) 
     }
     var pendingWidgetCalendarIds by remember {
-        val ids = try {
-            widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())
-        } catch (_: ClassCastException) {
-            emptySet()
-        }?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
-        mutableStateOf(ids)
+        mutableStateOf(SettingsManager.getWidgetSelectedCalendarIds(context))
     }
-    val currentWidgetIds = pendingWidgetCalendarIds.filter { id -> uiState.availableCalendars.any { it.id == id } }.ifEmpty { uiState.selectedCalendarIds }
+    val currentWidgetIds = pendingWidgetCalendarIds.filter { id -> uiState.availableCalendars.any { it.id == id } }.toSet().ifEmpty { uiState.selectedCalendarIds }
     val widgetCalendarSummary = "(${currentWidgetIds.size})"
     
     var pendingAlarmOffset by remember { 
-        val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 30) } 
-                catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_ALARM_OFFSET]?.toString()?.toIntOrNull() ?: 30 }
-        mutableFloatStateOf(v.toFloat()) 
+        mutableFloatStateOf(SettingsManager.getDefaultAlarmOffset(context).toFloat()) 
     }
     var pendingSnoozeInterval by remember { 
-        val v = try { appPrefs.getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10) } 
-                catch (_: Exception) { (appPrefs.all[AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL] as? Number)?.toInt() ?: appPrefs.all[AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL]?.toString()?.toIntOrNull() ?: 10 }
-        mutableFloatStateOf(v.toFloat()) 
+        mutableFloatStateOf(SettingsManager.getDefaultSnoozeInterval(context).toFloat()) 
     }
 
     var showWidgetEventColorPalette by remember { mutableStateOf(false) }
@@ -259,13 +236,7 @@ fun SettingsScreen(
     var showWidgetBackgroundColorPalette by remember { mutableStateOf(false) }
 
     // Auxiliares
-    val updateAppPrefs = { block: android.content.SharedPreferences.Editor.() -> Unit ->
-        appPrefs.edit { block() }
-        CalendarAppWidgetProvider.triggerWidgetUpdate(context)
-        WidgetStateManager.refreshWithCurrentEvents(context)
-    }
-    val updateWidgetPrefs = { block: android.content.SharedPreferences.Editor.() -> Unit ->
-        widgetPrefs.edit(commit = true) { block() }
+    val refreshUI = {
         CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         WidgetStateManager.refreshWithCurrentEvents(context)
     }
@@ -362,7 +333,7 @@ fun SettingsScreen(
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showBundledThemesDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.predefined_themes), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    val currentThemeId = lightThemeName ?: "theme_1"
+                    val currentThemeId = lightThemeName
                     val bundledTheme = BundledThemes.themes.find { t -> val manifest = t["themeManifest"] as Map<*,*>; manifest["id"] == currentThemeId.removeSuffix("***") || manifest["name"] == currentThemeId.removeSuffix("***") }
                     val finalName = if (bundledTheme != null) stringResource(id = (bundledTheme["themeManifest"] as Map<*,*>)["nameRes"] as Int) + (if (currentThemeId.endsWith("***")) "***" else "") else currentThemeId
                     Text(text = truncateThemeName(finalName, 20), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
@@ -385,7 +356,11 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Slider(
                             value = pendingEventCount, 
-                            onValueChange = { pendingEventCount = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_EVENT_COUNT, it.roundToInt()) } }, 
+                            onValueChange = { 
+                                pendingEventCount = it
+                                SettingsManager.saveWidgetEventCount(context, it.roundToInt())
+                                refreshUI()
+                            }, 
                             valueRange = 1f..12f, 
                             steps = 10, 
                             modifier = Modifier.weight(1f),
@@ -404,7 +379,11 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Slider(
                             value = pendingTextBoost, 
-                            onValueChange = { pendingTextBoost = it; updateWidgetPrefs { putFloat(WidgetConstants.KEY_WIDGET_TEXT_BOOST, it) } }, 
+                            onValueChange = { 
+                                pendingTextBoost = it
+                                SettingsManager.saveWidgetTextBoost(context, it)
+                                refreshUI()
+                            }, 
                             valueRange = -4f..4f, 
                             steps = 7, 
                             modifier = Modifier.weight(1f),
@@ -457,7 +436,8 @@ fun SettingsScreen(
                                     .border(1.dp, chipBorder, RoundedCornerShape(18.dp))
                                     .clickable { 
                                         pendingFontBold = !pendingFontBold
-                                        updateWidgetPrefs { putBoolean(WidgetConstants.KEY_WIDGET_FONT_BOLD, pendingFontBold) }
+                                        SettingsManager.saveWidgetFontBold(context, pendingFontBold)
+                                        refreshUI()
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -601,9 +581,9 @@ fun SettingsScreen(
             LanguageSelectionDialog(currentLanguageCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language, onLanguageSelected = { newCode -> scope.launch { isChangingLanguage = true; delay(1000.milliseconds); AppCompatDelegate.setApplicationLocales(if (newCode == null) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(newCode)); showLanguageDialog = false } }, onDismiss = { showLanguageDialog = false })
         }
         if (showThemeDialog) { ThemeSelectionDialog(currentTheme = themeSetting, onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false }, onDismiss = { showThemeDialog = false }) }
-        if (showWeekConfigDialog) { WeekConfigDialog(currentSelectionKey = pendingStartOfWeekKey, showWeekNumber = pendingShowWeekNumber, onConfirm = { key, show -> pendingStartOfWeekKey = key; pendingShowWeekNumber = show; updateAppPrefs { putString(AppConstants.KEY_START_OF_WEEK, key); putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, show) }; showWeekConfigDialog = false }, onDismiss = { showWeekConfigDialog = false }) }
-        if (showAlarmConfigDialog) { AlarmConfigDialog(anticipation = pendingAlarmOffset, snooze = pendingSnoozeInterval, onConfirm = { offset, interval -> pendingAlarmOffset = offset; pendingSnoozeInterval = interval; updateAppPrefs { putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset.roundToInt()); putInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, interval.roundToInt()) }; showAlarmConfigDialog = false }, onDismiss = { showAlarmConfigDialog = false }) }
-        if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onConfirm = { family -> pendingFontFamily = family; updateWidgetPrefs { putString(WidgetConstants.KEY_WIDGET_FONT_FAMILY, family) }; showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
+        if (showWeekConfigDialog) { WeekConfigDialog(currentSelectionKey = pendingStartOfWeekKey, showWeekNumber = pendingShowWeekNumber, onConfirm = { key, show -> pendingStartOfWeekKey = key; pendingShowWeekNumber = show; SettingsManager.saveStartOfWeek(context, StartOfWeekOption.fromKey(key)); SettingsManager.saveWeekNumberVisibility(context, show); refreshUI(); showWeekConfigDialog = false }, onDismiss = { showWeekConfigDialog = false }) }
+        if (showAlarmConfigDialog) { AlarmConfigDialog(anticipation = pendingAlarmOffset, snooze = pendingSnoozeInterval, onConfirm = { offset, interval -> pendingAlarmOffset = offset; pendingSnoozeInterval = interval; SettingsManager.saveDefaultAlarmOffset(context, offset.roundToInt()); SettingsManager.saveDefaultSnoozeInterval(context, interval.roundToInt()); refreshUI(); showAlarmConfigDialog = false }, onDismiss = { showAlarmConfigDialog = false }) }
+        if (showFontFamilyDialog) { FontFamilySelectionDialog(currentSelection = pendingFontFamily, onConfirm = { family -> pendingFontFamily = family; SettingsManager.saveWidgetFontFamily(context, family); refreshUI(); showFontFamilyDialog = false }, onDismiss = { showFontFamilyDialog = false }) }
         if (showBundledThemesDialog) { 
             BundledThemesDialog(
                 currentThemeId = lightThemeName, 
@@ -629,12 +609,12 @@ fun SettingsScreen(
                 onSaveClick = { showExportDialog = true }
             ) 
         }
-        if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_EVENT_COLOR, it.toArgb()) }; showWidgetEventColorPalette = false }) }
-        if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_TODAY_EVENT_COLOR, it.toArgb()) }; showWidgetTodayEventColorPalette = false }) }
-        if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; updateWidgetPrefs { putInt(WidgetConstants.KEY_WIDGET_BACKGROUND_COLOR, it.toArgb()) }; showWidgetBackgroundColorPalette = false }) }
+        if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; SettingsManager.saveWidgetEventColor(context, it); refreshUI(); showWidgetEventColorPalette = false }) }
+        if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; SettingsManager.saveWidgetTodayEventColor(context, it); refreshUI(); showWidgetTodayEventColorPalette = false }) }
+        if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; SettingsManager.saveWidgetBackgroundColor(context, it); refreshUI(); showWidgetBackgroundColorPalette = false }) }
         if (showDiscardChangesDialog) { AlertDialog(onDismissRequest = { showDiscardChangesDialog = false }, containerColor = CalendarioTheme.colors.fondoDialogos, titleContentColor = CalendarioTheme.colors.textSystem, textContentColor = CalendarioTheme.colors.textSystem, title = { Text(stringResource(id = R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, text = { Text(stringResource(id = R.string.discard_changes_confirmation)) }, confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) }, dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) } ) }
         if (showExportDialog) { 
-            val cleanId = lightThemeName?.removeSuffix("***") ?: "theme_1"
+            val cleanId = lightThemeName.removeSuffix("***")
             val bundled = remember(cleanId) {
                 BundledThemes.themes.find { (it["themeManifest"] as Map<*, *>)["id"] == cleanId }
             }
@@ -649,7 +629,7 @@ fun SettingsScreen(
                 onDismissRequest = { showExportDialog = false }, 
                 onConfirm = { newName -> 
                     showExportDialog = false
-                    appPrefs.edit { putString("temp_export_name", newName) }
+                    SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME).edit { putString("temp_export_name", newName) }
                     exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { 
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "application/json"
@@ -668,7 +648,8 @@ fun SettingsScreen(
                 currentFavoriteId = uiState.favoriteCalendarId, 
                 onApply = { newIds -> 
                     pendingWidgetCalendarIds = newIds
-                    updateWidgetPrefs { putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newIds.map { it.toString() }.toSet()) }
+                    SettingsManager.saveWidgetSelectedCalendarIds(context, newIds)
+                    refreshUI()
                     showWidgetCalendarDialog = false 
                 }, 
                 onDismissRequest = { showWidgetCalendarDialog = false }

@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Context
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -67,18 +66,17 @@ fun MonthlyCalendar(
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
-    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
     val themeColors = CalendarioTheme.colors
-    val event1Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
-    val event2Keyword = remember(themeColors) { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val event1Keyword = remember(themeColors) { SettingsManager.getEvent1Keyword(context) }
+    val event2Keyword = remember(themeColors) { SettingsManager.getEvent2Keyword(context) }
     val normEvent1 = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
     val normEvent2 = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
-    val event1Pulse = remember(themeColors) { prefs.getBoolean(AppConstants.KEY_EVENT_1_PULSE, false) }
-    val event2Pulse = remember(themeColors) { prefs.getBoolean(AppConstants.KEY_EVENT_2_PULSE, false) }
+    val event1Pulse = remember(themeColors) { SettingsManager.isEvent1PulseEnabled(context) }
+    val event2Pulse = remember(themeColors) { SettingsManager.isEvent2PulseEnabled(context) }
 
-    val effectType = remember(themeColors) { prefs.getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient" }
+    val effectType = remember(themeColors) { SettingsManager.getMonthlyEffectType(context) }
     
-    val showWeekNumber = remember(prefs) { prefs.getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false) }
+    val showWeekNumber = remember(themeColors) { SettingsManager.isWeekNumberVisible(context) }
     val weekFields = remember(locale) { WeekFields.of(locale) }
     val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
 

@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,9 +49,8 @@ internal fun EventRow(
 ) {
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE) }
-    val event1Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_1_KEYWORD, "")?.trim() ?: "" }
-    val event2Keyword = remember { prefs.getString(AppConstants.KEY_EVENT_2_KEYWORD, "")?.trim() ?: "" }
+    val event1Keyword = remember { SettingsManager.getEvent1Keyword(context) }
+    val event2Keyword = remember { SettingsManager.getEvent2Keyword(context) }
 
     val normalizedTitle = festivo.title.unaccent().lowercase()
     val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()

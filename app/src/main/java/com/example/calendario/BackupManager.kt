@@ -22,12 +22,6 @@ object BackupManager {
     private const val KEY_BACKUP_METADATA = "backup_metadata"
 
     fun createFullBackupJson(context: Context, selectedAppIds: Set<Long>, favoriteId: Long?): JSONObject {
-        val appPrefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
-        val widgetPrefs = context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE)
-        val holidayPrefs = context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE)
-        val calendarPrefs = context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE)
-        val alarmPrefs = context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE)
-
         val root = JSONObject()
 
         // 1. Metadata
@@ -42,13 +36,13 @@ object BackupManager {
         }
         root.put(KEY_BACKUP_METADATA, metadata)
 
-        // 2. Preferencias
-        root.put(KEY_APP_PREFS, JSONObject(appPrefs.all))
-        root.put(KEY_WIDGET_PREFS, JSONObject(widgetPrefs.all))
-        root.put(KEY_ALARM_PREFS, JSONObject(alarmPrefs.all))
-        root.put(KEY_HOLIDAY_PREFS, JSONObject(holidayPrefs.all))
+        // 2. Preferencias (Centralizado v3.1.34)
+        root.put(KEY_APP_PREFS, JSONObject(SettingsManager.getAllAppPrefs(context)))
+        root.put(KEY_WIDGET_PREFS, JSONObject(SettingsManager.getAllWidgetPrefs(context)))
+        root.put(KEY_ALARM_PREFS, JSONObject(SettingsManager.getAllAlarmPrefs(context)))
+        root.put(KEY_HOLIDAY_PREFS, JSONObject(SettingsManager.getAllHolidayPrefs(context)))
 
-        val calPrefsMap = calendarPrefs.all.mapValues { entry ->
+        val calPrefsMap = SettingsManager.getAllCalendarPrefs(context).mapValues { entry ->
             val value = entry.value
             if (value is Set<*>) JSONArray(value) else value
         }
@@ -105,7 +99,7 @@ object BackupManager {
                 put("account", cal.accountName)
                 put("isPrimary", cal.isPrimary)
                 val isSelectedInApp = selectedAppIds.contains(cal.id)
-                val isSelectedInWidget = widgetPrefs.getStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, emptySet())?.contains(cal.id.toString()) ?: false
+                val isSelectedInWidget = SettingsManager.getWidgetSelectedCalendarIds(context).contains(cal.id)
                 put("selApp", isSelectedInApp)
                 put("selWid", isSelectedInWidget)
                 put("isFav", cal.id == favoriteId)
@@ -151,13 +145,13 @@ object BackupManager {
 
             // 1. PREFERENCIAS
             if (restorePrefs) {
-                restorePrefs(context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE), json.optJSONObject(KEY_APP_PREFS))
-                restorePrefs(context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE), json.optJSONObject(KEY_WIDGET_PREFS))
-                restorePrefs(context.getSharedPreferences(AppConstants.ALARM_PREFS_NAME, Context.MODE_PRIVATE), json.optJSONObject(KEY_ALARM_PREFS))
+                restorePrefs(SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME), json.optJSONObject(KEY_APP_PREFS))
+                restorePrefs(SettingsManager.getPrefs(context, WidgetConstants.GLOBAL_WIDGET_PREFS_NAME), json.optJSONObject(KEY_WIDGET_PREFS))
+                restorePrefs(SettingsManager.getPrefs(context, AppConstants.ALARM_PREFS_NAME), json.optJSONObject(KEY_ALARM_PREFS))
                 
                 val calendarJson = json.optJSONObject(KEY_CALENDAR_PREFS)
                 calendarJson?.let {
-                    context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE).edit {
+                    SettingsManager.getPrefs(context, "calendar_prefs").edit {
                         clear()
                         val keys = it.keys()
                         while (keys.hasNext()) {
@@ -199,26 +193,24 @@ object BackupManager {
 
                     // Aplicamos los IDs reparados
                     if (newSelectedApp.isNotEmpty()) {
-                        context.getSharedPreferences("calendar_prefs", Context.MODE_PRIVATE).edit {
+                        SettingsManager.getPrefs(context, "calendar_prefs").edit {
                             putStringSet("selected_ids", newSelectedApp.map { it.toString() }.toSet())
                         }
                     }
                     if (newSelectedWidget.isNotEmpty()) {
-                        context.getSharedPreferences(WidgetConstants.GLOBAL_WIDGET_PREFS_NAME, Context.MODE_PRIVATE).edit {
+                        SettingsManager.getPrefs(context, WidgetConstants.GLOBAL_WIDGET_PREFS_NAME).edit {
                             putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, newSelectedWidget)
                         }
                     }
                     if (newFavoriteId != null) {
-                        context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE).edit {
-                            putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, newFavoriteId)
-                        }
+                        SettingsManager.saveFavoriteCalendarId(context, newFavoriteId)
                     }
                 }
             }
 
             // 2. FESTIVOS MANUALES
             if (restoreHolidays) {
-                restorePrefs(context.getSharedPreferences(AppConstants.HOLIDAY_PREFS_NAME, Context.MODE_PRIVATE), json.optJSONObject(KEY_HOLIDAY_PREFS))
+                restorePrefs(SettingsManager.getPrefs(context, AppConstants.HOLIDAY_PREFS_NAME), json.optJSONObject(KEY_HOLIDAY_PREFS))
             }
 
             val database = AppDatabase.getDatabase(context)
@@ -337,7 +329,7 @@ object BackupManager {
             (manifest["id"] as? String) == cleanId || (manifest["name"] as? String) == cleanId
         } ?: return
         val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<String, String> ?: return
-        val prefs = context.getSharedPreferences(AppConstants.APP_SETTINGS_PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME)
         prefs.edit { colorMap.forEach { (key, hex) -> try { putInt(key, hex.toColorInt()) } catch (_: Exception) { } } }
     }
 
