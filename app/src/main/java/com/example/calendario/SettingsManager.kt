@@ -65,7 +65,6 @@ object SettingsManager {
     fun getAllHolidayPrefs(context: Context): Map<String, *> = holidayPrefs(context).all
     fun getAllCalendarPrefs(context: Context): Map<String, *> = calendarPrefs(context).all
     fun getAllAlarmPrefs(context: Context): Map<String, *> = alarmPrefs(context).all
-    fun getAllDeletedEventsPrefs(context: Context): Map<String, *> = deletedEventsPrefs(context).all
 
     fun saveFavoriteCalendarId(context: Context, id: Long) =
         appPrefs(context).edit { putLong(AppConstants.KEY_FAVORITE_CALENDAR_ID, id) }
@@ -129,17 +128,8 @@ object SettingsManager {
     fun saveLightThemeName(context: Context, name: String?) =
         appPrefs(context).edit { putString(AppConstants.KEY_LIGHT_THEME_NAME, name) }
 
-    fun getDarkThemeName(context: Context): String? =
-        appPrefs(context).getString(AppConstants.KEY_DARK_THEME_NAME, null)
-
     fun saveDarkThemeName(context: Context, name: String?) =
         appPrefs(context).edit { putString(AppConstants.KEY_DARK_THEME_NAME, name) }
-
-    fun getEvent1Pulse(context: Context): Boolean =
-        appPrefs(context).getBoolean(AppConstants.KEY_EVENT_1_PULSE, false)
-
-    fun getEvent2Pulse(context: Context): Boolean =
-        appPrefs(context).getBoolean(AppConstants.KEY_EVENT_2_PULSE, false)
 
     // --- 2. COPIA DE SEGURIDAD (Drive) ---
     fun isAutoBackupEnabled(context: Context): Boolean =

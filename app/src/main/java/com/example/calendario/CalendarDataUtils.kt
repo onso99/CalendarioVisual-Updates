@@ -198,7 +198,6 @@ fun readFestivosFromCalendarsSync(
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
             val customColorMap = mutableMapOf<Long, Int?>()
-            val internalColorsPrefs = SettingsManager.getPrefs(context, AppConstants.PERIOD_COLOR_PREFS_NAME)
 
             uniqueEventIds.chunked(400).forEach { chunk ->
                 val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
@@ -217,7 +216,7 @@ fun readFestivosFromCalendarsSync(
                         val id = cursor.getLong(idCol)
                         if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
                         if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
-                        val internalColor = if (internalColorsPrefs.contains(id.toString())) internalColorsPrefs.getInt(id.toString(), 0) else null
+                        val internalColor = SettingsManager.getPeriodColor(context, id)
                         val systemColor = if (colorCol != -1 && !cursor.isNull(colorCol)) cursor.getInt(colorCol) else null
                         customColorMap[id] = internalColor ?: systemColor
                         val s1 = if (s1Col != -1) cursor.getStringOrNull(s1Col)?.lowercase() ?: "" else ""

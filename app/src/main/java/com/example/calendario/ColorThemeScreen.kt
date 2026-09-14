@@ -188,7 +188,11 @@ fun ColorThemeScreen(
                         color = currentColor,
                         isPulsing = isPulsing,
                         onPulseClick = if (pulseKey != null) { {
-                            prefs.edit { putBoolean(pulseKey, !isPulsing) }
+                            if (pulseKey == AppConstants.KEY_EVENT_1_PULSE) {
+                                SettingsManager.saveEvent1Pulse(context, !isPulsing)
+                            } else {
+                                SettingsManager.saveEvent2Pulse(context, !isPulsing)
+                            }
                             updateTrigger++
                         } } else null,
                         onLabelClick = if (keywordKey != null) { { 
@@ -227,7 +231,11 @@ fun ColorThemeScreen(
             initialName = currentVal,
             onDismissRequest = { showRenameDialog = false },
             onConfirm = { newName ->
-                prefs.edit { putString(keywordKey, newName.trim()) }
+                if (keywordKey == AppConstants.KEY_EVENT_1_KEYWORD) {
+                    SettingsManager.saveEvent1Keyword(context, newName)
+                } else {
+                    SettingsManager.saveEvent2Keyword(context, newName)
+                }
                 ThemePersistence.markThemeAsModified(prefs)
                 onThemeModified()
                 updateTrigger++
