@@ -128,7 +128,28 @@ data class HolidayAdjustment(
     val title: String,
     val type: HolidayAdjustmentType,
     val originalEventId: Long? = null
-)
+) {
+    /**
+     * Serializa el ajuste a JSON (Fase 4 v3.1.34)
+     */
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("fecha", date.toString())
+        put("titulo", title)
+        put("tipo", type.name)
+        originalEventId?.let { put("originalEventId", it) }
+    }
+
+    companion object {
+        fun fromJson(obj: JSONObject): HolidayAdjustment {
+            return HolidayAdjustment(
+                date = LocalDate.parse(obj.getString("fecha")),
+                title = obj.getString("titulo"),
+                type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
+                originalEventId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
+            )
+        }
+    }
+}
 
 enum class HolidayAdjustmentType {
     HOLIDAY,

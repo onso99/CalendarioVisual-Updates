@@ -21,24 +21,11 @@ object CvoHelper {
         root.put("fecha_creacion", System.currentTimeMillis())
 
         val eventsArray = JSONArray()
-        events.forEach { event ->
-            eventsArray.put(JSONObject().apply {
-                put("titulo", event.title)
-                put("fecha", event.date.toString())
-                put("es_todo_el_dia", event.isAllDay)
-                put("es_periodo_largo", event.isLongPeriod)
-                put("rrule", event.rrule)
-            })
-        }
+        events.forEach { event -> eventsArray.put(event.toJson()) }
         root.put("eventos", eventsArray)
 
         val notesArray = JSONArray()
-        notes.forEach { note ->
-            notesArray.put(JSONObject().apply {
-                put("fecha", note.dateStr)
-                put("contenido", note.content)
-            })
-        }
+        notes.forEach { note -> notesArray.put(note.toJson()) }
         root.put("notas", notesArray)
         
         return root.toString(4)
@@ -87,14 +74,7 @@ object CvoHelper {
             root.put("fecha_creacion", System.currentTimeMillis())
             
             val dataArray = JSONArray()
-            exportable.forEach { adj ->
-                dataArray.put(JSONObject().apply {
-                    put("fecha", adj.date.toString())
-                    put("titulo", adj.title)
-                    put("tipo", adj.type.name)
-                    adj.originalEventId?.let { put("originalEventId", it) }
-                })
-            }
+            exportable.forEach { adj -> dataArray.put(adj.toJson()) }
             root.put("ajustes", dataArray)
 
             val fileName = "FestivosLocales.cvo"

@@ -48,45 +48,19 @@ object BackupManager {
         }
         root.put(KEY_CALENDAR_PREFS, JSONObject(calPrefsMap))
 
-        // 3. Notas Diarias (Desde Room)
+        // 3. Notas Diarias (Centralizado v3.1.34)
         val database = AppDatabase.getDatabase(context)
         val dao = database.calendarDao()
         val notesArray = JSONArray()
         dao.getAllNotesSync().forEach { entity ->
-            notesArray.put(JSONObject().apply {
-                put("dateStr", entity.dateStr)
-                put("content", entity.content)
-                put("lastModified", entity.lastModified)
-                put("isDeleted", entity.isDeleted)
-            })
+            notesArray.put(entity.toDailyNote().toJson())
         }
         root.put(KEY_DAILY_NOTES, notesArray)
 
-        // 4. Historial de Eventos (Desde Room)
+        // 4. Historial de Eventos (Centralizado v3.1.34)
         val historyArray = JSONArray()
         dao.getAllEventsSync().forEach { entity ->
-            historyArray.put(JSONObject().apply {
-                put("id", entity.googleId)
-                put("title", entity.title)
-                put("description", entity.description)
-                put("dateStr", entity.date)
-                put("startTimeStr", entity.startTime)
-                put("endTimeStr", entity.endTime)
-                put("isAllDay", entity.isAllDay)
-                put("calendarId", entity.calendarId)
-                put("rrule", entity.rrule)
-                put("age", entity.age)
-                put("isBirthday", entity.isBirthday)
-                put("isFromHolidaySource", entity.isFromHolidaySource)
-                put("isLongPeriod", entity.isLongPeriod)
-                put("lane", entity.lane)
-                put("totalDays", entity.totalDays)
-                put("currentDay", entity.currentDay)
-                put("customColor", entity.customColor)
-                put("lastModified", entity.lastModified)
-                put("isDeleted", entity.isDeleted)
-                put("isGhost", entity.isGhost)
-            })
+            historyArray.put(entity.toFestivo().toJson())
         }
         root.put(KEY_CALENDAR_HISTORY, historyArray)
 
