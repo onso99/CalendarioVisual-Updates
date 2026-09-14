@@ -63,22 +63,23 @@ fun BackupHistoryScreen(onBack: () -> Unit) {
                     .padding(padding)
                     .padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(history) { entry ->
                     val dateStr = Instant.ofEpochMilli(entry.timestamp)
                         .atZone(ZoneId.systemDefault())
                         .format(formatter)
                     
-                    val sourceStr = when (entry.source) {
-                        BackupSource.DRIVE -> stringResource(R.string.drive_label)
-                        BackupSource.LOCAL -> stringResource(R.string.preferences_backup_label)
-                    }
-
                     val actionStr = when (entry.action) {
                         BackupAction.SAVE -> stringResource(R.string.guardar_label)
                         BackupAction.RESTORE -> stringResource(R.string.restaurar_label)
                         BackupAction.SYNC -> stringResource(R.string.sincronizar_label)
+                    }
+
+                    val headerText = if (entry.source == BackupSource.LOCAL) {
+                        "$dateStr - ${stringResource(R.string.preferences_backup_label)}"
+                    } else {
+                        dateStr
                     }
 
                     val contentStr = if (entry.isSuccess) {
@@ -101,15 +102,17 @@ fun BackupHistoryScreen(onBack: () -> Unit) {
 
                     Column {
                         Text(
-                            text = "$dateStr - $sourceStr",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = CalendarioTheme.colors.textSystem
+                            text = headerText,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = CalendarioTheme.colors.textSystem,
+                            lineHeight = 17.sp
                         )
                         Text(
                             text = "$actionStr$contentStr",
-                            fontSize = 14.sp,
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f)
+                            fontSize = 13.sp,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.8f),
+                            lineHeight = 17.sp
                         )
                     }
                 }

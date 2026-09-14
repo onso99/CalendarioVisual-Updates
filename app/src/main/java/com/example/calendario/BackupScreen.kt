@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -172,19 +173,54 @@ fun BackupScreen(
                         Text(text = freqLabel, color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
                     HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                    Column(modifier = Modifier.padding(bottom = 8.dp)) {
-                        var dateFontSize by remember { mutableStateOf(14.sp) }
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
-                            Text(stringResource(id = R.string.last_backup_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                            Spacer(modifier = Modifier.weight(1f))
-                            val lastStr = if (lastBackupTimestamp == 0L) stringResource(R.string.never) else AppFormats.dateTimeShort(locale).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
-                            val sizeStr = if (lastBackupSize > 0) " · ${"%.2f".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))}MB" else ""
-                            Text(text = "$lastStr$sizeStr", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), fontSize = dateFontSize, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis, onTextLayout = { if (it.hasVisualOverflow && dateFontSize > 11.sp) dateFontSize = (dateFontSize.value - 1f).sp })
+                    
+                    // --- FILA ÚLTIMA COPIA (Integrada con Historial v3.1.34) ---
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clickable { onHistoryClick() }
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            stringResource(id = R.string.last_backup_label), 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontSize = 16.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        
+                        val lastStr = if (lastBackupTimestamp == 0L) {
+                            stringResource(R.string.never)
+                        } else {
+                            AppFormats.dateTimeShort(locale).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(lastBackupTimestamp))
                         }
                         
-                        HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                        val sizeStr = if (lastBackupSize > 0) {
+                            " %.2fMB".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))
+                        } else ""
 
-                        BackupActionRow(
+                        Text(
+                            text = "$lastStr$sizeStr", 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
+                            fontSize = 13.sp, // Fuente reducida para evitar problemas de espacio
+                            maxLines = 1, 
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    
+                    HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                    BackupActionRow(
                             text = stringResource(id = R.string.sincronizar_label),
                             icon = Icons.Default.Sync,
                             isRotating = isSyncing,
@@ -200,19 +236,10 @@ fun BackupScreen(
                             reverseRotation = true,
                             onClick = { showConfirmRestoreDialog = true }
                         )
-
-                        HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-
-                        BackupActionRow(
-                            text = stringResource(id = R.string.activity_log),
-                            icon = Icons.Default.History,
-                            onClick = onHistoryClick
-                        )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
             // --- SECCIÓN MANTENIMIENTO (Integrada) ---
             SectionTitle(text = stringResource(id = R.string.maintenance_section))
