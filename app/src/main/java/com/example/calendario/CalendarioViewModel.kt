@@ -548,60 +548,75 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val eventsToImport = _uiState.value.agendaImportEvents
             val notesToImport = _uiState.value.agendaImportNotes
             
-            withContext(Dispatchers.IO) {
-                // 1. Importar Eventos (Evitando duplicados exactos en el mismo calendario) v3.1.34
-                val currentEvents = readFestivosFromCalendarsSync(context, setOf(targetCalendarId)).values.flatten()
-                val currentAdns = currentEvents.map { it.adn }.toSet()
+            try {
+                withContext(Dispatchers.IO) {
+                    // 1. Importar Eventos (Evitando duplicados exactos en el mismo calendario) v3.1.34
+                    val currentEvents = readFestivosFromCalendarsSync(context, setOf(targetCalendarId)).values.flatten()
+                    val currentAdns = currentEvents.map { it.adn }.toSet()
 
-                eventsToImport.forEach { event ->
-                    val targetAdn = Festivo.generateAdn(event.date, event.title, null)
-                    
-                    if (!currentAdns.contains(targetAdn)) {
-                        createEvent(
-                            context = context,
-                            title = event.title,
-                            calendarId = targetCalendarId,
-                            startDate = event.date.atStartOfDay(),
-                            endDate = if (event.isLongPeriod) event.date.plusDays(1).atStartOfDay() else event.date.atStartOfDay(),
-                            isAllDay = event.isAllDay,
-                            repetitionRule = RepetitionRule.entries.find { it.rrule == event.rrule } ?: RepetitionRule.NONE,
-                            isLongPeriod = event.isLongPeriod
-                        )
+                    eventsToImport.forEach { event ->
+                        // 1. REGLA DE ORO FASE 4 (v3.1.34): Todo entra como evento SIMPLE.
+                        // Calculamos el ADN localmente basado solo en datos básicos.
+                        val targetAdn = Festivo.generateAdn(event.date, event.title, event.startTime)
+                        
+                        if (!currentAdns.contains(targetAdn)) {
+                            // Reconstruimos fechas reales (sin repetición)
+                            val startDT = if (event.startTime != null) java.time.LocalDateTime.of(event.date, event.startTime) else event.date.atStartOfDay()
+                            val endDT = if (event.endTime != null) java.time.LocalDateTime.of(event.date, event.endTime) 
+                                       else if (event.isLongPeriod) event.date.plusDays(1).atStartOfDay() 
+                                       else startDT.plusMinutes(30)
+
+                            createEvent(
+                                context = context,
+                                title = event.title,
+                                calendarId = targetCalendarId,
+                                startDate = startDT,
+                                endDate = endDT,
+                                isAllDay = event.isAllDay,
+                                repetitionRule = RepetitionRule.NONE, // Forzado a SIMPLE
+                                repeatUntil = null,
+                                repeatCount = null,
+                                isLongPeriod = event.isLongPeriod,
+                                showToast = false
+                            )
+                        }
                     }
-                }
 
-                // 2. Importar Notas (Lógica de Fusión Inteligente por Contención v3.1.34)
-                notesToImport.forEach { importedNote ->
-                    val existingNote = dao.getNoteByDate(importedNote.dateStr)
-                    
-                    if (existingNote == null || existingNote.content.isBlank()) {
-                        dao.insertNote(NoteEntity(importedNote.dateStr, importedNote.content, System.currentTimeMillis(), false))
-                    } else {
-                        val localContent = existingNote.content.trim()
-                        val impContent = importedNote.content.trim()
+                    // 2. Importar Notas (Lógica de Fusión Inteligente por Contención v3.1.34)
+                    notesToImport.forEach { importedNote ->
+                        val existingNote = dao.getNoteByDate(importedNote.dateStr)
+                        
+                        if (existingNote == null || existingNote.content.isBlank()) {
+                            dao.insertNote(NoteEntity(importedNote.dateStr, importedNote.content, System.currentTimeMillis(), false))
+                        } else {
+                            val localContent = existingNote.content.trim()
+                            val impContent = importedNote.content.trim()
 
-                        when {
-                            localContent.contains(impContent) -> {
-                                // Caso B: Ya está incluido. No hacer nada.
-                                Log.d("CalendarioVM", "Nota ignorada por duplicado en ${importedNote.dateStr}")
-                            }
-                            impContent.contains(localContent) -> {
-                                // Caso C: La importada es más completa. Sustituir.
-                                dao.insertNote(NoteEntity(importedNote.dateStr, importedNote.content, System.currentTimeMillis(), false))
-                            }
-                            else -> {
-                                // Caso D: Son diferentes. Añadir al final.
-                                val combined = "${existingNote.content}\n---\n${importedNote.content}"
-                                dao.insertNote(NoteEntity(importedNote.dateStr, combined, System.currentTimeMillis(), false))
+                            when {
+                                localContent.contains(impContent) -> {
+                                    // Ya incluido
+                                }
+                                impContent.contains(localContent) -> {
+                                    // La importada es más completa. Sustituir.
+                                    dao.insertNote(NoteEntity(importedNote.dateStr, importedNote.content, System.currentTimeMillis(), false))
+                                }
+                                else -> {
+                                    // Son diferentes. Añadir al final.
+                                    val combined = "${existingNote.content}\n---\n${importedNote.content}"
+                                    dao.insertNote(NoteEntity(importedNote.dateStr, combined, System.currentTimeMillis(), false))
+                                }
                             }
                         }
                     }
                 }
+                
+                cancelAgendaImport()
+                refreshData()
+                context.showToast(R.string.import_success)
+            } catch (e: Exception) {
+                Log.e("CalendarioVM", "Error en applyAgendaImport", e)
+                context.showToast("Error crítico durante la importación")
             }
-            
-            cancelAgendaImport()
-            refreshData()
-            context.showToast(R.string.import_success)
         }
     }
 

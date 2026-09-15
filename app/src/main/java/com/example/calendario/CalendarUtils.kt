@@ -24,14 +24,15 @@ fun createEvent(
     repeatUntil: LocalDate? = null,
     repeatCount: Int? = null,
     customColor: Int? = null,
-    isLongPeriod: Boolean = false
+    isLongPeriod: Boolean = false,
+    showToast: Boolean = true
 ): Long? {
     if (calendarId == null) {
-        context.showToast(R.string.no_calendar_selected_error, Toast.LENGTH_LONG)
+        if (showToast) context.showToast(R.string.no_calendar_selected_error, Toast.LENGTH_LONG)
         return null
     }
     if (title.isBlank()) {
-        context.showToast(R.string.title_empty_error)
+        if (showToast) context.showToast(R.string.title_empty_error)
         return null
     }
 
@@ -57,17 +58,17 @@ fun createEvent(
             if (customColor != null) {
                 savePeriodColor(context, eventId, customColor)
             }
-            context.showToast(R.string.event_saved_successfully)
+            if (showToast) context.showToast(R.string.event_saved_successfully)
             eventId
         } else {
-            context.showToast(R.string.error_saving_event, Toast.LENGTH_LONG)
+            if (showToast) context.showToast(R.string.error_saving_event, Toast.LENGTH_LONG)
             null
         }
     } catch (_: SecurityException) {
-        context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
+        if (showToast) context.showToast(R.string.permission_denied_calendar, Toast.LENGTH_LONG)
         null
     } catch (e: Exception) {
-        context.showToast(context.getString(R.string.unexpected_error_create, e.message), Toast.LENGTH_LONG)
+        if (showToast) context.showToast(context.getString(R.string.unexpected_error_create, e.message), Toast.LENGTH_LONG)
         null
     }
 }

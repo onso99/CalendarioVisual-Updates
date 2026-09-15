@@ -1,6 +1,8 @@
 package com.example.calendario
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
@@ -15,17 +17,23 @@ import com.example.calendario.ui.theme.isColorDark
 
 /**
  * Muestra un Toast corto de forma simplificada.
+ * Garantiza la ejecución en el hilo principal sin dependencias de corrutinas (v3.1.34)
  */
 fun Context.showToast(@StringRes resId: Int, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(this, resId, duration).show()
+    Handler(Looper.getMainLooper()).post {
+        Toast.makeText(this, resId, duration).show()
+    }
 }
 
 /**
  * Muestra un Toast corto con un texto personalizado.
+ * Garantiza la ejecución en el hilo principal sin dependencias de corrutinas (v3.1.34)
  */
 fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
     if (message.isNotBlank()) {
-        Toast.makeText(this, message, duration).show()
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, message, duration).show()
+        }
     }
 }
 

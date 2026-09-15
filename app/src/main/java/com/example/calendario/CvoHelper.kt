@@ -21,7 +21,7 @@ object CvoHelper {
         root.put("fecha_creacion", System.currentTimeMillis())
 
         val eventsArray = JSONArray()
-        events.forEach { event -> eventsArray.put(event.toJson()) }
+        events.forEach { event -> eventsArray.put(event.toJson(forExport = true)) }
         root.put("eventos", eventsArray)
 
         val notesArray = JSONArray()

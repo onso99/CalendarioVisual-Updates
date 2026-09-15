@@ -42,30 +42,32 @@ data class Festivo(
     val isGhost: Boolean = false
 ) {
     /**
-     * Serializa el objeto a JSON para Copias de Seguridad e Intercambio (Fase 4 v3.1.34)
+     * Serializa el objeto a JSON (Fase 4 v3.1.34)
+     * @param forExport Si es true, omite datos técnicos como IDs reales y reglas de repetición
+     *                  para tratarlo como un evento simple e independiente.
      */
-    fun toJson(): JSONObject = JSONObject().apply {
-        put("id", id)
+    fun toJson(forExport: Boolean = false): JSONObject = JSONObject().apply {
+        put("id", if (forExport) 0L else id)
         put("title", title)
         put("description", description)
         put("dateStr", date.toString())
         put("startTimeStr", startTime?.toString())
         put("endTimeStr", endTime?.toString())
         put("isAllDay", isAllDay)
-        put("calendarId", calendarId)
-        put("isFromHolidaySource", isFromHolidaySource)
-        put("rrule", rrule)
+        put("calendarId", if (forExport) 0L else calendarId)
+        put("isFromHolidaySource", if (forExport) false else isFromHolidaySource)
+        put("rrule", if (forExport) null else rrule)
         put("age", age)
-        put("isBirthday", isBirthday)
+        put("isBirthday", if (forExport) false else isBirthday)
         put("isLongPeriod", isLongPeriod)
-        put("lane", lane)
+        put("lane", if (forExport) null else lane)
         put("totalDays", totalDays)
         put("currentDay", currentDay)
         put("customColor", customColor)
         put("lastModified", lastModified)
         put("isDeleted", isDeleted)
-        put("isGhost", isGhost)
-        put("adn", adn)
+        put("isGhost", if (forExport) false else isGhost)
+        put("adn", if (forExport) "" else adn)
     }
 
     companion object {
@@ -80,14 +82,27 @@ data class Festivo(
          * Crea un objeto Festivo desde un JSON con seguridad ante nulos (Fase 4 v3.1.34)
          */
         fun fromJson(obj: JSONObject): Festivo {
+            val dateStr = obj.getString("dateStr")
+            val startTimeStr = if (obj.isNull("startTimeStr")) null else obj.optString("startTimeStr")
+            val endTimeStr = if (obj.isNull("endTimeStr")) null else obj.optString("endTimeStr")
+
             return Festivo(
                 id = obj.optLong("id", 0L),
                 title = obj.optString("title", ""),
                 description = if (obj.isNull("description")) null else obj.optString("description"),
-                date = LocalDate.parse(obj.getString("dateStr")),
-                startTime = if (obj.isNull("startTimeStr")) null else try { LocalTime.parse(obj.getString("startTimeStr")) } catch(_:Exception) { null },
-                endTime = if (obj.isNull("endTimeStr")) null else try { LocalTime.parse(obj.getString("endTimeStr")) } catch(_:Exception) { null },
-                isAllDay = obj.optBoolean("isAllDay", true),
+                date = LocalDate.parse(dateStr),
+                startTime = startTimeStr?.let { 
+                    try { LocalTime.parse(it) } catch(_:Exception) { 
+                        // Fallback para formatos parciales (HH:mm)
+                        try { LocalTime.parse(it.take(5)) } catch(_:Exception) { null }
+                    }
+                },
+                endTime = endTimeStr?.let { 
+                    try { LocalTime.parse(it) } catch(_:Exception) { 
+                        try { LocalTime.parse(it.take(5)) } catch(_:Exception) { null }
+                    }
+                },
+                isAllDay = obj.optBoolean("isAllDay", startTimeStr == null),
                 calendarId = obj.optLong("calendarId", 0L),
                 isFromHolidaySource = obj.optBoolean("isFromHolidaySource", false),
                 rrule = if (obj.isNull("rrule")) null else obj.optString("rrule"),

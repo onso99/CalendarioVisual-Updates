@@ -330,7 +330,8 @@ fun SearchScreen(
                         }
                         
                         if (deletedCount > 0) {
-                            context.showToast(R.string.holiday_updated_successfully)
+                            val msg = context.applicationContext.getString(R.string.events_deleted_count, deletedCount)
+                            context.showToast(msg)
                             onRefresh()
                         }
                         

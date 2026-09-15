@@ -106,25 +106,19 @@ object SettingsManager {
         appPrefs(context).edit { putBoolean(AppConstants.KEY_LOGGING_ENABLED, enabled) }
 
     fun getSafeInt(prefs: SharedPreferences, key: String, default: Int): Int {
+        val all = prefs.all
         return try {
-            prefs.getInt(key, default)
-        } catch (_: ClassCastException) {
-            val all = prefs.all[key]
-            (all as? Number)?.toInt() 
-                ?: all?.toString()?.toIntOrNull() 
-                ?: default
-        }
+            if (all[key] is Int) prefs.getInt(key, default)
+            else (all[key] as? Number)?.toInt() ?: all[key]?.toString()?.toIntOrNull() ?: default
+        } catch (_: Exception) { default }
     }
 
     fun getSafeLong(prefs: SharedPreferences, key: String, default: Long): Long {
+        val all = prefs.all
         return try {
-            prefs.getLong(key, default)
-        } catch (_: ClassCastException) {
-            val all = prefs.all[key]
-            (all as? Number)?.toLong() 
-                ?: all?.toString()?.toLongOrNull() 
-                ?: default
-        }
+            if (all[key] is Long) prefs.getLong(key, default)
+            else (all[key] as? Number)?.toLong() ?: all[key]?.toString()?.toLongOrNull() ?: default
+        } catch (_: Exception) { default }
     }
 
     fun getSafeBoolean(prefs: SharedPreferences, key: String, default: Boolean): Boolean {
