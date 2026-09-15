@@ -129,12 +129,6 @@ object SettingsManager {
         }
     }
 
-    fun isJsonToRoomMigrated(context: Context): Boolean =
-        appPrefs(context).getBoolean("json_to_room_migrated", false)
-
-    fun setJsonToRoomMigrated(context: Context) =
-        appPrefs(context).edit { putBoolean("json_to_room_migrated", true) }
-
     fun getLightThemeName(context: Context): String? =
         appPrefs(context).getString(AppConstants.KEY_LIGHT_THEME_NAME, null)
 

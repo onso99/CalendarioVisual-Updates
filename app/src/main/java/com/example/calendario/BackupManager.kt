@@ -7,7 +7,6 @@ import androidx.core.graphics.toColorInt
 import com.example.calendario.database.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.LocalDate
 
 object BackupManager {
 
@@ -275,42 +274,6 @@ object BackupManager {
         val colorMap = (if (isDark) themeMap["darkTheme"] else themeMap["lightTheme"]) as? Map<String, String> ?: return
         val prefs = SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME)
         prefs.edit { colorMap.forEach { (key, hex) -> try { putInt(key, hex.toColorInt()) } catch (_: Exception) { } } }
-    }
-
-    fun getEventsFromLegacyJson(context: Context): List<Festivo> {
-        return try {
-            val file = context.getFileStreamPath("calendar_history_v2.json")
-            if (!file.exists()) return emptyList()
-            val json = context.openFileInput("calendar_history_v2.json").bufferedReader().use { it.readText() }
-            val array = JSONArray(json)
-            val result = mutableListOf<Festivo>()
-            for (i in 0 until array.length()) {
-                val obj = array.getJSONObject(i)
-                result.add(Festivo(
-                    title = obj.optString("title", ""), id = obj.optLong("id", 0L),
-                    date = LocalDate.parse(obj.getString("dateStr")), 
-                    isAllDay = obj.optBoolean("isAllDay", true), calendarId = obj.optLong("calendarId", 0L),
-                    adn = obj.optString("adn", ""), isFromHolidaySource = obj.optBoolean("isFromHolidaySource", false),
-                    description = null, startTime = null, endTime = null, rrule = null
-                ))
-            }
-            result
-        } catch (_: Exception) { emptyList() }
-    }
-
-    fun getNotesFromLegacyJson(context: Context): List<DailyNote> {
-        return try {
-            val file = context.getFileStreamPath("notes_history.json")
-            if (!file.exists()) return emptyList()
-            val json = context.openFileInput("notes_history.json").bufferedReader().use { it.readText() }
-            val array = JSONArray(json)
-            val result = mutableListOf<DailyNote>()
-            for (i in 0 until array.length()) {
-                val obj = array.getJSONObject(i)
-                result.add(DailyNote(obj.getString("dateStr"), obj.getString("content"), obj.optLong("lastModified", 0L), obj.optBoolean("isDeleted", false)))
-            }
-            result
-        } catch (_: Exception) { emptyList() }
     }
 
     private fun putPreference(editor: SharedPreferences.Editor, key: String, value: Any) {

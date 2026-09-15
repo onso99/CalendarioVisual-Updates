@@ -54,9 +54,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     init {
         viewModelScope.launch {
-            // Asegurar trasvase JSON -> Room si es necesario
-            MigrationManager.checkAndMigrate(application, database)
-            
             // Carga inicial de ajustes de festivos
             refreshAdjustments()
 
