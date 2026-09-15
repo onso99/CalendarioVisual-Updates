@@ -83,7 +83,7 @@ object BackupManager {
 
         // 6. Lista de IDs Borrados
         val deletedArray = JSONArray()
-        getDeletedEventIds(context).forEach { id -> deletedArray.put(id) }
+        SettingsManager.getDeletedEventIds(context).forEach { id -> deletedArray.put(id) }
         root.put(KEY_DELETED_EVENTS, deletedArray)
 
         return root
@@ -222,9 +222,9 @@ object BackupManager {
                     val localEvents = dao.getAllEventsSync().map { it.toFestivo() }
                     val availableCalendars = loadAvailableCalendarsSync(context)
                     
-                    clearDeletedEventIds(context)
+                    SettingsManager.clearDeletedEventIds(context)
                     json.optJSONArray(KEY_DELETED_EVENTS)?.let { array ->
-                        for (i in 0 until array.length()) markEventAsDeleted(context, array.optLong(i))
+                        for (i in 0 until array.length()) SettingsManager.markEventAsDeleted(context, array.optLong(i))
                     }
                     
                     val merged = mergeHistoryWithSystemData(context, localEvents, remoteEvents, availableCalendars)

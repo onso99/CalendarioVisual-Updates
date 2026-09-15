@@ -50,7 +50,7 @@ object WidgetStateManager {
         
         // 1. Obtener IDs seleccionados del Widget y activos de la App
         val widgetSelectedIds = SettingsManager.getWidgetSelectedCalendarIds(context)
-        val appActiveIds = loadSelectedCalendarIds(context)
+        val appActiveIds = SettingsManager.getSelectedCalendarIds(context)
 
         // Usamos la fecha de hoy a medianoche para una comparación limpia
         val today = LocalDate.now()

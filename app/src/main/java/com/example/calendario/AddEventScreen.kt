@@ -86,7 +86,7 @@ private fun processAlarmForEvent(
         val cleanAlarmTime = alarmTime.withSecond(0).withNano(0)
         
         val offset = Duration.between(cleanAlarmTime, cleanStartTime).toMinutes().toInt()
-        AlarmUtils.saveAlarmSetting(context, eventId, offset)
+        SettingsManager.saveEventAlarmOffset(context, eventId, offset)
         val tempFestivo = Festivo(
             id = eventId,
             title = title,
@@ -101,7 +101,7 @@ private fun processAlarmForEvent(
         )
         AlarmUtils.scheduleAlarm(context, tempFestivo)
     } else {
-        AlarmUtils.saveAlarmSetting(context, eventId, null)
+        SettingsManager.saveEventAlarmOffset(context, eventId, null)
         AlarmUtils.cancelAlarm(context, eventId, startDate.toLocalDate())
     }
 }
@@ -257,7 +257,7 @@ fun AddEventScreen(
                 } else null
             }
 
-            val offset = AlarmUtils.getAlarmOffset(context, localEventToEdit!!.id)
+            val offset = SettingsManager.getEventAlarmOffset(context, localEventToEdit!!.id)
             hasAlarm = offset != null
             
             alarmTime = if (offset != null) {

@@ -170,7 +170,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     fun refreshAdjustments() {
         val context = getApplication<Application>()
-        val adjustments = loadHolidayAdjustments(context)
+        val adjustments = SettingsManager.getHolidayAdjustments(context)
         val workingDates = adjustments.asSequence()
             .filter { (it.type == HolidayAdjustmentType.WORKING_DAY) && (it.originalEventId == null) }
             .map { it.date }
@@ -192,7 +192,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             try {
                 // 1. CARGA DE CONFIGURACIÓN
                 val availableCalendars = withContext(Dispatchers.IO) { loadAvailableCalendarsSuspend(context) }
-                val selectedIds = withContext(Dispatchers.IO) { loadSelectedCalendarIds(context) }
+                val selectedIds = withContext(Dispatchers.IO) { SettingsManager.getSelectedCalendarIds(context) }
                 var favoriteId = withContext(Dispatchers.IO) { getFavoriteCalendarId(context) }
                 
                 BackupScheduler.ensureBackupScheduled(context)
@@ -224,7 +224,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 
                 // Si la selección ha cambiado tras la curación, la guardamos
                 if (finalSelectedIds != selectedIds) {
-                    saveSelectedCalendarIds(context, finalSelectedIds)
+                    SettingsManager.saveSelectedCalendarIds(context, finalSelectedIds)
                 }
 
                 val systemEventsMap = if (finalSelectedIds.isNotEmpty()) {
@@ -284,7 +284,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 // Optimización: Actualización quirúrgica
                 dao.smartRefreshEvents(mergedEvents.map { it.toEntity() })
             }
-            saveSelectedCalendarIds(getApplication(), newSelectedIds)
+            SettingsManager.saveSelectedCalendarIds(getApplication(), newSelectedIds)
             _uiState.update { it.copy(availableCalendars = newAvailable, selectedCalendarIds = newSelectedIds) }
         }
     }
@@ -336,7 +336,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val result = withContext(Dispatchers.IO) {
                 try {
                     // 1. Asegurar datos frescos respetando coherencia
-                    val freshSelectedIds = loadSelectedCalendarIds(context)
+                    val freshSelectedIds = SettingsManager.getSelectedCalendarIds(context)
                     val freshFavoriteId = getFavoriteCalendarId(context)
                     
                     val freshEvents = readFestivosFromCalendarsSync(context, freshSelectedIds)
@@ -527,12 +527,12 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             val context = getApplication<Application>()
             withContext(Dispatchers.IO) {
-                val current = loadHolidayAdjustments(context).toMutableList()
+                val current = SettingsManager.getHolidayAdjustments(context).toMutableList()
                 selectedItems.forEach { imp ->
                     current.removeAll { adj -> adj.date == imp.date }
                     current.add(imp)
                 }
-                saveHolidayAdjustments(context, current)
+                SettingsManager.saveHolidayAdjustments(context, current)
             }
             
             cancelHolidayImport()

@@ -56,7 +56,7 @@ fun createEvent(
         if (results.isNotEmpty() && results[0].uri != null) {
             val eventId = ContentUris.parseId(results[0].uri!!)
             if (customColor != null) {
-                savePeriodColor(context, eventId, customColor)
+                SettingsManager.savePeriodColor(context, eventId, customColor)
             }
             if (showToast) context.showToast(R.string.event_saved_successfully)
             eventId
@@ -119,7 +119,7 @@ fun updateEvent(
         context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
         
         if (customColor != null) {
-            savePeriodColor(context, eventId, customColor)
+            SettingsManager.savePeriodColor(context, eventId, customColor)
         }
 
         // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
@@ -192,7 +192,7 @@ fun deleteEvent(context: Context, event: Festivo) {
             // pero es un evento que debería estar ahí (eventId > 0), limpiamos nuestro historial.
             
             // Registrar borrado para sincronización futura
-            markEventAsDeleted(context, eventId)
+            SettingsManager.markEventAsDeleted(context, eventId)
             // LIMPIEZA TOTAL: Borramos todas las instancias que compartan este ID (incluyendo excepciones)
             removeSeriesFromHistory(context, eventId)
 
@@ -201,8 +201,8 @@ fun deleteEvent(context: Context, event: Festivo) {
             
             // Cancelamos la alarma asociada si existe
             AlarmUtils.cancelAlarm(context, eventId)
-            AlarmUtils.saveAlarmSetting(context, eventId, null)
-            savePeriodColor(context, eventId, null)
+            SettingsManager.saveEventAlarmOffset(context, eventId, null)
+            SettingsManager.savePeriodColor(context, eventId, null)
 
             val dateStr = eventDate.format(AppFormats.DateAbbr)
             val displayTitle = if (eventTitle.length > 60) eventTitle.take(57) + "..." else eventTitle
@@ -262,7 +262,7 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
 
             // Cancelamos la alarma asociada si existe
             AlarmUtils.cancelAlarm(context, eventToCancel.id)
-            AlarmUtils.saveAlarmSetting(context, eventToCancel.id, null)
+            SettingsManager.saveEventAlarmOffset(context, eventToCancel.id, null)
 
             val dateStr = eventToCancel.date.format(AppFormats.DateAbbr)
             val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title

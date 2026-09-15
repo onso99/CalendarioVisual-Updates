@@ -14,18 +14,6 @@ import java.time.ZoneId
 
 // --- GESTIÓN DE BORRADOS (Tombstones) ---
 
-fun markEventAsDeleted(context: Context, eventId: Long) {
-    SettingsManager.markEventAsDeleted(context, eventId)
-}
-
-fun getDeletedEventIds(context: Context): Set<Long> {
-    return SettingsManager.getDeletedEventIds(context)
-}
-
-fun clearDeletedEventIds(context: Context) {
-    SettingsManager.clearDeletedEventIds(context)
-}
-
 fun removeEventFromHistory(context: Context, eventAdn: String) {
     // Limpieza ROOM (Motor principal)
     @Suppress("OPT_IN_USAGE")
@@ -44,18 +32,6 @@ fun removeSeriesFromHistory(context: Context, eventId: Long) {
         val database = com.example.calendario.database.AppDatabase.getDatabase(context)
         database.calendarDao().markEventAsDeleted(eventId, System.currentTimeMillis())
     }
-}
-
-fun saveSelectedCalendarIds(context: Context, ids: Set<Long>) {
-    SettingsManager.saveSelectedCalendarIds(context, ids)
-}
-
-fun loadSelectedCalendarIds(context: Context): Set<Long> {
-    return SettingsManager.getSelectedCalendarIds(context)
-}
-
-fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?) {
-    SettingsManager.savePeriodColor(context, eventId, colorInt)
 }
 
 fun loadAvailableCalendarsSync(context: Context): List<CalendarInfo> {
@@ -116,20 +92,12 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
     loadAvailableCalendarsSync(context)
 }
 
-fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
-    SettingsManager.saveHolidayAdjustments(context, adjustments)
-}
-
-fun loadHolidayAdjustments(context: Context): List<HolidayAdjustment> {
-    return SettingsManager.getHolidayAdjustments(context)
-}
-
 fun readFestivosFromCalendarsSync(
     context: Context,
     selectedCalendarIds: Set<Long>
 ): Map<LocalDate, List<Festivo>> {
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
-    val holidayAdjustments = loadHolidayAdjustments(context)
+    val holidayAdjustments = SettingsManager.getHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
     val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
     val manualHolidays = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }
@@ -421,10 +389,10 @@ suspend fun mergeHistoryWithSystemData(
     availableCalendars: List<CalendarInfo>
 ): List<Festivo> = withContext(Dispatchers.Default) {
     val today = LocalDate.now()
-    val deletedIds = getDeletedEventIds(context)
+    val deletedIds = SettingsManager.getDeletedEventIds(context)
     
     // Cargar ajustes para filtrado de laborables en la fusión
-    val holidayAdjustments = loadHolidayAdjustments(context)
+    val holidayAdjustments = SettingsManager.getHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
     val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
     val manualHolidaysAdns = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }.associate { it.date to Festivo.generateAdn(it.date, it.title, null) }

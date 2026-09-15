@@ -76,7 +76,7 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             uploadFileToDrive(tempFile)
             tempFile.delete()
 
-            clearDeletedEventIds(context)
+            SettingsManager.clearDeletedEventIds(context)
             
             // Registrar en historial
             BackupHistoryManager.addEntry(context, BackupHistoryEntry(

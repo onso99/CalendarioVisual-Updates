@@ -1,3 +1,4 @@
+2026-09-15 - v3.1.62.4.dev DataMappers Fase 4: Cierre y blindaje de serialización. Implementado modo de exportación segura para intercambio de agenda (eventos simples) y preservación de datos íntegros en copias de Drive.
 2026-09-15 - v3.1.62.3.dev DataMappers Fase 3: Robustez del importador. Actualizada la lógica de restauración en BackupManager y CalendarioViewModel para utilizar los constructores fromJson() de los modelos, centralizando la validación de datos.
 2026-09-14 - v3.1.62.2.dev DataMappers Fase 2: Simplificación de los exportadores. Refactorizados BackupManager y CvoHelper para utilizar las funciones toJson() de los modelos, eliminando 50+ líneas de código manual y unificando el formato JSON.
 2026-09-14 - v3.1.62.1.dev DataMappers Fase 1: Implementada inteligencia de serialización en modelos de datos. Añadidas funciones toJson() y fromJson() a Festivo y DailyNote para centralizar la lógica de persistencia JSON.

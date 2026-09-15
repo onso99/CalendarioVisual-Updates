@@ -42,7 +42,7 @@ class UpdateCalendarDataWorker(
         return try {
             val context = applicationContext
 
-            val selectedCalendarIds = loadSelectedCalendarIds(context)
+            val selectedCalendarIds = SettingsManager.getSelectedCalendarIds(context)
             if (selectedCalendarIds.isEmpty()) {
                 Log.i(TAG_WORKER, "No hay calendarios seleccionados. Trabajo finalizado sin acción. ID: ${this.id}")
                 return Result.success()

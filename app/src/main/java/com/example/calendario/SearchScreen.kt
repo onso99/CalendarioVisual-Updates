@@ -316,7 +316,7 @@ fun SearchScreen(
                                 val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, festivo.id)
                                 val rows = context.contentResolver.delete(deleteUri, null, null)
                                 if (rows > 0 || festivo.id > 0) {
-                                    markEventAsDeleted(context, festivo.id)
+                                    SettingsManager.markEventAsDeleted(context, festivo.id)
                                     removeSeriesFromHistory(context, festivo.id)
                                     deletedCount++
                                 }

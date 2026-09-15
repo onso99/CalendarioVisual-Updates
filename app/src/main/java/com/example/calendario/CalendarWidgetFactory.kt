@@ -186,7 +186,7 @@ class CalendarWidgetFactory(
     override fun hasStableIds(): Boolean = true
 
     private fun loadCalendarEvents() {
-        val appActiveIds = loadSelectedCalendarIds(context)
+        val appActiveIds = SettingsManager.getSelectedCalendarIds(context)
         val widgetSelectedIds = SettingsManager.getWidgetSelectedCalendarIds(context)
 
         // 1. Verificamos qué IDs de la App existen realmente en el sistema actual
