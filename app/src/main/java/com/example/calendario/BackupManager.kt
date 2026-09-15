@@ -198,12 +198,7 @@ object BackupManager {
                     for (i in 0 until notesJson.length()) {
                         try {
                             val obj = notesJson.getJSONObject(i)
-                            remoteNotes.add(NoteEntity(
-                                dateStr = obj.getString("dateStr"),
-                                content = obj.getString("content"),
-                                lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
-                                isDeleted = obj.optBoolean("isDeleted", false)
-                            ))
+                            remoteNotes.add(DailyNote.fromJson(obj).toEntity())
                         } catch (_: Exception) {}
                     }
                     notesCount = remoteNotes.size
@@ -219,32 +214,7 @@ object BackupManager {
                     for (i in 0 until historyJson.length()) {
                         try {
                             val obj = historyJson.getJSONObject(i)
-                            remoteEvents.add(Festivo(
-                                title = obj.optString("title", ""),
-                                description = if (!obj.isNull("description")) obj.getString("description") else null,
-                                id = if (obj.has("id")) obj.getLong("id") else 0L,
-                                date = LocalDate.parse(obj.getString("dateStr")),
-                                startTime = if (!obj.isNull("startTimeStr")) java.time.LocalTime.parse(obj.getString("startTimeStr")) else null,
-                                endTime = if (!obj.isNull("endTimeStr")) java.time.LocalTime.parse(obj.getString("endTimeStr")) else null,
-                                isAllDay = obj.optBoolean("isAllDay", true),
-                                calendarId = if (obj.has("calendarId")) obj.getLong("calendarId") else 0L,
-                                isFromHolidaySource = obj.optBoolean("isFromHolidaySource", false),
-                                rrule = if (!obj.isNull("rrule")) obj.getString("rrule") else null,
-                                age = if (obj.has("age") && !obj.isNull("age")) obj.getInt("age") else null,
-                                isBirthday = obj.optBoolean("isBirthday", false),
-                                isLongPeriod = obj.optBoolean("isLongPeriod", false),
-                                lane = if (obj.has("lane") && !obj.isNull("lane")) obj.getInt("lane") else null,
-                                totalDays = obj.optInt("totalDays", 1),
-                                currentDay = obj.optInt("currentDay", 1),
-                                customColor = if (obj.has("customColor") && !obj.isNull("customColor")) obj.getInt("customColor") else null,
-                                fullStartMillis = if (obj.has("fullStartMillis")) obj.getLong("fullStartMillis") else null,
-                                fullEndMillis = if (obj.has("fullEndMillis")) obj.getLong("fullEndMillis") else null,
-                                repeatCount = if (obj.has("repeatCount")) obj.getInt("repeatCount") else null,
-                                lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
-                                isDeleted = obj.optBoolean("isDeleted", false),
-                                isGhost = obj.optBoolean("isGhost", false),
-                                adn = obj.optString("adn", "")
-                            ))
+                            remoteEvents.add(Festivo.fromJson(obj))
                         } catch (_: Exception) {}
                     }
                     eventsCount = remoteEvents.size

@@ -1,3 +1,5 @@
+2026-09-15 - v3.1.62.3.dev DataMappers Fase 3: Robustez del importador. Actualizada la lógica de restauración en BackupManager y CalendarioViewModel para utilizar los constructores fromJson() de los modelos, centralizando la validación de datos.
+2026-09-14 - v3.1.62.2.dev DataMappers Fase 2: Simplificación de los exportadores. Refactorizados BackupManager y CvoHelper para utilizar las funciones toJson() de los modelos, eliminando 50+ líneas de código manual y unificando el formato JSON.
 2026-09-14 - v3.1.62.1.dev DataMappers Fase 1: Implementada inteligencia de serialización en modelos de datos. Añadidas funciones toJson() y fromJson() a Festivo y DailyNote para centralizar la lógica de persistencia JSON.
 2026-09-14 - v3.1.61.2.dev Refinamiento de la sección de Backup: Integrada la opción Última con el historial de actividad, eliminación de redundancias visuales y compactación tipográfica del log de copias
 2026-09-14 - v3.1.61.1.dev Corrección de warnings

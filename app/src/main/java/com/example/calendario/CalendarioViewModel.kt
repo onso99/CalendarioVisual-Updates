@@ -466,38 +466,25 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     
                     if (tipo == "CVO_AGENDA") {
                         isAgenda = true
-                        // MODO AGENDA: Cargar datos
+                        // MODO AGENDA: Cargar datos (Centralizado v3.1.34)
                         val eventsArray = json.optJSONArray("eventos")
                         val notesArray = json.optJSONArray("notas")
                         
                         val importedEvents = mutableListOf<Festivo>()
                         if (eventsArray != null) {
                             for (i in 0 until eventsArray.length()) {
-                                val obj = eventsArray.getJSONObject(i)
-                                importedEvents.add(Festivo(
-                                    id = 0, 
-                                    title = obj.getString("titulo"),
-                                    description = null,
-                                    date = LocalDate.parse(obj.getString("fecha")),
-                                    startTime = null, 
-                                    endTime = null,
-                                    isAllDay = obj.optBoolean("es_todo_el_dia", true),
-                                    calendarId = 0,
-                                    isFromHolidaySource = false,
-                                    rrule = obj.optString("rrule").takeIf { it.isNotEmpty() && it != "null" },
-                                    isLongPeriod = obj.optBoolean("es_periodo_largo", false)
-                                ))
+                                try {
+                                    importedEvents.add(Festivo.fromJson(eventsArray.getJSONObject(i)))
+                                } catch (_: Exception) {}
                             }
                         }
 
                         val importedNotes = mutableListOf<DailyNote>()
                         if (notesArray != null) {
                             for (i in 0 until notesArray.length()) {
-                                val obj = notesArray.getJSONObject(i)
-                                importedNotes.add(DailyNote(
-                                    dateStr = obj.getString("fecha"),
-                                    content = obj.getString("contenido")
-                                ))
+                                try {
+                                    importedNotes.add(DailyNote.fromJson(notesArray.getJSONObject(i)))
+                                } catch (_: Exception) {}
                             }
                         }
 
@@ -508,20 +495,13 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         ) }
                         return@withContext true
                     } else if (tipo == "CVO_HOLIDAYS") {
-                        // MODO FESTIVOS: Preparar previsualización (v3.1.34)
+                        // MODO FESTIVOS: Preparar previsualización (Centralizado v3.1.34)
                         val dataArray = json.getJSONArray("ajustes")
                         val imported = mutableListOf<HolidayAdjustment>()
                         for (i in 0 until dataArray.length()) {
-                            val obj = dataArray.getJSONObject(i)
-                            val originalId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
-                            imported.add(
-                                HolidayAdjustment(
-                                    date = LocalDate.parse(obj.getString("fecha")),
-                                    title = obj.getString("titulo"),
-                                    type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
-                                    originalEventId = originalId,
-                                )
-                            )
+                            try {
+                                imported.add(HolidayAdjustment.fromJson(dataArray.getJSONObject(i)))
+                            } catch (_: Exception) {}
                         }
 
                         _uiState.update { it.copy(

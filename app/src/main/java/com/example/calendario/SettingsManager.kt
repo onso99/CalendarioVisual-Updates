@@ -50,7 +50,7 @@ object SettingsManager {
     }
 
     fun isWeekNumberVisible(context: Context): Boolean =
-        appPrefs(context).getBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
+        getSafeBoolean(appPrefs(context), AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, false)
 
     fun getMonthlyEffectType(context: Context): String =
         appPrefs(context).getString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, "gradient") ?: "gradient"
@@ -111,8 +111,27 @@ object SettingsManager {
         } catch (_: ClassCastException) {
             val all = prefs.all[key]
             (all as? Number)?.toInt() 
-                ?: all?.toString()?.toLongOrNull()?.toInt() 
+                ?: all?.toString()?.toIntOrNull() 
                 ?: default
+        }
+    }
+
+    fun getSafeLong(prefs: SharedPreferences, key: String, default: Long): Long {
+        return try {
+            prefs.getLong(key, default)
+        } catch (_: ClassCastException) {
+            val all = prefs.all[key]
+            (all as? Number)?.toLong() 
+                ?: all?.toString()?.toLongOrNull() 
+                ?: default
+        }
+    }
+
+    fun getSafeBoolean(prefs: SharedPreferences, key: String, default: Boolean): Boolean {
+        return try {
+            prefs.getBoolean(key, default)
+        } catch (_: ClassCastException) {
+            prefs.all[key]?.toString()?.toBoolean() ?: default
         }
     }
 
@@ -133,16 +152,16 @@ object SettingsManager {
 
     // --- 2. COPIA DE SEGURIDAD (Drive) ---
     fun isAutoBackupEnabled(context: Context): Boolean =
-        appPrefs(context).getBoolean(AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
+        getSafeBoolean(appPrefs(context), AppConstants.KEY_AUTO_BACKUP_DRIVE, false)
 
     fun getBackupFrequency(context: Context): String =
         appPrefs(context).getString(AppConstants.KEY_BACKUP_FREQUENCY, "manual") ?: "manual"
 
     fun getLastBackupTime(context: Context): Long =
-        appPrefs(context).getLong(AppConstants.KEY_LAST_BACKUP_TIME, 0L)
+        getSafeLong(appPrefs(context), AppConstants.KEY_LAST_BACKUP_TIME, 0L)
 
     fun getLastBackupSize(context: Context): Long =
-        appPrefs(context).getLong(AppConstants.KEY_LAST_BACKUP_SIZE, 0L)
+        getSafeLong(appPrefs(context), AppConstants.KEY_LAST_BACKUP_SIZE, 0L)
 
     fun saveLastBackupMetadata(context: Context, count: Int, sizeBytes: Long) {
         appPrefs(context).edit {
@@ -164,10 +183,10 @@ object SettingsManager {
     private fun alarmPrefs(context: Context) = getPrefs(context, AppConstants.ALARM_PREFS_NAME)
 
     fun getDefaultAlarmOffset(context: Context): Int =
-        appPrefs(context).getInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, 30)
+        getSafeInt(appPrefs(context), AppConstants.KEY_DEFAULT_ALARM_OFFSET, 30)
 
     fun getDefaultSnoozeInterval(context: Context): Int =
-        appPrefs(context).getInt(AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10)
+        getSafeInt(appPrefs(context), AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10)
 
     fun getEventAlarmOffset(context: Context, eventId: Long): Int? {
         val prefs = alarmPrefs(context)

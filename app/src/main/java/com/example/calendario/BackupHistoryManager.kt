@@ -43,18 +43,20 @@ object BackupHistoryManager {
             val result = mutableListOf<BackupHistoryEntry>()
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
-                result.add(BackupHistoryEntry(
-                    timestamp = obj.getLong("time"),
-                    source = BackupSource.valueOf(obj.getString("src")),
-                    action = BackupAction.valueOf(obj.getString("act")),
-                    isSuccess = obj.getBoolean("ok"),
-                    eventsCount = obj.optInt("evs", 0),
-                    notesCount = obj.optInt("nts", 0),
-                    includePrefs = obj.optBoolean("prf", false),
-                    sizeBytes = obj.optLong("sz", 0),
-                    errorMessageRes = if (obj.has("errRes")) obj.getInt("errRes") else null,
-                    technicalError = if (obj.has("tech")) obj.getString("tech") else null
-                ))
+                try {
+                    result.add(BackupHistoryEntry(
+                        timestamp = obj.getLong("time"),
+                        source = try { BackupSource.valueOf(obj.getString("src")) } catch(_:Exception) { BackupSource.DRIVE },
+                        action = try { BackupAction.valueOf(obj.getString("act")) } catch(_:Exception) { BackupAction.SYNC },
+                        isSuccess = obj.getBoolean("ok"),
+                        eventsCount = obj.optInt("evs", 0),
+                        notesCount = obj.optInt("nts", 0),
+                        includePrefs = obj.optBoolean("prf", false),
+                        sizeBytes = obj.optLong("sz", 0),
+                        errorMessageRes = if (obj.has("errRes")) obj.getInt("errRes") else null,
+                        technicalError = if (obj.has("tech")) obj.getString("tech") else null
+                    ))
+                } catch (_: Exception) {}
             }
             result
         } catch (_: Exception) {
