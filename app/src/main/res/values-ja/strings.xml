@@ -207,6 +207,8 @@
     <string name="selected_count">%1$d件選択中</string>
     <string name="delete_multiple_confirmation">%1$d件のイベントを削除しますか？この操作は元に戻せません。</string>
     <string name="events_deleted_count">%1$d件のイベントを削除しました。</string>
+    <string name="notes_deleted_count">%1$d件のメモを削除しました。</string>
+    <string name="elements_deleted_count">%1$d個のアイテムを削除しました。</string>
 
 
     <string name="alarm">アラーム</string>

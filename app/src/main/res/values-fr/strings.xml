@@ -207,6 +207,8 @@
     <string name="selected_count">%1$d sélectionnés</string>
     <string name="delete_multiple_confirmation">Voulez-vous supprimer ces %1$d événements ? Cette action est irréversible.</string>
     <string name="events_deleted_count">%1$d événements supprimés.</string>
+    <string name="notes_deleted_count">%1$d notes supprimées.</string>
+    <string name="elements_deleted_count">%1$d éléments supprimés.</string>
 
 
     <string name="alarm">Alarme</string>

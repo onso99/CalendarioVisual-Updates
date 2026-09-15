@@ -207,6 +207,8 @@
     <string name="selected_count">%1$d seleccionados</string>
     <string name="delete_multiple_confirmation">Desexas eliminar estes %1$d eventos? Esta acción non se pode desfacer.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
+    <string name="notes_deleted_count">%1$d notas eliminadas.</string>
+    <string name="elements_deleted_count">%1$d elementos eliminados.</string>
 
 
     <string name="alarm">Alarma</string>

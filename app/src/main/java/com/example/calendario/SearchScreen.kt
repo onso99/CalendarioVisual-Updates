@@ -330,7 +330,15 @@ fun SearchScreen(
                         }
                         
                         if (deletedCount > 0) {
-                            val msg = context.applicationContext.getString(R.string.events_deleted_count, deletedCount)
+                            val hasNotes = selectedNotes.isNotEmpty()
+                            val hasEvents = selectedFestivos.isNotEmpty()
+                            
+                            val msg = when {
+                                hasNotes && hasEvents -> context.applicationContext.getString(R.string.elements_deleted_count, deletedCount)
+                                hasNotes -> context.applicationContext.getString(R.string.notes_deleted_count, deletedCount)
+                                else -> context.applicationContext.getString(R.string.events_deleted_count, deletedCount)
+                            }
+                            
                             context.showToast(msg)
                             onRefresh()
                         }

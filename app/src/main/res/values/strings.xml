@@ -218,6 +218,8 @@
     <string name="selected_count">%1$d seleccionados</string>
     <string name="delete_multiple_confirmation">¿Deseas eliminar estos %1$d eventos? Esta acción no se puede deshacer.</string>
     <string name="events_deleted_count">%1$d eventos eliminados.</string>
+    <string name="notes_deleted_count">%1$d notas eliminadas.</string>
+    <string name="elements_deleted_count">%1$d elementos eliminados.</string>
     <string name="selected_count_short">(%1$d)</string>
     <string name="clear_selection">Reiniciar selección</string>
     <string name="import_agenda_title">Compartir</string>

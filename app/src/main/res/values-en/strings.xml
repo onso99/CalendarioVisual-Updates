@@ -207,6 +207,8 @@
     <string name="selected_count">%1$d selected</string>
     <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
     <string name="events_deleted_count">%1$d events deleted.</string>
+    <string name="notes_deleted_count">%1$d notes deleted.</string>
+    <string name="elements_deleted_count">%1$d items deleted.</string>
 
 
     <string name="alarm">Alarm</string>

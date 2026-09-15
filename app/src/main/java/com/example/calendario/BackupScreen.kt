@@ -112,11 +112,11 @@ fun BackupScreen(
         }
     )
 
-    // --- States (Con escudos de seguridad) ---
-    val lastBackupTimestamp = remember(permissionsUpdateTrigger, isSyncing) { 
+    // --- States (Con escudos de seguridad v3.1.34) ---
+    val lastBackupTimestamp = remember(permissionsUpdateTrigger, isSyncing, isRestoring) { 
         SettingsManager.getLastBackupTime(context)
     }
-    val lastBackupSize = remember(permissionsUpdateTrigger, isSyncing) { 
+    val lastBackupSize = remember(permissionsUpdateTrigger, isSyncing, isRestoring) { 
         SettingsManager.getLastBackupSize(context)
     }
 

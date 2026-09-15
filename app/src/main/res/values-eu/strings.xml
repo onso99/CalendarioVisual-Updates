@@ -207,6 +207,8 @@
     <string name="selected_count">%1$d hautatuta</string>
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
     <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
+    <string name="notes_deleted_count">%1$d ohar ezabatu dira.</string>
+    <string name="elements_deleted_count">%1$d elementu ezabatu dira.</string>
 
 
     <string name="alarm">Alarma</string>

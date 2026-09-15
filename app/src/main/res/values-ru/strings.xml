@@ -207,6 +207,8 @@
     <string name="selected_count">Выбрано: %1$d</string>
     <string name="delete_multiple_confirmation">Удалить эти события (%1$d)? Это действие нельзя отменить.</string>
     <string name="events_deleted_count">Удалено событий: %1$d.</string>
+    <string name="notes_deleted_count">Удалено заметок: %1$d.</string>
+    <string name="elements_deleted_count">Удалено элементов: %1$d.</string>
 
 
     <string name="alarm">Будильник</string>

@@ -207,6 +207,8 @@
     <string name="selected_count">%1$d ausgewählt</string>
     <string name="delete_multiple_confirmation">Möchten Sie diese %1$d Ereignisse löschen? Diese Aktion kann nicht rückgängig gemacht werden.</string>
     <string name="events_deleted_count">%1$d Ereignisse gelöscht.</string>
+    <string name="notes_deleted_count">%1$d Notizen gelöscht.</string>
+    <string name="elements_deleted_count">%1$d Elemente gelöscht.</string>
 
 
     <string name="alarm">Alarm</string>
