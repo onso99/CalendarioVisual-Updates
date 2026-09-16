@@ -240,15 +240,37 @@ fun MonthlyEventList(
                                                     }
                                                 }
                                             }
-                                            if (festivo.rrule != null && !festivo.isBirthday) {
+                                            // --- PRIORIDAD VISUAL: Alarma > Repetición (v3.1.64) ---
+                                            val alarmTime = remember(festivo.id, date) { 
+                                                AlarmUtils.getAlarmTimeString(context, festivo) 
+                                            }
+                                            
+                                            if (alarmTime != null) {
+                                                // Caso 1: Tiene Alarma (Dato prioritario)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.padding(start = 4.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Outlined.Notifications,
+                                                        contentDescription = stringResource(id = R.string.alarm),
+                                                        tint = iconColor,
+                                                        modifier = Modifier.size(14.dp)
+                                                    )
+                                                    Text(
+                                                        text = alarmTime,
+                                                        color = iconColor,
+                                                        fontSize = 12.sp
+                                                    )
+                                                }
+                                            } else if (festivo.rrule != null && !festivo.isBirthday) {
+                                                // Caso 2: No tiene alarma pero es repetido -> Mostrar contador (1/10)
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
                                                     modifier = Modifier.padding(start = 8.dp)
                                                 ) {
                                                     val isFinite = festivo.repeatCount != null && festivo.repeatCount > 0
-                                                    
                                                     if (isFinite) {
-                                                        // Modo Compacto: "1/10"
                                                         Text(
                                                             text = "${festivo.repeatIndex ?: 1}/${festivo.repeatCount}",
                                                             color = iconColor,
@@ -272,27 +294,6 @@ fun MonthlyEventList(
                                                             modifier = Modifier.size(16.dp)
                                                         )
                                                     }
-                                                }
-                                            }
-                                            val alarmTime = remember(festivo.id, date) { 
-                                                AlarmUtils.getAlarmTimeString(context, festivo) 
-                                            }
-                                            if (alarmTime != null) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    modifier = Modifier.padding(start = 4.dp)
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Outlined.Notifications,
-                                                        contentDescription = stringResource(id = R.string.alarm),
-                                                        tint = iconColor,
-                                                        modifier = Modifier.size(14.dp)
-                                                    )
-                                                    Text(
-                                                        text = alarmTime,
-                                                        color = iconColor,
-                                                        fontSize = 12.sp
-                                                    )
                                                 }
                                             }
                                         }

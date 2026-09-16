@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
@@ -203,13 +204,57 @@ internal fun EventRow(
             }
         }
 
-        if (festivo.rrule != null) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = null,
-                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                modifier = Modifier.padding(start = 8.dp).size(16.dp)
-            )
+        // --- PRIORIDAD VISUAL: Alarma > Repetición (v3.1.64) ---
+        val alarmTime = remember(festivo.id, festivo.date) { AlarmUtils.getAlarmTimeString(context, festivo) }
+        
+        if (alarmTime != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Outlined.Notifications,
+                    contentDescription = null,
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = alarmTime,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                    fontSize = 11.sp
+                )
+            }
+        } else if (festivo.rrule != null && !festivo.isBirthday) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                val isFinite = festivo.repeatCount != null && festivo.repeatCount > 0
+                
+                if (isFinite) {
+                    // Modo Compacto: "1/10" (Consistente con EventList v3.1.64)
+                    Text(
+                        text = "${festivo.repeatIndex ?: 1}/${festivo.repeatCount}",
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                } else {
+                    // Modo Indefinido
+                    if (festivo.repeatIndex != null && festivo.repeatIndex > 0) {
+                        Text(
+                            text = festivo.repeatIndex.toString(),
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(end = 2.dp)
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
 
         if (isSpecial) {
