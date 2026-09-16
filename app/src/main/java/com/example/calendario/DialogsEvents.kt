@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -183,13 +184,13 @@ fun DayEventsDialog(
                                     if (festivo.isLongPeriod) withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) { append(" (${festivo.currentDay}/${festivo.totalDays})") }
                                 }, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                                 
-                                // ICONO ALARMA (v3.1.34)
+                                // ICONO ALARMA (v3.1.64 - Outlined y mayor)
                                 if (AlarmUtils.shouldShowAlarmIcon(context, festivo)) {
                                     Icon(
-                                        imageVector = Icons.Default.NotificationsActive,
+                                        imageVector = Icons.Outlined.NotificationsActive,
                                         contentDescription = null,
                                         tint = titleColor.copy(alpha = 0.6f),
-                                        modifier = Modifier.size(16.dp).padding(top = 4.dp)
+                                        modifier = Modifier.size(20.dp).padding(top = 2.dp)
                                     )
                                 }
                             }
