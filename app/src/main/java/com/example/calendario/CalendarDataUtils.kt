@@ -166,26 +166,13 @@ fun readFestivosFromCalendarsSync(
         if (tempInstancesMap.isNotEmpty()) {
             val rruleMap = mutableMapOf<Long, String>()
             val repeatCountMap = mutableMapOf<Long, Int?>()
-            val instanceOrdinalMap = mutableMapOf<String, Int>() // uniqueKey -> ordinal (v3.1.64)
+            val dtStartMap = mutableMapOf<Long, Long>() // Anchor para ordinales estáticos (v3.1.64)
             val birthYearMap = mutableMapOf<Long, Int>() // Mapa recuperado
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
             val customColorMap = mutableMapOf<Long, Int?>()
 
-            // Asignar índices ordinales a las instancias respetando excepciones (v3.1.64)
-            val instancesBySeries = tempInstancesMap.values.groupBy { 
-                val orig = it["originalId"] as Long
-                if (orig > 0) orig else it["eventId"] as Long
-            }
-            instancesBySeries.forEach { (_, instances) ->
-                val sortedInstances = instances.sortedBy { it["begin"] as Long }
-                sortedInstances.forEachIndexed { index, data ->
-                    val eventId = data["eventId"] as Long
-                    val beginM = data["begin"] as Long
-                    instanceOrdinalMap["${eventId}_$beginM"] = index + 1
-                }
-            }
-
+            // 1. CARGA DE METADATOS MAESTROS (RRULE, COUNT, DTSTART)
             val tempInstancesData = tempInstancesMap.values
             val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
             val parentIds = tempInstancesData.map { it["originalId"] as Long }.filter { it > 0 }.distinct()
@@ -206,6 +193,8 @@ fun readFestivosFromCalendarsSync(
 
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(idCol)
+                        if (startCol != -1) dtStartMap[id] = cursor.getLong(startCol)
+                        
                         if (rruleCol != -1) {
                             cursor.getStringOrNull(rruleCol)?.let { rrule ->
                                 rruleMap[id] = rrule
@@ -341,8 +330,40 @@ fun readFestivosFromCalendarsSync(
                     if (birthYear != null && birthYear >= startDate.year) birthYear = null
                 }
 
-                val uniqueKey = "${eventId}_${beginMillis}"
+                val uniqueKey = "${eventId}_$beginMillis"
                 
+                // CÁLCULO DE ORDINAL ESTÁTICO (Fiel a Google Calendar v3.1.64)
+                val originalId = data["originalId"] as Long
+                val seriesId = if (originalId > 0) originalId else eventId
+                val masterStartMillis = dtStartMap[seriesId] ?: beginMillis
+                val masterRrule = rruleMap[seriesId] ?: rruleMap[eventId]
+                
+                val staticRepeatIndex = if (masterRrule != null) {
+                    val startLocalDate = Instant.ofEpochMilli(masterStartMillis).atZone(ZoneId.systemDefault()).toLocalDate()
+                    
+                    val interval = masterRrule.substringAfter("INTERVAL=", "1").substringBefore(";").toIntOrNull() ?: 1
+                    
+                    when {
+                        masterRrule.contains("FREQ=DAILY") -> {
+                            val days = java.time.temporal.ChronoUnit.DAYS.between(startLocalDate, startDate)
+                            (days / interval + 1).toInt()
+                        }
+                        masterRrule.contains("FREQ=WEEKLY") -> {
+                            val weeks = java.time.temporal.ChronoUnit.WEEKS.between(startLocalDate, startDate)
+                            (weeks / interval + 1).toInt()
+                        }
+                        masterRrule.contains("FREQ=MONTHLY") -> {
+                            val months = java.time.temporal.ChronoUnit.MONTHS.between(startLocalDate, startDate)
+                            (months / interval + 1).toInt()
+                        }
+                        masterRrule.contains("FREQ=YEARLY") -> {
+                            val years = java.time.temporal.ChronoUnit.YEARS.between(startLocalDate, startDate)
+                            (years / interval + 1).toInt()
+                        }
+                        else -> null
+                    }
+                } else null
+
                 // REGLA DE ORO (Corregida v3.1.34): Un evento es periodo largo si dura 24h o más,
                 // atraviesa al menos dos días diferentes y no es especial (cumple/festivo)
                 val duration = java.time.Duration.between(startZdt, endZdt)
@@ -352,8 +373,6 @@ fun readFestivosFromCalendarsSync(
                 val assignedLane = if (isLongPeriod) laneAssignments[uniqueKey] else null
 
                 val totalDaysCount = if (isLongPeriod) (java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1) else 1
-                val originalId = data["originalId"] as Long
-                val seriesId = if (originalId > 0) originalId else eventId
                 
                 var currentLoopDate = startDate
                 var dayIndex = 1
@@ -372,7 +391,7 @@ fun readFestivosFromCalendarsSync(
                         isAllDay = isAllDay || (currentLoopDate != startDate && currentLoopDate != endDate),
                         calendarId = calendarId,
                         isFromHolidaySource = isFromHoliday,
-                        rrule = rruleMap[seriesId] ?: rruleMap[eventId], // Heredar RRULE si es excepción (v3.1.64)
+                        rrule = masterRrule,
                         age = age,
                         isBirthday = finalIsBirthday,
                         originalBirthDate = if (finalIsBirthday) birthYear?.let { y -> startDate.withYear(y) } else null,
@@ -384,7 +403,7 @@ fun readFestivosFromCalendarsSync(
                         fullStartMillis = beginMillis,
                         fullEndMillis = endMillis,
                         repeatCount = repeatCountMap[seriesId] ?: repeatCountMap[eventId], // Heredar conteo (v3.1.64)
-                        repeatIndex = instanceOrdinalMap[uniqueKey],
+                        repeatIndex = staticRepeatIndex,
                         adn = Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)

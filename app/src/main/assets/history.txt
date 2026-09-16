@@ -1,3 +1,4 @@
+2026-09-16 - v3.2.04 Diálogo de resumen diario: icono de alarma corregido
 2026-09-16 - v3.2.03 Lógica robusta de series repetidas: ordinales persistentes (DB v4) que respetan excepciones, prioridad visual para alarmas en listas y mantenimiento de diseño original en widgets.
 2026-09-16 - v3.2.02 Rediseño del diálogo de resumen diario: Reubicación del icono de notas a la esquina inferior con estilo Outlined, editor de notas movido debajo de los eventos y simplificación de la gestión de notas (autosave).
 2026-09-16 - v3.2.01 Contadores ordinales en eventos repetidos: lista de eventos muestra el progreso de las series (ej: 1/10), eliminación de iconos redundantes en repeticiones finitas y actualización del motor de persistencia a v4. Ajuste de texto en Historial
