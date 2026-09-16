@@ -42,7 +42,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,18 +111,41 @@ fun HistoryScreen(onBack: () -> Unit) {
             val screenHeight = maxHeight
             val screenHeightPx = constraints.maxHeight.toFloat()
             
-            // OPTIMIZACIÓN DE ANCHO: Menos relleno lateral para dar más espacio al texto
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
                     .padding(start = 12.dp, end = 28.dp, top = 16.dp, bottom = 16.dp)
             ) {
+                val annotatedHistory = buildAnnotatedString {
+                    historyText.lineSequence().forEach { line ->
+                        // Buscamos el patrÃ³n " - v" que separa la fecha de la versiÃ³n
+                        val sepIndex = line.indexOf(" - v")
+                        if (sepIndex != -1) {
+                            // Buscamos el final de la versiÃ³n (primer espacio tras el "v...")
+                            val endOfVersion = line.indexOf(' ', sepIndex + 4)
+                            if (endOfVersion != -1) {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                    append(line.substring(0, endOfVersion))
+                                }
+                                append(line.substring(endOfVersion))
+                            } else {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                    append(line)
+                                }
+                            }
+                        } else {
+                            append(line)
+                        }
+                        append("\n")
+                    }
+                }
+
                 Text(
-                    text = historyText,
+                    text = annotatedHistory,
                     color = CalendarioTheme.colors.textSystem,
-                    fontSize = 13.sp, // Texto reducido para mejor ajuste (v3.1.34)
-                    lineHeight = 18.sp
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp
                 )
                 Box(modifier = Modifier.height(120.dp))
             }

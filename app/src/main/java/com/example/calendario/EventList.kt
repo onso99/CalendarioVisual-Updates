@@ -245,17 +245,31 @@ fun MonthlyEventList(
                                                     verticalAlignment = Alignment.CenterVertically,
                                                     modifier = Modifier.padding(start = 8.dp)
                                                 ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Refresh,
-                                                        contentDescription = stringResource(id = R.string.repeated_event),
-                                                        tint = iconColor,
-                                                        modifier = Modifier.size(16.dp)
-                                                    )
-                                                    if (festivo.repeatCount != null && festivo.repeatCount > 0) {
+                                                    val isFinite = festivo.repeatCount != null && festivo.repeatCount > 0
+                                                    
+                                                    if (isFinite) {
+                                                        // Modo Compacto: "1/10"
                                                         Text(
-                                                            text = festivo.repeatCount.toString(),
+                                                            text = "${festivo.repeatIndex ?: 1}/${festivo.repeatCount}",
                                                             color = iconColor,
-                                                            fontSize = 12.sp
+                                                            fontSize = 12.sp,
+                                                            fontWeight = FontWeight.Medium
+                                                        )
+                                                    } else {
+                                                        // Modo Indefinido: Mantiene el icono
+                                                        if (festivo.repeatIndex != null && festivo.repeatIndex > 0) {
+                                                            Text(
+                                                                text = festivo.repeatIndex.toString(),
+                                                                color = iconColor,
+                                                                fontSize = 12.sp,
+                                                                modifier = Modifier.padding(end = 2.dp)
+                                                            )
+                                                        }
+                                                        Icon(
+                                                            imageVector = Icons.Default.Refresh,
+                                                            contentDescription = stringResource(id = R.string.repeated_event),
+                                                            tint = iconColor,
+                                                            modifier = Modifier.size(16.dp)
                                                         )
                                                     }
                                                 }

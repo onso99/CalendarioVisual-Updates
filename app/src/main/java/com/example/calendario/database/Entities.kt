@@ -27,6 +27,7 @@ data class EventEntity(
     val fullStartMillis: Long?,
     val fullEndMillis: Long?,
     val repeatCount: Int?,
+    val repeatIndex: Int?, // Añadido v3.1.64
     val lastModified: Long,
     val isDeleted: Boolean,
     val isGhost: Boolean

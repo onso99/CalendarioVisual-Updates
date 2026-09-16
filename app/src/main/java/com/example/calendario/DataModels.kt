@@ -30,6 +30,7 @@ data class Festivo(
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
+    val repeatIndex: Int? = null, // Índice ordinal para eventos repetidos (v3.1.64)
     val adn: String = "", // Huella digital única para deduplicación y refresco
     
     // --- Campos de Optimización Punto 1 ---
@@ -67,6 +68,7 @@ data class Festivo(
         put("lastModified", lastModified)
         put("isDeleted", isDeleted)
         put("isGhost", if (forExport) false else isGhost)
+        put("repeatIndex", repeatIndex)
         put("adn", if (forExport) "" else adn)
     }
 
@@ -116,6 +118,7 @@ data class Festivo(
                 fullStartMillis = if (obj.has("fullStartMillis")) obj.getLong("fullStartMillis") else null,
                 fullEndMillis = if (obj.has("fullEndMillis")) obj.getLong("fullEndMillis") else null,
                 repeatCount = if (obj.has("repeatCount")) obj.getInt("repeatCount") else null,
+                repeatIndex = if (obj.has("repeatIndex") && !obj.isNull("repeatIndex")) obj.getInt("repeatIndex") else null,
                 lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
                 isDeleted = obj.optBoolean("isDeleted", false),
                 isGhost = obj.optBoolean("isGhost", false),

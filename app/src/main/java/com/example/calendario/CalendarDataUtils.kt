@@ -159,13 +159,27 @@ fun readFestivosFromCalendarsSync(
         }
 
         if (tempInstancesMap.isNotEmpty()) {
-            val tempInstancesData = tempInstancesMap.values
-            val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
             val rruleMap = mutableMapOf<Long, String>()
+            val repeatCountMap = mutableMapOf<Long, Int?>()
+            val instanceOrdinalMap = mutableMapOf<String, Int>() // uniqueKey -> ordinal (v3.1.64)
             val birthYearMap = mutableMapOf<Long, Int>() // Mapa recuperado
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
             val customColorMap = mutableMapOf<Long, Int?>()
+
+            // Asignar índices ordinales a las instancias (v3.1.64)
+            val instancesByEvent = tempInstancesMap.values.groupBy { it["eventId"] as Long }
+            instancesByEvent.forEach { (_, instances) ->
+                val sortedInstances = instances.sortedBy { it["begin"] as Long }
+                sortedInstances.forEachIndexed { index, data ->
+                    val eventId = data["eventId"] as Long
+                    val beginM = data["begin"] as Long
+                    instanceOrdinalMap["${eventId}_$beginM"] = index + 1
+                }
+            }
+
+            val tempInstancesData = tempInstancesMap.values
+            val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
 
             uniqueEventIds.chunked(400).forEach { chunk ->
                 val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
@@ -182,7 +196,14 @@ fun readFestivosFromCalendarsSync(
 
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(idCol)
-                        if (rruleCol != -1) cursor.getStringOrNull(rruleCol)?.let { rruleMap[id] = it }
+                        if (rruleCol != -1) {
+                            cursor.getStringOrNull(rruleCol)?.let { rrule ->
+                                rruleMap[id] = rrule
+                                if (rrule.contains("COUNT=")) {
+                                    repeatCountMap[id] = rrule.substringAfter("COUNT=").substringBefore(";").toIntOrNull()
+                                }
+                            }
+                        }
                         if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
                         val internalColor = SettingsManager.getPeriodColor(context, id)
                         val systemColor = if (colorCol != -1 && !cursor.isNull(colorCol)) cursor.getInt(colorCol) else null
@@ -349,6 +370,8 @@ fun readFestivosFromCalendarsSync(
                         customColor = customColorMap[eventId],
                         fullStartMillis = beginMillis,
                         fullEndMillis = endMillis,
+                        repeatCount = repeatCountMap[eventId],
+                        repeatIndex = instanceOrdinalMap[uniqueKey],
                         adn = Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)
