@@ -18,7 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.*
+import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -107,7 +107,7 @@ fun DayEventsDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 1. TÍTULO (Izquierda)
+                // 1. TÍTULO (Izquierda) - Ahora tiene todo el espacio
                 Text(
                     text = formattedDate, 
                     fontWeight = FontWeight.Bold, 
@@ -116,31 +116,9 @@ fun DayEventsDialog(
                     textAlign = TextAlign.Start
                 )
 
-                // 2. ICONO NOTA (Opacidad dinámica)
-                val hasNote = note != null || noteText.isNotBlank()
-                val noteOpacity = if (showNoteField || hasNote) 1f else 0.5f
+                // 2. ICONO EVENTO (+) - Se mantiene arriba a la derecha
                 val circleColor = CalendarioTheme.colors.cabecera
                 val contentColor = circleColor.getContrastColor(Color.White)
-
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(circleColor.copy(alpha = noteOpacity))
-                        .clickable { showNoteField = !showNoteField },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.StickyNote2,
-                        contentDescription = stringResource(id = R.string.note_label),
-                        tint = contentColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Spacer(Modifier.width(12.dp))
-
-                // 3. ICONO EVENTO (+)
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -160,60 +138,7 @@ fun DayEventsDialog(
         },
         text = {
             Column {
-                // --- 1. EDITOR DE NOTA INTEGRADO ---
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = showNoteField,
-                    enter = androidx.compose.animation.expandVertically() + androidx.compose.animation.fadeIn(),
-                    exit = androidx.compose.animation.shrinkVertically() + androidx.compose.animation.fadeOut()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
-                            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                            .padding(horizontal = 8.dp, vertical = 6.dp)
-                    ) {
-                        androidx.compose.foundation.text.BasicTextField(
-                            value = noteText,
-                            onValueChange = { if (it.length <= charLimit) noteText = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = TextStyle(fontSize = 13.sp, color = CalendarioTheme.colors.textSystem),
-                            maxLines = 4,
-                            decorationBox = { innerTextField ->
-                                if (noteText.isEmpty()) {
-                                    Text(stringResource(id = R.string.note_hint), fontSize = 13.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
-                                }
-                                innerTextField()
-                            }
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = { 
-                                    if (noteText.isBlank()) showNoteField = false 
-                                    else showDeleteConfirmation = true 
-                                }, 
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.Red, modifier = Modifier.size(20.dp))
-                            }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (noteText != (note?.content ?: "")) {
-                                    IconButton(onClick = { onSaveNote(noteText) }, modifier = Modifier.size(24.dp)) {
-                                        Icon(Icons.Default.Check, stringResource(id = R.string.save), tint = CalendarioTheme.colors.cabecera)
-                                    }
-                                    Spacer(Modifier.width(8.dp))
-                                }
-                                Text(text = "${noteText.length}/$charLimit", fontSize = 11.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
-                            }
-                        }
-                    }
-                }
-
-                // --- 2. LISTA DE EVENTOS (Ahora empieza inmediatamente) ---
+                // --- 1. LISTA DE EVENTOS ---
                 if (events.isNotEmpty()) {
                     LazyColumn(Modifier.heightIn(max = 320.dp)) {
                         items(events, key = { it.adn }) { festivo ->
@@ -271,14 +196,89 @@ fun DayEventsDialog(
                             Spacer(Modifier.height(4.dp))
                         }
                     }
+                    Spacer(Modifier.height(12.dp))
+                }
+
+                // --- 2. EDITOR DE NOTA INTEGRADO (Debajo de eventos v3.1.64) ---
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = showNoteField,
+                    enter = androidx.compose.animation.expandVertically() + androidx.compose.animation.fadeIn(),
+                    exit = androidx.compose.animation.shrinkVertically() + androidx.compose.animation.fadeOut()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                            .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        androidx.compose.foundation.text.BasicTextField(
+                            value = noteText,
+                            onValueChange = { if (it.length <= charLimit) noteText = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = TextStyle(fontSize = 13.sp, color = CalendarioTheme.colors.textSystem),
+                            maxLines = 4,
+                            decorationBox = { innerTextField ->
+                                if (noteText.isEmpty()) {
+                                    Text(stringResource(id = R.string.note_hint), fontSize = 13.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+                                }
+                                innerTextField()
+                            }
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = { 
+                                    if (noteText.isBlank()) showNoteField = false 
+                                    else showDeleteConfirmation = true 
+                                }, 
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.Red, modifier = Modifier.size(20.dp))
+                            }
+                            
+                            // Contador de caracteres (v3.1.64)
+                            Text(
+                                text = "${noteText.length}/$charLimit", 
+                                fontSize = 11.sp, 
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
                 }
             }
         },
         confirmButton = { 
-            DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
-                onClick = onDismissRequest
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // ICONO NOTA (Esquina inferior izquierda v3.1.64)
+                val hasNote = note != null || noteText.isNotBlank()
+                val noteIconAlpha = if (showNoteField || hasNote) 1f else 0.4f
+                
+                IconButton(
+                    onClick = { showNoteField = !showNoteField },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.StickyNote2,
+                        contentDescription = stringResource(id = R.string.note_label),
+                        tint = CalendarioTheme.colors.cabecera.copy(alpha = noteIconAlpha),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                // BOTÓN ACEPTAR (Derecha)
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.accept),
+                    onClick = onDismissRequest
+                )
+            }
         }
     )
 
