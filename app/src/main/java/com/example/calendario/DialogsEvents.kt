@@ -180,18 +180,32 @@ fun DayEventsDialog(
                                 Spacer(Modifier.width(4.dp))
                                 Text(buildAnnotatedString {
                                     if (timeText != null) withStyle(SpanStyle(color = neutralColor)) { append("$timeText ") }
-                                    withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) } + (if (festivo.age != null) " (${festivo.age})" else "")) }
+                                    withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) }) }
+                                    if (festivo.age != null) withStyle(SpanStyle(color = titleColor)) { append(" (${festivo.age})") }
                                     if (festivo.isLongPeriod) withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) { append(" (${festivo.currentDay}/${festivo.totalDays})") }
                                 }, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                                 
-                                // ICONO ALARMA (v3.1.64 - Outlined y mayor)
-                                if (AlarmUtils.shouldShowAlarmIcon(context, festivo)) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.NotificationsActive,
-                                        contentDescription = null,
-                                        tint = titleColor.copy(alpha = 0.6f),
-                                        modifier = Modifier.size(20.dp).padding(top = 2.dp)
-                                    )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    // ICONO ALARMA (v3.1.64 - Outlined y mayor)
+                                    if (AlarmUtils.shouldShowAlarmIcon(context, festivo)) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.NotificationsActive,
+                                            contentDescription = null,
+                                            tint = titleColor.copy(alpha = 0.6f),
+                                            modifier = Modifier.size(20.dp).padding(top = 2.dp)
+                                        )
+                                    }
+
+                                    // MARCADOR DE INCIDENCIA (v3.2.06)
+                                    if (festivo.hasIncident) {
+                                        Text(
+                                            text = " *",
+                                            color = Color.Red,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    }
                                 }
                             }
                             Spacer(Modifier.height(4.dp))

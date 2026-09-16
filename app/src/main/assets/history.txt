@@ -1,3 +1,5 @@
+2026-09-17 - v3.2.06 Alertas de integridad y series estables: implementación del asterisco rojo de incidencia a la derecha del título, motor de ordinales compatible con excepciones de Google y solución a fallos de arranque (DB v7).
+2026-09-16 - v3.2.05 Optimización de código: Limpieza de advertencias en CalendarDataUtils.kt e inlinado de variables redundantes para mejorar la legibilidad y eficiencia del motor de datos.
 2026-09-16 - v3.2.04 Diálogo de resumen diario: icono de alarma corregido
 2026-09-16 - v3.2.03 Lógica robusta de series repetidas: ordinales persistentes (DB v4) que respetan excepciones, prioridad visual para alarmas en listas y mantenimiento de diseño original en widgets.
 2026-09-16 - v3.2.02 Rediseño del diálogo de resumen diario: Reubicación del icono de notas a la esquina inferior con estilo Outlined, editor de notas movido debajo de los eventos y simplificación de la gestión de notas (autosave).

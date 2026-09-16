@@ -245,55 +245,68 @@ fun MonthlyEventList(
                                                 AlarmUtils.getAlarmTimeString(context, festivo) 
                                             }
                                             
-                                            if (alarmTime != null) {
-                                                // Caso 1: Tiene Alarma (Dato prioritario)
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    modifier = Modifier.padding(start = 4.dp)
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Outlined.Notifications,
-                                                        contentDescription = stringResource(id = R.string.alarm),
-                                                        tint = iconColor,
-                                                        modifier = Modifier.size(14.dp)
-                                                    )
-                                                    Text(
-                                                        text = alarmTime,
-                                                        color = iconColor,
-                                                        fontSize = 12.sp
-                                                    )
-                                                }
-                                            } else if (festivo.rrule != null && !festivo.isBirthday) {
-                                                // Caso 2: No tiene alarma pero es repetido -> Mostrar contador (1/10)
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    modifier = Modifier.padding(start = 8.dp)
-                                                ) {
-                                                    val isFinite = festivo.repeatCount != null && festivo.repeatCount > 0
-                                                    if (isFinite) {
-                                                        Text(
-                                                            text = "${festivo.repeatIndex ?: 1}/${festivo.repeatCount}",
-                                                            color = iconColor,
-                                                            fontSize = 12.sp,
-                                                            fontWeight = FontWeight.Medium
-                                                        )
-                                                    } else {
-                                                        // Modo Indefinido: Mantiene el icono
-                                                        if (festivo.repeatIndex != null && festivo.repeatIndex > 0) {
-                                                            Text(
-                                                                text = festivo.repeatIndex.toString(),
-                                                                color = iconColor,
-                                                                fontSize = 12.sp,
-                                                                modifier = Modifier.padding(end = 2.dp)
-                                                            )
-                                                        }
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                if (alarmTime != null) {
+                                                    // Caso 1: Tiene Alarma (Dato prioritario)
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        modifier = Modifier.padding(start = 4.dp)
+                                                    ) {
                                                         Icon(
-                                                            imageVector = Icons.Default.Refresh,
-                                                            contentDescription = stringResource(id = R.string.repeated_event),
+                                                            imageVector = Icons.Outlined.Notifications,
+                                                            contentDescription = stringResource(id = R.string.alarm),
                                                             tint = iconColor,
-                                                            modifier = Modifier.size(16.dp)
+                                                            modifier = Modifier.size(14.dp)
+                                                        )
+                                                        Text(
+                                                            text = alarmTime,
+                                                            color = iconColor,
+                                                            fontSize = 12.sp
                                                         )
                                                     }
+                                                } else if (festivo.rrule != null && !festivo.isBirthday) {
+                                                    // Caso 2: No tiene alarma pero es repetido -> Mostrar contador (1/10)
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        modifier = Modifier.padding(start = 8.dp)
+                                                    ) {
+                                                        val isFinite = festivo.repeatCount != null && festivo.repeatCount > 0
+                                                        if (isFinite) {
+                                                            Text(
+                                                                text = "${festivo.repeatIndex ?: 1}/${festivo.repeatCount}",
+                                                                color = iconColor,
+                                                                fontSize = 12.sp,
+                                                                fontWeight = FontWeight.Medium
+                                                            )
+                                                        } else {
+                                                            // Modo Indefinido: Mantiene el icono
+                                                            if (festivo.repeatIndex != null && festivo.repeatIndex > 0) {
+                                                                Text(
+                                                                    text = festivo.repeatIndex.toString(),
+                                                                    color = iconColor,
+                                                                    fontSize = 12.sp,
+                                                                    modifier = Modifier.padding(end = 2.dp)
+                                                                )
+                                                            }
+                                                            Icon(
+                                                                imageVector = Icons.Default.Refresh,
+                                                                contentDescription = stringResource(id = R.string.repeated_event),
+                                                                tint = iconColor,
+                                                                modifier = Modifier.size(16.dp)
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
+                                                // MARCADOR DE INCIDENCIA (Far Right v3.2.06)
+                                                if (festivo.hasIncident) {
+                                                    Text(
+                                                        text = " *",
+                                                        color = Color.Red,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 18.sp,
+                                                        modifier = Modifier.padding(start = 4.dp)
+                                                    )
                                                 }
                                             }
                                         }

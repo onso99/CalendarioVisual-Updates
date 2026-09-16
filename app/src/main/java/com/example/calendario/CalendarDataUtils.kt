@@ -113,8 +113,7 @@ fun readFestivosFromCalendarsSync(
             CalendarContract.Instances.EVENT_ID, CalendarContract.Instances.CALENDAR_ID,
             CalendarContract.Instances.BEGIN, CalendarContract.Instances.END,
             CalendarContract.Instances.TITLE, CalendarContract.Instances.ALL_DAY,
-            CalendarContract.Instances.ORGANIZER,
-            CalendarContract.Events.ORIGINAL_ID // Identificar excepciones (v3.1.64)
+            CalendarContract.Instances.ORGANIZER
         )
         val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
         val tempInstancesMap = mutableMapOf<String, Map<String, Any>>()
@@ -138,18 +137,14 @@ fun readFestivosFromCalendarsSync(
                 val titleCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.TITLE)
                 val allDayCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY)
                 val orgCol = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ORGANIZER)
-                val origIdCol = cursor.getColumnIndex(CalendarContract.Events.ORIGINAL_ID)
 
                 while (cursor.moveToNext()) {
                     val eventId = cursor.getLong(evIdCol)
                     val startM = cursor.getLong(beginCol)
-                    val originalId = if (origIdCol != -1) cursor.getLong(origIdCol) else 0L
-                    
                     val uniqueKey = "${eventId}_$startM"
                     if (!tempInstancesMap.containsKey(uniqueKey)) {
                         tempInstancesMap[uniqueKey] = mapOf(
                             "eventId" to eventId,
-                            "originalId" to originalId,
                             "calendarId" to cursor.getLong(calIdCol),
                             "title" to (cursor.getStringOrNull(titleCol)?.take(120) ?: ""),
                             "begin" to startM,
@@ -166,19 +161,18 @@ fun readFestivosFromCalendarsSync(
         if (tempInstancesMap.isNotEmpty()) {
             val rruleMap = mutableMapOf<Long, String>()
             val repeatCountMap = mutableMapOf<Long, Int?>()
+            val incidentMap = mutableMapOf<Long, Boolean>() // ID -> Tiene Incidencia (v3.2.06)
             val dtStartMap = mutableMapOf<Long, Long>() // Anchor para ordinales estáticos (v3.1.64)
             val birthYearMap = mutableMapOf<Long, Int>() // Mapa recuperado
             val descMap = mutableMapOf<Long, String>()
             val technicalBirthdayIds = mutableSetOf<Long>()
             val customColorMap = mutableMapOf<Long, Int?>()
+            val originalIdMap = mutableMapOf<Long, Long>() // Para excepciones
 
-            // 1. CARGA DE METADATOS MAESTROS (RRULE, COUNT, DTSTART)
             val tempInstancesData = tempInstancesMap.values
             val uniqueEventIds = tempInstancesData.map { it["eventId"] as Long }.distinct()
-            val parentIds = tempInstancesData.map { it["originalId"] as Long }.filter { it > 0 }.distinct()
-            val allIdsToQuery = (uniqueEventIds + parentIds).distinct()
 
-            allIdsToQuery.chunked(400).forEach { chunk ->
+            uniqueEventIds.chunked(400).forEach { chunk ->
                 val eventSelection = "${CalendarContract.Events._ID} IN (${chunk.joinToString(",")})"
                 resolver.query(CalendarContract.Events.CONTENT_URI, null, eventSelection, null, null)?.use { cursor ->
                     val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
@@ -186,6 +180,8 @@ fun readFestivosFromCalendarsSync(
                     val startCol = cursor.getColumnIndex(CalendarContract.Events.DTSTART)
                     val descCol = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION)
                     val colorCol = cursor.getColumnIndex(CalendarContract.Events.EVENT_COLOR)
+                    val locCol = cursor.getColumnIndex(CalendarContract.Events.EVENT_LOCATION)
+                    val origIdCol = cursor.getColumnIndex(CalendarContract.Events.ORIGINAL_ID)
                     val s1Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA1)
                     val s2Col = cursor.getColumnIndex(CalendarContract.Events.SYNC_DATA2)
                     val pkgCol = cursor.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE)
@@ -194,6 +190,7 @@ fun readFestivosFromCalendarsSync(
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(idCol)
                         if (startCol != -1) dtStartMap[id] = cursor.getLong(startCol)
+                        if (origIdCol != -1) originalIdMap[id] = cursor.getLong(origIdCol)
                         
                         if (rruleCol != -1) {
                             cursor.getStringOrNull(rruleCol)?.let { rrule ->
@@ -201,8 +198,18 @@ fun readFestivosFromCalendarsSync(
                                 if (rrule.contains("COUNT=")) {
                                     repeatCountMap[id] = rrule.substringAfter("COUNT=").substringBefore(";").toIntOrNull()
                                 }
+                                
+                                // DETECCIÓN DE REPETICIÓN COMPLEJA
+                                val isComplex = !rrule.contains("FREQ=DAILY") && !rrule.contains("FREQ=WEEKLY") && 
+                                                !rrule.contains("FREQ=MONTHLY") && !rrule.contains("FREQ=YEARLY")
+                                if (isComplex) incidentMap[id] = true
                             }
                         }
+
+                        // DETECCIÓN DE CAMPOS EXTRAÑOS (v3.2.06)
+                        val location = if (locCol != -1) cursor.getStringOrNull(locCol) else null
+                        if (!location.isNullOrBlank()) incidentMap[id] = true
+
                         if (descCol != -1) descMap[id] = cursor.getStringOrNull(descCol) ?: ""
                         val internalColor = SettingsManager.getPeriodColor(context, id)
                         val systemColor = if (colorCol != -1 && !cursor.isNull(colorCol)) cursor.getInt(colorCol) else null
@@ -259,7 +266,7 @@ fun readFestivosFromCalendarsSync(
                     val isB = technicalBirthdayIds.contains(eventId) || organizer.contains("contacts@google.com") || (birthdayKeywords.any { title.contains(it) })
                     
                     if (!isH && !isB && !workingDayIds.contains(eventId) && !workingDayDates.contains(startD)) {
-                        val uniqueKey = "${eventId}_${beginM}"
+                        val uniqueKey = "${eventId}_$beginM"
                         Triple(uniqueKey, startD, endD)
                     } else null
                 } else null
@@ -333,8 +340,10 @@ fun readFestivosFromCalendarsSync(
                 val uniqueKey = "${eventId}_$beginMillis"
                 
                 // CÁLCULO DE ORDINAL ESTÁTICO (Fiel a Google Calendar v3.1.64)
-                val originalId = data["originalId"] as Long
+                val originalId = originalIdMap[eventId] ?: 0L
                 val seriesId = if (originalId > 0) originalId else eventId
+                val isIncident = incidentMap[seriesId] ?: incidentMap[eventId] ?: false // Heredar (v3.2.06)
+                
                 val masterStartMillis = dtStartMap[seriesId] ?: beginMillis
                 val masterRrule = rruleMap[seriesId] ?: rruleMap[eventId]
                 
@@ -404,6 +413,7 @@ fun readFestivosFromCalendarsSync(
                         fullEndMillis = endMillis,
                         repeatCount = repeatCountMap[seriesId] ?: repeatCountMap[eventId], // Heredar conteo (v3.1.64)
                         repeatIndex = staticRepeatIndex,
+                        hasIncident = isIncident,
                         adn = Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)

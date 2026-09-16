@@ -304,6 +304,8 @@ private fun createEventValues(
         put(CalendarContract.Events.CALENDAR_ID, calendarId)
         put(CalendarContract.Events.ALL_DAY, if (isAllDay) 1 else 0)
         put(CalendarContract.Events.EVENT_TIMEZONE, timezone)
+        put(CalendarContract.Events.EVENT_LOCATION, "") // Limpiar ubicaciÃ³n para estandarizar (v3.2.06)
+        
         if (customColor != null) {
             put(CalendarContract.Events.EVENT_COLOR, customColor)
         }

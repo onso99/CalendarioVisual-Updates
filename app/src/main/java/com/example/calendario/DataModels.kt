@@ -30,8 +30,9 @@ data class Festivo(
     val fullStartMillis: Long? = null,
     val fullEndMillis: Long? = null,
     val repeatCount: Int? = null,
-    val repeatIndex: Int? = null, // Índice ordinal para eventos repetidos (v3.1.64)
     val adn: String = "", // Huella digital única para deduplicación y refresco
+    val repeatIndex: Int? = null, // Índice ordinal para eventos repetidos (v3.1.64)
+    val hasIncident: Boolean = false, // Marca para eventos con datos extra/complejos (v3.2.06)
     
     // --- Campos de Optimización Punto 1 ---
     val cleanTitle: String = title.unaccent().trim().lowercase(),
@@ -68,6 +69,7 @@ data class Festivo(
         put("lastModified", lastModified)
         put("isDeleted", isDeleted)
         put("isGhost", if (forExport) false else isGhost)
+        put("hasIncident", hasIncident)
         put("repeatIndex", repeatIndex)
         put("adn", if (forExport) "" else adn)
     }
@@ -118,6 +120,7 @@ data class Festivo(
                 fullStartMillis = if (obj.has("fullStartMillis")) obj.getLong("fullStartMillis") else null,
                 fullEndMillis = if (obj.has("fullEndMillis")) obj.getLong("fullEndMillis") else null,
                 repeatCount = if (obj.has("repeatCount")) obj.getInt("repeatCount") else null,
+                hasIncident = obj.optBoolean("hasIncident", false),
                 repeatIndex = if (obj.has("repeatIndex") && !obj.isNull("repeatIndex")) obj.getInt("repeatIndex") else null,
                 lastModified = obj.optLong("lastModified", System.currentTimeMillis()),
                 isDeleted = obj.optBoolean("isDeleted", false),
@@ -195,7 +198,8 @@ data class DailyNote(
     val dateStr: String, // Formato "yyyy-MM-dd"
     val content: String,
     val lastModified: Long = System.currentTimeMillis(),
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val hasIncident: Boolean = false
 ) {
     // Propiedad para facilitar la ordenación y búsqueda
     val date: LocalDate get() = try { LocalDate.parse(dateStr) } catch(_: Exception) { LocalDate.now() }
