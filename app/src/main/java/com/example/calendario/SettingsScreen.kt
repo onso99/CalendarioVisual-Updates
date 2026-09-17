@@ -809,7 +809,8 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
                         val isSelected = option.key == tempKey
                         Text(text = stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
                         if (isSelected) { 
-                            Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.fondoDialogos.getContrastColor(MaterialTheme.colorScheme.background)) 
+                            val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
+                            Icon(Icons.Default.Check, null, tint = checkColor) 
                         } 
                     } 
                 }

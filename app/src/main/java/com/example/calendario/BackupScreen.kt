@@ -282,7 +282,7 @@ fun BackupScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoSecciones), modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(8.dp))
                             Text(stringResource(id = R.string.no_cleaning_results), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 14.sp)
                         }
@@ -494,7 +494,7 @@ private fun BackupFrequencyDialog(selection: String, onConfirm: (String) -> Unit
                     Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
                         val isSelected = key == tempSelection
                         Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
-                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera) 
+                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)) 
                     } 
                 } 
             } 

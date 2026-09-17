@@ -476,7 +476,7 @@ fun DeleteRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (DeleteR
                             Icon(
                                 imageVector = Icons.Default.Check, 
                                 contentDescription = null, 
-                                tint = CalendarioTheme.colors.cabecera
+                                tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
                             )
                         }
                     }
@@ -524,7 +524,7 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
                             Icon(
                                 imageVector = Icons.Default.Check, 
                                 contentDescription = null, 
-                                tint = CalendarioTheme.colors.cabecera
+                                tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
                             )
                         }
                     }
@@ -693,7 +693,7 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = CalendarioTheme.colors.cabecera,
+                                    tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos),
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
@@ -829,7 +829,7 @@ fun SelectWidgetCalendarsDialog(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = CalendarioTheme.colors.cabecera,
+                                    tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos),
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -873,7 +873,7 @@ fun SelectCalendarDialog(calendars: List<CalendarInfo>, currentSelection: Calend
                     Icon(
                         imageVector = Icons.Default.Check, 
                         contentDescription = null, 
-                        tint = CalendarioTheme.colors.cabecera
+                        tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
                     )
                 }
             }
@@ -946,7 +946,7 @@ fun RepetitionSelectionDialog(
                             Icon(
                                 imageVector = Icons.Default.Check, 
                                 contentDescription = null, 
-                                tint = CalendarioTheme.colors.cabecera
+                                tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
                             )
                         }
                     }
@@ -974,7 +974,7 @@ fun RepetitionSelectionDialog(
                         color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)
                     )
                     if (endMode == 0 && isRepetitionActive) {
-                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
                     }
                 }
 
@@ -1001,7 +1001,7 @@ fun RepetitionSelectionDialog(
                         overflow = TextOverflow.Ellipsis
                     )
                     if (endMode == 1 && isRepetitionActive) {
-                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
                     }
                 }
 
@@ -1050,7 +1050,7 @@ fun RepetitionSelectionDialog(
                         )
                     }
                     if (endMode == 2 && isRepetitionActive) {
-                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera)
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
                     }
                 }
             }
