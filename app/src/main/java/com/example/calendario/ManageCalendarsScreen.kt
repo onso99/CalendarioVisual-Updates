@@ -1,7 +1,5 @@
 package com.example.calendario
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -12,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +21,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -76,15 +74,6 @@ fun ManageCalendarsScreen(
         )
     }
 
-    val messageAlpha by animateFloatAsState(
-        targetValue = if (infoMessage != null) 1f else 0f,
-        animationSpec = tween(durationMillis = 800),
-        label = "alpha"
-    )
-    
-    var lastKnownMessage by remember { mutableStateOf("") }
-    if (infoMessage != null) lastKnownMessage = infoMessage!!
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -111,29 +100,17 @@ fun ManageCalendarsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Banner de Información (Espacio compacto reservado)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(32.dp) // Reducido de 48dp a 32dp para ganar espacio
-                    .background(CalendarioTheme.colors.cabecera.copy(alpha = 0.05f * messageAlpha)),
-                contentAlignment = Alignment.Center
-            ) {
-                if (messageAlpha > 0.01f) {
-                    Text(
-                        text = if (infoMessage != null) infoMessage!! else lastKnownMessage,
-                        fontSize = 12.sp, // Tamaño de texto menor como en el diálogo
-                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f * messageAlpha),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-            }
+            InfoBanner(
+                message = infoMessage,
+                isVisible = infoMessage != null,
+                icon = if (infoMessage == favUpdatedMsg) Icons.Default.Star else Icons.Default.Info,
+                iconColor = CalendarioTheme.colors.cabecera
+            )
 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 0.dp) // Eliminado margen superior
+                    .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp, top = AppLayout.TopToSectionPadding) 
                     .clip(RoundedCornerShape(16.dp))
                     .background(CalendarioTheme.colors.fondoSecciones)
             ) {

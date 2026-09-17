@@ -346,6 +346,7 @@
     <string name="agenda_file_detected_title">Tipo de ficheiro: Axenda</string>
     <string name="agenda_file_detected_message">O ficheiro contén eventos e notas en lugar de festivos. Continuar coa importación?</string>
     <string name="continue_button">Continuar</string>
+    <string name="unknown_elements_warning">Elementos descoñecidos neste evento *</string>
 
 </resources>
 

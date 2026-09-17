@@ -345,6 +345,7 @@
     <string name="agenda_file_detected_title">Dateityp: Terminkalender</string>
     <string name="agenda_file_detected_message">Diese Datei enthält Ereignisse und Notizen anstelle von Feiertagen. Import fortsetzen?</string>
     <string name="continue_button">Weiter</string>
+    <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
 
 </resources>
 

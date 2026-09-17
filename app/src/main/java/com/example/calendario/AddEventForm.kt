@@ -90,7 +90,7 @@ fun AddEventForm(
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column {
         // --- First Block ---
         Column(
             modifier = Modifier

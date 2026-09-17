@@ -345,6 +345,7 @@
     <string name="agenda_file_detected_title">Type de fichier : Agenda</string>
     <string name="agenda_file_detected_message">Ce fichier contient des événements et des notes au lieu de jours fériés. Continuer l\'importation ?</string>
     <string name="continue_button">Continuer</string>
+    <string name="unknown_elements_warning">Éléments inconnus dans cet événement *</string>
 
 </resources>
 

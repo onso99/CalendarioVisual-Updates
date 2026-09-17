@@ -344,6 +344,7 @@
     <string name="agenda_file_detected_title">Fitxategi mota: Agenda</string>
     <string name="agenda_file_detected_message">Fitxategiak gertaerak eta oharrak ditu jaiegunen ordez. Inportazioarekin jarraitu?</string>
     <string name="continue_button">Jarraitu</string>
+    <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
 
 </resources>
 

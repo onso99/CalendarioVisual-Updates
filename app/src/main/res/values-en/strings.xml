@@ -346,6 +346,6 @@
     <string name="agenda_file_detected_title">File type: Agenda</string>
     <string name="agenda_file_detected_message">This file contains events and notes instead of holidays. Continue with import?</string>
     <string name="continue_button">Continue</string>
-
+    <string name="unknown_elements_warning">Unknown elements in this event *</string>
 </resources>
 

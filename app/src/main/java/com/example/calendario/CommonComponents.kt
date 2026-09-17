@@ -22,8 +22,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,68 @@ import com.example.calendario.ui.theme.CalendarioTheme
  * Librería de Componentes Comunes (Fase 4 - Optimización v3.1.34)
  * Centralización de piezas visuales repetidas para asegurar consistencia.
  */
+
+object AppLayout {
+    val BannerHeight = 32.dp
+    val ScreenHorizontalPadding = 16.dp
+    val TopToSectionPadding = 0.dp // Espacio reservado para el banner informativo (v3.2.06)
+}
+
+/**
+ * Banner informativo común para la parte superior de las pantallas (v3.2.06)
+ */
+@Composable
+fun InfoBanner(
+    message: String?,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    iconColor: Color = Color.Unspecified
+) {
+    val messageAlpha by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 800),
+        label = "alpha"
+    )
+    
+    var lastKnownMessage by remember { mutableStateOf("") }
+    if (message != null) lastKnownMessage = message
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(AppLayout.BannerHeight),
+        contentAlignment = Alignment.Center
+    ) {
+        if (messageAlpha > 0.01f) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+            ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = if (iconColor == Color.Unspecified) 
+                               CalendarioTheme.colors.textSystem.copy(alpha = 0.4f * messageAlpha)
+                               else iconColor.copy(alpha = 0.6f * messageAlpha)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text(
+                    text = lastKnownMessage,
+                    fontSize = 12.sp,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f * messageAlpha),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun AdaptiveButtonText(
@@ -280,7 +344,7 @@ fun AppActionChip(
                     }
 
                 when (icon) {
-                    is androidx.compose.ui.graphics.vector.ImageVector -> {
+                    is ImageVector -> {
                         Icon(
                             imageVector = icon, 
                             contentDescription = null, 

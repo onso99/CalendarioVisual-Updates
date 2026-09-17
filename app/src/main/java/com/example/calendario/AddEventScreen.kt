@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -55,6 +56,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -196,6 +199,19 @@ fun AddEventScreen(
     var localEventToEdit by remember { mutableStateOf(eventToEdit) }
     var isCopying by remember { mutableStateOf(false) }
     var showEditRecurringDialog by remember { mutableStateOf(false) }
+
+    // Banner informativo temporal (v3.2.06)
+    val hasIncident = localEventToEdit?.hasIncident == true
+    var bannerMessage by remember { mutableStateOf<String?>(null) }
+    val unknownElementsMsg = stringResource(id = R.string.unknown_elements_warning)
+
+    LaunchedEffect(localEventToEdit) {
+        if (hasIncident) {
+            bannerMessage = unknownElementsMsg
+            delay(5000.milliseconds)
+            bannerMessage = null
+        }
+    }
 
     var hasAlarm by remember { mutableStateOf(false) }
     var alarmTime by remember { mutableStateOf(LocalTime.now()) }
@@ -416,8 +432,25 @@ fun AddEventScreen(
         },
         containerColor = CalendarioTheme.colors.settingsBackground
     ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState())) {
-            AddEventForm(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            InfoBanner(
+                message = bannerMessage,
+                isVisible = bannerMessage != null,
+                icon = Icons.Default.Warning,
+                iconColor = Color.Red
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp, top = AppLayout.TopToSectionPadding)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                AddEventForm(
                 title = title, onTitleChange = { title = it },
                 selectedCalendar = selectedCalendar, onCalendarClick = { showCalendarDialog = true },
                 isAllDay = isAllDay, onAllDayChange = { newValue -> 
@@ -814,4 +847,5 @@ fun AddEventScreen(
             }
         )
     }
+}
 }
