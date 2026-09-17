@@ -345,6 +345,9 @@
     <string name="agenda_file_detected_title">ファイル形式: 予定表</string>
     <string name="agenda_file_detected_message">このファイルには祝日の代わりにイベントとメモが含まれています。インポートを続行しますか？</string>
     <string name="continue_button">続行</string>
+    <string name="edit_all_events_option">系列内のすべてのイベント</string>
+    <string name="event_details">イベントの詳細</string>
+    <string name="read_only_event_message">このイベントは Google が管理するシリーズの例外であり、このアプリケーションから編集することはできません。</string>
     <string name="unknown_elements_warning">このイベント内の不明な要素 *</string>
 
 </resources>

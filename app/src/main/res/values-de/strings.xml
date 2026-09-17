@@ -345,6 +345,9 @@
     <string name="agenda_file_detected_title">Dateityp: Terminkalender</string>
     <string name="agenda_file_detected_message">Diese Datei enthält Ereignisse und Notizen anstelle von Feiertagen. Import fortsetzen?</string>
     <string name="continue_button">Weiter</string>
+    <string name="edit_all_events_option">Alle Termine der Serie</string>
+    <string name="event_details">Termindetails</string>
+    <string name="read_only_event_message">Dieses Ereignis ist eine Ausnahme in einer von Google verwalteten Serie und kann in dieser App nicht bearbeitet werden.</string>
     <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
 
 </resources>

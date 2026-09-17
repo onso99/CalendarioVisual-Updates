@@ -343,6 +343,9 @@
     <string name="lang_ru">Ruso (Русский)</string>
     <string name="lang_zh">Chino (中文)</string>
     <string name="lang_ja">Japonés (日本語)</string>
+    <string name="edit_all_events_option">Todos los eventos de la serie</string>
+    <string name="event_details">Detalle del evento</string>
+    <string name="read_only_event_message">Este evento es una excepción de una serie gestionada por Google y no puede editarse desde esta aplicación.</string>
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
 </resources>
 

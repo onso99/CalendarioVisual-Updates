@@ -345,6 +345,9 @@
     <string name="agenda_file_detected_title">文件类型：日程</string>
     <string name="agenda_file_detected_message">此文件包含事件和备注，而不是节假日。是否继续导入？</string>
     <string name="continue_button">继续</string>
+    <string name="edit_all_events_option">系列中的所有事件</string>
+    <string name="event_details">活动详情</string>
+    <string name="read_only_event_message">此活动是 Google 管理的系列中的一个例外，无法从此应用进行编辑。</string>
     <string name="unknown_elements_warning">此事件中的未知元素 *</string>
 
 </resources>

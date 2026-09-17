@@ -25,6 +25,7 @@ fun createEvent(
     repeatCount: Int? = null,
     customColor: Int? = null,
     isLongPeriod: Boolean = false,
+    selectedDays: Set<java.time.DayOfWeek> = emptySet(),
     showToast: Boolean = true
 ): Long? {
     if (calendarId == null) {
@@ -38,7 +39,7 @@ fun createEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays)
         
         val eventInsertOperation = ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI).withValues(values)
         operations.add(eventInsertOperation.build())
@@ -85,7 +86,8 @@ fun updateEvent(
     repeatUntil: LocalDate? = null,
     repeatCount: Int? = null,
     customColor: Int? = null,
-    isLongPeriod: Boolean = false
+    isLongPeriod: Boolean = false,
+    selectedDays: Set<java.time.DayOfWeek> = emptySet()
 ): Long? {
      if (calendarId == null) {
         context.showToast(R.string.no_calendar_selected_error, Toast.LENGTH_LONG)
@@ -98,7 +100,7 @@ fun updateEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         operations.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build())
 
@@ -288,7 +290,8 @@ private fun createEventValues(
     repeatUntil: LocalDate? = null,
     repeatCount: Int? = null,
     customColor: Int? = null,
-    isLongPeriod: Boolean = false
+    isLongPeriod: Boolean = false,
+    selectedDays: Set<java.time.DayOfWeek> = emptySet()
 ): ContentValues {
     val timezone = if (isAllDay) TimeZone.getTimeZone("UTC").id else TimeZone.getDefault().id
     val startMillis = if (isAllDay) {
@@ -304,7 +307,7 @@ private fun createEventValues(
         put(CalendarContract.Events.CALENDAR_ID, calendarId)
         put(CalendarContract.Events.ALL_DAY, if (isAllDay) 1 else 0)
         put(CalendarContract.Events.EVENT_TIMEZONE, timezone)
-        put(CalendarContract.Events.EVENT_LOCATION, "") // Limpiar ubicaciÃ³n para estandarizar (v3.2.06)
+        put(CalendarContract.Events.EVENT_LOCATION, "") // Limpiar ubicación para estandarizar (v3.2.06)
         
         if (customColor != null) {
             put(CalendarContract.Events.EVENT_COLOR, customColor)
@@ -332,13 +335,29 @@ private fun createEventValues(
                 put(CalendarContract.Events.DURATION, "PT${durationInSeconds}S")
             }
             
+            var rruleStr = repetitionRule.rrule ?: ""
+            if (repetitionRule == RepetitionRule.WEEKLY && selectedDays.isNotEmpty()) {
+                val byDay = selectedDays.joinToString(",") { 
+                    when(it) {
+                        java.time.DayOfWeek.MONDAY -> "MO"
+                        java.time.DayOfWeek.TUESDAY -> "TU"
+                        java.time.DayOfWeek.WEDNESDAY -> "WE"
+                        java.time.DayOfWeek.THURSDAY -> "TH"
+                        java.time.DayOfWeek.FRIDAY -> "FR"
+                        java.time.DayOfWeek.SATURDAY -> "SA"
+                        java.time.DayOfWeek.SUNDAY -> "SU"
+                    }
+                }
+                rruleStr += ";BYDAY=$byDay"
+            }
+
             val finalRrule = if (repeatUntil != null) {
                 val untilStr = repeatUntil.format(AppFormats.IcsDateTime)
-                "${repetitionRule.rrule};UNTIL=$untilStr"
+                "$rruleStr;UNTIL=$untilStr"
             } else if (repeatCount != null && repeatCount > 0) {
-                "${repetitionRule.rrule};COUNT=$repeatCount"
+                "$rruleStr;COUNT=$repeatCount"
             } else {
-                repetitionRule.rrule
+                rruleStr
             }
             put(CalendarContract.Events.RRULE, finalRrule)
             putNull(CalendarContract.Events.DTEND)

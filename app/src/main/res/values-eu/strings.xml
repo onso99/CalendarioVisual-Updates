@@ -344,6 +344,9 @@
     <string name="agenda_file_detected_title">Fitxategi mota: Agenda</string>
     <string name="agenda_file_detected_message">Fitxategiak gertaerak eta oharrak ditu jaiegunen ordez. Inportazioarekin jarraitu?</string>
     <string name="continue_button">Jarraitu</string>
+    <string name="edit_all_events_option">Multzoko gertaera guztiak</string>
+    <string name="event_details">Gertaeraren xehetasunak</string>
+    <string name="read_only_event_message">Gertaera hau Google-k kudeatutako serie baten salbuespena da eta ezin da aplikazio honetatik editatu.</string>
     <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
 
 </resources>

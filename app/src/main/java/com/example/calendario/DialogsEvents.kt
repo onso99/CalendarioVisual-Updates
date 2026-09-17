@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.calendario.ui.theme.CalendarioTheme
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -897,18 +898,21 @@ fun RepetitionSelectionDialog(
     currentRule: RepetitionRule,
     currentUntil: LocalDate?,
     currentCount: Int?,
-    onConfirm: (RepetitionRule, LocalDate?, Int?) -> Unit,
+    currentDays: Set<DayOfWeek>,
+    onConfirm: (RepetitionRule, LocalDate?, Int?, Set<DayOfWeek>) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     val locale = LocalConfiguration.current.locales[0]
     var tempSelection by remember { mutableStateOf(currentRule) }
     var tempUntil by remember { mutableStateOf(currentUntil) }
     var tempCount by remember { mutableStateOf(currentCount?.toString() ?: "") }
+    var tempDays by remember { mutableStateOf(currentDays) }
     var showDatePicker by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
     var endMode by remember { 
-        mutableIntStateOf(if (currentUntil != null) 1 else if (currentCount != null) 2 else 0)
+        // Por defecto preferimos "Repeticiones" (2) si no hay fecha de fin explÃ­cita (v3.2.08)
+        mutableIntStateOf(if (currentUntil != null) 1 else 2)
     }
 
     LaunchedEffect(endMode) {
@@ -925,29 +929,71 @@ fun RepetitionSelectionDialog(
             Column {
                 RepetitionRule.entries.forEach { rule ->
                     val isSelected = rule == tempSelection
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { 
-                                tempSelection = rule 
-                                val limit = if (rule == RepetitionRule.DAILY) 3 else 2
-                                if (tempCount.length > limit) tempCount = tempCount.take(limit)
-                            }
-                            .padding(vertical = 10.dp), 
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = rule.displayNameRes), 
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp,
-                            color = CalendarioTheme.colors.textSystem
-                        )
-                        if (isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check, 
-                                contentDescription = null, 
-                                tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
+                    Column {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { 
+                                    tempSelection = rule 
+                                    val limit = if (rule == RepetitionRule.DAILY) 3 else 2
+                                    if (tempCount.length > limit) tempCount = tempCount.take(limit)
+                                }
+                                .padding(vertical = 10.dp), 
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = rule.displayNameRes), 
+                                modifier = Modifier.weight(1f),
+                                fontSize = 16.sp,
+                                color = CalendarioTheme.colors.textSystem
                             )
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check, 
+                                    contentDescription = null, 
+                                    tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
+                                )
+                            }
+                        }
+                        
+                        // --- Fila de días para Cada semana (v3.2.08) ---
+                        if (rule == RepetitionRule.WEEKLY && tempSelection == RepetitionRule.WEEKLY) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 12.dp, top = 4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                val days = listOf(
+                                    DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+                                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY
+                                )
+                                days.forEach { day ->
+                                    val isDaySelected = tempDays.contains(day)
+                                    Box(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .clip(CircleShape)
+                                            .background(if (isDaySelected) CalendarioTheme.colors.cabecera else Color.Transparent)
+                                            .border(1.dp, if (isDaySelected) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), CircleShape)
+                                            .clickable {
+                                                tempDays = if (isDaySelected) {
+                                                    if (tempDays.size > 1) tempDays - day else tempDays
+                                                } else {
+                                                    tempDays + day
+                                                }
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = day.getDisplayName(java.time.format.TextStyle.NARROW, locale).uppercase(locale),
+                                            color = if (isDaySelected) CalendarioTheme.colors.cabecera.getContrastColor(Color.White) else CalendarioTheme.colors.textSystem,
+                                            fontSize = 12.sp,
+                                            fontWeight = if (isDaySelected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -958,54 +1004,9 @@ fun RepetitionSelectionDialog(
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
                 Spacer(Modifier.height(6.dp))
 
-                // 1. INDEFINIDAMENTE
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(enabled = isRepetitionActive) { endMode = 0 }
-                        .padding(vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.repeat_indefinite), 
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp, 
-                        color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)
-                    )
-                    if (endMode == 0 && isRepetitionActive) {
-                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
-                    }
-                }
+                Spacer(Modifier.height(6.dp))
 
-                // 2. HASTA LA FECHA
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(enabled = isRepetitionActive) { 
-                            endMode = 1
-                            if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
-                            showDatePicker = true 
-                        }
-                        .padding(vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(AppFormats.dayDateFull(locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
-                    Text(
-                        text = textToShow, 
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp, 
-                        color = if (endMode == 1) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha), 
-                        maxLines = 1, 
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (endMode == 1 && isRepetitionActive) {
-                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
-                    }
-                }
-
-                // 3. REPETICIONES
+                // 1. REPETICIONES (Ahora primera opciÃ³n por defecto v3.2.08)
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -1042,7 +1043,7 @@ fun RepetitionSelectionDialog(
                             keyboardActions = KeyboardActions(onDone = { 
                                 val finalUntil = if (endMode == 1) tempUntil else null
                                 val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null
-                                onConfirm(tempSelection, finalUntil, finalCount) 
+                                onConfirm(tempSelection, finalUntil, finalCount, tempDays) 
                             }), 
                             singleLine = true, 
                             enabled = (endMode == 2 && isRepetitionActive),
@@ -1050,6 +1051,53 @@ fun RepetitionSelectionDialog(
                         )
                     }
                     if (endMode == 2 && isRepetitionActive) {
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
+                    }
+                }
+
+                // 2. HASTA LA FECHA
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { 
+                            endMode = 1
+                            if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
+                            showDatePicker = true 
+                        }
+                        .padding(vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(AppFormats.dayDateFull(locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
+                    Text(
+                        text = textToShow, 
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp, 
+                        color = if (endMode == 1) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha), 
+                        maxLines = 1, 
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (endMode == 1 && isRepetitionActive) {
+                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
+                    }
+                }
+
+                // 3. INDEFINIDAMENTE
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = isRepetitionActive) { endMode = 0 }
+                        .padding(vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.repeat_indefinite), 
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp, 
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = activeAlpha)
+                    )
+                    if (endMode == 0 && isRepetitionActive) {
                         Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos))
                     }
                 }
@@ -1061,7 +1109,7 @@ fun RepetitionSelectionDialog(
                 onClick = { 
                     val finalUntil = if (endMode == 1) tempUntil else null
                     val finalCount = if (endMode == 2) tempCount.toIntOrNull() else null
-                    onConfirm(tempSelection, finalUntil, finalCount) 
+                    onConfirm(tempSelection, finalUntil, finalCount, tempDays) 
                 }
             )
         },

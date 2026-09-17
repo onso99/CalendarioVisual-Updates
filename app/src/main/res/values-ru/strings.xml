@@ -345,6 +345,9 @@
     <string name="agenda_file_detected_title">Тип файла: Повестка дня</string>
     <string name="agenda_file_detected_message">Этот файл содержит события и заметки вместо праздников. Продолжить импорт?</string>
     <string name="continue_button">Продолжить</string>
+    <string name="edit_all_events_option">Все события в серии</string>
+    <string name="event_details">Детали события</string>
+    <string name="read_only_event_message">Это событие является исключением в серии, управляемой Google, и его нельзя редактировать в этом приложении.</string>
     <string name="unknown_elements_warning">Неизвестные элементы в этом событии *</string>
 
 </resources>

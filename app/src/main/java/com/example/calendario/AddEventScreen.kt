@@ -191,6 +191,7 @@ fun AddEventScreen(
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var repeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
     var repeatCount by remember { mutableStateOf<Int?>(null) }
+    var selectedDays by remember { mutableStateOf<Set<java.time.DayOfWeek>>(emptySet()) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteRecurringDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
@@ -259,12 +260,31 @@ fun AddEventScreen(
             isLongPeriod = localEventToEdit!!.isLongPeriod
             selectedColorInt = localEventToEdit!!.customColor
             repeatCount = localEventToEdit!!.repeatCount
-                
-            repetitionRule = RepetitionRule.entries.find { it.rrule != null && localEventToEdit!!.rrule?.startsWith(it.rrule) == true } ?: RepetitionRule.NONE
             
+            val rrule = localEventToEdit!!.rrule
+            repetitionRule = RepetitionRule.entries.find { it.rrule != null && rrule?.startsWith(it.rrule) == true } ?: RepetitionRule.NONE
+            
+            selectedDays = if (repetitionRule == RepetitionRule.WEEKLY && rrule != null && rrule.contains("BYDAY=")) {
+                val daysPart = rrule.substringAfter("BYDAY=").substringBefore(";")
+                daysPart.split(",").mapNotNull { 
+                    when(it) {
+                        "MO" -> java.time.DayOfWeek.MONDAY
+                        "TU" -> java.time.DayOfWeek.TUESDAY
+                        "WE" -> java.time.DayOfWeek.WEDNESDAY
+                        "TH" -> java.time.DayOfWeek.THURSDAY
+                        "FR" -> java.time.DayOfWeek.FRIDAY
+                        "SA" -> java.time.DayOfWeek.SATURDAY
+                        "SU" -> java.time.DayOfWeek.SUNDAY
+                        else -> null
+                    }
+                }.toSet()
+            } else if (repetitionRule == RepetitionRule.WEEKLY) {
+                setOf(startDate.dayOfWeek)
+            } else emptySet()
+
             // Extraer UNTIL de la RRULE si existe
-            repeatUntilDate = localEventToEdit!!.rrule?.let { rrule ->
-                if (rrule.contains("UNTIL=")) {
+            repeatUntilDate = rrule?.let { r ->
+                if (r.contains("UNTIL=")) {
                     val untilPart = rrule.substringAfter("UNTIL=").substringBefore(";")
                     try {
                         // Formato esperado: yyyyMMddT...Z o yyyyMMdd
@@ -307,6 +327,7 @@ fun AddEventScreen(
             repetitionRule = RepetitionRule.NONE
             repeatUntilDate = null
             repeatCount = null
+            selectedDays = setOf(effectiveInitialDateTime.dayOfWeek) // Inicializar con el día actual (v3.2.08)
             hasAlarm = false
             // Alarma a las 09:00 AM por defecto para Todo el día
             alarmTime = LocalTime.of(9, 0)
@@ -320,7 +341,7 @@ fun AddEventScreen(
         }
     }
 
-    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, repeatUntilDate, repeatCount, isLongPeriod, selectedColorInt, hasAlarm, alarmTime) {
+    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, repeatUntilDate, repeatCount, isLongPeriod, selectedColorInt, hasAlarm, alarmTime, selectedDays) {
         derivedStateOf {
             title != initialTitle ||
             isAllDay != initialIsAllDay ||
@@ -333,7 +354,8 @@ fun AddEventScreen(
             isLongPeriod != (localEventToEdit?.isLongPeriod ?: false) ||
             selectedColorInt != localEventToEdit?.customColor ||
             hasAlarm != initialHasAlarm ||
-            (hasAlarm && alarmTime != initialAlarmTime)
+            (hasAlarm && alarmTime != initialAlarmTime) ||
+            (repetitionRule == RepetitionRule.WEEKLY && selectedDays != (initialStartDate.dayOfWeek.let { setOf(it) })) 
         }
     }
 
@@ -589,7 +611,7 @@ fun AddEventScreen(
                         }
                     }
                     EditRecurringOption.ALL_EVENTS -> {
-                        val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt)
+                        val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, selectedDays = selectedDays)
                         if (success != null) {
                             processAlarmForEvent(context, localEventToEdit!!.id, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule, repeatUntilDate)
                             onSave()
@@ -819,10 +841,12 @@ fun AddEventScreen(
             currentRule = repetitionRule,
             currentUntil = repeatUntilDate,
             currentCount = repeatCount,
-            onConfirm = { rule, until, count ->
+            currentDays = selectedDays.ifEmpty { setOf(startDate.dayOfWeek) }, // Garantizar siempre un dÃ­a (v3.2.08)
+            onConfirm = { rule, until, count, days ->
                 repetitionRule = rule
                 repeatUntilDate = until
                 repeatCount = count
+                selectedDays = days
                 showRepetitionDialog = false
             },
             onDismissRequest = { showRepetitionDialog = false }

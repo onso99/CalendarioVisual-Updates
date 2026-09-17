@@ -346,6 +346,9 @@
     <string name="agenda_file_detected_title">Tipo de arquivo: Agenda</string>
     <string name="agenda_file_detected_message">O arquivo contém eventos e notas em vez de feriados. Continuar com a importação?</string>
     <string name="continue_button">Continuar</string>
+    <string name="edit_all_events_option">Todos os eventos da série</string>
+    <string name="event_details">Detalhes do evento</string>
+    <string name="read_only_event_message">Este evento é uma exceção em uma série gerenciada pelo Google e não pode ser editado neste aplicativo.</string>
     <string name="unknown_elements_warning">Elementos desconhecidos neste evento *</string>
 
 </resources>

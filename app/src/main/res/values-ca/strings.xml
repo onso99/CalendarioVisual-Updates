@@ -346,6 +346,9 @@
     <string name="agenda_file_detected_title">Tipus de fitxer: Agenda</string>
     <string name="agenda_file_detected_message">El fitxer conté esdeveniments i notes en lloc de festius. Voleu continuar amb la importació?</string>
     <string name="continue_button">Continuar</string>
+    <string name="edit_all_events_option">Tots els esdeveniments de la sèrie</string>
+    <string name="event_details">Detalls de l\'esdeveniment</string>
+    <string name="read_only_event_message">Aquest esdeveniment és una excepció en una sèrie gestionada per Google i no es pot editar des d\'aquesta aplicació.</string>
     <string name="unknown_elements_warning">Elements desconeguts en aquest esdeveniment *</string>
 </resources>
 
