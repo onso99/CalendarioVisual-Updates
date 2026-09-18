@@ -99,6 +99,58 @@ fun InfoBanner(
     }
 }
 
+/**
+ * Componente Maestro para todos los diálogos de la App (v3.2.11)
+ * Asegura coherencia visual en títulos, fondos y espaciados.
+ */
+@Composable
+fun AppDialog(
+    onDismissRequest: () -> Unit,
+    title: String,
+    icon: @Composable (() -> Unit)? = null,
+    titleTrailingContent: @Composable (() -> Unit)? = null,
+    confirmButton: @Composable (() -> Unit)? = null,
+    dismissButton: @Composable (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = CalendarioTheme.colors.fondoDialogos,
+        titleContentColor = CalendarioTheme.colors.cabecera,
+        textContentColor = CalendarioTheme.colors.textSystem,
+        icon = icon,
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = CalendarioTheme.colors.cabecera,
+                    modifier = Modifier.weight(1f),
+                    textAlign = if (icon != null && titleTrailingContent == null) TextAlign.Center else TextAlign.Start
+                )
+                if (titleTrailingContent != null) {
+                    titleTrailingContent()
+                }
+            }
+        },
+        text = {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                content()
+            }
+        },
+        confirmButton = {
+            if (confirmButton != null) confirmButton()
+        },
+        dismissButton = {
+            if (dismissButton != null) dismissButton()
+        }
+    )
+}
+
 @Composable
 fun AdaptiveButtonText(
     text: String,

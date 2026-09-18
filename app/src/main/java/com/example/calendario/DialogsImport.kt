@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgendaImportPreviewDialog(
     events: List<Festivo>,
@@ -40,81 +39,9 @@ fun AgendaImportPreviewDialog(
     var showCalendarDropdown by remember { mutableStateOf(false) }
     val dateFormatter = remember { AppFormats.DateAbbr }
 
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(R.string.import_agenda_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.import_summary, events.size, notes.size),
-                    fontSize = 14.sp,
-                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // Selector de Calendario
-                Text(stringResource(R.string.select_target_calendar), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.cabecera)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(CalendarioTheme.colors.fondoSecciones)
-                        .clickable { showCalendarDropdown = true }
-                        .padding(12.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CalendarMonth, null, tint = selectedCalendar?.let { Color(it.color) } ?: CalendarioTheme.colors.textSystem, modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Text(selectedCalendar?.displayName ?: "", color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
-                        Icon(Icons.Default.ArrowDropDown, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
-                    }
-                    
-                    DropdownMenu(
-                        expanded = showCalendarDropdown,
-                        onDismissRequest = { showCalendarDropdown = false },
-                        modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
-                    ) {
-                        editableCalendars.forEach { cal ->
-                            DropdownMenuItem(
-                                text = { Text(cal.displayName, color = CalendarioTheme.colors.textSystem) },
-                                leadingIcon = { Icon(Icons.Default.CalendarMonth, null, tint = Color(cal.color)) },
-                                onClick = {
-                                    selectedCalendar = cal
-                                    showCalendarDropdown = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Lista de elementos
-                LazyColumn(modifier = Modifier.heightIn(max = 240.dp)) {
-                    items(events) { event ->
-                        Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.size(8.dp).clip(androidx.compose.foundation.shape.CircleShape).background(if (event.isLongPeriod) CalendarioTheme.colors.cabecera else Color.Gray))
-                            Spacer(Modifier.width(8.dp))
-                            Text(event.title, fontSize = 14.sp, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                            Text(event.date.format(dateFormatter), fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
-                        }
-                    }
-                    items(notes) { note ->
-                        Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.AutoMirrored.Filled.StickyNote2, null, tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.6f), modifier = Modifier.size(14.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(note.content, fontSize = 14.sp, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                            Text(note.date.format(dateFormatter), fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
-                        }
-                    }
-                }
-            }
-        },
+        title = stringResource(R.string.import_agenda_title),
         confirmButton = {
             DialogConfirmButton(
                 text = stringResource(R.string.import_button),
@@ -123,7 +50,75 @@ fun AgendaImportPreviewDialog(
             )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
-    )
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(R.string.import_summary, events.size, notes.size),
+                fontSize = 14.sp,
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Selector de Calendario
+            Text(stringResource(R.string.select_target_calendar), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.cabecera)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(CalendarioTheme.colors.fondoSecciones)
+                    .clickable { showCalendarDropdown = true }
+                    .padding(12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.CalendarMonth, null, tint = selectedCalendar?.let { Color(it.color) } ?: CalendarioTheme.colors.textSystem, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(12.dp))
+                    Text(selectedCalendar?.displayName ?: "", color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
+                    Icon(Icons.Default.ArrowDropDown, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+                }
+                
+                DropdownMenu(
+                    expanded = showCalendarDropdown,
+                    onDismissRequest = { showCalendarDropdown = false },
+                    modifier = Modifier.background(CalendarioTheme.colors.fondoDialogos)
+                ) {
+                    editableCalendars.forEach { cal ->
+                        DropdownMenuItem(
+                            text = { Text(cal.displayName, color = CalendarioTheme.colors.textSystem) },
+                            leadingIcon = { Icon(Icons.Default.CalendarMonth, null, tint = Color(cal.color)) },
+                            onClick = {
+                                selectedCalendar = cal
+                                showCalendarDropdown = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Lista de elementos
+            LazyColumn(modifier = Modifier.heightIn(max = 240.dp)) {
+                items(events) { event ->
+                    Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.size(8.dp).clip(androidx.compose.foundation.shape.CircleShape).background(if (event.isLongPeriod) CalendarioTheme.colors.cabecera else Color.Gray))
+                        Spacer(Modifier.width(8.dp))
+                        Text(event.title, fontSize = 14.sp, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                        Text(event.date.format(dateFormatter), fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+                    }
+                }
+                items(notes) { note ->
+                    Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.AutoMirrored.Filled.StickyNote2, null, tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.6f), modifier = Modifier.size(14.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(note.content, fontSize = 14.sp, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                        Text(note.date.format(dateFormatter), fontSize = 12.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f))
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -136,62 +131,9 @@ fun HolidayImportPreviewDialog(
     var selectedItems by remember { mutableStateOf(adjustments.toSet()) }
     val dateFormatter = remember { AppFormats.dayDateAbbr(locale) }
 
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(R.string.holiday_manager_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.import_summary, adjustments.size, 0).replace("0 notas.", ""),
-                    fontSize = 14.sp,
-                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-
-                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
-                    items(adjustments) { adj ->
-                        val isSelected = selectedItems.contains(adj)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { 
-                                    selectedItems = if (isSelected) selectedItems - adj else selectedItems + adj 
-                                }
-                                .padding(vertical = 4.dp), 
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = isSelected,
-                                onCheckedChange = { 
-                                    selectedItems = if (it) selectedItems + adj else selectedItems - adj 
-                                },
-                                colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
-                            )
-                            
-                            Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
-                                Text(
-                                    text = adj.title, 
-                                    fontSize = 14.sp, 
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (adj.type == HolidayAdjustmentType.HOLIDAY) CalendarioTheme.colors.textSundayHoliday else CalendarioTheme.colors.textSystem,
-                                    maxLines = 1, 
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = adj.date.format(dateFormatter).replaceFirstChar { it.titlecase(locale) }, 
-                                    fontSize = 12.sp, 
-                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        },
+        title = stringResource(R.string.holiday_manager_title),
         confirmButton = {
             DialogConfirmButton(
                 text = stringResource(R.string.import_button),
@@ -200,5 +142,54 @@ fun HolidayImportPreviewDialog(
             )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
-    )
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(R.string.import_summary, adjustments.size, 0).replace("0 notas.", ""),
+                fontSize = 14.sp,
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
+                items(adjustments) { adj ->
+                    val isSelected = selectedItems.contains(adj)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { 
+                                selectedItems = if (isSelected) selectedItems - adj else selectedItems + adj 
+                            }
+                            .padding(vertical = 4.dp), 
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = isSelected,
+                            onCheckedChange = { 
+                                selectedItems = if (it) selectedItems + adj else selectedItems - adj 
+                            },
+                            colors = CheckboxDefaults.colors(checkedColor = CalendarioTheme.colors.cabecera)
+                        )
+                        
+                        Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                            Text(
+                                text = adj.title, 
+                                fontSize = 14.sp, 
+                                fontWeight = FontWeight.Bold,
+                                color = if (adj.type == HolidayAdjustmentType.HOLIDAY) CalendarioTheme.colors.textSundayHoliday else CalendarioTheme.colors.textSystem,
+                                maxLines = 1, 
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = adj.date.format(dateFormatter).replaceFirstChar { it.titlecase(locale) }, 
+                                fontSize = 12.sp, 
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

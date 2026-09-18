@@ -32,7 +32,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -457,24 +456,21 @@ private fun EffectColorThemeRow(
 @Composable
 private fun RenameEventDialog(initialName: String, onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
     var text by remember { mutableStateOf(initialName) }
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.customize_colors), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = { 
-            OutlinedTextField(
-                value = text, 
-                onValueChange = { text = it }, 
-                label = { Text(stringResource(id = R.string.title)) }, 
-                singleLine = true, 
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-            ) 
-        },
+        title = stringResource(id = R.string.customize_colors),
         confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = { onConfirm(text) }) },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
-    )
+    ) {
+        OutlinedTextField(
+            value = text, 
+            onValueChange = { text = it }, 
+            label = { Text(stringResource(id = R.string.title)) }, 
+            singleLine = true, 
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+            modifier = Modifier.fillMaxWidth()
+        ) 
+    }
 }
 
 @Composable

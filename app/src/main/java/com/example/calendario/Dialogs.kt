@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,51 +53,9 @@ fun GoToYearDialog(
     val minYear = 1924
     val maxYear = 2124
 
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.year_selection_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                IconButton(
-                    onClick = {
-                        val currentYear = year.toIntOrNull() ?: initialYear
-                        val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
-                        year = newYear.toString()
-                    }
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = stringResource(id = R.string.previous_year), modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
-                }
-                OutlinedTextField(
-                    value = year,
-                    onValueChange = {
-                        val newText = it.filter { char -> char.isDigit() }.take(4)
-                        year = newText
-                        if (newText.length == 4) {
-                            val newYear = newText.toInt().coerceIn(minYear, maxYear)
-                            year = newYear.toString()
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-                    textStyle = TextStyle(textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem),
-                    singleLine = true
-                )
-                IconButton(onClick = {
-                    val currentYear = year.toIntOrNull() ?: initialYear
-                    val newYear = (currentYear + 1).coerceIn(minYear, maxYear)
-                    year = newYear.toString()
-                }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = stringResource(id = R.string.next_year), modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
-                }
-            }
-        },
+        title = stringResource(id = R.string.year_selection_title),
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
@@ -109,9 +66,46 @@ fun GoToYearDialog(
                 },
                 onDismiss = onDismissRequest
             )
-        },
-        dismissButton = null
-    )
+        }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(
+                onClick = {
+                    val currentYear = year.toIntOrNull() ?: initialYear
+                    val newYear = (currentYear - 1).coerceIn(minYear, maxYear)
+                    year = newYear.toString()
+                }
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = stringResource(id = R.string.previous_year), modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
+            }
+            OutlinedTextField(
+                value = year,
+                onValueChange = {
+                    val newText = it.filter { char -> char.isDigit() }.take(4)
+                    year = newText
+                    if (newText.length == 4) {
+                        val newYear = newText.toInt().coerceIn(minYear, maxYear)
+                        year = newYear.toString()
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                textStyle = TextStyle(textAlign = TextAlign.Center, color = CalendarioTheme.colors.textSystem),
+                singleLine = true
+            )
+            IconButton(onClick = {
+                val currentYear = year.toIntOrNull() ?: initialYear
+                val newYear = (currentYear + 1).coerceIn(minYear, maxYear)
+                year = newYear.toString()
+            }) {
+                Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = stringResource(id = R.string.next_year), modifier = Modifier.size(36.dp), tint = CalendarioTheme.colors.textSystem)
+            }
+        }
+    }
 }
 
 /**
@@ -150,38 +144,9 @@ fun LanguageSelectionDialog(
     val initialSetting = remember(currentLanguageCode) { AppLanguageSetting.fromCode(currentLanguageCode) }
     var tempSelection by remember { mutableStateOf(initialSetting) }
     
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.language), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            LazyColumn(modifier = Modifier.heightIn(max = 400.dp).fillMaxWidth()) {
-                items(AppLanguageSetting.entries) { lang ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { tempSelection = lang }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val isSelected = lang == tempSelection
-                        Text(
-                            text = stringResource(id = lang.displayNameRes),
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp,
-                            color = CalendarioTheme.colors.textSystem,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                        )
-                        if (isSelected) {
-                            val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
-                        }
-                    }
-                }
-            }
-        },
+        title = stringResource(id = R.string.language),
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
@@ -192,7 +157,32 @@ fun LanguageSelectionDialog(
                 onDismiss = onDismiss
             )
         }
-    )
+    ) {
+        LazyColumn(modifier = Modifier.heightIn(max = 400.dp).fillMaxWidth()) {
+            items(AppLanguageSetting.entries) { lang ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { tempSelection = lang }
+                        .padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val isSelected = lang == tempSelection
+                    Text(
+                        text = stringResource(id = lang.displayNameRes),
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp,
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                    )
+                    if (isSelected) {
+                        val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
+                        Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -203,34 +193,9 @@ fun ThemeSelectionDialog(
 ) {
     var tempSelection by remember { mutableStateOf(currentTheme) }
 
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.select_mode_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            Column {
-                ThemeSetting.entries.forEach { theme ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable { tempSelection = theme }.padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val isSelected = theme == tempSelection
-                        Text(
-                            text = stringResource(id = theme.displayNameRes),
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                        )
-                        if (isSelected) {
-                            val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                            Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
-                        }
-                    }
-                }
-            }
-        },
+        title = stringResource(id = R.string.select_mode_title),
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
@@ -241,10 +206,30 @@ fun ThemeSelectionDialog(
                 onDismiss = onDismiss
             )
         }
-    )
+    ) {
+        Column {
+            ThemeSetting.entries.forEach { theme ->
+                Row(
+                    Modifier.fillMaxWidth().clickable { tempSelection = theme }.padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val isSelected = theme == tempSelection
+                    Text(
+                        text = stringResource(id = theme.displayNameRes),
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp,
+                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                    )
+                    if (isSelected) {
+                        val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
+                        Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
+                    }
+                }
+            }
+        }
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmDeleteDialog(
     onDismissRequest: () -> Unit,
@@ -252,14 +237,10 @@ fun ConfirmDeleteDialog(
     title: String,
     icon: (@Composable () -> Unit)? = null
 ) {
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
+        title = stringResource(id = R.string.confirm_deletion_title),
         icon = icon,
-        title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = if (icon != null) TextAlign.Center else TextAlign.Start) },
-        text = { Text(stringResource(id = R.string.confirm_deletion_message, title), textAlign = if (icon != null) TextAlign.Center else TextAlign.Start, modifier = Modifier.fillMaxWidth()) },
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.delete),
@@ -268,7 +249,13 @@ fun ConfirmDeleteDialog(
                 confirmColor = Color.Red
             )
         }
-    )
+    ) {
+        Text(
+            text = stringResource(id = R.string.confirm_deletion_message, title),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = if (icon != null) TextAlign.Center else TextAlign.Start
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -280,25 +267,10 @@ fun TimePickerDialog(
     initialMinute: Int
 ) {
     val timePickerState = rememberTimePickerState(initialHour = initialHour, initialMinute = initialMinute, is24Hour = true)
-    AlertDialog(
+    
+    AppDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.textSystem,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        title = { Text(stringResource(id = R.string.select_time_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-        text = {
-            TimePicker(
-                state = timePickerState,
-                modifier = Modifier.fillMaxWidth(),
-                colors = TimePickerDefaults.colors(
-                    clockDialColor = CalendarioTheme.colors.fondoSecciones,
-                    timeSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera,
-                    timeSelectorUnselectedContainerColor = CalendarioTheme.colors.fondoSecciones,
-                    timeSelectorSelectedContentColor = CalendarioTheme.colors.cabecera.getContrastColor(CalendarioTheme.colors.fondoSecciones),
-                    periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
-                )
-            )
-        },
+        title = stringResource(id = R.string.select_time_title),
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.accept),
@@ -306,5 +278,17 @@ fun TimePickerDialog(
                 onDismiss = onDismissRequest
             )
         }
-    )
+    ) {
+        TimePicker(
+            state = timePickerState,
+            modifier = Modifier.fillMaxWidth(),
+            colors = TimePickerDefaults.colors(
+                clockDialColor = CalendarioTheme.colors.fondoSecciones,
+                timeSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera,
+                timeSelectorUnselectedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                timeSelectorSelectedContentColor = CalendarioTheme.colors.cabecera.getContrastColor(CalendarioTheme.colors.fondoSecciones),
+                periodSelectorSelectedContainerColor = CalendarioTheme.colors.cabecera
+            )
+        )
+    }
 }

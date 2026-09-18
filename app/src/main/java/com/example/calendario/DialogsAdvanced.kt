@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,10 +41,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
@@ -138,23 +135,9 @@ fun AdvancedColorPickerDialog(
     val state = rememberAdvancedColorPickerState(initialColor = initialColor)
     val onConfirmAction = { if (!state.isHexError) onColorConfirm(state.currentColor) }
 
-    AlertDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
-        containerColor = CalendarioTheme.colors.fondoDialogos,
-        title = { Text(stringResource(id = R.string.select_color_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        text = {
-            Column {
-                ColorPreview(
-                    initialColor = initialColor,
-                    newColor = state.currentColor,
-                    isHexError = state.isHexError
-                )
-                Spacer(Modifier.height(16.dp))
-                ColorSliders(state = state)
-                Spacer(Modifier.height(8.dp))
-                HexInput(state = state, onConfirm = onConfirmAction)
-            }
-        },
+        title = stringResource(id = R.string.select_color_title),
         confirmButton = {
             DialogConfirmButton(
                 text = stringResource(id = R.string.accept),
@@ -162,7 +145,19 @@ fun AdvancedColorPickerDialog(
             )
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismissRequest) }
-    )
+    ) {
+        Column {
+            ColorPreview(
+                initialColor = initialColor,
+                newColor = state.currentColor,
+                isHexError = state.isHexError
+            )
+            Spacer(Modifier.height(16.dp))
+            ColorSliders(state = state)
+            Spacer(Modifier.height(8.dp))
+            HexInput(state = state, onConfirm = onConfirmAction)
+        }
+    }
 }
 
 @Composable

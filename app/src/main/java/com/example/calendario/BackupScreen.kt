@@ -203,7 +203,7 @@ fun BackupScreen(
                         Text(
                             text = "$lastStr$sizeStr", 
                             color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
-                            fontSize = 13.sp, // Fuente reducida para evitar problemas de espacio
+                            fontSize = 13.sp, 
                             maxLines = 1, 
                             overflow = TextOverflow.Ellipsis
                         )
@@ -221,25 +221,25 @@ fun BackupScreen(
                     HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
                     BackupActionRow(
-                            text = stringResource(id = R.string.sincronizar_label),
-                            icon = Icons.Default.Sync,
-                            isRotating = isSyncing,
-                            onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; context.showToast(context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG) } else { context.showToast(R.string.sync_error_drive) } } }
-                        )
+                        text = stringResource(id = R.string.sincronizar_label),
+                        icon = Icons.Default.Sync,
+                        isRotating = isSyncing,
+                        onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; context.showToast(context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG) } else { context.showToast(R.string.sync_error_drive) } } }
+                    )
 
-                        HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                    HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                        BackupActionRow(
-                            text = stringResource(id = R.string.restaurar_label),
-                            icon = painterResource(id = R.drawable.ic_restore_custom),
-                            isRotating = isRestoring,
-                            reverseRotation = true,
-                            onClick = { showConfirmRestoreDialog = true }
-                        )
-                    }
+                    BackupActionRow(
+                        text = stringResource(id = R.string.restaurar_label),
+                        icon = painterResource(id = R.drawable.ic_restore_custom),
+                        isRotating = isRestoring,
+                        reverseRotation = true,
+                        onClick = { showConfirmRestoreDialog = true }
+                    )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // --- SECCIÓN MANTENIMIENTO (Integrada) ---
             SectionTitle(text = stringResource(id = R.string.maintenance_section))
@@ -322,13 +322,9 @@ fun BackupScreen(
 
         // --- Diálogos ---
         if (showUnlinkAccountDialog) { 
-            AlertDialog(
-                onDismissRequest = { showUnlinkAccountDialog = false }, 
-                containerColor = CalendarioTheme.colors.fondoDialogos, 
-                titleContentColor = CalendarioTheme.colors.textSystem, 
-                textContentColor = CalendarioTheme.colors.textSystem, 
-                title = { Text(stringResource(id = R.string.unlink_google_account), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
-                text = { Text(stringResource(id = R.string.unlink_account_confirmation)) }, 
+            AppDialog(
+                onDismissRequest = { showUnlinkAccountDialog = false },
+                title = stringResource(id = R.string.unlink_google_account),
                 confirmButton = { 
                     DialogConfirmButton(
                         text = stringResource(id = R.string.unlink_action), 
@@ -344,7 +340,9 @@ fun BackupScreen(
                     ) 
                 }, 
                 dismissButton = { DialogDismissButton(onDismiss = { showUnlinkAccountDialog = false }) }
-            ) 
+            ) {
+                Text(stringResource(id = R.string.unlink_account_confirmation))
+            }
         }
 
         if (showFrequencyDialog) { 
@@ -482,50 +480,31 @@ private fun BackupFrequencyDialog(selection: String, onConfirm: (String) -> Unit
         "weekly" to R.string.frequency_weekly, 
         "monthly" to R.string.frequency_monthly
     )
-    AlertDialog(
-        onDismissRequest = onDismiss, 
-        containerColor = CalendarioTheme.colors.fondoDialogos, 
-        titleContentColor = CalendarioTheme.colors.textSystem, 
-        textContentColor = CalendarioTheme.colors.textSystem, 
-        title = { Text(stringResource(id = R.string.backup_frequency), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
-        text = { 
-            Column { 
-                options.forEach { (key, labelRes) -> 
-                    Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
-                        val isSelected = key == tempSelection
-                        Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
-                        if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)) 
-                    } 
-                } 
-            } 
-        }, 
+    
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(id = R.string.backup_frequency),
         confirmButton = { 
             AdaptiveDialogButtons(confirmText = stringResource(id = R.string.accept), onConfirm = { onConfirm(tempSelection) }, onDismiss = onDismiss) 
         }
-    )
+    ) {
+        Column { 
+            options.forEach { (key, labelRes) -> 
+                Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
+                    val isSelected = key == tempSelection
+                    Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
+                    if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)) 
+                } 
+            } 
+        } 
+    }
 }
 
 @Composable
 private fun ConfirmRestoreDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss, 
-        containerColor = CalendarioTheme.colors.fondoDialogos, 
-        title = { 
-            Text(
-                text = stringResource(id = R.string.confirm_restore_title), 
-                fontWeight = FontWeight.Bold, 
-                fontSize = 20.sp, 
-                modifier = Modifier.fillMaxWidth(), 
-                textAlign = TextAlign.Start
-            ) 
-        }, 
-        text = { 
-            Text(
-                text = stringResource(id = R.string.restore_total_confirmation),
-                color = CalendarioTheme.colors.textSystem,
-                fontSize = 16.sp
-            ) 
-        }, 
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(id = R.string.confirm_restore_title),
         confirmButton = { 
             DialogConfirmButton(
                 text = stringResource(id = R.string.accept), 
@@ -535,5 +514,11 @@ private fun ConfirmRestoreDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
         dismissButton = { 
             DialogDismissButton(onDismiss = onDismiss) 
         }
-    )
+    ) {
+        Text(
+            text = stringResource(id = R.string.restore_total_confirmation),
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 16.sp
+        ) 
+    }
 }

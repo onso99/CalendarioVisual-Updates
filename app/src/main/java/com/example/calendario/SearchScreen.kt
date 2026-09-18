@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +45,7 @@ fun SearchScreen(
     onClose: () -> Unit,
     onEventClick: (Festivo) -> Unit,
     onNoteClick: (DailyNote) -> Unit,
-    onDeleteNote: (LocalDate) -> Unit, // Nueva acción para Fase 2
+    onDeleteNote: (LocalDate) -> Unit, 
     onOpenHolidayManager: (Festivo) -> Unit,
     onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>,
@@ -57,10 +56,8 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
     
-    // --- Lógica de Multiselección Unificada (v3.1.34) ---
     var selectedItems by remember { mutableStateOf(setOf<SearchItem>()) }
     
-    // MODELO DRIVE (v3.1.34): Reiniciar selección si cambian los criterios de búsqueda
     LaunchedEffect(searchQuery, searchScope) {
         selectedItems = emptySet()
     }
@@ -135,7 +132,6 @@ fun SearchScreen(
                 .background(CalendarioTheme.colors.settingsBackground),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // FASE 1 corregida: Cuadro de búsqueda integrado en el cuerpo, no en la cabecera
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
@@ -291,24 +287,16 @@ fun SearchScreen(
         }
     }
 
-    // --- Diálogo de Confirmación de Borrado ---
     if (showDeleteConfirmDialog) {
-        val deleteMultipleConfirmation = stringResource(id = R.string.delete_multiple_confirmation, selectedItems.size)
-
-        AlertDialog(
+        AppDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            titleContentColor = CalendarioTheme.colors.textSystem,
-            textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-            text = { Text(deleteMultipleConfirmation) },
+            title = stringResource(id = R.string.confirm_deletion_title),
             confirmButton = {
                 DialogConfirmButton(
                     text = stringResource(id = R.string.delete),
                     onClick = {
                         var deletedCount = 0
 
-                        // 1. Borrar Eventos
                         selectedFestivos.filter { festivo ->
                             availableCalendars.find { it.id == festivo.calendarId }?.canModify == true
                         }.forEach { festivo ->
@@ -323,7 +311,6 @@ fun SearchScreen(
                             } catch (_: Exception) {}
                         }
 
-                        // 2. Borrar Notas
                         selectedNotes.forEach { note ->
                             onDeleteNote(note.date)
                             deletedCount++
@@ -352,6 +339,8 @@ fun SearchScreen(
             dismissButton = {
                 DialogDismissButton(onDismiss = { showDeleteConfirmDialog = false })
             }
-        )
+        ) {
+            Text(stringResource(id = R.string.delete_multiple_confirmation, selectedItems.size))
+        }
     }
 }

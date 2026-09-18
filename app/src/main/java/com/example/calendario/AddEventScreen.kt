@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -49,10 +48,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -355,7 +352,7 @@ fun AddEventScreen(
             selectedColorInt != localEventToEdit?.customColor ||
             hasAlarm != initialHasAlarm ||
             (hasAlarm && alarmTime != initialAlarmTime) ||
-            (repetitionRule == RepetitionRule.WEEKLY && selectedDays != (initialStartDate.dayOfWeek.let { setOf(it) })) 
+            (repetitionRule == RepetitionRule.WEEKLY && selectedDays != setOf(initialStartDate.dayOfWeek)) 
         }
     }
 
@@ -633,13 +630,9 @@ fun AddEventScreen(
                 Triple(stringResource(R.string.error), stringResource(R.string.lanes_full_error, dateStr), false)
             }
         }
-        AlertDialog(
-            onDismissRequest = { saveError = null }, 
-            containerColor = CalendarioTheme.colors.fondoDialogos, 
-            titleContentColor = CalendarioTheme.colors.textSystem, 
-            textContentColor = CalendarioTheme.colors.textSystem, 
-            title = { Text(errorTitle, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
-            text = { Text(errorText) },
+        AppDialog(
+            onDismissRequest = { saveError = null },
+            title = errorTitle,
             confirmButton = { 
                 DialogConfirmButton(
                     text = stringResource(R.string.accept),
@@ -654,7 +647,9 @@ fun AddEventScreen(
                     } 
                 } 
             }
-        )
+        ) {
+            Text(errorText)
+        }
     }
 
     if (showDeleteDialog) {
@@ -692,13 +687,9 @@ fun AddEventScreen(
     }
 
     if (showDiscardChangesDialog) {
-        AlertDialog(
-            onDismissRequest = { showDiscardChangesDialog = false }, 
-            containerColor = CalendarioTheme.colors.fondoDialogos, 
-            titleContentColor = CalendarioTheme.colors.textSystem, 
-            textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(R.string.discard_changes_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) }, 
-            text = { Text(stringResource(R.string.discard_changes_confirmation)) },
+        AppDialog(
+            onDismissRequest = { showDiscardChangesDialog = false },
+            title = stringResource(R.string.discard_changes_title),
             confirmButton = { 
                 DialogConfirmButton(
                     text = stringResource(id = R.string.discard),
@@ -707,7 +698,9 @@ fun AddEventScreen(
                 )
             },
             dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }
-        )
+        ) {
+            Text(stringResource(R.string.discard_changes_confirmation))
+        }
     }
 
     if (showStartDatePickerDialog) {

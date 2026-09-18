@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -50,7 +49,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -70,7 +68,6 @@ fun HolidayManagerScreen(
 ) {
     val context = LocalContext.current
     
-    // REACTIVIDAD (v3.1.34): Recargamos la lista local cada vez que el estado global de festivos cambie
     val uiState by viewModel.uiState.collectAsState()
     var adjustments by remember { mutableStateOf(SettingsManager.getHolidayAdjustments(context)) }
     
@@ -78,7 +75,6 @@ fun HolidayManagerScreen(
         adjustments = SettingsManager.getHolidayAdjustments(context)
     }
     
-    // Internal state for the current edit
     var editingAdjustment by remember { mutableStateOf<HolidayAdjustment?>(null) }
     var currentOriginalEventId by remember { mutableStateOf(initialFestivo?.id) }
     var title by remember { mutableStateOf(initialFestivo?.title ?: "") }
@@ -89,17 +85,15 @@ fun HolidayManagerScreen(
 
     var showDatePicker by remember { mutableStateOf(value = false) }
     var adjustmentToDelete by remember { mutableStateOf<HolidayAdjustment?>(null) }
-    var showAgendaContextWarning by remember { mutableStateOf(false) } // Nuevo (v3.1.34)
+    var showAgendaContextWarning by remember { mutableStateOf(false) } 
 
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            // UNIFICACIÓN CON AVISO (v3.1.34): No mostramos la agenda directamente
             viewModel.processExternalCvo(it, autoShowAgendaPreview = false) { success, error, isAgenda ->
                 if (success) {
                     if (isAgenda) {
-                        // Saltamos el aviso si detectamos agenda en lugar de festivos
                         showAgendaContextWarning = true
                     }
                 } else if (error != null) {
@@ -109,7 +103,6 @@ fun HolidayManagerScreen(
         }
     }
     
-    // Logic to store reference values to detect changes
     var refTitle by remember { mutableStateOf(initialFestivo?.title ?: "") }
     var refDate by remember { mutableStateOf(initialFestivo?.date ?: LocalDate.now()) }
     var refIsHoliday by remember { mutableStateOf(initialFestivo?.isFromHolidaySource ?: true) }
@@ -239,14 +232,12 @@ fun HolidayManagerScreen(
             Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 SectionTitle(text = stringResource(id = R.string.local_holidays_label), modifier = Modifier.weight(1f), topPadding = 0.dp)
                 
-                // 1. Importar (Carpeta abierta custom)
                 IconButton(onClick = { importLauncher.launch(arrayOf("*/*")) }, modifier = Modifier.size(32.dp)) {
                     Icon(painter = painterResource(id = R.drawable.ic_folder_open_custom), contentDescription = stringResource(id = R.string.cargar_label), tint = CalendarioTheme.colors.cabecera, modifier = Modifier.size(22.dp))
                 }
                 
                 Spacer(modifier = Modifier.width(8.dp))
                 
-                // 2. Exportar (Compartir - Siempre al extremo derecho)
                 IconButton(
                     onClick = { 
                         CvoHelper.shareHolidaysPackage(context, adjustments)
@@ -314,13 +305,9 @@ fun HolidayManagerScreen(
         val dateStr = toDelete.date.format(AppFormats.DateAbbr)
         val holidayDeletedMsg = stringResource(id = R.string.holiday_deleted_message, dateStr, toDelete.title)
 
-        AlertDialog(
+        AppDialog(
             onDismissRequest = { adjustmentToDelete = null },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            titleContentColor = CalendarioTheme.colors.textSystem,
-            textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(id = R.string.confirm_deletion_title), fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start) },
-            text = { Text(stringResource(id = R.string.confirm_delete_adjustment)) },
+            title = stringResource(id = R.string.confirm_deletion_title),
             confirmButton = {
                 DialogConfirmButton(
                     text = stringResource(id = R.string.delete),
@@ -338,17 +325,15 @@ fun HolidayManagerScreen(
                 )
             },
             dismissButton = { DialogDismissButton(onDismiss = { adjustmentToDelete = null }) }
-        )
+        ) {
+            Text(stringResource(id = R.string.confirm_delete_adjustment))
+        }
     }
 
     if (showAgendaContextWarning) {
-        AlertDialog(
+        AppDialog(
             onDismissRequest = { showAgendaContextWarning = false },
-            containerColor = CalendarioTheme.colors.fondoDialogos,
-            titleContentColor = CalendarioTheme.colors.textSystem,
-            textContentColor = CalendarioTheme.colors.textSystem,
-            title = { Text(stringResource(R.string.agenda_file_detected_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-            text = { Text(stringResource(R.string.agenda_file_detected_message)) },
+            title = stringResource(R.string.agenda_file_detected_title),
             confirmButton = {
                 DialogConfirmButton(
                     text = stringResource(R.string.continue_button),
@@ -364,7 +349,9 @@ fun HolidayManagerScreen(
                     onDismiss = { showAgendaContextWarning = false }
                 )
             }
-        )
+        ) {
+            Text(stringResource(R.string.agenda_file_detected_message))
+        }
     }
 }
 
