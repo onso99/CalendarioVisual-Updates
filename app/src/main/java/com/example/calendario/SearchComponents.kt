@@ -239,15 +239,7 @@ internal fun EventRow(
                             fontWeight = FontWeight.Medium
                         )
                     } else {
-                        // Modo Indefinido
-                        if (festivo.repeatIndex != null && festivo.repeatIndex > 0) {
-                            Text(
-                                text = festivo.repeatIndex.toString(),
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                                fontSize = 11.sp,
-                                modifier = Modifier.padding(end = 2.dp)
-                            )
-                        }
+                        // Modo Indefinido: Muestra solo el icono (v3.2.08.2)
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = null,

@@ -279,15 +279,7 @@ fun MonthlyEventList(
                                                                 fontWeight = FontWeight.Medium
                                                             )
                                                         } else {
-                                                            // Modo Indefinido: Mantiene el icono
-                                                            if (festivo.repeatIndex != null && festivo.repeatIndex > 0) {
-                                                                Text(
-                                                                    text = festivo.repeatIndex.toString(),
-                                                                    color = iconColor,
-                                                                    fontSize = 12.sp,
-                                                                    modifier = Modifier.padding(end = 2.dp)
-                                                                )
-                                                            }
+                                                            // Modo Indefinido: Muestra solo el icono (v3.2.08.2)
                                                             Icon(
                                                                 imageVector = Icons.Default.Refresh,
                                                                 contentDescription = stringResource(id = R.string.repeated_event),

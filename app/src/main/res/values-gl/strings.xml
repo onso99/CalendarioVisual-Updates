@@ -28,7 +28,7 @@
     <string name="custom_selected">Seleccionado</string>
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">Seguro que queres eliminar este evento: \"%1$s\"?</string>
-    <string name="repeat_event_title">Repetir evento</string>
+    <string name="repeat_event_title">Repetición</string>
     <string name="repeat_until">Remata</string>
     <string name="repeat_indefinite">Indefinidamente</string>
     <string name="repeat_on_date">Ata a data</string>

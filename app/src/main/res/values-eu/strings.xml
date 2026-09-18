@@ -28,7 +28,7 @@
     <string name="custom_selected">Hautatua</string>
     <string name="confirm_deletion_title">Baieztatu ezabatzea</string>
     <string name="confirm_deletion_message">Ziur al zaude gertaera hau ezabatu nahi duzula: \"%1$s\"?</string>
-    <string name="repeat_event_title">Errepikatu gertaera</string>
+    <string name="repeat_event_title">Errepikapena</string>
     <string name="repeat_until">Noiz amaitu</string>
     <string name="repeat_indefinite">Mugagabe</string>
     <string name="repeat_on_date">Data arte</string>

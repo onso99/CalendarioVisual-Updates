@@ -911,8 +911,14 @@ fun RepetitionSelectionDialog(
 
     val focusRequester = remember { FocusRequester() }
     var endMode by remember { 
-        // Por defecto preferimos "Repeticiones" (2) si no hay fecha de fin explÃ­cita (v3.2.08)
-        mutableIntStateOf(if (currentUntil != null) 1 else 2)
+        mutableIntStateOf(
+            when {
+                currentUntil != null -> 1
+                currentCount != null -> 2
+                currentRule != RepetitionRule.NONE -> 0 // Existente indefinida (v3.2.08.2)
+                else -> 2 // Nuevo evento: Repeticiones por defecto (v3.2.08.1)
+            }
+        )
     }
 
     LaunchedEffect(endMode) {

@@ -28,7 +28,7 @@
     <string name="custom_selected">Выбрано</string>
     <string name="confirm_deletion_title">Подтверждение удаления</string>
     <string name="confirm_deletion_message">Вы уверены, что хотите удалить это событие: \"%1$s\"?</string>
-    <string name="repeat_event_title">Повторять событие</string>
+    <string name="repeat_event_title">Повторение</string>
     <string name="repeat_until">Заканчивается</string>
     <string name="repeat_indefinite">Бессрочно</string>
     <string name="repeat_on_date">До даты</string>
