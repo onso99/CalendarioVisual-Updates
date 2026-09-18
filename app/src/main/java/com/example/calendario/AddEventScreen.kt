@@ -13,10 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -28,11 +25,8 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,9 +41,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.size
 import androidx.core.content.ContextCompat
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -390,86 +382,61 @@ fun AddEventScreen(
     var showRepeatUntilDatePickerDialog by remember { mutableStateOf(false) }
     var showRepetitionDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            val isImported = localEventToEdit?.id == 0L
-            TopAppBar(
-                title = { 
-                    Text(
-                        text = if (localEventToEdit != null && !isImported) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    ) 
-                },
-                navigationIcon = { IconButton(onClick = backAction) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
-                actions = {
-                    if (hasChanges || isImported) {
-                        IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
-                    }
-                    localEventToEdit?.let { event ->
-                        if (!isImported) {
-                            if (!hasChanges) {
-                                IconButton(onClick = { IcsHelper.shareEvent(context, event) }) {
-                                    Icon(Icons.Default.Share, stringResource(id = R.string.share_event))
-                                }
-                            }
-                            IconButton(onClick = {
-                                val currentEvent = localEventToEdit ?: return@IconButton
-                                isCopying = true 
-                                
-                                // 1. Preparar nuevas fechas (Hoy + duración original)
-                                val today = LocalDate.now()
-                                val duration = Duration.between(startDate, endDate)
-                                val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
-                                
-                                startDate = newStartDate
-                                endDate = newStartDate.plus(duration)
-                                
-                                // 2. Protección de Calendario: Si el original es de solo lectura, usamos el favorito
-                                val originalCalendar = editableCalendars.find { it.id == currentEvent.calendarId }
-                                if (originalCalendar?.canModify == false) {
-                                    selectedCalendar = initialCalendar // El calendario inicial es el favorito/por defecto
-                                }
-                                
-                                // 3. Soltar el ancla del evento anterior para que sea uno NUEVO
-                                localEventToEdit = null
-                            }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
-                            
-                            IconButton(onClick = {
-                                if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
-                            }) { Icon(Icons.Default.Delete, stringResource(id = R.string.delete_event)) }
+    val isImported = localEventToEdit?.id == 0L
+
+    AppScreen(
+        title = if (localEventToEdit != null && !isImported) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event),
+        onBackClick = backAction,
+        bannerMessage = bannerMessage,
+        isBannerVisible = bannerMessage != null,
+        bannerIcon = Icons.Default.Warning,
+        bannerIconColor = Color.Red,
+        actions = {
+            if (hasChanges || isImported) {
+                IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
+            }
+            localEventToEdit?.let { event ->
+                if (!isImported) {
+                    if (!hasChanges) {
+                        IconButton(onClick = { IcsHelper.shareEvent(context, event) }) {
+                            Icon(Icons.Default.Share, stringResource(id = R.string.share_event))
                         }
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
-            )
-        },
-        containerColor = CalendarioTheme.colors.settingsBackground
-    ) { paddingValues ->
+                    IconButton(onClick = {
+                        val currentEvent = localEventToEdit ?: return@IconButton
+                        isCopying = true 
+                        
+                        // 1. Preparar nuevas fechas (Hoy + duración original)
+                        val today = LocalDate.now()
+                        val duration = Duration.between(startDate, endDate)
+                        val newStartDate = LocalDateTime.of(today, startDate.toLocalTime())
+                        
+                        startDate = newStartDate
+                        endDate = newStartDate.plus(duration)
+                        
+                        // 2. Protección de Calendario: Si el original es de solo lectura, usamos el favorito
+                        val originalCalendar = editableCalendars.find { it.id == currentEvent.calendarId }
+                        if (originalCalendar?.canModify == false) {
+                            selectedCalendar = initialCalendar // El calendario inicial es el favorito/por defecto
+                        }
+                        
+                        // 3. Soltar el ancla del evento anterior para que sea uno NUEVO
+                        localEventToEdit = null
+                    }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
+                    
+                    IconButton(onClick = {
+                        if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
+                    }) { Icon(Icons.Default.Delete, stringResource(id = R.string.delete_event)) }
+                }
+            }
+        }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(horizontal = AppLayout.ScreenHorizontalPadding)
         ) {
-            InfoBanner(
-                message = bannerMessage,
-                isVisible = bannerMessage != null,
-                icon = Icons.Default.Warning,
-                iconColor = Color.Red
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp, top = AppLayout.TopToSectionPadding)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                AddEventForm(
+            AddEventForm(
                 title = title, onTitleChange = { title = it },
                 selectedCalendar = selectedCalendar, onCalendarClick = { showCalendarDialog = true },
                 isAllDay = isAllDay, onAllDayChange = { newValue -> 
@@ -864,5 +831,4 @@ fun AddEventScreen(
             }
         )
     }
-}
 }

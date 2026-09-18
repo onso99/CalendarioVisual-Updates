@@ -10,11 +10,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
@@ -126,34 +123,13 @@ fun BackupScreen(
         mutableStateOf(f)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.backup_section_title_label), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-                navigationIcon = { 
-                    IconButton(onClick = onBackPress) { 
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) 
-                    } 
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
-            )
-        },
-        containerColor = CalendarioTheme.colors.settingsBackground
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
+    AppScreen(
+        title = stringResource(id = R.string.backup_section_title_label),
+        onBackClick = onBackPress
+    ) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
             // --- SECCIÓN GOOGLE DRIVE ---
-            SectionTitle(text = stringResource(id = R.string.drive_label))
+            SectionTitle(text = stringResource(id = R.string.drive_label), isFirst = true)
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val email = remember(permissionsUpdateTrigger) { SettingsManager.getGoogleAccountEmail(context) }
                 if (email == null) {
@@ -239,9 +215,7 @@ fun BackupScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // --- SECCIÓN MANTENIMIENTO (Integrada) ---
+            // --- SECCIÃ“N MANTENIMIENTO (Sincronizada v3.2.12.4) ---
             SectionTitle(text = stringResource(id = R.string.maintenance_section))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
@@ -33,11 +33,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -149,30 +146,20 @@ fun HolidayManagerScreen(
 
     val festivoColor = if (CalendarioTheme.colors.textSundayHoliday == Color(0xFFFF0000)) Color(0xFFD32F2F) else CalendarioTheme.colors.textSundayHoliday
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.holiday_manager_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
-                actions = {
-                    if (editingAdjustment != null || isFromExistingGoogleEvent) {
-                        IconButton(onClick = { resetForm() }) { Icon(Icons.Default.Close, contentDescription = "Cancelar edición") }
-                    }
-                    if (title.isNotBlank() && hasChanges) {
-                        IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
-            )
+    AppScreen(
+        title = stringResource(id = R.string.holiday_manager_title),
+        onBackClick = onBackPress,
+        actions = {
+            if (editingAdjustment != null || isFromExistingGoogleEvent) {
+                IconButton(onClick = { resetForm() }) { Icon(Icons.Default.Close, contentDescription = "Cancelar edición") }
+            }
+            if (title.isNotBlank() && hasChanges) {
+                IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
+            }
         },
-        containerColor = CalendarioTheme.colors.settingsBackground
-    ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+        scrollable = false 
+    ) {
+        Column(modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
             // --- Editor Section ---
             Column(
                 modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)
@@ -227,12 +214,20 @@ fun HolidayManagerScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // --- SECCIÃ“N LISTADO (Sincronizada v3.2.12.6) ---
+            Spacer(modifier = Modifier.height(32.dp))
 
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                SectionTitle(text = stringResource(id = R.string.local_holidays_label), modifier = Modifier.weight(1f), topPadding = 0.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(), 
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SectionTitle(
+                    text = stringResource(id = R.string.local_holidays_label), 
+                    modifier = Modifier.weight(1f), 
+                    topPadding = 0.dp
+                )
                 
-                IconButton(onClick = { importLauncher.launch(arrayOf("*/*")) }, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = { importLauncher.launch(arrayOf("*/*")) }, modifier = Modifier.size(32.dp).offset(y = (-8).dp)) {
                     Icon(painter = painterResource(id = R.drawable.ic_folder_open_custom), contentDescription = stringResource(id = R.string.cargar_label), tint = CalendarioTheme.colors.cabecera, modifier = Modifier.size(22.dp))
                 }
                 
@@ -242,7 +237,7 @@ fun HolidayManagerScreen(
                     onClick = { 
                         CvoHelper.shareHolidaysPackage(context, adjustments)
                     }, 
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp).offset(y = (-8).dp)
                 ) {
                     Icon(imageVector = Icons.Outlined.Share, contentDescription = stringResource(id = R.string.guardar_label), tint = CalendarioTheme.colors.cabecera)
                 }

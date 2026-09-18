@@ -10,26 +10,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.runtime.*
@@ -71,29 +63,15 @@ fun ColorThemeScreen(
     val dividerColor = CalendarioTheme.colors.settingsBackground
     val dividerThickness = 1.dp
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.customize_colors), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary) },
-                navigationIcon = {
-                    IconButton(onClick = onBackPress) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = MaterialTheme.colorScheme.onPrimary)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
-            )
-        },
-        containerColor = CalendarioTheme.colors.settingsBackground
-    ) { paddingValues ->
+    AppScreen(
+        title = stringResource(id = R.string.customize_colors),
+        onBackClick = onBackPress
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             // --- BLOQUE 1: TEMA ---
-            SectionTitle(stringResource(id = R.string.theme_section_title))
+            SectionTitle(stringResource(id = R.string.theme_section_title), isFirst = true)
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val themeItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Tema" && it.labelRes != R.string.calendar_background }
                 themeItems.forEachIndexed { index, item ->
@@ -154,9 +132,7 @@ fun ColorThemeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // --- BLOQUE 2: PROPIOS ---
+            // --- BLOQUE 2: PROPIOS (Sincronizado v3.2.12.4) ---
             SectionTitle(stringResource(id = R.string.propios_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val propiosItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Propios" }

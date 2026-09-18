@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
@@ -74,114 +73,92 @@ fun ManageCalendarsScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.calendars), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-                navigationIcon = {
-                    IconButton(onClick = { 
-                        onApplySelection(currentIds)
-                        onBackPress() 
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
+    AppScreen(
+        title = stringResource(id = R.string.calendars),
+        onBackClick = { 
+            onApplySelection(currentIds)
+            onBackPress() 
         },
-        containerColor = CalendarioTheme.colors.settingsBackground
-    ) { paddingValues ->
-        Column(
+        bannerMessage = infoMessage,
+        isBannerVisible = infoMessage != null,
+        bannerIcon = if (infoMessage == favUpdatedMsg) Icons.Default.Star else Icons.Default.Info,
+        bannerIconColor = CalendarioTheme.colors.cabecera,
+        scrollable = false // El scroll ya lo maneja el LazyColumn interno
+    ) {
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp) 
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
         ) {
-            InfoBanner(
-                message = infoMessage,
-                isVisible = infoMessage != null,
-                icon = if (infoMessage == favUpdatedMsg) Icons.Default.Star else Icons.Default.Info,
-                iconColor = CalendarioTheme.colors.cabecera
-            )
+            items(sortedCalendars) { cal ->
+                val isFavorite = cal.id == currentFavoriteId
+                val isSelected = currentIds.contains(cal.id) || isFavorite
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp, top = AppLayout.TopToSectionPadding) 
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CalendarioTheme.colors.fondoSecciones)
-            ) {
-                items(sortedCalendars) { cal ->
-                    val isFavorite = cal.id == currentFavoriteId
-                    val isSelected = currentIds.contains(cal.id) || isFavorite
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .combinedClickable(
-                                onClick = { 
-                                    if (!isFavorite) {
-                                        val set = currentIds.toMutableSet()
-                                        if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
-                                        currentIds = set 
-                                    }
-                                },
-                                onLongClick = {
-                                    if (cal.canModify) {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        onSetFavorite(cal.id)
-                                        currentFavoriteId = cal.id
-                                        currentIds = currentIds + cal.id
-                                        infoMessage = favUpdatedMsg
-                                    } else {
-                                        infoMessage = readOnlyMsg
-                                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = { 
+                                if (!isFavorite) {
+                                    val set = currentIds.toMutableSet()
+                                    if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
+                                    currentIds = set 
                                 }
-                            )
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) { 
-                            Text(
-                                text = cal.displayName, 
-                                fontWeight = if (isFavorite) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 16.sp,
-                                color = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem
-                            )
-                            Text(
-                                text = cal.accountName, 
-                                fontSize = 13.sp,
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                            ) 
-                        }
-                        
-                        if (isFavorite) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.cabecera,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else if (isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.cabecera,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                            },
+                            onLongClick = {
+                                if (cal.canModify) {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onSetFavorite(cal.id)
+                                    currentFavoriteId = cal.id
+                                    currentIds = currentIds + cal.id
+                                    infoMessage = favUpdatedMsg
+                                } else {
+                                    infoMessage = readOnlyMsg
+                                }
+                            }
+                        )
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) { 
+                        Text(
+                            text = cal.displayName, 
+                            fontWeight = if (isFavorite) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 16.sp,
+                            color = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem
+                        )
+                        Text(
+                            text = cal.accountName, 
+                            fontSize = 13.sp,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                        ) 
                     }
                     
-                    if (cal != sortedCalendars.last()) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = CalendarioTheme.colors.settingsBackground,
-                            thickness = 1.dp
+                    if (isFavorite) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.cabecera,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else if (isSelected) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.cabecera,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
+                }
+                
+                if (cal != sortedCalendars.last()) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = CalendarioTheme.colors.settingsBackground,
+                        thickness = 1.dp
+                    )
                 }
             }
         }

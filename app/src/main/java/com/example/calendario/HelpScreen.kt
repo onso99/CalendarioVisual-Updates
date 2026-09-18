@@ -2,23 +2,12 @@ package com.example.calendario
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,31 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpScreen(onBackPress: () -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.help), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-                navigationIcon = { IconButton(onClick = onBackPress) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back)) } },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
-                )
-            )
-        },
-        containerColor = CalendarioTheme.colors.settingsBackground,
-        contentColor = CalendarioTheme.colors.textSystem
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp) 
-        ) {
+    AppScreen(
+        title = stringResource(id = R.string.help),
+        onBackClick = onBackPress
+    ) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
             HelpSection(title = stringResource(id = R.string.help_section_calendar_views)) {
                 Text(stringResource(id = R.string.help_calendar_views_1), fontSize = 14.sp, lineHeight = 20.sp)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -85,13 +56,15 @@ private fun HelpSection(title: String, content: @Composable () -> Unit) {
         fraction = 0.4f
     )
 
-    Column(modifier = Modifier.padding(bottom = 24.dp)) {
+    Column(modifier = Modifier.padding(bottom = 32.dp)) { // Aumentado a 32dp para uniformidad
         Text(
             text = title,
-            fontSize = 17.sp, // TÃ­tulo mÃ¡s discreto (v3.1.34)
+            fontSize = 17.sp,
             fontWeight = FontWeight.Bold,
             color = titleColor,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier
+                .padding(bottom = 2.dp) // Reducido a 2dp para consistencia (v3.2.12.5)
+                .offset(y = (-8).dp) // COMPENSACIÃ“N VISUAL UNIFICADA
         )
         content()
     }

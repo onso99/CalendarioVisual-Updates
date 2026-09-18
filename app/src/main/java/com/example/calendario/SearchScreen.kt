@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
@@ -76,60 +75,45 @@ fun SearchScreen(
         if (!isSelectionMode) focusRequester.requestFocus()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.search),
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        if (isSelectionMode) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(id = R.string.selected_count_short, selectedItems.size),
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 18.sp
-                            )
-                            IconButton(onClick = { selectedItems = emptySet() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(id = R.string.clear_selection),
-                                    tint = Color.White.copy(alpha = 0.8f),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
+    AppScreen(
+        title = stringResource(id = R.string.search),
+        onBackClick = onClose,
+        scrollable = false, 
+        topBarExtension = {
+            if (isSelectionMode) {
+                // Barra de selección alojada en el hueco reservado (v3.2.12.1)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .background(CalendarioTheme.colors.cabecera.copy(alpha = 0.12f))
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.selected_count_short, selectedItems.size),
+                        color = CalendarioTheme.colors.cabecera,
+                        fontSize = 14.sp, // Ligeramente menor para encajar en 32dp
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { selectedItems = emptySet() }, modifier = Modifier.size(24.dp)) {
+                        Icon(Icons.Default.Close, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), modifier = Modifier.size(18.dp))
                     }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back),
-                            tint = Color.White
-                        )
-                    }
-                },
-                        actions = {
-                            if (isSelectionMode) {
-                                IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                                    Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
-                                }
-                            }
-                        },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = CalendarioTheme.colors.cabecera)
-            )
+                }
+            }
+        },
+        actions = {
+            if (isSelectionMode) {
+                IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                    Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
+                }
+            }
         }
-    ) { paddingValues ->
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(CalendarioTheme.colors.settingsBackground),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
@@ -137,7 +121,7 @@ fun SearchScreen(
                 onValueChange = onSearchQueryChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 0.dp)
                     .focusRequester(focusRequester),
                 placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                 singleLine = true,

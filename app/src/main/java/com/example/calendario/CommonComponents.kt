@@ -8,8 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,6 +44,89 @@ object AppLayout {
     val BannerHeight = 32.dp
     val ScreenHorizontalPadding = 16.dp
     val TopToSectionPadding = 0.dp // Espacio reservado para el banner informativo (v3.2.06)
+}
+
+/**
+ * Componente Maestro para todas las pantallas de la App (v3.2.12)
+ * Unifica la cabecera, fondo, navegación y sistema de banners.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppScreen(
+    title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
+    bannerMessage: String? = null,
+    isBannerVisible: Boolean = false,
+    bannerIcon: ImageVector? = null,
+    bannerIconColor: Color = Color.Unspecified,
+    topBarExtension: @Composable (() -> Unit)? = null, // NUEVO: Para alojar la barra de selección (v3.2.12.1)
+    scrollable: Boolean = true,
+    content: @Composable (ColumnScope) -> Unit
+) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        text = title, 
+                        fontWeight = FontWeight.Bold, 
+                        fontSize = 20.sp
+                    ) 
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back))
+                    }
+                },
+                actions = actions,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
+            )
+        },
+        containerColor = CalendarioTheme.colors.settingsBackground
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // ZONA RESERVADA (32dp - LÍNEA ROJA)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(AppLayout.BannerHeight),
+                contentAlignment = Alignment.Center
+            ) {
+                if (topBarExtension != null) {
+                    topBarExtension()
+                } else {
+                    InfoBanner(
+                        message = bannerMessage,
+                        isVisible = isBannerVisible,
+                        icon = bannerIcon,
+                        iconColor = bannerIconColor
+                    )
+                }
+            }
+
+            // Contenedor de contenido con margen superior normalizado (v3.2.12.1)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = AppLayout.TopToSectionPadding)
+                    .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+            ) {
+                content(this)
+            }
+        }
+    }
 }
 
 /**
@@ -263,7 +349,8 @@ fun AdaptiveDialogButtons(
 fun SectionTitle(
     text: String, 
     modifier: Modifier = Modifier, 
-    topPadding: androidx.compose.ui.unit.Dp = 24.dp
+    topPadding: androidx.compose.ui.unit.Dp = 32.dp, // AUMENTADO A 32dp PARA UNIFORMIDAD (v3.2.12.4)
+    isFirst: Boolean = false 
 ) {
     val titleColor = lerp(
         start = CalendarioTheme.colors.cabecera,
@@ -273,7 +360,9 @@ fun SectionTitle(
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        modifier = modifier.padding(bottom = 8.dp, top = topPadding),
+        modifier = modifier
+            .padding(bottom = 2.dp, top = if (isFirst) 0.dp else topPadding)
+            .offset(y = (-8).dp), // COMPENSACIÃ“N VISUAL AUMENTADA PARA TODAS LAS SECCIONES
         fontWeight = FontWeight.Bold,
         color = titleColor,
     )
@@ -283,7 +372,7 @@ fun SectionTitle(
 fun WidgetSectionTitle() {
     SectionTitle(
         text = stringResource(id = R.string.widget),
-        topPadding = 24.dp
+        topPadding = 32.dp // SINCRONIZADO CON LÃNEA ROJA
     )
 }
 

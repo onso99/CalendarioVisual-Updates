@@ -1,3 +1,4 @@
+2026-09-18 - v3.2.12 Unificación de pantallas con AppScreen: fijada distancia de cabecera (32dp), integración estática de banners/selección y refinado de espaciado en secciones.
 2026-09-18 - v3.2.11 Unificación de diálogos con componente AppDialog (títulos en azul de marca), restauración de posición del botón (+), corrección de repeticiones indefinidas y limpieza de avisos de código.
 2026-09-18 - v3.2.10 Diálogos informativos: información sobre Festivos ajustada.
 2026-09-18 - v3.2.09 Diálogo Repetición: cambio de título, Eventos indefinidos bien asignados. Sin Nro de repetición en Lista de eventos

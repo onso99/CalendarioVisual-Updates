@@ -78,92 +78,76 @@ fun AgendaExchangeScreen(
         selectedItems = emptySet()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.import_agenda_title),
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        if (isSelectionMode) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(id = R.string.selected_count_short, selectedItems.size),
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 18.sp
-                            )
-                            IconButton(onClick = { selectedItems = emptySet() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(id = R.string.clear_selection),
-                                    tint = Color.White.copy(alpha = 0.8f),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
+    AppScreen(
+        title = stringResource(id = R.string.import_agenda_title),
+        onBackClick = onClose,
+        scrollable = false,
+        topBarExtension = {
+            if (isSelectionMode) {
+                // Barra de selección alojada en el hueco reservado (v3.2.12.1)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .background(CalendarioTheme.colors.cabecera.copy(alpha = 0.12f))
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.selected_count_short, selectedItems.size),
+                        color = CalendarioTheme.colors.cabecera,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { selectedItems = emptySet() }, modifier = Modifier.size(24.dp)) {
+                        Icon(Icons.Default.Close, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), modifier = Modifier.size(18.dp))
                     }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back), tint = Color.White)
-                    }
-                },
-                actions = {
-                    // 1. Acción de Exportar (Compartir Clásico - v3.1.34)
-                    if (isSelectionMode) {
-                        IconButton(onClick = { onExportClick(selectedItems) }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Share, 
-                                contentDescription = stringResource(id = R.string.share_event), 
-                                tint = Color.White
-                            )
-                        }
-                    }
+                }
+            }
+        },
+        actions = {
+            // 1. Acción de Exportar (Compartir Clásico - v3.1.34)
+            if (isSelectionMode) {
+                IconButton(onClick = { onExportClick(selectedItems) }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Share, 
+                        contentDescription = stringResource(id = R.string.share_event), 
+                        tint = Color.White
+                    )
+                }
+            }
 
-                    // 2. Acción de Guardar Local (Disquete Outlined) - Modo Pruebas
-                    if (isSelectionMode) {
-                        IconButton(onClick = { onSaveLocalClick(selectedItems) }) {
-                            Icon(Icons.Outlined.Save, null, tint = Color.White)
-                        }
-                    }
+            // 2. Acción de Guardar Local (Disquete Outlined) - Modo Pruebas
+            if (isSelectionMode) {
+                IconButton(onClick = { onSaveLocalClick(selectedItems) }) {
+                    Icon(Icons.Outlined.Save, null, tint = Color.White)
+                }
+            }
 
-                    // 3. Acción de Importar (Carpeta Custom) - Siempre en el extremo derecho
-                    IconButton(onClick = onImportClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_folder_open_custom), 
-                            contentDescription = stringResource(id = R.string.cargar_label), 
-                            tint = Color.White,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CalendarioTheme.colors.cabecera,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
+            // 3. Acción de Importar (Carpeta Custom) - Siempre en el extremo derecho
+            IconButton(onClick = onImportClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_folder_open_custom), 
+                    contentDescription = stringResource(id = R.string.cargar_label), 
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
                 )
-            )
+            }
         }
-    ) { paddingValues ->
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(CalendarioTheme.colors.settingsBackground),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Buscador
+            // Buscador (Sin padding superior extra v3.2.12.2)
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 0.dp)
                     .focusRequester(focusRequester),
                 placeholder = { Text(stringResource(id = R.string.search_events_placeholder), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                 singleLine = true,
