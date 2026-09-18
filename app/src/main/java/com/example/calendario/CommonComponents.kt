@@ -197,42 +197,67 @@ fun AppDialog(
     titleTrailingContent: @Composable (() -> Unit)? = null,
     confirmButton: @Composable (() -> Unit)? = null,
     dismissButton: @Composable (() -> Unit)? = null,
+    bannerMessage: String? = null,
+    isBannerVisible: Boolean = false,
+    bannerIcon: ImageVector? = null,
+    bannerIconColor: Color = Color.Unspecified,
     content: @Composable () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = CalendarioTheme.colors.fondoDialogos,
-        titleContentColor = CalendarioTheme.colors.cabecera,
-        textContentColor = CalendarioTheme.colors.textSystem,
-        icon = icon,
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = CalendarioTheme.colors.cabecera,
-                    modifier = Modifier.weight(1f),
-                    textAlign = if (icon != null && titleTrailingContent == null) TextAlign.Center else TextAlign.Start
-                )
-                if (titleTrailingContent != null) {
-                    titleTrailingContent()
-                }
-            }
-        },
-        text = {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                content()
-            }
-        },
         confirmButton = {
             if (confirmButton != null) confirmButton()
         },
         dismissButton = {
             if (dismissButton != null) dismissButton()
+        },
+        // ANULAMOS SLOTS DEL SISTEMA PARA CONTROLAR EL PADDING (v3.2.12.8)
+        title = null,
+        icon = null,
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // 1. CABECERA PERSONALIZADA (Sin paddings fantasma)
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 0.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (icon != null) {
+                        Box(modifier = Modifier.padding(end = 12.dp)) { icon() }
+                    }
+                    Text(
+                        text = title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = CalendarioTheme.colors.cabecera,
+                        modifier = Modifier.weight(1f),
+                        textAlign = if (icon != null && titleTrailingContent == null) TextAlign.Center else TextAlign.Start
+                    )
+                    if (titleTrailingContent != null) {
+                        Box(modifier = Modifier.padding(start = 8.dp)) { titleTrailingContent() }
+                    }
+                }
+
+                // 2. ZONA RESERVADA (32dp - LÃNEA ROJA)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppLayout.BannerHeight),
+                    contentAlignment = Alignment.Center
+                ) {
+                    InfoBanner(
+                        message = bannerMessage,
+                        isVisible = isBannerVisible,
+                        icon = bannerIcon,
+                        iconColor = bannerIconColor
+                    )
+                }
+
+                // 3. CONTENIDO CON COMPENSACIÃ“N VISUAL
+                Box(modifier = Modifier.fillMaxWidth().offset(y = (-8).dp)) {
+                    content()
+                }
+            }
         }
     )
 }

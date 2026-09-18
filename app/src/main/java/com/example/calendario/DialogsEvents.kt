@@ -1,7 +1,5 @@
 package com.example.calendario
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -484,7 +482,7 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
     ) {
         Column { 
             listOf(
-                EditRecurringOption.SINGLE_EVENT to stringResource(id = R.string.edit_recurring_event_dialog_single_event), 
+                EditRecurringOption.SINGLE_EVENT to stringResource(R.string.edit_recurring_event_dialog_single_event), 
                 EditRecurringOption.ALL_EVENTS to stringResource(id = R.string.edit_all_events_option)
             ).forEach { (opt, txt) ->
                 val isSelected = selectedOption == opt
@@ -554,17 +552,16 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
         )
     }
 
-    val messageAlpha by animateFloatAsState(
-        targetValue = if (infoMessage != null) 1f else 0f,
-        animationSpec = tween(durationMillis = 800),
-        label = "alpha"
-    )
-    var lastKnownMessage by remember { mutableStateOf("") }
-    if (infoMessage != null) lastKnownMessage = infoMessage!!
+    val brandColor = CalendarioTheme.colors.cabecera
+    val checkColor = brandColor.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
 
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = stringResource(id = R.string.calendars),
+        bannerMessage = infoMessage,
+        isBannerVisible = infoMessage != null,
+        bannerIcon = if (infoMessage == favUpdatedMsg) Icons.Default.Star else Icons.Default.Info,
+        bannerIconColor = brandColor,
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.apply),
@@ -573,89 +570,64 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
             )
         }
     ) {
-        Column {
-            // Mensaje fijo que solo cambia opacidad
-            Text(
-                text = lastKnownMessage,
-                fontSize = 12.sp,
-                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f * messageAlpha),
-                modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .heightIn(max = 400.dp)
-                    .fillMaxWidth()
-            ) {
-                items(sortedCalendars) { cal ->
-                    val isFavorite = cal.id == currentFavoriteId
-                    val isSelected = currentIds.contains(cal.id) || isFavorite
-                    
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .combinedClickable(
-                                onClick = { 
-                                    if (!isFavorite) {
-                                        val set = currentIds.toMutableSet()
-                                        if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
-                                        currentIds = set 
-                                    }
-                                },
-                                onLongClick = {
-                                    if (cal.canModify) {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        onSetFavorite(cal.id)
-                                        currentFavoriteId = cal.id
-                                        currentIds = currentIds + cal.id
-                                        infoMessage = favUpdatedMsg
-                                    } else {
-                                        infoMessage = readOnlyMsg
-                                    }
+        LazyColumn(modifier = Modifier.heightIn(max = 400.dp).fillMaxWidth()) {
+            items(sortedCalendars) { cal ->
+                val isFavorite = cal.id == currentFavoriteId
+                val isSelected = currentIds.contains(cal.id) || isFavorite
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .combinedClickable(
+                            onClick = { 
+                                if (!isFavorite) {
+                                    val set = currentIds.toMutableSet()
+                                    if (set.contains(cal.id)) set.remove(cal.id) else set.add(cal.id)
+                                    currentIds = set 
                                 }
-                            )
-                            .padding(vertical = 12.dp, horizontal = 4.dp),
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Column(Modifier.weight(1f)) { 
-                            Text(
-                                text = cal.displayName, 
-                                fontWeight = if (isFavorite) FontWeight.Medium else FontWeight.Normal,
-                                fontSize = 15.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = CalendarioTheme.colors.textSystem
-                            )
-                            Text(
-                                text = cal.accountName, 
-                                fontSize = 12.sp,
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            ) 
-                        }
-                        
-                        Box(
-                            modifier = Modifier.size(32.dp).offset(y = (-2).dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (isFavorite) {
-                                Icon(
-                                    imageVector = Icons.Filled.Star,
-                                    contentDescription = null,
-                                    tint = CalendarioTheme.colors.cabecera,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            } else if (isSelected) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                    tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos),
-                                    modifier = Modifier.size(22.dp)
-                                )
+                            },
+                            onLongClick = {
+                                if (cal.canModify) {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onSetFavorite(cal.id)
+                                    currentFavoriteId = cal.id
+                                    currentIds = currentIds + cal.id
+                                    infoMessage = favUpdatedMsg
+                                } else {
+                                    infoMessage = readOnlyMsg
+                                }
                             }
+                        )
+                        .padding(vertical = 10.dp, horizontal = 4.dp), 
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) { 
+                        Text(
+                            text = cal.displayName, 
+                            fontWeight = if (isFavorite) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 15.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = if (isFavorite) brandColor else CalendarioTheme.colors.textSystem
+                        )
+                        Text(
+                            text = cal.accountName, 
+                            fontSize = 12.sp,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    }
+                    
+                    Box(
+                        modifier = Modifier.size(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isFavorite) {
+                            Icon(imageVector = Icons.Filled.Star, contentDescription = null, tint = brandColor, modifier = Modifier.size(22.dp))
+                        } else if (isSelected) {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = checkColor, modifier = Modifier.size(22.dp))
                         }
                     }
                 }
@@ -690,15 +662,13 @@ fun SelectWidgetCalendarsDialog(
         )
     }
 
-    val errorAlpha by animateFloatAsState(
-        targetValue = if (showError) 1f else 0f,
-        animationSpec = tween(durationMillis = 800),
-        label = "errorAlpha"
-    )
-
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = stringResource(id = R.string.calendars),
+        bannerMessage = stringResource(id = R.string.widget_min_calendar_error),
+        isBannerVisible = showError,
+        bannerIcon = Icons.Default.Warning,
+        bannerIconColor = Color.Red,
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.apply),
@@ -707,70 +677,56 @@ fun SelectWidgetCalendarsDialog(
             )
         }
     ) {
-        Column {
-            Text(
-                text = stringResource(id = R.string.widget_min_calendar_error),
-                fontSize = 12.sp,
-                color = Color.Red.copy(alpha = errorAlpha),
-                modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .heightIn(max = 400.dp)
-                    .fillMaxWidth()
-            ) {
-                items(sortedCalendars) { cal ->
-                    val isSelected = currentIds.contains(cal.id)
-                    val isFavorite = cal.id == currentFavoriteId
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable {
-                                if (isSelected) {
-                                    if (currentIds.size > 1) {
-                                        currentIds = currentIds - cal.id
-                                        showError = false
-                                    } else {
-                                        showError = true
-                                    }
-                                } else {
-                                    currentIds = currentIds + cal.id
-                                    showError = false
-                                }
-                            }
-                            .padding(vertical = 12.dp, horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(
-                                text = cal.displayName,
-                                fontWeight = if (isFavorite) FontWeight.Medium else FontWeight.Normal,
-                                fontSize = 15.sp,
-                                color = CalendarioTheme.colors.textSystem,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = cal.accountName,
-                                fontSize = 12.sp,
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        
-                        Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+        LazyColumn(modifier = Modifier.heightIn(max = 400.dp).fillMaxWidth()) {
+            items(sortedCalendars) { cal ->
+                val isSelected = currentIds.contains(cal.id)
+                val isFavorite = cal.id == currentFavoriteId
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
                             if (isSelected) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                    tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos),
-                                    modifier = Modifier.size(20.dp)
-                                )
+                                if (currentIds.size > 1) {
+                                    currentIds = currentIds - cal.id
+                                    showError = false
+                                } else {
+                                    showError = true
+                                }
+                            } else {
+                                currentIds = currentIds + cal.id
+                                showError = false
                             }
+                        }
+                        .padding(vertical = 10.dp, horizontal = 4.dp), // Padding ajustado v3.2.12.8
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = cal.displayName,
+                            fontWeight = if (isFavorite) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 15.sp,
+                            color = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = cal.accountName,
+                            fontSize = 12.sp,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    
+                    Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos),
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
                 }
