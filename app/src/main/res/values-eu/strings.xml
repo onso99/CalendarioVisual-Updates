@@ -18,6 +18,7 @@
     <string name="cancel">Utzi</string>
     <string name="read_only">(Irakurtzeko soilik)</string>
     <string name="apply">Aplikatu</string>
+    <string name="gestor_label">Kudeatzailea</string>
     <string name="no_title">(Izenbururik gabe)</string>
     <string name="close">Itxi</string>
     <string name="year_selection_title">Urtea</string>

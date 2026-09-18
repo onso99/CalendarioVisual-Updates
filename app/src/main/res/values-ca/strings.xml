@@ -18,6 +18,7 @@
     <string name="cancel">Cancel·lar</string>
     <string name="read_only">(Només lectura)</string>
     <string name="apply">Aplicar</string>
+    <string name="gestor_label">Gestor</string>
     <string name="no_title">(Sense títol)</string>
     <string name="close">Tancar</string>
     <string name="year_selection_title">Any</string>

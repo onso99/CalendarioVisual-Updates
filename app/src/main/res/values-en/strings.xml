@@ -18,6 +18,7 @@
     <string name="cancel">Cancel</string>
     <string name="read_only">(Read-only)</string>
     <string name="apply">Apply</string>
+    <string name="gestor_label">Manager</string>
     <string name="no_title">(No title)</string>
     <string name="close">Close</string>
     <string name="year_selection_title">Year</string>

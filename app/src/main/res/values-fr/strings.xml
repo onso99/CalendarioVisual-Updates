@@ -18,6 +18,7 @@
     <string name="cancel">Annuler</string>
     <string name="read_only">(Lecture seule)</string>
     <string name="apply">Appliquer</string>
+    <string name="gestor_label">Gestionnaire</string>
     <string name="no_title">(Sans titre)</string>
     <string name="close">Fermer</string>
     <string name="year_selection_title">Année</string>

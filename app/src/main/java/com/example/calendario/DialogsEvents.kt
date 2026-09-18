@@ -394,27 +394,29 @@ fun ReadOnlyEventDialog(
 
                     Spacer(Modifier.height(16.dp))
                     
+                    val isReadOnly = calendar?.canModify == false
+                    val calendarName = calendar?.displayName ?: "-"
+                    val calendarInfoText = if (isReadOnly) {
+                        stringResource(id = R.string.calendar_source, calendarName) + " " + stringResource(id = R.string.read_only).lowercase()
+                    } else {
+                        stringResource(id = R.string.calendar_source, calendarName)
+                    }
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (festivo.isGhost || (calendar == null && festivo.calendarId > 0)) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_ghost_24),
                                 contentDescription = null,
-                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                                modifier = Modifier.size(20.dp).padding(end = 8.dp)
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.35f),
+                                modifier = Modifier.size(18.dp).padding(end = 8.dp)
                             )
                         }
                         Text(
-                            text = stringResource(id = R.string.calendar_source, calendar?.displayName ?: "-"), 
-                            fontSize = 14.sp, 
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                        )
-                    }
-                    if (calendar?.canModify == false) {
-                        Text(
-                            text = stringResource(id = R.string.calendar_read_only_error),
-                            fontSize = 12.sp,
-                            color = CalendarioTheme.colors.textSundayHoliday.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(top = 4.dp)
+                            text = calendarInfoText, 
+                            fontSize = 12.sp, 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.45f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -424,7 +426,7 @@ fun ReadOnlyEventDialog(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (festivo.isFromHolidaySource) {
                     TextButton(onClick = { onDismissRequest(); onOpenHolidayManager(festivo) }, colors = ButtonDefaults.textButtonColors(contentColor = CalendarioTheme.colors.cabecera)) { 
-                        Text(stringResource(id = R.string.holiday_manager_title)) 
+                        Text(stringResource(id = R.string.gestor_label)) 
                     }
                     Spacer(Modifier.width(8.dp))
                 }

@@ -1,3 +1,4 @@
+2026-09-18 - v3.2.09 Diálogo Repetición: cambio de título, Eventos indefinidos bien asignados. Sin Nro de repetición en Lista de eventos
 2026-09-17 - v3.2.08 Soporte de repetición por días de semana (L-X-V), selección automática del día actual y reorganización del diálogo de duración (opción "Repeticiones" por defecto).
 2026-09-17 - v3.2.07 Unificados todos los iconos de selección (checks)
 2026-09-17 - v3.2.06.2 Sistema unificado de InfoBanner: diseño centrado con iconos en color (80% opacidad), desaparición automática (5s) en edición de eventos y márgenes normalizados (AppLayout). Localización completa a 12 idiomas.
