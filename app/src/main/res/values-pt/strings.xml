@@ -80,7 +80,7 @@
     <string name="customize_colors">Personalizar cores</string>
     <string name="widget_event_count">Número de eventos</string>
     <string name="widget_selected_calendars_label">Calendários</string>
-    <string name="widget_min_calendar_error">É necessário pelo menos um calendário</string>
+    <string name="widget_min_calendar_error">É necessário um calendário</string>
     <string name="widget_text_adjustment">Ajuste de texto</string>
     <string name="about">Sobre</string>
     <string name="discard_changes_title">Descartar alterações</string>

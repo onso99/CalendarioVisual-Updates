@@ -562,6 +562,7 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
         isBannerVisible = infoMessage != null,
         bannerIcon = if (infoMessage == favUpdatedMsg) Icons.Default.Star else Icons.Default.Info,
         bannerIconColor = brandColor,
+        bannerTextAlign = TextAlign.Start, // JUSTIFICADO IZQUIERDA (v3.2.13.1)
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.apply),
@@ -669,6 +670,7 @@ fun SelectWidgetCalendarsDialog(
         isBannerVisible = showError,
         bannerIcon = Icons.Default.Warning,
         bannerIconColor = Color.Red,
+        bannerTextAlign = TextAlign.Start, // JUSTIFICADO IZQUIERDA (v3.2.13.1)
         confirmButton = {
             AdaptiveDialogButtons(
                 confirmText = stringResource(id = R.string.apply),

@@ -138,7 +138,9 @@ fun InfoBanner(
     isVisible: Boolean,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    iconColor: Color = Color.Unspecified
+    iconColor: Color = Color.Unspecified,
+    textAlign: TextAlign = TextAlign.Center,
+    horizontalPadding: androidx.compose.ui.unit.Dp = 16.dp // NUEVO: Padding configurable (v3.2.13.2)
 ) {
     val messageAlpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
@@ -158,8 +160,8 @@ fun InfoBanner(
         if (messageAlpha > 0.01f) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                horizontalArrangement = if (textAlign == TextAlign.Start) Arrangement.Start else Arrangement.Center,
+                modifier = Modifier.padding(horizontal = horizontalPadding).fillMaxWidth()
             ) {
                 if (icon != null) {
                     Icon(
@@ -176,7 +178,7 @@ fun InfoBanner(
                     text = lastKnownMessage,
                     fontSize = 12.sp,
                     color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f * messageAlpha),
-                    textAlign = TextAlign.Center,
+                    textAlign = textAlign,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -201,6 +203,7 @@ fun AppDialog(
     isBannerVisible: Boolean = false,
     bannerIcon: ImageVector? = null,
     bannerIconColor: Color = Color.Unspecified,
+    bannerTextAlign: TextAlign = TextAlign.Center, // NUEVO (v3.2.13.1)
     content: @Composable () -> Unit
 ) {
     AlertDialog(
@@ -238,7 +241,7 @@ fun AppDialog(
                     }
                 }
 
-                // 2. ZONA RESERVADA (32dp - LÃNEA ROJA)
+                // 2. ZONA RESERVADA (32dp - LÍNEA ROJA)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -249,7 +252,9 @@ fun AppDialog(
                         message = bannerMessage,
                         isVisible = isBannerVisible,
                         icon = bannerIcon,
-                        iconColor = bannerIconColor
+                        iconColor = bannerIconColor,
+                        textAlign = bannerTextAlign,
+                        horizontalPadding = 0.dp // ELIMINAMOS PADDING FANTASMA EN DIÁLOGOS (v3.2.13.2)
                     )
                 }
 
