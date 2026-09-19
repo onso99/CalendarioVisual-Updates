@@ -16,8 +16,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.AssistantPhoto
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Dataset
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,16 +28,19 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneOffset
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -59,7 +60,7 @@ fun SearchScreen(
     onEventClick: (Festivo) -> Unit,
     onNoteClick: (DailyNote) -> Unit,
     onDeleteNote: (LocalDate) -> Unit, 
-    onOpenHolidayManager: (Festivo) -> Unit, // RE-AÑADIDO (v3.2.14.1)
+    onOpenHolidayManager: (Festivo) -> Unit, 
     onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>,
 ) {
@@ -81,6 +82,39 @@ fun SearchScreen(
         selectedItems = emptySet()
     }
     
+    // --- LÃ“GICA DE AUTO-SCROLL AL \"HOY\" (v3.2.14.6) ---
+    val today = LocalDate.now()
+    LaunchedEffect(searchResults) {
+        if (searchResults.isNotEmpty()) {
+            val targetDate = searchResults.keys.filter { it >= today }.minByOrNull { it }
+                ?: searchResults.keys.maxByOrNull { it }
+            
+            if (targetDate != null) {
+                val groupedByMonth = searchResults.keys.groupBy { YearMonth.from(it) }
+                    .toSortedMap(compareByDescending { it })
+                
+                var targetIndex = 0
+                outer@for ((month, days) in groupedByMonth) {
+                    targetIndex += 1
+                    val isTargetMonth = month == YearMonth.from(targetDate)
+                    if (isTargetMonth) {
+                        for (day in days) {
+                            if (day == targetDate) break@outer
+                            targetIndex += searchResults[day]?.size ?: 0
+                        }
+                        break@outer
+                    }
+                    days.forEach { d -> targetIndex += searchResults[d]?.size ?: 0 }
+                }
+                
+                if (targetIndex > 0) {
+                    delay(150.milliseconds)
+                    lazyListState.scrollToItem((targetIndex - 1).coerceAtLeast(0)) 
+                }
+            }
+        }
+    }
+    
     val isSelectionMode = selectedItems.isNotEmpty()
 
     val selectedFestivos = remember(selectedItems) { 
@@ -100,7 +134,6 @@ fun SearchScreen(
         scrollable = false, 
         topBarExtension = {
             if (isSelectionMode) {
-                // Barra de selecciÃ³n alojada en el hueco reservado
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -134,7 +167,6 @@ fun SearchScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 1. Buscador
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
@@ -166,7 +198,7 @@ fun SearchScreen(
                 )
             )
 
-            // 2. Filtros (Chips v3.2.14.2)
+            // 2. Filtros (Chips v3.2.14.8)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -174,7 +206,7 @@ fun SearchScreen(
             ) {
                 // TIPO
                 SearchFilterChip(
-                    icon = Icons.Outlined.AssistantPhoto, // NUEVO: flag 2 (v3.2.14.3)
+                    icon = Icons.Outlined.AssistantPhoto,
                     isSelected = activeFilters.contains("EVENT"),
                     onClick = { onToggleFilter("EVENT") }
                 )
@@ -190,19 +222,23 @@ fun SearchScreen(
 
                 // TIEMPO
                 SearchFilterChip(
-                    icon = Icons.Outlined.CalendarToday, // NUEVO: calendar today
+                    painter = painterResource(id = R.drawable.ic_search_month), // NUEVO: Mes (v3.2.14.8)
                     isSelected = timeShortcut == "MONTH",
                     onClick = { onApplyShortcut("MONTH") }
                 )
                 SearchFilterChip(
-                    icon = Icons.Outlined.Dataset, // NUEVO: Data set
+                    painter = painterResource(id = R.drawable.ic_search_year), // NUEVO: Año (v3.2.14.8)
                     isSelected = timeShortcut == "YEAR",
                     onClick = { onApplyShortcut("YEAR") }
+                )
+                SearchFilterChip(
+                    icon = Icons.Default.AllInclusive,
+                    isSelected = timeShortcut == "ALWAYS",
+                    onClick = { onApplyShortcut("ALWAYS") }
                 )
 
                 Spacer(Modifier.weight(1f))
 
-                // SELECCIONAR TODO
                 val visibleItems = remember(searchResults) { searchResults.values.flatten().toSet() }
                 val allVisibleSelected = remember(selectedItems, visibleItems) { 
                     visibleItems.isNotEmpty() && visibleItems.all { it in selectedItems } 
@@ -227,17 +263,19 @@ fun SearchScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+                val isAlways = timeShortcut == "ALWAYS"
+                val dateAlpha = if (isAlways) 0.3f else 1f
                 val dateFmt = AppFormats.DateAbbr
-                TextButton(onClick = { showStartDatePicker = true }) {
-                    Text(startDate.format(dateFmt), color = CalendarioTheme.colors.textSystem, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                
+                TextButton(onClick = { showStartDatePicker = true }, enabled = !isAlways) {
+                    Text(startDate.format(dateFmt), color = CalendarioTheme.colors.textSystem.copy(alpha = dateAlpha), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                 }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.size(14.dp))
-                TextButton(onClick = { showEndDatePickerDialog = true }) {
-                    Text(endDate.format(dateFmt), color = CalendarioTheme.colors.textSystem, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f * dateAlpha), modifier = Modifier.size(14.dp))
+                TextButton(onClick = { showEndDatePickerDialog = true }, enabled = !isAlways) {
+                    Text(endDate.format(dateFmt), color = CalendarioTheme.colors.textSystem.copy(alpha = dateAlpha), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                 }
             }
 
-            // 4. Resultados
             if (searchResults.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
@@ -250,24 +288,34 @@ fun SearchScreen(
                     searchResults.keys.groupBy { YearMonth.from(it) }
                         .toSortedMap(compareByDescending { it })
                 }
+                val mostFutureMonth = groupedByMonth.keys.firstOrNull()
 
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
                     groupedByMonth.forEach { (month, daysInMonth) ->
                         stickyHeader {
+                            val isNotMostFuture = month != mostFutureMonth
                             Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                                 shape = RoundedCornerShape(12.dp),
                                 color = CalendarioTheme.colors.fondoSecciones,
                                 shadowElevation = 1.dp
                             ) {
-                                Text(
-                                    text = month.format(AppFormats.monthYear(locale)).replaceFirstChar { it.titlecase(locale) },
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                                    fontWeight = FontWeight.Bold,
-                                    color = CalendarioTheme.colors.cabecera
-                                )
+                                Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = month.format(AppFormats.monthYear(locale)).replaceFirstChar { it.titlecase(locale) },
+                                        fontWeight = FontWeight.Bold,
+                                        color = CalendarioTheme.colors.cabecera,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    if (isNotMostFuture) {
+                                        Icon(
+                                            imageVector = Icons.Default.KeyboardArrowUp,
+                                            contentDescription = null,
+                                            tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.4f),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
 
@@ -278,7 +326,6 @@ fun SearchScreen(
                                         val festivo = searchItem.festivo
                                         val isSelected = selectedItems.contains(searchItem)
                                         val isLocalHoliday = festivo.calendarId == -1L && festivo.isFromHolidaySource
-                                        
                                         EventRow(
                                             festivo = festivo,
                                             availableCalendars = availableCalendars,
@@ -411,7 +458,8 @@ fun SearchScreen(
 
 @Composable
 private fun SearchFilterChip(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    painter: androidx.compose.ui.graphics.painter.Painter? = null,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -427,12 +475,21 @@ private fun SearchFilterChip(
         modifier = Modifier.size(40.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (isSelected) brandColor else CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                modifier = Modifier.size(20.dp)
-            )
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = if (isSelected) brandColor else CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                    modifier = Modifier.size(20.dp)
+                )
+            } else if (painter != null) {
+                Icon(
+                    painter = painter,
+                    contentDescription = null,
+                    tint = if (isSelected) brandColor else CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
