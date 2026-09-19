@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 
+
+enum class SearchScope { MONTH, YEAR }
+
 /**
  * Librería de Componentes Comunes (Fase 4 - Optimización v3.1.34)
  * Centralización de piezas visuales repetidas para asegurar consistencia.

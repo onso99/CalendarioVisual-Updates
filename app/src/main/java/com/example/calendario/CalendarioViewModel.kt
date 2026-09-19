@@ -41,7 +41,15 @@ data class CalendarioUiState(
     val agendaStartDate: LocalDate = LocalDate.now(),
     val agendaEndDate: LocalDate = LocalDate.now().plusMonths(1),
     val agendaActiveFilters: Set<String> = emptySet(),
-    val agendaSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap()
+    val agendaSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap(),
+
+    // --- NUEVOS ESTADOS BÚSQUEDA UNIFICADA (v3.2.14) ---
+    val mainSearchQuery: String = "",
+    val mainSearchStartDate: LocalDate = LocalDate.now().withDayOfMonth(1),
+    val mainSearchEndDate: LocalDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()),
+    val mainSearchFilters: Set<String> = emptySet(), // Ninguno seleccionado por defecto (v3.2.14.2)
+    val mainSearchTimeShortcut: String? = "MONTH", 
+    val mainSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap()
 )
 
 class CalendarioViewModel(application: Application) : AndroidViewModel(application) {
@@ -69,6 +77,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 ) }
                 updateCleaningCandidates()
                 updateAgendaSearchResults() // Sincronizar resultados de agenda
+                updateMainSearchResults()   // Sincronizar resultados de búsqueda principal (v3.2.14)
                 
                 // Notificar a los widgets
                 CalendarAppWidgetProvider.triggerWidgetUpdate(application)
@@ -110,6 +119,100 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             state.copy(agendaActiveFilters = newFilters)
         }
         updateAgendaSearchResults()
+    }
+
+    // --- ACCIONES BÚSQUEDA UNIFICADA (v3.2.14) ---
+    fun updateMainSearchQuery(query: String) {
+        _uiState.update { it.copy(mainSearchQuery = query) }
+        updateMainSearchResults()
+    }
+
+    fun updateMainSearchStartDate(date: LocalDate) {
+        _uiState.update { state ->
+            val newEndDate = if (state.mainSearchEndDate.isBefore(date)) date.plusYears(1) else state.mainSearchEndDate
+            state.copy(mainSearchStartDate = date, mainSearchEndDate = newEndDate, mainSearchTimeShortcut = null)
+        }
+        updateMainSearchResults()
+    }
+
+    fun updateMainSearchEndDate(date: LocalDate) {
+        _uiState.update { it.copy(mainSearchEndDate = date, mainSearchTimeShortcut = null) }
+        updateMainSearchResults()
+    }
+
+    fun toggleMainSearchFilter(filter: String) {
+        _uiState.update { state ->
+            val current = state.mainSearchFilters
+            val newFilters = if (current.contains(filter)) {
+                current - filter // Permite desactivar ambos (v3.2.14.3)
+            } else {
+                current + filter
+            }
+            state.copy(mainSearchFilters = newFilters)
+        }
+        updateMainSearchResults()
+    }
+
+    fun applyMainSearchTimeShortcut(shortcut: String) {
+        _uiState.update { state ->
+            // LÓGICA DE TOGGLE: Si ya está activo, lo quitamos pero mantenemos el rango (v3.2.14.1)
+            if (state.mainSearchTimeShortcut == shortcut) {
+                return@update state.copy(mainSearchTimeShortcut = null)
+            }
+
+            val (start, end) = when (shortcut) {
+                "MONTH" -> {
+                    val month = java.time.YearMonth.now()
+                    month.atDay(1) to month.atEndOfMonth()
+                }
+                "YEAR" -> {
+                    val year = java.time.Year.now()
+                    year.atDay(1) to year.atDay(year.length())
+                }
+                else -> state.mainSearchStartDate to state.mainSearchEndDate
+            }
+            state.copy(mainSearchStartDate = start, mainSearchEndDate = end, mainSearchTimeShortcut = shortcut)
+        }
+        updateMainSearchResults()
+    }
+
+    private fun updateMainSearchResults() {
+        val state = _uiState.value
+        
+        // REGLA: No mostrar nada hasta que el usuario escriba
+        if (state.mainSearchQuery.isBlank()) {
+            _uiState.update { it.copy(mainSearchResults = emptyMap()) }
+            return
+        }
+
+        val normalizedQuery = state.mainSearchQuery.unaccent().lowercase()
+        
+        // LÓGICA DE FILTRADO TIPO (v3.2.14.2): Si el set está vacío, incluye ambos.
+        val includeEvents = state.mainSearchFilters.isEmpty() || state.mainSearchFilters.contains("EVENT")
+        val includeNotes = state.mainSearchFilters.isEmpty() || state.mainSearchFilters.contains("NOTE")
+
+        val filteredEvents = if (includeEvents) {
+            state.eventsByDate.values.flatten()
+                .filter { event ->
+                    val inRange = !event.date.isBefore(state.mainSearchStartDate) && !event.date.isAfter(state.mainSearchEndDate)
+                    if (!inRange) return@filter false
+                    normalizedQuery.isBlank() || event.title.unaccent().lowercase().contains(normalizedQuery)
+                }
+                .map { SearchItem.Event(it) }
+        } else emptyList()
+
+        val filteredNotes = if (includeNotes) {
+            state.dailyNotes.values
+                .filter { note ->
+                    val inRange = !note.date.isBefore(state.mainSearchStartDate) && !note.date.isAfter(state.mainSearchEndDate)
+                    if (!inRange) return@filter false
+                    normalizedQuery.isBlank() || note.content.unaccent().lowercase().contains(normalizedQuery)
+                }
+                .map { SearchItem.Note(it) }
+        } else emptyList()
+
+        val sortedResults = (filteredEvents + filteredNotes).groupBy { it.date }.toSortedMap(compareByDescending { it })
+        _uiState.update { it.copy(mainSearchResults = sortedResults) }
     }
 
     private fun updateAgendaSearchResults() {

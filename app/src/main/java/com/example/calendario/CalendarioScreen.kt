@@ -56,9 +56,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
@@ -69,7 +67,6 @@ import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
-enum class SearchScope { MONTH, YEAR, ALL }
 
 
 @Composable
@@ -127,9 +124,6 @@ fun CalendarioScreen(
     var showAllEvents by remember { mutableStateOf(false) }
     val lazyListState = rememberLazyListState()
     var isSearchActive by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
-    var searchScope by remember { mutableStateOf(SearchScope.YEAR) } // Default to YEAR
-    var searchResults by remember { mutableStateOf<Map<LocalDate, List<SearchItem>>>(emptyMap()) }
     var showReadOnlyDialog by remember { mutableStateOf(false) }
     var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
@@ -269,17 +263,6 @@ fun CalendarioScreen(
         }
     }
 
-    val onNoteClickHandler = { note: DailyNote ->
-        val date = note.date
-        val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.from(date)).toInt()
-        scope.launch {
-            monthPagerState.scrollToPage(targetPage)
-            selectedDateForDialog = date
-            showDayEventsDialog = true
-            isSearchActive = false
-        }
-        Unit
-    }
 
     LaunchedEffect(uiState.hasCalendarPermission) {
         if (uiState.hasCalendarPermission) {
@@ -291,52 +274,6 @@ fun CalendarioScreen(
         uiState.importedEvent?.let { event ->
             launchAddEditScreen(event.date, event)
             viewModel.consumeImportedEvent()
-        }
-    }
-
-    LaunchedEffect(searchQuery, searchScope, uiState.eventsByDate, uiState.dailyNotes) {
-        if (searchQuery.isNotBlank()) {
-            delay(300.milliseconds) // Debounce
-            val normalizedQuery = searchQuery.unaccent().lowercase(locale)
-            
-            // 1. Filtrar Eventos
-            val allEvents = uiState.eventsByDate.values.flatten()
-            val filteredEvents = allEvents.filter { it.title.unaccent().lowercase(locale).contains(normalizedQuery) }
-                .filter { event ->
-                    when (searchScope) {
-                        SearchScope.MONTH -> event.date.year == currentMonth.year && event.date.month == currentMonth.month
-                        SearchScope.YEAR -> event.date.year == currentMonth.year
-                        SearchScope.ALL -> true
-                    }
-                }
-                .map { SearchItem.Event(it) }
-
-            // 2. Filtrar Notas
-            val filteredNotes = uiState.dailyNotes.values.filter { it.content.unaccent().lowercase(locale).contains(normalizedQuery) }
-                .filter { note ->
-                    when (searchScope) {
-                        SearchScope.MONTH -> note.date.year == currentMonth.year && note.date.month == currentMonth.month
-                        SearchScope.YEAR -> note.date.year == currentMonth.year
-                        SearchScope.ALL -> true
-                    }
-                }
-                .map { SearchItem.Note(it) }
-
-            // 3. Combinar y Agrupar
-            val combined = (filteredEvents + filteredNotes)
-            val grouped = combined.groupBy {
-                when (searchScope) {
-                    SearchScope.MONTH -> it.date
-                    SearchScope.YEAR -> it.date.withDayOfMonth(1)
-                    SearchScope.ALL -> it.date.withDayOfYear(1)
-                }
-            }.mapValues { (_, items) ->
-                items.sortedWith(compareBy({ it.date }, { (it as? SearchItem.Event)?.festivo?.startTime }))
-            }
-
-            searchResults = grouped.toSortedMap(compareByDescending { it })
-        } else {
-            searchResults = emptyMap()
         }
     }
 
@@ -634,18 +571,20 @@ fun CalendarioScreen(
 
     if (isSearchActive) {
         SearchScreen(
-            searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it },
-            searchScope = searchScope,
-            onSearchScopeChange = { searchScope = it },
-            searchResults = searchResults,
-            onClose = {
-                isSearchActive = false
-                searchQuery = ""
-                searchResults = emptyMap()
-            },
-            onEventClick = onEventClickHandler,
-            onNoteClick = onNoteClickHandler,
+            searchQuery = uiState.mainSearchQuery,
+            onSearchQueryChange = viewModel::updateMainSearchQuery,
+            startDate = uiState.mainSearchStartDate,
+            onStartDateChange = viewModel::updateMainSearchStartDate,
+            endDate = uiState.mainSearchEndDate,
+            onEndDateChange = viewModel::updateMainSearchEndDate,
+            activeFilters = uiState.mainSearchFilters,
+            onToggleFilter = viewModel::toggleMainSearchFilter,
+            timeShortcut = uiState.mainSearchTimeShortcut,
+            onApplyShortcut = viewModel::applyMainSearchTimeShortcut,
+            searchResults = uiState.mainSearchResults,
+            onClose = { isSearchActive = false },
+            onEventClick = { clicked -> eventToEdit = clicked; isSearchActive = false },
+            onNoteClick = { note -> selectedDateForDialog = LocalDate.parse(note.dateStr); showDayEventsDialog = true; isSearchActive = false },
             onDeleteNote = viewModel::deleteDailyNote,
             onOpenHolidayManager = { clicked ->
                 holidayForManager = clicked
