@@ -1,3 +1,4 @@
+2026-09-19 - v3.2.15 Búsqueda bidireccional centrada en el presente: auto-scroll al "Hoy", filtros de tipo flexibles e iconografía de precisión.
 2026-09-19 - v3.2.14 Nueva pantalla de Búsqueda unificada: filtros por chips outlined, rango de fechas dinámico e iconografía renovada.
 2026-09-19 - v3.2.13.1 Limpieza de márgenes en Diálogos y Visibilidad completa
 2026-09-18 - v3.2.13 Refactorización Maestra de AppDialog

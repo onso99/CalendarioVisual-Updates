@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -84,24 +83,31 @@ fun AgendaExchangeScreen(
         scrollable = false,
         topBarExtension = {
             if (isSelectionMode) {
-                // Barra de selección alojada en el hueco reservado (v3.2.12.1)
+                // Contador y aspa prÃ³ximos y centrados (v3.2.15.2)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                        .background(CalendarioTheme.colors.cabecera.copy(alpha = 0.12f))
-                        .padding(horizontal = 16.dp),
+                        .fillMaxHeight(),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = stringResource(id = R.string.selected_count_short, selectedItems.size),
                         color = CalendarioTheme.colors.cabecera,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
+                        fontWeight = FontWeight.Bold
                     )
-                    IconButton(onClick = { selectedItems = emptySet() }, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Close, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { selectedItems = emptySet() }, 
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close, 
+                            contentDescription = null, 
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), 
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
             }

@@ -3,7 +3,6 @@ package com.example.calendario
 import android.content.ContentUris
 import android.provider.CalendarContract
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -134,23 +133,31 @@ fun SearchScreen(
         scrollable = false, 
         topBarExtension = {
             if (isSelectionMode) {
+                // Contador y aspa próximos y centrados (v3.2.15.2)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                        .background(CalendarioTheme.colors.cabecera.copy(alpha = 0.12f))
-                        .padding(horizontal = 16.dp),
+                        .fillMaxHeight(),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = stringResource(id = R.string.selected_count_short, selectedItems.size),
                         color = CalendarioTheme.colors.cabecera,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
+                        fontWeight = FontWeight.Bold
                     )
-                    IconButton(onClick = { selectedItems = emptySet() }, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Close, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { selectedItems = emptySet() }, 
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close, 
+                            contentDescription = null, 
+                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), 
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
             }
@@ -248,10 +255,10 @@ fun SearchScreen(
                     icon = if (allVisibleSelected) Icons.Default.LibraryAddCheck else Icons.Default.SelectAll,
                     isSelected = allVisibleSelected,
                     onClick = {
-                        if (allVisibleSelected) {
-                            selectedItems = selectedItems - visibleItems
+                        selectedItems = if (allVisibleSelected) {
+                            selectedItems - visibleItems
                         } else {
-                            selectedItems = selectedItems + visibleItems
+                            selectedItems + visibleItems
                         }
                     }
                 )
