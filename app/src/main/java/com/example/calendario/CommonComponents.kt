@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -60,11 +61,13 @@ fun AppScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
+    selectionCount: Int = 0, // NUEVO (v3.3.02)
+    onClearSelection: () -> Unit = {}, // NUEVO (v3.3.02)
     bannerMessage: String? = null,
     isBannerVisible: Boolean = false,
     bannerIcon: ImageVector? = null,
     bannerIconColor: Color = Color.Unspecified,
-    topBarExtension: @Composable (() -> Unit)? = null, // NUEVO: Para alojar la barra de selección (v3.2.12.1)
+    topBarExtension: @Composable (() -> Unit)? = null, 
     scrollable: Boolean = true,
     content: @Composable (ColumnScope) -> Unit
 ) {
@@ -73,11 +76,36 @@ fun AppScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    Text(
-                        text = title, 
-                        fontWeight = FontWeight.Bold, 
-                        fontSize = 20.sp
-                    ) 
+                    if (selectionCount > 0) {
+                        // MODO SELECCIÓN (v3.3.02): Contador y aspa próximos y centrados
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.selected_count_short, selectionCount),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            IconButton(onClick = onClearSelection, modifier = Modifier.size(24.dp)) {
+                                Icon(
+                                    imageVector = Icons.Default.Close, 
+                                    contentDescription = null, 
+                                    tint = Color.White.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        // MODO REPOSO
+                        Text(
+                            text = title, 
+                            fontWeight = FontWeight.Bold, 
+                            fontSize = 20.sp
+                        ) 
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {

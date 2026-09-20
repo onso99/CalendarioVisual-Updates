@@ -15,6 +15,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.AssistantPhoto
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -131,41 +134,25 @@ fun SearchScreen(
         title = stringResource(id = R.string.search),
         onBackClick = onClose,
         scrollable = false, 
-        topBarExtension = {
-            if (isSelectionMode) {
-                // Contador y aspa próximos y centrados (v3.2.15.2)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.selected_count_short, selectedItems.size),
-                        color = CalendarioTheme.colors.cabecera,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    IconButton(
-                        onClick = { selectedItems = emptySet() }, 
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close, 
-                            contentDescription = null, 
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f), 
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-            }
-        },
+        selectionCount = selectedItems.size, // INTEGRACIÓN MAESTRA (v3.3.02)
+        onClearSelection = { selectedItems = emptySet() },
         actions = {
             if (isSelectionMode) {
+                // ACCIONES DE SELECCIÓN (v3.3.02)
+                IconButton(onClick = { 
+                    val events = selectedItems.filterIsInstance<SearchItem.Event>().map { it.festivo }
+                    val notes = selectedItems.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
+                    CvoHelper.shareAgendaPackage(context, events, notes)
+                }) {
+                    Icon(Icons.Outlined.Share, null, tint = Color.White)
+                }
+                IconButton(onClick = { 
+                    // TODO: Implementar lógica de guardado local unificada
+                }) {
+                    Icon(Icons.Outlined.Save, null, tint = Color.White)
+                }
                 IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                    Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
+                    Icon(Icons.Outlined.Delete, stringResource(id = R.string.delete), tint = Color.White)
                 }
             }
         }
