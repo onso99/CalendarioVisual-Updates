@@ -572,23 +572,30 @@ fun CalendarioScreen(
     if (isSearchActive) {
         SearchScreen(
             searchQuery = uiState.mainSearchQuery,
-            onSearchQueryChange = viewModel::updateMainSearchQuery,
+            onSearchQueryChange = viewModel::updateSearchQuery,
             startDate = uiState.mainSearchStartDate,
-            onStartDateChange = viewModel::updateMainSearchStartDate,
+            onStartDateChange = viewModel::updateSearchStartDate,
             endDate = uiState.mainSearchEndDate,
-            onEndDateChange = viewModel::updateMainSearchEndDate,
+            onEndDateChange = viewModel::updateSearchEndDate,
             activeFilters = uiState.mainSearchFilters,
-            onToggleFilter = viewModel::toggleMainSearchFilter,
+            onToggleFilter = viewModel::toggleSearchFilter,
             timeShortcut = uiState.mainSearchTimeShortcut,
-            onApplyShortcut = viewModel::applyMainSearchTimeShortcut,
+            onApplyShortcut = viewModel::applySearchTimeShortcut,
             searchResults = uiState.mainSearchResults,
             onClose = { isSearchActive = false },
-            onEventClick = { clicked -> eventToEdit = clicked; isSearchActive = false },
-            onNoteClick = { note -> selectedDateForDialog = LocalDate.parse(note.dateStr); showDayEventsDialog = true; isSearchActive = false },
+            onEventClick = { clicked -> 
+                isSearchActive = false
+                onEventClickHandler(clicked)
+            },
+            onNoteClick = { note -> 
+                selectedDateForDialog = LocalDate.parse(note.dateStr)
+                showDayEventsDialog = true
+                isSearchActive = false 
+            },
             onDeleteNote = viewModel::deleteDailyNote,
             onOpenHolidayManager = { clicked ->
-                holidayForManager = clicked
-                showHolidayManagerScreen = true
+                isSearchActive = false
+                onEventClickHandler(clicked)
             },
             onRefresh = { viewModel.refreshData() },
             availableCalendars = uiState.availableCalendars

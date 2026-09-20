@@ -47,8 +47,8 @@ data class CalendarioUiState(
     val mainSearchQuery: String = "",
     val mainSearchStartDate: LocalDate = LocalDate.now().withDayOfMonth(1),
     val mainSearchEndDate: LocalDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()),
-    val mainSearchFilters: Set<String> = emptySet(), // Ninguno seleccionado por defecto (v3.2.14.2)
-    val mainSearchTimeShortcut: String? = "MONTH", 
+    val mainSearchFilters: Set<String> = setOf("EVENT", "NOTE"), // Restaurado a seleccionados por defecto (v3.2.16.2)
+    val mainSearchTimeShortcut: String? = "MONTH", // Mes por defecto (v3.2.14.1)
     val mainSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap()
 )
 
@@ -122,12 +122,12 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     // --- ACCIONES BÚSQUEDA UNIFICADA (v3.2.14) ---
-    fun updateMainSearchQuery(query: String) {
+    fun updateSearchQuery(query: String) {
         _uiState.update { it.copy(mainSearchQuery = query) }
         updateMainSearchResults()
     }
 
-    fun updateMainSearchStartDate(date: LocalDate) {
+    fun updateSearchStartDate(date: LocalDate) {
         _uiState.update { state ->
             val newEndDate = if (state.mainSearchEndDate.isBefore(date)) date.plusYears(1) else state.mainSearchEndDate
             state.copy(mainSearchStartDate = date, mainSearchEndDate = newEndDate, mainSearchTimeShortcut = null)
@@ -135,16 +135,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         updateMainSearchResults()
     }
 
-    fun updateMainSearchEndDate(date: LocalDate) {
+    fun updateSearchEndDate(date: LocalDate) {
         _uiState.update { it.copy(mainSearchEndDate = date, mainSearchTimeShortcut = null) }
         updateMainSearchResults()
     }
 
-    fun toggleMainSearchFilter(filter: String) {
+    fun toggleSearchFilter(filter: String) {
         _uiState.update { state ->
             val current = state.mainSearchFilters
             val newFilters = if (current.contains(filter)) {
-                current - filter // Permite desactivar ambos (v3.2.14.3)
+                current - filter 
             } else {
                 current + filter
             }
@@ -153,11 +153,16 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         updateMainSearchResults()
     }
 
-    fun applyMainSearchTimeShortcut(shortcut: String) {
+    fun applySearchTimeShortcut(shortcut: String) {
         _uiState.update { state ->
-            // LÓGICA DE TOGGLE: Si ya está activo, lo quitamos pero mantenemos el rango (v3.2.14.1)
+            // LÓGICA DE TOGGLE: Si ya está activo, lo quitamos
             if (state.mainSearchTimeShortcut == shortcut) {
                 return@update state.copy(mainSearchTimeShortcut = null)
+            }
+
+            // Mantenemos las fechas actuales si el nuevo modo es ALWAYS (v3.2.14.5)
+            if (shortcut == "ALWAYS") {
+                return@update state.copy(mainSearchTimeShortcut = "ALWAYS")
             }
 
             val (start, end) = when (shortcut) {
@@ -187,31 +192,39 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
         val normalizedQuery = state.mainSearchQuery.unaccent().lowercase()
         
-        // LÓGICA DE FILTRADO TIPO (v3.2.14.2): Si el set está vacío, incluye ambos.
-        val includeEvents = state.mainSearchFilters.isEmpty() || state.mainSearchFilters.contains("EVENT")
-        val includeNotes = state.mainSearchFilters.isEmpty() || state.mainSearchFilters.contains("NOTE")
+        // LÓGICA SIEMPRE (v3.2.14.5): Si está activo, ignoramos el rango visual
+        val isAlways = state.mainSearchTimeShortcut == "ALWAYS"
+        val effectiveStart = if (isAlways) LocalDate.of(1924, 1, 1) else state.mainSearchStartDate
+        val effectiveEnd = if (isAlways) LocalDate.of(2124, 12, 31) else state.mainSearchEndDate
 
-        val filteredEvents = if (includeEvents) {
+        // FILTRADO ESTRICTO (v3.2.16.2): Si no hay filtros, no mostramos nada (pero por defecto vienen ambos)
+        val filteredEvents = if (state.mainSearchFilters.contains("EVENT")) {
             state.eventsByDate.values.flatten()
                 .filter { event ->
-                    val inRange = !event.date.isBefore(state.mainSearchStartDate) && !event.date.isAfter(state.mainSearchEndDate)
+                    val inRange = !event.date.isBefore(effectiveStart) && !event.date.isAfter(effectiveEnd)
                     if (!inRange) return@filter false
                     normalizedQuery.isBlank() || event.title.unaccent().lowercase().contains(normalizedQuery)
                 }
                 .map { SearchItem.Event(it) }
         } else emptyList()
 
-        val filteredNotes = if (includeNotes) {
+        val filteredNotes = if (state.mainSearchFilters.contains("NOTE")) {
             state.dailyNotes.values
                 .filter { note ->
-                    val inRange = !note.date.isBefore(state.mainSearchStartDate) && !note.date.isAfter(state.mainSearchEndDate)
+                    val inRange = !note.date.isBefore(effectiveStart) && !note.date.isAfter(effectiveEnd)
                     if (!inRange) return@filter false
                     normalizedQuery.isBlank() || note.content.unaccent().lowercase().contains(normalizedQuery)
                 }
                 .map { SearchItem.Note(it) }
         } else emptyList()
 
-        val sortedResults = (filteredEvents + filteredNotes).groupBy { it.date }.toSortedMap(compareByDescending { it })
+        val sortedResults = (filteredEvents + filteredNotes)
+            .groupBy { it.date }
+            .mapValues { (_, items) ->
+                // Orden interno del día: Hora ➔ Título (v3.2.14.6)
+                items.sortedWith(compareBy({ (it as? SearchItem.Event)?.festivo?.startTime }, { (it as? SearchItem.Event)?.festivo?.title }))
+            }
+            .toSortedMap(compareByDescending { it })
         _uiState.update { it.copy(mainSearchResults = sortedResults) }
     }
 
