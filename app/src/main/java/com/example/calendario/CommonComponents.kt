@@ -8,13 +8,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +29,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,25 +39,16 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
-
+import java.time.LocalDate
 
 enum class SearchScope { MONTH, YEAR }
-
-/**
- * Librería de Componentes Comunes (Fase 4 - Optimización v3.1.34)
- * Centralización de piezas visuales repetidas para asegurar consistencia.
- */
 
 object AppLayout {
     val BannerHeight = 32.dp
     val ScreenHorizontalPadding = 16.dp
-    val TopToSectionPadding = 0.dp // Espacio reservado para el banner informativo (v3.2.06)
+    val TopToSectionPadding = 0.dp 
 }
 
-/**
- * Componente Maestro para todas las pantallas de la App (v3.2.12)
- * Unifica la cabecera, fondo, navegación y sistema de banners.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScreen(
@@ -61,8 +56,8 @@ fun AppScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
-    selectionCount: Int = 0, // NUEVO (v3.3.02)
-    onClearSelection: () -> Unit = {}, // NUEVO (v3.3.02)
+    selectionCount: Int = 0, 
+    onClearSelection: () -> Unit = {}, 
     bannerMessage: String? = null,
     isBannerVisible: Boolean = false,
     bannerIcon: ImageVector? = null,
@@ -77,7 +72,6 @@ fun AppScreen(
             TopAppBar(
                 title = { 
                     if (selectionCount > 0) {
-                        // MODO SELECCIÓN (v3.3.02): Contador y aspa próximos y centrados
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -99,7 +93,6 @@ fun AppScreen(
                             }
                         }
                     } else {
-                        // MODO REPOSO
                         Text(
                             text = title, 
                             fontWeight = FontWeight.Bold, 
@@ -128,7 +121,6 @@ fun AppScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // ZONA RESERVADA (32dp - LÍNEA ROJA)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,7 +139,6 @@ fun AppScreen(
                 }
             }
 
-            // Contenedor de contenido con margen superior normalizado (v3.2.12.1)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -160,9 +151,6 @@ fun AppScreen(
     }
 }
 
-/**
- * Banner informativo común para la parte superior de las pantallas (v3.2.06)
- */
 @Composable
 fun InfoBanner(
     message: String?,
@@ -171,7 +159,7 @@ fun InfoBanner(
     icon: ImageVector? = null,
     iconColor: Color = Color.Unspecified,
     textAlign: TextAlign = TextAlign.Center,
-    horizontalPadding: androidx.compose.ui.unit.Dp = 16.dp // NUEVO: Padding configurable (v3.2.13.2)
+    horizontalPadding: androidx.compose.ui.unit.Dp = 16.dp 
 ) {
     val messageAlpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
@@ -218,10 +206,6 @@ fun InfoBanner(
     }
 }
 
-/**
- * Componente Maestro para todos los diálogos de la App (v3.2.11)
- * Asegura coherencia visual en títulos, fondos y espaciados.
- */
 @Composable
 fun AppDialog(
     onDismissRequest: () -> Unit,
@@ -234,7 +218,7 @@ fun AppDialog(
     isBannerVisible: Boolean = false,
     bannerIcon: ImageVector? = null,
     bannerIconColor: Color = Color.Unspecified,
-    bannerTextAlign: TextAlign = TextAlign.Center, // NUEVO (v3.2.13.1)
+    bannerTextAlign: TextAlign = TextAlign.Center, 
     content: @Composable () -> Unit
 ) {
     AlertDialog(
@@ -246,12 +230,10 @@ fun AppDialog(
         dismissButton = {
             if (dismissButton != null) dismissButton()
         },
-        // ANULAMOS SLOTS DEL SISTEMA PARA CONTROLAR EL PADDING (v3.2.12.8)
         title = null,
         icon = null,
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // 1. CABECERA PERSONALIZADA (Sin paddings fantasma)
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 0.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -272,7 +254,6 @@ fun AppDialog(
                     }
                 }
 
-                // 2. ZONA RESERVADA (32dp - LÍNEA ROJA)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -285,11 +266,10 @@ fun AppDialog(
                         icon = bannerIcon,
                         iconColor = bannerIconColor,
                         textAlign = bannerTextAlign,
-                        horizontalPadding = 0.dp // ELIMINAMOS PADDING FANTASMA EN DIÁLOGOS (v3.2.13.2)
+                        horizontalPadding = 0.dp 
                     )
                 }
 
-                // 3. CONTENIDO CON COMPENSACIÃ“N VISUAL
                 Box(modifier = Modifier.fillMaxWidth().offset(y = (-8).dp)) {
                     content()
                 }
@@ -410,7 +390,7 @@ fun AdaptiveDialogButtons(
 fun SectionTitle(
     text: String, 
     modifier: Modifier = Modifier, 
-    topPadding: androidx.compose.ui.unit.Dp = 32.dp, // AUMENTADO A 32dp PARA UNIFORMIDAD (v3.2.12.4)
+    topPadding: androidx.compose.ui.unit.Dp = 32.dp, 
     isFirst: Boolean = false 
 ) {
     val titleColor = lerp(
@@ -423,17 +403,180 @@ fun SectionTitle(
         style = MaterialTheme.typography.titleMedium,
         modifier = modifier
             .padding(bottom = 2.dp, top = if (isFirst) 0.dp else topPadding)
-            .offset(y = (-8).dp), // COMPENSACIÃ“N VISUAL AUMENTADA PARA TODAS LAS SECCIONES
+            .offset(y = (-8).dp), 
         fontWeight = FontWeight.Bold,
         color = titleColor,
     )
 }
 
 @Composable
+fun AboutDialog(onDismiss: () -> Unit) {
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(id = R.string.about),
+        confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss) }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally, 
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier.size(64.dp).padding(bottom = 4.dp), 
+                tint = Color.Unspecified
+            )
+            Text(
+                stringResource(id = R.string.app_name), 
+                fontWeight = FontWeight.Bold, 
+                fontSize = 15.sp, 
+                color = CalendarioTheme.colors.textSystem
+            )
+            Text(
+                "Versión 3.3.03", 
+                fontSize = 12.sp, 
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+            )
+            Text(
+                "© 2026 Calendario", 
+                fontSize = 10.sp, 
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                modifier = Modifier.padding(top = 2.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun CleaningAssistantDialog(
+    uiState: CalendarioUiState,
+    isScanning: Boolean,
+    statusMessage: String?,
+    onScan: () -> Unit,
+    onDelete: (SearchItem) -> Unit,
+    onDeleteAll: () -> Unit,
+    onNavigateToDate: (LocalDate) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(id = R.string.maintenance_section),
+        confirmButton = {
+            if (uiState.cleaningCandidates.isNotEmpty()) {
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.delete_all_events_option).substringBefore(" "),
+                    color = Color.Red,
+                    onClick = onDeleteAll
+                )
+            }
+        },
+        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
+    ) {
+        Column(modifier = Modifier.height(180.dp)) { // ALTURA COMPACTA Y FIJA (v3.3.03.6)
+            // 1. FILA TITULAR FIJA
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.data_cleaning_label),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                    modifier = Modifier.weight(1f)
+                )
+                
+                Button(
+                    onClick = onScan,
+                    enabled = !isScanning,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.12f),
+                        contentColor = CalendarioTheme.colors.cabecera
+                    ),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                    modifier = Modifier.height(32.dp)
+                ) {
+                    Text(stringResource(id = R.string.scan_label), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            // 2. FILA DE MENSAJES DE ACCIÃ“N (Independiente v3.3.03.6)
+            Box(modifier = Modifier.fillMaxWidth().height(20.dp), contentAlignment = Alignment.CenterStart) {
+                statusMessage?.let {
+                    Text(text = it, fontSize = 11.sp, color = CalendarioTheme.colors.cabecera, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            // 3. ÁREA DE RESULTADOS
+            if (uiState.cleaningCandidates.isEmpty() && !isScanning) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+                    Text(
+                        stringResource(id = R.string.no_cleaning_results), 
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        textAlign = TextAlign.Start
+                    )
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(uiState.cleaningCandidates) { item ->
+                        InternalCleaningCandidateRow(
+                            item = item,
+                            onClick = { onNavigateToDate(item.date) },
+                            onDelete = { onDelete(item) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InternalCleaningCandidateRow(
+    item: SearchItem,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    val fmt = remember { AppFormats.dayDateAbbr(locale) }
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = if (item is SearchItem.Event) R.drawable.ic_ghost_24 else R.drawable.ic_all_day_24),
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            val title = when (item) {
+                is SearchItem.Event -> item.festivo.title.ifBlank { stringResource(id = R.string.no_title) }
+                is SearchItem.Note -> stringResource(id = R.string.note_label)
+            }
+            Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(item.date.format(fmt), fontSize = 11.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
+        }
+        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+            Icon(Icons.Default.Delete, null, tint = Color.Red.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+        }
+    }
+}
+
+@Composable
 fun WidgetSectionTitle() {
     SectionTitle(
         text = stringResource(id = R.string.widget),
-        topPadding = 32.dp // SINCRONIZADO CON LÃNEA ROJA
+        topPadding = 32.dp 
     )
 }
 
@@ -494,7 +637,7 @@ fun AppActionChip(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(10.dp),
     containerColor: Color = Color.Transparent,
-    icon: Any? = null, // Puede ser ImageVector o Painter
+    icon: Any? = null, 
     isIconRotating: Boolean = false,
     reverseRotation: Boolean = false
 ) {
@@ -509,7 +652,6 @@ fun AppActionChip(
 
     val borderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
 
-    // Animación de rotación infinita
     val infiniteTransition = rememberInfiniteTransition(label = "rotation")
     val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,

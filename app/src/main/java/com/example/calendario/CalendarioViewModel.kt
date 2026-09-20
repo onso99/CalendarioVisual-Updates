@@ -35,13 +35,6 @@ data class CalendarioUiState(
     // --- Estado para Importación de Festivos (.cvo) v3.1.34 ---
     val holidayImportItems: List<HolidayAdjustment> = emptyList(),
     val showHolidayImportPreview: Boolean = false,
-    
-    // --- ESTADOS FASE 3: Filtros de Agenda Compartida PERSISTENTES ---
-    val agendaSearchQuery: String = "",
-    val agendaStartDate: LocalDate = LocalDate.now(),
-    val agendaEndDate: LocalDate = LocalDate.now().plusMonths(1),
-    val agendaActiveFilters: Set<String> = emptySet(),
-    val agendaSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap(),
 
     // --- NUEVOS ESTADOS BÚSQUEDA UNIFICADA (v3.2.14) ---
     val mainSearchQuery: String = "",
@@ -76,7 +69,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     dailyNotes = notes
                 ) }
                 updateCleaningCandidates()
-                updateAgendaSearchResults() // Sincronizar resultados de agenda
                 updateMainSearchResults()   // Sincronizar resultados de búsqueda principal (v3.2.14)
                 
                 // Notificar a los widgets
@@ -91,34 +83,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
         loadAllData()
-    }
-
-    // --- ACCIONES AGENDA COMPARTIDA (FASE 3) ---
-    fun updateAgendaSearchQuery(query: String) {
-        _uiState.update { it.copy(agendaSearchQuery = query) }
-        updateAgendaSearchResults()
-    }
-
-    fun updateAgendaStartDate(date: LocalDate) {
-        _uiState.update { state ->
-            // REGLA FASE 3 (v3.1.34): Si el inicio supera al fin, movemos el fin 1 mes adelante (como al inicio)
-            val newEndDate = if (state.agendaEndDate.isBefore(date)) date.plusMonths(1) else state.agendaEndDate
-            state.copy(agendaStartDate = date, agendaEndDate = newEndDate)
-        }
-        updateAgendaSearchResults()
-    }
-
-    fun updateAgendaEndDate(date: LocalDate) {
-        _uiState.update { it.copy(agendaEndDate = date) }
-        updateAgendaSearchResults()
-    }
-
-    fun toggleAgendaFilter(filter: String) {
-        _uiState.update { state ->
-            val newFilters = if (state.agendaActiveFilters.contains(filter)) state.agendaActiveFilters - filter else state.agendaActiveFilters + filter
-            state.copy(agendaActiveFilters = newFilters)
-        }
-        updateAgendaSearchResults()
     }
 
     // --- ACCIONES BÚSQUEDA UNIFICADA (v3.2.14) ---
@@ -226,47 +190,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             }
             .toSortedMap(compareByDescending { it })
         _uiState.update { it.copy(mainSearchResults = sortedResults) }
-    }
-
-    private fun updateAgendaSearchResults() {
-        val state = _uiState.value
-        val context = getApplication<Application>()
-        
-        val normalizedQuery = state.agendaSearchQuery.unaccent().lowercase()
-        val event1Kw = SettingsManager.getEvent1Keyword(context).unaccent().lowercase()
-        val event2Kw = SettingsManager.getEvent2Keyword(context).unaccent().lowercase()
-
-        val filteredEvents = state.eventsByDate.values.flatten()
-            .filter { event ->
-                val inRange = !event.date.isBefore(state.agendaStartDate) && !event.date.isAfter(state.agendaEndDate)
-                if (!inRange) return@filter false
-                val matchesQuery = normalizedQuery.isBlank() || event.title.unaccent().lowercase().contains(normalizedQuery)
-                if (!matchesQuery) return@filter false
-                if (state.agendaActiveFilters.isNotEmpty()) {
-                    val normalizedTitle = event.title.unaccent().lowercase()
-                    val isE1 = event1Kw.isNotBlank() && normalizedTitle.contains(event1Kw)
-                    val isE2 = event2Kw.isNotBlank() && normalizedTitle.contains(event2Kw)
-                    return@filter (state.agendaActiveFilters.contains("EVENT1") && isE1) ||
-                                 (state.agendaActiveFilters.contains("EVENT2") && isE2) ||
-                                 (state.agendaActiveFilters.contains("BIRTHDAY") && event.isBirthday)
-                }
-                true
-            }
-            .map { SearchItem.Event(it) }
-
-        val filteredNotes = state.dailyNotes.values
-            .filter { note ->
-                val inRange = !note.date.isBefore(state.agendaStartDate) && !note.date.isAfter(state.agendaEndDate)
-                if (!inRange) return@filter false
-                val matchesQuery = normalizedQuery.isBlank() || note.content.unaccent().lowercase().contains(normalizedQuery)
-                if (!matchesQuery) return@filter false
-                if (state.agendaActiveFilters.isNotEmpty() && !state.agendaActiveFilters.contains("NOTE")) return@filter false
-                true
-            }
-            .map { SearchItem.Note(it) }
-
-        val sortedResults = (filteredEvents + filteredNotes).groupBy { it.date }.toSortedMap(compareByDescending { it })
-        _uiState.update { it.copy(agendaSearchResults = sortedResults) }
     }
 
     fun onPermissionResult(isGranted: Boolean) {
@@ -577,52 +500,56 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                     val json = org.json.JSONObject(content)
                     val tipo = json.optString("tipo")
                     
-                    if (tipo == "CVO_AGENDA") {
-                        isAgenda = true
-                        // MODO AGENDA: Cargar datos (Centralizado v3.1.34)
-                        val eventsArray = json.optJSONArray("eventos")
-                        val notesArray = json.optJSONArray("notas")
-                        
-                        val importedEvents = mutableListOf<Festivo>()
-                        if (eventsArray != null) {
-                            for (i in 0 until eventsArray.length()) {
+                    when (tipo) {
+                        "CVO_AGENDA" -> {
+                            isAgenda = true
+                            // MODO AGENDA: Cargar datos (Centralizado v3.1.34)
+                            val eventsArray = json.optJSONArray("eventos")
+                            val notesArray = json.optJSONArray("notas")
+                            
+                            val importedEvents = mutableListOf<Festivo>()
+                            if (eventsArray != null) {
+                                for (i in 0 until eventsArray.length()) {
+                                    try {
+                                        importedEvents.add(Festivo.fromJson(eventsArray.getJSONObject(i)))
+                                    } catch (_: Exception) {}
+                                }
+                            }
+
+                            val importedNotes = mutableListOf<DailyNote>()
+                            if (notesArray != null) {
+                                for (i in 0 until notesArray.length()) {
+                                    try {
+                                        importedNotes.add(DailyNote.fromJson(notesArray.getJSONObject(i)))
+                                    } catch (_: Exception) {}
+                                }
+                            }
+
+                            _uiState.update { it.copy(
+                                agendaImportEvents = importedEvents,
+                                agendaImportNotes = importedNotes,
+                                showAgendaImportPreview = autoShowAgendaPreview // Activamos solo si se solicita (v3.1.34)
+                            ) }
+                            true
+                        }
+                        "CVO_HOLIDAYS" -> {
+                            // MODO FESTIVOS: Preparar previsualización (Centralizado v3.1.34)
+                            val dataArray = json.getJSONArray("ajustes")
+                            val imported = mutableListOf<HolidayAdjustment>()
+                            for (i in 0 until dataArray.length()) {
                                 try {
-                                    importedEvents.add(Festivo.fromJson(eventsArray.getJSONObject(i)))
+                                    imported.add(HolidayAdjustment.fromJson(dataArray.getJSONObject(i)))
                                 } catch (_: Exception) {}
                             }
-                        }
 
-                        val importedNotes = mutableListOf<DailyNote>()
-                        if (notesArray != null) {
-                            for (i in 0 until notesArray.length()) {
-                                try {
-                                    importedNotes.add(DailyNote.fromJson(notesArray.getJSONObject(i)))
-                                } catch (_: Exception) {}
-                            }
+                            _uiState.update { it.copy(
+                                holidayImportItems = imported,
+                                showHolidayImportPreview = true
+                            ) }
+                            true
                         }
-
-                        _uiState.update { it.copy(
-                            agendaImportEvents = importedEvents,
-                            agendaImportNotes = importedNotes,
-                            showAgendaImportPreview = autoShowAgendaPreview // Activamos solo si se solicita (v3.1.34)
-                        ) }
-                        return@withContext true
-                    } else if (tipo == "CVO_HOLIDAYS") {
-                        // MODO FESTIVOS: Preparar previsualización (Centralizado v3.1.34)
-                        val dataArray = json.getJSONArray("ajustes")
-                        val imported = mutableListOf<HolidayAdjustment>()
-                        for (i in 0 until dataArray.length()) {
-                            try {
-                                imported.add(HolidayAdjustment.fromJson(dataArray.getJSONObject(i)))
-                            } catch (_: Exception) {}
-                        }
-
-                        _uiState.update { it.copy(
-                            holidayImportItems = imported,
-                            showHolidayImportPreview = true
-                        ) }
-                        return@withContext true
-                    } else false
+                        else -> false
+                    }
                 } catch (e: Exception) {
                     Log.e("CalendarioVM", "Error procesando CVO externo: ${e.message}")
                     false
@@ -675,9 +602,11 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                         if (!currentAdns.contains(targetAdn)) {
                             // Reconstruimos fechas reales (sin repetición)
                             val startDT = if (event.startTime != null) java.time.LocalDateTime.of(event.date, event.startTime) else event.date.atStartOfDay()
-                            val endDT = if (event.endTime != null) java.time.LocalDateTime.of(event.date, event.endTime) 
-                                       else if (event.isLongPeriod) event.date.plusDays(1).atStartOfDay() 
-                                       else startDT.plusMinutes(30)
+                            val endDT = when {
+                                event.endTime != null -> java.time.LocalDateTime.of(event.date, event.endTime)
+                                event.isLongPeriod -> event.date.plusDays(1).atStartOfDay()
+                                else -> startDT.plusMinutes(30)
+                            }
 
                             createEvent(
                                 context = context,

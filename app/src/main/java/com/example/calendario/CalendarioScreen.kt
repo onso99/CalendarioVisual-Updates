@@ -57,6 +57,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.calendario.ui.theme.CalendarioTheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
@@ -65,6 +66,7 @@ import java.time.Year
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class CalendarViewMode { MONTHLY, YEARLY }
 
@@ -135,7 +137,33 @@ fun CalendarioScreen(
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
-    var showAgendaExchangeScreen by remember { mutableStateOf(false) }
+    
+    var showMenu3Puntos by remember { mutableStateOf(false) } 
+    var showAboutDialog by remember { mutableStateOf(false) } 
+    var showCleaningDialog by remember { mutableStateOf(false) } 
+    
+    var isScanningCleaning by remember { mutableStateOf(false) }
+    var cleaningStatusMessage by remember { mutableStateOf<String?>(null) }
+    val analyzingDataMsg = stringResource(id = R.string.analyzing_data)
+    val analysisFinishedMsg = stringResource(id = R.string.analysis_finished)
+
+    LaunchedEffect(isScanningCleaning) {
+        if (isScanningCleaning) {
+            cleaningStatusMessage = analyzingDataMsg
+            viewModel.refreshData {
+                isScanningCleaning = false
+                cleaningStatusMessage = analysisFinishedMsg
+            }
+        }
+    }
+
+    LaunchedEffect(cleaningStatusMessage) {
+        if (cleaningStatusMessage == analysisFinishedMsg) {
+            delay(2000.milliseconds)
+            cleaningStatusMessage = null
+        }
+    }
+    
     var itemsToExportLocally by remember { mutableStateOf<Set<SearchItem>>(emptySet()) }
 
     // --- MANEJO DE PANTALLAS (Fase 4 - Optimización) ---
@@ -420,6 +448,27 @@ fun CalendarioScreen(
         )
     }
 
+    if (showAboutDialog) {
+        AboutDialog(onDismiss = { showAboutDialog = false })
+    }
+
+    if (showCleaningDialog) {
+        CleaningAssistantDialog(
+            uiState = uiState,
+            isScanning = isScanningCleaning,
+            statusMessage = cleaningStatusMessage,
+            onScan = { isScanningCleaning = true },
+            onDelete = viewModel::deleteCleaningCandidate,
+            onDeleteAll = viewModel::deleteAllCleaningCandidates,
+            onNavigateToDate = { date ->
+                showCleaningDialog = false
+                val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.from(date)).toInt()
+                scope.launch { monthPagerState.scrollToPage(targetPage) }
+            },
+            onDismiss = { showCleaningDialog = false }
+        )
+    }
+
     if (showHolidayManagerScreen) {
         HolidayManagerScreen(
             onBackPress = { 
@@ -459,41 +508,6 @@ fun CalendarioScreen(
             eventToEdit = eventToEdit,
             initialCalendar = initialCalendar,
             eventsByDate = uiState.eventsByDate
-        )
-        return
-    }
-
-    if (showAgendaExchangeScreen) {
-        AgendaExchangeScreen(
-            searchQuery = uiState.agendaSearchQuery,
-            onSearchQueryChange = viewModel::updateAgendaSearchQuery,
-            startDate = uiState.agendaStartDate,
-            onStartDateChange = viewModel::updateAgendaStartDate,
-            endDate = uiState.agendaEndDate,
-            onEndDateChange = viewModel::updateAgendaEndDate,
-            activeFilters = uiState.agendaActiveFilters,
-            onToggleFilter = viewModel::toggleAgendaFilter,
-            searchResults = uiState.agendaSearchResults,
-            onClose = { showAgendaExchangeScreen = false },
-            onEventClick = { event ->
-                eventForReadOnlyDialog = event
-                showReadOnlyDialog = true
-            },
-            onNoteClick = { note ->
-                selectedDateForDialog = note.date
-                showDayEventsDialog = true
-            },
-            onImportClick = { importCvoLauncher.launch(arrayOf("*/*")) },
-            onExportClick = { selectedSet ->
-                val events = selectedSet.filterIsInstance<SearchItem.Event>().map { it.festivo }
-                val notes = selectedSet.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
-                CvoHelper.shareAgendaPackage(context, events, notes)
-            },
-            onSaveLocalClick = { selectedSet ->
-                itemsToExportLocally = selectedSet
-                exportCvoLauncher.launch("AgendaVisual.cvo")
-            },
-            availableCalendars = uiState.availableCalendars
         )
         return
     }
@@ -596,6 +610,10 @@ fun CalendarioScreen(
             onOpenHolidayManager = { clicked ->
                 isSearchActive = false
                 onEventClickHandler(clicked)
+            },
+            onSaveLocalClick = { selectedSet ->
+                itemsToExportLocally = selectedSet
+                exportCvoLauncher.launch("AgendaVisual.cvo")
             },
             onRefresh = { viewModel.refreshData() },
             availableCalendars = uiState.availableCalendars
@@ -722,18 +740,6 @@ fun CalendarioScreen(
                     )
 
                     // --- SECCIÓN: HERRAMIENTAS (Fase 1.7 - v3.1.06) ---
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(id = R.string.import_agenda_title)) },
-                        selected = showAgendaExchangeScreen,
-                        onClick = {
-                            showAgendaExchangeScreen = true
-                            scope.launch { drawerState.close() }
-                        },
-                        icon = { Icon(Icons.Outlined.Share, null, tint = iconColor) },
-                        colors = drawerItemColors,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-
                     NavigationDrawerItem(
                         label = { Text(stringResource(id = R.string.holiday_manager_title)) },
                         selected = false,
@@ -893,6 +899,45 @@ fun CalendarioScreen(
                                             imageVector = Icons.Default.Search,
                                             contentDescription = stringResource(id = R.string.search)
                                         )
+                                    }
+
+                                    // MENU 3 PUNTOS (v3.3.03.4)
+                                    Box {
+                                        IconButton(onClick = { showMenu3Puntos = true }) {
+                                            Icon(Icons.Default.MoreVert, contentDescription = "Opciones")
+                                        }
+                                        DropdownMenu(
+                                            expanded = showMenu3Puntos,
+                                            onDismissRequest = { showMenu3Puntos = false },
+                                            modifier = Modifier.background(CalendarioTheme.colors.fondoSecciones),
+                                            shape = RoundedCornerShape(16.dp),
+                                            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = (-48).dp)
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text("Importar agenda (.cvo)", color = CalendarioTheme.colors.textSystem) },
+                                                leadingIcon = { Icon(painterResource(id = R.drawable.ic_folder_open_custom), null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                                                onClick = {
+                                                    showMenu3Puntos = false
+                                                    importCvoLauncher.launch(arrayOf("*/*"))
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Optimizar historial", color = CalendarioTheme.colors.textSystem) },
+                                                leadingIcon = { Icon(Icons.Default.CleaningServices, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                                                onClick = {
+                                                    showMenu3Puntos = false
+                                                    showCleaningDialog = true
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Acerca de", color = CalendarioTheme.colors.textSystem) },
+                                                leadingIcon = { Icon(Icons.Default.Info, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                                                onClick = {
+                                                    showMenu3Puntos = false
+                                                    showAboutDialog = true
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }

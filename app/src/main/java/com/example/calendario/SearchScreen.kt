@@ -63,6 +63,7 @@ fun SearchScreen(
     onNoteClick: (DailyNote) -> Unit,
     onDeleteNote: (LocalDate) -> Unit, 
     onOpenHolidayManager: (Festivo) -> Unit, 
+    onSaveLocalClick: (Set<SearchItem>) -> Unit, 
     onRefresh: () -> Unit,
     availableCalendars: List<CalendarInfo>,
 ) {
@@ -79,12 +80,12 @@ fun SearchScreen(
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePickerDialog by remember { mutableStateOf(false) }
 
-    // Reiniciar selecciÃ³n si cambian los criterios
+    // Reiniciar selección si cambian los criterios
     LaunchedEffect(searchQuery, startDate, endDate, activeFilters) {
         selectedItems = emptySet()
     }
     
-    // --- LÃ“GICA DE AUTO-SCROLL AL \"HOY\" (v3.2.14.6) ---
+    // --- LÓGICA DE AUTO-SCROLL AL "HOY" ---
     val today = LocalDate.now()
     LaunchedEffect(searchResults) {
         if (searchResults.isNotEmpty()) {
@@ -134,11 +135,10 @@ fun SearchScreen(
         title = stringResource(id = R.string.search),
         onBackClick = onClose,
         scrollable = false, 
-        selectionCount = selectedItems.size, // INTEGRACIÓN MAESTRA (v3.3.02)
+        selectionCount = selectedItems.size, 
         onClearSelection = { selectedItems = emptySet() },
         actions = {
             if (isSelectionMode) {
-                // ACCIONES DE SELECCIÓN (v3.3.02)
                 IconButton(onClick = { 
                     val events = selectedItems.filterIsInstance<SearchItem.Event>().map { it.festivo }
                     val notes = selectedItems.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
@@ -146,9 +146,7 @@ fun SearchScreen(
                 }) {
                     Icon(Icons.Outlined.Share, null, tint = Color.White)
                 }
-                IconButton(onClick = { 
-                    // TODO: Implementar lógica de guardado local unificada
-                }) {
+                IconButton(onClick = { onSaveLocalClick(selectedItems) }) {
                     Icon(Icons.Outlined.Save, null, tint = Color.White)
                 }
                 IconButton(onClick = { showDeleteConfirmDialog = true }) {
@@ -192,13 +190,12 @@ fun SearchScreen(
                 )
             )
 
-            // 2. Filtros (Chips v3.2.14.8)
+            // 2. Filtros
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // TIPO
                 SearchFilterChip(
                     icon = Icons.Outlined.AssistantPhoto,
                     isSelected = activeFilters.contains("EVENT"),
@@ -214,14 +211,13 @@ fun SearchScreen(
                 HorizontalDivider(modifier = Modifier.width(1.dp).height(24.dp), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
                 Spacer(Modifier.width(4.dp))
 
-                // TIEMPO
                 SearchFilterChip(
-                    painter = painterResource(id = R.drawable.ic_search_month), // NUEVO: Mes (v3.2.14.8)
+                    painter = painterResource(id = R.drawable.ic_search_month), 
                     isSelected = timeShortcut == "MONTH",
                     onClick = { onApplyShortcut("MONTH") }
                 )
                 SearchFilterChip(
-                    painter = painterResource(id = R.drawable.ic_search_year), // NUEVO: Año (v3.2.14.8)
+                    painter = painterResource(id = R.drawable.ic_search_year), 
                     isSelected = timeShortcut == "YEAR",
                     onClick = { onApplyShortcut("YEAR") }
                 )
