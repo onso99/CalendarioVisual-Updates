@@ -254,22 +254,29 @@ fun AppDialog(
                     }
                 }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(AppLayout.BannerHeight),
-                    contentAlignment = Alignment.Center
-                ) {
-                    InfoBanner(
-                        message = bannerMessage,
-                        isVisible = isBannerVisible,
-                        icon = bannerIcon,
-                        iconColor = bannerIconColor,
-                        textAlign = bannerTextAlign,
-                        horizontalPadding = 0.dp 
-                    )
+                // 2. ZONA RESERVADA (32dp - LÍNEA ROJA) (v3.3.04.4)
+                val hasBanner = isBannerVisible || bannerMessage != null
+                if (hasBanner) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(AppLayout.BannerHeight),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        InfoBanner(
+                            message = bannerMessage,
+                            isVisible = isBannerVisible,
+                            icon = bannerIcon,
+                            iconColor = bannerIconColor,
+                            textAlign = bannerTextAlign,
+                            horizontalPadding = 0.dp 
+                        )
+                    }
+                } else {
+                    Spacer(Modifier.height(32.dp)) // RESTAURADO: Espacio estándar v3.3.03 (32dp - 8dp offset = 24dp libres)
                 }
 
+                // 3. CONTENIDO (v3.3.04.3)
                 Box(modifier = Modifier.fillMaxWidth().offset(y = (-8).dp)) {
                     content()
                 }
@@ -418,12 +425,12 @@ fun AboutDialog(onDismiss: () -> Unit) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, 
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = null,
-                modifier = Modifier.size(64.dp).padding(bottom = 4.dp), 
+                modifier = Modifier.size(64.dp), 
                 tint = Color.Unspecified
             )
             Text(
@@ -433,15 +440,15 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 color = CalendarioTheme.colors.textSystem
             )
             Text(
-                "Versión 3.3.03", 
+                "Versión 3.3.04", 
                 fontSize = 12.sp, 
                 color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
             )
+            Spacer(Modifier.height(4.dp))
             Text(
                 "© 2026 Calendario", 
                 fontSize = 10.sp, 
-                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                modifier = Modifier.padding(top = 2.dp)
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
             )
         }
     }
@@ -472,7 +479,7 @@ fun CleaningAssistantDialog(
         },
         dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
     ) {
-        Column(modifier = Modifier.height(180.dp)) { // ALTURA COMPACTA Y FIJA (v3.3.03.6)
+        Column(modifier = Modifier.height(160.dp)) { // ALTURA COMPACTA (v3.3.04.1)
             // 1. FILA TITULAR FIJA
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -501,7 +508,7 @@ fun CleaningAssistantDialog(
                 }
             }
 
-            // 2. FILA DE MENSAJES DE ACCIÃ“N (Independiente v3.3.03.6)
+            // 2. FILA DE MENSAJES DE ACCIÓN (Independiente)
             Box(modifier = Modifier.fillMaxWidth().height(20.dp), contentAlignment = Alignment.CenterStart) {
                 statusMessage?.let {
                     Text(text = it, fontSize = 11.sp, color = CalendarioTheme.colors.cabecera, fontWeight = FontWeight.Bold)

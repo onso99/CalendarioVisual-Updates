@@ -537,15 +537,7 @@ fun CalendarioScreen(
         BackupScreen(
             onBackPress = { showBackupScreen = false },
             viewModel = viewModel,
-            onHistoryClick = { showBackupHistoryScreen = true },
-            onNavigateToDate = { date ->
-                val targetPage = ChronoUnit.MONTHS.between(startMonth, YearMonth.from(date)).toInt()
-                scope.launch {
-                    monthPagerState.scrollToPage(targetPage)
-                    selectedDateForDialog = date
-                    showDayEventsDialog = true
-                }
-            }
+            onHistoryClick = { showBackupHistoryScreen = true }
         )
         return
     }
@@ -922,7 +914,7 @@ fun CalendarioScreen(
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text("Optimizar historial", color = CalendarioTheme.colors.textSystem) },
+                                                text = { Text("Optimizar datos", color = CalendarioTheme.colors.textSystem) },
                                                 leadingIcon = { Icon(Icons.Default.CleaningServices, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                                                 onClick = {
                                                     showMenu3Puntos = false

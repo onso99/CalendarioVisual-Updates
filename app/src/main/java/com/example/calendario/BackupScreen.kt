@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -37,20 +36,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
-import kotlinx.coroutines.delay
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Locale
-import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupScreen(
     onBackPress: () -> Unit,
     viewModel: CalendarioViewModel,
-    onHistoryClick: () -> Unit = {},
-    onNavigateToDate: (LocalDate) -> Unit = {}
+    onHistoryClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isSyncing = uiState.isSyncing
@@ -64,32 +59,6 @@ fun BackupScreen(
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showConfirmRestoreDialog by remember { mutableStateOf(false) }
-
-    // --- Mantenimiento States ---
-    var isScanning by remember { mutableStateOf(false) }
-    var scanFinished by remember { mutableStateOf(false) }
-    var statusMessage by remember { mutableStateOf<String?>(null) }
-
-    val analyzingDataMsg = stringResource(id = R.string.analyzing_data)
-    val analysisFinishedMsg = stringResource(id = R.string.analysis_finished)
-
-    LaunchedEffect(isScanning) {
-        if (isScanning) {
-            statusMessage = analyzingDataMsg
-            viewModel.refreshData {
-                isScanning = false
-                scanFinished = true
-                statusMessage = analysisFinishedMsg
-            }
-        }
-    }
-
-    LaunchedEffect(statusMessage) {
-        if (statusMessage == analysisFinishedMsg) {
-            delay(3000.milliseconds)
-            statusMessage = null
-        }
-    }
 
     // --- Launchers ---
     val googleSignInLauncher = rememberLauncherForActivityResult(
@@ -150,7 +119,7 @@ fun BackupScreen(
                     }
                     HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                     
-                    // --- FILA ÚLTIMA COPIA (Integrada con Historial v3.1.34) ---
+                    // --- FILA ÚLTIMA COPIA ---
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -212,84 +181,6 @@ fun BackupScreen(
                         reverseRotation = true,
                         onClick = { showConfirmRestoreDialog = true }
                     )
-                }
-            }
-
-            // --- SECCIÃ“N MANTENIMIENTO (Sincronizada v3.2.12.4) ---
-            SectionTitle(text = stringResource(id = R.string.maintenance_section))
-            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(id = R.string.data_cleaning_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
-                        statusMessage?.let {
-                            Text(text = it, fontSize = 12.sp, color = CalendarioTheme.colors.cabecera, fontWeight = FontWeight.Medium)
-                        }
-                    }
-                    
-                    if (uiState.cleaningCandidates.isNotEmpty()) {
-                        Text(
-                            text = "(${uiState.cleaningCandidates.size})",
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                    }
-
-                    Button(
-                        onClick = { isScanning = true },
-                        enabled = !isScanning,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.12f), contentColor = CalendarioTheme.colors.cabecera),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Text(stringResource(id = R.string.scan_label), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-
-                if (scanFinished) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    if (uiState.cleaningCandidates.isEmpty()) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoSecciones), modifier = Modifier.size(20.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(id = R.string.no_cleaning_results), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 14.sp)
-                        }
-                    } else {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            uiState.cleaningCandidates.take(10).forEach { item ->
-                                InternalCleaningCandidateRow(
-                                    item = item,
-                                    onClick = { onNavigateToDate(item.date) },
-                                    onDelete = { viewModel.deleteCleaningCandidate(item) }
-                                )
-                            }
-                            if (uiState.cleaningCandidates.size > 10) {
-                                Text(
-                                    text = "... y ${uiState.cleaningCandidates.size - 10} más",
-                                    fontSize = 12.sp,
-                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                                    modifier = Modifier.padding(start = 40.dp)
-                                )
-                            }
-                            
-                            Spacer(modifier = Modifier.height(8.dp))
-                            
-                            Button(
-                                onClick = { viewModel.deleteAllCleaningCandidates() },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.1f), contentColor = Color.Red),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Text(stringResource(id = R.string.delete_all_events_option).substringBefore(" "), fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -400,47 +291,6 @@ private fun BackupActionRow(
             is Painter -> {
                 Icon(painter = icon, contentDescription = null, modifier = iconModifier, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
             }
-        }
-    }
-}
-
-@Composable
-private fun InternalCleaningCandidateRow(
-    item: SearchItem,
-    onClick: () -> Unit,
-    onDelete: () -> Unit
-) {
-    val locale = LocalConfiguration.current.locales[0]
-    val fmt = remember { AppFormats.dayDateAbbr(locale) }
-    
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(CalendarioTheme.colors.settingsBackground) 
-            .clickable { onClick() }
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (item is SearchItem.Event) {
-            Icon(painterResource(id = R.drawable.ic_ghost_24), null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.size(20.dp))
-        } else {
-            Icon(Icons.AutoMirrored.Filled.StickyNote2, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), modifier = Modifier.size(20.dp))
-        }
-        
-        Spacer(modifier = Modifier.width(12.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            val title = when (item) {
-                is SearchItem.Event -> item.festivo.title.ifBlank { stringResource(id = R.string.no_title) }
-                is SearchItem.Note -> stringResource(id = R.string.note_label)
-            }
-            Text(text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = CalendarioTheme.colors.textSystem, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(text = item.date.format(fmt), fontSize = 11.sp, color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
-        }
-        
-        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-            Icon(Icons.Default.Delete, null, tint = Color.Red.copy(alpha = 0.7f), modifier = Modifier.size(18.dp))
         }
     }
 }
