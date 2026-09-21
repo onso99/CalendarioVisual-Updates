@@ -1,7 +1,8 @@
-2026-09-21 - v3.3.05: Blindaje de datos y migración segura. Sincronizado esquema de notas (v8) y eliminada la migración destructiva automática para proteger los datos locales.
+2026-09-21 - v3.3.05.1 Protección de "Lápidas" (Tombstones). Fusión Inteligente de Borrados (Unión de Conocimiento). Blindaje en GoogleDriveHelper
+2026-09-21 - v3.3.05 Blindaje de datos y migración segura. Sincronizado esquema de notas (v8) y eliminada la migración destructiva automática para proteger los datos locales.
 2026-09-21 - v3.3.04.1 Mejoras en el diálogo Mantenimiento
-2026-09-21 - v3.3.04: Consolidación estructural y excelencia visual. Eliminado código redundante (AgendaExchange), limpieza de BackupScreen, restauración del equilibrio estético en diálogos y corrección de avisos de código.
-2026-09-20 - v3.3.03: Menú global de acciones y unificación de flujo. Integrado menú de 3 puntos (Importar/Optimizar), limpieza del menú lateral y refinamiento de ergonomía en diálogos.
+2026-09-21 - v3.3.04 Consolidación estructural y excelencia visual. Eliminado código redundante (AgendaExchange), limpieza de BackupScreen, restauración del equilibrio estético en diálogos y corrección de avisos de código.
+2026-09-20 - v3.3.03 Menú global de acciones y unificación de flujo. Integrado menú de 3 puntos (Importar/Optimizar), limpieza del menú lateral y refinamiento de ergonomía en diálogos.
 2026-09-20 - v3.3.02 Barra de multiselección contextual: integración de acciones (Compartir, Guardar, Borrar) en cabecera maestra.
 2026-09-20 - v3.3.01 Unificación del motor de búsqueda y navegación inteligente: auto-scroll al presente, filtros dinámicos e iconografía de precisión.
 2026-09-19 - v3.2.15.1 Mejora en la pantalla de Búsqueda

@@ -262,9 +262,9 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
             // Limpiamos también esta instancia específica del historial JSON
             removeEventFromHistory(context, eventToCancel.adn)
 
-            // Cancelamos la alarma asociada si existe
-            AlarmUtils.cancelAlarm(context, eventToCancel.id)
-            SettingsManager.saveEventAlarmOffset(context, eventToCancel.id, null)
+            // PROTECCIÓN (v3.3.06.1): Al cancelar una instancia única, NO borramos el offset de la serie.
+            // Solo cancelamos la alarma física de este día concreto.
+            AlarmUtils.cancelAlarm(context, eventToCancel.id, eventToCancel.date)
 
             val dateStr = eventToCancel.date.format(AppFormats.DateAbbr)
             val displayTitle = if (eventToCancel.title.length > 60) eventToCancel.title.take(57) + "..." else eventToCancel.title
