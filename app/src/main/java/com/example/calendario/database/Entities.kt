@@ -39,5 +39,6 @@ data class NoteEntity(
     @PrimaryKey val dateStr: String, // Fecha ISO
     val content: String,
     val lastModified: Long,
-    val isDeleted: Boolean
+    val isDeleted: Boolean,
+    val hasIncident: Boolean = false
 )

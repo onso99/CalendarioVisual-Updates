@@ -74,7 +74,8 @@ fun NoteEntity.toDailyNote(): DailyNote {
         dateStr = this.dateStr,
         content = this.content,
         lastModified = this.lastModified,
-        isDeleted = this.isDeleted
+        isDeleted = this.isDeleted,
+        hasIncident = this.hasIncident
     )
 }
 
@@ -83,6 +84,7 @@ fun DailyNote.toEntity(): NoteEntity {
         dateStr = this.dateStr,
         content = this.content,
         lastModified = this.lastModified,
-        isDeleted = this.isDeleted
+        isDeleted = this.isDeleted,
+        hasIncident = this.hasIncident
     )
 }
