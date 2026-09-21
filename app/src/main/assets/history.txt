@@ -1,3 +1,4 @@
+2026-09-21 - v3.3.04: Consolidación estructural y excelencia visual. Eliminado código redundante (AgendaExchange), limpieza de BackupScreen, restauración del equilibrio estético en diálogos y corrección de avisos de código.
 2026-09-20 - v3.3.03: Menú global de acciones y unificación de flujo. Integrado menú de 3 puntos (Importar/Optimizar), limpieza del menú lateral y refinamiento de ergonomía en diálogos.
 2026-09-20 - v3.3.02 Barra de multiselección contextual: integración de acciones (Compartir, Guardar, Borrar) en cabecera maestra.
 2026-09-20 - v3.3.01 Unificación del motor de búsqueda y navegación inteligente: auto-scroll al presente, filtros dinámicos e iconografía de precisión.

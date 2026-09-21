@@ -273,10 +273,10 @@ fun AppDialog(
                         )
                     }
                 } else {
-                    Spacer(Modifier.height(32.dp)) // RESTAURADO: Espacio estándar v3.3.03 (32dp - 8dp offset = 24dp libres)
+                    Spacer(Modifier.height(48.dp)) // AUMENTADO (v3.3.04.5) para dar el máximo aire respecto al título
                 }
 
-                // 3. CONTENIDO (v3.3.04.3)
+                // 3. CONTENIDO (v3.3.04.5)
                 Box(modifier = Modifier.fillMaxWidth().offset(y = (-8).dp)) {
                     content()
                 }
