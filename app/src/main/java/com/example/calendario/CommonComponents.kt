@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
@@ -443,7 +444,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 color = CalendarioTheme.colors.textSystem
             )
             Text(
-                "Versión 3.3.06", 
+                "Versión ${AboutInfo.getVersionName(LocalContext.current)}", 
                 fontSize = 12.sp, 
                 color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
             )
