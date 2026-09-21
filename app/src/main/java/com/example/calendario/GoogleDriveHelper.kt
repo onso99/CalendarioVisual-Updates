@@ -49,7 +49,8 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
                     restorePrefs = false, restoreHolidays = false, 
                     restoreNotes = true, restoreEvents = true,
                     source = BackupSource.DRIVE,
-                    logEntry = false
+                    logEntry = false,
+                    isSync = true // PROTECCIÓN (v3.3.06): Fusionar en lugar de reemplazar borrados
                 )
                 
                 // Tras la fusión silenciosa en Room, volcamos de nuevo al disco legado (para no romper el flujo)
@@ -76,7 +77,8 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             uploadFileToDrive(tempFile)
             tempFile.delete()
 
-            SettingsManager.clearDeletedEventIds(context)
+            // ELIMINADO: SettingsManager.clearDeletedEventIds(context)
+            // ERROR CRÍTICO (v3.3.06): Borrar los IDs locales causaba la "resurrección" de eventos del sistema.
             
             // Registrar en historial
             BackupHistoryManager.addEntry(context, BackupHistoryEntry(

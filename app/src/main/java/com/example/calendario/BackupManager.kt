@@ -96,7 +96,8 @@ object BackupManager {
         restoreNotes: Boolean,
         restoreEvents: Boolean,
         source: BackupSource,
-        logEntry: Boolean = true
+        logEntry: Boolean = true,
+        isSync: Boolean = false // NUEVO: Evita limpieza destructiva de borrados (v3.3.06)
     ): Boolean {
         var eventsCount = 0
         var notesCount = 0
@@ -221,7 +222,12 @@ object BackupManager {
                     val localEvents = dao.getAllEventsSync().map { it.toFestivo() }
                     val availableCalendars = loadAvailableCalendarsSync(context)
                     
-                    SettingsManager.clearDeletedEventIds(context)
+                    // REGLA DE ORO (v3.3.06): Durante la sincronización NUNCA borramos la lista local de eventos eliminados.
+                    // Solo la limpiamos si es una restauración total solicitada por el usuario.
+                    if (!isSync) {
+                        SettingsManager.clearDeletedEventIds(context)
+                    }
+                    
                     json.optJSONArray(KEY_DELETED_EVENTS)?.let { array ->
                         for (i in 0 until array.length()) SettingsManager.markEventAsDeleted(context, array.optLong(i))
                     }

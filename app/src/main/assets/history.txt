@@ -1,3 +1,4 @@
+2026-09-21 - v3.3.05: Blindaje de datos y migración segura. Sincronizado esquema de notas (v8) y eliminada la migración destructiva automática para proteger los datos locales.
 2026-09-21 - v3.3.04.1 Mejoras en el diálogo Mantenimiento
 2026-09-21 - v3.3.04: Consolidación estructural y excelencia visual. Eliminado código redundante (AgendaExchange), limpieza de BackupScreen, restauración del equilibrio estético en diálogos y corrección de avisos de código.
 2026-09-20 - v3.3.03: Menú global de acciones y unificación de flujo. Integrado menú de 3 puntos (Importar/Optimizar), limpieza del menú lateral y refinamiento de ergonomía en diálogos.
