@@ -1,6 +1,7 @@
 package com.example.calendario
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,8 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -440,7 +443,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 color = CalendarioTheme.colors.textSystem
             )
             Text(
-                "Versión 3.3.04", 
+                "Versión 3.3.06", 
                 fontSize = 12.sp, 
                 color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
             )
@@ -465,10 +468,22 @@ fun CleaningAssistantDialog(
     onNavigateToDate: (LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+    val containerSize = LocalWindowInfo.current.containerSize
+    val screenHeight = with(density) { containerSize.height.toDp() }
+
     AppDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(id = R.string.maintenance_section),
+        title = "Optimizar", 
         confirmButton = {
+            // Botón Cerrar en modo texto (v3.3.06.6)
+            DialogDismissButton(
+                text = stringResource(id = R.string.close),
+                onDismiss = onDismiss
+            )
+        },
+        dismissButton = {
             if (uiState.cleaningCandidates.isNotEmpty()) {
                 DialogConfirmButton(
                     text = stringResource(id = R.string.delete_all_events_option).substringBefore(" "),
@@ -476,58 +491,94 @@ fun CleaningAssistantDialog(
                     onClick = onDeleteAll
                 )
             }
-        },
-        dismissButton = { DialogDismissButton(onDismiss = onDismiss) }
+        }
     ) {
-        Column(modifier = Modifier.height(160.dp)) { // ALTURA COMPACTA (v3.3.04.1)
-            // 1. FILA TITULAR FIJA
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize() 
+        ) {
+            // 1. ZONA SUPERIOR ESTÁTICA (v3.3.06.4)
+            // Esta zona mantiene siempre la misma altura para evitar que el diálogo "baile" durante el escaneo
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(id = R.string.data_cleaning_label),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                    modifier = Modifier.weight(1f)
-                )
-                
+                // BOTÓN ESCANEAR
                 Button(
-                    onClick = onScan,
+                    onClick = {
+                        isExpanded = false 
+                        onScan()
+                    },
                     enabled = !isScanning,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.12f),
-                        contentColor = CalendarioTheme.colors.cabecera
+                        containerColor = CalendarioTheme.colors.cabecera,
+                        contentColor = Color.White
                     ),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.height(32.dp)
+                    modifier = Modifier.height(48.dp)
                 ) {
-                    Text(stringResource(id = R.string.scan_label), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(id = R.string.scan_label), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+
+                // FILA DE MENSAJES (Altura fija 28dp para estabilidad)
+                Box(modifier = Modifier.fillMaxWidth().height(28.dp), contentAlignment = Alignment.Center) {
+                    statusMessage?.let {
+                        Text(text = it, fontSize = 12.sp, color = CalendarioTheme.colors.cabecera, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
 
-            // 2. FILA DE MENSAJES DE ACCIÓN (Independiente)
-            Box(modifier = Modifier.fillMaxWidth().height(20.dp), contentAlignment = Alignment.CenterStart) {
-                statusMessage?.let {
-                    Text(text = it, fontSize = 11.sp, color = CalendarioTheme.colors.cabecera, fontWeight = FontWeight.Bold)
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            // 3. ÁREA DE RESULTADOS
-            if (uiState.cleaningCandidates.isEmpty() && !isScanning) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            // 2. RANURA DE RESULTADOS / RESUMEN (Altura fija 56dp para acomodar 2 líneas v3.3.06.5)
+            Box(
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isScanning) {
+                    // Vacío durante el escaneo para no mover nada
+                } else if (uiState.cleaningCandidates.isEmpty()) {
                     Text(
                         stringResource(id = R.string.no_cleaning_results), 
                         color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        textAlign = TextAlign.Start
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
                     )
+                } else {
+                    // Fila de expansión manual
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { isExpanded = !isExpanded }
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${uiState.cleaningCandidates.size} elementos encontrados",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            tint = CalendarioTheme.colors.cabecera,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
-            } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+            }
+
+            // 3. LISTA DESPLEGABLE (Solo añade altura si se solicita)
+            if (isExpanded && uiState.cleaningCandidates.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = screenHeight * 0.4f)
+                ) {
                     items(uiState.cleaningCandidates) { item ->
                         InternalCleaningCandidateRow(
                             item = item,
