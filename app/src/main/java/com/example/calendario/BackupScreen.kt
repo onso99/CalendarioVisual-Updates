@@ -169,7 +169,6 @@ fun BackupScreen(
                         text = stringResource(id = R.string.sincronizar_label),
                         icon = Icons.Default.Sync,
                         isRotating = isSyncing,
-                        reverseRotation = true, // Giro anti-horario siguiendo flechas (v3.3.07)
                         onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; context.showToast(context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG) } else { context.showToast(R.string.sync_error_drive) } } }
                     )
 
@@ -179,7 +178,6 @@ fun BackupScreen(
                         text = stringResource(id = R.string.restaurar_label),
                         icon = painterResource(id = R.drawable.ic_restore_custom),
                         isRotating = isRestoring,
-                        reverseRotation = true,
                         onClick = { showConfirmRestoreDialog = true }
                     )
                 }
@@ -256,7 +254,8 @@ private fun BackupActionRow(
     text: String,
     icon: Any,
     isRotating: Boolean = false,
-    reverseRotation: Boolean = false,
+    @Suppress("SAME_PARAMETER_VALUE")
+    reverseRotation: Boolean = true,
     onClick: () -> Unit
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "rotation")

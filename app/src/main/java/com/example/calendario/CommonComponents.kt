@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
@@ -418,44 +417,6 @@ fun SectionTitle(
         fontWeight = FontWeight.Bold,
         color = titleColor,
     )
-}
-
-@Composable
-fun AboutDialog(onDismiss: () -> Unit) {
-    AppDialog(
-        onDismissRequest = onDismiss,
-        title = stringResource(id = R.string.about),
-        confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.accept), onClick = onDismiss) }
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally, 
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = null,
-                modifier = Modifier.size(64.dp), 
-                tint = Color.Unspecified
-            )
-            Text(
-                stringResource(id = R.string.app_name), 
-                fontWeight = FontWeight.Bold, 
-                fontSize = 15.sp, 
-                color = CalendarioTheme.colors.textSystem
-            )
-            Text(
-                "Versión ${AboutInfo.getVersionName(LocalContext.current)}", 
-                fontSize = 12.sp, 
-                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                "© 2026 Calendario", 
-                fontSize = 10.sp, 
-                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
-            )
-        }
-    }
 }
 
 @Composable
