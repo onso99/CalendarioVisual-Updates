@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Fins a la data</string>
     <string name="repeat_after">Repeticions</string>
 
-    <string name="activity_log">Registre d\'activitat</string>
-    <string name="maintenance_section">Manteniment</string>
 
     <string name="long_period_switch">Període llarg</string>
     <string name="date">Data</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Copiar color</string>
     <string name="paste_color">Enganxar color</string>
     <string name="search_events_placeholder">Cercar esdeveniments…</string>
-    <string name="close_search">Tancar cerca</string>
     <string name="clear_search">Netejar cerca</string>
-    <string name="current_month">Mes actual</string>
-    <string name="current_year">Any actual</string>
     <string name="no_results_found">No s\'han trobat resultats</string>
     <string name="type_to_search">Escriu per cercar…</string>
     <string name="all_day_event">(Esdeveniment tot el dia)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Editar esdeveniment recurrent</string>
     <string name="edit_recurring_event_dialog_single_event">Només aquest esdeveniment</string>
-    <string name="edit_recurring_event_dialog_all_events">Tots els esdeveniments</string>
     <string name="copy_event">Copiar esdeveniment</string>
 
     <string name="holiday_manager_title">Gestor de Festius</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Ample fix)</string>
     <string name="font_condensed">Condensada (Estreta)</string>
     <string name="share_event">Compartir esdeveniment</string>
-    <string name="share_multiple_message">📅 Et comparteixo %1$d esdeveniments del meu calendari</string>
-    <string name="calendar_events_subject">Esdeveniments de Calendari</string>
     <string name="debug_title">Depuració</string>
     <string name="next_refresh_label">Proper refresc: %1$s</string>
     <string name="next_refresh_pending">en 15 min.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Copiar</string>
     <string name="sync_alarms">Sincronitzar alarmes</string>
     <string name="sync_alarms_success">Neteja finalitzada: %1$d alarmes òrfenes eliminades.</string>
-    <string name="selected_count">%1$d seleccionats</string>
     <string name="delete_multiple_confirmation">Vols eliminar aquests %1$d esdeveniments? Aquesta acció no es pot desfer.</string>
-    <string name="events_deleted_count">%1$d esdeveniments eliminats.</string>
-    <string name="notes_deleted_count">%1$d notes eliminades.</string>
     <string name="elements_deleted_count">%1$d elements eliminats.</string>
 
 
@@ -311,7 +300,6 @@
     <string name="calendar_read_only_error">Calendari de només lectura</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Optimitzar dades</string>
     <string name="scan_label">Escanejar</string>
     <string name="analyzing_data">Analitzant dades…</string>
     <string name="analysis_finished">Anàlisi finalitzada</string>
@@ -332,13 +320,8 @@
     <string name="other_calendars">Tots els calendaris</string>
     <string name="monthly_view">Mensual</string>
     <string name="yearly_view">Anual</string>
-    <string name="holidays_imported_successfully">Festius importats amb èxit.</string>
-    <string name="error_reading_holidays_file">Error en llegir el fitxer de festius.</string>
-    <string name="error_saving_holidays_file">Error en desar el fitxer de festius.</string>
-    <string name="holidays_exported_successfully">Festius exportats amb èxit</string>
     <string name="file_saved_successfully">Arxiu desat correctament</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Reiniciar selecció</string>
     <string name="import_agenda_title">Compartir</string>
     <string name="select_target_calendar">Calendari de destí</string>
     <string name="import_summary">S\'importaran %1$d esdeveniments i %2$d notes.</string>
@@ -348,8 +331,6 @@
     <string name="agenda_file_detected_message">El fitxer conté esdeveniments i notes en lloc de festius. Voleu continuar amb la importació?</string>
     <string name="continue_button">Continuar</string>
     <string name="edit_all_events_option">Tots els esdeveniments de la sèrie</string>
-    <string name="event_details">Detalls de l\'esdeveniment</string>
-    <string name="read_only_event_message">Aquest esdeveniment és una excepció en una sèrie gestionada per Google i no es pot editar des d\'aquesta aplicació.</string>
     <string name="unknown_elements_warning">Elements desconeguts en aquest esdeveniment *</string>
 </resources>
 

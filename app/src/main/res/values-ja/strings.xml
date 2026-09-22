@@ -35,8 +35,6 @@
     <string name="repeat_on_date">指定日まで</string>
     <string name="repeat_after">回数</string>
 
-    <string name="activity_log">アクティビティログ</string>
-    <string name="maintenance_section">メンテナンス</string>
 
     <string name="long_period_switch">長期期間</string>
     <string name="date">日付</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">色をコピー</string>
     <string name="paste_color">色を貼り付け</string>
     <string name="search_events_placeholder">イベントを検索…</string>
-    <string name="close_search">検索を閉じる</string>
     <string name="clear_search">検索をクリア</string>
-    <string name="current_month">今月</string>
-    <string name="current_year">今年</string>
     <string name="no_results_found">結果が見つかりません</string>
     <string name="type_to_search">検索キーワードを入力…</string>
     <string name="all_day_event">(終日イベント)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">繰り返しイベントを編集</string>
     <string name="edit_recurring_event_dialog_single_event">このイベントのみ</string>
-    <string name="edit_recurring_event_dialog_all_events">すべてのイベント</string>
     <string name="copy_event">イベントをコピー</string>
 
     <string name="holiday_manager_title">祝日管理</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">等幅フォント</string>
     <string name="font_condensed">凝縮体 (細身)</string>
     <string name="share_event">イベントを共有</string>
-    <string name="share_multiple_message">📅 カレンダーのイベント（%1$d件）を共有します</string>
-    <string name="calendar_events_subject">カレンダーのイベント</string>
     <string name="debug_title">デバッグ</string>
     <string name="next_refresh_label">次回の更新: %1$s</string>
     <string name="next_refresh_pending">15分以内</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">コピー</string>
     <string name="sync_alarms">アラームを同期</string>
     <string name="sync_alarms_success">クリーンアップ完了: %1$d個のアラームを削除しました。</string>
-    <string name="selected_count">%1$d件選択中</string>
     <string name="delete_multiple_confirmation">%1$d件のイベントを削除しますか？この操作は元に戻せません。</string>
-    <string name="events_deleted_count">%1$d件のイベントを削除しました。</string>
-    <string name="notes_deleted_count">%1$d件のメモを削除しました。</string>
     <string name="elements_deleted_count">%1$d個のアイテムを削除しました。</string>
 
 
@@ -310,7 +299,6 @@
     <string name="calendar_read_only_error">読み取り専用カレンダー</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">データを最適化</string>
     <string name="scan_label">スキャン</string>
     <string name="analyzing_data">データを分析中…</string>
     <string name="analysis_finished">分析が完了しました</string>
@@ -331,13 +319,8 @@
     <string name="other_calendars">すべてのカレンダー</string>
     <string name="monthly_view">月間</string>
     <string name="yearly_view">年間</string>
-    <string name="holidays_imported_successfully">祝日が正常にインポートされました。</string>
-    <string name="error_reading_holidays_file">祝日ファイルの読み込みエラー。</string>
-    <string name="error_saving_holidays_file">祝日ファイルの保存エラー。</string>
-    <string name="holidays_exported_successfully">祝日が正常にエクスポートされました</string>
     <string name="file_saved_successfully">ファイルが正常に保存されました</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">選択を解除</string>
     <string name="import_agenda_title">共有</string>
     <string name="select_target_calendar">ターゲットカレンダー</string>
     <string name="import_summary">%1$d 個のイベントと %2$d 個のメモがインポートされます。</string>
@@ -347,8 +330,6 @@
     <string name="agenda_file_detected_message">このファイルには祝日の代わりにイベントとメモが含まれています。インポートを続行しますか？</string>
     <string name="continue_button">続行</string>
     <string name="edit_all_events_option">系列内のすべてのイベント</string>
-    <string name="event_details">イベントの詳細</string>
-    <string name="read_only_event_message">このイベントは Google が管理するシリーズの例外であり、このアプリケーションから編集することはできません。</string>
     <string name="unknown_elements_warning">このイベント内の不明な要素 *</string>
 
 </resources>

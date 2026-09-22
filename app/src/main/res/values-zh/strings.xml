@@ -35,8 +35,6 @@
     <string name="repeat_on_date">直到日期</string>
     <string name="repeat_after">重复次数</string>
 
-    <string name="activity_log">活动日志</string>
-    <string name="maintenance_section">维护</string>
 
     <string name="long_period_switch">长期</string>
     <string name="date">日期</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">复制颜色</string>
     <string name="paste_color">粘贴颜色</string>
     <string name="search_events_placeholder">搜索事件…</string>
-    <string name="close_search">关闭搜索</string>
     <string name="clear_search">清除搜索</string>
-    <string name="current_month">本月</string>
-    <string name="current_year">本年</string>
     <string name="no_results_found">未找到结果</string>
     <string name="type_to_search">输入以搜索…</string>
     <string name="all_day_event">(全天事件)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">编辑循环事件</string>
     <string name="edit_recurring_event_dialog_single_event">仅此事件</string>
-    <string name="edit_recurring_event_dialog_all_events">所有事件</string>
     <string name="copy_event">复制事件</string>
 
     <string name="holiday_manager_title">节假日管理</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">等宽字体 (固定宽度)</string>
     <string name="font_condensed">紧凑体 (窄)</string>
     <string name="share_event">分享事件</string>
-    <string name="share_multiple_message">📅 与您分享我日历中的 %1$d 个事件</string>
-    <string name="calendar_events_subject">日历事件</string>
     <string name="debug_title">调试</string>
     <string name="next_refresh_label">下次刷新：%1$s</string>
     <string name="next_refresh_pending">15 分钟内</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">复制</string>
     <string name="sync_alarms">同步闹钟</string>
     <string name="sync_alarms_success">清理完成：已删除 %1$d 个孤立闹钟。</string>
-    <string name="selected_count">已选择 %1$d 项</string>
     <string name="delete_multiple_confirmation">确定要删除这 %1$d 个事件吗？此操作无法撤销。</string>
-    <string name="events_deleted_count">已删除 %1$d 个事件。</string>
-    <string name="notes_deleted_count">已删除 %1$d 条便签。</string>
     <string name="elements_deleted_count">已删除 %1$d 个项目。</string>
 
 
@@ -310,7 +299,6 @@
     <string name="calendar_read_only_error">只读日历</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">优化数据</string>
     <string name="scan_label">扫描</string>
     <string name="analyzing_data">正在分析数据…</string>
     <string name="analysis_finished">分析完成</string>
@@ -331,13 +319,8 @@
     <string name="other_calendars">所有日历</string>
     <string name="monthly_view">月视图</string>
     <string name="yearly_view">年视图</string>
-    <string name="holidays_imported_successfully">节假日导入成功。</string>
-    <string name="error_reading_holidays_file">读取节假日文件出错。</string>
-    <string name="error_saving_holidays_file">保存节假日文件出错。</string>
-    <string name="holidays_exported_successfully">节假日导出成功</string>
     <string name="file_saved_successfully">文件保存成功</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">清除选择</string>
     <string name="import_agenda_title">分享</string>
     <string name="select_target_calendar">目标日历</string>
     <string name="import_summary">将导入 %1$d 个事件和 %2$d 条备注。</string>
@@ -347,8 +330,6 @@
     <string name="agenda_file_detected_message">此文件包含事件和备注，而不是节假日。是否继续导入？</string>
     <string name="continue_button">继续</string>
     <string name="edit_all_events_option">系列中的所有事件</string>
-    <string name="event_details">活动详情</string>
-    <string name="read_only_event_message">此活动是 Google 管理的系列中的一个例外，无法从此应用进行编辑。</string>
     <string name="unknown_elements_warning">此事件中的未知元素 *</string>
 
 </resources>

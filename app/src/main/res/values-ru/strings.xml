@@ -35,8 +35,6 @@
     <string name="repeat_on_date">До даты</string>
     <string name="repeat_after">Повторы</string>
 
-    <string name="activity_log">Журнал активности</string>
-    <string name="maintenance_section">Обслуживание</string>
 
     <string name="long_period_switch">Длительный период</string>
     <string name="date">Дата</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Копировать цвет</string>
     <string name="paste_color">Вставить цвет</string>
     <string name="search_events_placeholder">Поиск событий…</string>
-    <string name="close_search">Закрыть поиск</string>
     <string name="clear_search">Очистить поиск</string>
-    <string name="current_month">Текущий месяц</string>
-    <string name="current_year">Текущий год</string>
     <string name="no_results_found">Результатов не найдено</string>
     <string name="type_to_search">Введите для поиска…</string>
     <string name="all_day_event">(Весь день)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Правка серии событий</string>
     <string name="edit_recurring_event_dialog_single_event">Только это событие</string>
-    <string name="edit_recurring_event_dialog_all_events">Вся серия</string>
     <string name="copy_event">Копировать событие</string>
 
     <string name="holiday_manager_title">Менеджер Праздников</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Моноширинный</string>
     <string name="font_condensed">Узкий (Condensed)</string>
     <string name="share_event">Поделиться событием</string>
-    <string name="share_multiple_message">📅 Делюсь с вами событиями (%1$d) из моего календаря</string>
-    <string name="calendar_events_subject">События календаря</string>
     <string name="debug_title">Отладка</string>
     <string name="next_refresh_label">Следующее обновление: %1$s</string>
     <string name="next_refresh_pending">через 15 мин.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Копировать</string>
     <string name="sync_alarms">Синхронизировать будильники</string>
     <string name="sync_alarms_success">Очистка завершена: удалено %1$d лишних будильников.</string>
-    <string name="selected_count">Выбрано: %1$d</string>
     <string name="delete_multiple_confirmation">Удалить эти события (%1$d)? Это действие нельзя отменить.</string>
-    <string name="events_deleted_count">Удалено событий: %1$d.</string>
-    <string name="notes_deleted_count">Удалено заметок: %1$d.</string>
     <string name="elements_deleted_count">Удалено элементов: %1$d.</string>
 
 
@@ -310,7 +299,6 @@
     <string name="calendar_read_only_error">Календарь только для чтения</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Оптимизация данных</string>
     <string name="scan_label">Сканировать</string>
     <string name="analyzing_data">Анализ данных…</string>
     <string name="analysis_finished">Анализ завершен</string>
@@ -331,13 +319,8 @@
     <string name="other_calendars">Все календари</string>
     <string name="monthly_view">Ежемесячно</string>
     <string name="yearly_view">Ежегодно</string>
-    <string name="holidays_imported_successfully">Праздники успешно импортированы.</string>
-    <string name="error_reading_holidays_file">Ошибка при чтении файла праздников.</string>
-    <string name="error_saving_holidays_file">Ошибка при сохранении файла праздников.</string>
-    <string name="holidays_exported_successfully">Праздники успешно экспортированы</string>
     <string name="file_saved_successfully">Файл успешно сохранен</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Сбросить выбор</string>
     <string name="import_agenda_title">Поделиться</string>
     <string name="select_target_calendar">Целевой календарь</string>
     <string name="import_summary">Будет импортировано %1$d событий и %2$d заметок.</string>
@@ -347,8 +330,6 @@
     <string name="agenda_file_detected_message">Этот файл содержит события и заметки вместо праздников. Продолжить импорт?</string>
     <string name="continue_button">Продолжить</string>
     <string name="edit_all_events_option">Все события в серии</string>
-    <string name="event_details">Детали события</string>
-    <string name="read_only_event_message">Это событие является исключением в серии, управляемой Google, и его нельзя редактировать в этом приложении.</string>
     <string name="unknown_elements_warning">Неизвестные элементы в этом событии *</string>
 
 </resources>

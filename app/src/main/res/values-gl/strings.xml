@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Ata a data</string>
     <string name="repeat_after">Repeticións</string>
 
-    <string name="activity_log">Rexistro de actividade</string>
-    <string name="maintenance_section">Mantemento</string>
 
     <string name="long_period_switch">Período longo</string>
     <string name="date">Data</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Copiar color</string>
     <string name="paste_color">Pegar color</string>
     <string name="search_events_placeholder">Buscar eventos…</string>
-    <string name="close_search">Pechar busca</string>
     <string name="clear_search">Limpar busca</string>
-    <string name="current_month">Mes actual</string>
-    <string name="current_year">Ano actual</string>
     <string name="no_results_found">Non se atoparon resultados</string>
     <string name="type_to_search">Escribe para buscar…</string>
     <string name="all_day_event">(Evento todo o día)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Editar evento recorrente</string>
     <string name="edit_recurring_event_dialog_single_event">Só este evento</string>
-    <string name="edit_recurring_event_dialog_all_events">Todos os eventos</string>
     <string name="copy_event">Copiar evento</string>
 
     <string name="holiday_manager_title">Xestor de Festivos</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Ancho fixo)</string>
     <string name="font_condensed">Condensada (Estreita)</string>
     <string name="share_event">Compartir evento</string>
-    <string name="share_multiple_message">📅 Compártoche %1$d eventos do meu calendario</string>
-    <string name="calendar_events_subject">Eventos de Calendario</string>
     <string name="debug_title">Depuración</string>
     <string name="next_refresh_label">Próximo refresco: %1$s</string>
     <string name="next_refresh_pending">en 15 min.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Copiar</string>
     <string name="sync_alarms">Sincronizar alarmas</string>
     <string name="sync_alarms_success">Limpeza finalizada: %1$d alarmas orfas eliminadas.</string>
-    <string name="selected_count">%1$d seleccionados</string>
     <string name="delete_multiple_confirmation">Desexas eliminar estes %1$d eventos? Esta acción non se pode desfacer.</string>
-    <string name="events_deleted_count">%1$d eventos eliminados.</string>
-    <string name="notes_deleted_count">%1$d notas eliminadas.</string>
     <string name="elements_deleted_count">%1$d elementos eliminados.</string>
 
 
@@ -311,7 +300,6 @@
     <string name="calendar_read_only_error">Calendario de só lectura</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Optimizar datos</string>
     <string name="scan_label">Escanear</string>
     <string name="analyzing_data">Analizando datos…</string>
     <string name="analysis_finished">Análise finalizada</string>
@@ -332,13 +320,8 @@
     <string name="other_calendars">Todos os calendarios</string>
     <string name="monthly_view">Mensual</string>
     <string name="yearly_view">Anual</string>
-    <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
-    <string name="error_reading_holidays_file">Erro ao ler o ficheiro de festivos.</string>
-    <string name="error_saving_holidays_file">Erro ao gardar o ficheiro de festivos.</string>
-    <string name="holidays_exported_successfully">Festivos exportados con éxito</string>
     <string name="file_saved_successfully">Ficheiro gardado con éxito</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Reiniciar selección</string>
     <string name="import_agenda_title">Compartir</string>
     <string name="select_target_calendar">Calendario de destino</string>
     <string name="import_summary">Importaranse %1$d eventos e %2$d notas.</string>
@@ -348,8 +331,6 @@
     <string name="agenda_file_detected_message">O ficheiro contén eventos e notas en lugar de festivos. Continuar coa importación?</string>
     <string name="continue_button">Continuar</string>
     <string name="edit_all_events_option">Todos os eventos da serie</string>
-    <string name="event_details">Detalles do evento</string>
-    <string name="read_only_event_message">Este evento é unha excepción nunha serie xestionada por Google e no se pode editar desde esta aplicación.</string>
     <string name="unknown_elements_warning">Elementos descoñecidos neste evento *</string>
 
 </resources>

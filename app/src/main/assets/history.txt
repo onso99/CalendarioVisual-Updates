@@ -1,3 +1,4 @@
+2026-09-22 - v3.4.01 Corrección de warnings
 2026-09-22 - v3.4.00 Reingeniería de Sincronización Nube: Arquitectura Híbrida Limpia. Delegación de eventos a Google Calendar, vinculación de colores y alarmas por ADN y backups ultraligeros en Drive.
 2026-09-22 - v3.3.07 Preservación Total de Metadatos de Repetición (DataModels.kt). Fusión Real contra el Calendario del Sistema (BackupManager.kt). Protección de Series Recurrentes (CalendarDataUtils.kt). Escudo de Seguridad para Alarmas (AlarmUtils.kt)
 2026-09-22 - v3.3.06.3 Corrección de warnings

@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Until date</string>
     <string name="repeat_after">Repetitions</string>
 
-    <string name="activity_log">Activity log</string>
-    <string name="maintenance_section">Maintenance</string>
 
     <string name="long_period_switch">Long period</string>
     <string name="date">Date</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Copy color</string>
     <string name="paste_color">Paste color</string>
     <string name="search_events_placeholder">Search events…</string>
-    <string name="close_search">Close search</string>
     <string name="clear_search">Clear search</string>
-    <string name="current_month">Current month</string>
-    <string name="current_year">Current year</string>
     <string name="no_results_found">No results found</string>
     <string name="type_to_search">Type to search…</string>
     <string name="all_day_event">(All day event)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Edit recurring event</string>
     <string name="edit_recurring_event_dialog_single_event">Only this event</string>
-    <string name="edit_recurring_event_dialog_all_events">All events</string>
     <string name="copy_event">Copy event</string>
 
     <string name="holiday_manager_title">Holiday Manager</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Fixed width)</string>
     <string name="font_condensed">Condensed (Narrow)</string>
     <string name="share_event">Share event</string>
-    <string name="share_multiple_message">📅 I share %1$d events from my calendar with you</string>
-    <string name="calendar_events_subject">Calendar Events</string>
     <string name="debug_title">Debugging</string>
     <string name="next_refresh_label">Next refresh: %1$s</string>
     <string name="next_refresh_pending">in 15 min.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Copy</string>
     <string name="sync_alarms">Sync alarms</string>
     <string name="sync_alarms_success">Cleanup finished: %1$d orphan alarms removed.</string>
-    <string name="selected_count">%1$d selected</string>
     <string name="delete_multiple_confirmation">Do you want to delete these %1$d events? This action cannot be undone.</string>
-    <string name="events_deleted_count">%1$d events deleted.</string>
-    <string name="notes_deleted_count">%1$d notes deleted.</string>
     <string name="elements_deleted_count">%1$d items deleted.</string>
 
 
@@ -311,7 +300,6 @@
     <string name="calendar_read_only_error">Read-only calendar</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Optimize data</string>
     <string name="scan_label">Scan</string>
     <string name="analyzing_data">Analyzing data…</string>
     <string name="analysis_finished">Analysis finished</string>
@@ -332,13 +320,8 @@
     <string name="other_calendars">All calendars</string>
     <string name="monthly_view">Monthly</string>
     <string name="yearly_view">Yearly</string>
-    <string name="holidays_imported_successfully">Holidays imported successfully.</string>
-    <string name="error_reading_holidays_file">Error reading holidays file.</string>
-    <string name="error_saving_holidays_file">Error saving holidays file.</string>
-    <string name="holidays_exported_successfully">Holidays exported successfully</string>
     <string name="file_saved_successfully">File saved successfully</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Clear selection</string>
     <string name="import_agenda_title">Share</string>
     <string name="select_target_calendar">Target calendar</string>
     <string name="import_summary">%1$d events and %2$d notes will be imported.</string>
@@ -348,8 +331,6 @@
     <string name="agenda_file_detected_message">This file contains events and notes instead of holidays. Continue with import?</string>
     <string name="continue_button">Continue</string>
     <string name="edit_all_events_option">All events in the series</string>
-    <string name="event_details">Event details</string>
-    <string name="read_only_event_message">This event is an exception in a series managed by Google and cannot be edited from this application.</string>
     <string name="unknown_elements_warning">Unknown elements in this event *</string>
 </resources>
 

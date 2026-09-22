@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Bis zum Datum</string>
     <string name="repeat_after">Wiederholungen</string>
 
-    <string name="activity_log">Aktivitätsprotokoll</string>
-    <string name="maintenance_section">Wartung</string>
 
     <string name="long_period_switch">Langer Zeitraum</string>
     <string name="date">Datum</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Farbe kopieren</string>
     <string name="paste_color">Farbe einfügen</string>
     <string name="search_events_placeholder">Ereignisse suchen…</string>
-    <string name="close_search">Suche schließen</string>
     <string name="clear_search">Suche löschen</string>
-    <string name="current_month">Aktueller Monat</string>
-    <string name="current_year">Aktuelles Jahr</string>
     <string name="no_results_found">Keine Ergebnisse gefunden</string>
     <string name="type_to_search">Suchen…</string>
     <string name="all_day_event">(Ganztägiges Ereignis)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Serientermin bearbeiten</string>
     <string name="edit_recurring_event_dialog_single_event">Nur dieses Ereignis</string>
-    <string name="edit_recurring_event_dialog_all_events">Alle Ereignisse</string>
     <string name="copy_event">Ereignis kopieren</string>
 
     <string name="holiday_manager_title">Feiertagsmanager</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Feste Breite)</string>
     <string name="font_condensed">Condensed (Schmal)</string>
     <string name="share_event">Ereignis teilen</string>
-    <string name="share_multiple_message">📅 Ich teile %1$d Ereignisse aus meinem Kalender mit Ihnen</string>
-    <string name="calendar_events_subject">Kalenderereignisse</string>
     <string name="debug_title">Fehlersuche</string>
     <string name="next_refresh_label">Nächste Aktualisierung: %1$s</string>
     <string name="next_refresh_pending">in 15 Min.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Kopieren</string>
     <string name="sync_alarms">Alarme synchronisieren</string>
     <string name="sync_alarms_success">Bereinigung abgeschlossen: %1$d verwaiste Alarme entfernt.</string>
-    <string name="selected_count">%1$d ausgewählt</string>
     <string name="delete_multiple_confirmation">Möchten Sie diese %1$d Ereignisse löschen? Diese Aktion kann nicht rückgängig gemacht werden.</string>
-    <string name="events_deleted_count">%1$d Ereignisse gelöscht.</string>
-    <string name="notes_deleted_count">%1$d Notizen gelöscht.</string>
     <string name="elements_deleted_count">%1$d Elemente gelöscht.</string>
 
 
@@ -310,7 +299,6 @@
     <string name="calendar_read_only_error">Schreibgeschützter Kalender</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Daten optimieren</string>
     <string name="scan_label">Scannen</string>
     <string name="analyzing_data">Daten werden analysiert…</string>
     <string name="analysis_finished">Analyse abgeschlossen</string>
@@ -331,13 +319,8 @@
     <string name="other_calendars">Alle Kalender</string>
     <string name="monthly_view">Monatlich</string>
     <string name="yearly_view">Jährlich</string>
-    <string name="holidays_imported_successfully">Feiertage erfolgreich importiert.</string>
-    <string name="error_reading_holidays_file">Fehler beim Lesen der Feiertagsdatei.</string>
-    <string name="error_saving_holidays_file">Fehler beim Speichern der Feiertagsdatei.</string>
-    <string name="holidays_exported_successfully">Feiertage erfolgreich exportiert</string>
     <string name="file_saved_successfully">Datei erfolgreich gespeichert</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Auswahl zurücksetzen</string>
     <string name="import_agenda_title">Teilen</string>
     <string name="select_target_calendar">Zielkalender</string>
     <string name="import_summary">%1$d Ereignisse und %2$d Notizen werden importiert.</string>
@@ -347,8 +330,6 @@
     <string name="agenda_file_detected_message">Diese Datei enthält Ereignisse und Notizen anstelle von Feiertagen. Import fortsetzen?</string>
     <string name="continue_button">Weiter</string>
     <string name="edit_all_events_option">Alle Termine der Serie</string>
-    <string name="event_details">Termindetails</string>
-    <string name="read_only_event_message">Dieses Ereignis ist eine Ausnahme in einer von Google verwalteten Serie und kann in dieser App nicht bearbeitet werden.</string>
     <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
 
 </resources>

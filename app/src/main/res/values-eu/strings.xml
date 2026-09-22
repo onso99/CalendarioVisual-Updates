@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Data arte</string>
     <string name="repeat_after">Errepikapenak</string>
 
-    <string name="activity_log">Jarduera-erregistroa</string>
-    <string name="maintenance_section">Mantentze-lana</string>
 
     <string name="long_period_switch">Aldi luzea</string>
     <string name="date">Data</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Kopiatu kolorea</string>
     <string name="paste_color">Itsatsi kolorea</string>
     <string name="search_events_placeholder">Bilatu gertaerak…</string>
-    <string name="close_search">Itxi bilaketa</string>
     <string name="clear_search">Garbitu bilaketa</string>
-    <string name="current_month">Uneko hilabetea</string>
-    <string name="current_year">Uneko urtea</string>
     <string name="no_results_found">Ez da emaitzarik aurkitu</string>
     <string name="type_to_search">Idatzi bilatzeko…</string>
     <string name="all_day_event">(Egun osoko gertaera)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Editatu gertaera errepikakorra</string>
     <string name="edit_recurring_event_dialog_single_event">Gertaera hau bakarrik</string>
-    <string name="edit_recurring_event_dialog_all_events">Gertaera guztiak</string>
     <string name="copy_event">Kopiatu gertaera</string>
 
     <string name="holiday_manager_title">Jai-egun Kudeatzailea</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Zabalera finkoa)</string>
     <string name="font_condensed">Kondentsatua (Estua)</string>
     <string name="share_event">Partekatu gertaera</string>
-    <string name="share_multiple_message">📅 Nire egutegiko %1$d gertaera partekatzen dizkizut</string>
-    <string name="calendar_events_subject">Egutegiko Gertaerak</string>
     <string name="debug_title">Arazketa</string>
     <string name="next_refresh_label">Hurrengo freskatzea: %1$s</string>
     <string name="next_refresh_pending">15 minututan</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Kopiatu</string>
     <string name="sync_alarms">Sinkronizatu alarmak</string>
     <string name="sync_alarms_success">Garbiketa amaituta: %1$d alarma umezurtz ezabatu dira.</string>
-    <string name="selected_count">%1$d hautatuta</string>
     <string name="delete_multiple_confirmation">%1$d gertaera hauek ezabatu nahi dituzu? Ekintza hau ezin da desegin.</string>
-    <string name="events_deleted_count">%1$d gertaera ezabatu dira.</string>
-    <string name="notes_deleted_count">%1$d ohar ezabatu dira.</string>
     <string name="elements_deleted_count">%1$d elementu ezabatu dira.</string>
 
 
@@ -309,7 +298,6 @@
     <string name="calendar_read_only_error">Irakurtzeko soilik den egutegia</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Datuak optimizatu</string>
     <string name="scan_label">Eskaneatu</string>
     <string name="analyzing_data">Datuak analizatzen…</string>
     <string name="analysis_finished">Analisia amaitu da</string>
@@ -330,13 +318,8 @@
     <string name="other_calendars">Egutegi guztiak</string>
     <string name="monthly_view">Hilabetekoa</string>
     <string name="yearly_view">Urtekoa</string>
-    <string name="holidays_imported_successfully">Jai-egunak ongi inportatu dira.</string>
-    <string name="error_reading_holidays_file">Errorea jai-egunen fitxategia irakurtzean.</string>
-    <string name="error_saving_holidays_file">Errorea jai-egunen fitxategia gordetzean.</string>
-    <string name="holidays_exported_successfully">Jai-egunak ongi esportatu dira</string>
     <string name="file_saved_successfully">Fitxategia ongi gorde da</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Garbitu hautapena</string>
     <string name="import_agenda_title">Partekatu</string>
     <string name="select_target_calendar">Helburuko egutegia</string>
     <string name="import_summary">%1$d ekitaldi eta %2$d ohar inportatuko dira.</string>
@@ -346,8 +329,6 @@
     <string name="agenda_file_detected_message">Fitxategiak gertaerak eta oharrak ditu jaiegunen ordez. Inportazioarekin jarraitu?</string>
     <string name="continue_button">Jarraitu</string>
     <string name="edit_all_events_option">Multzoko gertaera guztiak</string>
-    <string name="event_details">Gertaeraren xehetasunak</string>
-    <string name="read_only_event_message">Gertaera hau Google-k kudeatutako serie baten salbuespena da eta ezin da aplikazio honetatik editatu.</string>
     <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
 
 </resources>

@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Hasta la fecha</string>
     <string name="repeat_after">Repeticiones</string>
 
-    <string name="activity_log">Registro de actividad</string>
-    <string name="maintenance_section">Mantenimiento</string>
     <string name="other_calendars">Todos los calendarios</string>
     <string name="monthly_view">Mensual</string>
     <string name="yearly_view" tools:ignore="Typos">Anual</string>
@@ -74,10 +72,7 @@
     <string name="sunday">Domingo</string>
     <string name="saturday">Sábado</string>
     <string name="theme_imported_successfully">Tema importado con éxito.</string>
-    <string name="holidays_imported_successfully">Festivos importados con éxito.</string>
-    <string name="error_reading_holidays_file">Error al leer el archivo de festivos.</string>
     <string name="error_saving_theme_file">Error al guardar el archivo del tema.</string>
-    <string name="error_saving_holidays_file">Error al guardar el archivo de festivos.</string>
     <string name="general">General</string>
     <string name="language">Idioma</string>
     <string name="mode">Modo</string>
@@ -115,10 +110,7 @@
     <string name="copy_color">Copiar color</string>
     <string name="paste_color">Pegar color</string>
     <string name="search_events_placeholder">Buscar eventos…</string>
-    <string name="close_search">Cerrar búsqueda</string>
     <string name="clear_search">Limpiar búsqueda</string>
-    <string name="current_month">Mes actual</string>
-    <string name="current_year">Año actual</string>
     <string name="no_results_found">No se han encontrado resultados</string>
     <string name="type_to_search">Escribe para buscar…</string>
     <string name="all_day_event">(Evento todo el día)</string>
@@ -130,7 +122,6 @@
     <string name="propios_section_title">Propios</string>
     <string name="reset_color">Restablecer</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
-    <string name="holidays_exported_successfully">Festivos exportados con éxito</string>
     <string name="file_saved_successfully">Archivo guardado con éxito</string>
     <string name="import_success">Importación realizada con éxito</string>
     <string name="agenda_file_detected_title">Tipo de archivo: Agenda</string>
@@ -187,7 +178,6 @@
 
     <string name="edit_recurring_event_dialog_title">Editar evento recurrente</string>
     <string name="edit_recurring_event_dialog_single_event">Solo este evento</string>
-    <string name="edit_recurring_event_dialog_all_events">Todos los eventos</string>
     <string name="copy_event">Copiar evento</string>
 
     <string name="holiday_manager_title">Gestor de Festivos</string>
@@ -206,8 +196,6 @@
     <string name="font_monospace">Monospace (Ancho fijo)</string>
     <string name="font_condensed">Condensada (Estrecha)</string>
     <string name="share_event">Compartir evento</string>
-    <string name="share_multiple_message">📅 Te comparto %1$d eventos de mi calendario</string>
-    <string name="calendar_events_subject">Eventos de Calendario</string>
     <string name="debug_title">Depuración</string>
     <string name="next_refresh_label">Próximo refresco: %1$s</string>
     <string name="next_refresh_pending">en 15 min.</string>
@@ -216,13 +204,9 @@
     <string name="copy_action">Copiar</string>
     <string name="sync_alarms">Sincronizar alarmas</string>
     <string name="sync_alarms_success">Limpieza finalizada: %1$d alarmas huérfanas eliminadas.</string>
-    <string name="selected_count">%1$d seleccionados</string>
     <string name="delete_multiple_confirmation">¿Deseas eliminar estos %1$d eventos? Esta acción no se puede deshacer.</string>
-    <string name="events_deleted_count">%1$d eventos eliminados.</string>
-    <string name="notes_deleted_count">%1$d notas eliminadas.</string>
     <string name="elements_deleted_count">%1$d elementos eliminados.</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Reiniciar selección</string>
     <string name="import_agenda_title">Compartir</string>
     <string name="select_target_calendar">Calendario de destino</string>
     <string name="import_summary">Se importarán %1$d eventos y %2$d notas.</string>
@@ -326,7 +310,6 @@
     <string name="calendar_read_only_error">Calendario de solo lectura</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Optimizar datos</string>
     <string name="scan_label">Escanear</string>
     <string name="analyzing_data">Analizando datos…</string>
     <string name="analysis_finished">Análisis finalizado</string>
@@ -345,8 +328,6 @@
     <string name="lang_zh">Chino (中文)</string>
     <string name="lang_ja">Japonés (日本語)</string>
     <string name="edit_all_events_option">Todos los eventos de la serie</string>
-    <string name="event_details">Detalle del evento</string>
-    <string name="read_only_event_message">Este evento es una excepción de una serie gestionada por Google y no puede editarse desde esta aplicación.</string>
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
 </resources>
 

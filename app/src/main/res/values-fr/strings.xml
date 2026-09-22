@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Jusqu\'à la date</string>
     <string name="repeat_after">Répétitions</string>
 
-    <string name="activity_log">Journal d\'activité</string>
-    <string name="maintenance_section">Maintenance</string>
 
     <string name="long_period_switch">Longue période</string>
     <string name="date">Date</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Copier la couleur</string>
     <string name="paste_color">Coller la couleur</string>
     <string name="search_events_placeholder">Rechercher des événements…</string>
-    <string name="close_search">Fermer la recherche</string>
     <string name="clear_search">Effacer la recherche</string>
-    <string name="current_month">Mois actuel</string>
-    <string name="current_year">Année actuelle</string>
     <string name="no_results_found">Aucun résultat trouvé</string>
     <string name="type_to_search">Tapez pour rechercher…</string>
     <string name="all_day_event">(Événement toute la journée)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Modifier l\'événement récurrent</string>
     <string name="edit_recurring_event_dialog_single_event">Seulement cet événement</string>
-    <string name="edit_recurring_event_dialog_all_events">Toute la série</string>
     <string name="copy_event">Copier l\'événement</string>
 
     <string name="holiday_manager_title">Gestionnaire de jours fériés</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Chasse fixe)</string>
     <string name="font_condensed">Condensée (Étroite)</string>
     <string name="share_event">Partager l\'événement</string>
-    <string name="share_multiple_message">📅 Je partage %1$d événements de mon calendrier avec vous</string>
-    <string name="calendar_events_subject">Événements de calendrier</string>
     <string name="debug_title">Débogage</string>
     <string name="next_refresh_label">Prochain rafraîchissement : %1$s</string>
     <string name="next_refresh_pending">dans 15 min.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Copier</string>
     <string name="sync_alarms">Synchroniser les alarmes</string>
     <string name="sync_alarms_success">Nettoyage terminé : %1$d alarmes orphelines supprimées.</string>
-    <string name="selected_count">%1$d sélectionnés</string>
     <string name="delete_multiple_confirmation">Voulez-vous supprimer ces %1$d événements ? Cette action est irréversible.</string>
-    <string name="events_deleted_count">%1$d événements supprimés.</string>
-    <string name="notes_deleted_count">%1$d notes supprimées.</string>
     <string name="elements_deleted_count">%1$d éléments supprimés.</string>
 
 
@@ -310,7 +299,6 @@
     <string name="calendar_read_only_error">Calendrier en lecture seule</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Optimiser les données</string>
     <string name="scan_label">Scanner</string>
     <string name="analyzing_data">Analyse des données…</string>
     <string name="analysis_finished">Analyse terminée</string>
@@ -331,13 +319,8 @@
     <string name="other_calendars">Tous les calendriers</string>
     <string name="monthly_view">Mensuel</string>
     <string name="yearly_view">Annuel</string>
-    <string name="holidays_imported_successfully">Jours fériés importés avec succès.</string>
-    <string name="error_reading_holidays_file">Erreur lors de la lecture du fichier des jours fériés.</string>
-    <string name="error_saving_holidays_file">Erreur lors de l\'enregistrement du fichier des jours fériés.</string>
-    <string name="holidays_exported_successfully">Jours fériés exportés avec succès</string>
     <string name="file_saved_successfully">Fichier enregistré avec succès</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Réinitialiser la sélection</string>
     <string name="import_agenda_title">Partager</string>
     <string name="select_target_calendar">Calendrier de destination</string>
     <string name="import_summary">%1$d événements et %2$d notes seront importés.</string>
@@ -347,8 +330,6 @@
     <string name="agenda_file_detected_message">Ce fichier contient des événements et des notes au lieu de jours fériés. Continuer l\'importation ?</string>
     <string name="continue_button">Continuer</string>
     <string name="edit_all_events_option">Tous les événements de la série</string>
-    <string name="event_details">Détails de l\'événement</string>
-    <string name="read_only_event_message">Cet événement est une exception dans une série gérée par Google et ne peut pas être modifié depuis cette application.</string>
     <string name="unknown_elements_warning">Éléments inconnus dans cet événement *</string>
 
 </resources>

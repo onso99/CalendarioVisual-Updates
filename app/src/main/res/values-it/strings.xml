@@ -35,8 +35,6 @@
     <string name="repeat_on_date">Fino alla data</string>
     <string name="repeat_after">Ripetizioni</string>
 
-    <string name="activity_log">Registro attività</string>
-    <string name="maintenance_section">Manutenzione</string>
 
     <string name="long_period_switch">Lungo periodo</string>
     <string name="date">Data</string>
@@ -110,10 +108,7 @@
     <string name="copy_color">Copia colore</string>
     <string name="paste_color">Incolla colore</string>
     <string name="search_events_placeholder">Cerca eventi…</string>
-    <string name="close_search">Chiudi ricerca</string>
     <string name="clear_search">Cancella ricerca</string>
-    <string name="current_month">Mese corrente</string>
-    <string name="current_year">Anno corrente</string>
     <string name="no_results_found">Nessun risultato trovato</string>
     <string name="type_to_search">Digita per cercare…</string>
     <string name="all_day_event">(Evento tutto il giorno)</string>
@@ -176,7 +171,6 @@
 
     <string name="edit_recurring_event_dialog_title">Modifica evento ricorrente</string>
     <string name="edit_recurring_event_dialog_single_event">Solo questo evento</string>
-    <string name="edit_recurring_event_dialog_all_events">Tutta la serie</string>
     <string name="copy_event">Copia evento</string>
 
     <string name="holiday_manager_title">Gestore festività</string>
@@ -195,8 +189,6 @@
     <string name="font_monospace">Monospace (Larghezza fissa)</string>
     <string name="font_condensed">Condensed (Stretto)</string>
     <string name="share_event">Condividi evento</string>
-    <string name="share_multiple_message">📅 Ti condivido %1$d eventi dal mio calendario</string>
-    <string name="calendar_events_subject">Eventi del calendario</string>
     <string name="debug_title">Debug</string>
     <string name="next_refresh_label">Prossimo aggiornamento: %1$s</string>
     <string name="next_refresh_pending">tra 15 min.</string>
@@ -205,10 +197,7 @@
     <string name="copy_action">Copia</string>
     <string name="sync_alarms">Sincronizza allarmi</string>
     <string name="sync_alarms_success">Pulizia completata: %1$d allarmi orfani rimossi.</string>
-    <string name="selected_count">%1$d selezionati</string>
     <string name="delete_multiple_confirmation">Vuoi eliminare questi %1$d eventi? L\'azione è irreversibile.</string>
-    <string name="events_deleted_count">%1$d eventi eliminati.</string>
-    <string name="notes_deleted_count">%1$d note eliminate.</string>
     <string name="elements_deleted_count">%1$d elementi eliminati.</string>
 
 
@@ -311,7 +300,6 @@
     <string name="calendar_read_only_error">Calendario in sola lettura</string>
 
     <!-- Idiomas -->
-    <string name="data_cleaning_label">Ottimizza dati</string>
     <string name="scan_label">Scansiona</string>
     <string name="analyzing_data">Analisi dei dati…</string>
     <string name="analysis_finished">Analisi terminata</string>
@@ -332,13 +320,8 @@
     <string name="other_calendars">Tutti i calendari</string>
     <string name="monthly_view">Mensile</string>
     <string name="yearly_view">Annuale</string>
-    <string name="holidays_imported_successfully">Festività importate con successo.</string>
-    <string name="error_reading_holidays_file">Errore durante la lettura del file delle festività.</string>
-    <string name="error_saving_holidays_file">Errore durante il salvataggio del file delle festività.</string>
-    <string name="holidays_exported_successfully">Festività esportate con successo</string>
     <string name="file_saved_successfully">File salvato correttamente</string>
     <string name="selected_count_short">(%1$d)</string>
-    <string name="clear_selection">Reimposta selezione</string>
     <string name="import_agenda_title">Condividi</string>
     <string name="select_target_calendar">Calendario di destinazione</string>
     <string name="import_summary">Verranno importati %1$d eventi e %2$d note.</string>
@@ -348,8 +331,6 @@
     <string name="agenda_file_detected_message">Questo file contiene eventi e note invece di festività. Continuare con l\'importazione?</string>
     <string name="continue_button">Continua</string>
     <string name="edit_all_events_option">Tutti gli eventi della serie</string>
-    <string name="event_details">Dettagli evento</string>
-    <string name="read_only_event_message">Questo evento è un\'eccezione in una serie gestita da Google e non può essere modificato da questa applicazione.</string>
     <string name="unknown_elements_warning">Elementi sconosciuti in questo evento *</string>
 
 </resources>
