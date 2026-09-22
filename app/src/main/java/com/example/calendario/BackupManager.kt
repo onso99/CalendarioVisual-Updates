@@ -232,8 +232,12 @@ object BackupManager {
                         for (i in 0 until array.length()) SettingsManager.markEventAsDeleted(context, array.optLong(i))
                     }
                     
-                    val merged = mergeHistoryWithSystemData(context, localEvents, remoteEvents, availableCalendars)
-                    dao.refreshEvents(merged.map { it.toEntity() })
+                    val selectedIds = SettingsManager.getSelectedCalendarIds(context)
+                    val systemEventsMap = if (selectedIds.isNotEmpty()) readFestivosFromCalendarsSync(context, selectedIds) else emptyMap()
+                    val systemEvents = systemEventsMap.values.flatten()
+                    
+                    val merged = mergeHistoryWithSystemData(context, localEvents + remoteEvents, systemEvents, availableCalendars)
+                    dao.smartRefreshEvents(merged.map { it.toEntity() })
                 }
             }
             

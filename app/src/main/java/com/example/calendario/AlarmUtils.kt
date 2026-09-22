@@ -5,10 +5,12 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
+import android.provider.CalendarContract
 import androidx.core.content.edit
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -195,6 +197,18 @@ object AlarmUtils {
         }
     }
 
+    private fun isEventInSystemCalendar(context: Context, eventId: Long): Boolean {
+        if (eventId <= 0) return false
+        return try {
+            val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
+            context.contentResolver.query(uri, arrayOf(CalendarContract.Events._ID), null, null, null)?.use { cursor ->
+                cursor.moveToFirst()
+            } ?: false
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     fun rescheduleAllAlarms(context: Context, providedEvents: List<Festivo>? = null): Int {
         val allEvents = providedEvents ?: run {
             val database = AppDatabase.getDatabase(context)
@@ -221,10 +235,13 @@ object AlarmUtils {
                 val eventInstances = allEvents.filter { it.id == eventId }
                 
                 if (eventInstances.isEmpty()) {
-                    // El evento REALMENTE ya no existe en el calendario (purgado)
-                    cancelAlarm(context, eventId)
-                    remove(eventIdStr)
-                    purgedCount++
+                    // Verificar si el evento aún existe en el calendario del sistema antes de purgar la alarma
+                    val existsInSystem = isEventInSystemCalendar(context, eventId)
+                    if (!existsInSystem) {
+                        cancelAlarm(context, eventId)
+                        remove(eventIdStr)
+                        purgedCount++
+                    }
                 } else {
                     // El evento existe: Verificamos si el bloque completo ya ha pasado
                     val lastInstance = eventInstances.maxByOrNull { it.date }

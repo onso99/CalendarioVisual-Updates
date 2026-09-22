@@ -71,6 +71,9 @@ data class Festivo(
         put("isGhost", if (forExport) false else isGhost)
         put("hasIncident", hasIncident)
         put("repeatIndex", repeatIndex)
+        put("fullStartMillis", fullStartMillis)
+        put("fullEndMillis", fullEndMillis)
+        put("repeatCount", repeatCount)
         put("adn", if (forExport) "" else adn)
     }
 

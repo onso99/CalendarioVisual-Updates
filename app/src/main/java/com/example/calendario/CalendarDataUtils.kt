@@ -480,8 +480,8 @@ suspend fun mergeHistoryWithSystemData(
 
             // C) SANEAMIENTO DE DUPLICADOS Y SEGMENTOS (v3.1.34):
             if (event.id > 0) {
-                // Si el ID existe en el sistema pero este día/ADN concreto NO, es basura de Room (evento acortado)
-                if (systemIds.contains(event.id) && !systemKeys.contains(event.adn)) {
+                // Si el ID existe en el sistema pero este día/ADN concreto NO, es basura de Room (evento acortado, no aplicable a series recurrentes)
+                if (systemIds.contains(event.id) && !systemKeys.contains(event.adn) && event.rrule == null) {
                     return@filter false
                 }
                 
@@ -511,7 +511,7 @@ suspend fun mergeHistoryWithSystemData(
         .map { event ->
             if (event.id > 0) {
                 val fuzzyKey = "${event.date}_${event.title.unaccent().trim().lowercase()}"
-                val isPresent = systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey)
+                val isPresent = systemKeys.contains(event.adn) || fuzzySystemMap.containsKey(fuzzyKey) || (event.rrule != null && systemIds.contains(event.id))
                 if (isPresent) event.copy(isGhost = false)
                 else {
                     val isWithinYear = !event.date.isBefore(today) && event.date.isBefore(today.plusYears(1))
