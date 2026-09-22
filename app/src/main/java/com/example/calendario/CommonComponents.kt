@@ -459,6 +459,71 @@ fun AboutDialog(onDismiss: () -> Unit) {
 }
 
 @Composable
+fun SyncDriveDialog(
+    isSyncing: Boolean,
+    statusMessage: String?,
+    onSync: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = "Sincronizar",
+        confirmButton = {
+            DialogDismissButton(
+                text = stringResource(id = R.string.close),
+                onDismiss = onDismiss
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().animateContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 1. BOTÓN SINCRONIZAR CENTRADO (v3.3.07)
+            Button(
+                onClick = onSync,
+                enabled = !isSyncing,
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CalendarioTheme.colors.cabecera,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.height(48.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val infiniteTransition = rememberInfiniteTransition(label = "sync_rotation")
+                    val rotation by infiniteTransition.animateFloat(
+                        initialValue = 0f,
+                        targetValue = 360f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1200, easing = LinearEasing)
+                        ),
+                        label = "angle"
+                    )
+                    
+                    Icon(
+                        imageVector = Icons.Default.Sync, 
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp).graphicsLayer {
+                            if (isSyncing) rotationZ = -rotation // Sentido anti-horario (v3.3.07)
+                        }
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(id = R.string.sincronizar_label), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            // 2. FILA DE MENSAJES (Altura fija 28dp para estabilidad)
+            Box(modifier = Modifier.fillMaxWidth().height(28.dp), contentAlignment = Alignment.Center) {
+                statusMessage?.let {
+                    Text(text = it, fontSize = 12.sp, color = CalendarioTheme.colors.cabecera, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun CleaningAssistantDialog(
     uiState: CalendarioUiState,
     isScanning: Boolean,

@@ -139,13 +139,18 @@ fun CalendarioScreen(
     var showBackupScreen by remember { mutableStateOf(false) }
     
     var showMenu3Puntos by remember { mutableStateOf(false) } 
-    var showAboutDialog by remember { mutableStateOf(false) } 
-    var showCleaningDialog by remember { mutableStateOf(false) } 
+    var showCleaningDialog by remember { mutableStateOf(false) }
+    var showSyncDialog by remember { mutableStateOf(false) }
     
     var isScanningCleaning by remember { mutableStateOf(false) }
     var cleaningStatusMessage by remember { mutableStateOf<String?>(null) }
     val analyzingDataMsg = stringResource(id = R.string.analyzing_data)
     val analysisFinishedMsg = stringResource(id = R.string.analysis_finished)
+
+    var isSyncingDrive by remember { mutableStateOf(false) }
+    var syncStatusMessage by remember { mutableStateOf<String?>(null) }
+    val syncingMsg = "Sincronizando con Drive..."
+    val syncFinishedMsg = "Sincronización completada"
 
     LaunchedEffect(isScanningCleaning) {
         if (isScanningCleaning) {
@@ -157,10 +162,27 @@ fun CalendarioScreen(
         }
     }
 
+    LaunchedEffect(isSyncingDrive) {
+        if (isSyncingDrive) {
+            syncStatusMessage = syncingMsg
+            viewModel.syncHistoryToDrive(context) { result ->
+                isSyncingDrive = false
+                syncStatusMessage = if (result.success) syncFinishedMsg else "Error en la sincronización"
+            }
+        }
+    }
+
     LaunchedEffect(cleaningStatusMessage) {
         if (cleaningStatusMessage == analysisFinishedMsg) {
             delay(2000.milliseconds)
             cleaningStatusMessage = null
+        }
+    }
+
+    LaunchedEffect(syncStatusMessage) {
+        if (syncStatusMessage == syncFinishedMsg || syncStatusMessage?.startsWith("Error") == true) {
+            delay(2000.milliseconds)
+            syncStatusMessage = null
         }
     }
     
@@ -448,8 +470,13 @@ fun CalendarioScreen(
         )
     }
 
-    if (showAboutDialog) {
-        AboutDialog(onDismiss = { showAboutDialog = false })
+    if (showSyncDialog) {
+        SyncDriveDialog(
+            isSyncing = isSyncingDrive,
+            statusMessage = syncStatusMessage,
+            onSync = { isSyncingDrive = true },
+            onDismiss = { showSyncDialog = false }
+        )
     }
 
     if (showCleaningDialog) {
@@ -906,7 +933,7 @@ fun CalendarioScreen(
                                             offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = (-48).dp)
                                         ) {
                                             DropdownMenuItem(
-                                                text = { Text("Importar agenda (.cvo)", color = CalendarioTheme.colors.textSystem) },
+                                                text = { Text("Importar datos (.cvo)", color = CalendarioTheme.colors.textSystem) },
                                                 leadingIcon = { Icon(painterResource(id = R.drawable.ic_folder_open_custom), null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                                                 onClick = {
                                                     showMenu3Puntos = false
@@ -914,19 +941,19 @@ fun CalendarioScreen(
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text("Optimizar datos", color = CalendarioTheme.colors.textSystem) },
+                                                text = { Text("Sincronizar con Drive", color = CalendarioTheme.colors.textSystem) },
+                                                leadingIcon = { Icon(Icons.Default.Sync, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
+                                                onClick = {
+                                                    showMenu3Puntos = false
+                                                    showSyncDialog = true
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Optimizar Base de datos", color = CalendarioTheme.colors.textSystem) },
                                                 leadingIcon = { Icon(Icons.Default.CleaningServices, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
                                                 onClick = {
                                                     showMenu3Puntos = false
                                                     showCleaningDialog = true
-                                                }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text("Acerca de", color = CalendarioTheme.colors.textSystem) },
-                                                leadingIcon = { Icon(Icons.Default.Info, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
-                                                onClick = {
-                                                    showMenu3Puntos = false
-                                                    showAboutDialog = true
                                                 }
                                             )
                                         }

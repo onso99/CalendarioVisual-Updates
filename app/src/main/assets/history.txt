@@ -1,3 +1,4 @@
+2026-09-21 - v3.3.06.1 Acerca de:unificación de versión con build.gradle.kts
 2026-09-21 - v3.3.06 Mejora del diálogo Optimizar
 2026-09-21 - v3.3.05.2 Blindaje en cancelEventInstance (CalendarUtils.kt). Sincronización Selectiva de Alarmas
 2026-09-21 - v3.3.05.1 Protección de "Lápidas" (Tombstones). Fusión Inteligente de Borrados (Unión de Conocimiento). Blindaje en GoogleDriveHelper
