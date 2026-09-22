@@ -51,7 +51,6 @@ fun ColorThemeScreen(
 ) {
     val context = LocalContext.current
     val prefs = remember { SettingsManager.getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME) }
-    val isAppDark = darkTheme
     
     var showColorPicker by remember { mutableStateOf(value = false) }
     var showRenameDialog by remember { mutableStateOf(value = false) }
@@ -75,11 +74,11 @@ fun ColorThemeScreen(
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val themeItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Tema" && it.labelRes != R.string.calendar_background }
                 themeItems.forEachIndexed { index, item ->
-                    val currentColor = getThemeColor(prefs, if (isAppDark) item.darkThemeKey else item.lightThemeKey, if (isAppDark) item.defaultDark else item.defaultLight)
+                    val currentColor = getThemeColor(prefs, if (darkTheme) item.darkThemeKey else item.lightThemeKey, if (darkTheme) item.defaultDark else item.defaultLight)
                     
                     if (item.labelRes == R.string.effect) {
                         val backgroundItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.calendar_background }!!
-                        val color1 = getThemeColor(prefs, if (isAppDark) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey, if (isAppDark) backgroundItem.defaultDark else backgroundItem.defaultLight)
+                        val color1 = getThemeColor(prefs, if (darkTheme) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey, if (darkTheme) backgroundItem.defaultDark else backgroundItem.defaultLight)
 
                         EffectColorThemeRow(
                             label = stringResource(id = item.labelRes),
@@ -103,8 +102,8 @@ fun ColorThemeScreen(
                                 showColorPicker = true
                             },
                             onExchange = {
-                                val key1 = if (isAppDark) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey
-                                val key2 = if (isAppDark) item.darkThemeKey else item.lightThemeKey
+                                val key1 = if (darkTheme) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey
+                                val key2 = if (darkTheme) item.darkThemeKey else item.lightThemeKey
                                 val c1 = color1.toArgb()
                                 val c2 = currentColor.toArgb()
                                 prefs.edit {
@@ -137,8 +136,8 @@ fun ColorThemeScreen(
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val propiosItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Propios" }
                 propiosItems.forEachIndexed { index, item ->
-                    val key = if (isAppDark) item.darkThemeKey else item.lightThemeKey
-                    val defaultColor = if (isAppDark) item.defaultDark else item.defaultLight
+                    val key = if (darkTheme) item.darkThemeKey else item.lightThemeKey
+                    val defaultColor = if (darkTheme) item.defaultDark else item.defaultLight
                     val currentColor = getThemeColor(prefs, key, defaultColor)
                     
                     val keywordKey = when (item.labelRes) {
@@ -221,8 +220,8 @@ fun ColorThemeScreen(
 
     if (showColorPicker && pendingItem != null) {
         val item = pendingItem!!
-        val key = if (isAppDark) item.darkThemeKey else item.lightThemeKey
-        val currentColor = getThemeColor(prefs, key, if (isAppDark) item.defaultDark else item.defaultLight)
+        val key = if (darkTheme) item.darkThemeKey else item.lightThemeKey
+        val currentColor = getThemeColor(prefs, key, if (darkTheme) item.defaultDark else item.defaultLight)
 
         AdvancedColorPickerDialog(
             initialColor = currentColor,

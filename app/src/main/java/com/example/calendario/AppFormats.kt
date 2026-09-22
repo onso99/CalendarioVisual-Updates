@@ -23,9 +23,6 @@ object AppFormats {
     fun dateTimeShort(locale: Locale): DateTimeFormatter = 
         DateTimeFormatter.ofPattern("dd/MM/yy HH:mm", locale)
 
-    fun yearOnly(locale: Locale): DateTimeFormatter = 
-        DateTimeFormatter.ofPattern("yyyy", locale)
-    
     // Formatos con nombre de día/mes (Requieren Locale para traducciones)
     fun dayDateAbbr(locale: Locale): DateTimeFormatter = 
         DateTimeFormatter.ofPattern("EEE, d MMM yyyy", locale)

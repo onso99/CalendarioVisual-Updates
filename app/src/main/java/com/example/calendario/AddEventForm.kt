@@ -652,6 +652,7 @@ private fun ColorCircle(
 private fun AdaptiveDateTimeRow(
     label: String,
     date: LocalDateTime,
+    @Suppress("SAME_PARAMETER_VALUE")
     isAllDay: Boolean,
     onDateClick: () -> Unit,
     onTimeClick: () -> Unit,
