@@ -57,7 +57,8 @@ fun createEvent(
         if (results.isNotEmpty() && results[0].uri != null) {
             val eventId = ContentUris.parseId(results[0].uri!!)
             if (customColor != null) {
-                SettingsManager.savePeriodColor(context, eventId, customColor)
+                val adn = Festivo.generateAdn(startDate.toLocalDate(), title, if (isAllDay) null else startDate.toLocalTime())
+                SettingsManager.savePeriodColor(context, eventId, customColor, adn)
             }
             if (showToast) context.showToast(R.string.event_saved_successfully)
             eventId
@@ -121,7 +122,8 @@ fun updateEvent(
         context.contentResolver.applyBatch(CalendarContract.AUTHORITY, operations)
         
         if (customColor != null) {
-            SettingsManager.savePeriodColor(context, eventId, customColor)
+            val adn = Festivo.generateAdn(startDate.toLocalDate(), title, if (isAllDay) null else startDate.toLocalTime())
+            SettingsManager.savePeriodColor(context, eventId, customColor, adn)
         }
 
         // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi

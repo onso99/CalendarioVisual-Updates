@@ -408,7 +408,7 @@ fun readFestivosFromCalendarsSync(
                         lane = assignedLane,
                         totalDays = totalDaysCount,
                         currentDay = dayIndex,
-                        customColor = customColorMap[eventId],
+                        customColor = customColorMap[eventId] ?: SettingsManager.getPeriodColorByAdn(context, Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)),
                         fullStartMillis = beginMillis,
                         fullEndMillis = endMillis,
                         repeatCount = repeatCountMap[seriesId] ?: repeatCountMap[eventId], // Heredar conteo (v3.1.64)

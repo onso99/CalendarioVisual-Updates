@@ -78,7 +78,8 @@ private fun processAlarmForEvent(
         val cleanAlarmTime = alarmTime.withSecond(0).withNano(0)
         
         val offset = Duration.between(cleanAlarmTime, cleanStartTime).toMinutes().toInt()
-        SettingsManager.saveEventAlarmOffset(context, eventId, offset)
+        val eventAdn = Festivo.generateAdn(startDate.toLocalDate(), title, if (isAllDay) null else startDate.toLocalTime())
+        SettingsManager.saveEventAlarmOffset(context, eventId, offset, eventAdn)
         val tempFestivo = Festivo(
             id = eventId,
             title = title,
@@ -89,11 +90,13 @@ private fun processAlarmForEvent(
             isAllDay = isAllDay,
             calendarId = selectedCalendarId ?: -1,
             isFromHolidaySource = false,
-            rrule = finalRrule
+            rrule = finalRrule,
+            adn = eventAdn
         )
         AlarmUtils.scheduleAlarm(context, tempFestivo)
     } else {
-        SettingsManager.saveEventAlarmOffset(context, eventId, null)
+        val eventAdn = Festivo.generateAdn(startDate.toLocalDate(), title, if (isAllDay) null else startDate.toLocalTime())
+        SettingsManager.saveEventAlarmOffset(context, eventId, null, eventAdn)
         AlarmUtils.cancelAlarm(context, eventId, startDate.toLocalDate())
     }
 }

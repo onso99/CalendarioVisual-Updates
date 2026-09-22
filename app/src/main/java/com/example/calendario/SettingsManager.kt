@@ -176,14 +176,34 @@ object SettingsManager {
     fun getDefaultSnoozeInterval(context: Context): Int =
         getSafeInt(appPrefs(context), AppConstants.KEY_DEFAULT_SNOOZE_INTERVAL, 10)
 
-    fun getEventAlarmOffset(context: Context, eventId: Long): Int? {
+    fun getEventAlarmOffset(context: Context, eventId: Long, adn: String? = null): Int? {
         val prefs = alarmPrefs(context)
-        return if (prefs.contains(eventId.toString())) prefs.getInt(eventId.toString(), 20) else null
+        val idOffset = if (prefs.contains(eventId.toString())) prefs.getInt(eventId.toString(), 20) else null
+        if (idOffset != null) return idOffset
+        return if (!adn.isNullOrBlank()) getEventAlarmOffsetByAdn(context, adn) else null
     }
 
-    fun saveEventAlarmOffset(context: Context, eventId: Long, offset: Int?) {
+    fun saveEventAlarmOffset(context: Context, eventId: Long, offset: Int?, adn: String? = null) {
         alarmPrefs(context).edit {
             if (offset == null) remove(eventId.toString()) else putInt(eventId.toString(), offset)
+        }
+        if (!adn.isNullOrBlank()) {
+            saveEventAlarmOffsetByAdn(context, adn, offset)
+        }
+    }
+
+    fun getEventAlarmOffsetByAdn(context: Context, adn: String): Int? {
+        if (adn.isBlank()) return null
+        val prefs = alarmPrefs(context)
+        val key = "adn_$adn"
+        return if (prefs.contains(key)) prefs.getInt(key, 20) else null
+    }
+
+    fun saveEventAlarmOffsetByAdn(context: Context, adn: String, offset: Int?) {
+        if (adn.isBlank()) return
+        alarmPrefs(context).edit {
+            val key = "adn_$adn"
+            if (offset == null) remove(key) else putInt(key, offset)
         }
     }
 
@@ -221,14 +241,34 @@ object SettingsManager {
     // --- 5. COLORES DE PERIODOS ---
     private fun periodColorPrefs(context: Context) = getPrefs(context, AppConstants.PERIOD_COLOR_PREFS_NAME)
 
-    fun getPeriodColor(context: Context, eventId: Long): Int? {
+    fun getPeriodColor(context: Context, eventId: Long, adn: String? = null): Int? {
         val prefs = periodColorPrefs(context)
-        return if (prefs.contains(eventId.toString())) prefs.getInt(eventId.toString(), 0) else null
+        val idColor = if (prefs.contains(eventId.toString())) prefs.getInt(eventId.toString(), 0) else null
+        if (idColor != null) return idColor
+        return if (!adn.isNullOrBlank()) getPeriodColorByAdn(context, adn) else null
     }
 
-    fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?) {
+    fun savePeriodColor(context: Context, eventId: Long, colorInt: Int?, adn: String? = null) {
         periodColorPrefs(context).edit {
             if (colorInt == null) remove(eventId.toString()) else putInt(eventId.toString(), colorInt)
+        }
+        if (!adn.isNullOrBlank()) {
+            savePeriodColorByAdn(context, adn, colorInt)
+        }
+    }
+
+    fun getPeriodColorByAdn(context: Context, adn: String): Int? {
+        if (adn.isBlank()) return null
+        val prefs = periodColorPrefs(context)
+        val key = "adn_$adn"
+        return if (prefs.contains(key)) prefs.getInt(key, 0) else null
+    }
+
+    fun savePeriodColorByAdn(context: Context, adn: String, colorInt: Int?) {
+        if (adn.isBlank()) return
+        periodColorPrefs(context).edit {
+            val key = "adn_$adn"
+            if (colorInt == null) remove(key) else putInt(key, colorInt)
         }
     }
 

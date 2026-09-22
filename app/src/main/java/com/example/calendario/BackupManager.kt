@@ -56,12 +56,25 @@ object BackupManager {
         }
         root.put(KEY_DAILY_NOTES, notesArray)
 
-        // 4. Historial de Eventos (Centralizado v3.1.34)
-        val historyArray = JSONArray()
-        dao.getAllEventsSync().forEach { entity ->
-            historyArray.put(entity.toFestivo().toJson())
+        // 4. Historial de Eventos (Desacoplado v3.3.07: Backup ultraligero)
+        root.put(KEY_CALENDAR_HISTORY, JSONArray())
+
+        // 4.1 Metadatos por ADN (Colores y Alarmas v3.3.07)
+        val periodColorsByAdn = JSONObject()
+        SettingsManager.getPrefs(context, AppConstants.PERIOD_COLOR_PREFS_NAME).all.forEach { (key, value) ->
+            if (key.startsWith("adn_") && value is Int) {
+                periodColorsByAdn.put(key.removePrefix("adn_"), value)
+            }
         }
-        root.put(KEY_CALENDAR_HISTORY, historyArray)
+        root.put("period_colors_by_adn", periodColorsByAdn)
+
+        val alarmOffsetsByAdn = JSONObject()
+        SettingsManager.getPrefs(context, AppConstants.ALARM_PREFS_NAME).all.forEach { (key, value) ->
+            if (key.startsWith("adn_") && value is Int) {
+                alarmOffsetsByAdn.put(key.removePrefix("adn_"), value)
+            }
+        }
+        root.put("alarm_offsets_by_adn", alarmOffsetsByAdn)
 
         // 5. Mapeo de Identidad de Calendarios (Crucial para restauración inteligente)
         val calendarMapping = JSONArray()
@@ -206,39 +219,58 @@ object BackupManager {
                 }
             }
 
-            // 4. HISTORIAL DE EVENTOS (Fusión Room)
+            // 4. METADATOS Y COLORES POR ADN (Restauración Ligera v3.3.07)
+            json.optJSONObject("period_colors_by_adn")?.let { colorsObj ->
+                val keys = colorsObj.keys()
+                while (keys.hasNext()) {
+                    val adn = keys.next()
+                    val colorInt = colorsObj.optInt(adn)
+                    if (colorInt != 0) {
+                        SettingsManager.savePeriodColorByAdn(context, adn, colorInt)
+                    }
+                }
+            }
+
+            json.optJSONObject("alarm_offsets_by_adn")?.let { alarmObj ->
+                val keys = alarmObj.keys()
+                while (keys.hasNext()) {
+                    val adn = keys.next()
+                    val offset = alarmObj.optInt(adn)
+                    SettingsManager.saveEventAlarmOffsetByAdn(context, adn, offset)
+                }
+            }
+
+            // 5. EVENTOS Y SINCRO CON SISTEMA
             if (restoreEvents) {
                 val historyJson = json.optJSONArray(KEY_CALENDAR_HISTORY)
+                val remoteEvents = mutableListOf<Festivo>()
                 if (historyJson != null) {
-                    val remoteEvents = mutableListOf<Festivo>()
                     for (i in 0 until historyJson.length()) {
                         try {
                             val obj = historyJson.getJSONObject(i)
                             remoteEvents.add(Festivo.fromJson(obj))
                         } catch (_: Exception) {}
                     }
-                    eventsCount = remoteEvents.size
-                    
-                    val localEvents = dao.getAllEventsSync().map { it.toFestivo() }
-                    val availableCalendars = loadAvailableCalendarsSync(context)
-                    
-                    // REGLA DE ORO (v3.3.06): Durante la sincronización NUNCA borramos la lista local de eventos eliminados.
-                    // Solo la limpiamos si es una restauración total solicitada por el usuario.
-                    if (!isSync) {
-                        SettingsManager.clearDeletedEventIds(context)
-                    }
-                    
-                    json.optJSONArray(KEY_DELETED_EVENTS)?.let { array ->
-                        for (i in 0 until array.length()) SettingsManager.markEventAsDeleted(context, array.optLong(i))
-                    }
-                    
-                    val selectedIds = SettingsManager.getSelectedCalendarIds(context)
-                    val systemEventsMap = if (selectedIds.isNotEmpty()) readFestivosFromCalendarsSync(context, selectedIds) else emptyMap()
-                    val systemEvents = systemEventsMap.values.flatten()
-                    
-                    val merged = mergeHistoryWithSystemData(context, localEvents + remoteEvents, systemEvents, availableCalendars)
-                    dao.smartRefreshEvents(merged.map { it.toEntity() })
                 }
+                
+                val localEvents = dao.getAllEventsSync().map { it.toFestivo() }
+                val availableCalendars = loadAvailableCalendarsSync(context)
+                
+                if (!isSync) {
+                    SettingsManager.clearDeletedEventIds(context)
+                }
+                
+                json.optJSONArray(KEY_DELETED_EVENTS)?.let { array ->
+                    for (i in 0 until array.length()) SettingsManager.markEventAsDeleted(context, array.optLong(i))
+                }
+                
+                val selectedIds = SettingsManager.getSelectedCalendarIds(context)
+                val systemEventsMap = if (selectedIds.isNotEmpty()) readFestivosFromCalendarsSync(context, selectedIds) else emptyMap()
+                val systemEvents = systemEventsMap.values.flatten()
+                eventsCount = systemEvents.size
+                
+                val merged = mergeHistoryWithSystemData(context, localEvents + remoteEvents, systemEvents, availableCalendars)
+                dao.smartRefreshEvents(merged.map { it.toEntity() })
             }
             
             AlarmUtils.rescheduleAllAlarms(context)

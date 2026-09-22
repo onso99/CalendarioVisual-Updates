@@ -26,7 +26,7 @@ object AlarmUtils {
 
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleAlarm(context: Context, event: Festivo) {
-        val offset = SettingsManager.getEventAlarmOffset(context, event.id) ?: return
+        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return
         
         val referenceDateTime = if ((event.isAllDay) || (event.startTime == null)) {
             event.date.atStartOfDay()
@@ -268,7 +268,7 @@ object AlarmUtils {
         LogCollector.addLog("ALARMA: Sincronizando ventana...")
         var count = 0
         allEvents.forEach { event ->
-            if (SettingsManager.getEventAlarmOffset(context, event.id) != null) {
+            if (SettingsManager.getEventAlarmOffset(context, event.id, event.adn) != null) {
                 val referenceDateTime = if (event.isAllDay || event.startTime == null) {
                     event.date.atStartOfDay()
                 } else {
@@ -294,7 +294,7 @@ object AlarmUtils {
      * Criterio: Switch ON Y (Es futuro O es serie recurrente que aún no ha pasado en el día)
      */
     fun shouldShowAlarmIcon(context: Context, event: Festivo): Boolean {
-        val offset = SettingsManager.getEventAlarmOffset(context, event.id) ?: return false
+        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return false
         
         // SINCRO INTELIGENTE (v3.1.34): En periodos largos, si el ajuste existe en Prefs, 
         // mostramos la campana en todos los días del bloque para dar confianza al usuario.
@@ -313,7 +313,7 @@ object AlarmUtils {
     }
 
     fun getAlarmTimeString(context: Context, event: Festivo): String? {
-        val offset = SettingsManager.getEventAlarmOffset(context, event.id) ?: return null
+        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return null
         
         val referenceDateTime = if (event.isAllDay || event.startTime == null) {
             event.date.atStartOfDay()

@@ -57,15 +57,16 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
                 // pero Room ya manda en la App.
             }
 
-            // Creamos el nuevo paquete con los datos fusionados (o nuevos si no había remotos)
+            // Creamos el nuevo paquete ligero con los metadatos de la App
             val selectedIds = SettingsManager.getSelectedCalendarIds(context)
             val favoriteId = SettingsManager.getFavoriteCalendarId(context)
 
             val fullBackupJson = BackupManager.createFullBackupJson(context, selectedIds, favoriteId)
             
-            // Calculamos estadísticas para el resultado
-            val totalEvents = fullBackupJson.optJSONArray("calendar_history")?.length() ?: 0
+            // Calculamos estadísticas para el resultado (v3.3.07)
             val totalNotes = fullBackupJson.optJSONArray("daily_notes")?.length() ?: 0
+            val colorsCount = fullBackupJson.optJSONObject("period_colors_by_adn")?.length() ?: 0
+            val alarmOffsetsCount = fullBackupJson.optJSONObject("alarm_offsets_by_adn")?.length() ?: 0
             
             val jsonString = fullBackupJson.toString()
             val sizeBytes = jsonString.toByteArray(Charsets.UTF_8).size.toLong()
@@ -77,24 +78,21 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
             uploadFileToDrive(tempFile)
             tempFile.delete()
 
-            // ELIMINADO: SettingsManager.clearDeletedEventIds(context)
-            // ERROR CRÍTICO (v3.3.06): Borrar los IDs locales causaba la "resurrección" de eventos del sistema.
-            
             // Registrar en historial
             BackupHistoryManager.addEntry(context, BackupHistoryEntry(
                 timestamp = System.currentTimeMillis(),
                 source = BackupSource.DRIVE,
                 action = BackupAction.SYNC,
                 isSuccess = true,
-                eventsCount = totalEvents,
+                eventsCount = colorsCount + alarmOffsetsCount,
                 notesCount = totalNotes,
                 includePrefs = true,
                 sizeBytes = sizeBytes
             ))
             
             SyncResult(
-                totalEvents = totalEvents + totalNotes, 
-                deletedCount = 0, // El motor de fusión ya limpió, informamos total resultante
+                totalEvents = colorsCount + alarmOffsetsCount + totalNotes, 
+                deletedCount = 0,
                 success = true,
                 sizeBytes = sizeBytes
             )
