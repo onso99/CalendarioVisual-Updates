@@ -44,6 +44,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -638,7 +640,9 @@ fun CalendarioScreen(
             availableCalendars = uiState.availableCalendars
         )
     } else {
-        val maxDrawerWidth = LocalConfiguration.current.screenWidthDp.dp * 0.85f
+        val density = LocalDensity.current
+        val containerWidth = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+        val maxDrawerWidth = containerWidth * 0.85f
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
