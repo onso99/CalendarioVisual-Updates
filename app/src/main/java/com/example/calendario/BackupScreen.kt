@@ -59,6 +59,9 @@ fun BackupScreen(
     var showUnlinkAccountDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showConfirmRestoreDialog by remember { mutableStateOf(false) }
+    var showCleaningDialog by remember { mutableStateOf(false) }
+    var isScanningCleaning by remember { mutableStateOf(false) }
+    var cleaningStatusMessage by remember { mutableStateOf<String?>(null) }
 
     // --- Launchers ---
     val googleSignInLauncher = rememberLauncherForActivityResult(
@@ -73,6 +76,21 @@ fun BackupScreen(
                     context.showToast(R.string.account_linked_success)
                 } else {
                     context.showToast(R.string.account_linked_error)
+                }
+            }
+        }
+    )
+
+    val importCvoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            if (uri != null) {
+                viewModel.processExternalCvo(uri) { success, error, _ ->
+                    if (success) {
+                        context.showToast(R.string.import_success)
+                    } else {
+                        context.showToast(error ?: "Error al importar archivo .cvo")
+                    }
                 }
             }
         }
@@ -93,12 +111,12 @@ fun BackupScreen(
     }
 
     AppScreen(
-        title = stringResource(id = R.string.backup_section_title_label),
+        title = stringResource(id = R.string.data_center_screen_title),
         onBackClick = onBackPress
     ) {
         Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
-            // --- SECCIÓN GOOGLE DRIVE ---
-            SectionTitle(text = stringResource(id = R.string.drive_label), isFirst = true)
+            // --- SECCIÓN 1: COPIA DE SEGURIDAD ---
+            SectionTitle(text = stringResource(id = R.string.backup_section_title_label), isFirst = true)
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 val email = remember(permissionsUpdateTrigger) { SettingsManager.getGoogleAccountEmail(context) }
                 if (email == null) {
@@ -182,6 +200,24 @@ fun BackupScreen(
                     )
                 }
             }
+
+            // --- SECCIÓN 2: BASE DE DATOS ---
+            SectionTitle(text = stringResource(id = R.string.database_section_label))
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                BackupActionRow(
+                    text = stringResource(id = R.string.import_cvo_option_label),
+                    icon = painterResource(id = R.drawable.ic_folder_open_custom),
+                    onClick = { importCvoLauncher.launch(arrayOf("*/*")) }
+                )
+
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                BackupActionRow(
+                    text = "Optimizar",
+                    icon = Icons.Default.CleaningServices,
+                    onClick = { showCleaningDialog = true }
+                )
+            }
         }
 
         // --- Diálogos ---
@@ -244,6 +280,25 @@ fun BackupScreen(
                         onComplete = callback
                     )
                 }
+            )
+        }
+
+        if (showCleaningDialog) {
+            CleaningAssistantDialog(
+                uiState = uiState,
+                isScanning = isScanningCleaning,
+                statusMessage = cleaningStatusMessage,
+                onScan = {
+                    isScanningCleaning = true
+                    cleaningStatusMessage = context.applicationContext.getString(R.string.analyzing_data)
+                    viewModel.updateCleaningCandidates()
+                    isScanningCleaning = false
+                    cleaningStatusMessage = context.applicationContext.getString(R.string.analysis_finished)
+                },
+                onDelete = { item -> viewModel.deleteCleaningCandidate(item) },
+                onDeleteAll = { viewModel.deleteAllCleaningCandidates() },
+                onNavigateToDate = { _ -> showCleaningDialog = false },
+                onDismiss = { showCleaningDialog = false }
             )
         }
     }

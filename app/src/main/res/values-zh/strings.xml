@@ -252,9 +252,12 @@
     <string name="restore_notes_label">备注</string>
     <string name="restore_events_label">事件</string>
     <string name="confirm_restore_title">确认恢复</string>
-    <string name="restore_total_confirmation">完整备份恢复：备注、事件和设置。</string>
+    <string name="restore_total_confirmation">完全还原便签、闹钟、主题和偏好设置。</string>
     <string name="backup_section_title_label">备份</string>
-    <string name="drive_label">云端硬盘</string>
+    <string name="data_center_screen_title">数据中心</string>
+    <string name="drive_label">Drive</string>
+    <string name="database_section_label">数据库</string>
+    <string name="import_cvo_option_label">导入 .cvo 文件</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,4 +336,5 @@
     <string name="unknown_elements_warning">此事件中的未知元素 *</string>
 
 </resources>
+
 

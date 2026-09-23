@@ -252,9 +252,12 @@
     <string name="restore_notes_label">メモ</string>
     <string name="restore_events_label">イベント</string>
     <string name="confirm_restore_title">復元の確認</string>
-    <string name="restore_total_confirmation">バックアップの完全復元：メモ、イベント、設定。</string>
+    <string name="restore_total_confirmation">メモ、アラーム、テーマ、設定の完全な復元。</string>
     <string name="backup_section_title_label">バックアップ</string>
-    <string name="drive_label">ドライブ</string>
+    <string name="data_center_screen_title">データセンター</string>
+    <string name="drive_label">Drive</string>
+    <string name="database_section_label">データベース</string>
+    <string name="import_cvo_option_label">.cvoファイルをインポート</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,4 +336,5 @@
     <string name="unknown_elements_warning">このイベント内の不明な要素 *</string>
 
 </resources>
+
 

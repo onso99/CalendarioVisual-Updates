@@ -251,9 +251,12 @@
     <string name="restore_notes_label">Oharrak</string>
     <string name="restore_events_label">Gertaerak</string>
     <string name="confirm_restore_title">Berrezarpena berretsi</string>
-    <string name="restore_total_confirmation">Segurtasun-kopia osoa berrezartzea: oharrak, gertaerak eta ezarpenak.</string>
-    <string name="backup_section_title_label">Babeskopia</string>
+    <string name="restore_total_confirmation">Ohar, alarma, gai eta hobespenen berreskuratze osoa.</string>
+    <string name="backup_section_title_label">Babes-kopia</string>
+    <string name="data_center_screen_title">Datu-zentroa</string>
     <string name="drive_label">Drive</string>
+    <string name="database_section_label">Datu-basea</string>
+    <string name="import_cvo_option_label">Inportatu .cvo fitxategia</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -332,4 +335,5 @@
     <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
 
 </resources>
+
 

@@ -253,9 +253,12 @@
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Eventos</string>
     <string name="confirm_restore_title">Confirmar restauración</string>
-    <string name="restore_total_confirmation">Restauración de copia de seguridade total: notas, eventos e axustes.</string>
+    <string name="restore_total_confirmation">Restauración total de notas, alarmas, temas e preferencias.</string>
     <string name="backup_section_title_label">Copia de seguridade</string>
+    <string name="data_center_screen_title">Centro de datos</string>
     <string name="drive_label">Drive</string>
+    <string name="database_section_label">Base de datos</string>
+    <string name="import_cvo_option_label">Importar ficheiro .cvo</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -334,4 +337,5 @@
     <string name="unknown_elements_warning">Elementos descoñecidos neste evento *</string>
 
 </resources>
+
 

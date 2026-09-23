@@ -252,9 +252,12 @@
     <string name="restore_notes_label">Notizen</string>
     <string name="restore_events_label">Termine</string>
     <string name="confirm_restore_title">Wiederherstellung bestätigen</string>
-    <string name="restore_total_confirmation">Vollständige Backup-Wiederherstellung: Notizen, Termine und Einstellungen.</string>
-    <string name="backup_section_title_label">Backup</string>
+    <string name="restore_total_confirmation">Vollständige Wiederherstellung von Notizen, Alarmen, Themen und Einstellungen.</string>
+    <string name="backup_section_title_label">Sicherungskopie</string>
+    <string name="data_center_screen_title">Datenzentrum</string>
     <string name="drive_label">Drive</string>
+    <string name="database_section_label">Datenbank</string>
+    <string name="import_cvo_option_label">.cvo-Datei importieren</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,4 +336,5 @@
     <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
 
 </resources>
+
 

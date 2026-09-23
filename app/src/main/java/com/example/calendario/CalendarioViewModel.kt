@@ -451,7 +451,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    private fun updateCleaningCandidates() {
+    fun updateCleaningCandidates() {
         val allEvents = _uiState.value.eventsByDate.values.flatten()
         val ghosts = allEvents.filter { it.isGhost }.map { SearchItem.Event(it) }
         val emptyNotes = _uiState.value.dailyNotes.values.filter { it.content.isBlank() }.map { SearchItem.Note(it) }

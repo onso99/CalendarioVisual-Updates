@@ -252,9 +252,12 @@
     <string name="restore_notes_label">Заметки</string>
     <string name="restore_events_label">События</string>
     <string name="confirm_restore_title">Подтвердите восстановление</string>
-    <string name="restore_total_confirmation">Полное восстановление резервной копии: заметки, события и настройки.</string>
-    <string name="backup_section_title_label">Резервное копирование</string>
-    <string name="drive_label">Диск</string>
+    <string name="restore_total_confirmation">Полное восстановление заметок, будильников, тем и настроек.</string>
+    <string name="backup_section_title_label">Резервная копия</string>
+    <string name="data_center_screen_title">Центр данных</string>
+    <string name="drive_label">Drive</string>
+    <string name="database_section_label">База данных</string>
+    <string name="import_cvo_option_label">Импортировать файл .cvo</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -333,4 +336,5 @@
     <string name="unknown_elements_warning">Неизвестные элементы в этом событии *</string>
 
 </resources>
+
 

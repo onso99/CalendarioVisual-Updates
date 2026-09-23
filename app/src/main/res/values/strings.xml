@@ -263,14 +263,17 @@
     <string name="restore_prefs_label">Ajustes</string>
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Eventos</string>
-    <string name="restore_total_confirmation">Restauración de copia de seguridad total: notas, eventos y ajustes.</string>
+    <string name="restore_total_confirmation">Restauración total de notas, alarmas, temas y preferencias.</string>
     <string name="last_backup_label">Última</string>
     <string name="never">Nunca</string>
     <string name="confirm_delete_adjustment">¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.</string>
     <string name="not_applicable">N/A</string>
 
     <string name="backup_section_title_label">Copia de seguridad</string>
+    <string name="data_center_screen_title">Centro de datos</string>
     <string name="drive_label">Drive</string>
+    <string name="database_section_label">Base de datos</string>
+    <string name="import_cvo_option_label">Importar archivo .cvo</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
@@ -330,4 +333,5 @@
     <string name="edit_all_events_option">Todos los eventos de la serie</string>
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
 </resources>
+
 

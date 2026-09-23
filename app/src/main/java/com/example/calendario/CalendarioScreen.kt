@@ -140,7 +140,6 @@ fun CalendarioScreen(
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
     
-    var showMenu3Puntos by remember { mutableStateOf(false) } 
     var showCleaningDialog by remember { mutableStateOf(false) }
     var showSyncDialog by remember { mutableStateOf(false) }
     
@@ -237,18 +236,6 @@ fun CalendarioScreen(
             }
         } else {
             context.showToast(R.string.permission_calendar_select, Toast.LENGTH_LONG)
-        }
-    }
-
-    val importCvoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        uri?.let { selectedUri ->
-            viewModel.processExternalCvo(selectedUri) { success, error, _ ->
-                if (!success && error != null) {
-                    context.showToast(error)
-                }
-            }
         }
     }
 
@@ -760,7 +747,7 @@ fun CalendarioScreen(
                     )
 
                     NavigationDrawerItem(
-                        label = { Text(stringResource(id = R.string.backup_section_title_label)) },
+                        label = { Text(stringResource(id = R.string.data_center_screen_title)) },
                         selected = false,
                         onClick = { 
                             showBackupScreen = true
@@ -906,45 +893,6 @@ fun CalendarioScreen(
                                             imageVector = Icons.Default.Search,
                                             contentDescription = stringResource(id = R.string.search)
                                         )
-                                    }
-
-                                    // MENU 3 PUNTOS (v3.3.03.4)
-                                    Box {
-                                        IconButton(onClick = { showMenu3Puntos = true }) {
-                                            Icon(Icons.Default.MoreVert, contentDescription = "Opciones")
-                                        }
-                                        DropdownMenu(
-                                            expanded = showMenu3Puntos,
-                                            onDismissRequest = { showMenu3Puntos = false },
-                                            modifier = Modifier.background(CalendarioTheme.colors.fondoSecciones),
-                                            shape = RoundedCornerShape(16.dp),
-                                            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = (-48).dp)
-                                        ) {
-                                            DropdownMenuItem(
-                                                text = { Text("Importar datos (.cvo)", color = CalendarioTheme.colors.textSystem) },
-                                                leadingIcon = { Icon(painterResource(id = R.drawable.ic_folder_open_custom), null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
-                                                onClick = {
-                                                    showMenu3Puntos = false
-                                                    importCvoLauncher.launch(arrayOf("*/*"))
-                                                }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text("Sincronizar con Drive", color = CalendarioTheme.colors.textSystem) },
-                                                leadingIcon = { Icon(Icons.Default.Sync, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
-                                                onClick = {
-                                                    showMenu3Puntos = false
-                                                    showSyncDialog = true
-                                                }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text("Optimizar Base de datos", color = CalendarioTheme.colors.textSystem) },
-                                                leadingIcon = { Icon(Icons.Default.CleaningServices, null, modifier = Modifier.size(20.dp), tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)) },
-                                                onClick = {
-                                                    showMenu3Puntos = false
-                                                    showCleaningDialog = true
-                                                }
-                                            )
-                                        }
                                     }
                                 }
                             }
