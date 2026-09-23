@@ -14,6 +14,7 @@ import com.example.calendario.database.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
+import kotlin.math.abs
 
 data class CalendarioUiState(
     val eventsByDate: Map<LocalDate, List<Festivo>> = emptyMap(),
@@ -199,9 +200,18 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun refreshData(onComplete: () -> Unit = {}) {
+    private var lastLoadedAnchorYear: Int? = null
+
+    fun refreshData(anchorDate: LocalDate = LocalDate.now(), onComplete: () -> Unit = {}) {
         refreshAdjustments()
-        loadAllData(onComplete)
+        loadAllData(anchorDate, onComplete)
+    }
+
+    fun checkAndRefreshForAnchorDate(date: LocalDate) {
+        val loadedYear = lastLoadedAnchorYear ?: return
+        if (abs(date.year - loadedYear) >= 2) {
+            refreshData(anchorDate = date)
+        }
     }
 
     fun refreshAdjustments() {
@@ -214,7 +224,8 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update { it.copy(workingDayDates = workingDates) }
     }
 
-    private fun loadAllData(onComplete: () -> Unit = {}) {
+    private fun loadAllData(anchorDate: LocalDate = LocalDate.now(), onComplete: () -> Unit = {}) {
+        lastLoadedAnchorYear = anchorDate.year
         viewModelScope.launch {
             val context = getApplication<Application>()
             val hasPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
@@ -264,7 +275,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
 
                 val systemEventsMap = if (finalSelectedIds.isNotEmpty()) {
-                    readFestivosFromCalendarsSuspend(context, finalSelectedIds)
+                    readFestivosFromCalendarsSuspend(context, finalSelectedIds, anchorDate)
                 } else {
                     emptyMap()
                 }
@@ -589,9 +600,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             val notesToImport = _uiState.value.agendaImportNotes
             
             try {
+                val anchorDate = eventsToImport.minOfOrNull { it.date } ?: LocalDate.now()
                 withContext(Dispatchers.IO) {
                     // 1. Importar Eventos (Evitando duplicados exactos en el mismo calendario) v3.1.34
-                    val currentEvents = readFestivosFromCalendarsSync(context, setOf(targetCalendarId)).values.flatten()
+                    val currentEvents = readFestivosFromCalendarsSync(context, setOf(targetCalendarId), anchorDate).values.flatten()
                     val currentAdns = currentEvents.map { it.adn }.toSet()
 
                     eventsToImport.forEach { event ->
@@ -653,7 +665,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
                 
                 cancelAgendaImport()
-                refreshData()
+                refreshData(anchorDate = anchorDate)
                 context.showToast(R.string.import_success)
             } catch (e: Exception) {
                 Log.e("CalendarioVM", "Error en applyAgendaImport", e)

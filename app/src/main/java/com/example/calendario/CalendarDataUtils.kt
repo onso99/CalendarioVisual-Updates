@@ -94,7 +94,8 @@ suspend fun loadAvailableCalendarsSuspend(context: Context): List<CalendarInfo> 
 
 fun readFestivosFromCalendarsSync(
     context: Context,
-    selectedCalendarIds: Set<Long>
+    selectedCalendarIds: Set<Long>,
+    anchorDate: LocalDate = LocalDate.now()
 ): Map<LocalDate, List<Festivo>> {
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val holidayAdjustments = SettingsManager.getHolidayAdjustments(context)
@@ -106,7 +107,6 @@ fun readFestivosFromCalendarsSync(
     
     val resolver = context.contentResolver
     val systemZoneId = ZoneId.systemDefault()
-    val today = LocalDate.now()
     
     if (selectedCalendarIds.isNotEmpty()) {
         val instancesProjection = arrayOf(
@@ -117,8 +117,8 @@ fun readFestivosFromCalendarsSync(
         )
         val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (${selectedCalendarIds.joinToString(",")})"
         val tempInstancesMap = mutableMapOf<String, Map<String, Any>>()
-        var windowStart = today.minusYears(1)
-        val totalEnd = today.plusYears(5)
+        var windowStart = anchorDate.minusYears(2)
+        val totalEnd = anchorDate.plusYears(3)
         
         while (windowStart.isBefore(totalEnd)) {
             val windowEnd = windowStart.plusMonths(3).run { if (isAfter(totalEnd)) totalEnd else this }
@@ -444,8 +444,9 @@ fun readFestivosFromCalendarsSync(
 
 fun readFestivosFromCalendarsSuspend(
     context: Context,
-    selectedCalendarIds: Set<Long>
-): Map<LocalDate, List<Festivo>> = readFestivosFromCalendarsSync(context, selectedCalendarIds)
+    selectedCalendarIds: Set<Long>,
+    anchorDate: LocalDate = LocalDate.now()
+): Map<LocalDate, List<Festivo>> = readFestivosFromCalendarsSync(context, selectedCalendarIds, anchorDate)
 
 suspend fun mergeHistoryWithSystemData(
     context: Context,

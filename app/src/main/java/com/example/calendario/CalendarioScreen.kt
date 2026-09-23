@@ -998,17 +998,22 @@ fun CalendarioScreen(
                                 state = monthPagerState,
                             ) { page ->
                                 val month = startMonth.plusMonths(page.toLong())
+                                LaunchedEffect(month) {
+                                    viewModel.checkAndRefreshForAnchorDate(month.atDay(1))
+                                }
                                 val startOfWeek = getActualFirstDayOfWeek(context)
                                 MonthlyCalendar(
                                     currentMonth = month,
                                     today = today,
                                     eventsByDate = uiState.eventsByDate,
                                     onDayClick = { date, events ->
+                                        viewModel.checkAndRefreshForAnchorDate(date)
                                         selectedDateForDialog = date
                                         eventsForDialog = events
                                         showDayEventsDialog = true
                                     },
                                     onEmptyDayClick = { date ->
+                                        viewModel.checkAndRefreshForAnchorDate(date)
                                         selectedDateForDialog = date
                                         eventsForDialog = emptyList()
                                         showDayEventsDialog = true
