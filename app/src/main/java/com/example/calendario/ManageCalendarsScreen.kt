@@ -20,6 +20,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -129,11 +130,15 @@ fun ManageCalendarsScreen(
                             fontSize = 16.sp,
                             color = if (isFavorite) CalendarioTheme.colors.cabecera else CalendarioTheme.colors.textSystem
                         )
-                        Text(
-                            text = cal.accountName, 
-                            fontSize = 13.sp,
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                        ) 
+                        if (cal.accountName.isNotBlank()) {
+                            Text(
+                                text = cal.accountName, 
+                                fontSize = 12.sp,
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                     
                     if (isFavorite) {
