@@ -90,9 +90,13 @@ fun BackupHistoryScreen(onBack: () -> Unit) {
                         
                         val base = parts.joinToString(", ")
                         val size = if (entry.sizeBytes > 0) {
-                            " (%.2f MB)".format(Locale.US, entry.sizeBytes / (1024.0 * 1024.0))
+                            if (entry.sizeBytes < 1024 * 1024) {
+                                " %.2fKB".format(Locale.US, entry.sizeBytes / 1024.0)
+                            } else {
+                                " %.2fMB".format(Locale.US, entry.sizeBytes / (1024.0 * 1024.0))
+                            }
                         } else ""
-                        ": $base.$size"
+                        ": $base$size"
                     } else {
                         val errorBase = stringResource(R.string.error)
                         val detail = entry.errorMessageRes?.let { stringResource(it) } 

@@ -250,7 +250,7 @@
     <string name="restore_error">Kein gültiges Backup in Drive gefunden</string>
     <string name="restore_prefs_label">Einstellungen</string>
     <string name="restore_notes_label">Notizen</string>
-    <string name="restore_events_label">Termine</string>
+    <string name="restore_events_label">Personalisierungen</string>
     <string name="confirm_restore_title">Wiederherstellung bestätigen</string>
     <string name="restore_total_confirmation">Vollständige Wiederherstellung von Notizen, Alarmen, Themen und Einstellungen.</string>
     <string name="backup_section_title_label">Sicherungskopie</string>

@@ -250,7 +250,7 @@
     <string name="restore_error">Aucune copie valide trouvée sur Drive</string>
     <string name="restore_prefs_label">Paramètres</string>
     <string name="restore_notes_label">Notes</string>
-    <string name="restore_events_label">Événements</string>
+    <string name="restore_events_label">Personnalisations</string>
     <string name="confirm_restore_title">Confirmer la restauration</string>
     <string name="restore_total_confirmation">Restauration totale des notes, alarmes, thèmes et préférences.</string>
     <string name="backup_section_title_label">Sauvegarde</string>

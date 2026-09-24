@@ -251,7 +251,7 @@
     <string name="restore_error">No s\'ha trobat cap còpia vàlida a Drive</string>
     <string name="restore_prefs_label">Ajustos</string>
     <string name="restore_notes_label">Notes</string>
-    <string name="restore_events_label">Esdeveniments</string>
+    <string name="restore_events_label">Personalitzacions</string>
     <string name="confirm_restore_title">Confirmar restauració</string>
     <string name="restore_total_confirmation">Restauració total de notes, alarmes, temes i preferències.</string>
     <string name="backup_section_title_label">Còpia de seguretat</string>

@@ -160,7 +160,11 @@ fun BackupScreen(
                         }
                         
                         val sizeStr = if (lastBackupSize > 0) {
-                            " %.2fMB".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))
+                            if (lastBackupSize < 1024 * 1024) {
+                                " %.2fKB".format(Locale.US, lastBackupSize / 1024.0)
+                            } else {
+                                " %.2fMB".format(Locale.US, lastBackupSize / (1024.0 * 1024.0))
+                            }
                         } else ""
 
                         Text(

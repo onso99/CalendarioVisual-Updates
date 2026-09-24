@@ -251,7 +251,7 @@
     <string name="restore_error">Nessuna copia valida trovata su Drive</string>
     <string name="restore_prefs_label">Impostazioni</string>
     <string name="restore_notes_label">Note</string>
-    <string name="restore_events_label">Eventi</string>
+    <string name="restore_events_label">Personalizzazioni</string>
     <string name="confirm_restore_title">Conferma ripristino</string>
     <string name="restore_total_confirmation">Ripristino totale di note, allarmi, temi e preferenze.</string>
     <string name="backup_section_title_label">Copia di sicurezza</string>

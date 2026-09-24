@@ -251,7 +251,7 @@
     <string name="restore_error">Não foi encontrada uma cópia válida no Drive</string>
     <string name="restore_prefs_label">Ajustes</string>
     <string name="restore_notes_label">Notas</string>
-    <string name="restore_events_label">Eventos</string>
+    <string name="restore_events_label">Personalizações</string>
     <string name="confirm_restore_title">Confirmar restauração</string>
     <string name="restore_total_confirmation">Restauração total de notas, alarmes, temas e preferências.</string>
     <string name="backup_section_title_label">Cópia de segurança</string>

@@ -251,7 +251,7 @@
     <string name="restore_error">No valid backup found in Drive</string>
     <string name="restore_prefs_label">Settings</string>
     <string name="restore_notes_label">Notes</string>
-    <string name="restore_events_label">Events</string>
+    <string name="restore_events_label">Customizations</string>
     <string name="confirm_restore_title">Confirm restoration</string>
     <string name="restore_total_confirmation">Total restore of notes, alarms, themes, and preferences.</string>
     <string name="backup_section_title_label">Backup</string>

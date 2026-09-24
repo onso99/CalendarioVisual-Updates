@@ -249,7 +249,7 @@
     <string name="restore_error">Ez da baliozko kopiarik aurkitu Driven</string>
     <string name="restore_prefs_label">Ezarpenak</string>
     <string name="restore_notes_label">Oharrak</string>
-    <string name="restore_events_label">Gertaerak</string>
+    <string name="restore_events_label">Pertsonalizazioak</string>
     <string name="confirm_restore_title">Berrezarpena berretsi</string>
     <string name="restore_total_confirmation">Ohar, alarma, gai eta hobespenen berreskuratze osoa.</string>
     <string name="backup_section_title_label">Babes-kopia</string>

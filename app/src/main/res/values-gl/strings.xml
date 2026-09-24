@@ -251,7 +251,7 @@
     <string name="restore_error">Non se atopou unha copia válida en Drive</string>
     <string name="restore_prefs_label">Axustes</string>
     <string name="restore_notes_label">Notas</string>
-    <string name="restore_events_label">Eventos</string>
+    <string name="restore_events_label">Personalizacións</string>
     <string name="confirm_restore_title">Confirmar restauración</string>
     <string name="restore_total_confirmation">Restauración total de notas, alarmas, temas e preferencias.</string>
     <string name="backup_section_title_label">Copia de seguridade</string>

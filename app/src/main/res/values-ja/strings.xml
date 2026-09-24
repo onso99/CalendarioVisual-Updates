@@ -250,7 +250,7 @@
     <string name="restore_error">有効なバックアップが見つかりません</string>
     <string name="restore_prefs_label">設定</string>
     <string name="restore_notes_label">メモ</string>
-    <string name="restore_events_label">イベント</string>
+    <string name="restore_events_label">カスタマイズ</string>
     <string name="confirm_restore_title">復元の確認</string>
     <string name="restore_total_confirmation">メモ、アラーム、テーマ、設定の完全な復元。</string>
     <string name="backup_section_title_label">バックアップ</string>

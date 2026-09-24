@@ -250,7 +250,7 @@
     <string name="restore_error">在云端硬盘中未找到有效备份</string>
     <string name="restore_prefs_label">设置</string>
     <string name="restore_notes_label">备注</string>
-    <string name="restore_events_label">事件</string>
+    <string name="restore_events_label">个性化设置</string>
     <string name="confirm_restore_title">确认恢复</string>
     <string name="restore_total_confirmation">完全还原便签、闹钟、主题和偏好设置。</string>
     <string name="backup_section_title_label">备份</string>
