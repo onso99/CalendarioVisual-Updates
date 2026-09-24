@@ -1,3 +1,4 @@
+2026-09-24 - v3.4.06 Terminología en Historial de Copias. Formato Adaptativo de Tamaño en Pantalla. Formato Adaptativo en Logs.
 2026-09-23 - v3.4.05 Eliminación del Menú de 3 Puntos. Reestructuración de la Pantalla "Centro de Datos". Cadenas de Texto Localizadas
 2026-09-23 - v3.4.04.1 Corrección de warnings
 2026-09-23 - v3.4.04 Optimización de Menú Lateral y Formato de Cuentas: Ancho acotado al 85% de pantalla, lógica adaptativa para calendario favorito, icono identificativo y cuentas largas a 2 líneas.

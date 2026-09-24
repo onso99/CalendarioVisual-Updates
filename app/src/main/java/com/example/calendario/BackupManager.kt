@@ -59,19 +59,31 @@ object BackupManager {
         // 4. Historial de Eventos (Desacoplado v3.3.07: Backup ultraligero)
         root.put(KEY_CALENDAR_HISTORY, JSONArray())
 
-        // 4.1 Metadatos por ADN (Colores y Alarmas v3.3.07)
+        // 4.1 Metadatos por ADN (Colores y Alarmas con Timestamps LWW v3.4.07)
         val periodColorsByAdn = JSONObject()
-        SettingsManager.getPrefs(context, AppConstants.PERIOD_COLOR_PREFS_NAME).all.forEach { (key, value) ->
-            if (key.startsWith("adn_") && value is Int) {
-                periodColorsByAdn.put(key.removePrefix("adn_"), value)
+        val periodPrefs = SettingsManager.getPrefs(context, AppConstants.PERIOD_COLOR_PREFS_NAME)
+        periodPrefs.all.forEach { (key, value) ->
+            if (key.startsWith("adn_") && !key.startsWith("adn_time_") && value is Int) {
+                val adn = key.removePrefix("adn_")
+                val time = periodPrefs.getLong("adn_time_$adn", 0L)
+                periodColorsByAdn.put(adn, JSONObject().apply {
+                    put("val", value)
+                    put("time", time)
+                })
             }
         }
         root.put("period_colors_by_adn", periodColorsByAdn)
 
         val alarmOffsetsByAdn = JSONObject()
-        SettingsManager.getPrefs(context, AppConstants.ALARM_PREFS_NAME).all.forEach { (key, value) ->
-            if (key.startsWith("adn_") && value is Int) {
-                alarmOffsetsByAdn.put(key.removePrefix("adn_"), value)
+        val alarmPrefs = SettingsManager.getPrefs(context, AppConstants.ALARM_PREFS_NAME)
+        alarmPrefs.all.forEach { (key, value) ->
+            if (key.startsWith("adn_") && !key.startsWith("adn_time_") && value is Int) {
+                val adn = key.removePrefix("adn_")
+                val time = alarmPrefs.getLong("adn_time_$adn", 0L)
+                alarmOffsetsByAdn.put(adn, JSONObject().apply {
+                    put("val", value)
+                    put("time", time)
+                })
             }
         }
         root.put("alarm_offsets_by_adn", alarmOffsetsByAdn)
@@ -203,30 +215,50 @@ object BackupManager {
             val database = AppDatabase.getDatabase(context)
             val dao = database.calendarDao()
 
-            // 3. NOTAS DIARIAS (Fusión Room)
+            // 3. NOTAS DIARIAS (Fusión Room con Resolución LWW v3.4.07)
             if (restoreNotes) {
                 val notesJson = json.optJSONArray(KEY_DAILY_NOTES)
                 if (notesJson != null) {
-                    val remoteNotes = mutableListOf<NoteEntity>()
+                    val notesToInsert = mutableListOf<NoteEntity>()
                     for (i in 0 until notesJson.length()) {
                         try {
                             val obj = notesJson.getJSONObject(i)
-                            remoteNotes.add(DailyNote.fromJson(obj).toEntity())
+                            val remoteNote = DailyNote.fromJson(obj)
+                            val localEntity = dao.getNoteByDate(remoteNote.dateStr)
+                            val localNote = localEntity?.toDailyNote()
+                            
+                            if (localNote == null) {
+                                if (!remoteNote.isDeleted) {
+                                    notesToInsert.add(remoteNote.toEntity())
+                                }
+                            } else {
+                                if (remoteNote.lastModified > localNote.lastModified) {
+                                    notesToInsert.add(remoteNote.toEntity())
+                                }
+                            }
                         } catch (_: Exception) {}
                     }
-                    notesCount = remoteNotes.size
-                    dao.insertNotes(remoteNotes)
+                    notesCount = notesToInsert.size
+                    if (notesToInsert.isNotEmpty()) {
+                        dao.insertNotes(notesToInsert)
+                    }
                 }
             }
 
-            // 4. METADATOS Y COLORES POR ADN (Restauración Ligera v3.3.07)
+            // 4. METADATOS Y COLORES POR ADN (Restauración Ligera con Resolución LWW v3.4.07)
             json.optJSONObject("period_colors_by_adn")?.let { colorsObj ->
                 val keys = colorsObj.keys()
                 while (keys.hasNext()) {
                     val adn = keys.next()
-                    val colorInt = colorsObj.optInt(adn)
-                    if (colorInt != 0) {
-                        SettingsManager.savePeriodColorByAdn(context, adn, colorInt)
+                    val valObj = colorsObj.optJSONObject(adn)
+                    val colorInt = if (valObj != null) valObj.optInt("val") else colorsObj.optInt(adn)
+                    val remoteTime = valObj?.optLong("time") ?: 0L
+                    val localTime = SettingsManager.getPeriodColorTimestampByAdn(context, adn)
+                    
+                    if (remoteTime > localTime || localTime == 0L) {
+                        if (colorInt != 0) {
+                            SettingsManager.savePeriodColorByAdn(context, adn, colorInt, if (remoteTime > 0L) remoteTime else System.currentTimeMillis())
+                        }
                     }
                 }
             }
@@ -235,8 +267,14 @@ object BackupManager {
                 val keys = alarmObj.keys()
                 while (keys.hasNext()) {
                     val adn = keys.next()
-                    val offset = alarmObj.optInt(adn)
-                    SettingsManager.saveEventAlarmOffsetByAdn(context, adn, offset)
+                    val valObj = alarmObj.optJSONObject(adn)
+                    val offset = if (valObj != null) valObj.optInt("val") else alarmObj.optInt(adn)
+                    val remoteTime = valObj?.optLong("time") ?: 0L
+                    val localTime = SettingsManager.getAlarmOffsetTimestampByAdn(context, adn)
+                    
+                    if (remoteTime > localTime || localTime == 0L) {
+                        SettingsManager.saveEventAlarmOffsetByAdn(context, adn, offset, if (remoteTime > 0L) remoteTime else System.currentTimeMillis())
+                    }
                 }
             }
 

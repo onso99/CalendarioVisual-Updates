@@ -199,11 +199,25 @@ object SettingsManager {
         return if (prefs.contains(key)) prefs.getInt(key, 20) else null
     }
 
-    fun saveEventAlarmOffsetByAdn(context: Context, adn: String, offset: Int?) {
+    fun getAlarmOffsetTimestampByAdn(context: Context, adn: String): Long {
+        if (adn.isBlank()) return 0L
+        val prefs = alarmPrefs(context)
+        val timeKey = "adn_time_$adn"
+        return if (prefs.contains(timeKey)) prefs.getLong(timeKey, 0L) else 0L
+    }
+
+    fun saveEventAlarmOffsetByAdn(context: Context, adn: String, offset: Int?, timestamp: Long = System.currentTimeMillis()) {
         if (adn.isBlank()) return
         alarmPrefs(context).edit {
             val key = "adn_$adn"
-            if (offset == null) remove(key) else putInt(key, offset)
+            val timeKey = "adn_time_$adn"
+            if (offset == null) {
+                remove(key)
+                putLong(timeKey, timestamp)
+            } else {
+                putInt(key, offset)
+                putLong(timeKey, timestamp)
+            }
         }
     }
 
@@ -264,11 +278,25 @@ object SettingsManager {
         return if (prefs.contains(key)) prefs.getInt(key, 0) else null
     }
 
-    fun savePeriodColorByAdn(context: Context, adn: String, colorInt: Int?) {
+    fun getPeriodColorTimestampByAdn(context: Context, adn: String): Long {
+        if (adn.isBlank()) return 0L
+        val prefs = periodColorPrefs(context)
+        val timeKey = "adn_time_$adn"
+        return if (prefs.contains(timeKey)) prefs.getLong(timeKey, 0L) else 0L
+    }
+
+    fun savePeriodColorByAdn(context: Context, adn: String, colorInt: Int?, timestamp: Long = System.currentTimeMillis()) {
         if (adn.isBlank()) return
         periodColorPrefs(context).edit {
             val key = "adn_$adn"
-            if (colorInt == null) remove(key) else putInt(key, colorInt)
+            val timeKey = "adn_time_$adn"
+            if (colorInt == null) {
+                remove(key)
+                putLong(timeKey, timestamp)
+            } else {
+                putInt(key, colorInt)
+                putLong(timeKey, timestamp)
+            }
         }
     }
 
