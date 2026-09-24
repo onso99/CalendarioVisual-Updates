@@ -238,10 +238,10 @@ object BackupManager {
                             }
                         } catch (_: Exception) {}
                     }
-                    notesCount = notesToInsert.size
                     if (notesToInsert.isNotEmpty()) {
                         dao.insertNotes(notesToInsert)
                     }
+                    notesCount = dao.getAllNotesSync().count { !it.isDeleted && it.content.isNotBlank() }
                 }
             }
 

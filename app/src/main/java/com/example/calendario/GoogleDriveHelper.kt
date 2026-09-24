@@ -4,6 +4,7 @@ package com.example.calendario
 
 import android.content.Context
 import android.util.Log
+import com.example.calendario.database.AppDatabase
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
@@ -63,8 +64,9 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
 
             val fullBackupJson = BackupManager.createFullBackupJson(context, selectedIds, favoriteId)
             
-            // Calculamos estadísticas para el resultado (v3.3.07)
-            val totalNotes = fullBackupJson.optJSONArray("daily_notes")?.length() ?: 0
+            // Calculamos estadísticas para el resultado (Contando solo notas activas v3.4.08)
+            val database = AppDatabase.getDatabase(context)
+            val totalNotes = database.calendarDao().getAllNotesSync().count { !it.isDeleted && it.content.isNotBlank() }
             val colorsCount = fullBackupJson.optJSONObject("period_colors_by_adn")?.length() ?: 0
             val alarmOffsetsCount = fullBackupJson.optJSONObject("alarm_offsets_by_adn")?.length() ?: 0
             
