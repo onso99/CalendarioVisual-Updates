@@ -53,6 +53,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.delay
+import java.time.LocalTime
 import kotlin.time.Duration.Companion.milliseconds
 
 enum class DeleteRecurringOption { SINGLE_EVENT, ALL_EVENTS }
@@ -149,8 +150,17 @@ fun DayEventsDialog(
         Column {
             // --- 1. LISTA DE EVENTOS ---
             if (events.isNotEmpty()) {
+                val sortedEvents = remember(events) {
+                    events.sortedWith(
+                        compareBy(
+                            { !it.isAllDay && it.startTime != null },
+                            { it.startTime ?: LocalTime.MIN },
+                            { it.title.unaccent().lowercase() }
+                        )
+                    )
+                }
                 LazyColumn(Modifier.heightIn(max = 320.dp)) {
-                    items(events, key = { it.adn }) { festivo ->
+                    items(sortedEvents, key = { it.adn }) { festivo ->
                         val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
                         val esCumpleanos = festivo.isBirthday && !esFestivo
                         val normalizedTitle = festivo.title.unaccent().lowercase()

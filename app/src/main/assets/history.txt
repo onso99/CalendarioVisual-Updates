@@ -1,3 +1,4 @@
+2026-09-24 - v3.4.07.1 Conteo Exclusivo de Notas Activas. Conteo en Restauración.
 2026-09-24 - v3.4.07 Implementación de la regla Last-Write-Wins en la sincronización con Drive
 2026-09-24 - v3.4.06 Terminología en Historial de Copias. Formato Adaptativo de Tamaño en Pantalla. Formato Adaptativo en Logs.
 2026-09-23 - v3.4.05 Eliminación del Menú de 3 Puntos. Reestructuración de la Pantalla "Centro de Datos". Cadenas de Texto Localizadas

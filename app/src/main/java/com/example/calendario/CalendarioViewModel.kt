@@ -14,6 +14,7 @@ import com.example.calendario.database.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
+import java.time.LocalTime
 import kotlin.math.abs
 
 data class CalendarioUiState(
@@ -65,8 +66,18 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 val notes = noteEntities.associateBy { it.dateStr }.mapValues { it.value.toDailyNote() }
                 events to notes
             }.collect { (events, notes) ->
+                val sortedEventsByDate = events.groupBy { event -> event.date }
+                    .mapValues { (_, dayEvents) ->
+                        dayEvents.sortedWith(
+                            compareBy(
+                                { !it.isAllDay && it.startTime != null },
+                                { it.startTime ?: LocalTime.MIN },
+                                { it.title.unaccent().lowercase() }
+                            )
+                        )
+                    }
                 _uiState.update { state -> state.copy(
-                    eventsByDate = events.groupBy { event -> event.date },
+                    eventsByDate = sortedEventsByDate,
                     dailyNotes = notes
                 ) }
                 updateCleaningCandidates()

@@ -439,7 +439,15 @@ fun readFestivosFromCalendarsSync(
         ))
     }
 
-    return finalMap
+    return finalMap.mapValues { (_, list) ->
+        list.sortedWith(
+            compareBy(
+                { !it.isAllDay && it.startTime != null },
+                { it.startTime ?: LocalTime.MIN },
+                { it.title.unaccent().lowercase() }
+            )
+        )
+    }
 }
 
 fun readFestivosFromCalendarsSuspend(
