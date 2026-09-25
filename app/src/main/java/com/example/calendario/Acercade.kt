@@ -8,7 +8,7 @@ import java.util.Locale
 object AboutInfo {
     const val LINE_3_AUTHOR = "Onso"
     
-    private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 8, 1)
+    private val RELEASE_DATE: LocalDate = LocalDate.of(2026, 9, 1)
 
     fun getFormattedDate(): String {
         val formatter = AppFormats.monthYear(Locale.getDefault())

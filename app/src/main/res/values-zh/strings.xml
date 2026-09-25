@@ -258,6 +258,7 @@
     <string name="drive_label">Drive</string>
     <string name="database_section_label">数据库</string>
     <string name="import_cvo_option_label">导入 .cvo 文件</string>
+    <string name="check_updates_label">检查更新</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

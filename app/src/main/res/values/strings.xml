@@ -274,6 +274,7 @@
     <string name="drive_label">Drive</string>
     <string name="database_section_label">Base de datos</string>
     <string name="import_cvo_option_label">Importar archivo .cvo</string>
+    <string name="check_updates_label">Buscar actualizaciones</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

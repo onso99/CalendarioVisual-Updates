@@ -46,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -96,6 +95,8 @@ fun SettingsScreen(
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {},
+    onCheckUpdatesClick: () -> Unit = {},
+    updateCheckLabel: String = stringResource(id = R.string.check_updates_label)
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -485,33 +486,52 @@ fun SettingsScreen(
                 }
             }
 
-            // --- BLOQUE ACERCA DE (Sincronizado v3.2.12.4) ---
+            // --- BLOQUE ACERCA DE (Rediseñado 3 Filas) ---
             SectionTitle(text = stringResource(id = R.string.about))
-            Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                // Fila 1: Versión e Historial (con símbolo >)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { onHistoryClick() }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = "${stringResource(id = R.string.app_name)} ${AboutInfo.getVersionName(context)}", 
                         fontSize = 16.sp, 
                         color = CalendarioTheme.colors.textSystem,
                         modifier = Modifier.weight(1f)
                     )
-                    IconButton(onClick = onHistoryClick, modifier = Modifier.size(24.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.History, 
-                            contentDescription = null, 
-                            tint = lerp(CalendarioTheme.colors.cabecera, CalendarioTheme.colors.textSystem, 0.4f)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, 
+                        contentDescription = null, 
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
-                
-                Spacer(modifier = Modifier.height(4.dp))
 
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                // Fila 2: Autor e Icono BugReport para logs
                 val haptic = LocalHapticFeedback.current
                 var loggingEnabledInternal by remember { mutableStateOf(LogCollector.isLoggingEnabled(context)) }
                 var debugClickCount by remember { mutableIntStateOf(0) }
 
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text("${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()}", fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()}", 
+                        fontSize = 16.sp, 
+                        color = CalendarioTheme.colors.textSystem, 
+                        modifier = Modifier.weight(1f)
+                    )
                     
                     Icon(
                         imageVector = Icons.Default.BugReport, 
@@ -543,6 +563,25 @@ fun SettingsScreen(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             )
+                    )
+                }
+
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                // Fila 3: Buscar actualizaciones (se actualizará con el nombre de versión detectada)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { onCheckUpdatesClick() }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = updateCheckLabel, 
+                        fontSize = 16.sp, 
+                        color = CalendarioTheme.colors.textSystem,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
