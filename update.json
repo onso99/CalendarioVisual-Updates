@@ -1,12 +1,12 @@
 {
-    "versionCode": 1,
-    "versionName": "1.0.0",
+    "versionCode": 3,
+    "versionName": "3.5.00",
     "releaseDate": "2026-09-25",
     "mandatory": false,
     "fileSize": 0,
     "downloadUrl": "",
     "sha256": "",
     "releaseNotes": [
-        "Primera versión de CalendarioVisual"
+        "Nueva versión de CalendarioVisual"
     ]
 }
