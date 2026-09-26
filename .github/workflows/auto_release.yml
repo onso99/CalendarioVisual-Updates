@@ -1,0 +1,63 @@
+name: Publicar Lanzamiento Automático
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Descargar Código Fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Dar Permiso de Ejecución a Gradlew
+        run: chmod +x gradlew
+
+      - name: Compilar APK de Lanzamiento
+        run: ./gradlew assembleDebug
+
+      - name: Extraer Novedades de history.txt
+        id: extract_changelog
+        run: |
+          python3 -c "
+          import re
+          try:
+              with open('app/src/main/assets/history.txt', 'r', encoding='utf-8') as f:
+                  lines = f.readlines()
+              changelog = []
+              for line in lines:
+                  if changelog and re.match(r'^\d{4}-\d{2}-\d{2}\s*-', line):
+                      break
+                  changelog.append(line)
+              text = ''.join(changelog).strip()
+              if not text:
+                  text = 'Lanzamiento automático de nueva versión.'
+              with open('release_notes.txt', 'w', encoding='utf-8') as f:
+                  f.write(text)
+          except Exception as e:
+              with open('release_notes.txt', 'w', encoding='utf-8') as f:
+                  f.write('Lanzamiento automático de nueva versión.')
+          "
+
+      - name: Publicar Release en CalendarioVisual-Updates
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: onso99/CalendarioVisual-Updates
+          token: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          files: app/build/outputs/apk/debug/*.apk
+          name: Versión ${{ github.ref_name }}
+          body_path: release_notes.txt
+          draft: false
+          prerelease: false
