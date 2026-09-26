@@ -134,9 +134,7 @@ fun SettingsScreen(
     }
 
     val handleCheckUpdatesClick = {
-        if (isUpdateAvailable && !latestVersionName.isNullOrBlank() && !latestDownloadUrl.isNullOrBlank()) {
-            showUpdateDialog = true
-        } else if (!isCheckingUpdates) {
+        if (!isCheckingUpdates) {
             isCheckingUpdates = true
             scope.launch {
                 when (UpdateManager.checkLatestRelease(context)) {
@@ -145,6 +143,7 @@ fun SettingsScreen(
                         showUpdateDialog = true
                     }
                     is UpdateCheckResult.AlreadyUpToDate -> {
+                        permissionsUpdateTrigger++
                         context.showToast(R.string.app_up_to_date)
                     }
                     is UpdateCheckResult.Error -> {

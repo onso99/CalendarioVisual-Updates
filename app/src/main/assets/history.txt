@@ -1,3 +1,5 @@
+2026-09-27 - v3.5.01 Incluir flujo GitHub Actions y UpdateManager
+2026-09-27 - v3.5.01 Automatización de lanzamientos con GitHub Actions y control de versionCode
 2026-09-26 - v3.5.00 Cambio de icono: camaleón
 2026-09-26 - v3.4.10 Sistema de actualizaciones: Repositorio Nube. Permisos y Seguridad de Android. Motor de Actualización. Chequeo Silencioso Semanal. Punto Azul Indicador en Menú Lateral. Diálogo con Novedades
 2026-09-25 - v3.4.09 Acerca de: nuevo diseño y añadida la opción Buscar actualizaciones
