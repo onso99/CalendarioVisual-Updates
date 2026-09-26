@@ -1,4 +1,5 @@
-2026-09-26 - v3.4.10 Sistema actualizaciones: F-1 Permiso de Instalación. Punto azul en Ajustes.
+2026-09-26 - v3.5.00 Cambio de icono: camaleón
+2026-09-26 - v3.4.10 Sistema de actualizaciones: Repositorio Nube. Permisos y Seguridad de Android. Motor de Actualización. Chequeo Silencioso Semanal. Punto Azul Indicador en Menú Lateral. Diálogo con Novedades
 2026-09-25 - v3.4.09 Acerca de: nuevo diseño y añadida la opción Buscar actualizaciones
 2026-09-25 - v3.4.08 Ordenación Centralizada. Doble Escudo en Diálogo Diario. Consistencia en Lectura
 2026-09-24 - v3.4.07.1 Conteo Exclusivo de Notas Activas. Conteo en Restauración.
