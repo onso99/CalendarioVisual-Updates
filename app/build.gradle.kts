@@ -21,19 +21,32 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         applicationId = "com.example.calendario"
         minSdk = 29
         targetSdk = 35
-        versionCode = 6
-        versionName = "3.5.02"
+        versionCode = 7
+        versionName = "3.5.03"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("releaseKey") {
+            storeFile = file("calendario_keystore.jks")
+            storePassword = "CalendarioVisual2026"
+            keyAlias = "calendario_key"
+            keyPassword = "CalendarioVisual2026"
+        }
+    }
+
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.getByName("releaseKey")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("releaseKey")
         }
     }
 
