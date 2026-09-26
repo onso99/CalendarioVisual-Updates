@@ -259,6 +259,14 @@
     <string name="database_section_label">Datenbank</string>
     <string name="import_cvo_option_label">.cvo-Datei importieren</string>
     <string name="check_updates_label">Nach Updates suchen</string>
+    <string name="checking_updates">Nach Updates suchen…</string>
+    <string name="app_up_to_date">Ihre Anwendung ist auf dem neuesten Stand.</string>
+    <string name="update_available_title">Neue Version verfügbar (%1$s)</string>
+    <string name="update_action">Jetzt aktualisieren</string>
+    <string name="remind_later_action">Jetzt nicht</string>
+    <string name="update_error">Update konnte nicht geprüft werden</string>
+    <string name="downloading_update">Update wird heruntergeladen…</string>
+    <string name="permission_install_packages_label">Apps installieren</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

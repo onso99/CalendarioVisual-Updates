@@ -167,6 +167,41 @@ object SettingsManager {
         }
     }
 
+    // --- 2.1 ACTUALIZACIONES DE APP (GitHub Releases) ---
+    fun getLastUpdateCheckTime(context: Context): Long =
+        getSafeLong(appPrefs(context), "last_update_check_time", 0L)
+
+    fun saveLastUpdateCheckTime(context: Context, timestamp: Long = System.currentTimeMillis()) =
+        appPrefs(context).edit { putLong("last_update_check_time", timestamp) }
+
+    fun isUpdateAvailable(context: Context): Boolean =
+        getSafeBoolean(appPrefs(context), "is_update_available", false)
+
+    fun getLatestVersionName(context: Context): String? =
+        appPrefs(context).getString("latest_version_name", null)
+
+    fun getLatestChangelog(context: Context): String? =
+        appPrefs(context).getString("latest_changelog", null)
+
+    fun getLatestDownloadUrl(context: Context): String? =
+        appPrefs(context).getString("latest_download_url", null)
+
+    fun setUpdateAvailable(
+        context: Context,
+        available: Boolean,
+        latestVersion: String? = null,
+        changelog: String? = null,
+        downloadUrl: String? = null
+    ) {
+        appPrefs(context).edit {
+            putBoolean("is_update_available", available)
+            putString("latest_version_name", latestVersion)
+            putString("latest_changelog", changelog)
+            putString("latest_download_url", downloadUrl)
+            putLong("last_update_check_time", System.currentTimeMillis())
+        }
+    }
+
     // --- 3. ALARMAS ---
     private fun alarmPrefs(context: Context) = getPrefs(context, AppConstants.ALARM_PREFS_NAME)
 

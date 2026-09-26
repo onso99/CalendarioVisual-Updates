@@ -260,6 +260,14 @@
     <string name="database_section_label">Database</string>
     <string name="import_cvo_option_label">Importa file .cvo</string>
     <string name="check_updates_label">Cerca aggiornamenti</string>
+    <string name="checking_updates">Ricerca aggiornamenti in corso…</string>
+    <string name="app_up_to_date">La tua applicazione è aggiornata all\'ultima versione.</string>
+    <string name="update_available_title">Nuova versione disponibile (%1$s)</string>
+    <string name="update_action">Aggiorna ora</string>
+    <string name="remind_later_action">Non ora</string>
+    <string name="update_error">Impossibile verificare gli aggiornamenti</string>
+    <string name="downloading_update">Download dell\'aggiornamento…</string>
+    <string name="permission_install_packages_label">Installa applicazioni</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

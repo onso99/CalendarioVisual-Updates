@@ -139,6 +139,7 @@ fun CalendarioScreen(
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
+    var updateCheckTrigger by remember { mutableIntStateOf(0) }
     
     var showCleaningDialog by remember { mutableStateOf(false) }
     var showSyncDialog by remember { mutableStateOf(false) }
@@ -180,6 +181,19 @@ fun CalendarioScreen(
         }
     }
 
+    // --- Comprobación Silenciosa Semanal de Actualizaciones ---
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            val lastCheck = SettingsManager.getLastUpdateCheckTime(context)
+            val now = System.currentTimeMillis()
+            val sevenDaysMillis = 7L * 24 * 60 * 60 * 1000L
+            if (now - lastCheck > sevenDaysMillis) {
+                UpdateManager.checkLatestRelease(context)
+                updateCheckTrigger++
+            }
+        }
+    }
+
     LaunchedEffect(syncStatusMessage) {
         if (syncStatusMessage == syncFinishedMsg || syncStatusMessage?.startsWith("Error") == true) {
             delay(2000.milliseconds)
@@ -209,18 +223,7 @@ fun CalendarioScreen(
 
     val permissionPointColor by remember(permissionsUpdateTrigger) {
         derivedStateOf {
-            val calStatus = PermissionChecker.getCalendarStatus(context)
-            val notifStatus = PermissionChecker.getNotificationsStatus(context)
-            val alarmStatus = PermissionChecker.getAlarmsStatus(context)
-            val driveStatus = PermissionChecker.getGoogleDriveStatus(context)
-            val batteryStatus = PermissionChecker.getBatteryOptimizationStatus(context)
-
-            when {
-                calStatus == PermissionStatus.DENIED -> Color.Red
-                notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED || 
-                driveStatus == PermissionStatus.DENIED || batteryStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
-                else -> Color.Green
-            }
+            PermissionChecker.getOverallPermissionPointColor(context)
         }
     }
 
@@ -763,17 +766,30 @@ fun CalendarioScreen(
                         color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
                     )
 
+                    val isUpdateAvailable = remember(updateCheckTrigger, showSettingsScreen) { SettingsManager.isUpdateAvailable(context) }
+                    val updatePointColor = Color(0xFF2196F3)
+
                     // --- SECCIÓN: OTROS (Ajustes, Ayuda) ---
                     NavigationDrawerItem(
                         label = { 
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(id = R.string.settings), modifier = Modifier.weight(1f))
-                                Box(
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .size(8.dp)
-                                        .background(permissionPointColor, CircleShape)
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    if (isUpdateAvailable) {
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 4.dp)
+                                                .size(8.dp)
+                                                .background(updatePointColor, CircleShape)
+                                        )
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(horizontal = 4.dp)
+                                            .size(8.dp)
+                                            .background(permissionPointColor, CircleShape)
+                                    )
+                                }
                             }
                         },
                         selected = false,

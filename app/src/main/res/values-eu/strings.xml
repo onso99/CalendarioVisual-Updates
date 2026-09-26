@@ -258,6 +258,14 @@
     <string name="database_section_label">Datu-basea</string>
     <string name="import_cvo_option_label">Inportatu .cvo fitxategia</string>
     <string name="check_updates_label">Eguneratzeak bilatu</string>
+    <string name="checking_updates">Eguneratzeak bilatzen…</string>
+    <string name="app_up_to_date">Zure aplikazioa azken bertsiora eguneratuta dago.</string>
+    <string name="update_available_title">Bertsio berria eskuragarri (%1$s)</string>
+    <string name="update_action">Eguneratu orain</string>
+    <string name="remind_later_action">Orain ez</string>
+    <string name="update_error">Ezin izan dira eguneratzeak egiaztatu</string>
+    <string name="downloading_update">Eguneratzea deskargatzen…</string>
+    <string name="permission_install_packages_label">Aplikazioak instalatu</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

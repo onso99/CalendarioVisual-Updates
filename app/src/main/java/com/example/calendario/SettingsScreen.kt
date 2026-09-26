@@ -94,9 +94,7 @@ fun SettingsScreen(
     onColorThemeClick: () -> Unit,
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
-    onLogClick: () -> Unit = {},
-    onCheckUpdatesClick: () -> Unit = {},
-    updateCheckLabel: String = stringResource(id = R.string.check_updates_label)
+    onLogClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -119,6 +117,44 @@ fun SettingsScreen(
     var isChangingLanguage by remember { mutableStateOf(false) }
     var showWidgetColorExpand by remember { mutableStateOf(false) }
     var showFontExpand by remember { mutableStateOf(false) }
+
+    var isCheckingUpdates by remember { mutableStateOf(false) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var isDownloadingApk by remember { mutableStateOf(false) }
+
+    val isUpdateAvailable = remember(permissionsUpdateTrigger) { SettingsManager.isUpdateAvailable(context) }
+    val latestVersionName = remember(permissionsUpdateTrigger) { SettingsManager.getLatestVersionName(context) }
+    val latestChangelog = remember(permissionsUpdateTrigger) { SettingsManager.getLatestChangelog(context) }
+    val latestDownloadUrl = remember(permissionsUpdateTrigger) { SettingsManager.getLatestDownloadUrl(context) }
+
+    val currentUpdateLabel = when {
+        isCheckingUpdates -> stringResource(R.string.checking_updates)
+        isUpdateAvailable && !latestVersionName.isNullOrBlank() -> "v$latestVersionName disponible ●"
+        else -> stringResource(R.string.check_updates_label)
+    }
+
+    val handleCheckUpdatesClick = {
+        if (isUpdateAvailable && !latestVersionName.isNullOrBlank() && !latestDownloadUrl.isNullOrBlank()) {
+            showUpdateDialog = true
+        } else if (!isCheckingUpdates) {
+            isCheckingUpdates = true
+            scope.launch {
+                when (UpdateManager.checkLatestRelease(context)) {
+                    is UpdateCheckResult.UpdateAvailable -> {
+                        permissionsUpdateTrigger++
+                        showUpdateDialog = true
+                    }
+                    is UpdateCheckResult.AlreadyUpToDate -> {
+                        context.showToast(R.string.app_up_to_date)
+                    }
+                    is UpdateCheckResult.Error -> {
+                        context.showToast(R.string.update_error)
+                    }
+                }
+                isCheckingUpdates = false
+            }
+        }
+    }
 
     var importedThemeData by remember { mutableStateOf<Pair<ParsedTheme, String>?>(null) }
 
@@ -240,16 +276,8 @@ fun SettingsScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val calStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getCalendarStatus(context) }
-    val notifStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getNotificationsStatus(context) }
-    val alarmStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getAlarmsStatus(context) }
-    val driveStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getGoogleDriveStatus(context) }
-    val batteryStatus = remember(permissionsUpdateTrigger) { PermissionChecker.getBatteryOptimizationStatus(context) }
-
-    val permissionPointColor = when {
-        calStatus == PermissionStatus.DENIED -> Color.Red
-        notifStatus == PermissionStatus.DENIED || alarmStatus == PermissionStatus.DENIED || driveStatus == PermissionStatus.DENIED || batteryStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
-        else -> Color.Green
+    val permissionPointColor = remember(permissionsUpdateTrigger) {
+        PermissionChecker.getOverallPermissionPointColor(context)
     }
 
     AppScreen(
@@ -569,18 +597,19 @@ fun SettingsScreen(
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
                 // Fila 3: Buscar actualizaciones (se actualizará con el nombre de versión detectada)
+                val updatePointColor = Color(0xFF2196F3)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
-                        .clickable { onCheckUpdatesClick() }
+                        .clickable { handleCheckUpdatesClick() }
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = updateCheckLabel, 
+                        text = currentUpdateLabel, 
                         fontSize = 16.sp, 
-                        color = CalendarioTheme.colors.textSystem,
+                        color = if (isUpdateAvailable) updatePointColor else CalendarioTheme.colors.textSystem,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -588,6 +617,31 @@ fun SettingsScreen(
         }
 
         // --- Dialogs ---
+        if (showUpdateDialog && !latestVersionName.isNullOrBlank() && !latestDownloadUrl.isNullOrBlank()) {
+            UpdateAvailableDialog(
+                versionName = latestVersionName,
+                changelog = latestChangelog ?: "",
+                isDownloading = isDownloadingApk,
+                onConfirmUpdate = {
+                    if (!isDownloadingApk) {
+                        isDownloadingApk = true
+                        scope.launch {
+                            val success = UpdateManager.downloadAndInstallApk(context, latestDownloadUrl)
+                            if (!success) {
+                                context.showToast(R.string.update_error)
+                            }
+                            isDownloadingApk = false
+                            showUpdateDialog = false
+                        }
+                    }
+                },
+                onDismissRequest = {
+                    if (!isDownloadingApk) {
+                        showUpdateDialog = false
+                    }
+                }
+            )
+        }
         if (showLanguageDialog) {
             val currentLocales = AppCompatDelegate.getApplicationLocales()
             LanguageSelectionDialog(currentLanguageCode = if (currentLocales.isEmpty) null else currentLocales.get(0)?.language, onLanguageSelected = { newCode -> scope.launch { isChangingLanguage = true; delay(1000.milliseconds); AppCompatDelegate.setApplicationLocales(if (newCode == null) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(newCode)); showLanguageDialog = false } }, onDismiss = { showLanguageDialog = false })
@@ -684,6 +738,7 @@ fun SettingsScreen(
                 alarmStatus = PermissionChecker.getAlarmsStatus(context),
                 driveStatus = PermissionChecker.getGoogleDriveStatus(context),
                 batteryStatus = PermissionChecker.getBatteryOptimizationStatus(context),
+                installStatus = PermissionChecker.getInstallPackagesStatus(context),
                 onDismiss = { showPermissionsDialog = false },
                 onFix = { type ->
                     when (type) {
@@ -727,6 +782,15 @@ fun SettingsScreen(
                                 @SuppressLint("BatteryLife")
                                 val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply { data = Uri.fromParts("package", context.packageName, null) }
                                 context.startActivity(intent)
+                            }
+                        }
+                        "install" -> {
+                            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply { data = Uri.fromParts("package", context.packageName, null) }
+                            try {
+                                context.startActivity(intent)
+                            } catch (_: Exception) {
+                                val appDetailsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }
+                                context.startActivity(appDetailsIntent)
                             }
                         }
                     }
@@ -1059,7 +1123,7 @@ private fun WidgetColorChip(label: String, color: Color, modifier: Modifier = Mo
 }
 
 @Composable
-private fun PermissionsDialog(calStatus: PermissionStatus, notifStatus: PermissionStatus, alarmStatus: PermissionStatus, driveStatus: PermissionStatus, batteryStatus: PermissionStatus, onDismiss: () -> Unit, onFix: (String) -> Unit) {
+private fun PermissionsDialog(calStatus: PermissionStatus, notifStatus: PermissionStatus, alarmStatus: PermissionStatus, driveStatus: PermissionStatus, batteryStatus: PermissionStatus, installStatus: PermissionStatus, onDismiss: () -> Unit, onFix: (String) -> Unit) {
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(id = R.string.permissions_dialog_title),
@@ -1071,6 +1135,7 @@ private fun PermissionsDialog(calStatus: PermissionStatus, notifStatus: Permissi
             PermissionRow(label = stringResource(id = R.string.alarms_permission_label), status = alarmStatus, fixLabel = if (alarmStatus == PermissionStatus.GRANTED) stringResource(R.string.status_full_screen) else stringResource(R.string.status_no_full_screen), onFix = { onFix("alarms") })
             PermissionRow(label = stringResource(id = R.string.google_drive_permission_label), status = driveStatus, fixLabel = if (driveStatus == PermissionStatus.GRANTED) stringResource(R.string.status_linked) else stringResource(R.string.status_unlinked), onFix = { onFix("drive") })
             PermissionRow(label = stringResource(id = R.string.battery_optimization_label), status = batteryStatus, fixLabel = if (batteryStatus == PermissionStatus.GRANTED) stringResource(R.string.status_unrestricted) else stringResource(R.string.status_optimized), onFix = { onFix("battery") }) 
+            PermissionRow(label = stringResource(id = R.string.permission_install_packages_label), status = installStatus, fixLabel = if (installStatus == PermissionStatus.GRANTED) stringResource(R.string.status_granted) else stringResource(R.string.status_denied), onFix = { onFix("install") })
         } 
     }
 }

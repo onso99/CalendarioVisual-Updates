@@ -1048,3 +1048,57 @@ fun RepetitionSelectionDialog(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UpdateAvailableDialog(
+    versionName: String,
+    changelog: String,
+    isDownloading: Boolean,
+    onConfirmUpdate: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.update_available_title, versionName),
+        confirmButton = {
+            if (isDownloading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = CalendarioTheme.colors.cabecera,
+                    strokeWidth = 2.5.dp
+                )
+            } else {
+                DialogConfirmButton(
+                    text = stringResource(R.string.update_action),
+                    onClick = onConfirmUpdate
+                )
+            }
+        },
+        dismissButton = {
+            if (!isDownloading) {
+                DialogDismissButton(
+                    text = stringResource(R.string.remind_later_action),
+                    onDismiss = onDismissRequest
+                )
+            }
+        }
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            if (isDownloading) {
+                Text(
+                    text = stringResource(R.string.downloading_update),
+                    fontSize = 15.sp,
+                    color = CalendarioTheme.colors.textSystem
+                )
+            } else if (changelog.isNotBlank()) {
+                Text(
+                    text = changelog,
+                    fontSize = 14.sp,
+                    color = CalendarioTheme.colors.textSystem,
+                    lineHeight = 20.sp
+                )
+            }
+        }
+    }
+}

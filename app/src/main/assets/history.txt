@@ -1,3 +1,5 @@
+2026-09-26 - v3.4.10 Sistema actualizaciones: F-1 Permiso de Instalación. Punto azul en Ajustes.
+2026-09-25 - v3.4.09 Acerca de: nuevo diseño y añadida la opción Buscar actualizaciones
 2026-09-25 - v3.4.08 Ordenación Centralizada. Doble Escudo en Diálogo Diario. Consistencia en Lectura
 2026-09-24 - v3.4.07.1 Conteo Exclusivo de Notas Activas. Conteo en Restauración.
 2026-09-24 - v3.4.07 Implementación de la regla Last-Write-Wins en la sincronización con Drive

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.services.drive.DriveScopes
@@ -79,6 +80,35 @@ object PermissionChecker {
             PermissionStatus.GRANTED
         } else {
             PermissionStatus.DENIED
+        }
+    }
+
+    fun getInstallPackagesStatus(context: Context): PermissionStatus {
+        return try {
+            val canInstall = context.packageManager.canRequestPackageInstalls()
+            if (canInstall) PermissionStatus.GRANTED else PermissionStatus.DENIED
+        } catch (e: Exception) {
+            Log.e("PermissionChecker", "Error checking install packages status", e)
+            PermissionStatus.DENIED
+        }
+    }
+
+    fun getOverallPermissionPointColor(context: Context): Color {
+        val calStatus = getCalendarStatus(context)
+        val notifStatus = getNotificationsStatus(context)
+        val alarmStatus = getAlarmsStatus(context)
+        val driveStatus = getGoogleDriveStatus(context)
+        val batteryStatus = getBatteryOptimizationStatus(context)
+        val installStatus = getInstallPackagesStatus(context)
+
+        return when {
+            calStatus == PermissionStatus.DENIED -> Color.Red
+            notifStatus == PermissionStatus.DENIED ||
+            alarmStatus == PermissionStatus.DENIED ||
+            driveStatus == PermissionStatus.DENIED ||
+            batteryStatus == PermissionStatus.DENIED ||
+            installStatus == PermissionStatus.DENIED -> Color(0xFFFFA500)
+            else -> Color.Green
         }
     }
 }
