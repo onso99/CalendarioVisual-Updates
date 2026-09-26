@@ -21,8 +21,8 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         applicationId = "com.example.calendario"
         minSdk = 29
         targetSdk = 35
-        versionCode = 3
-        versionName = "3.5.00"
+        versionCode = 5
+        versionName = "3.5.01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

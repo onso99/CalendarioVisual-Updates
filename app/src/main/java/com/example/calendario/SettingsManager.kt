@@ -174,8 +174,43 @@ object SettingsManager {
     fun saveLastUpdateCheckTime(context: Context, timestamp: Long = System.currentTimeMillis()) =
         appPrefs(context).edit { putLong("last_update_check_time", timestamp) }
 
-    fun isUpdateAvailable(context: Context): Boolean =
-        getSafeBoolean(appPrefs(context), "is_update_available", false)
+    fun getLatestVersionCode(context: Context): Long =
+        getSafeLong(appPrefs(context), "latest_version_code", 0L)
+
+    fun isUpdateAvailable(context: Context): Boolean {
+        val isAvailable = getSafeBoolean(appPrefs(context), "is_update_available", false)
+        if (!isAvailable) return false
+
+        val latestCode = getLatestVersionCode(context)
+        val currentCode = try {
+            @Suppress("DEPRECATION")
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.longVersionCode
+        } catch (_: Exception) {
+            0L
+        }
+
+        if (latestCode > 0L && currentCode >= latestCode) {
+            setUpdateAvailable(context, false)
+            return false
+        }
+
+        val latestVersion = getLatestVersionName(context) ?: return false
+        val currentVersion = try {
+            @Suppress("DEPRECATION")
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.versionName ?: "0.0.0"
+        } catch (_: Exception) {
+            "0.0.0"
+        }
+
+        if (!UpdateManager.isVersionNewer(latestVersion, currentVersion)) {
+            setUpdateAvailable(context, false)
+            return false
+        }
+
+        return true
+    }
 
     fun getLatestVersionName(context: Context): String? =
         appPrefs(context).getString("latest_version_name", null)
@@ -191,13 +226,15 @@ object SettingsManager {
         available: Boolean,
         latestVersion: String? = null,
         changelog: String? = null,
-        downloadUrl: String? = null
+        downloadUrl: String? = null,
+        latestCode: Long = 0L
     ) {
         appPrefs(context).edit {
             putBoolean("is_update_available", available)
             putString("latest_version_name", latestVersion)
             putString("latest_changelog", changelog)
             putString("latest_download_url", downloadUrl)
+            putLong("latest_version_code", latestCode)
             putLong("last_update_check_time", System.currentTimeMillis())
         }
     }
