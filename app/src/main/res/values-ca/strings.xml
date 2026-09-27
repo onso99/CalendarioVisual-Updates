@@ -261,7 +261,7 @@
     <string name="import_cvo_option_label">Importar fitxer .cvo</string>
     <string name="check_updates_label">Cerca actualitzacions</string>
     <string name="checking_updates">Cercant actualitzacions…</string>
-    <string name="app_up_to_date">La teva aplicació està actualitzada a la darrera versió.</string>
+    <string name="app_up_to_date">Aplicació actualitzada a la darrera versió.</string>
     <string name="update_available_title">Nova versió disponible (%1$s)</string>
     <string name="update_action">Actualitzar ara</string>
     <string name="remind_later_action">Ara no</string>

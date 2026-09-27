@@ -260,7 +260,7 @@
     <string name="import_cvo_option_label">.cvo-Datei importieren</string>
     <string name="check_updates_label">Nach Updates suchen</string>
     <string name="checking_updates">Nach Updates suchen…</string>
-    <string name="app_up_to_date">Ihre Anwendung ist auf dem neuesten Stand.</string>
+    <string name="app_up_to_date">App ist auf dem neuesten Stand.</string>
     <string name="update_available_title">Neue Version verfügbar (%1$s)</string>
     <string name="update_action">Jetzt aktualisieren</string>
     <string name="remind_later_action">Jetzt nicht</string>

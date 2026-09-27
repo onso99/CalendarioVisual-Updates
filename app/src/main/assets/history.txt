@@ -1,3 +1,4 @@
+2026-09-27 - v3.5.03 Integrar clave historica onso.jks y eliminar clave anterior
 2026-09-27 - v3.5.03 Incluir app/calendario_keystore.jks en el repositorio
 2026-09-27 - v3.5.03 Clave Permanente Creada. Se configuraron las variantes release y debug para que siempre firmen los ejecutables con la clave del proyecto releaseKey.
 2026-09-27 - v3.5.02 Se eliminó el atajo que abría el diálogo usando los datos almacenados en la caché de la sesión anterior. Ahora, al pulsar sobre la fila de actualización en Ajustes, la App ejecuta siempre una consulta viva en directo a GitHub

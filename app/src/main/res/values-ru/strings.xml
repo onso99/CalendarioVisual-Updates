@@ -260,7 +260,7 @@
     <string name="import_cvo_option_label">Импортировать файл .cvo</string>
     <string name="check_updates_label">Проверить обновления</string>
     <string name="checking_updates">Проверка обновлений…</string>
-    <string name="app_up_to_date">У вас установлена последняя версия приложения.</string>
+    <string name="app_up_to_date">Приложение обновлено до последней версии.</string>
     <string name="update_available_title">Доступна новая версия (%1$s)</string>
     <string name="update_action">Обновить сейчас</string>
     <string name="remind_later_action">Не сейчас</string>

@@ -261,7 +261,7 @@
     <string name="import_cvo_option_label">Import .cvo file</string>
     <string name="check_updates_label">Check for updates</string>
     <string name="checking_updates">Checking for updates…</string>
-    <string name="app_up_to_date">Your app is up to date.</string>
+    <string name="app_up_to_date">App is up to date.</string>
     <string name="update_available_title">New version available (%1$s)</string>
     <string name="update_action">Update now</string>
     <string name="remind_later_action">Not now</string>

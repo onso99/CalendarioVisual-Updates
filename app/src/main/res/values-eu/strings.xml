@@ -259,7 +259,7 @@
     <string name="import_cvo_option_label">Inportatu .cvo fitxategia</string>
     <string name="check_updates_label">Eguneratzeak bilatu</string>
     <string name="checking_updates">Eguneratzeak bilatzen…</string>
-    <string name="app_up_to_date">Zure aplikazioa azken bertsiora eguneratuta dago.</string>
+    <string name="app_up_to_date">Aplikazioa azken bertsiora eguneratuta dago.</string>
     <string name="update_available_title">Bertsio berria eskuragarri (%1$s)</string>
     <string name="update_action">Eguneratu orain</string>
     <string name="remind_later_action">Orain ez</string>
