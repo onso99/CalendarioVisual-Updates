@@ -29,10 +29,10 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
 
     signingConfigs {
         create("releaseKey") {
-            storeFile = file("calendario_keystore.jks")
-            storePassword = "CalendarioVisual2026"
-            keyAlias = "calendario_key"
-            keyPassword = "CalendarioVisual2026"
+            storeFile = file("onso.jks")
+            storePassword = "Benito1961"
+            keyAlias = "key0"
+            keyPassword = "Benito1961"
         }
     }
 
