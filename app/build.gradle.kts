@@ -12,6 +12,16 @@ kotlin {
     }
 }
 
+fun getGitCommitCount(): Int {
+    return try {
+        val process = ProcessBuilder("git", "rev-list", "--count", "HEAD").start()
+        val countStr = process.inputStream.bufferedReader().readText().trim()
+        countStr.toIntOrNull() ?: 100
+    } catch (_: Exception) {
+        100
+    }
+}
+
 // Configuración de Android usando la API moderna recomendada (ApplicationExtension)
 extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
     namespace = "com.example.calendario"
@@ -21,8 +31,8 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         applicationId = "com.example.calendario"
         minSdk = 29
         targetSdk = 35
-        versionCode = 7
-        versionName = "3.5.04"
+        versionCode = getGitCommitCount()
+        versionName = "3.5.05"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

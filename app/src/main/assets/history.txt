@@ -1,3 +1,4 @@
+2026-09-28 - v3.5.04 Calendarios: Tarjetas Flotantes Independientes. Prioridad y Desplegado Inteligente. Tipografía y 2 Líneas.
 2026-09-27 - v3.5.03.1 Actualizado toast de confirmación al buscar actualización
 2026-09-27 - v3.5.03 Integrar clave historica onso.jks y eliminar clave anterior
 2026-09-27 - v3.5.03 Incluir app/calendario_keystore.jks en el repositorio
