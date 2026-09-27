@@ -72,6 +72,7 @@ fun BackupScreen(
                 if (task.isSuccessful) {
                     val account = task.result
                     SettingsManager.saveGoogleAccountEmail(context, account?.email)
+                    SettingsManager.saveGoogleAccountPhotoUrl(context, account?.photoUrl?.toString())
                     permissionsUpdateTrigger++
                     context.showToast(R.string.account_linked_success)
                 } else {
@@ -236,6 +237,7 @@ fun BackupScreen(
                             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
                             GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener { 
                                 SettingsManager.saveGoogleAccountEmail(context, null)
+                                SettingsManager.saveGoogleAccountPhotoUrl(context, null)
                                 permissionsUpdateTrigger++
                                 showUnlinkAccountDialog = false 
                             } 

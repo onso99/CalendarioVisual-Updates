@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.calendario
 
 import android.content.Context
@@ -5,6 +7,7 @@ import android.content.SharedPreferences
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.edit
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
@@ -75,11 +78,29 @@ object SettingsManager {
     fun isLoggingEnabled(context: Context): Boolean =
         appPrefs(context).getBoolean(AppConstants.KEY_LOGGING_ENABLED, false)
 
-    fun getGoogleAccountEmail(context: Context): String? =
-        appPrefs(context).getString("google_account_email", null)
+    @Suppress("DEPRECATION")
+    fun getGoogleAccountEmail(context: Context): String? {
+        val account = GoogleSignIn.getLastSignedInAccount(context)
+        if (account != null && !account.email.isNullOrBlank()) {
+            return account.email
+        }
+        return appPrefs(context).getString("google_account_email", null)
+    }
 
     fun saveGoogleAccountEmail(context: Context, email: String?) =
         appPrefs(context).edit { putString("google_account_email", email) }
+
+    @Suppress("DEPRECATION")
+    fun getGoogleAccountPhotoUrl(context: Context): String? {
+        val account = GoogleSignIn.getLastSignedInAccount(context)
+        if (account != null && account.photoUrl != null) {
+            return account.photoUrl.toString()
+        }
+        return appPrefs(context).getString("google_account_photo_url", null)
+    }
+
+    fun saveGoogleAccountPhotoUrl(context: Context, photoUrl: String?) =
+        appPrefs(context).edit { putString("google_account_photo_url", photoUrl) }
 
     fun saveStartOfWeek(context: Context, option: StartOfWeekOption) =
         appPrefs(context).edit { putString(AppConstants.KEY_START_OF_WEEK, option.key) }
@@ -190,7 +211,7 @@ object SettingsManager {
             0L
         }
 
-        if (latestCode > 0L && currentCode >= latestCode) {
+        if (latestCode in 1L..currentCode) {
             setUpdateAvailable(context, false)
             return false
         }

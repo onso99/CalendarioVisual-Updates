@@ -1097,7 +1097,10 @@ private fun CalendarDrawerItem(
     iconColor: Color,
     onToggle: (Long) -> Unit
 ) {
+    val context = LocalContext.current
     val brandColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.settingsBackground)
+    val isGoogleAccount = calendar.accountName.contains("gmail.com", ignoreCase = true) || calendar.accountName.contains("google", ignoreCase = true)
+    val googlePhotoUrl = if (isGoogleAccount) SettingsManager.getGoogleAccountPhotoUrl(context) else null
 
     NavigationDrawerItem(
         label = {
@@ -1114,11 +1117,18 @@ private fun CalendarDrawerItem(
         selected = false,
         onClick = { onToggle(calendar.id) },
         icon = {
-            Icon(
-                imageVector = Icons.Outlined.CalendarMonth,
-                contentDescription = null,
-                tint = iconColor
-            )
+            if (!googlePhotoUrl.isNullOrBlank()) {
+                UserGoogleAvatar(
+                    photoUrl = googlePhotoUrl,
+                    size = 24.dp
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Outlined.CalendarMonth,
+                    contentDescription = null,
+                    tint = iconColor
+                )
+            }
         },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )

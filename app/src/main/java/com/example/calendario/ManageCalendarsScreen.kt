@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -153,12 +154,23 @@ fun ManageCalendarsScreen(
                                 .padding(horizontal = 16.dp, vertical = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                        val context = LocalContext.current
+                        val isGoogleAccount = accountName.contains("gmail.com", ignoreCase = true) || accountName.contains("google", ignoreCase = true)
+                        val googlePhotoUrl = if (isGoogleAccount) SettingsManager.getGoogleAccountPhotoUrl(context) else null
+
+                        if (!googlePhotoUrl.isNullOrBlank()) {
+                            UserGoogleAvatar(
+                                photoUrl = googlePhotoUrl,
+                                size = 20.dp
+                            )
+                        } else {
                             Icon(
                                 imageVector = if (accountName == localCalendarsLabel) Icons.Default.AccountCircle else Icons.Outlined.AccountCircle,
                                 contentDescription = null,
                                 tint = CalendarioTheme.colors.cabecera,
                                 modifier = Modifier.size(20.dp)
                             )
+                        }
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = accountName,

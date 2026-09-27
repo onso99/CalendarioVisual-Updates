@@ -1,3 +1,5 @@
+2026-09-28 - v3.5.06 Calendario Favorito y Pantalla Todos los calendarios: el icono genérico de la izquierda se sustituye por la foto de perfil circular de Google del usuario
+2026-09-28 - v3.5.05 Asignación automática de versionCode basada en commits de Git
 2026-09-28 - v3.5.04 Calendarios: Tarjetas Flotantes Independientes. Prioridad y Desplegado Inteligente. Tipografía y 2 Líneas.
 2026-09-27 - v3.5.03.1 Actualizado toast de confirmación al buscar actualización
 2026-09-27 - v3.5.03 Integrar clave historica onso.jks y eliminar clave anterior
