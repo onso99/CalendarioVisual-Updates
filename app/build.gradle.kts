@@ -32,7 +32,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 35
         versionCode = getGitCommitCount()
-        versionName = "3.5.06"
+        versionName = "3.5.07"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -126,7 +126,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // Carga de imágenes (Avatar Google)
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation(libs.coil.compose)
 
     // Room (Base de Datos)
     implementation(libs.androidx.room.runtime)

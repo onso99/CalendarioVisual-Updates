@@ -1,3 +1,4 @@
+2026-09-28 - v3.5.07 Añadido al Catálogo de Versiones (gradle/libs.versions.toml). Se actualizó la versión de 2.6.0 a la 2.7.0
 2026-09-28 - v3.5.06 Calendario Favorito y Pantalla Todos los calendarios: el icono genérico de la izquierda se sustituye por la foto de perfil circular de Google del usuario
 2026-09-28 - v3.5.05 Asignación automática de versionCode basada en commits de Git
 2026-09-28 - v3.5.04 Calendarios: Tarjetas Flotantes Independientes. Prioridad y Desplegado Inteligente. Tipografía y 2 Líneas.
