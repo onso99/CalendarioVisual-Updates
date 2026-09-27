@@ -267,6 +267,7 @@
     <string name="update_error">Не удалось проверить обновления</string>
     <string name="downloading_update">Загрузка обновления…</string>
     <string name="permission_install_packages_label">Установка приложений</string>
+    <string name="local_calendars_label">Локальные календари устройства</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

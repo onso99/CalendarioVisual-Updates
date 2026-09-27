@@ -266,6 +266,7 @@
     <string name="update_error">Ezin izan dira eguneratzeak egiaztatu</string>
     <string name="downloading_update">Eguneratzea deskargatzen…</string>
     <string name="permission_install_packages_label">Aplikazioak instalatu</string>
+    <string name="local_calendars_label">Mugikorreko kalendarioak</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

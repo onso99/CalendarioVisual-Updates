@@ -268,6 +268,7 @@
     <string name="update_error">Could not check for updates</string>
     <string name="downloading_update">Downloading update…</string>
     <string name="permission_install_packages_label">Install apps</string>
+    <string name="local_calendars_label">Local / Device calendars</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

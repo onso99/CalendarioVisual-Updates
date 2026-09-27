@@ -283,6 +283,7 @@
     <string name="update_error">No se pudo comprobar la actualización</string>
     <string name="downloading_update">Descargando actualización…</string>
     <string name="permission_install_packages_label">Instalar aplicaciones</string>
+    <string name="local_calendars_label">Calendarios locales / dispositivo</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

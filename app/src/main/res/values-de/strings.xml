@@ -267,6 +267,7 @@
     <string name="update_error">Update konnte nicht geprüft werden</string>
     <string name="downloading_update">Update wird heruntergeladen…</string>
     <string name="permission_install_packages_label">Apps installieren</string>
+    <string name="local_calendars_label">Lokale / Geräte-Kalender</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
