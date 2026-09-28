@@ -22,6 +22,16 @@ fun getGitCommitCount(): Int {
     }
 }
 
+fun getGitCommitDate(): String {
+    return try {
+        val process = ProcessBuilder("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d").start()
+        val dateStr = process.inputStream.bufferedReader().readText().trim()
+        dateStr.ifEmpty { "2026-09-01" }
+    } catch (_: Exception) {
+        "2026-09-01"
+    }
+}
+
 // Configuración de Android usando la API moderna recomendada (ApplicationExtension)
 extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
     namespace = "com.example.calendario"
@@ -32,9 +42,10 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 35
         versionCode = getGitCommitCount()
-        versionName = "3.5.07"
+        versionName = "3.5.07.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "GIT_COMMIT_DATE", "\"${getGitCommitDate()}\"")
     }
 
     signingConfigs {
@@ -67,6 +78,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {

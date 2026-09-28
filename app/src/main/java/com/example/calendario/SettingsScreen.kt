@@ -105,6 +105,7 @@ fun SettingsScreen(
     var lightThemeName by remember { mutableStateOf(SettingsManager.getLightThemeName(context) ?: "theme_1") }
 
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showAboutDetailDialog by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
     var showWeekConfigDialog by remember { mutableStateOf(false) }
@@ -557,7 +558,9 @@ fun SettingsScreen(
                         text = "${AboutInfo.LINE_3_AUTHOR} > ${AboutInfo.getFormattedDate()}", 
                         fontSize = 16.sp, 
                         color = CalendarioTheme.colors.textSystem, 
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showAboutDetailDialog = true }
                     )
                     
                     Icon(
@@ -795,6 +798,10 @@ fun SettingsScreen(
                     }
                 }
             )
+        }
+
+        if (showAboutDetailDialog) {
+            AboutDetailDialog(onDismiss = { showAboutDetailDialog = false })
         }
 
         if (isChangingLanguage) {
