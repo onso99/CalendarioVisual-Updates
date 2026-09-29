@@ -231,10 +231,8 @@ object BackupManager {
                                 if (!remoteNote.isDeleted) {
                                     notesToInsert.add(remoteNote.toEntity())
                                 }
-                            } else {
-                                if (remoteNote.lastModified > localNote.lastModified) {
-                                    notesToInsert.add(remoteNote.toEntity())
-                                }
+                            } else if (remoteNote.lastModified > localNote.lastModified) {
+                                notesToInsert.add(remoteNote.toEntity())
                             }
                         } catch (_: Exception) {}
                     }
@@ -251,7 +249,7 @@ object BackupManager {
                 while (keys.hasNext()) {
                     val adn = keys.next()
                     val valObj = colorsObj.optJSONObject(adn)
-                    val colorInt = if (valObj != null) valObj.optInt("val") else colorsObj.optInt(adn)
+                    val colorInt = valObj?.optInt("val") ?: colorsObj.optInt(adn)
                     val remoteTime = valObj?.optLong("time") ?: 0L
                     val localTime = SettingsManager.getPeriodColorTimestampByAdn(context, adn)
                     
@@ -268,7 +266,7 @@ object BackupManager {
                 while (keys.hasNext()) {
                     val adn = keys.next()
                     val valObj = alarmObj.optJSONObject(adn)
-                    val offset = if (valObj != null) valObj.optInt("val") else alarmObj.optInt(adn)
+                    val offset = valObj?.optInt("val") ?: alarmObj.optInt(adn)
                     val remoteTime = valObj?.optLong("time") ?: 0L
                     val localTime = SettingsManager.getAlarmOffsetTimestampByAdn(context, adn)
                     
@@ -373,7 +371,7 @@ object BackupManager {
                     is String -> editor.putString(key, value)
                     is JSONArray -> {
                         val set = mutableSetOf<String>()
-                        for (i in 0 until value.length()) { val item = value.opt(i); if (item != null) set.add(item.toString()) }
+                        for (i in 0 until value.length()) { value.opt(i)?.let { set.add(it.toString()) } }
                         editor.putStringSet(key, set)
                     }
                     else -> editor.putString(key, value.toString())

@@ -188,7 +188,6 @@ fun AddEventForm(
                 AdaptiveDateTimeRow(
                     label = stringResource(id = R.string.start),
                     date = startDate,
-                    isAllDay = true, // Forzado visualmente
                     onDateClick = onStartDateClick,
                     onTimeClick = onStartTimeClick,
                     fontScale = fontScale
@@ -197,7 +196,6 @@ fun AddEventForm(
                 AdaptiveDateTimeRow(
                     label = stringResource(id = R.string.end),
                     date = endDate,
-                    isAllDay = true, // Forzado visualmente
                     onDateClick = onEndDateClick,
                     onTimeClick = onEndTimeClick,
                     fontScale = fontScale
@@ -652,11 +650,10 @@ private fun ColorCircle(
 private fun AdaptiveDateTimeRow(
     label: String,
     date: LocalDateTime,
-    @Suppress("SAME_PARAMETER_VALUE")
-    isAllDay: Boolean,
     onDateClick: () -> Unit,
     onTimeClick: () -> Unit,
     fontScale: Float,
+    isAllDay: Boolean = true,
     hideDate: Boolean = false
 ) {
     val configuration = LocalConfiguration.current

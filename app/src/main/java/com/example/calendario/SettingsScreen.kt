@@ -138,8 +138,9 @@ fun SettingsScreen(
         if (!isCheckingUpdates) {
             isCheckingUpdates = true
             scope.launch {
-                when (UpdateManager.checkLatestRelease(context)) {
+                when (val result = UpdateManager.checkLatestRelease(context)) {
                     is UpdateCheckResult.UpdateAvailable -> {
+                        Log.d("SettingsScreen", "Actualización disponible: ${result.versionName} - ${result.downloadUrl} (${result.changelog.take(30)})")
                         permissionsUpdateTrigger++
                         showUpdateDialog = true
                     }
@@ -148,6 +149,7 @@ fun SettingsScreen(
                         context.showToast(R.string.app_up_to_date)
                     }
                     is UpdateCheckResult.Error -> {
+                        Log.e("SettingsScreen", "Error comprobando actualización: ${result.message}")
                         context.showToast(R.string.update_error)
                     }
                 }

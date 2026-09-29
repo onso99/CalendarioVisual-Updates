@@ -78,7 +78,7 @@ fun ManageCalendarsScreen(
     // Agrupación de calendarios por cuenta
     val rawGroupedCalendars = remember(availableCalendars) {
         availableCalendars.groupBy { cal ->
-            if (cal.accountName.isNotBlank()) cal.accountName else localCalendarsLabel
+            cal.accountName.ifBlank { localCalendarsLabel }
         }
     }
 
@@ -108,8 +108,7 @@ fun ManageCalendarsScreen(
         }
 
         mutableStateOf(
-            if (defaultExpanded.isNotEmpty()) defaultExpanded
-            else sortedAccountEntries.firstOrNull()?.let { setOf(it.key) } ?: emptySet()
+            defaultExpanded.ifEmpty { sortedAccountEntries.firstOrNull()?.let { setOf(it.key) } ?: emptySet() }
         )
     }
 

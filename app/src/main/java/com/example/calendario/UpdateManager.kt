@@ -16,7 +16,7 @@ sealed class UpdateCheckResult {
     data class UpdateAvailable(
         val versionName: String,
         val changelog: String,
-        val downloadUrl: String
+        val downloadUrl: String,
     ) : UpdateCheckResult()
 
     object AlreadyUpToDate : UpdateCheckResult()
