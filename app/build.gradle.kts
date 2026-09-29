@@ -42,7 +42,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 35
         versionCode = getGitCommitCount()
-        versionName = "3.5.07.1"
+        versionName = "3.5.07.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "GIT_COMMIT_DATE", "\"${getGitCommitDate()}\"")

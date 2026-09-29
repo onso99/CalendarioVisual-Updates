@@ -82,10 +82,12 @@ fun ManageCalendarsScreen(
         }
     }
 
-    // Ordenar cuentas: Cuentas Google primero, luego las demás, luego locales
-    val sortedAccountEntries = remember(rawGroupedCalendars, localCalendarsLabel) {
+    // Ordenar cuentas: 1. La cuenta que contiene el calendario favorito va PRIMERO, luego Google, luego las demás
+    val sortedAccountEntries = remember(rawGroupedCalendars, localCalendarsLabel, currentFavoriteId) {
         rawGroupedCalendars.entries.sortedWith(
             compareByDescending<Map.Entry<String, List<CalendarInfo>>> { entry ->
+                entry.value.any { it.id == currentFavoriteId }
+            }.thenByDescending { entry ->
                 val name = entry.key
                 name.contains("gmail.com", ignoreCase = true) || name.contains("google", ignoreCase = true)
             }.thenBy { entry ->
@@ -94,12 +96,16 @@ fun ManageCalendarsScreen(
         )
     }
 
-    // Cuentas desplegadas por defecto: Cuentas de Google (o la primera si no hay Google)
-    var expandedAccounts by remember(sortedAccountEntries) {
-        val defaultExpanded = sortedAccountEntries.filter { entry ->
-            val name = entry.key
-            name.contains("gmail.com", ignoreCase = true) || name.contains("google", ignoreCase = true)
-        }.map { it.key }.toSet()
+    // Cuentas desplegadas por defecto: La cuenta con el favorito y las cuentas de Google
+    var expandedAccounts by remember(sortedAccountEntries, currentFavoriteId) {
+        val defaultExpanded = mutableSetOf<String>()
+        sortedAccountEntries.forEach { entry ->
+            val isFavoriteAccount = entry.value.any { it.id == currentFavoriteId }
+            val isGoogleAccount = entry.key.contains("gmail.com", ignoreCase = true) || entry.key.contains("google", ignoreCase = true)
+            if (isFavoriteAccount || isGoogleAccount) {
+                defaultExpanded.add(entry.key)
+            }
+        }
 
         mutableStateOf(
             if (defaultExpanded.isNotEmpty()) defaultExpanded
