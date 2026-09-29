@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -160,22 +159,16 @@ fun ManageCalendarsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                         val context = LocalContext.current
-                        val isGoogleAccount = accountName.contains("gmail.com", ignoreCase = true) || accountName.contains("google", ignoreCase = true)
-                        val googlePhotoUrl = if (isGoogleAccount) SettingsManager.getGoogleAccountPhotoUrl(context) else null
+                        val signedInEmail = SettingsManager.getGoogleAccountEmail(context)
+                        val isMatchingAccount = !signedInEmail.isNullOrBlank() && accountName.equals(signedInEmail, ignoreCase = true)
+                        val googlePhotoUrl = if (isMatchingAccount) SettingsManager.getGoogleAccountPhotoUrl(context) else null
 
-                        if (!googlePhotoUrl.isNullOrBlank()) {
-                            UserGoogleAvatar(
-                                photoUrl = googlePhotoUrl,
-                                size = 20.dp
-                            )
-                        } else {
-                            Icon(
-                                imageVector = if (accountName == localCalendarsLabel) Icons.Default.AccountCircle else Icons.Outlined.AccountCircle,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.cabecera,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+                        UserGoogleAvatar(
+                            photoUrl = googlePhotoUrl,
+                            size = 20.dp,
+                            fallbackIcon = Icons.Outlined.AccountCircle,
+                            iconTint = CalendarioTheme.colors.cabecera
+                        )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = accountName,

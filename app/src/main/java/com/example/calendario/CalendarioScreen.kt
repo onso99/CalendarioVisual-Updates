@@ -1099,8 +1099,9 @@ private fun CalendarDrawerItem(
 ) {
     val context = LocalContext.current
     val brandColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.settingsBackground)
-    val isGoogleAccount = calendar.accountName.contains("gmail.com", ignoreCase = true) || calendar.accountName.contains("google", ignoreCase = true)
-    val googlePhotoUrl = if (isGoogleAccount) SettingsManager.getGoogleAccountPhotoUrl(context) else null
+    val signedInEmail = SettingsManager.getGoogleAccountEmail(context)
+    val isMatchingAccount = !signedInEmail.isNullOrBlank() && calendar.accountName.equals(signedInEmail, ignoreCase = true)
+    val googlePhotoUrl = if (isMatchingAccount) SettingsManager.getGoogleAccountPhotoUrl(context) else null
 
     NavigationDrawerItem(
         label = {
