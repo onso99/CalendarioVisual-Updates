@@ -95,20 +95,19 @@ fun ManageCalendarsScreen(
         )
     }
 
-    // Cuentas desplegadas por defecto: La cuenta con el favorito y las cuentas de Google
+    // Cuentas desplegadas por defecto: ÚNICAMENTE la cuenta que contiene el calendario Favorito
     var expandedAccounts by remember(sortedAccountEntries, currentFavoriteId) {
-        val defaultExpanded = mutableSetOf<String>()
-        sortedAccountEntries.forEach { entry ->
-            val isFavoriteAccount = entry.value.any { it.id == currentFavoriteId }
-            val isGoogleAccount = entry.key.contains("gmail.com", ignoreCase = true) || entry.key.contains("google", ignoreCase = true)
-            if (isFavoriteAccount || isGoogleAccount) {
-                defaultExpanded.add(entry.key)
-            }
+        val favoriteAccountKey = sortedAccountEntries.find { entry ->
+            entry.value.any { it.id == currentFavoriteId }
+        }?.key
+
+        val defaultExpanded = if (favoriteAccountKey != null) {
+            setOf(favoriteAccountKey)
+        } else {
+            sortedAccountEntries.firstOrNull()?.let { setOf(it.key) } ?: emptySet()
         }
 
-        mutableStateOf(
-            defaultExpanded.ifEmpty { sortedAccountEntries.firstOrNull()?.let { setOf(it.key) } ?: emptySet() }
-        )
+        mutableStateOf(defaultExpanded)
     }
 
     AppScreen(
