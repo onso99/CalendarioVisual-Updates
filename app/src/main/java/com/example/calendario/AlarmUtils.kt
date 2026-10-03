@@ -76,6 +76,8 @@ object AlarmUtils {
                 action = "com.example.calendario.ALARM_DISPARO_${event.id}_${event.date}"
                 putExtra("event_id", event.id)
                 putExtra("event_title", event.title)
+                putExtra("event_date", event.date.toString())
+                putExtra("event_adn", event.adn)
             }
             val receiverPendingIntent = PendingIntent.getBroadcast(
                 context,

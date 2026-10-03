@@ -9,6 +9,7 @@ import android.media.RingtoneManager
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import com.example.calendario.database.AppDatabase
 
 class AlarmReceiver : BroadcastReceiver() {
     companion object {
@@ -35,6 +36,40 @@ class AlarmReceiver : BroadcastReceiver() {
                 snoozeAlarmGlobally(context, eventId, eventTitle)
             }
             else -> {
+                val eventDateStr = intent.getStringExtra("event_date")
+                val eventAdn = intent.getStringExtra("event_adn")
+
+                // ESCUDO DE SEGURIDAD PREVIO AL DISPARO:
+                // 1. Verificar si el ID de evento está marcado como borrado en SharedPreferences
+                val isDeletedInPrefs = SettingsManager.getDeletedEventIds(context).contains(eventId)
+                if (isDeletedInPrefs) {
+                    LogCollector.addLog("ALARMA: Omitida -> '$eventTitle' (Evento borrado en preferencias)")
+                    return
+                }
+
+                // 2. Verificar si la entidad del evento en Room está marcada con isDeleted = true
+                if (!eventAdn.isNullOrBlank()) {
+                    val database = AppDatabase.getDatabase(context)
+                    val eventEntity = database.calendarDao().getEventByAdn(eventAdn)
+                    if (eventEntity != null && eventEntity.isDeleted) {
+                        LogCollector.addLog("ALARMA: Omitida -> '$eventTitle' (Instancia borrada en DB)")
+                        return
+                    }
+                }
+
+                // 3. Verificar si la fecha de esta instancia específica existe en los eventos activos del día
+                if (!eventDateStr.isNullOrBlank()) {
+                    try {
+                        val database = AppDatabase.getDatabase(context)
+                        val dayEvents = database.calendarDao().getAllEventsSync().filter { it.date == eventDateStr && !it.isDeleted }
+                        val matchingEvent = dayEvents.find { it.googleId == eventId || (!eventAdn.isNullOrBlank() && it.adn == eventAdn) }
+                        if (matchingEvent == null) {
+                            LogCollector.addLog("ALARMA: Omitida -> '$eventTitle' ($eventDateStr) (Instancia cancelada/eliminada)")
+                            return
+                        }
+                    } catch (_: Exception) {}
+                }
+
                 LogCollector.addLog("ALARMA: ¡Disparada! para '$eventTitle'")
                 showNotification(context, eventId, eventTitle)
             }

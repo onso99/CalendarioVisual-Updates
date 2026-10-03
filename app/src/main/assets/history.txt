@@ -1,3 +1,4 @@
+2026-09-29 - v3.5.09 Calendarios: sólo la familia del calendario favorito aparece desplegada por defecto.
 2026-09-29 - v3.5.08 Foto original de cuenta e icono AccountCircle si carece de ella
 2026-09-29 - v3.5.07.3 Corrección de warnings
 2026-09-29 - v3.5.07.2 Orden en la lista de calendarios: 1.Calendario favorito, 2.Cuentas de Google, 3. Resto de cuentas y locales

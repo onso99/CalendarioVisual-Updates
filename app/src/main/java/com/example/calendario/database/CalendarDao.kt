@@ -54,6 +54,9 @@ interface CalendarDao {
     @Query("UPDATE events SET isDeleted = 1, lastModified = :timestamp WHERE adn = :adn")
     suspend fun markEventAsDeletedByAdn(adn: String, timestamp: Long)
 
+    @Query("SELECT * FROM events WHERE adn = :adn LIMIT 1")
+    fun getEventByAdn(adn: String): EventEntity?
+
     @Query("DELETE FROM events WHERE googleId = :googleId")
     suspend fun deleteEventPermanently(googleId: Long)
 
