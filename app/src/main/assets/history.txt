@@ -1,3 +1,4 @@
+2026-10-03 - v3.5.11 Tamaño de fuente: Reducido de 14.sp a 12.sp (igualando el tamaño compacto utilizado en la pantalla de Historial de cambios). Interlineado: Reducido de 20.sp a 16.sp para que las listas de novedades queden más compactas y quepan holgadamente sin saturar el espacio del diálogo.
 2026-10-03 - v3.5.10 Inclusión de Fecha y ADN en la Alarma. Escudo de Validación Previa al Disparo (AlarmReceiver.kt)
 2026-09-29 - v3.5.09 Calendarios: sólo la familia del calendario favorito aparece desplegada por defecto.
 2026-09-29 - v3.5.08 Foto original de cuenta e icono AccountCircle si carece de ella
