@@ -1088,15 +1088,15 @@ fun UpdateAvailableDialog(
             if (isDownloading) {
                 Text(
                     text = stringResource(R.string.downloading_update),
-                    fontSize = 15.sp,
+                    fontSize = 13.sp,
                     color = CalendarioTheme.colors.textSystem
                 )
             } else if (changelog.isNotBlank()) {
                 Text(
                     text = changelog,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color = CalendarioTheme.colors.textSystem,
-                    lineHeight = 20.sp
+                    lineHeight = 16.sp
                 )
             }
         }
