@@ -269,6 +269,10 @@
     <string name="downloading_update">Descargando actualización…</string>
     <string name="permission_install_packages_label">Instalar aplicacións</string>
     <string name="local_calendars_label">Calendarios locais / dispositivo</string>
+    <string name="startup_error_dialog_title">⚠️ Problema detectado ao iniciar</string>
+    <string name="startup_error_dialog_message">Detectouse un inconveniente ao cargar os datos no inicio anterior:</string>
+    <string name="repair_data_action">Reparar datos locais</string>
+    <string name="repair_data_success">Base de datos local reparada con éxito</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

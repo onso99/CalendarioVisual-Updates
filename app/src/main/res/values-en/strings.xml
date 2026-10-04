@@ -269,6 +269,10 @@
     <string name="downloading_update">Downloading update…</string>
     <string name="permission_install_packages_label">Install apps</string>
     <string name="local_calendars_label">Local / Device calendars</string>
+    <string name="startup_error_dialog_title">⚠️ Issue detected on startup</string>
+    <string name="startup_error_dialog_message">An issue was detected while loading data on the previous startup:</string>
+    <string name="repair_data_action">Repair local data</string>
+    <string name="repair_data_success">Local database successfully repaired</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

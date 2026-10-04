@@ -267,6 +267,10 @@
     <string name="downloading_update">Eguneratzea deskargatzen…</string>
     <string name="permission_install_packages_label">Aplikazioak instalatu</string>
     <string name="local_calendars_label">Mugikorreko kalendarioak</string>
+    <string name="startup_error_dialog_title">⚠️ Arazoa detektatu da hastean</string>
+    <string name="startup_error_dialog_message">Aurreko abiaraztean datuak kargatzean arazo bat detektatu da:</string>
+    <string name="repair_data_action">Tokiko datuak konpondu</string>
+    <string name="repair_data_success">Tokiko datu-basea ondo konpondu da</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

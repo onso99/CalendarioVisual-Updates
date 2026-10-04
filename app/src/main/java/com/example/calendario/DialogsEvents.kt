@@ -1102,3 +1102,58 @@ fun UpdateAvailableDialog(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StartupRecoveryDialog(
+    errorMessage: String?,
+    isRepairing: Boolean,
+    onConfirmRepair: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.startup_error_dialog_title),
+        confirmButton = {
+            if (isRepairing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = CalendarioTheme.colors.cabecera,
+                    strokeWidth = 2.5.dp
+                )
+            } else {
+                DialogConfirmButton(
+                    text = stringResource(R.string.repair_data_action),
+                    onClick = onConfirmRepair
+                )
+            }
+        },
+        dismissButton = {
+            if (!isRepairing) {
+                DialogDismissButton(
+                    text = stringResource(R.string.accept),
+                    onDismiss = onDismissRequest
+                )
+            }
+        }
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Text(
+                text = stringResource(R.string.startup_error_dialog_message),
+                fontSize = 14.sp,
+                color = CalendarioTheme.colors.textSystem,
+                lineHeight = 20.sp
+            )
+            if (!errorMessage.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "\"$errorMessage\"",
+                    fontSize = 12.sp,
+                    color = Color.Red,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 16.sp
+                )
+            }
+        }
+    }
+}

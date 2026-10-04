@@ -195,6 +195,26 @@ object SettingsManager {
     fun saveLastUpdateCheckTime(context: Context, timestamp: Long = System.currentTimeMillis()) =
         appPrefs(context).edit { putLong("last_update_check_time", timestamp) }
 
+    // --- 2.2 REGISTRO DE DIAGNÓSTICO Y RESCATE (Startup Recovery) ---
+    fun hasStartupCrashFlag(context: Context): Boolean =
+        getSafeBoolean(appPrefs(context), "has_startup_crash_flag", false)
+
+    fun getLastCrashMessage(context: Context): String? =
+        appPrefs(context).getString("last_crash_message", null)
+
+    fun setStartupCrashFlag(context: Context, flag: Boolean, message: String? = null) {
+        appPrefs(context).edit(commit = true) {
+            putBoolean("has_startup_crash_flag", flag)
+            if (message != null) {
+                putString("last_crash_message", message)
+            } else if (!flag) {
+                remove("last_crash_message")
+            }
+        }
+    }
+
+    fun clearStartupCrashFlag(context: Context) = setStartupCrashFlag(context, false, null)
+
     fun getLatestVersionCode(context: Context): Long =
         getSafeLong(appPrefs(context), "latest_version_code", 0L)
 

@@ -268,6 +268,10 @@
     <string name="downloading_update">更新をダウンロード中…</string>
     <string name="permission_install_packages_label">アプリのインストール</string>
     <string name="local_calendars_label">ローカル/デバイスのカレンダー</string>
+    <string name="startup_error_dialog_title">⚠️ 起動時に問題が検出されました</string>
+    <string name="startup_error_dialog_message">前回の起動時にデータの読み込みで問題が検出されました:</string>
+    <string name="repair_data_action">ローカルデータを修復</string>
+    <string name="repair_data_success">ローカルデータベースが正常に修復されました</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

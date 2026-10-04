@@ -268,6 +268,10 @@
     <string name="downloading_update">Téléchargement de la mise à jour…</string>
     <string name="permission_install_packages_label">Installer des applications</string>
     <string name="local_calendars_label">Calendriers locaux / appareil</string>
+    <string name="startup_error_dialog_title">⚠️ Problème détecté au démarrage</string>
+    <string name="startup_error_dialog_message">Un problème est survenu lors du chargement des données lors du démarrage précédent :</string>
+    <string name="repair_data_action">Réparer les données locales</string>
+    <string name="repair_data_success">Base de données locale réparée avec succès</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

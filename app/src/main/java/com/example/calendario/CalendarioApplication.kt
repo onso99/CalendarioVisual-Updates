@@ -17,7 +17,10 @@ class CalendarioApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         
-        // 1. InicializaciÃ³n inmediata de logs (Vital para evitar cierres)
+        // 0. Capturador Global de Excepciones para diagnóstico de rescate
+        GlobalCrashHandler.init(this)
+        
+        // 1. Inicialización inmediata de logs
         LogCollector.init(this)
         
         // 2. ProgramaciÃ³n diferida del Backup

@@ -140,6 +140,9 @@ fun CalendarioScreen(
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
     var updateCheckTrigger by remember { mutableIntStateOf(0) }
+    var showStartupRecoveryDialog by remember { mutableStateOf(SettingsManager.hasStartupCrashFlag(context)) }
+    var lastCrashMessage by remember { mutableStateOf(SettingsManager.getLastCrashMessage(context)) }
+    var isRepairingDatabase by remember { mutableStateOf(false) }
     
     var showCleaningDialog by remember { mutableStateOf(false) }
     var showSyncDialog by remember { mutableStateOf(false) }
@@ -1087,6 +1090,33 @@ fun CalendarioScreen(
                 scope.launch { yearPagerState.scrollToPage(targetYearPage) }
             },
             onDismissRequest = { showGoToYearDialog = false }
+        )
+    }
+
+    if (showStartupRecoveryDialog) {
+        StartupRecoveryDialog(
+            errorMessage = lastCrashMessage,
+            isRepairing = isRepairingDatabase,
+            onConfirmRepair = {
+                if (!isRepairingDatabase) {
+                    isRepairingDatabase = true
+                    viewModel.repairDatabaseAndResync(context) { success ->
+                        isRepairingDatabase = false
+                        showStartupRecoveryDialog = false
+                        if (success) {
+                            context.showToast(R.string.repair_data_success)
+                        } else {
+                            context.showToast(R.string.error)
+                        }
+                    }
+                }
+            },
+            onDismissRequest = {
+                if (!isRepairingDatabase) {
+                    SettingsManager.clearStartupCrashFlag(context)
+                    showStartupRecoveryDialog = false
+                }
+            }
         )
     }
 }

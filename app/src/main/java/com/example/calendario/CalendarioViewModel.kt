@@ -443,6 +443,41 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun repairDatabaseAndResync(context: Context, onComplete: (Boolean) -> Unit = {}) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val success = try {
+                LogCollector.addLog("RESCATE: Iniciando auto-reparación de base de datos local...")
+                dao.clearAllEvents()
+                dao.clearAllNotes()
+                
+                SettingsManager.clearStartupCrashFlag(context)
+                
+                val selectedIds = SettingsManager.getSelectedCalendarIds(context)
+                val newEventsMap: Map<LocalDate, List<Festivo>> = readFestivosFromCalendarsSync(context, selectedIds)
+                val newEvents = mutableListOf<Festivo>()
+                for (entry in newEventsMap) {
+                    newEvents.addAll(entry.value)
+                }
+                if (newEvents.isNotEmpty()) {
+                    dao.smartRefreshEvents(newEvents.map { it.toEntity() })
+                }
+                
+                LogCollector.addLog("RESCATE: Base de datos reparada con éxito (${newEvents.size} eventos cargados)")
+                true
+            } catch (e: Exception) {
+                LogCollector.addLog("RESCATE: Error al reparar base de datos: ${e.message}")
+                false
+            }
+            
+            withContext(Dispatchers.Main) {
+                if (success) {
+                    refreshData()
+                }
+                onComplete(success)
+            }
+        }
+    }
+
     fun saveDailyNote(date: LocalDate, content: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val note = DailyNote(date.toString(), content, System.currentTimeMillis(), false)

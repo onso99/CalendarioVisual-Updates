@@ -268,6 +268,10 @@
     <string name="downloading_update">Загрузка обновления…</string>
     <string name="permission_install_packages_label">Установка приложений</string>
     <string name="local_calendars_label">Локальные календари устройства</string>
+    <string name="startup_error_dialog_title">⚠️ Обнаружена проблема при запуске</string>
+    <string name="startup_error_dialog_message">При предыдущем запуске возникла проблема с загрузкой данных:</string>
+    <string name="repair_data_action">Восстановить локальные данные</string>
+    <string name="repair_data_success">Локальная база данных успешно восстановлена</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>

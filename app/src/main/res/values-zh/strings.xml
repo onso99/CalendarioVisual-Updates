@@ -268,6 +268,10 @@
     <string name="downloading_update">正在下载更新…</string>
     <string name="permission_install_packages_label">安装应用</string>
     <string name="local_calendars_label">本地/设备日历</string>
+    <string name="startup_error_dialog_title">⚠️ 启动时检测到问题</string>
+    <string name="startup_error_dialog_message">上次启动加载数据时检测到问题：</string>
+    <string name="repair_data_action">修复本地数据</string>
+    <string name="repair_data_success">本地数据库修复成功</string>
     <string name="color_alpha_label">A</string>
     <string name="color_red_label">R</string>
     <string name="color_green_label">G</string>
