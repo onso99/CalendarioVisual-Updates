@@ -8,6 +8,8 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -1084,19 +1086,25 @@ fun UpdateAvailableDialog(
             }
         }
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 260.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 4.dp)
+        ) {
             if (isDownloading) {
                 Text(
                     text = stringResource(R.string.downloading_update),
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     color = CalendarioTheme.colors.textSystem
                 )
             } else if (changelog.isNotBlank()) {
                 Text(
                     text = changelog,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     color = CalendarioTheme.colors.textSystem,
-                    lineHeight = 16.sp
+                    lineHeight = 14.sp
                 )
             }
         }
