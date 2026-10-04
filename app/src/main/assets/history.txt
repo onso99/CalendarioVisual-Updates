@@ -1,3 +1,4 @@
+2026-10-04 - v3.5.12 Sistema de rescate: Intercepta de forma transparente cualquier cierre o excepción. El botón "Reparar datos locales" resetea automáticamente las tablas locales corruptas de Room.
 2026-10-03 - v3.5.11 Incluir UserGoogleAvatar.kt y actualizar history.txt
 2026-10-03 - v3.5.11 Tamaño de fuente: Reducido de 14.sp a 12.sp (igualando el tamaño compacto utilizado en la pantalla de Historial de cambios). Interlineado: Reducido de 20.sp a 16.sp para que las listas de novedades queden más compactas y quepan holgadamente sin saturar el espacio del diálogo.
 2026-10-03 - v3.5.10 Inclusión de Fecha y ADN en la Alarma. Escudo de Validación Previa al Disparo (AlarmReceiver.kt)

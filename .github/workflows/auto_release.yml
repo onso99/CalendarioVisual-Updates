@@ -34,23 +34,45 @@ jobs:
         id: extract_changelog
         run: |
           python3 -c "
-          import re
+          import re, urllib.request, json
+          latest_url = 'https://api.github.com/repos/onso99/CalendarioVisual-Updates/releases/latest'
+          prev_tag = ''
+          try:
+              req = urllib.request.Request(latest_url, headers={'User-Agent': 'CalendarioApp'})
+              with urllib.request.urlopen(req) as resp:
+                  data = json.loads(resp.read().decode('utf-8'))
+                  raw_tag = data.get('tag_name', '').strip()
+                  if raw_tag.startswith('v') or raw_tag.startswith('V'):
+                      prev_tag = raw_tag[1:]
+                  else:
+                      prev_tag = raw_tag
+          except Exception as e:
+              print(f'Aviso: No se pudo consultar release previa: {e}')
+
+          changes = []
           try:
               with open('app/src/main/assets/history.txt', 'r', encoding='utf-8') as f:
                   lines = f.readlines()
-              changelog = []
+
               for line in lines:
-                  if changelog and re.match(r'^\d{4}-\d{2}-\d{2}\s*-', line):
+                  line_str = line.strip()
+                  if not line_str:
+                      continue
+
+                  if prev_tag and (f'v{prev_tag}' in line_str or f'v.{prev_tag}' in line_str):
                       break
-                  changelog.append(line)
-              text = ''.join(changelog).strip()
-              if not text:
-                  text = 'Lanzamiento automático de nueva versión.'
-              with open('release_notes.txt', 'w', encoding='utf-8') as f:
-                  f.write(text)
+
+                  clean_text = re.sub(r'^\d{4}-\d{2}-\d{2}\s*-\s*(?:v[\d\.]+\s*)?', '', line_str).strip()
+                  if clean_text:
+                      changes.append(f'• {clean_text}')
+
+              if not changes:
+                  changes = ['• Lanzamiento automático de nueva versión.']
           except Exception as e:
-              with open('release_notes.txt', 'w', encoding='utf-8') as f:
-                  f.write('Lanzamiento automático de nueva versión.')
+              changes = ['• Lanzamiento automático de nueva versión.']
+
+          with open('release_notes.txt', 'w', encoding='utf-8') as f:
+              f.write('\n'.join(changes))
           "
 
       - name: Publicar Release en CalendarioVisual-Updates
