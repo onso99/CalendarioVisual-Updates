@@ -48,9 +48,8 @@ object ThemePersistence {
     }
 
     private fun android.content.SharedPreferences.Editor.applyThemeColors(theme: JSONObject, themeType: String) {
-        // Solo operamos con los colores que NO son independientes (ajustes globales)
-        val themeItems = ColorThemeConfig.colorThemeItems.filter { !it.isIndependent }
-        val allKeys = themeItems.map { if (themeType == "light") it.lightThemeKey else it.darkThemeKey }
+        val themeItems = ColorThemeConfig.colorThemeItems.filterNot { (_, _, _, _, _, _, _, isIndependent) -> isIndependent }
+        val allKeys = themeItems.map { (_, lightKey, darkKey) -> if (themeType == "light") lightKey else darkKey }
         
         // 1. Limpiar colores estéticos anteriores
         allKeys.forEach { key ->
@@ -58,8 +57,8 @@ object ThemePersistence {
         }
 
         // 2. Aplicar nuevos colores del tema (solo los estéticos)
-        for (item in themeItems) {
-            val key = if (themeType == "light") item.lightThemeKey else item.darkThemeKey
+        for ((_, lightKey, darkKey) in themeItems) {
+            val key = if (themeType == "light") lightKey else darkKey
             if (key.isNotBlank() && theme.has(key)) {
                 val colorString = theme.getString(key)
                 putInt(key, colorString.toColorInt())
@@ -102,18 +101,18 @@ object ThemePersistence {
 
             // Filtramos la lista para que SOLO exporte los colores vinculados al tema
             // (Ignoramos Cumpleaños, Evento-1 y Evento-2 ya que son ajustes globales)
-            val themeItems = ColorThemeConfig.colorThemeItems.filter { !it.isIndependent }
+            val themeItems = ColorThemeConfig.colorThemeItems.filterNot { (_, _, _, _, _, _, _, isIndependent) -> isIndependent }
 
-            themeItems.forEach { item ->
+            themeItems.forEach { (_, lightKey, darkKey, defaultLight, defaultDark) ->
                 // Light
-                if (item.lightThemeKey.isNotBlank()) {
-                    val lightColor = prefs.getInt(item.lightThemeKey, item.defaultLight.toArgb())
-                    lightTheme.put(item.lightThemeKey, String.format(java.util.Locale.US, "#%08X", lightColor))
+                if (lightKey.isNotBlank()) {
+                    val lightColor = prefs.getInt(lightKey, defaultLight.toArgb())
+                    lightTheme.put(lightKey, String.format(java.util.Locale.US, "#%08X", lightColor))
                 }
                 // Dark
-                if (item.darkThemeKey.isNotBlank()) {
-                    val darkColor = prefs.getInt(item.darkThemeKey, item.defaultDark.toArgb())
-                    darkTheme.put(item.darkThemeKey, String.format(java.util.Locale.US, "#%08X", darkColor))
+                if (darkKey.isNotBlank()) {
+                    val darkColor = prefs.getInt(darkKey, defaultDark.toArgb())
+                    darkTheme.put(darkKey, String.format(java.util.Locale.US, "#%08X", darkColor))
                 }
             }
 

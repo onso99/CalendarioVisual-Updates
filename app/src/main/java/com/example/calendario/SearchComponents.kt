@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -37,7 +36,6 @@ import com.example.calendario.ui.theme.CalendarioTheme
 /**
  * Componente visual para una fila de evento en las pantallas de búsqueda y exportación.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun EventRow(
     festivo: Festivo,
@@ -276,7 +274,6 @@ internal fun EventRow(
 /**
  * Componente visual para una fila de nota en las pantallas de búsqueda y exportación.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun NoteRow(
     note: DailyNote,

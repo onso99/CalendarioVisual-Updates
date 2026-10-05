@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.calendario
 
 import android.widget.Toast
@@ -18,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -125,7 +126,6 @@ fun rememberAdvancedColorPickerState(
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdvancedColorPickerDialog(
     initialColor: Color,
@@ -202,7 +202,6 @@ private fun ColorSliders(state: AdvancedColorPickerState) {
 @Composable
 private fun HexInput(state: AdvancedColorPickerState, onConfirm: () -> Unit) {
     val context = LocalContext.current
-    @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
     val fontScale = LocalConfiguration.current.fontScale
     val useVerticalLayout = fontScale > 1.4f

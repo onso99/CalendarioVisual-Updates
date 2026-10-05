@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoToYearDialog(
     initialYear: Int,

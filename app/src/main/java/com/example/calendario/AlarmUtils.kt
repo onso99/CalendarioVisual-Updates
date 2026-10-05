@@ -200,12 +200,11 @@ object AlarmUtils {
     }
 
     private fun isEventInSystemCalendar(context: Context, eventId: Long): Boolean {
-        if (eventId <= 0) return false
-        return try {
+        return eventId > 0 && try {
             val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
             context.contentResolver.query(uri, arrayOf(CalendarContract.Events._ID), null, null, null)?.use { cursor ->
                 cursor.moveToFirst()
-            } ?: false
+            } == true
         } catch (_: Exception) {
             false
         }

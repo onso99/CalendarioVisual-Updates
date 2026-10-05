@@ -8,13 +8,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,7 +84,6 @@ private fun getActualFirstDayOfWeek(context: Context): DayOfWeek {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun CalendarioScreen(
     themeManager: ThemeManager,
@@ -324,7 +323,7 @@ fun CalendarioScreen(
 
     val isCurrentMonthView = currentMonth.year == today.year && currentMonth.month == today.month
     val finalEventsToList = remember(uiState.eventsByDate, currentMonth, showAllEvents) {
-        processEventsForDisplay(uiState.eventsByDate, currentMonth.atDay(1), showAll = if (isCurrentMonthView) showAllEvents else true)
+        processEventsForDisplay(uiState.eventsByDate, currentMonth.atDay(1), showAll = !isCurrentMonthView || showAllEvents)
     }
 
     LaunchedEffect(finalEventsToList, showAllEvents, viewMode, isCurrentMonthView) {
@@ -870,11 +869,7 @@ fun CalendarioScreen(
                                             }
                                     )
 
-                                    val isAtToday = if (viewMode == CalendarViewMode.MONTHLY) {
-                                        currentMonth == YearMonth.from(today)
-                                    } else {
-                                        currentYear == Year.from(today)
-                                    }
+                                    val isAtToday = if (viewMode == CalendarViewMode.MONTHLY) currentMonth == YearMonth.from(today) else currentYear == Year.from(today)
 
                                     if (!isAtToday) {
                                         IconButton(

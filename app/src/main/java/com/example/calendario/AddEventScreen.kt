@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SelectableDates
@@ -154,7 +153,6 @@ private fun isLaneAvailable(
     return null
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventScreen(
     onBackPress: () -> Unit,

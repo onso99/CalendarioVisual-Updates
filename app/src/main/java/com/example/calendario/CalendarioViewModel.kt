@@ -63,7 +63,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
             // OBSERVACIÓN REACTIVA: La UI se actualiza sola cuando cambia la DB
             combine(dao.getAllEvents(), dao.getAllNotes()) { entities, noteEntities ->
                 val events = entities.map { it.toFestivo() }
-                val notes = noteEntities.associateBy { it.dateStr }.mapValues { it.value.toDailyNote() }
+                val notes = noteEntities.associateBy { it.dateStr }.mapValues { (_, entity) -> entity.toDailyNote() }
                 events to notes
             }.collect { (events, notes) ->
                 val sortedEventsByDate = events.groupBy { event -> event.date }

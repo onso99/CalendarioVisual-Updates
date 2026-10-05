@@ -53,19 +53,10 @@ object PermissionChecker {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
             
             // 1. Check Exact Alarms (Android 12+)
-            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                alarmManager?.canScheduleExactAlarms() ?: false
-            } else {
-                true
-            }
+            val canScheduleExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || (alarmManager?.canScheduleExactAlarms() == true)
 
             // 2. Check Full Screen Intent (Android 14+)
-            val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-                nm?.canUseFullScreenIntent() ?: false
-            } else {
-                true
-            }
+            val canUseFullScreen = Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE || ((context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)?.canUseFullScreenIntent() == true)
 
             if (canScheduleExact && canUseFullScreen) PermissionStatus.GRANTED else PermissionStatus.DENIED
         } catch (e: Exception) {

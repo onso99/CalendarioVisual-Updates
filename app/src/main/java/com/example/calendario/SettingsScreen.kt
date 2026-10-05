@@ -22,7 +22,6 @@ import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -85,7 +84,6 @@ enum class StartOfWeekOption(val key: String, val displayNameRes: Int) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SettingsScreen(
     onBackPress: () -> Unit,
@@ -752,9 +750,7 @@ fun SettingsScreen(
                         }
                         "alarms" -> {
                             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? android.app.AlarmManager
-                            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                alarmManager?.canScheduleExactAlarms() ?: false
-                            } else true
+                            val canScheduleExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || (alarmManager?.canScheduleExactAlarms() == true)
 
                             if (!canScheduleExact) {
                                 @SuppressLint("NewApi")

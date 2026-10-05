@@ -2,7 +2,6 @@ package com.example.calendario
 
 import android.content.ContentUris
 import android.provider.CalendarContract
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -44,7 +43,6 @@ import java.time.YearMonth
 import java.time.ZoneOffset
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(
     searchQuery: String,

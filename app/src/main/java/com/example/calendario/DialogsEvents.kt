@@ -1,6 +1,5 @@
 package com.example.calendario
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -524,7 +523,6 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: List<CalendarInfo>, favoriteCalendarId: Long?, onDismissRequest: () -> Unit, onApplySelection: (Set<Long>) -> Unit, onSetFavorite: (Long) -> Unit) {
     var currentIds by remember(initialSelectedIds) { mutableStateOf(initialSelectedIds) }
@@ -796,7 +794,6 @@ fun SelectCalendarDialog(calendars: List<CalendarInfo>, currentSelection: Calend
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepetitionSelectionDialog(
     currentRule: RepetitionRule,
@@ -1051,7 +1048,6 @@ fun RepetitionSelectionDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateAvailableDialog(
     versionName: String,
@@ -1111,7 +1107,6 @@ fun UpdateAvailableDialog(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartupRecoveryDialog(
     errorMessage: String?,

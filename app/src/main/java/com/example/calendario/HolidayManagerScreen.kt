@@ -27,7 +27,6 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +54,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HolidayManagerScreen(
     onBackPress: () -> Unit,
@@ -125,7 +123,7 @@ fun HolidayManagerScreen(
         val currentAdjustments = SettingsManager.getHolidayAdjustments(context).toMutableList()
         currentAdjustments.removeAll { it.date == date }
         
-        val shouldAdd = if (isFromExistingGoogleEvent) !isHoliday else true
+        val shouldAdd = !isFromExistingGoogleEvent || !isHoliday
         if (shouldAdd) {
             currentAdjustments.add(
                 HolidayAdjustment(

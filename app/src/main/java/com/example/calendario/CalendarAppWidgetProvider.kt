@@ -108,11 +108,7 @@ class CalendarAppWidgetProvider : AppWidgetProvider() {
             LogCollector.setNextRefreshTime(context, triggerTime)
 
             // Comprobar si podemos programar alarmas exactas (Android 12+)
-            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                alarmManager.canScheduleExactAlarms()
-            } else {
-                true
-            }
+            val canScheduleExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
 
             if (canScheduleExact) {
                 try {

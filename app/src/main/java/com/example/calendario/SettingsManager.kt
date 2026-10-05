@@ -81,7 +81,7 @@ object SettingsManager {
     @Suppress("DEPRECATION")
     fun getGoogleAccountEmail(context: Context): String? {
         val account = GoogleSignIn.getLastSignedInAccount(context)
-        if (account != null && !account.email.isNullOrBlank()) {
+        if (!account?.email.isNullOrBlank()) {
             return account.email
         }
         return appPrefs(context).getString("google_account_email", null)
@@ -93,7 +93,7 @@ object SettingsManager {
     @Suppress("DEPRECATION")
     fun getGoogleAccountPhotoUrl(context: Context): String? {
         val account = GoogleSignIn.getLastSignedInAccount(context)
-        if (account != null && account.photoUrl != null) {
+        if (account?.photoUrl != null) {
             return account.photoUrl.toString()
         }
         return appPrefs(context).getString("google_account_photo_url", null)
