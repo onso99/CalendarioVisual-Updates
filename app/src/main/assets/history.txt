@@ -1,3 +1,4 @@
+2026-10-06 - v3.6.00 Gestor de acciones masivas y multiselección: Pantalla de Búsqueda y Lista de eventos.
 2026-10-05 - v3.5.15 Corrección de warnings
 2026-10-05 - v3.5.14 Incluir GlobalCrashHandler.kt
 2026-10-05 - v3.5.14 El tamaño y la maquetación del texto de novedades en el diálogo de actualización (DialogsEvents.kt) han sido ajustados de forma óptima.

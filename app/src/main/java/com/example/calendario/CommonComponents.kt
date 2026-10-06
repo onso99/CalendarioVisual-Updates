@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -825,7 +826,7 @@ fun MultiSelectionTopBar(
         navigationIcon = {
             IconButton(onClick = onClearSelection) {
                 Icon(
-                    imageVector = Icons.Default.Close,
+                    imageVector = Icons.Outlined.Close,
                     contentDescription = stringResource(id = R.string.close),
                     tint = Color.White
                 )
@@ -834,21 +835,21 @@ fun MultiSelectionTopBar(
         actions = {
             IconButton(onClick = onShareClick) {
                 Icon(
-                    imageVector = Icons.Default.Share,
+                    imageVector = Icons.Outlined.Share,
                     contentDescription = null,
                     tint = Color.White
                 )
             }
             IconButton(onClick = onSaveClick) {
                 Icon(
-                    imageVector = Icons.Default.Save,
+                    imageVector = Icons.Outlined.Download,
                     contentDescription = null,
                     tint = Color.White
                 )
             }
             IconButton(onClick = onDeleteClick) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
+                    imageVector = Icons.Outlined.Delete,
                     contentDescription = null,
                     tint = Color.White
                 )
