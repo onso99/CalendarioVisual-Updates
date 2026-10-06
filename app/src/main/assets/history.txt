@@ -1,3 +1,4 @@
+2026-10-06 - v3.6.05 Icono de aplicación con fondo transparente desde New>Image Asset
 2026-10-06 - v3.6.04 Corrección de warnings
 2026-10-06 - v3.6.03 Multiselección: rediseño y unificación de la cabecera contextual.
 2026-10-06 - v3.6.02 Multiselección: ajuste de iconos Compartir, Guardar y Eliminar

@@ -6,29 +6,16 @@ on:
       - 'v*'
 
 jobs:
-  build-and-release:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Descargar Código Fuente
+      - name: Descargar Código Fuente y APK
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Configurar Java JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
-
-      - name: Dar Permiso de Ejecución a Gradlew
-        run: chmod +x gradlew
-
-      - name: Compilar APK de Lanzamiento
-        run: ./gradlew assembleDebug
 
       - name: Extraer Novedades de history.txt
         id: extract_changelog
@@ -80,7 +67,10 @@ jobs:
         with:
           repository: onso99/CalendarioVisual-Updates
           token: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
-          files: app/build/outputs/apk/debug/*.apk
+          files: |
+            app/release/app-release.apk
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/debug/app-debug.apk
           name: Versión ${{ github.ref_name }}
           body_path: release_notes.txt
           draft: false
