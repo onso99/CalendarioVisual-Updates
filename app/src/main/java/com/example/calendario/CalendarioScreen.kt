@@ -840,11 +840,15 @@ fun CalendarioScreen(
                                 ) {
                                     if (isMainSelectionMode) {
                                         IconButton(onClick = { selectedMainEvents = emptySet() }) {
-                                            Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.close), tint = Color.White)
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_close_outlined),
+                                                contentDescription = stringResource(id = R.string.close),
+                                                tint = Color.White
+                                            )
                                         }
                                         Text(
-                                            text = stringResource(id = R.string.selected_count_short, selectedMainEvents.size),
-                                            fontSize = 18.sp,
+                                            text = selectedMainEvents.size.toString(),
+                                            fontSize = 20.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White,
                                             modifier = Modifier.padding(start = 4.dp)

@@ -1,3 +1,4 @@
+2026-10-06 - v3.6.02 Multiselección: ajuste de iconos Compartir, Guardar y Eliminar
 2026-10-06 - v3.6.01 Multiselección: unificado el aspecto de los elementos seleccionados
 2026-10-06 - v3.6.00 Gestor de acciones masivas y multiselección: Pantalla de Búsqueda y Lista de eventos.
 2026-10-05 - v3.5.15 Corrección de warnings

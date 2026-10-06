@@ -75,25 +75,12 @@ fun AppScreen(
             TopAppBar(
                 title = { 
                     if (selectionCount > 0) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.selected_count_short, selectionCount),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            IconButton(onClick = onClearSelection, modifier = Modifier.size(24.dp)) {
-                                Icon(
-                                    imageVector = Icons.Default.Close, 
-                                    contentDescription = null, 
-                                    tint = Color.White.copy(alpha = 0.8f),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
+                        Text(
+                            text = selectionCount.toString(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
                     } else {
                         Text(
                             text = title, 
@@ -103,8 +90,18 @@ fun AppScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back))
+                    if (selectionCount > 0) {
+                        IconButton(onClick = onClearSelection) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_close_outlined),
+                                contentDescription = stringResource(id = R.string.close),
+                                tint = Color.White
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(id = R.string.back))
+                        }
                     }
                 },
                 actions = actions,
