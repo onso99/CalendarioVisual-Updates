@@ -14,9 +14,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.AssistantPhoto
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -142,13 +139,13 @@ fun SearchScreen(
                     val notes = selectedItems.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
                     CvoHelper.shareAgendaPackage(context, events, notes)
                 }) {
-                    Icon(Icons.Outlined.Share, null, tint = Color.White)
+                    Icon(Icons.Default.Share, null, tint = Color.White)
                 }
                 IconButton(onClick = { onSaveLocalClick(selectedItems) }) {
-                    Icon(Icons.Outlined.Save, null, tint = Color.White)
+                    Icon(Icons.Default.Save, null, tint = Color.White)
                 }
                 IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                    Icon(Icons.Outlined.Delete, stringResource(id = R.string.delete), tint = Color.White)
+                    Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
                 }
             }
         }

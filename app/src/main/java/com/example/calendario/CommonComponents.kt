@@ -803,3 +803,62 @@ fun AppActionChip(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MultiSelectionTopBar(
+    selectedCount: Int,
+    onClearSelection: () -> Unit,
+    onShareClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = "$selectedCount",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.White
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onClearSelection) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(id = R.string.close),
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onShareClick) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = onSaveClick) {
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = CalendarioTheme.colors.cabecera,
+            titleContentColor = Color.White,
+            navigationIconContentColor = Color.White,
+            actionIconContentColor = Color.White
+        )
+    )
+}

@@ -1,4 +1,4 @@
-2026-10-05 - v3.5.14.1 Corrección de warnings
+2026-10-05 - v3.5.15 Corrección de warnings
 2026-10-05 - v3.5.14 Incluir GlobalCrashHandler.kt
 2026-10-05 - v3.5.14 El tamaño y la maquetación del texto de novedades en el diálogo de actualización (DialogsEvents.kt) han sido ajustados de forma óptima.
 2026-10-05 - v3.5.13 Consulta Inteligente de Versión Previa. Acumulación de Cambios. Formato Limpio de Viñetas (Sin números de versión)

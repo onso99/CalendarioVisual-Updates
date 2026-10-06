@@ -1,7 +1,7 @@
 package com.example.calendario
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
@@ -50,6 +51,8 @@ fun MonthlyEventList(
     showAllEvents: Boolean,
     today: LocalDate,
     onEventClick: (Festivo) -> Unit,
+    onEventLongClick: (Festivo) -> Unit = {},
+    selectedEvents: Set<Festivo> = emptySet(),
     availableCalendars: List<CalendarInfo>
 ) {
     val context = LocalContext.current
@@ -159,18 +162,30 @@ fun MonthlyEventList(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
                                     ) {
+                                        val isSelected = selectedEvents.contains(festivo)
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clip(RoundedCornerShape(16.dp))
-                                            .then(
-                                                    if (isTodayEvents) {
-                                                        Modifier.background(CalendarioTheme.colors.todayHighlightColor)
-                                                    } else {
-                                                        Modifier
+                                                .then(
+                                                    when {
+                                                        isSelected -> Modifier.background(CalendarioTheme.colors.cabecera.copy(alpha = 0.25f))
+                                                        isTodayEvents -> Modifier.background(CalendarioTheme.colors.todayHighlightColor)
+                                                        else -> Modifier
                                                     }
                                                 )
-                                                .clickable { onEventClick(festivo) }
+                                                .combinedClickable(
+                                                    onClick = { 
+                                                        if (selectedEvents.isNotEmpty()) {
+                                                            onEventLongClick(festivo)
+                                                        } else {
+                                                            onEventClick(festivo)
+                                                        }
+                                                    },
+                                                    onLongClick = {
+                                                        onEventLongClick(festivo)
+                                                    }
+                                                )
                                                 .padding(horizontal = 4.dp, vertical = 4.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
@@ -298,6 +313,15 @@ fun MonthlyEventList(
                                                         fontWeight = FontWeight.Bold,
                                                         fontSize = 18.sp,
                                                         modifier = Modifier.padding(start = 4.dp)
+                                                    )
+                                                }
+
+                                                if (isSelected) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Check,
+                                                        contentDescription = null,
+                                                        tint = CalendarioTheme.colors.cabecera,
+                                                        modifier = Modifier.size(18.dp).padding(start = 4.dp)
                                                     )
                                                 }
                                             }

@@ -142,6 +142,8 @@ fun CalendarioScreen(
     var showStartupRecoveryDialog by remember { mutableStateOf(SettingsManager.hasStartupCrashFlag(context)) }
     var lastCrashMessage by remember { mutableStateOf(SettingsManager.getLastCrashMessage(context)) }
     var isRepairingDatabase by remember { mutableStateOf(false) }
+    var selectedMainEvents by remember { mutableStateOf(setOf<Festivo>()) }
+    val isMainSelectionMode = selectedMainEvents.isNotEmpty()
     
     var showCleaningDialog by remember { mutableStateOf(false) }
     var showSyncDialog by remember { mutableStateOf(false) }
@@ -830,83 +832,119 @@ fun CalendarioScreen(
                                 modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Left Group: Menu + Dynamic Title
+                                // Left Group: Menu + Dynamic Title / Selection Counter
                                 Row(
                                     modifier = Modifier.weight(1f),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Start
                                 ) {
-                                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                        Icon(Icons.Default.Menu, stringResource(id = R.string.menu))
-                                    }
-                                    
-                                    val titleText = remember(currentMonth, currentYear, viewMode, today, locale) {
-                                        if (viewMode == CalendarViewMode.YEARLY) {
-                                            currentYear.value.toString()
-                                        } else {
-                                            if (currentMonth.year == today.year) {
-                                                currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale)
-                                                    .replaceFirstChar { it.uppercase(locale) }
+                                    if (isMainSelectionMode) {
+                                        IconButton(onClick = { selectedMainEvents = emptySet() }) {
+                                            Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.close), tint = Color.White)
+                                        }
+                                        Text(
+                                            text = stringResource(id = R.string.selected_count_short, selectedMainEvents.size),
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    } else {
+                                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                            Icon(Icons.Default.Menu, stringResource(id = R.string.menu))
+                                        }
+                                        
+                                        val titleText = remember(currentMonth, currentYear, viewMode, today, locale) {
+                                            if (viewMode == CalendarViewMode.YEARLY) {
+                                                currentYear.value.toString()
                                             } else {
-                                                val monthShort = currentMonth.month.getDisplayName(java.time.format.TextStyle.SHORT, locale)
-                                                    .replaceFirstChar { it.uppercase(locale) }
-                                                "$monthShort ${currentMonth.year}"
+                                                if (currentMonth.year == today.year) {
+                                                    currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, locale)
+                                                        .replaceFirstChar { it.uppercase(locale) }
+                                                } else {
+                                                    val monthShort = currentMonth.month.getDisplayName(java.time.format.TextStyle.SHORT, locale)
+                                                        .replaceFirstChar { it.uppercase(locale) }
+                                                    "$monthShort ${currentMonth.year}"
+                                                }
                                             }
                                         }
-                                    }
 
-                                    Text(
-                                        text = titleText,
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        color = Color.White,
-                                        modifier = Modifier
-                                            .padding(start = 8.dp)
-                                            .clickable(enabled = viewMode == CalendarViewMode.YEARLY) {
-                                                showGoToYearDialog = true
-                                            }
-                                    )
-
-                                    val isAtToday = if (viewMode == CalendarViewMode.MONTHLY) currentMonth == YearMonth.from(today) else currentYear == Year.from(today)
-
-                                    if (!isAtToday) {
-                                        IconButton(
-                                            onClick = {
-                                                scope.launch {
-                                                    if (viewMode == CalendarViewMode.MONTHLY) {
-                                                        monthPagerState.animateScrollToPage(initialPage)
-                                                    } else {
-                                                        yearPagerState.animateScrollToPage(initialYearPage)
-                                                    }
+                                        Text(
+                                            text = titleText,
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = Color.White,
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .clickable(enabled = viewMode == CalendarViewMode.YEARLY) {
+                                                    showGoToYearDialog = true
                                                 }
-                                            },
-                                            modifier = Modifier.padding(start = 12.dp).size(32.dp)
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.ic_undo_return),
-                                                contentDescription = stringResource(id = R.string.back_to_current_month),
-                                                modifier = Modifier.size(24.dp),
-                                                tint = Color.White
-                                            )
+                                        )
+
+                                        val isAtToday = if (viewMode == CalendarViewMode.MONTHLY) currentMonth == YearMonth.from(today) else currentYear == Year.from(today)
+
+                                        if (!isAtToday) {
+                                            IconButton(
+                                                onClick = {
+                                                    scope.launch {
+                                                        if (viewMode == CalendarViewMode.MONTHLY) {
+                                                            monthPagerState.animateScrollToPage(initialPage)
+                                                        } else {
+                                                            yearPagerState.animateScrollToPage(initialYearPage)
+                                                        }
+                                                    }
+                                                },
+                                                modifier = Modifier.padding(start = 12.dp).size(32.dp)
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.ic_undo_return),
+                                                    contentDescription = stringResource(id = R.string.back_to_current_month),
+                                                    modifier = Modifier.size(24.dp),
+                                                    tint = Color.White
+                                                )
+                                            }
                                         }
                                     }
                                 }
 
-                                // Right Group: Add + Search + More
+                                // Right Group: Add + Search + More / Multiselection Actions
                                 Row(
                                     horizontalArrangement = Arrangement.End,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    IconButton(onClick = { launchAddEditScreen(null, null) }) {
-                                        Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
-                                    }
-                                    IconButton(onClick = { isSearchActive = true }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Search,
-                                            contentDescription = stringResource(id = R.string.search)
-                                        )
+                                    if (isMainSelectionMode) {
+                                        IconButton(onClick = {
+                                            CvoHelper.shareAgendaPackage(context, selectedMainEvents.toList(), emptyList())
+                                        }) {
+                                            Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
+                                        }
+                                        IconButton(onClick = {
+                                            // Guardar local
+                                        }) {
+                                            Icon(Icons.Default.Save, contentDescription = null, tint = Color.White)
+                                        }
+                                        IconButton(onClick = {
+                                            scope.launch {
+                                                selectedMainEvents.forEach { event ->
+                                                    viewModel.removeOrphanEvent(event)
+                                                }
+                                                selectedMainEvents = emptySet()
+                                            }
+                                        }) {
+                                            Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.delete), tint = Color.White)
+                                        }
+                                    } else {
+                                        IconButton(onClick = { launchAddEditScreen(null, null) }) {
+                                            Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
+                                        }
+                                        IconButton(onClick = { isSearchActive = true }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Search,
+                                                contentDescription = stringResource(id = R.string.search)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -1023,6 +1061,12 @@ fun CalendarioScreen(
                                     showAllEvents = showAllEvents,
                                     today = today,
                                     onEventClick = onEventClickHandler,
+                                    onEventLongClick = { festivo ->
+                                        val set = selectedMainEvents.toMutableSet()
+                                        if (set.contains(festivo)) set.remove(festivo) else set.add(festivo)
+                                        selectedMainEvents = set
+                                    },
+                                    selectedEvents = selectedMainEvents,
                                     availableCalendars = uiState.availableCalendars
                                 )
 
