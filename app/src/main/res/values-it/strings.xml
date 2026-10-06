@@ -338,7 +338,6 @@
     <string name="monthly_view">Mensile</string>
     <string name="yearly_view">Annuale</string>
     <string name="file_saved_successfully">File salvato correttamente</string>
-    <string name="selected_count_short">(%1$d)</string>
     <string name="import_agenda_title">Condividi</string>
     <string name="select_target_calendar">Calendario di destinazione</string>
     <string name="import_summary">Verranno importati %1$d eventi e %2$d note.</string>

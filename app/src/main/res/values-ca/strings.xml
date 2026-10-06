@@ -338,7 +338,6 @@
     <string name="monthly_view">Mensual</string>
     <string name="yearly_view">Anual</string>
     <string name="file_saved_successfully">Arxiu desat correctament</string>
-    <string name="selected_count_short">(%1$d)</string>
     <string name="import_agenda_title">Compartir</string>
     <string name="select_target_calendar">Calendari de destí</string>
     <string name="import_summary">S\'importaran %1$d esdeveniments i %2$d notes.</string>

@@ -756,8 +756,9 @@ fun SettingsScreen(
                                 @SuppressLint("NewApi")
                                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.fromParts("package", context.packageName, null) }
                                 context.startActivity(intent)
-                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            } else {
                                 try {
+                                    @SuppressLint("NewApi")
                                     val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply { data = Uri.fromParts("package", context.packageName, null) }
                                     context.startActivity(intent)
                                 } catch (_: Exception) {

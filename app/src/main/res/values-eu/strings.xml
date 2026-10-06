@@ -336,7 +336,6 @@
     <string name="monthly_view">Hilabetekoa</string>
     <string name="yearly_view">Urtekoa</string>
     <string name="file_saved_successfully">Fitxategia ongi gorde da</string>
-    <string name="selected_count_short">(%1$d)</string>
     <string name="import_agenda_title">Partekatu</string>
     <string name="select_target_calendar">Helburuko egutegia</string>
     <string name="import_summary">%1$d ekitaldi eta %2$d ohar inportatuko dira.</string>

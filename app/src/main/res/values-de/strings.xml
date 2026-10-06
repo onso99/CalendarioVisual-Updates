@@ -337,7 +337,6 @@
     <string name="monthly_view">Monatlich</string>
     <string name="yearly_view">Jährlich</string>
     <string name="file_saved_successfully">Datei erfolgreich gespeichert</string>
-    <string name="selected_count_short">(%1$d)</string>
     <string name="import_agenda_title">Teilen</string>
     <string name="select_target_calendar">Zielkalender</string>
     <string name="import_summary">%1$d Ereignisse und %2$d Notizen werden importiert.</string>

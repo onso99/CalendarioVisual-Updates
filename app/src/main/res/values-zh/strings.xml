@@ -337,7 +337,6 @@
     <string name="monthly_view">月视图</string>
     <string name="yearly_view">年视图</string>
     <string name="file_saved_successfully">文件保存成功</string>
-    <string name="selected_count_short">(%1$d)</string>
     <string name="import_agenda_title">分享</string>
     <string name="select_target_calendar">目标日历</string>
     <string name="import_summary">将导入 %1$d 个事件和 %2$d 条备注。</string>
