@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -77,7 +76,6 @@ fun AppScreen(
                 title = { 
                     if (selectionCount > 0) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start
                         ) {
@@ -826,7 +824,7 @@ fun MultiSelectionTopBar(
         navigationIcon = {
             IconButton(onClick = onClearSelection) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
+                    painter = painterResource(id = R.drawable.ic_close_outlined),
                     contentDescription = stringResource(id = R.string.close),
                     tint = Color.White
                 )
@@ -835,21 +833,21 @@ fun MultiSelectionTopBar(
         actions = {
             IconButton(onClick = onShareClick) {
                 Icon(
-                    imageVector = Icons.Outlined.Share,
+                    painter = painterResource(id = R.drawable.ic_share_outlined),
                     contentDescription = null,
                     tint = Color.White
                 )
             }
             IconButton(onClick = onSaveClick) {
                 Icon(
-                    imageVector = Icons.Outlined.Download,
+                    painter = painterResource(id = R.drawable.ic_save_outlined),
                     contentDescription = null,
                     tint = Color.White
                 )
             }
             IconButton(onClick = onDeleteClick) {
                 Icon(
-                    imageVector = Icons.Outlined.Delete,
+                    painter = painterResource(id = R.drawable.ic_delete_outlined),
                     contentDescription = null,
                     tint = Color.White
                 )

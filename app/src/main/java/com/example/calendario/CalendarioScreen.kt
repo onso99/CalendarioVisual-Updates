@@ -918,12 +918,12 @@ fun CalendarioScreen(
                                         IconButton(onClick = {
                                             CvoHelper.shareAgendaPackage(context, selectedMainEvents.toList(), emptyList())
                                         }) {
-                                            Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
+                                            Icon(painter = painterResource(id = R.drawable.ic_share_outlined), contentDescription = null, tint = Color.White)
                                         }
                                         IconButton(onClick = {
                                             // Guardar local
                                         }) {
-                                            Icon(Icons.Default.Save, contentDescription = null, tint = Color.White)
+                                            Icon(painter = painterResource(id = R.drawable.ic_save_outlined), contentDescription = null, tint = Color.White)
                                         }
                                         IconButton(onClick = {
                                             scope.launch {
@@ -933,7 +933,7 @@ fun CalendarioScreen(
                                                 selectedMainEvents = emptySet()
                                             }
                                         }) {
-                                            Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.delete), tint = Color.White)
+                                            Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = stringResource(id = R.string.delete), tint = Color.White)
                                         }
                                     } else {
                                         IconButton(onClick = { launchAddEditScreen(null, null) }) {

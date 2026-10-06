@@ -139,13 +139,13 @@ fun SearchScreen(
                     val notes = selectedItems.filterIsInstance<SearchItem.Note>().map { it.dailyNote }
                     CvoHelper.shareAgendaPackage(context, events, notes)
                 }) {
-                    Icon(Icons.Default.Share, null, tint = Color.White)
+                    Icon(painter = painterResource(id = R.drawable.ic_share_outlined), contentDescription = null, tint = Color.White)
                 }
                 IconButton(onClick = { onSaveLocalClick(selectedItems) }) {
-                    Icon(Icons.Default.Save, null, tint = Color.White)
+                    Icon(painter = painterResource(id = R.drawable.ic_save_outlined), contentDescription = null, tint = Color.White)
                 }
                 IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                    Icon(Icons.Default.Delete, stringResource(id = R.string.delete), tint = Color.White)
+                    Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = stringResource(id = R.string.delete), tint = Color.White)
                 }
             }
         }
