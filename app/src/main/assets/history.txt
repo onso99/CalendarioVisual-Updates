@@ -1,3 +1,4 @@
+2026-10-07 - v3.6.08 .gitignore rastreará el ejecutable compilado
 2026-10-07 - v3.6.07 Bucle de Resolución de Redirecciones
 2026-10-07 - v3.6.06 Intervalo de 24 horas para la comprobar nueva versión en GitHub.
 2026-10-06 - v3.6.05 Publicacion automatica con APK precompilado

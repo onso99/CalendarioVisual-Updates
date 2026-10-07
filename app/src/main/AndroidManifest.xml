@@ -123,21 +123,6 @@
 
 
         <receiver
-            android:name=".CalendarAppWidgetProvider"
-            android:exported="true"
-            android:label="@string/widget_name_classic">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/calendar_widget_info" />
-        </receiver>
-
-        <receiver
             android:name=".ModernCalendarWidgetReceiver"
             android:exported="true"
             android:label="@string/widget_name_modern">
@@ -148,11 +133,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/modern_calendar_widget_info" />
         </receiver>
-
-        <service
-            android:name=".CalendarWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"
-            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

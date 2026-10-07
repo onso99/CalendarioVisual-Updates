@@ -127,7 +127,7 @@ fun updateEvent(
         }
 
         // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
-        CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+        WidgetStateManager.refreshWithCurrentEvents(context)
         
         context.showToast(R.string.event_updated_successfully)
         eventId
@@ -165,7 +165,7 @@ fun updateSingleEventInSeries(
         
         if (uri != null) {
             // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
-            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            WidgetStateManager.refreshWithCurrentEvents(context)
             
             context.showToast(R.string.event_updated_successfully)
             ContentUris.parseId(uri)
@@ -201,7 +201,7 @@ fun deleteEvent(context: Context, event: Festivo) {
             removeSeriesFromHistory(context, eventId)
 
             // Forzar actualización del widget tras eliminar un evento
-            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            WidgetStateManager.refreshWithCurrentEvents(context)
             
             // Cancelamos la alarma asociada si existe
             AlarmUtils.cancelAlarm(context, eventId)
@@ -259,7 +259,7 @@ fun cancelEventInstance(context: Context, eventToCancel: Festivo) {
 
         if (uri != null) {
             // Forzar actualización del widget tras cancelar una instancia
-            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
+            WidgetStateManager.refreshWithCurrentEvents(context)
 
             // Limpiamos también esta instancia específica del historial JSON
             removeEventFromHistory(context, eventToCancel.adn)

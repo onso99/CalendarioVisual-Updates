@@ -265,7 +265,6 @@ fun SettingsScreen(
     var showWidgetBackgroundColorPalette by remember { mutableStateOf(false) }
 
     val refreshUI = {
-        CalendarAppWidgetProvider.triggerWidgetUpdate(context)
         WidgetStateManager.refreshWithCurrentEvents(context)
     }
 
@@ -664,7 +663,6 @@ fun SettingsScreen(
                     showBundledThemesDialog = false
                     ThemePersistence.applyTheme(context, theme, id)
                     onThemeImported()
-                    CalendarAppWidgetProvider.triggerWidgetUpdate(context)
                     WidgetStateManager.refreshWithCurrentEvents(context)
                     importedThemeData = null
                 }, 

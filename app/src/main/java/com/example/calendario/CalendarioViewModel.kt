@@ -84,7 +84,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 updateMainSearchResults()   // Sincronizar resultados de búsqueda principal (v3.2.14)
                 
                 // Notificar a los widgets
-                CalendarAppWidgetProvider.triggerWidgetUpdate(application)
                 WidgetStateManager.refreshWithCurrentEvents(application)
 
                 // SINCRONIZACIÓN DE ALARMAS EN TIEMPO REAL:

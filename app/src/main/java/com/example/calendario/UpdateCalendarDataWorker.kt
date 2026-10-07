@@ -103,7 +103,6 @@ class UpdateCalendarDataWorker(
             BackupScheduler.ensureBackupScheduled(context)
             
             // Notificamos al widget de forma directa
-            CalendarAppWidgetProvider.triggerWidgetUpdate(context)
             WidgetStateManager.refreshWithCurrentEvents(context)
 
             LogCollector.addLog("WORKER: Completado con éxito")
@@ -115,5 +114,4 @@ class UpdateCalendarDataWorker(
         }
     }
 
-    // Eliminamos este método porque ahora usamos el unificado de CalendarAppWidgetProvider
 }
