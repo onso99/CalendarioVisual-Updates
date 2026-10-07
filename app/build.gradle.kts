@@ -42,7 +42,7 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         minSdk = 29
         targetSdk = 35
         versionCode = getGitCommitCount()
-        versionName = "3.7.00"
+        versionName = "3.7.01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "GIT_COMMIT_DATE", "\"${getGitCommitDate()}\"")
@@ -60,7 +60,8 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("releaseKey")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
