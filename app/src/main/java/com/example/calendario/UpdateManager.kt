@@ -130,11 +130,38 @@ object UpdateManager {
         onProgress: (Float) -> Unit = {}
     ): Boolean = withContext(Dispatchers.IO) {
         try {
-            val url = URL(downloadUrl)
-            val connection = (url.openConnection() as HttpURLConnection).apply {
-                connectTimeout = 15000
-                readTimeout = 15000
-                setRequestProperty("User-Agent", AppConstants.APP_SIGNATURE)
+            var currentUrl = downloadUrl
+            var connection: HttpURLConnection
+            var redirectCount = 0
+
+            while (true) {
+                val url = URL(currentUrl)
+                connection = (url.openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 15000
+                    readTimeout = 15000
+                    instanceFollowRedirects = true
+                    setRequestProperty("User-Agent", AppConstants.APP_SIGNATURE)
+                }
+
+                val status = connection.responseCode
+                if (status == HttpURLConnection.HTTP_MOVED_TEMP ||
+                    status == HttpURLConnection.HTTP_MOVED_PERM ||
+                    status == HttpURLConnection.HTTP_SEE_OTHER ||
+                    status == 307 || status == 308
+                ) {
+                    val newUrl = connection.getHeaderField("Location")
+                    if (!newUrl.isNullOrBlank() && redirectCount < 5) {
+                        currentUrl = newUrl
+                        redirectCount++
+                        continue
+                    }
+                }
+                break
+            }
+
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                Log.e(TAG, "Error HTTP ${connection.responseCode} al descargar el APK")
+                return@withContext false
             }
 
             val totalSize = connection.contentLength

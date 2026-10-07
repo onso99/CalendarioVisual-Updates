@@ -1,3 +1,4 @@
+2026-10-07 - v3.6.06 Intervalo de 24 horas para la comprobar nueva versión en GitHub.
 2026-10-06 - v3.6.05 Publicacion automatica con APK precompilado
 2026-10-06 - v3.6.05 Icono de aplicación con fondo transparente desde New>Image Asset
 2026-10-06 - v3.6.04 Corrección de warnings
