@@ -185,13 +185,13 @@ fun CalendarioScreen(
         }
     }
 
-    // --- Comprobación Silenciosa Semanal de Actualizaciones ---
+    // --- Comprobación Silenciosa Diaria (24h) de Actualizaciones ---
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             val lastCheck = SettingsManager.getLastUpdateCheckTime(context)
             val now = System.currentTimeMillis()
-            val sevenDaysMillis = 7L * 24 * 60 * 60 * 1000L
-            if (now - lastCheck > sevenDaysMillis) {
+            val twentyFourHoursMillis = 24L * 60 * 60 * 1000L
+            if (now - lastCheck > twentyFourHoursMillis) {
                 UpdateManager.checkLatestRelease(context)
                 updateCheckTrigger++
             }
