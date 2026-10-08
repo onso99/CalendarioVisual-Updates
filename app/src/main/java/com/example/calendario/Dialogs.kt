@@ -63,7 +63,7 @@ fun GoToYearDialog(
                     onYearSelected(selectedYear)
                     onDismissRequest()
                 },
-                onDismiss = onDismissRequest
+                onDismiss = onDismissRequest,
             )
         }
     ) {
