@@ -54,23 +54,24 @@ fun ManageCalendarsScreen(
     val favUpdatedMsg = stringResource(id = R.string.favorite_updated)
     val readOnlyMsg = stringResource(id = R.string.calendar_read_only_error)
 
-    // Auto-sincronización con reintento automático si la agenda del sistema aún está cargando
-    LaunchedEffect(availableCalendars) {
+    val context = LocalContext.current
+
+    // Auto-sincronización y selección automática de favorito tan pronto como lleguen los calendarios
+    LaunchedEffect(availableCalendars, currentFavoriteId) {
         if (availableCalendars.isEmpty()) {
             delay(1000.milliseconds)
             onRefreshCalendars()
-        }
-    }
-
-    // Inicialización y mensaje de ayuda
-    LaunchedEffect(Unit) {
-        if (currentFavoriteId == null) {
-            findBestCalendarCandidate(availableCalendars)?.let { candidate ->
+        } else if (currentFavoriteId == null) {
+            findBestCalendarCandidate(context, availableCalendars)?.let { candidate ->
                 onSetFavorite(candidate.id)
                 currentFavoriteId = candidate.id
                 currentIds = currentIds + candidate.id
             }
         }
+    }
+
+    // Mensaje de ayuda inicial
+    LaunchedEffect(Unit) {
         infoMessage = hintMsg
     }
 

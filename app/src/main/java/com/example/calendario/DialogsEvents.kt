@@ -525,6 +525,7 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
 
 @Composable
 fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: List<CalendarInfo>, favoriteCalendarId: Long?, onDismissRequest: () -> Unit, onApplySelection: (Set<Long>) -> Unit, onSetFavorite: (Long) -> Unit) {
+    val context = LocalContext.current
     var currentIds by remember(initialSelectedIds) { mutableStateOf(initialSelectedIds) }
     var currentFavoriteId by remember(favoriteCalendarId) { mutableStateOf(favoriteCalendarId) }
     var infoMessage by remember { mutableStateOf<String?>(null) }
@@ -534,14 +535,17 @@ fun SelectCalendarsDialog(initialSelectedIds: Set<Long>, availableCalendars: Lis
     val favUpdatedMsg = stringResource(id = R.string.favorite_updated)
     val readOnlyMsg = stringResource(id = R.string.calendar_read_only_error)
 
-    LaunchedEffect(Unit) {
-        if (currentFavoriteId == null) {
-            findBestCalendarCandidate(availableCalendars)?.let { candidate ->
+    LaunchedEffect(availableCalendars, currentFavoriteId) {
+        if (currentFavoriteId == null && availableCalendars.isNotEmpty()) {
+            findBestCalendarCandidate(context, availableCalendars)?.let { candidate ->
                 onSetFavorite(candidate.id)
                 currentFavoriteId = candidate.id
                 currentIds = currentIds + candidate.id
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
         infoMessage = hintMsg
         delay(5000.milliseconds)
         infoMessage = null

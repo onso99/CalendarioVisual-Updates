@@ -367,17 +367,21 @@ private fun createEventValues(
     }
 }
 
-fun findBestCalendarCandidate(calendars: List<CalendarInfo>): CalendarInfo? {
+fun findBestCalendarCandidate(context: Context, calendars: List<CalendarInfo>): CalendarInfo? {
     if (calendars.isEmpty()) return null
+    val signedInEmail = SettingsManager.getGoogleAccountEmail(context)?.lowercase()
 
     return calendars
         .filter { it.canModify } // Solo consideramos calendarios donde se pueda escribir
         .maxByOrNull { calendar ->
             var score = 0
             val name = calendar.accountName.lowercase()
+            val owner = calendar.ownerAccount.lowercase()
             
-            // PRIORIDAD 1: Es una cuenta de Google (Gmail o Corporativa)
-            if (name.contains("@gmail.com") || name.contains("@google.com") || name.contains("com.google")) {
+            // PRIORIDAD MÁXIMA: Coincide exactamente con el email de la cuenta de Google vinculada
+            if (!signedInEmail.isNullOrBlank() && (name == signedInEmail || owner == signedInEmail)) {
+                score += 50
+            } else if (name.contains("@gmail.com") || name.contains("@google.com") || name.contains("com.google")) {
                 score += 10
             }
             

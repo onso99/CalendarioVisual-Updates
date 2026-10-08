@@ -258,7 +258,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
                 // 2. AUTO-REPARACIÓN DE FAVORITO (Búsqueda inteligente v3.1.05)
                 if (favoriteId == null && availableCalendars.isNotEmpty()) {
-                    val bestCandidate = findBestCalendarCandidate(availableCalendars)
+                    val bestCandidate = findBestCalendarCandidate(context, availableCalendars)
                     favoriteId = bestCandidate?.id
                     favoriteId?.let { setFavoriteCalendar(it) }
                 }
