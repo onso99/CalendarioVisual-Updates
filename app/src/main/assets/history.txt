@@ -1,3 +1,4 @@
+2026-10-07 - v3.7.01 Redución apk-F1: Optimización de Compilación R8 en Gradle
 2026-10-07 - v3.7.00 Eliminación del widget clásico
 2026-10-07 - v3.6.08 .gitignore rastreará el ejecutable compilado
 2026-10-07 - v3.6.07 Bucle de Resolución de Redirecciones
