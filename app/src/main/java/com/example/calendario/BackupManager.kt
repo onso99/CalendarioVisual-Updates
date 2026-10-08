@@ -207,9 +207,13 @@ object BackupManager {
                 }
             }
 
-            // 2. FESTIVOS MANUALES
+            // 2. FESTIVOS MANUALES (Compatibilidad hacia atrás v3.1.34 / v3.6.08)
             if (restoreHolidays) {
-                restorePrefs(SettingsManager.getPrefs(context, AppConstants.HOLIDAY_PREFS_NAME), json.optJSONObject(KEY_HOLIDAY_PREFS))
+                val holidaysJson = json.optJSONObject(KEY_HOLIDAY_PREFS)
+                    ?: json.optJSONObject(AppConstants.HOLIDAY_PREFS_NAME)
+                    ?: json.optJSONObject("holiday_adjustments_prefs")
+
+                restorePrefs(SettingsManager.getPrefs(context, AppConstants.HOLIDAY_PREFS_NAME), holidaysJson)
             }
 
             val database = AppDatabase.getDatabase(context)
@@ -331,7 +335,6 @@ object BackupManager {
     private fun restorePrefs(prefs: SharedPreferences, json: JSONObject?) {
         json?.let {
             prefs.edit {
-                clear()
                 val keys = it.keys()
                 while (keys.hasNext()) {
                     val key = keys.next()

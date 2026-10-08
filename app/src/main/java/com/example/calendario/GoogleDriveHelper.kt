@@ -141,12 +141,17 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
                 .setQ("name = '$backupFileName'")
                 .execute()
             val files = result.files
-            if (files.isNullOrEmpty()) return@withContext null
+            if (files.isNullOrEmpty()) {
+                LogCollector.addLog("DRIVE: No se encontró ningún archivo '$backupFileName' en la nube")
+                return@withContext null
+            }
 
             val outputStream = java.io.ByteArrayOutputStream()
             driveService.files().get(files[0].id).executeMediaAndDownloadTo(outputStream)
             outputStream.toString("UTF-8")
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LogCollector.addLog("DRIVE: Error al descargar desde Google Drive: ${e.message}")
+            Log.e("DriveHelper", "Error descargando archivo de Drive", e)
             null
         }
     }
