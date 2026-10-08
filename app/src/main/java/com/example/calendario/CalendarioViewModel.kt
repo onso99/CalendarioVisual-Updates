@@ -203,10 +203,12 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update { it.copy(mainSearchResults = sortedResults) }
     }
 
-    fun onPermissionResult(isGranted: Boolean) {
+    fun onPermissionResult(isGranted: Boolean, onComplete: () -> Unit = {}) {
         _uiState.update { it.copy(hasCalendarPermission = isGranted) }
         if (isGranted) {
-            loadAllData()
+            refreshData(onComplete = onComplete)
+        } else {
+            onComplete()
         }
     }
 
@@ -318,17 +320,17 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             val context = getApplication<Application>()
             try {
-                withContext(Dispatchers.IO) { 
+                withContext(Dispatchers.IO) {
                     val freshAvailableCalendars = loadAvailableCalendarsSuspend(context)
-                    if (_uiState.value.availableCalendars != freshAvailableCalendars) {
-                        _uiState.update { it.copy(availableCalendars = freshAvailableCalendars) }
-                    }
+                    _uiState.update { it.copy(availableCalendars = freshAvailableCalendars) }
                 }
             } catch (e: Exception) {
                 Log.e("CalendarioViewModel", "Error refreshing available calendars", e)
             }
         }
     }
+
+
 
     fun updateCalendarData(newEvents: Map<LocalDate, List<Festivo>>, newAvailable: List<CalendarInfo>, newSelectedIds: Set<Long>) {
         viewModelScope.launch {

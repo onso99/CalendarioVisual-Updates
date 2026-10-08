@@ -12,7 +12,9 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.*
@@ -40,7 +42,8 @@ fun ManageCalendarsScreen(
     initialSelectedIds: Set<Long>,
     favoriteCalendarId: Long?,
     onApplySelection: (Set<Long>) -> Unit,
-    onSetFavorite: (Long) -> Unit
+    onSetFavorite: (Long) -> Unit,
+    onRefreshCalendars: () -> Unit = {}
 ) {
     var currentIds by remember(initialSelectedIds) { mutableStateOf(initialSelectedIds) }
     var currentFavoriteId by remember(favoriteCalendarId) { mutableStateOf(favoriteCalendarId) }
@@ -50,6 +53,14 @@ fun ManageCalendarsScreen(
     val hintMsg = stringResource(id = R.string.hint_long_press_favorite)
     val favUpdatedMsg = stringResource(id = R.string.favorite_updated)
     val readOnlyMsg = stringResource(id = R.string.calendar_read_only_error)
+
+    // Auto-sincronización con reintento automático si la agenda del sistema aún está cargando
+    LaunchedEffect(availableCalendars) {
+        if (availableCalendars.isEmpty()) {
+            delay(1000.milliseconds)
+            onRefreshCalendars()
+        }
+    }
 
     // Inicialización y mensaje de ayuda
     LaunchedEffect(Unit) {
@@ -118,14 +129,40 @@ fun ManageCalendarsScreen(
         isBannerVisible = infoMessage != null,
         bannerIcon = if (infoMessage == favUpdatedMsg) Icons.Default.Star else Icons.Default.Info,
         bannerIconColor = CalendarioTheme.colors.cabecera,
+        actions = {
+            IconButton(onClick = onRefreshCalendars) {
+                Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.White)
+            }
+        },
         scrollable = false
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        if (availableCalendars.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = CalendarioTheme.colors.cabecera)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Sincronizando calendarios con el dispositivo...",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = CalendarioTheme.colors.textSystem,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
             sortedAccountEntries.forEach { (accountName, calendarsInAccount) ->
                 val isExpanded = expandedAccounts.contains(accountName)
                 val sortedAccountCalendars = calendarsInAccount.sortedWith(
@@ -290,4 +327,5 @@ fun ManageCalendarsScreen(
             }
         }
     }
+}
 }

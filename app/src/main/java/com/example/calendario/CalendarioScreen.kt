@@ -235,13 +235,12 @@ fun CalendarioScreen(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val allGranted = permissions.values.all { it }
-        viewModel.onPermissionResult(allGranted)
-        if (allGranted) {
-            scope.launch {
-                viewModel.refreshAvailableCalendars()
+        viewModel.onPermissionResult(allGranted) {
+            if (allGranted) {
                 showSelectCalendarsDialog = true
             }
-        } else {
+        }
+        if (!allGranted) {
             context.showToast(R.string.permission_calendar_select, Toast.LENGTH_LONG)
         }
     }
@@ -577,7 +576,8 @@ fun CalendarioScreen(
                     viewModel.updateCalendarData(updatedFestivosMap, uiState.availableCalendars, newlySelectedIds)
                 }
             },
-            onSetFavorite = viewModel::setFavoriteCalendar
+            onSetFavorite = viewModel::setFavoriteCalendar,
+            onRefreshCalendars = viewModel::refreshAvailableCalendars
         )
         return
     }
