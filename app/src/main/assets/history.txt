@@ -1,3 +1,4 @@
+2026-10-08 - v3.7.09 Retirada del Widget Clásico de AndroidManifest.xml y Eliminación de Clases Legacy
 2026-10-08 - v3.7.08 Restauración Atómica e Inofensiva. Compatibilidad Histórica de Festivos Locales. Diagnóstico Transparente en Google Drive
 2026-10-08 - v3.7.07 Se restauró una clase ligera en blanco que extiende BroadcastReceiver para satisfacer las referencias que Android busca durante el paquete de actualización. Se volvió a declarar el receptor del widget clásico junto con su configuración en calendar_widget_info.xml
 2026-10-08 - v3.7.06 APK optimizado de 6.54 MB
