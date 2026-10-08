@@ -1,3 +1,5 @@
+2026-10-09 - v3.7.13 Se ha blindado el método getHolidayAdjustments() y si encuentra alguna fecha en blanco, nula o con formato corrupto, la descarta de forma segura
+2026-10-08 - v3.7.12 Priorización Absoluta de la Cuenta Vinculada en la pantalla Calendarios
 2026-10-08 - v3.7.11 Disparador automático para sincronizar los calendarios en la pantalla Calendarios
 2026-10-08 - v3.7.10 Se ha restaurado el padding vertical compacto de 4.dp en la lista de eventos
 2026-10-08 - v3.7.09 Retirada del Widget Clásico de AndroidManifest.xml y Eliminación de Clases Legacy

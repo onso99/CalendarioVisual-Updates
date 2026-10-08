@@ -420,7 +420,19 @@ object SettingsManager {
         val json = holidayPrefs(context).getString("adjustments", null) ?: return emptyList()
         val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
         val dtoList: List<HolidayAdjustmentDto> = try { Gson().fromJson(json, type) } catch (_: Exception) { emptyList() }
-        return dtoList.map { HolidayAdjustment(LocalDate.parse(it.dateStr), it.title, HolidayAdjustmentType.valueOf(it.type), it.originalEventId) }
+        return dtoList.mapNotNull { dto ->
+            try {
+                if (dto.dateStr.isBlank()) return@mapNotNull null
+                HolidayAdjustment(
+                    date = LocalDate.parse(dto.dateStr),
+                    title = dto.title,
+                    type = try { HolidayAdjustmentType.valueOf(dto.type) } catch (_: Exception) { HolidayAdjustmentType.HOLIDAY },
+                    originalEventId = dto.originalEventId
+                )
+            } catch (_: Exception) {
+                null
+            }
+        }
     }
 
     fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {

@@ -129,7 +129,7 @@ object BackupManager {
         
         return try {
             val metadata = json.optJSONObject(KEY_BACKUP_METADATA)
-            if (metadata == null || (metadata.optString("appName") != AppConstants.APP_SIGNATURE)) {
+            if (metadata != null && metadata.has("appName") && metadata.optString("appName").isNotBlank() && metadata.optString("appName") != AppConstants.APP_SIGNATURE) {
                 if (logEntry) {
                     BackupHistoryManager.addEntry(context, BackupHistoryEntry(
                         timestamp = System.currentTimeMillis(),
@@ -358,28 +358,30 @@ object BackupManager {
     }
 
     private fun putPreference(editor: SharedPreferences.Editor, key: String, value: Any) {
-        when (key) {
-            AppConstants.KEY_FAVORITE_CALENDAR_ID -> editor.putLong(key, (value as? Number)?.toLong() ?: value.toString().toLongOrNull() ?: 0L)
-            WidgetConstants.KEY_WIDGET_TEXT_BOOST -> editor.putFloat(key, (value as? Number)?.toFloat() ?: value.toString().toFloatOrNull() ?: 0f)
-            else -> {
-                if (key.startsWith("light_") || key.startsWith("dark_") || key.contains("color")) {
-                    val intVal = (value as? Number)?.toInt() ?: value.toString().toLongOrNull()?.toInt()
-                    if (intVal != null) { editor.putInt(key, intVal); return }
-                }
-                when (value) {
-                    is Boolean -> editor.putBoolean(key, value)
-                    is Int -> editor.putInt(key, value)
-                    is Long -> editor.putLong(key, value)
-                    is Float -> editor.putFloat(key, value)
-                    is String -> editor.putString(key, value)
-                    is JSONArray -> {
-                        val set = mutableSetOf<String>()
-                        for (i in 0 until value.length()) { value.opt(i)?.let { set.add(it.toString()) } }
-                        editor.putStringSet(key, set)
+        try {
+            when (key) {
+                AppConstants.KEY_FAVORITE_CALENDAR_ID -> editor.putLong(key, (value as? Number)?.toLong() ?: value.toString().toLongOrNull() ?: 0L)
+                WidgetConstants.KEY_WIDGET_TEXT_BOOST -> editor.putFloat(key, (value as? Number)?.toFloat() ?: value.toString().toFloatOrNull() ?: 0f)
+                else -> {
+                    if (key.startsWith("light_") || key.startsWith("dark_") || key.contains("color")) {
+                        val intVal = (value as? Number)?.toInt() ?: value.toString().toLongOrNull()?.toInt()
+                        if (intVal != null) { editor.putInt(key, intVal); return }
                     }
-                    else -> editor.putString(key, value.toString())
+                    when (value) {
+                        is Boolean -> editor.putBoolean(key, value)
+                        is Int -> editor.putInt(key, value)
+                        is Long -> editor.putLong(key, value)
+                        is Float -> editor.putFloat(key, value)
+                        is String -> editor.putString(key, value)
+                        is JSONArray -> {
+                            val set = mutableSetOf<String>()
+                            for (i in 0 until value.length()) { value.opt(i)?.let { set.add(it.toString()) } }
+                            editor.putStringSet(key, set)
+                        }
+                        else -> editor.putString(key, value.toString())
+                    }
                 }
             }
-        }
+        } catch (_: Exception) {}
     }
 }

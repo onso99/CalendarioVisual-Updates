@@ -3,7 +3,6 @@ package com.example.calendario
 import android.content.Context
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.time.LocalTime
-import java.time.ZoneId
 
 object LogCollector {
     private val logs = ConcurrentLinkedQueue<String>()
