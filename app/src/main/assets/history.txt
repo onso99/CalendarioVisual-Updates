@@ -1,4 +1,4 @@
-2026-10-08 - v3.7.06 Corrección de warnings
+2026-10-08 - v3.7.06 APK optimizado de 6.54 MB
 2026-10-08 - v3.7.05 Reducción apk-F5: Unificación y Pulido de Diálogos
 2026-10-08 - v3.7.04 Reducción apk-F4: Eliminación del Widget Clásico / RemoteViews
 2026-10-08 - v3.7.03 Reducción apk-F3: Depuración y Limpieza de Recursos e Imágenes
