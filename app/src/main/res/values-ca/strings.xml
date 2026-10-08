@@ -305,7 +305,6 @@
 
     <!-- Noms de Widgets -->
     <string name="widget_name_modern">Esdeveniments Adaptatius</string>
-    <string name="widget_name_classic">Esdeveniments Clàssics</string>
 
     <!-- Notes Diàries -->
     <string name="note_label">Nota</string>

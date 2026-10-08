@@ -3,7 +3,6 @@ package com.example.calendario
 import android.content.Context
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.time.LocalTime
-import java.time.Instant
 import java.time.ZoneId
 
 object LogCollector {
@@ -40,16 +39,7 @@ object LogCollector {
         }
     }
 
-    fun setNextRefreshTime(context: Context, timeMillis: Long) {
-        if (!isLoggingEnabled(context)) return
-        
-        val timeStr = Instant.ofEpochMilli(timeMillis)
-            .atZone(ZoneId.systemDefault())
-            .toLocalTime()
-            .format(formatter)
-            
-        SettingsManager.saveNextRefreshTime(context, timeStr)
-    }
+
 
     fun getNextRefreshTime(context: Context): String {
         if (!isLoggingEnabled(context)) return "OFF"

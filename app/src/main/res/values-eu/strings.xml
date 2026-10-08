@@ -303,7 +303,6 @@
 
     <!-- Widget izenak -->
     <string name="widget_name_modern">Gertaera Egokitzaileak</string>
-    <string name="widget_name_classic">Gertaera Klasikoak</string>
 
     <!-- Eguneroko Oharrak -->
     <string name="note_label">Oharra</string>

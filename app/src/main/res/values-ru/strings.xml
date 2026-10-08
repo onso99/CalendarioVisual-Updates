@@ -304,7 +304,6 @@
 
     <!-- Названия виджетов -->
     <string name="widget_name_modern">Адаптивные события</string>
-    <string name="widget_name_classic">Классические события</string>
 
     <!-- Ежедневные заметки -->
     <string name="note_label">Заметка</string>

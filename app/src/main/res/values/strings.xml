@@ -314,7 +314,6 @@
 
     <!-- Nombres de Widgets -->
     <string name="widget_name_modern">Adaptativo</string>
-    <string name="widget_name_classic">Clásico</string>
 
     <!-- Notas Diarias -->
     <string name="note_label">Nota</string>

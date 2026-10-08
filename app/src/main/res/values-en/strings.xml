@@ -305,7 +305,6 @@
 
     <!-- Widget Names -->
     <string name="widget_name_modern">Adaptive Events</string>
-    <string name="widget_name_classic">Classic Events</string>
 
     <!-- Daily Notes -->
     <string name="note_label">Note</string>

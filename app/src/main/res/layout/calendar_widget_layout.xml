@@ -1,28 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/widget_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:context=".CalendarAppWidgetProvider">
-
-    <ListView
-        android:id="@+id/widget_event_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        tools:listitem="@layout/widget_list_item_s"/>
-
-    <TextView
-        android:id="@+id/widget_empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/widget_no_events"
-        android:textColor="#CCCCCC"
-        android:background="#000088"
-        android:visibility="gone"/>
-
-</FrameLayout>
+    android:background="@android:color/transparent" />

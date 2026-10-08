@@ -304,7 +304,6 @@
 
     <!-- 小部件名称 -->
     <string name="widget_name_modern">自适应事件</string>
-    <string name="widget_name_classic">经典事件</string>
 
     <!-- 每日笔记 -->
     <string name="note_label">备注</string>

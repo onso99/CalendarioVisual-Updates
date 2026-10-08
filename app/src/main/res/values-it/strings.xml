@@ -305,7 +305,6 @@
 
     <!-- Nomi dei Widget -->
     <string name="widget_name_modern">Eventi Adattivi</string>
-    <string name="widget_name_classic">Eventi Classici</string>
 
     <!-- Note Giornaliere -->
     <string name="note_label">Nota</string>

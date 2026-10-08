@@ -304,7 +304,6 @@
 
     <!-- ウィジェット名 -->
     <string name="widget_name_modern">アダプティブ・イベント</string>
-    <string name="widget_name_classic">クラシック・イベント</string>
 
     <!-- デイリーノート -->
     <string name="note_label">ノート</string>
