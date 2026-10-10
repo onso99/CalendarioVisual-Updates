@@ -1,3 +1,4 @@
+2026-10-10 - v3.8.02 PDF/Imprimir F3: Opciones de Personalización en Pantalla
 2026-10-10 - v3.8.01 PDF/Imprimir F2: Motor Generador de PDF Nativo
 2026-10-10 - v3.8.00 PDF/Imprimir F1: creación de menú lateral y pantalla
 2026-10-09 - v3.7.13 Se ha blindado el método getHolidayAdjustments() y si encuentra alguna fecha en blanco, nula o con formato corrupto, la descarta de forma segura

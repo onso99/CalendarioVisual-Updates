@@ -1,5 +1,16 @@
 package com.example.calendario
 
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
+import android.os.Environment
+import android.print.PageRange
+import android.print.PrintAttributes
+import android.print.PrintDocumentAdapter
+import android.print.PrintDocumentInfo
+import android.print.PrintManager
+import android.provider.MediaStore
+import androidx.core.content.FileProvider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,12 +28,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -33,7 +49,10 @@ fun PdfExportScreen(
     eventsByDate: Map<LocalDate, List<Festivo>> = emptyMap(),
     dailyNotes: Map<String, DailyNote> = emptyMap()
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val locale = LocalConfiguration.current.locales[0]
+    val parsedNotes = remember(dailyNotes) { dailyNotes.mapKeys { LocalDate.parse(it.key) } }
 
     var targetMonth by remember { mutableStateOf(YearMonth.now()) }
     var customTitleText by remember { mutableStateOf<String?>(null) }
@@ -43,6 +62,7 @@ fun PdfExportScreen(
 
     var includeEvents by remember { mutableStateOf(true) }
     var includeNotes by remember { mutableStateOf(true) }
+    var includeHolidays by remember { mutableStateOf(true) }
     var showEventTimes by remember { mutableStateOf(true) }
     var showLongPeriods by remember { mutableStateOf(true) }
 
@@ -56,6 +76,88 @@ fun PdfExportScreen(
     AppScreen(
         title = stringResource(id = R.string.pdf_print_title),
         onBackClick = onBackPress,
+        actions = {
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        val options = PdfExportOptions(
+                            titleText = displayTitle,
+                            targetMonth = targetMonth,
+                            isInkSaver = !isColorMode,
+                            includeNotes = includeNotes,
+                            includeHolidays = includeHolidays,
+                            showEventTimes = showEventTimes
+                        )
+                        val file = PdfExportEngine.generateMonthlyPdf(context, options, eventsByDate, parsedNotes)
+                        if (file != null && file.exists()) {
+                            sharePdf(context, file)
+                        } else {
+                            context.showToast("Error al generar PDF para compartir")
+                        }
+                    }
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_share_outlined),
+                    contentDescription = "Compartir",
+                    tint = Color.White
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        val options = PdfExportOptions(
+                            titleText = displayTitle,
+                            targetMonth = targetMonth,
+                            isInkSaver = !isColorMode,
+                            includeNotes = includeNotes,
+                            includeHolidays = includeHolidays,
+                            showEventTimes = showEventTimes
+                        )
+                        val file = PdfExportEngine.generateMonthlyPdf(context, options, eventsByDate, parsedNotes)
+                        if (file != null && file.exists()) {
+                            savePdfToDownloads(context, file, displayTitle.replace(" ", "_"))
+                        } else {
+                            context.showToast("Error al generar PDF")
+                        }
+                    }
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_save_outlined),
+                    contentDescription = "Guardar",
+                    tint = Color.White
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        val options = PdfExportOptions(
+                            titleText = displayTitle,
+                            targetMonth = targetMonth,
+                            isInkSaver = !isColorMode,
+                            includeNotes = includeNotes,
+                            includeHolidays = includeHolidays,
+                            showEventTimes = showEventTimes
+                        )
+                        val file = PdfExportEngine.generateMonthlyPdf(context, options, eventsByDate, parsedNotes)
+                        if (file != null && file.exists()) {
+                            printPdf(context, file, displayTitle)
+                        } else {
+                            context.showToast("Error al generar PDF para imprimir")
+                        }
+                    }
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_print_outlined),
+                    contentDescription = "Imprimir",
+                    tint = Color.White
+                )
+            }
+        },
         scrollable = true
     ) {
         Column(
@@ -158,7 +260,7 @@ fun PdfExportScreen(
             }
 
             // SECCIÓN 2: ESTILO DE DOCUMENTO
-            SectionTitle(text = "Estilo de documento")
+            SectionTitle(text = "Estilo de documento", topPadding = 24.dp)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -188,7 +290,7 @@ fun PdfExportScreen(
             }
 
             // SECCIÓN 3: CONTENIDO
-            SectionTitle(text = "Contenido")
+            SectionTitle(text = "Contenido", topPadding = 24.dp)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -272,5 +374,69 @@ private fun OptionRow(
                 }
             }
         }
+    }
+}
+
+private fun printPdf(context: Context, pdfFile: File, jobName: String) {
+    val printManager = context.getSystemService(Context.PRINT_SERVICE) as? PrintManager
+    printManager?.print(jobName, object : PrintDocumentAdapter() {
+        override fun onLayout(oldAttributes: PrintAttributes?, newAttributes: PrintAttributes?, cancellationSignal: android.os.CancellationSignal?, callback: LayoutResultCallback?, extras: android.os.Bundle?) {
+            if (cancellationSignal?.isCanceled == true) {
+                callback?.onLayoutCancelled()
+                return
+            }
+            val pInfo = PrintDocumentInfo.Builder("$jobName.pdf")
+                .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                .setPageCount(1)
+                .build()
+            callback?.onLayoutFinished(pInfo, true)
+        }
+
+        override fun onWrite(pages: Array<out PageRange>?, destination: android.os.ParcelFileDescriptor?, cancellationSignal: android.os.CancellationSignal?, callback: WriteResultCallback?) {
+            try {
+                FileInputStream(pdfFile).use { input ->
+                    FileOutputStream(destination?.fileDescriptor).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                callback?.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
+            } catch (e: Exception) {
+                callback?.onWriteFailed(e.message)
+            }
+        }
+    }, PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4.asLandscape()).build())
+}
+
+private fun sharePdf(context: Context, pdfFile: File) {
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", pdfFile)
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "application/pdf"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    context.startActivity(Intent.createChooser(intent, "Compartir PDF"))
+}
+
+private fun savePdfToDownloads(context: Context, sourceFile: File, displayName: String) {
+    try {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, "$displayName.pdf")
+            put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+        val resolver = context.contentResolver
+        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+        if (uri != null) {
+            resolver.openOutputStream(uri)?.use { output ->
+                sourceFile.inputStream().use { input ->
+                    input.copyTo(output)
+                }
+            }
+            context.showToast("PDF guardado en Descargas")
+        } else {
+            context.showToast("Error al guardar PDF en Descargas")
+        }
+    } catch (e: Exception) {
+        context.showToast("Error al guardar PDF: ${e.message}")
     }
 }
