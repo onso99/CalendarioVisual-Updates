@@ -557,7 +557,11 @@ fun CalendarioScreen(
     }
 
     if (showPdfExportScreen) {
-        PdfExportScreen(onBackPress = { showPdfExportScreen = false })
+        PdfExportScreen(
+            onBackPress = { showPdfExportScreen = false },
+            eventsByDate = uiState.eventsByDate,
+            dailyNotes = uiState.dailyNotes
+        )
         return
     }
 
