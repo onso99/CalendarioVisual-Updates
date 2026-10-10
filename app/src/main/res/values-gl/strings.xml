@@ -269,6 +269,7 @@
     <string name="downloading_update">Descargando actualización…</string>
     <string name="permission_install_packages_label">Instalar aplicacións</string>
     <string name="local_calendars_label">Calendarios locais / dispositivo</string>
+    <string name="pdf_print_title">PDF / Imprimir</string>
     <string name="startup_error_dialog_title">⚠️ Problema detectado ao iniciar</string>
     <string name="startup_error_dialog_message">Detectouse un inconveniente ao cargar os datos no inicio anterior:</string>
     <string name="repair_data_action">Reparar datos locais</string>

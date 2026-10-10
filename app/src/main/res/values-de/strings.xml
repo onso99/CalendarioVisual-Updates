@@ -255,6 +255,7 @@
     <string name="restore_total_confirmation">Vollständige Wiederherstellung von Notizen, Alarmen, Themen und Einstellungen.</string>
     <string name="backup_section_title_label">Sicherungskopie</string>
     <string name="data_center_screen_title">Datenzentrum</string>
+    <string name="pdf_print_title">PDF / Drucken</string>
     <string name="drive_label">Drive</string>
     <string name="database_section_label">Datenbank</string>
     <string name="import_cvo_option_label">.cvo-Datei importieren</string>

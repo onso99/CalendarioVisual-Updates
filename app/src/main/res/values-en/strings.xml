@@ -269,6 +269,7 @@
     <string name="downloading_update">Downloading update…</string>
     <string name="permission_install_packages_label">Install apps</string>
     <string name="local_calendars_label">Local / Device calendars</string>
+    <string name="pdf_print_title">PDF / Print</string>
     <string name="startup_error_dialog_title">⚠️ Issue detected on startup</string>
     <string name="startup_error_dialog_message">An issue was detected while loading data on the previous startup:</string>
     <string name="repair_data_action">Repair local data</string>

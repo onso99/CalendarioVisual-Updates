@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/widget_preview_bg"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    tools:ignore="SmallSp">
 
     <!-- Lista de Eventos de PrevisualizaciÃ³n -->
 
@@ -14,6 +16,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="2dp">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -22,6 +25,7 @@
             android:text="@string/preview_today"
             android:textColor="#FBBC04"
             android:textSize="11sp" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,15 +34,16 @@
             android:text="@string/preview_date_1"
             android:textColor="#FBBC04"
             android:textSize="10sp" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6.8"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/preview_event_1"
             android:textColor="#FBBC04"
-            android:textSize="11sp"
-            android:ellipsize="end"
-            android:maxLines="1" />
+            android:textSize="11sp" />
     </LinearLayout>
 
     <!-- Fila 2: JUE -->
@@ -47,6 +52,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="2dp">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,6 +61,7 @@
             android:text="@string/preview_jue"
             android:textColor="#E0E0E0"
             android:textSize="11sp" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -63,15 +70,16 @@
             android:text="@string/preview_date_2"
             android:textColor="#E0E0E0"
             android:textSize="10sp" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6.8"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/preview_event_2"
             android:textColor="#E0E0E0"
-            android:textSize="11sp"
-            android:ellipsize="end"
-            android:maxLines="1" />
+            android:textSize="11sp" />
     </LinearLayout>
 
     <!-- Fila 3: VIE -->
@@ -80,6 +88,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="2dp">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -88,6 +97,7 @@
             android:text="@string/preview_vie"
             android:textColor="#E0E0E0"
             android:textSize="11sp" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -96,14 +106,15 @@
             android:text="@string/preview_date_3"
             android:textColor="#E0E0E0"
             android:textSize="10sp" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6.8"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/preview_event_3"
             android:textColor="#E0E0E0"
-            android:textSize="11sp"
-            android:ellipsize="end"
-            android:maxLines="1" />
+            android:textSize="11sp" />
     </LinearLayout>
 </LinearLayout>

@@ -137,6 +137,7 @@ fun CalendarioScreen(
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
+    var showPdfExportScreen by remember { mutableStateOf(false) }
     var showBackupScreen by remember { mutableStateOf(false) }
     var updateCheckTrigger by remember { mutableIntStateOf(0) }
     var showStartupRecoveryDialog by remember { mutableStateOf(SettingsManager.hasStartupCrashFlag(context)) }
@@ -555,6 +556,11 @@ fun CalendarioScreen(
         return
     }
 
+    if (showPdfExportScreen) {
+        PdfExportScreen(onBackPress = { showPdfExportScreen = false })
+        return
+    }
+
     if (showBackupScreen) {
         BackupScreen(
             onBackPress = { showBackupScreen = false },
@@ -741,6 +747,18 @@ fun CalendarioScreen(
                     )
 
                     // --- SECCIÓN: HERRAMIENTAS (Fase 1.7 - v3.1.06) ---
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(id = R.string.pdf_print_title)) },
+                        selected = false,
+                        onClick = {
+                            showPdfExportScreen = true
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(painter = painterResource(id = R.drawable.ic_print_outlined), contentDescription = null, tint = iconColor, modifier = Modifier.size(24.dp)) },
+                        colors = drawerItemColors,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
                     NavigationDrawerItem(
                         label = { Text(stringResource(id = R.string.holiday_manager_title)) },
                         selected = false,

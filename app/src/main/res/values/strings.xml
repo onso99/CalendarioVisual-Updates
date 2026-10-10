@@ -270,6 +270,7 @@
 
     <string name="backup_section_title_label">Copia de seguridad</string>
     <string name="data_center_screen_title">Centro de datos</string>
+    <string name="pdf_print_title">PDF / Imprimir</string>
     <string name="drive_label">Drive</string>
     <string name="database_section_label">Base de datos</string>
     <string name="import_cvo_option_label">Importar archivo .cvo</string>
