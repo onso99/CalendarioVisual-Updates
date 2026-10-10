@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,7 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -73,6 +76,44 @@ fun PdfExportScreen(
 
     val displayTitle = customTitleText ?: defaultMonthName
 
+    var pdfBitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
+    var isGeneratingPreview by remember { mutableStateOf(false) }
+
+    LaunchedEffect(targetMonth, displayTitle, isColorMode, isMixedLayout, includeNotes, includeHolidays, showEventTimes, eventsByDate, parsedNotes) {
+        isGeneratingPreview = true
+        withContext(Dispatchers.IO) {
+            try {
+                val options = PdfExportOptions(
+                    titleText = displayTitle,
+                    targetMonth = targetMonth,
+                    isInkSaver = !isColorMode,
+                    isMixedLayout = isMixedLayout,
+                    includeNotes = includeNotes,
+                    includeHolidays = includeHolidays,
+                    showEventTimes = showEventTimes
+                )
+                val file = PdfExportEngine.generateMonthlyPdf(context, options, eventsByDate, parsedNotes)
+                if (file != null && file.exists()) {
+                    val parcelFileDescriptor = android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY)
+                    val renderer = android.graphics.pdf.PdfRenderer(parcelFileDescriptor)
+                    if (renderer.pageCount > 0) {
+                        val page = renderer.openPage(0)
+                        val bitmap = android.graphics.Bitmap.createBitmap(page.width / 2, page.height / 2, android.graphics.Bitmap.Config.ARGB_8888)
+                        page.render(bitmap, null, null, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        page.close()
+                        renderer.close()
+                        parcelFileDescriptor.close()
+                        pdfBitmap = bitmap
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("PdfExportScreen", "Error rendering preview", e)
+            } finally {
+                isGeneratingPreview = false
+            }
+        }
+    }
+
     AppScreen(
         title = stringResource(id = R.string.pdf_print_title),
         onBackClick = onBackPress,
@@ -84,6 +125,7 @@ fun PdfExportScreen(
                             titleText = displayTitle,
                             targetMonth = targetMonth,
                             isInkSaver = !isColorMode,
+                            isMixedLayout = isMixedLayout,
                             includeNotes = includeNotes,
                             includeHolidays = includeHolidays,
                             showEventTimes = showEventTimes
@@ -111,6 +153,7 @@ fun PdfExportScreen(
                             titleText = displayTitle,
                             targetMonth = targetMonth,
                             isInkSaver = !isColorMode,
+                            isMixedLayout = isMixedLayout,
                             includeNotes = includeNotes,
                             includeHolidays = includeHolidays,
                             showEventTimes = showEventTimes
@@ -138,6 +181,7 @@ fun PdfExportScreen(
                             titleText = displayTitle,
                             targetMonth = targetMonth,
                             isInkSaver = !isColorMode,
+                            isMixedLayout = isMixedLayout,
                             includeNotes = includeNotes,
                             includeHolidays = includeHolidays,
                             showEventTimes = showEventTimes
@@ -165,50 +209,46 @@ fun PdfExportScreen(
                 .fillMaxSize()
                 .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 24.dp)
         ) {
-            // TARJETA DE PREVISUALIZACIÓN DE TARJETA A4
-            Card(
+            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA (SIN CONTENEDOR)
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, CalendarioTheme.colors.cabecera.copy(alpha = 0.3f), RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CalendarioTheme.colors.fondoSecciones)
+                    .height(150.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxHeight()
+                        .aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.White)
+                        .border(0.5f.dp, Color.LightGray, RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_print_outlined),
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.cabecera,
-                            modifier = Modifier.size(28.dp)
+                    if (isGeneratingPreview && pdfBitmap == null) {
+                        CircularProgressIndicator(
+                            color = CalendarioTheme.colors.cabecera,
+                            modifier = Modifier.size(24.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                    } else if (pdfBitmap != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = pdfBitmap!!.asImageBitmap(),
+                            contentDescription = "Previsualización del PDF",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(2.dp)
+                        )
+                    } else {
                         Text(
                             text = displayTitle,
-                            fontSize = 18.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = CalendarioTheme.colors.textSystem
+                            color = Color.Black
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = if (isMixedLayout) "Documento Din A4 · Formato Mixto" else "Documento Din A4 · Formato Mensual",
-                        fontSize = 12.sp,
-                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                    )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             // SECCIÓN 1: INICIAL (SIN TÍTULO DE SECCIÓN)
             Column(
@@ -260,7 +300,7 @@ fun PdfExportScreen(
             }
 
             // SECCIÓN 2: ESTILO DE DOCUMENTO
-            SectionTitle(text = "Estilo de documento", topPadding = 24.dp)
+            SectionTitle(text = "Estilo de documento")
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -290,7 +330,7 @@ fun PdfExportScreen(
             }
 
             // SECCIÓN 3: CONTENIDO
-            SectionTitle(text = "Contenido", topPadding = 24.dp)
+            SectionTitle(text = "Contenido")
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

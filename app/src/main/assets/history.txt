@@ -1,3 +1,4 @@
+2026-10-10 - v3.8.03 PDF/Imprimir F4: Impresión Nativa (PrintManager), Guardar y Compartir
 2026-10-10 - v3.8.02 PDF/Imprimir F3: Opciones de Personalización en Pantalla
 2026-10-10 - v3.8.01 PDF/Imprimir F2: Motor Generador de PDF Nativo
 2026-10-10 - v3.8.00 PDF/Imprimir F1: creación de menú lateral y pantalla
