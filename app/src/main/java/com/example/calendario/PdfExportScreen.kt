@@ -12,7 +12,6 @@ import android.print.PrintManager
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -221,28 +220,27 @@ fun PdfExportScreen(
                 )
             }
         },
-        scrollable = true
+        scrollable = !isZoomed
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 24.dp)
         ) {
-            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA
+            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA (Altura fija invariable a 160.dp)
+            val previewHeight = 160.dp
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(8.dp)) // Evita que el zoom invada otras secciones recortando al contenedor
+                    .height(previewHeight)
+                    .clip(RoundedCornerShape(8.dp))
                     .padding(vertical = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
-                        .then(
-                            if (isZoomed) Modifier.fillMaxWidth().fillMaxHeight()
-                            else Modifier.fillMaxHeight().aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
-                        )
+                        .fillMaxHeight()
+                        .aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
                         .graphicsLayer(
                             scaleX = if (isZoomed) 3f else 1f,
                             scaleY = if (isZoomed) 3f else 1f,
@@ -251,7 +249,6 @@ fun PdfExportScreen(
                         )
                         .clip(RoundedCornerShape(4.dp))
                         .background(Color.White)
-                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                         .onGloballyPositioned { coordinates ->
                             containerSize = androidx.compose.ui.geometry.Size(
                                 coordinates.size.width.toFloat(),
@@ -279,7 +276,11 @@ fun PdfExportScreen(
                         .pointerInput(isZoomed) {
                             if (isZoomed) {
                                 detectTransformGestures { _, pan, _, _ ->
-                                    panOffset += pan
+                                    val maxPanX = containerSize.width * 1.5f
+                                    val maxPanY = containerSize.height * 1.5f
+                                    val newX = (panOffset.x + pan.x).coerceIn(-maxPanX, maxPanX)
+                                    val newY = (panOffset.y + pan.y).coerceIn(-maxPanY, maxPanY)
+                                    panOffset = Offset(newX, newY)
                                 }
                             }
                         },
@@ -294,8 +295,8 @@ fun PdfExportScreen(
                         androidx.compose.foundation.Image(
                             bitmap = pdfBitmap!!.asImageBitmap(),
                             contentDescription = "Previsualización del PDF",
-                            modifier = Modifier
-                                .fillMaxSize()
+                            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                            modifier = Modifier.fillMaxSize()
                         )
                     } else {
                         Text(
