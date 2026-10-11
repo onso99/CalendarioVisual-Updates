@@ -228,11 +228,12 @@ fun PdfExportScreen(
                 .fillMaxSize()
                 .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 24.dp)
         ) {
-            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA (Altura fija invariable)
+            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
+                    .clip(RoundedCornerShape(8.dp)) // Evita que el zoom invada otras secciones recortando al contenedor
                     .padding(vertical = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -242,11 +243,17 @@ fun PdfExportScreen(
                             if (isZoomed) Modifier.fillMaxWidth().fillMaxHeight()
                             else Modifier.fillMaxHeight().aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
                         )
-                        .clip(RoundedCornerShape(6.dp))
+                        .graphicsLayer(
+                            scaleX = if (isZoomed) 3f else 1f,
+                            scaleY = if (isZoomed) 3f else 1f,
+                            translationX = if (isZoomed) panOffset.x else 0f,
+                            translationY = if (isZoomed) panOffset.y else 0f
+                        )
+                        .clip(RoundedCornerShape(4.dp))
                         .background(Color.White)
-                        .border(0.5f.dp, Color.LightGray, RoundedCornerShape(6.dp))
+                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                         .onGloballyPositioned { coordinates ->
-                            containerSize = Size(
+                            containerSize = androidx.compose.ui.geometry.Size(
                                 coordinates.size.width.toFloat(),
                                 coordinates.size.height.toFloat()
                             )
@@ -289,13 +296,6 @@ fun PdfExportScreen(
                             contentDescription = "Previsualización del PDF",
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(2.dp)
-                                .graphicsLayer(
-                                    scaleX = if (isZoomed) 3f else 1f,
-                                    scaleY = if (isZoomed) 3f else 1f,
-                                    translationX = if (isZoomed) panOffset.x else 0f,
-                                    translationY = if (isZoomed) panOffset.y else 0f
-                                )
                         )
                     } else {
                         Text(
