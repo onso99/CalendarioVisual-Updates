@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import java.io.File
 import java.io.FileOutputStream
@@ -46,11 +47,15 @@ object PdfExportEngine {
             "$monthName ${options.targetMonth.year}"
         }
 
+        // --- FUENTES CONDENSADAS (Estrechas) ---
+        val condensedTypeface = Typeface.create("sans-serif-condensed", Typeface.NORMAL)
+        val condensedBoldTypeface = Typeface.create("sans-serif-condensed", Typeface.BOLD)
+
         // --- PINCELES (PAINTS) ---
         val titlePaint = Paint().apply {
             color = if (options.isInkSaver) Color.BLACK else 0xFF2E7D32.toInt()
             textSize = 20f
-            isFakeBoldText = true
+            typeface = condensedBoldTypeface
             isAntiAlias = true
         }
 
@@ -63,7 +68,7 @@ object PdfExportEngine {
         val headerTextPaint = Paint().apply {
             color = Color.BLACK
             textSize = 10f
-            isFakeBoldText = true
+            typeface = condensedBoldTypeface
             textAlign = Paint.Align.CENTER
             isAntiAlias = true
         }
@@ -78,20 +83,21 @@ object PdfExportEngine {
         val dayNumberPaint = Paint().apply {
             color = Color.BLACK
             textSize = 11f
-            isFakeBoldText = true
+            typeface = condensedBoldTypeface
             isAntiAlias = true
         }
 
         val sundayNumberPaint = Paint().apply {
             color = if (options.isInkSaver) Color.BLACK else 0xFFD32F2F.toInt()
             textSize = 11f
-            isFakeBoldText = true
+            typeface = condensedBoldTypeface
             isAntiAlias = true
         }
 
         val eventTextPaint = Paint().apply {
             color = Color.DKGRAY
             textSize = 8f
+            typeface = condensedTypeface
             isAntiAlias = true
         }
 
@@ -102,7 +108,8 @@ object PdfExportEngine {
         }
 
         // --- 1. ENCABEZADO ---
-        val margin = 24f
+        // --- 1. ENCABEZADO ---
+        val margin = 18f
         var currentY = margin + 12f
 
         canvas.drawText(monthYearTitle, margin, currentY, titlePaint)
@@ -113,7 +120,7 @@ object PdfExportEngine {
             textAlign = Paint.Align.RIGHT
             isAntiAlias = true
         }
-        canvas.drawText("${AppConstants.APP_SIGNATURE} — PDF", pageWidth - margin, currentY, appSignaturePaint)
+        canvas.drawText("CalendarioVisual — PDF", pageWidth - margin, currentY, appSignaturePaint)
 
         currentY += 10f
 
@@ -141,9 +148,14 @@ object PdfExportEngine {
         
         val totalWeeks = Math.ceil((dayOfWeekOffset + daysInMonth) / 7.0).toInt()
         
-        // Si es mixto, la rejilla ocupa la mitad superior (aprox 260pt); si es mensual, ocupa la mayor parte
-        val availableGridHeight = if (options.isMixedLayout) 260f else if (options.includeNotes) 360f else 460f
+        // Celdas cuadradas en vertical (Mixto) y más anchas/altas en apaisado (Mensual)
+        val availableGridHeight = if (options.isMixedLayout) 400f else if (options.includeNotes) 420f else 490f
         val rowHeight = availableGridHeight / totalWeeks
+
+        val overflowPaint = Paint(eventTextPaint).apply {
+            textAlign = Paint.Align.CENTER
+            isFakeBoldText = true
+        }
 
         var dayCounter = 1
         for (week in 0 until totalWeeks) {
@@ -174,19 +186,27 @@ object PdfExportEngine {
                     canvas.drawText(dayCounter.toString(), cellX + 3f, rowY + 11f, numPaint)
 
                     var eventY = rowY + 20f
+                    val maxEventsInCell = 7
                     var printedCount = 0
-                    for (event in dayEvents) {
-                        if (printedCount >= (if (options.isMixedLayout) 2 else 3)) {
-                            canvas.drawText("...", cellX + 3f, eventY, eventTextPaint)
+
+                    for (eventIndex in dayEvents.indices) {
+                        val event = dayEvents[eventIndex]
+                        if (printedCount >= maxEventsInCell && dayEvents.size > maxEventsInCell) {
+                            val remaining = dayEvents.size - printedCount
+                            canvas.drawText("+$remaining", cellX + (colWidth / 2f), eventY, overflowPaint)
                             break
                         }
+
                         val timeStr = if (options.showEventTimes && !event.isAllDay && event.startTime != null) {
                             "${event.startTime.format(AppFormats.TimeShort)} "
                         } else ""
 
-                        val titleStr = (timeStr + event.title).take(12)
+                        val rawTitle = timeStr + event.title
+                        val maxChars = if (options.isMixedLayout) 20 else 29
+                        val titleStr = if (rawTitle.length > maxChars) rawTitle.take(maxChars - 3) + "..." else rawTitle
+
                         canvas.drawText("• $titleStr", cellX + 3f, eventY, eventTextPaint)
-                        eventY += 8f
+                        eventY += 8.5f
                         printedCount++
                     }
 
@@ -197,7 +217,7 @@ object PdfExportEngine {
 
         currentY += availableGridHeight + 10f
 
-        // --- 4. FORMATO MIXTO (LISTA VERTICAL DETALLADA) ---
+        // --- 4. FORMATO MIXTO (LISTA VERTICAL DETALLADA EN 2 COLUMNAS) ---
         if (options.isMixedLayout) {
             val mixedTitlePaint = Paint().apply {
                 color = Color.BLACK
@@ -205,7 +225,7 @@ object PdfExportEngine {
                 isFakeBoldText = true
                 isAntiAlias = true
             }
-            canvas.drawText("📋 AGENDA DETALLADA:", margin, currentY, mixedTitlePaint)
+            canvas.drawText("📋 AGENDA DETALLADA DEL MES:", margin, currentY, mixedTitlePaint)
             currentY += 12f
 
             val monthEvents = (1..daysInMonth).flatMap { day ->
@@ -213,22 +233,31 @@ object PdfExportEngine {
                 (eventsByDate[date] ?: emptyList()).map { date to it }
             }
 
+            val col1X = margin
+            val col2X = margin + (gridWidth / 2f) + 10f
             var listY = currentY + 10f
-            var listCount = 0
-            for ((date, event) in monthEvents) {
-                if (listCount >= 14) break
+
+            for (i in monthEvents.indices) {
+                val (date, event) = monthEvents[i]
                 val timeStr = if (options.showEventTimes && !event.isAllDay && event.startTime != null) {
                     "${event.startTime.format(AppFormats.TimeShort)} "
                 } else ""
-                val lineStr = "${date.format(AppFormats.DateDayMonth)}: $timeStr${event.title}"
-                canvas.drawText("• $lineStr", margin, listY, eventTextPaint)
-                listY += 12f
-                listCount++
+                val rawLine = "${date.format(AppFormats.DateDayMonth)}: $timeStr${event.title}"
+                val lineStr = if (rawLine.length > 55) rawLine.take(52) + "..." else rawLine
+
+                val currentX = if (i % 2 == 0) col1X else col2X
+                canvas.drawText("• $lineStr", currentX, listY, eventTextPaint)
+                if (i % 2 == 1) {
+                    listY += 11f
+                }
             }
-            currentY += 40f
+            if (monthEvents.size % 2 != 0) {
+                listY += 11f
+            }
+            currentY = listY + 10f
         }
 
-        // --- 5. SECCIÓN NOTAS DIARIAS ---
+        // --- 5. SECCIÓN NOTAS DIARIAS (3 Columnas en Apaisado) ---
         if (options.includeNotes) {
             val monthNotes = notesByDate.filter { (date, note) ->
                 YearMonth.from(date) == options.targetMonth && note.content.isNotBlank() && !note.isDeleted
@@ -244,14 +273,30 @@ object PdfExportEngine {
                 canvas.drawText("📌 NOTAS DEL MES:", margin, currentY, notesTitlePaint)
                 currentY += 12f
 
-                var noteY = currentY + 10f
-                var count = 0
-                for ((date, note) in monthNotes) {
-                    if (count >= 5) break
-                    val noteSnippet = "${date.dayOfMonth}: ${note.content.take(50)}"
-                    canvas.drawText("• $noteSnippet", margin, noteY, eventTextPaint)
-                    noteY += 12f
-                    count++
+                val colWidth3 = gridWidth / 3f
+                val col1X = margin
+                val col2X = margin + colWidth3
+                val col3X = margin + (colWidth3 * 2f)
+
+                val startNotesY = currentY + 10f
+                val notesList = monthNotes.toList()
+                val maxRowsPerCol = 5
+
+                for (i in notesList.indices) {
+                    if (i >= 15) break // Hasta 15 notas (3 columnas x 5 filas)
+                    val (date, note) = notesList[i]
+                    val noteSnippet = "${date.dayOfMonth}: ${note.content.take(30)}"
+
+                    val colIndex = i / maxRowsPerCol // 0, 1 o 2
+                    val rowIndex = i % maxRowsPerCol // 0 a 4
+
+                    val currentX = when (colIndex) {
+                        0 -> col1X
+                        1 -> col2X
+                        else -> col3X
+                    }
+                    val currentYPos = startNotesY + (rowIndex * 11f)
+                    canvas.drawText("• $noteSnippet", currentX, currentYPos, eventTextPaint)
                 }
             }
         }

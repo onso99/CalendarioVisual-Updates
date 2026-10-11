@@ -28,6 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -62,6 +69,16 @@ fun PdfExportScreen(
     
     var isColorMode by remember { mutableStateOf(true) }
     var isMixedLayout by remember { mutableStateOf(false) }
+
+    var isZoomed by remember { mutableStateOf(false) }
+    var panOffset by remember { mutableStateOf(Offset.Zero) }
+    var containerSize by remember { mutableStateOf(Size.Zero) }
+
+    LaunchedEffect(targetMonth, isMixedLayout) {
+        isZoomed = false
+        panOffset = Offset.Zero
+        containerSize = Size.Zero
+    }
 
     var includeEvents by remember { mutableStateOf(true) }
     var includeNotes by remember { mutableStateOf(true) }
@@ -98,8 +115,10 @@ fun PdfExportScreen(
                     val renderer = android.graphics.pdf.PdfRenderer(parcelFileDescriptor)
                     if (renderer.pageCount > 0) {
                         val page = renderer.openPage(0)
-                        val bitmap = android.graphics.Bitmap.createBitmap(page.width / 2, page.height / 2, android.graphics.Bitmap.Config.ARGB_8888)
-                        page.render(bitmap, null, null, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        val renderScale = 2f
+                        val bitmap = android.graphics.Bitmap.createBitmap((page.width * renderScale).toInt(), (page.height * renderScale).toInt(), android.graphics.Bitmap.Config.ARGB_8888)
+                        val matrix = android.graphics.Matrix().apply { setScale(renderScale, renderScale) }
+                        page.render(bitmap, null, matrix, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                         page.close()
                         renderer.close()
                         parcelFileDescriptor.close()
@@ -209,21 +228,54 @@ fun PdfExportScreen(
                 .fillMaxSize()
                 .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 24.dp)
         ) {
-            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA (SIN CONTENEDOR)
+            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA (Altura fija invariable)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(vertical = 8.dp),
+                    .height(160.dp)
+                    .padding(vertical = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
-                        .clip(RoundedCornerShape(4.dp))
+                        .then(
+                            if (isZoomed) Modifier.fillMaxWidth().fillMaxHeight()
+                            else Modifier.fillMaxHeight().aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
+                        )
+                        .clip(RoundedCornerShape(6.dp))
                         .background(Color.White)
-                        .border(0.5f.dp, Color.LightGray, RoundedCornerShape(4.dp)),
+                        .border(0.5f.dp, Color.LightGray, RoundedCornerShape(6.dp))
+                        .onGloballyPositioned { coordinates ->
+                            containerSize = Size(
+                                coordinates.size.width.toFloat(),
+                                coordinates.size.height.toFloat()
+                            )
+                        }
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onDoubleTap = { tapOffset ->
+                                    isZoomed = !isZoomed
+                                    if (isZoomed) {
+                                        val centerX = containerSize.width / 2f
+                                        val centerY = containerSize.height / 2f
+                                        val scale = 3f
+                                        panOffset = Offset(
+                                            (centerX - tapOffset.x) * (scale - 1f),
+                                            (centerY - tapOffset.y) * (scale - 1f)
+                                        )
+                                    } else {
+                                        panOffset = Offset.Zero
+                                    }
+                                }
+                            )
+                        }
+                        .pointerInput(isZoomed) {
+                            if (isZoomed) {
+                                detectTransformGestures { _, pan, _, _ ->
+                                    panOffset += pan
+                                }
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     if (isGeneratingPreview && pdfBitmap == null) {
@@ -238,6 +290,12 @@ fun PdfExportScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(2.dp)
+                                .graphicsLayer(
+                                    scaleX = if (isZoomed) 3f else 1f,
+                                    scaleY = if (isZoomed) 3f else 1f,
+                                    translationX = if (isZoomed) panOffset.x else 0f,
+                                    translationY = if (isZoomed) panOffset.y else 0f
+                                )
                         )
                     } else {
                         Text(
@@ -249,6 +307,13 @@ fun PdfExportScreen(
                     }
                 }
             }
+
+            Text(
+                text = "* Se muestra un máximo de 7 eventos/día.",
+                fontSize = 11.sp,
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+            )
 
             // SECCIÓN 1: INICIAL (SIN TÍTULO DE SECCIÓN)
             Column(

@@ -1,3 +1,5 @@
+2026-10-11 - v3.8.05 PDF/Imprimir: límite máximo 7 eventos/día. Zoom en previsualización
+2026-10-11 - v3.8.04 PDF/Imprimir: ajustes con la previsualización
 2026-10-10 - v3.8.03 PDF/Imprimir F4: Impresión Nativa (PrintManager), Guardar y Compartir
 2026-10-10 - v3.8.02 PDF/Imprimir F3: Opciones de Personalización en Pantalla
 2026-10-10 - v3.8.01 PDF/Imprimir F2: Motor Generador de PDF Nativo
