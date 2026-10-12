@@ -18,8 +18,14 @@ object AppConstants {
     const val KEY_DARK_THEME_NAME = "dark_theme_name_key"
     const val KEY_EVENT_1_KEYWORD = "event_1_keyword"
     const val KEY_EVENT_2_KEYWORD = "event_2_keyword"
+    const val KEY_EVENT_3_KEYWORD = "event_3_keyword"
+    const val KEY_EVENT_4_KEYWORD = "event_4_keyword"
+    const val KEY_EVENT_5_KEYWORD = "event_5_keyword"
     const val KEY_EVENT_1_PULSE = "event_1_pulse"
     const val KEY_EVENT_2_PULSE = "event_2_pulse"
+    const val KEY_EVENT_3_PULSE = "event_3_pulse"
+    const val KEY_EVENT_4_PULSE = "event_4_pulse"
+    const val KEY_EVENT_5_PULSE = "event_5_pulse"
     const val KEY_AUTO_BACKUP_DRIVE = "auto_backup_drive_key"
     const val KEY_BACKUP_FREQUENCY = "backup_frequency_key"
     const val KEY_LAST_BACKUP_TIME = "last_backup_timestamp_key"
@@ -41,6 +47,9 @@ object AppConstants {
         const val LIGHT_TEXT_BIRTHDAY = "light_text_birthday"
         const val LIGHT_TEXT_EVENT_1 = "light_text_event_1"
         const val LIGHT_TEXT_EVENT_2 = "light_text_event_2"
+        const val LIGHT_TEXT_EVENT_3 = "light_text_event_3"
+        const val LIGHT_TEXT_EVENT_4 = "light_text_event_4"
+        const val LIGHT_TEXT_EVENT_5 = "light_text_event_5"
         const val LIGHT_TODAY_HIGHLIGHT_COLOR = "light_today_highlight_color"
         const val LIGHT_NOTE_ICON_COLOR = "light_note_icon_color"
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
@@ -54,6 +63,9 @@ object AppConstants {
         const val DARK_TEXT_BIRTHDAY = "dark_text_birthday"
         const val DARK_TEXT_EVENT_1 = "dark_text_event_1"
         const val DARK_TEXT_EVENT_2 = "dark_text_event_2"
+        const val DARK_TEXT_EVENT_3 = "dark_text_event_3"
+        const val DARK_TEXT_EVENT_4 = "dark_text_event_4"
+        const val DARK_TEXT_EVENT_5 = "dark_text_event_5"
         const val DARK_TODAY_HIGHLIGHT_COLOR = "dark_today_highlight_color"
         const val DARK_NOTE_ICON_COLOR = "dark_note_icon_color"
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
@@ -68,6 +80,9 @@ object AppConstants {
         val textBirthday = Color(0xFF0000FF)
         val textEvent1 = Color(0xFF008000)
         val textEvent2 = Color(0xFF980062)
+        val textEvent3 = Color(0xFF388E3C)
+        val textEvent4 = Color(0xFF7B1FA2)
+        val textEvent5 = Color(0xFFC2185B)
         val todayHighlightColor = Color(0x260077C2) // 15% opacidad
         val noteIconColor = Color(0xFFFFB300)
         val monthlyCalendarGridBackground = Color(0xFF0077C2)

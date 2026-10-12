@@ -27,6 +27,9 @@ data class CustomColors(
     val textBirthday: Color,
     val textEvent1: Color,
     val textEvent2: Color,
+    val textEvent3: Color,
+    val textEvent4: Color,
+    val textEvent5: Color,
     val todayHighlightColor: Color,
     val noteIconColor: Color,
     val monthlyCalendarGridBackground: Color,
@@ -84,6 +87,9 @@ val LocalCustomColors = staticCompositionLocalOf {
         textBirthday = AppConstants.LightColors.textBirthday,
         textEvent1 = AppConstants.LightColors.textEvent1,
         textEvent2 = AppConstants.LightColors.textEvent2,
+        textEvent3 = AppConstants.LightColors.textEvent3,
+        textEvent4 = AppConstants.LightColors.textEvent4,
+        textEvent5 = AppConstants.LightColors.textEvent5,
         todayHighlightColor = AppConstants.LightColors.todayHighlightColor,
         noteIconColor = AppConstants.LightColors.noteIconColor,
         monthlyCalendarGridBackground = AppConstants.LightColors.monthlyCalendarGridBackground,
@@ -171,16 +177,29 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
 
     fun getSafeInt(key: String, default: Int): Int = SettingsManager.getSafeInt(prefs, key, default)
 
+    // Colores Permanentes (Invariantes a modo oscuro y temas)
+    val permanentSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday.toArgb()))
+    val permanentBirthday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday.toArgb()))
+    val permanentEvent1 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.LightColors.textEvent1.toArgb()))
+    val permanentEvent2 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.LightColors.textEvent2.toArgb()))
+    val permanentEvent3 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_3, AppConstants.LightColors.textEvent3.toArgb()))
+    val permanentEvent4 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_4, AppConstants.LightColors.textEvent4.toArgb()))
+    val permanentEvent5 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_5, AppConstants.LightColors.textEvent5.toArgb()))
+    val permanentNoteIcon = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.LightColors.noteIconColor.toArgb()))
+
     return if (darkTheme) {
         CustomColors(
             cabecera = Color(getSafeInt(AppConstants.ColorKeys.DARK_CABECERA, AppConstants.DarkColors.cabecera.toArgb())),
             settingsBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_SETTINGS_BACKGROUND, AppConstants.DarkColors.settingsBackground.toArgb())),
-            textSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.DarkColors.textSundayHoliday.toArgb())),
-            textBirthday = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_BIRTHDAY, AppConstants.DarkColors.textBirthday.toArgb())),
-            textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_1, AppConstants.DarkColors.textEvent1.toArgb())),
-            textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.DARK_TEXT_EVENT_2, AppConstants.DarkColors.textEvent2.toArgb())),
+            textSundayHoliday = permanentSundayHoliday,
+            textBirthday = permanentBirthday,
+            textEvent1 = permanentEvent1,
+            textEvent2 = permanentEvent2,
+            textEvent3 = permanentEvent3,
+            textEvent4 = permanentEvent4,
+            textEvent5 = permanentEvent5,
             todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_TODAY_HIGHLIGHT_COLOR, AppConstants.DarkColors.todayHighlightColor.toArgb())),
-            noteIconColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_NOTE_ICON_COLOR, AppConstants.DarkColors.noteIconColor.toArgb())),
+            noteIconColor = permanentNoteIcon,
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.DarkColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.DarkColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.DarkColors.monthlyCalendarDayCellBackground.toArgb()))
@@ -189,12 +208,15 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
         CustomColors(
             cabecera = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_CABECERA, AppConstants.LightColors.cabecera.toArgb())),
             settingsBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_SETTINGS_BACKGROUND, AppConstants.LightColors.settingsBackground.toArgb())),
-            textSundayHoliday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday.toArgb())),
-            textBirthday = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday.toArgb())),
-            textEvent1 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.LightColors.textEvent1.toArgb())),
-            textEvent2 = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.LightColors.textEvent2.toArgb())),
+            textSundayHoliday = permanentSundayHoliday,
+            textBirthday = permanentBirthday,
+            textEvent1 = permanentEvent1,
+            textEvent2 = permanentEvent2,
+            textEvent3 = permanentEvent3,
+            textEvent4 = permanentEvent4,
+            textEvent5 = permanentEvent5,
             todayHighlightColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TODAY_HIGHLIGHT_COLOR, AppConstants.LightColors.todayHighlightColor.toArgb())),
-            noteIconColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.LightColors.noteIconColor.toArgb())),
+            noteIconColor = permanentNoteIcon,
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.LightColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.LightColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground.toArgb()))

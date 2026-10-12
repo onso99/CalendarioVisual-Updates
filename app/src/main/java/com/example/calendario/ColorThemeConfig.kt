@@ -24,11 +24,14 @@ object ColorThemeConfig {
         ColorThemeItem(R.string.current_month_cell, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground, AppConstants.DarkColors.monthlyCalendarDayCellBackground, "Tema"),
         ColorThemeItem(R.string.effect, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.LightColors.monthlyCalendarGridEffect, AppConstants.DarkColors.monthlyCalendarGridEffect, "Tema"),
 
-        // --- CATEGORÍA: PROPIOS (Independientes, con Reset, NO añaden ***) ---
-        ColorThemeItem(R.string.note_icon_color, AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.ColorKeys.DARK_NOTE_ICON_COLOR, AppConstants.LightColors.noteIconColor, AppConstants.DarkColors.noteIconColor, "Propios", isIndependent = true),
-        ColorThemeItem(R.string.sundays_and_holidays, AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.ColorKeys.DARK_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday, AppConstants.DarkColors.textSundayHoliday, "Propios", isIndependent = true),
-        ColorThemeItem(R.string.birthdays, AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.ColorKeys.DARK_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday, AppConstants.DarkColors.textBirthday, "Propios", isIndependent = true),
-        ColorThemeItem(R.string.event_1, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.ColorKeys.DARK_TEXT_EVENT_1, AppConstants.LightColors.textEvent1, AppConstants.DarkColors.textEvent1, "Propios", isIndependent = true),
-        ColorThemeItem(R.string.event_2, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.ColorKeys.DARK_TEXT_EVENT_2, AppConstants.LightColors.textEvent2, AppConstants.DarkColors.textEvent2, "Propios", isIndependent = true)
+        // --- CATEGORÍA: PERMANENTES (Independientes, con Reset, NO añaden ***, Invariantes a modo oscuro) ---
+        ColorThemeItem(R.string.note_icon_color, AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.LightColors.noteIconColor, AppConstants.LightColors.noteIconColor, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.sundays_and_holidays, AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.ColorKeys.LIGHT_TEXT_SUNDAY_HOLIDAY, AppConstants.LightColors.textSundayHoliday, AppConstants.LightColors.textSundayHoliday, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.birthdays, AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.ColorKeys.LIGHT_TEXT_BIRTHDAY, AppConstants.LightColors.textBirthday, AppConstants.LightColors.textBirthday, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.event_1, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_1, AppConstants.LightColors.textEvent1, AppConstants.LightColors.textEvent1, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.event_2, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_2, AppConstants.LightColors.textEvent2, AppConstants.LightColors.textEvent2, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.event_3, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_3, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_3, AppConstants.LightColors.textEvent3, AppConstants.LightColors.textEvent3, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.event_4, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_4, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_4, AppConstants.LightColors.textEvent4, AppConstants.LightColors.textEvent4, "Permanentes", isIndependent = true),
+        ColorThemeItem(R.string.event_5, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_5, AppConstants.ColorKeys.LIGHT_TEXT_EVENT_5, AppConstants.LightColors.textEvent5, AppConstants.LightColors.textEvent5, "Permanentes", isIndependent = true)
     )
 }

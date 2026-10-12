@@ -137,6 +137,9 @@
     <string name="birthdays">Birthdays</string>
     <string name="event_1">Event-1</string>
     <string name="event_2">Event-2</string>
+    <string name="event_3">Event-3</string>
+    <string name="event_4">Event-4</string>
+    <string name="event_5">Event-5</string>
     <string name="calendar_background">Calendar background</string>
     <string name="effect">Effect</string>
     <string name="current_month_cell">Current month cell</string>
