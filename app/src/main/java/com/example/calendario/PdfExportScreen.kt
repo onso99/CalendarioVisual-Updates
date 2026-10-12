@@ -11,6 +11,7 @@ import android.print.PrintDocumentInfo
 import android.print.PrintManager
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -50,7 +50,6 @@ import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun PdfExportScreen(
@@ -105,7 +104,7 @@ fun PdfExportScreen(
                     if (renderer.pageCount > 0) {
                         val page = renderer.openPage(0)
                         val renderScale = 2f
-                        val bitmap = android.graphics.Bitmap.createBitmap((page.width * renderScale).toInt(), (page.height * renderScale).toInt(), android.graphics.Bitmap.Config.ARGB_8888)
+                        val bitmap = createBitmap((page.width * renderScale).toInt(), (page.height * renderScale).toInt(), android.graphics.Bitmap.Config.ARGB_8888)
                         val matrix = android.graphics.Matrix().apply { setScale(renderScale, renderScale) }
                         page.render(bitmap, null, matrix, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                         page.close()

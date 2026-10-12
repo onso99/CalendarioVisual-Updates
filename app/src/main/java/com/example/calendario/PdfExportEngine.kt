@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlin.math.ceil
 
 data class PdfExportOptions(
     val titleText: String = "",
@@ -21,7 +22,7 @@ data class PdfExportOptions(
     val includeEvents: Boolean = true,
     val includeNotes: Boolean = true,
     val includeHolidays: Boolean = true,
-    val showEventTimes: Boolean = true
+    val showEventTimes: Boolean = true,
 )
 
 object PdfExportEngine {
@@ -30,7 +31,7 @@ object PdfExportEngine {
         context: Context,
         options: PdfExportOptions,
         eventsByDate: Map<LocalDate, List<Festivo>>,
-        notesByDate: Map<LocalDate, DailyNote>
+        notesByDate: Map<LocalDate, DailyNote>,
     ): File? {
         // Din A4 Vertical (Portrait) para Mixto: 595 x 842 pt
         // Din A4 Apaisado (Landscape) para Mensual: 842 x 595 pt
@@ -147,7 +148,7 @@ object PdfExportEngine {
         val daysInMonth = options.targetMonth.lengthOfMonth()
         val dayOfWeekOffset = firstDayOfMonth.dayOfWeek.value - 1
         
-        val totalWeeks = Math.ceil((dayOfWeekOffset + daysInMonth) / 7.0).toInt()
+        val totalWeeks = ceil((dayOfWeekOffset + daysInMonth) / 7.0).toInt()
         
         // Celdas cuadradas en vertical (Mixto) y más anchas/altas en apaisado (Mensual)
         val availableGridHeight = if (options.isMixedLayout) 400f else if (options.includeNotes) 420f else 490f
@@ -188,10 +189,8 @@ object PdfExportEngine {
 
                     var eventY = rowY + 20f
                     val maxEventsInCell = 7
-                    var printedCount = 0
 
-                    for (eventIndex in dayEvents.indices) {
-                        val event = dayEvents[eventIndex]
+                    for ((printedCount, event) in dayEvents.withIndex()) {
                         if (printedCount >= maxEventsInCell && dayEvents.size > maxEventsInCell) {
                             val remaining = dayEvents.size - printedCount
                             canvas.drawText("+$remaining", cellX + (colWidth / 2f), eventY, overflowPaint)
@@ -208,7 +207,6 @@ object PdfExportEngine {
 
                         canvas.drawText("• $titleStr", cellX + 3f, eventY, eventTextPaint)
                         eventY += 8.5f
-                        printedCount++
                     }
 
                     dayCounter++
@@ -252,7 +250,7 @@ object PdfExportEngine {
 
             if (options.includeNotes) {
                 val monthNotes = notesByDate.filter { (date, note) ->
-                    YearMonth.from(date) == options.targetMonth && note.content.isNotBlank() && !note.isDeleted
+                    (YearMonth.from(date) == options.targetMonth) && note.content.isNotBlank() && !note.isDeleted
                 }
                 if (monthNotes.isNotEmpty()) {
                     // Si ya había eventos en la lista, insertamos un espacio vertical de separación
@@ -273,7 +271,6 @@ object PdfExportEngine {
             }
 
             val colWidth3 = gridWidth / 3f
-            val col1X = margin
             val col2X = margin + colWidth3
             val col3X = margin + (colWidth3 * 2f)
 
@@ -287,7 +284,7 @@ object PdfExportEngine {
                 val rowIndex = i % maxRowsPerCol // 0 a 25
 
                 val currentX = when (colIndex) {
-                    0 -> col1X
+                    0 -> margin
                     1 -> col2X
                     else -> col3X
                 }
@@ -301,7 +298,7 @@ object PdfExportEngine {
             // --- 5. SECCIÓN NOTAS DIARIAS EN VISTA MENSUAL (3 Columnas en Apaisado) ---
             if (options.includeNotes) {
                 val monthNotes = notesByDate.filter { (date, note) ->
-                    YearMonth.from(date) == options.targetMonth && note.content.isNotBlank() && !note.isDeleted
+                    (YearMonth.from(date) == options.targetMonth) && note.content.isNotBlank() && !note.isDeleted
                 }
 
                 if (monthNotes.isNotEmpty()) {
@@ -315,7 +312,6 @@ object PdfExportEngine {
                     currentY += 12f
 
                     val colWidth3 = gridWidth / 3f
-                    val col1X = margin
                     val col2X = margin + colWidth3
                     val col3X = margin + (colWidth3 * 2f)
 
@@ -332,7 +328,7 @@ object PdfExportEngine {
                         val rowIndex = i % maxRowsPerCol // 0 a 4
 
                         val currentX = when (colIndex) {
-                            0 -> col1X
+                            0 -> margin
                             1 -> col2X
                             else -> col3X
                         }

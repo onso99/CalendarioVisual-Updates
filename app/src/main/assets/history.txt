@@ -1,3 +1,4 @@
+2026-10-12 - v3.8.09 Corrección de warnings
 2026-10-12 - v3.8.08 PDF/Imprimir: Nueva distribución de los elementos
 2026-10-11 - v3.8.07 PDF/Imprimir: radio máximo de paneo (maxPanX y maxPanY multiplicados por 1.5f). Zoom (3x)
 2026-10-11 - v3.8.06 PDF/Imprimir: ajustes del zoom en previsualización y borde de folio
