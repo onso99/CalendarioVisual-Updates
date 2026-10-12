@@ -130,24 +130,62 @@ fun ColorThemeScreen(
                 }
             }
 
-            // --- BLOQUE 2: PROPIOS (Sincronizado v3.2.12.4) ---
-            SectionTitle(stringResource(id = R.string.propios_section_title))
+            // --- BLOQUE 2: PERMANENTES ---
+            SectionTitle(stringResource(id = R.string.permanentes_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                val propiosItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Propios" }
-                propiosItems.forEachIndexed { index, item ->
-                    val key = if (darkTheme) item.darkThemeKey else item.lightThemeKey
-                    val defaultColor = if (darkTheme) item.defaultDark else item.defaultLight
+                val permanentesItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Permanentes" && it.labelRes != R.string.event_1 && it.labelRes != R.string.event_2 && it.labelRes != R.string.event_3 && it.labelRes != R.string.event_4 && it.labelRes != R.string.event_5 }
+                permanentesItems.forEachIndexed { index, item ->
+                    val key = item.lightThemeKey
+                    val defaultColor = item.defaultLight
+                    val currentColor = getThemeColor(prefs, key, defaultColor)
+
+                    SingleColorThemeRow(
+                        label = stringResource(id = item.labelRes),
+                        color = currentColor,
+                        isPulsing = false,
+                        onPulseClick = null,
+                        onLabelClick = null,
+                        onReset = {
+                            prefs.edit { remove(key) }
+                            ThemePersistence.markThemeAsModified(prefs)
+                            onThemeModified()
+                            updateTrigger++
+                        },
+                        onClick = {
+                            pendingItem = item
+                            showColorPicker = true
+                        }
+                    )
+                    if (index < permanentesItems.size - 1) {
+                        HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                    }
+                }
+            }
+
+            // --- BLOQUE 3: EVENTOS ESPECIALES (5 ranuras) ---
+            SectionTitle(stringResource(id = R.string.events_special_section_title))
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
+                val especialesItems = ColorThemeConfig.colorThemeItems.filter { it.labelRes == R.string.event_1 || it.labelRes == R.string.event_2 || it.labelRes == R.string.event_3 || it.labelRes == R.string.event_4 || it.labelRes == R.string.event_5 }
+                especialesItems.forEachIndexed { index, item ->
+                    val key = item.lightThemeKey
+                    val defaultColor = item.defaultLight
                     val currentColor = getThemeColor(prefs, key, defaultColor)
                     
                     val keywordKey = when (item.labelRes) {
                         R.string.event_1 -> AppConstants.KEY_EVENT_1_KEYWORD
                         R.string.event_2 -> AppConstants.KEY_EVENT_2_KEYWORD
+                        R.string.event_3 -> AppConstants.KEY_EVENT_3_KEYWORD
+                        R.string.event_4 -> AppConstants.KEY_EVENT_4_KEYWORD
+                        R.string.event_5 -> AppConstants.KEY_EVENT_5_KEYWORD
                         else -> null
                     }
                     
                     val pulseKey = when (item.labelRes) {
                         R.string.event_1 -> AppConstants.KEY_EVENT_1_PULSE
                         R.string.event_2 -> AppConstants.KEY_EVENT_2_PULSE
+                        R.string.event_3 -> AppConstants.KEY_EVENT_3_PULSE
+                        R.string.event_4 -> AppConstants.KEY_EVENT_4_PULSE
+                        R.string.event_5 -> AppConstants.KEY_EVENT_5_PULSE
                         else -> null
                     }
                     
@@ -161,10 +199,12 @@ fun ColorThemeScreen(
                         color = currentColor,
                         isPulsing = isPulsing,
                         onPulseClick = if (pulseKey != null) { {
-                            if (pulseKey == AppConstants.KEY_EVENT_1_PULSE) {
-                                SettingsManager.saveEvent1Pulse(context, !isPulsing)
-                            } else {
-                                SettingsManager.saveEvent2Pulse(context, !isPulsing)
+                            when (pulseKey) {
+                                AppConstants.KEY_EVENT_1_PULSE -> SettingsManager.saveEvent1Pulse(context, !isPulsing)
+                                AppConstants.KEY_EVENT_2_PULSE -> SettingsManager.saveEvent2Pulse(context, !isPulsing)
+                                AppConstants.KEY_EVENT_3_PULSE -> SettingsManager.saveEvent3Pulse(context, !isPulsing)
+                                AppConstants.KEY_EVENT_4_PULSE -> SettingsManager.saveEvent4Pulse(context, !isPulsing)
+                                AppConstants.KEY_EVENT_5_PULSE -> SettingsManager.saveEvent5Pulse(context, !isPulsing)
                             }
                             updateTrigger++
                         } } else null,
@@ -187,7 +227,7 @@ fun ColorThemeScreen(
                             showColorPicker = true
                         }
                     )
-                    if (index < propiosItems.size - 1) {
+                    if (index < especialesItems.size - 1) {
                         HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                     }
                 }
@@ -197,17 +237,26 @@ fun ColorThemeScreen(
 
     if (showRenameDialog && pendingItem != null) {
         val item = pendingItem!!
-        val keywordKey = if (item.labelRes == R.string.event_1) AppConstants.KEY_EVENT_1_KEYWORD else AppConstants.KEY_EVENT_2_KEYWORD
+        val keywordKey = when (item.labelRes) {
+            R.string.event_1 -> AppConstants.KEY_EVENT_1_KEYWORD
+            R.string.event_2 -> AppConstants.KEY_EVENT_2_KEYWORD
+            R.string.event_3 -> AppConstants.KEY_EVENT_3_KEYWORD
+            R.string.event_4 -> AppConstants.KEY_EVENT_4_KEYWORD
+            R.string.event_5 -> AppConstants.KEY_EVENT_5_KEYWORD
+            else -> ""
+        }
         val currentVal = prefs.getString(keywordKey, "") ?: ""
 
         RenameEventDialog(
             initialName = currentVal,
             onDismissRequest = { showRenameDialog = false },
             onConfirm = { newName ->
-                if (keywordKey == AppConstants.KEY_EVENT_1_KEYWORD) {
-                    SettingsManager.saveEvent1Keyword(context, newName)
-                } else {
-                    SettingsManager.saveEvent2Keyword(context, newName)
+                when (keywordKey) {
+                    AppConstants.KEY_EVENT_1_KEYWORD -> SettingsManager.saveEvent1Keyword(context, newName)
+                    AppConstants.KEY_EVENT_2_KEYWORD -> SettingsManager.saveEvent2Keyword(context, newName)
+                    AppConstants.KEY_EVENT_3_KEYWORD -> SettingsManager.saveEvent3Keyword(context, newName)
+                    AppConstants.KEY_EVENT_4_KEYWORD -> SettingsManager.saveEvent4Keyword(context, newName)
+                    AppConstants.KEY_EVENT_5_KEYWORD -> SettingsManager.saveEvent5Keyword(context, newName)
                 }
                 ThemePersistence.markThemeAsModified(prefs)
                 onThemeModified()

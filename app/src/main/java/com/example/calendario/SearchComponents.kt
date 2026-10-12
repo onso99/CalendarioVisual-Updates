@@ -51,18 +51,27 @@ internal fun EventRow(
     val context = LocalContext.current
     val event1Keyword = remember { SettingsManager.getEvent1Keyword(context) }
     val event2Keyword = remember { SettingsManager.getEvent2Keyword(context) }
+    val event3Keyword = remember { SettingsManager.getEvent3Keyword(context) }
+    val event4Keyword = remember { SettingsManager.getEvent4Keyword(context) }
+    val event5Keyword = remember { SettingsManager.getEvent5Keyword(context) }
 
     val normalizedTitle = festivo.title.unaccent().lowercase()
     val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
     val esCumpleanos = festivo.isBirthday && !esFestivo
     val esEvento1 = event1Keyword.isNotBlank() && normalizedTitle.contains(event1Keyword.unaccent().lowercase())
     val esEvento2 = event2Keyword.isNotBlank() && normalizedTitle.contains(event2Keyword.unaccent().lowercase())
+    val esEvento3 = event3Keyword.isNotBlank() && normalizedTitle.contains(event3Keyword.unaccent().lowercase())
+    val esEvento4 = event4Keyword.isNotBlank() && normalizedTitle.contains(event4Keyword.unaccent().lowercase())
+    val esEvento5 = event5Keyword.isNotBlank() && normalizedTitle.contains(event5Keyword.unaccent().lowercase())
 
     val neutralColor = CalendarioTheme.colors.textSystem
     
     val eventSpecificColor = when {
         esEvento1 -> CalendarioTheme.colors.textEvent1
         esEvento2 -> CalendarioTheme.colors.textEvent2
+        esEvento3 -> CalendarioTheme.colors.textEvent3
+        esEvento4 -> CalendarioTheme.colors.textEvent4
+        esEvento5 -> CalendarioTheme.colors.textEvent5
         esFestivo -> CalendarioTheme.colors.textSundayHoliday
         esCumpleanos -> CalendarioTheme.colors.textBirthday
         else -> CalendarioTheme.colors.textSystem

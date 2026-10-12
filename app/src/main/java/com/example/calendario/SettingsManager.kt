@@ -36,11 +36,38 @@ object SettingsManager {
     fun saveEvent2Keyword(context: Context, keyword: String) =
         appPrefs(context).edit { putString(AppConstants.KEY_EVENT_2_KEYWORD, keyword.trim()) }
 
+    fun getEvent3Keyword(context: Context): String =
+        appPrefs(context).getString(AppConstants.KEY_EVENT_3_KEYWORD, "") ?: ""
+
+    fun saveEvent3Keyword(context: Context, keyword: String) =
+        appPrefs(context).edit { putString(AppConstants.KEY_EVENT_3_KEYWORD, keyword.trim()) }
+
+    fun getEvent4Keyword(context: Context): String =
+        appPrefs(context).getString(AppConstants.KEY_EVENT_4_KEYWORD, "") ?: ""
+
+    fun saveEvent4Keyword(context: Context, keyword: String) =
+        appPrefs(context).edit { putString(AppConstants.KEY_EVENT_4_KEYWORD, keyword.trim()) }
+
+    fun getEvent5Keyword(context: Context): String =
+        appPrefs(context).getString(AppConstants.KEY_EVENT_5_KEYWORD, "") ?: ""
+
+    fun saveEvent5Keyword(context: Context, keyword: String) =
+        appPrefs(context).edit { putString(AppConstants.KEY_EVENT_5_KEYWORD, keyword.trim()) }
+
     fun isEvent1PulseEnabled(context: Context): Boolean =
         appPrefs(context).getBoolean(AppConstants.KEY_EVENT_1_PULSE, false)
 
     fun isEvent2PulseEnabled(context: Context): Boolean =
         appPrefs(context).getBoolean(AppConstants.KEY_EVENT_2_PULSE, false)
+
+    fun isEvent3PulseEnabled(context: Context): Boolean =
+        appPrefs(context).getBoolean(AppConstants.KEY_EVENT_3_PULSE, false)
+
+    fun isEvent4PulseEnabled(context: Context): Boolean =
+        appPrefs(context).getBoolean(AppConstants.KEY_EVENT_4_PULSE, false)
+
+    fun isEvent5PulseEnabled(context: Context): Boolean =
+        appPrefs(context).getBoolean(AppConstants.KEY_EVENT_5_PULSE, false)
 
     fun getThemeSetting(context: Context): ThemeSetting {
         val name = appPrefs(context).getString(AppConstants.KEY_THEME_SETTING, ThemeSetting.SYSTEM.name)
@@ -116,6 +143,15 @@ object SettingsManager {
 
     fun saveEvent2Pulse(context: Context, enabled: Boolean) =
         appPrefs(context).edit { putBoolean(AppConstants.KEY_EVENT_2_PULSE, enabled) }
+
+    fun saveEvent3Pulse(context: Context, enabled: Boolean) =
+        appPrefs(context).edit { putBoolean(AppConstants.KEY_EVENT_3_PULSE, enabled) }
+
+    fun saveEvent4Pulse(context: Context, enabled: Boolean) =
+        appPrefs(context).edit { putBoolean(AppConstants.KEY_EVENT_4_PULSE, enabled) }
+
+    fun saveEvent5Pulse(context: Context, enabled: Boolean) =
+        appPrefs(context).edit { putBoolean(AppConstants.KEY_EVENT_5_PULSE, enabled) }
 
     fun saveDefaultAlarmOffset(context: Context, offset: Int) =
         appPrefs(context).edit { putInt(AppConstants.KEY_DEFAULT_ALARM_OFFSET, offset) }

@@ -238,6 +238,9 @@ fun readFestivosFromCalendarsSync(
             
             val event1Keyword = SettingsManager.getEvent1Keyword(context).unaccent().trim().lowercase()
             val event2Keyword = SettingsManager.getEvent2Keyword(context).unaccent().trim().lowercase()
+            val event3Keyword = SettingsManager.getEvent3Keyword(context).unaccent().trim().lowercase()
+            val event4Keyword = SettingsManager.getEvent4Keyword(context).unaccent().trim().lowercase()
+            val event5Keyword = SettingsManager.getEvent5Keyword(context).unaccent().trim().lowercase()
 
             // --- GESTIÓN DE CARRILES (Lanes) ---
             val laneAssignments = mutableMapOf<String, Int>()
@@ -323,8 +326,11 @@ fun readFestivosFromCalendarsSync(
                 val cleanTitleForMatch = title.unaccent().trim().lowercase()
                 val finalIsEvent1 = event1Keyword.isNotBlank() && cleanTitleForMatch.contains(event1Keyword)
                 val finalIsEvent2 = event2Keyword.isNotBlank() && cleanTitleForMatch.contains(event2Keyword)
+                val finalIsEvent3 = event3Keyword.isNotBlank() && cleanTitleForMatch.contains(event3Keyword)
+                val finalIsEvent4 = event4Keyword.isNotBlank() && cleanTitleForMatch.contains(event4Keyword)
+                val finalIsEvent5 = event5Keyword.isNotBlank() && cleanTitleForMatch.contains(event5Keyword)
 
-                val finalIsBirthday = (isTechnicalBirthday || hasBirthdayWord || hasGreetingWord) && !isFromHoliday && !finalIsEvent1 && !finalIsEvent2
+                val finalIsBirthday = (isTechnicalBirthday || hasBirthdayWord || hasGreetingWord) && !isFromHoliday && !finalIsEvent1 && !finalIsEvent2 && !finalIsEvent3 && !finalIsEvent4 && !finalIsEvent5
                 var birthYear = birthYearMap[eventId]
                 
                 if (finalIsBirthday) {

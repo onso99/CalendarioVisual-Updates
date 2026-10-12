@@ -61,8 +61,14 @@ fun MonthlyEventList(
     val themeColors = CalendarioTheme.colors
     val event1Keyword = remember(themeColors) { SettingsManager.getEvent1Keyword(context) }
     val event2Keyword = remember(themeColors) { SettingsManager.getEvent2Keyword(context) }
+    val event3Keyword = remember(themeColors) { SettingsManager.getEvent3Keyword(context) }
+    val event4Keyword = remember(themeColors) { SettingsManager.getEvent4Keyword(context) }
+    val event5Keyword = remember(themeColors) { SettingsManager.getEvent5Keyword(context) }
     val normEvent1 = remember(event1Keyword) { event1Keyword.unaccent().lowercase() }
     val normEvent2 = remember(event2Keyword) { event2Keyword.unaccent().lowercase() }
+    val normEvent3 = remember(event3Keyword) { event3Keyword.unaccent().lowercase() }
+    val normEvent4 = remember(event4Keyword) { event4Keyword.unaccent().lowercase() }
+    val normEvent5 = remember(event5Keyword) { event5Keyword.unaccent().lowercase() }
 
     Box(modifier = modifier) {
         if (finalEventsToList.isEmpty()) {
@@ -95,6 +101,9 @@ fun MonthlyEventList(
                                 val normalizedTitle = remember(festivo.title) { festivo.title.unaccent().lowercase() }
                                 val esEvento1 = normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)
                                 val esEvento2 = normEvent2.isNotBlank() && normalizedTitle.contains(normEvent2)
+                                val esEvento3 = normEvent3.isNotBlank() && normalizedTitle.contains(normEvent3)
+                                val esEvento4 = normEvent4.isNotBlank() && normalizedTitle.contains(normEvent4)
+                                val esEvento5 = normEvent5.isNotBlank() && normalizedTitle.contains(normEvent5)
                                 val esCumpleanos = festivo.isBirthday
                                 val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
 
@@ -102,6 +111,9 @@ fun MonthlyEventList(
                                 val eventSpecificColor = when {
                                     esEvento1 -> CalendarioTheme.colors.textEvent1
                                     esEvento2 -> CalendarioTheme.colors.textEvent2
+                                    esEvento3 -> CalendarioTheme.colors.textEvent3
+                                    esEvento4 -> CalendarioTheme.colors.textEvent4
+                                    esEvento5 -> CalendarioTheme.colors.textEvent5
                                     esCumpleanos -> CalendarioTheme.colors.textBirthday
                                     esFestivo -> CalendarioTheme.colors.textSundayHoliday
                                     else -> CalendarioTheme.colors.textSystem // Eventos normales ahora usan textSystem adaptativo

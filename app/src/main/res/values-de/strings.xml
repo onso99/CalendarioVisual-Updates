@@ -118,6 +118,8 @@
     <string name="widget_no_events">Keine Ereignisse</string>
     <string name="theme_section_title">Thema</string>
     <string name="propios_section_title">Eigene</string>
+    <string name="permanentes_section_title">Dauerhaft</string>
+    <string name="events_special_section_title">Spezielle Ereignisse</string>
     <string name="reset_color">Zurücksetzen</string>
     <string name="theme_exported_successfully">Design erfolgreich exportiert</string>
     <string name="error_exporting_theme">Fehler beim Exportieren des Designs: %1$s</string>

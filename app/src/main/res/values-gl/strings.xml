@@ -118,6 +118,8 @@
     <string name="widget_no_events">Non hai eventos</string>
     <string name="theme_section_title">Tema</string>
     <string name="propios_section_title">Propios</string>
+    <string name="permanentes_section_title">Permanentes</string>
+    <string name="events_special_section_title">Eventos especiais</string>
     <string name="reset_color">Restablecer</string>
     <string name="theme_exported_successfully">Tema exportado con éxito</string>
     <string name="error_exporting_theme">Erro ao exportar o tema: %1$s</string>

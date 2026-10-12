@@ -118,6 +118,8 @@
     <string name="widget_no_events">Событий нет</string>
     <string name="theme_section_title">Тема</string>
     <string name="propios_section_title">Собственные</string>
+    <string name="permanentes_section_title">Постоянные</string>
+    <string name="events_special_section_title">Особые события</string>
     <string name="reset_color">Сбросить</string>
     <string name="theme_exported_successfully">Тема успешно экспортирована</string>
     <string name="error_exporting_theme">Ошибка экспорта темы: %1$s</string>

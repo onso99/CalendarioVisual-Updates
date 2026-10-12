@@ -118,6 +118,8 @@
     <string name="widget_no_events">イベントなし</string>
     <string name="theme_section_title">テーマ</string>
     <string name="propios_section_title">独自</string>
+    <string name="permanentes_section_title">永続</string>
+    <string name="events_special_section_title">特別イベント</string>
     <string name="reset_color">リセット</string>
     <string name="theme_exported_successfully">テーマをエクスポートしました</string>
     <string name="error_exporting_theme">テーマのエクスポート中にエラーが発生しました: %1$s</string>
