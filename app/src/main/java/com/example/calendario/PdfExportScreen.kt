@@ -12,14 +12,18 @@ import android.print.PrintManager
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,18 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
@@ -51,6 +50,7 @@ import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun PdfExportScreen(
@@ -69,21 +69,10 @@ fun PdfExportScreen(
     var isColorMode by remember { mutableStateOf(true) }
     var isMixedLayout by remember { mutableStateOf(false) }
 
-    var isZoomed by remember { mutableStateOf(false) }
-    var panOffset by remember { mutableStateOf(Offset.Zero) }
-    var containerSize by remember { mutableStateOf(Size.Zero) }
-
-    LaunchedEffect(targetMonth, isMixedLayout) {
-        isZoomed = false
-        panOffset = Offset.Zero
-        containerSize = Size.Zero
-    }
-
     var includeEvents by remember { mutableStateOf(true) }
     var includeNotes by remember { mutableStateOf(true) }
     var includeHolidays by remember { mutableStateOf(true) }
     var showEventTimes by remember { mutableStateOf(true) }
-    var showLongPeriods by remember { mutableStateOf(true) }
 
     val defaultMonthName = remember(targetMonth, locale) {
         val monthStr = targetMonth.month.getDisplayName(TextStyle.FULL, locale).replaceFirstChar { it.uppercase(locale) }
@@ -95,7 +84,7 @@ fun PdfExportScreen(
     var pdfBitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
     var isGeneratingPreview by remember { mutableStateOf(false) }
 
-    LaunchedEffect(targetMonth, displayTitle, isColorMode, isMixedLayout, includeNotes, includeHolidays, showEventTimes, eventsByDate, parsedNotes) {
+    LaunchedEffect(targetMonth, displayTitle, isColorMode, isMixedLayout, includeEvents, includeNotes, includeHolidays, showEventTimes, eventsByDate, parsedNotes) {
         isGeneratingPreview = true
         withContext(Dispatchers.IO) {
             try {
@@ -104,6 +93,7 @@ fun PdfExportScreen(
                     targetMonth = targetMonth,
                     isInkSaver = !isColorMode,
                     isMixedLayout = isMixedLayout,
+                    includeEvents = includeEvents,
                     includeNotes = includeNotes,
                     includeHolidays = includeHolidays,
                     showEventTimes = showEventTimes
@@ -144,6 +134,7 @@ fun PdfExportScreen(
                             targetMonth = targetMonth,
                             isInkSaver = !isColorMode,
                             isMixedLayout = isMixedLayout,
+                            includeEvents = includeEvents,
                             includeNotes = includeNotes,
                             includeHolidays = includeHolidays,
                             showEventTimes = showEventTimes
@@ -172,6 +163,7 @@ fun PdfExportScreen(
                             targetMonth = targetMonth,
                             isInkSaver = !isColorMode,
                             isMixedLayout = isMixedLayout,
+                            includeEvents = includeEvents,
                             includeNotes = includeNotes,
                             includeHolidays = includeHolidays,
                             showEventTimes = showEventTimes
@@ -200,6 +192,7 @@ fun PdfExportScreen(
                             targetMonth = targetMonth,
                             isInkSaver = !isColorMode,
                             isMixedLayout = isMixedLayout,
+                            includeEvents = includeEvents,
                             includeNotes = includeNotes,
                             includeHolidays = includeHolidays,
                             showEventTimes = showEventTimes
@@ -220,266 +213,179 @@ fun PdfExportScreen(
                 )
             }
         },
-        scrollable = !isZoomed
+        scrollable = true
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 24.dp)
+                .padding(start = AppLayout.ScreenHorizontalPadding, end = AppLayout.ScreenHorizontalPadding, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // FOLIO A4 DE PREVISUALIZACIÓN DIRECTO SOBRE LA PANTALLA (Altura fija invariable a 160.dp)
-            val previewHeight = 160.dp
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(previewHeight)
-                    .clip(RoundedCornerShape(8.dp))
-                    .padding(vertical = 4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
-                        .graphicsLayer(
-                            scaleX = if (isZoomed) 3f else 1f,
-                            scaleY = if (isZoomed) 3f else 1f,
-                            translationX = if (isZoomed) panOffset.x else 0f,
-                            translationY = if (isZoomed) panOffset.y else 0f
-                        )
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.White)
-                        .onGloballyPositioned { coordinates ->
-                            containerSize = androidx.compose.ui.geometry.Size(
-                                coordinates.size.width.toFloat(),
-                                coordinates.size.height.toFloat()
-                            )
-                        }
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onDoubleTap = { tapOffset ->
-                                    isZoomed = !isZoomed
-                                    if (isZoomed) {
-                                        val centerX = containerSize.width / 2f
-                                        val centerY = containerSize.height / 2f
-                                        val scale = 3f
-                                        panOffset = Offset(
-                                            (centerX - tapOffset.x) * (scale - 1f),
-                                            (centerY - tapOffset.y) * (scale - 1f)
-                                        )
-                                    } else {
-                                        panOffset = Offset.Zero
-                                    }
-                                }
-                            )
-                        }
-                        .pointerInput(isZoomed) {
-                            if (isZoomed) {
-                                detectTransformGestures { _, pan, _, _ ->
-                                    val maxPanX = containerSize.width * 1.5f
-                                    val maxPanY = containerSize.height * 1.5f
-                                    val newX = (panOffset.x + pan.x).coerceIn(-maxPanX, maxPanX)
-                                    val newY = (panOffset.y + pan.y).coerceIn(-maxPanY, maxPanY)
-                                    panOffset = Offset(newX, newY)
-                                }
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isGeneratingPreview && pdfBitmap == null) {
-                        CircularProgressIndicator(
-                            color = CalendarioTheme.colors.cabecera,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    } else if (pdfBitmap != null) {
-                        androidx.compose.foundation.Image(
-                            bitmap = pdfBitmap!!.asImageBitmap(),
-                            contentDescription = "Previsualización del PDF",
-                            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        Text(
-                            text = displayTitle,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                    }
-                }
-            }
-
-            Text(
-                text = "* Se muestra un máximo de 7 eventos/día.",
-                fontSize = 11.sp,
-                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+            // 1. CUADRO DE TEXTO: TÍTULO DEL PDF
+            OutlinedTextField(
+                value = displayTitle,
+                onValueChange = { customTitleText = it },
+                label = { Text("Título del PDF") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = CalendarioTheme.colors.cabecera,
+                    focusedLabelColor = CalendarioTheme.colors.cabecera
+                )
             )
 
-            // SECCIÓN 1: INICIAL (SIN TÍTULO DE SECCIÓN)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CalendarioTheme.colors.fondoSecciones)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            // 2. FILA DE CHIPS DE ICONOS (Filtros de Contenido, Vista y Modo Color)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Título en primer lugar
-                OutlinedTextField(
-                    value = displayTitle,
-                    onValueChange = { customTitleText = it },
-                    label = { Text("Título del PDF") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = CalendarioTheme.colors.cabecera,
-                        focusedLabelColor = CalendarioTheme.colors.cabecera
+                // Grupo 1: Eventos y Notas
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PdfOptionIconChip(
+                        icon = Icons.Outlined.Flag,
+                        isSelected = includeEvents,
+                        onClick = { includeEvents = !includeEvents }
                     )
-                )
+                    PdfOptionIconChip(
+                        icon = Icons.Outlined.EditNote,
+                        isSelected = includeNotes,
+                        onClick = { includeNotes = !includeNotes }
+                    )
+                }
 
-                // Elección del mes debajo
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {
-                        targetMonth = targetMonth.minusMonths(1)
-                        customTitleText = null // Actualizar título al nuevo mes
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = null, tint = CalendarioTheme.colors.textSystem)
-                    }
-                    Text(
-                        text = defaultMonthName,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = CalendarioTheme.colors.textSystem
+                // Grupo 2: Vista Mensual vs Vista Lista/Mixta
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PdfOptionIconChip(
+                        icon = Icons.Outlined.CalendarMonth,
+                        isSelected = !isMixedLayout,
+                        onClick = { isMixedLayout = false }
                     )
-                    IconButton(onClick = {
-                        targetMonth = targetMonth.plusMonths(1)
-                        customTitleText = null // Actualizar título al nuevo mes
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null, tint = CalendarioTheme.colors.textSystem)
-                    }
+                    PdfOptionIconChip(
+                        icon = Icons.AutoMirrored.Outlined.FormatListBulleted,
+                        isSelected = isMixedLayout,
+                        onClick = { isMixedLayout = true }
+                    )
+                }
+
+                // Grupo 3: Modo Color vs B&N
+                PdfOptionIconChip(
+                    icon = Icons.Outlined.Palette,
+                    isSelected = isColorMode,
+                    onClick = { isColorMode = !isColorMode }
+                )
+            }
+
+            // 3. SELECTOR DE MES
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = {
+                    targetMonth = targetMonth.minusMonths(1)
+                    customTitleText = null
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = null, tint = CalendarioTheme.colors.textSystem)
+                }
+                Text(
+                    text = defaultMonthName,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = CalendarioTheme.colors.textSystem
+                )
+                IconButton(onClick = {
+                    targetMonth = targetMonth.plusMonths(1)
+                    customTitleText = null
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null, tint = CalendarioTheme.colors.textSystem)
                 }
             }
 
-            // SECCIÓN 2: ESTILO DE DOCUMENTO
-            SectionTitle(text = "Estilo de documento")
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CalendarioTheme.colors.fondoSecciones)
-            ) {
-                OptionRow(
-                    text = "Mensual",
-                    isSelected = !isMixedLayout,
-                    onClick = { isMixedLayout = false }
+            // 4. LEYENDA Y PREVISUALIZACIÓN A ANCHO COMPLETO
+            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text(
+                    text = "* Se muestra un máximo de 7 eventos/día.",
+                    fontSize = 11.sp,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(start = 4.dp, bottom = 0.dp)
                 )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
-                OptionRow(
-                    text = "Mixto (vertical)",
-                    isSelected = isMixedLayout,
-                    onClick = { isMixedLayout = true }
-                )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-
-                OptionRow(
-                    text = "Color",
-                    isSelected = isColorMode,
-                    onClick = { isColorMode = !isColorMode },
-                    trailingDotColor = if (isColorMode) CalendarioTheme.colors.cabecera else Color.Gray
-                )
-            }
-
-            // SECCIÓN 3: CONTENIDO
-            SectionTitle(text = "Contenido")
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CalendarioTheme.colors.fondoSecciones)
-            ) {
-                OptionRow(
-                    text = "Eventos",
-                    isSelected = includeEvents,
-                    onClick = { includeEvents = !includeEvents }
-                )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-
-                OptionRow(
-                    text = "Notas",
-                    isSelected = includeNotes,
-                    onClick = { includeNotes = !includeNotes }
-                )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-
-                OptionRow(
-                    text = "Hora de inicio",
-                    isSelected = showEventTimes,
-                    onClick = { showEventTimes = !showEventTimes }
-                )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-
-                OptionRow(
-                    text = "Periodos largos",
-                    isSelected = showLongPeriods,
-                    onClick = { showLongPeriods = !showLongPeriods }
-                )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(if (isMixedLayout) (595f / 842f) else (842f / 595f))
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White)
+                            .border(0.5f.dp, Color.LightGray, RoundedCornerShape(12.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isGeneratingPreview && pdfBitmap == null) {
+                            CircularProgressIndicator(
+                                color = CalendarioTheme.colors.cabecera,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        } else if (pdfBitmap != null) {
+                            androidx.compose.foundation.Image(
+                                bitmap = pdfBitmap!!.asImageBitmap(),
+                                contentDescription = "Previsualización del PDF",
+                                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(4.dp)
+                            )
+                        } else {
+                            Text(
+                                text = displayTitle,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        }
+                    }
+                }
             }
         }
     }
-}
 
 @Composable
-private fun OptionRow(
-    text: String,
+private fun PdfOptionIconChip(
+    icon: ImageVector,
     isSelected: Boolean,
     onClick: () -> Unit,
-    trailingDotColor: Color? = null
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+    val backgroundColor = if (isSelected) {
+        CalendarioTheme.colors.cabecera.copy(alpha = 0.15f)
+    } else {
+        CalendarioTheme.colors.fondoSecciones
+    }
+    val borderColor = if (isSelected) {
+        CalendarioTheme.colors.cabecera
+    } else {
+        CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+    }
+    val iconColor = if (isSelected) {
+        CalendarioTheme.colors.cabecera
+    } else {
+        CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+    }
+
+    Box(
+        modifier = modifier
+            .size(44.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(backgroundColor)
+            .border(1.5.dp, borderColor, RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            fontSize = 15.sp,
-            color = CalendarioTheme.colors.textSystem
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(22.dp)
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (trailingDotColor != null) {
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .clip(CircleShape)
-                        .background(trailingDotColor)
-                )
-            }
-            Box(
-                modifier = Modifier.size(22.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (isSelected) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.cabecera,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
-        }
     }
 }
 

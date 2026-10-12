@@ -18,6 +18,7 @@ data class PdfExportOptions(
     val targetMonth: YearMonth = YearMonth.now(),
     val isInkSaver: Boolean = false,
     val isMixedLayout: Boolean = false,
+    val includeEvents: Boolean = true,
     val includeNotes: Boolean = true,
     val includeHolidays: Boolean = true,
     val showEventTimes: Boolean = true
@@ -173,7 +174,7 @@ object PdfExportEngine {
                     canvas.drawRect(cellRect, gridLinePaint)
                 } else {
                     val date = options.targetMonth.atDay(dayCounter)
-                    val dayEvents = eventsByDate[date] ?: emptyList()
+                    val dayEvents = if (options.includeEvents) (eventsByDate[date] ?: emptyList()) else emptyList()
                     val isSunday = col == 6
                     val hasHoliday = options.includeHolidays && dayEvents.any { it.isFromHolidaySource }
 
@@ -215,88 +216,129 @@ object PdfExportEngine {
             }
         }
 
-        currentY += availableGridHeight + 10f
+        currentY += availableGridHeight + 14f
 
-        // --- 4. FORMATO MIXTO (LISTA VERTICAL DETALLADA EN 2 COLUMNAS) ---
+        // --- 4. FORMATO MIXTO (LISTA VERTICAL Y NOTAS EN 3 COLUMNAS CONTINUAS EN A4 PORTRAIT) ---
         if (options.isMixedLayout) {
-            val mixedTitlePaint = Paint().apply {
+            val sectionTitlePaint = Paint().apply {
                 color = Color.BLACK
                 textSize = 10f
                 isFakeBoldText = true
                 isAntiAlias = true
             }
-            canvas.drawText("📋 AGENDA DETALLADA DEL MES:", margin, currentY, mixedTitlePaint)
-            currentY += 12f
 
-            val monthEvents = (1..daysInMonth).flatMap { day ->
-                val date = options.targetMonth.atDay(day)
-                (eventsByDate[date] ?: emptyList()).map { date to it }
-            }
+            // Construir lista unificada de elementos (par de booleano esTitulo y texto)
+            val displayItems = mutableListOf<Pair<Boolean, String>>()
 
-            val col1X = margin
-            val col2X = margin + (gridWidth / 2f) + 10f
-            var listY = currentY + 10f
-
-            for (i in monthEvents.indices) {
-                val (date, event) = monthEvents[i]
-                val timeStr = if (options.showEventTimes && !event.isAllDay && event.startTime != null) {
-                    "${event.startTime.format(AppFormats.TimeShort)} "
-                } else ""
-                val rawLine = "${date.format(AppFormats.DateDayMonth)}: $timeStr${event.title}"
-                val lineStr = if (rawLine.length > 55) rawLine.take(52) + "..." else rawLine
-
-                val currentX = if (i % 2 == 0) col1X else col2X
-                canvas.drawText("• $lineStr", currentX, listY, eventTextPaint)
-                if (i % 2 == 1) {
-                    listY += 11f
+            if (options.includeEvents) {
+                val monthEvents = (1..daysInMonth).flatMap { day ->
+                    val date = options.targetMonth.atDay(day)
+                    (eventsByDate[date] ?: emptyList()).map { date to it }
                 }
-            }
-            if (monthEvents.size % 2 != 0) {
-                listY += 11f
-            }
-            currentY = listY + 10f
-        }
-
-        // --- 5. SECCIÓN NOTAS DIARIAS (3 Columnas en Apaisado) ---
-        if (options.includeNotes) {
-            val monthNotes = notesByDate.filter { (date, note) ->
-                YearMonth.from(date) == options.targetMonth && note.content.isNotBlank() && !note.isDeleted
-            }
-
-            if (monthNotes.isNotEmpty()) {
-                val notesTitlePaint = Paint().apply {
-                    color = Color.BLACK
-                    textSize = 10f
-                    isFakeBoldText = true
-                    isAntiAlias = true
-                }
-                canvas.drawText("📌 NOTAS DEL MES:", margin, currentY, notesTitlePaint)
-                currentY += 12f
-
-                val colWidth3 = gridWidth / 3f
-                val col1X = margin
-                val col2X = margin + colWidth3
-                val col3X = margin + (colWidth3 * 2f)
-
-                val startNotesY = currentY + 10f
-                val notesList = monthNotes.toList()
-                val maxRowsPerCol = 5
-
-                for (i in notesList.indices) {
-                    if (i >= 15) break // Hasta 15 notas (3 columnas x 5 filas)
-                    val (date, note) = notesList[i]
-                    val noteSnippet = "${date.dayOfMonth}: ${note.content.take(30)}"
-
-                    val colIndex = i / maxRowsPerCol // 0, 1 o 2
-                    val rowIndex = i % maxRowsPerCol // 0 a 4
-
-                    val currentX = when (colIndex) {
-                        0 -> col1X
-                        1 -> col2X
-                        else -> col3X
+                if (monthEvents.isNotEmpty()) {
+                    displayItems.add(true to "AGENDA DEL MES:")
+                    for ((date, event) in monthEvents) {
+                        val timeStr = if (options.showEventTimes && !event.isAllDay && event.startTime != null) {
+                            "${event.startTime.format(AppFormats.TimeShort)} "
+                        } else ""
+                        val rawLine = "${date.format(AppFormats.DateDayMonth)}: $timeStr${event.title}"
+                        val lineStr = if (rawLine.length > 46) rawLine.take(43) + "..." else rawLine
+                        displayItems.add(false to "• $lineStr")
                     }
-                    val currentYPos = startNotesY + (rowIndex * 11f)
-                    canvas.drawText("• $noteSnippet", currentX, currentYPos, eventTextPaint)
+                }
+            }
+
+            val maxRowsPerCol = 26 // Ampliado a 26 filas por columna (hasta 78 elementos)
+
+            if (options.includeNotes) {
+                val monthNotes = notesByDate.filter { (date, note) ->
+                    YearMonth.from(date) == options.targetMonth && note.content.isNotBlank() && !note.isDeleted
+                }
+                if (monthNotes.isNotEmpty()) {
+                    // Si ya había eventos en la lista, insertamos un espacio vertical de separación
+                    if (displayItems.isNotEmpty()) {
+                        displayItems.add(false to "")
+                    }
+                    // Evitar que el título quede huérfano al final de una columna
+                    if (displayItems.size % maxRowsPerCol == maxRowsPerCol - 1) {
+                        displayItems.add(false to "") // Salto preventivo a la siguiente columna
+                    }
+                    displayItems.add(true to "NOTAS DEL MES:")
+                    for ((date, note) in monthNotes) {
+                        val rawLine = "${date.dayOfMonth}/${options.targetMonth.monthValue}: ${note.content}"
+                        val lineStr = if (rawLine.length > 46) rawLine.take(43) + "..." else rawLine
+                        displayItems.add(false to "• $lineStr")
+                    }
+                }
+            }
+
+            val colWidth3 = gridWidth / 3f
+            val col1X = margin
+            val col2X = margin + colWidth3
+            val col3X = margin + (colWidth3 * 2f)
+
+            val startListY = currentY + 4f
+
+            for (i in displayItems.indices) {
+                if (i >= 78) break // Hasta 78 elementos (3 columnas x 26 filas)
+                val (isTitle, itemText) = displayItems[i]
+
+                val colIndex = i / maxRowsPerCol // 0, 1 o 2
+                val rowIndex = i % maxRowsPerCol // 0 a 25
+
+                val currentX = when (colIndex) {
+                    0 -> col1X
+                    1 -> col2X
+                    else -> col3X
+                }
+                val currentYPos = startListY + (rowIndex * 11f)
+                val paintToUse = if (isTitle) sectionTitlePaint else eventTextPaint
+                if (itemText.isNotBlank()) {
+                    canvas.drawText(itemText, currentX, currentYPos, paintToUse)
+                }
+            }
+        } else {
+            // --- 5. SECCIÓN NOTAS DIARIAS EN VISTA MENSUAL (3 Columnas en Apaisado) ---
+            if (options.includeNotes) {
+                val monthNotes = notesByDate.filter { (date, note) ->
+                    YearMonth.from(date) == options.targetMonth && note.content.isNotBlank() && !note.isDeleted
+                }
+
+                if (monthNotes.isNotEmpty()) {
+                    val notesTitlePaint = Paint().apply {
+                        color = Color.BLACK
+                        textSize = 10f
+                        isFakeBoldText = true
+                        isAntiAlias = true
+                    }
+                    canvas.drawText("NOTAS DEL MES:", margin, currentY, notesTitlePaint)
+                    currentY += 12f
+
+                    val colWidth3 = gridWidth / 3f
+                    val col1X = margin
+                    val col2X = margin + colWidth3
+                    val col3X = margin + (colWidth3 * 2f)
+
+                    val startNotesY = currentY + 4f
+                    val notesList = monthNotes.toList()
+                    val maxRowsPerCol = 5
+
+                    for (i in notesList.indices) {
+                        if (i >= 15) break // Hasta 15 notas (3 columnas x 5 filas)
+                        val (date, note) = notesList[i]
+                        val noteSnippet = "${date.dayOfMonth}: ${note.content.take(30)}"
+
+                        val colIndex = i / maxRowsPerCol // 0, 1 o 2
+                        val rowIndex = i % maxRowsPerCol // 0 a 4
+
+                        val currentX = when (colIndex) {
+                            0 -> col1X
+                            1 -> col2X
+                            else -> col3X
+                        }
+                        val currentYPos = startNotesY + (rowIndex * 11f)
+                        canvas.drawText("• $noteSnippet", currentX, currentYPos, eventTextPaint)
+                    }
                 }
             }
         }
