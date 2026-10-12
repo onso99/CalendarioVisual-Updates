@@ -1,3 +1,4 @@
+2026-10-12 - v3.8.11 Eventos especiales F2: Integración Completa de los Eventos 3, 4 y 5
 2026-10-12 - v3.8.10 Eventos especiales F1: Ampliación de constantes y Colores permenantes invariantes
 2026-10-12 - v3.8.09 Corrección de warnings
 2026-10-12 - v3.8.08 PDF/Imprimir: Nueva distribución de los elementos
