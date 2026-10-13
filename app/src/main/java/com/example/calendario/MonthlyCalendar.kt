@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -30,8 +32,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
@@ -58,7 +63,7 @@ private data class EventKeywordSettings(
     val pulse2: Boolean = false,
     val pulse3: Boolean = false,
     val pulse4: Boolean = false,
-    val pulse5: Boolean = false
+    val pulse5: Boolean = false,
 ) {
     fun isEventPulsing(color: Color, themeColors: CustomColors): Boolean {
         return (color == themeColors.textEvent1 && pulse1) ||
@@ -109,10 +114,12 @@ fun MonthlyCalendar(
         )
     }
 
+    val effectType = remember(themeColors) { SettingsManager.getMonthlyEffectType(context) }
     val showWeekNumber = remember(themeColors) { SettingsManager.isWeekNumberVisible(context) }
     val weekFields = remember(locale) { WeekFields.of(locale) }
     val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
 
+    // --- ANIMACIÓN DE PARPADEO (v3.0.21-F4) ---
     val infiniteTransition = rememberInfiniteTransition(label = "blink")
     val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -136,30 +143,48 @@ fun MonthlyCalendar(
         days.slice(startDayIndex until days.size) + days.slice(0 until startDayIndex)
     }
 
+    // --- CÁLCULO DE LA CUADRÍCULA (MEMORIZADO DE V3.8.11) ---
     val weeksToDisplay = remember(currentMonth, startOfWeek) {
-        val firstDay = currentMonth.atDay(1)
-        val lastDay = currentMonth.atEndOfMonth()
-        val weeks = mutableListOf<List<LocalDate>>()
-        
-        var current = firstDay.with(java.time.temporal.TemporalAdjusters.previousOrSame(startOfWeek))
-        val endLimit = lastDay.with(java.time.temporal.TemporalAdjusters.nextOrSame(startOfWeek.plus(6)))
-        
-        while (!current.isAfter(endLimit)) {
-            val week = (0..6).map { current.plusDays(it.toLong()) }
-            weeks.add(week)
-            current = current.plusWeeks(1)
+        val days = mutableListOf<Pair<LocalDate, Boolean>>()
+        val firstDayOfMonth = currentMonth.atDay(1)
+        val firstDayOfWeekIndex = daysOfWeek.indexOf(firstDayOfMonth.dayOfWeek)
+        val prevMonth = currentMonth.minusMonths(1)
+        val nextMonth = currentMonth.plusMonths(1)
+        val daysInPrevMonth = prevMonth.lengthOfMonth()
+        val daysInCurrentMonth = currentMonth.lengthOfMonth()
+
+        for (i in 0 until firstDayOfWeekIndex) {
+            val day = (daysInPrevMonth - firstDayOfWeekIndex + 1) + i
+            days.add(prevMonth.atDay(day) to false)
         }
-        weeks
+        for (i in 1..daysInCurrentMonth) {
+            days.add(currentMonth.atDay(i) to true)
+        }
+        val remainingCells = if (days.size % 7 == 0) 0 else 7 - (days.size % 7)
+        for (i in 1..remainingCells) {
+            days.add(nextMonth.atDay(i) to false)
+        }
+
+        days.chunked(7).filter { week -> week.any { it.second } }
     }
 
-    val cellBackground = themeColors.monthlyCalendarDayCellBackground
-    val todayBorderColor = if (isAppDark) Color.White else Color.Black
-
-    val (headerBg, headerFg) = remember(themeColors, isAppDark) {
+    // --- COLORES DE CABECERA (RESTAURADO EXACTO DE V3.8.11) ---
+    val (headerBg, onHeaderColor) = remember(themeColors, effectType, isAppDark) {
+        val startColor = themeColors.monthlyCalendarGridBackground
+        val midColor = themeColors.monthlyCalendarGridEffect
+        val colorBehind = when (effectType) {
+            "gradient" -> lerp(startColor, midColor, 0.02f)
+            "sweep" -> lerp(startColor, midColor, 0.04f)
+            else -> startColor
+        }
+        
         val hsl = FloatArray(3)
-        ColorUtils.colorToHSL(themeColors.cabecera.toArgb(), hsl)
+        ColorUtils.colorToHSL(colorBehind.toArgb(), hsl)
+        
         if (isAppDark) {
+            hsl[2] = (hsl[2] + 0.10f).coerceAtMost(1f)
             hsl[1] = (hsl[1] + 0.05f).coerceAtMost(1f)
+        } else {
             val darkenFactor = when {
                 hsl[2] > 0.60f -> 0.20f
                 hsl[2] > 0.45f -> 0.10f
@@ -167,14 +192,6 @@ fun MonthlyCalendar(
             }
             hsl[2] = (hsl[2] - darkenFactor).coerceAtLeast(0f)
             hsl[1] = (hsl[1] + 0.10f).coerceAtMost(1f)
-        } else {
-            val lightenFactor = when {
-                hsl[2] < 0.25f -> 0.25f
-                hsl[2] < 0.40f -> 0.15f
-                else -> 0.08f
-            }
-            hsl[2] = (hsl[2] + lightenFactor).coerceAtMost(1f)
-            hsl[1] = (hsl[1] * 0.70f).coerceAtLeast(0f)
         }
         val bg = Color(ColorUtils.HSLToColor(hsl))
 
@@ -186,31 +203,37 @@ fun MonthlyCalendar(
     }
 
     Column(
-        modifier = Modifier
+        Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
+            .padding(4.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            daysOfWeek.forEach { dayOfWeek ->
-                val dayName = dayOfWeek.getDisplayName(TextStyle.SHORT, locale)
-                    .replaceFirstChar { it.uppercase(locale) }
-                    .take(2)
+        // CABECERA: FORMA EXACTA v3.8.11 / v1.8.943
+        Row(Modifier.fillMaxWidth()) {
+            daysOfWeek.forEach { day ->
                 Box(
-                    modifier = Modifier
+                    Modifier
                         .weight(1f)
                         .padding(1.dp)
                         .background(headerBg),
-                    contentAlignment = Alignment.Center
+                    Alignment.Center
                 ) {
+                    val dayText = remember(day, locale) {
+                        val shortText = day.getDisplayName(TextStyle.SHORT, locale)
+                        if (shortText.length >= 2) {
+                            shortText.take(2).replaceFirstChar { it.titlecase(locale) }
+                        } else {
+                            shortText.uppercase(locale)
+                        }
+                    }
+
                     Text(
-                        text = dayName,
-                        fontWeight = FontWeight.Bold,
+                        text = dayText,
                         fontSize = 14.sp,
-                        color = headerFg
+                        fontWeight = FontWeight.Bold,
+                        color = onHeaderColor,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             }
@@ -218,7 +241,6 @@ fun MonthlyCalendar(
 
         MonthGridView(
             weeksToDisplay = weeksToDisplay,
-            currentMonth = currentMonth,
             today = today,
             eventsByDate = eventsByDate,
             dailyNotes = dailyNotes,
@@ -228,8 +250,8 @@ fun MonthlyCalendar(
             themeColors = themeColors,
             eventSettings = eventSettings,
             pulseAlpha = pulseAlpha,
-            cellBackground = cellBackground,
-            todayBorderColor = todayBorderColor,
+            workingDayDates = workingDayDates,
+            availableCalendars = availableCalendars,
             onDayClick = onDayClick,
             onEmptyDayClick = onEmptyDayClick
         )
@@ -238,8 +260,7 @@ fun MonthlyCalendar(
 
 @Composable
 private fun MonthGridView(
-    weeksToDisplay: List<List<LocalDate>>,
-    currentMonth: YearMonth,
+    weeksToDisplay: List<List<Pair<LocalDate, Boolean>>>,
     today: LocalDate,
     eventsByDate: Map<LocalDate, List<Festivo>>,
     dailyNotes: Map<String, DailyNote>,
@@ -249,38 +270,74 @@ private fun MonthGridView(
     themeColors: CustomColors,
     eventSettings: EventKeywordSettings,
     pulseAlpha: Float,
-    cellBackground: Color,
-    todayBorderColor: Color,
+    workingDayDates: Set<LocalDate>,
+    availableCalendars: List<CalendarInfo>,
     onDayClick: (LocalDate, List<Festivo>) -> Unit,
     onEmptyDayClick: (LocalDate) -> Unit
 ) {
     weeksToDisplay.forEach { week ->
+        val weekContainsToday = week.any { it.first == today && it.second }
         Row(
-            modifier = Modifier
+            Modifier
                 .fillMaxWidth()
-                .height(52.dp),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                .zIndex(if (weekContainsToday) 2f else 0f)
         ) {
-            week.forEachIndexed { indexInWeek, date ->
-                val isCurrentMonth = YearMonth.from(date) == currentMonth
-                val isToday = date == today
-                val dayEvents = eventsByDate[date] ?: emptyList()
-                val dayColor = when {
-                    !isCurrentMonth -> themeColors.textSystem.copy(alpha = 0.38f)
-                    date.dayOfWeek == DayOfWeek.SUNDAY || dayEvents.any { it.isFromHolidaySource } -> themeColors.textSundayHoliday
-                    else -> themeColors.textSystem
+            week.forEachIndexed { indexInWeek, (date, isCurrentMonth) ->
+                val isToday = date == today && isCurrentMonth
+                val isPastDay = isCurrentMonth && date.isBefore(today)
+                val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
+
+                // SUAVIZADO DE FONDO (RESTAURADO EXACTO V3.8.11)
+                val cellBackground = remember(isPastDay, isCurrentMonth, baseCellBackground) {
+                    when {
+                        isPastDay -> {
+                            val overlay = baseCellBackground.getContrastColor(Color.Black)
+                            val alpha = if (overlay == Color.White) 0.04f else 0.02f
+                            overlay.copy(alpha = alpha).compositeOver(baseCellBackground)
+                        }
+                        !isCurrentMonth -> {
+                            val overlay = baseCellBackground.getContrastColor(Color.Black)
+                            overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
+                        }
+                        else -> baseCellBackground
+                    }
+                }
+
+                val isInactive = !isCurrentMonth || isPastDay
+                val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
+                val dayHasEventsWithTitle = remember(dayEvents) { dayEvents.any { it.title.isNotBlank() } }
+
+                val dayColor = remember(date, isInactive, dayEvents, workingDayDates, themeColors) {
+                    val isForcedWorkingDay = workingDayDates.contains(date)
+                    val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
+                    val isSunday = date.dayOfWeek == DayOfWeek.SUNDAY
+
+                    val baseColor = when {
+                        isHoliday || isSunday -> themeColors.textSundayHoliday
+                        else -> themeColors.textSystem
+                    }
+
+                    if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
+                }
+
+                val todayBorderColor = remember(cellBackground) { 
+                    if (ColorUtils.calculateLuminance(cellBackground.toArgb()) > 0.5) Color.Black else Color.White 
                 }
 
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .aspectRatio(1f)
+                        .zIndex(if (isToday) 10f else 0f),
+                    contentAlignment = Alignment.Center
                 ) {
                     MonthlyDayCell(
                         date = date,
                         isCurrentMonth = isCurrentMonth,
                         isToday = isToday,
+                        isInactive = isInactive,
                         dayEvents = dayEvents,
+                        dayHasEventsWithTitle = dayHasEventsWithTitle,
                         dailyNotes = dailyNotes,
                         showWeekNumber = showWeekNumber,
                         indexInWeek = indexInWeek,
@@ -292,6 +349,7 @@ private fun MonthGridView(
                         dayColor = dayColor,
                         cellBackground = cellBackground,
                         todayBorderColor = todayBorderColor,
+                        availableCalendars = availableCalendars,
                         onDayClick = onDayClick,
                         onEmptyDayClick = onEmptyDayClick
                     )
@@ -306,7 +364,9 @@ private fun MonthlyDayCell(
     date: LocalDate,
     isCurrentMonth: Boolean,
     isToday: Boolean,
+    isInactive: Boolean,
     dayEvents: List<Festivo>,
+    dayHasEventsWithTitle: Boolean,
     dailyNotes: Map<String, DailyNote>,
     showWeekNumber: Boolean,
     indexInWeek: Int,
@@ -318,23 +378,94 @@ private fun MonthlyDayCell(
     dayColor: Color,
     cellBackground: Color,
     todayBorderColor: Color,
+    availableCalendars: List<CalendarInfo>,
     onDayClick: (LocalDate, List<Festivo>) -> Unit,
     onEmptyDayClick: (LocalDate) -> Unit
 ) {
+    val fixedLaneWidth = 6.5.dp
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(4.dp))
-            .background(cellBackground)
-            .clickable {
-                if (dayEvents.isNotEmpty()) {
-                    onDayClick(date, dayEvents)
+            .padding(1.dp)
+            .background(cellBackground, RoundedCornerShape(4.dp))
+            .clickable(enabled = isCurrentMonth) {
+                if (dayHasEventsWithTitle) {
+                    onDayClick(date, dayEvents.filter { it.title.isNotBlank() })
                 } else {
                     onEmptyDayClick(date)
                 }
-            },
-        contentAlignment = Alignment.Center
+            }
     ) {
+        // --- RENDERIZADO DE CARRILES MULTI-DÍA (RESTAURADO EXACTO V3.8.11 CON OPACIDAD INACTIVA) ---
+        val longPeriods = dayEvents.filter { it.isLongPeriod && it.lane != null }
+        if (isCurrentMonth && longPeriods.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.85f)
+                    .align(Alignment.Center)
+            ) {
+                repeat(5) { laneIndex ->
+                    val period = longPeriods.find { it.lane == laneIndex }
+                    Box(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (period != null) {
+                            val cal = availableCalendars.find { it.id == period.calendarId }
+                            val baseColor = if (period.customColor != null) Color(period.customColor)
+                                       else if (cal != null) Color(cal.color)
+                                       else themeColors.textSystem
+                            val color = if (isInactive) baseColor.copy(alpha = 0.4f) else baseColor
+
+                            Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
+                                if (period.currentDay > 1) {
+                                    val isLastDay = period.currentDay == period.totalDays
+                                    val innerRadius = if (isLastDay) 10.dp else 0.dp
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterStart)
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .background(
+                                                color,
+                                                RoundedCornerShape(
+                                                    topEnd = innerRadius,
+                                                    bottomEnd = innerRadius,
+                                                    topStart = 0.dp,
+                                                    bottomStart = 0.dp
+                                                )
+                                            )
+                                    )
+                                }
+                                if (period.currentDay < period.totalDays) {
+                                    val isFirstDay = period.currentDay == 1
+                                    val innerRadius = if (isFirstDay) 10.dp else 0.dp
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .width(6.dp)
+                                            .fillMaxHeight()
+                                            .background(
+                                                color,
+                                                RoundedCornerShape(
+                                                    topStart = innerRadius,
+                                                    bottomStart = innerRadius,
+                                                    topEnd = 0.dp,
+                                                    bottomEnd = 0.dp
+                                                )
+                                            )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // NÚMERO DE SEMANA
         if (showWeekNumber && indexInWeek == 0) {
             val weekNumber = try {
                 date.get(weekFields.weekOfWeekBasedYear()).toString()
@@ -385,6 +516,7 @@ private fun MonthlyDayCell(
             )
         }
 
+        // --- INDICADORES POR PRIORIDAD (Propuesta 3) ---
         val indicatorColors = remember(dayEvents, isCurrentMonth, isAppDark, eventSettings, themeColors) {
             if (!isCurrentMonth) return@remember emptyList()
             
@@ -393,6 +525,7 @@ private fun MonthlyDayCell(
             
             if (filtered.isEmpty()) return@remember emptyList()
 
+            // 1. PRIORIDAD 1: Eventos especiales (1 al 5)
             val specialPairs = listOf(
                 Pair(themeColors.textEvent1, eventSettings.norm1),
                 Pair(themeColors.textEvent2, eventSettings.norm2),
@@ -408,12 +541,14 @@ private fun MonthlyDayCell(
                 }
             }
 
+            // 2. PRIORIDAD 2: Cumpleaños
             if (filtered.any { it.isBirthday }) {
                 if (indicators.size < 5) {
                     indicators.add(themeColors.textBirthday)
                 }
             }
 
+            // 3. PRIORIDAD 3: Eventos normales (1 punto único en color gris a la derecha, si hay hueco < 5)
             val hasNormalEvent = filtered.any { event ->
                 eventSettings.isNormalEvent(event.title, event.isBirthday)
             }
@@ -435,6 +570,7 @@ private fun MonthlyDayCell(
             ) {
                 indicatorColors.forEach { color ->
                     val isPulsing = eventSettings.isEventPulsing(color, themeColors)
+                    
                     Box(
                         modifier = Modifier
                             .size(5.dp)
@@ -455,6 +591,7 @@ private fun MonthlyDayCell(
                     .drawBehind {
                         val borderSize = (if (todayBorderColor == Color.Black) 2.8.dp else 2.dp).toPx()
                         val finalAlpha = if (todayBorderColor == Color.White) 0.6f else 1.0f
+                        
                         drawRoundRect(
                             color = todayBorderColor,
                             topLeft = androidx.compose.ui.geometry.Offset(-borderSize / 2, -borderSize / 2),
