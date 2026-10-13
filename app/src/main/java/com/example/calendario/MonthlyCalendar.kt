@@ -548,9 +548,9 @@ private fun MonthlyDayCell(
                 }
             }
 
-            // 3. PRIORIDAD 3: Eventos normales (1 punto único en color gris a la derecha, si hay hueco < 5)
+            // 3. PRIORIDAD 3: Eventos normales (1 punto único en color gris a la derecha, si hay hueco < 5 y no es evento largo)
             val hasNormalEvent = filtered.any { event ->
-                eventSettings.isNormalEvent(event.title, event.isBirthday)
+                !event.isLongPeriod && eventSettings.isNormalEvent(event.title, event.isBirthday)
             }
             if (hasNormalEvent) {
                 if (indicators.size < 5) {

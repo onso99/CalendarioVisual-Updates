@@ -1,4 +1,5 @@
-2026-10-13 - v3.8.13 Eventos normales con punto color Gris y se reduce espaciado entre puntos
+2026-10-13 - v3.8.15 Restaurados carriles de eventos largos y opacidad atenuada de días pasados (consecuencias de la modularización de la celda mensual)
+2026-10-13 - v3.8.14 Eventos normales con punto color Gris y se reduce espaciado entre puntos
 2026-10-13 - v3.8.13 Eventos especiales F3.2: Prioridades para los puntos de color. Se excluye festivos en el sistema de puntos
 2026-10-13 - v3.8.12 Eventos especiales F3.1: Nueva paleta de colores para los evento-x
 2026-10-12 - v3.8.11 Eventos especiales F2: Integración Completa de los Eventos 3, 4 y 5
