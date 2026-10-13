@@ -419,7 +419,7 @@ private fun MonthlyDayCell(
             }
             if (hasNormalEvent) {
                 if (indicators.size < 5) {
-                    indicators.add(if (isAppDark) Color(0xFFBDBDBD) else themeColors.cabecera)
+                    indicators.add(if (isAppDark) Color(0xFFA0A0A0) else Color.Gray)
                 }
             }
             
@@ -431,7 +431,7 @@ private fun MonthlyDayCell(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 indicatorColors.forEach { color ->
                     val isPulsing = eventSettings.isEventPulsing(color, themeColors)
