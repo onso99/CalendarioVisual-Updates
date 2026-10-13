@@ -117,7 +117,6 @@
     <string name="no_events_this_month">No events for this month.</string>
     <string name="widget_no_events">No events</string>
     <string name="theme_section_title">Theme</string>
-    <string name="propios_section_title">Personal</string>
     <string name="permanentes_section_title">Permanent</string>
     <string name="events_special_section_title">Special events</string>
     <string name="reset_color">Reset</string>

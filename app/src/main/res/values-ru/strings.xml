@@ -117,7 +117,6 @@
     <string name="no_events_this_month">Нет событий в этом месяце.</string>
     <string name="widget_no_events">Событий нет</string>
     <string name="theme_section_title">Тема</string>
-    <string name="propios_section_title">Собственные</string>
     <string name="permanentes_section_title">Постоянные</string>
     <string name="events_special_section_title">Особые события</string>
     <string name="reset_color">Сбросить</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">Дни рождения</string>
     <string name="event_1">Событие-1</string>
     <string name="event_2">Событие-2</string>
+    <string name="event_3">Событие-3</string>
+    <string name="event_4">Событие-4</string>
+    <string name="event_5">Событие-5</string>
     <string name="calendar_background">Фон календаря</string>
     <string name="effect">Эффект</string>
     <string name="current_month_cell">Ячейка месяца</string>

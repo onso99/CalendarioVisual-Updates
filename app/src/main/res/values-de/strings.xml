@@ -117,7 +117,6 @@
     <string name="no_events_this_month">Keine Ereignisse in diesem Monat.</string>
     <string name="widget_no_events">Keine Ereignisse</string>
     <string name="theme_section_title">Thema</string>
-    <string name="propios_section_title">Eigene</string>
     <string name="permanentes_section_title">Dauerhaft</string>
     <string name="events_special_section_title">Spezielle Ereignisse</string>
     <string name="reset_color">Zurücksetzen</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">Geburtstage</string>
     <string name="event_1">Ereignis-1</string>
     <string name="event_2">Ereignis-2</string>
+    <string name="event_3">Ereignis-3</string>
+    <string name="event_4">Ereignis-4</string>
+    <string name="event_5">Ereignis-5</string>
     <string name="calendar_background">Kalenderhintergrund</string>
     <string name="effect">Effekt</string>
     <string name="current_month_cell">Monatszelle</string>

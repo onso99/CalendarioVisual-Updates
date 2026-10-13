@@ -117,7 +117,6 @@
     <string name="no_events_this_month">本月没有事件。</string>
     <string name="widget_no_events">无事件</string>
     <string name="theme_section_title">主题</string>
-    <string name="propios_section_title">自定义</string>
     <string name="permanentes_section_title">永久</string>
     <string name="events_special_section_title">特别事件</string>
     <string name="reset_color">重置</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">生日</string>
     <string name="event_1">事件-1</string>
     <string name="event_2">事件-2</string>
+    <string name="event_3">事件-3</string>
+    <string name="event_4">事件-4</string>
+    <string name="event_5">事件-5</string>
     <string name="calendar_background">日历背景</string>
     <string name="effect">效果</string>
     <string name="current_month_cell">月份单元格</string>

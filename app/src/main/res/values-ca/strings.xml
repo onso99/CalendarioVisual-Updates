@@ -117,7 +117,6 @@
     <string name="no_events_this_month">No hi ha esdeveniments per a aquest mes.</string>
     <string name="widget_no_events">No hi ha esdeveniments</string>
     <string name="theme_section_title">Tema</string>
-    <string name="propios_section_title">Propis</string>
     <string name="permanentes_section_title">Permanents</string>
     <string name="events_special_section_title">Esdeveniments especials</string>
     <string name="reset_color">Restablir</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">Aniversaris</string>
     <string name="event_1">Esdeveniment-1</string>
     <string name="event_2">Esdeveniment-2</string>
+    <string name="event_3">Esdeveniment-3</string>
+    <string name="event_4">Esdeveniment-4</string>
+    <string name="event_5">Esdeveniment-5</string>
     <string name="calendar_background">Fons calendari</string>
     <string name="effect">Efecte</string>
     <string name="current_month_cell">Cel·la del mes</string>

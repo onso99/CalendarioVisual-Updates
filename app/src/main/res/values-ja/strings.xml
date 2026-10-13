@@ -117,7 +117,6 @@
     <string name="no_events_this_month">今月のイベントはありません。</string>
     <string name="widget_no_events">イベントなし</string>
     <string name="theme_section_title">テーマ</string>
-    <string name="propios_section_title">独自</string>
     <string name="permanentes_section_title">永続</string>
     <string name="events_special_section_title">特別イベント</string>
     <string name="reset_color">リセット</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">誕生日</string>
     <string name="event_1">イベント-1</string>
     <string name="event_2">イベント-2</string>
+    <string name="event_3">イベント-3</string>
+    <string name="event_4">イベント-4</string>
+    <string name="event_5">イベント-5</string>
     <string name="calendar_background">カレンダー背景</string>
     <string name="effect">エフェクト</string>
     <string name="current_month_cell">今月のセル</string>

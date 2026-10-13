@@ -117,7 +117,6 @@
     <string name="no_events_this_month">Ez dago gertaerarik hilabete honetarako.</string>
     <string name="widget_no_events">Ez dago gertaerarik</string>
     <string name="theme_section_title">Gaia</string>
-    <string name="propios_section_title">Propioak</string>
     <string name="permanentes_section_title">Iraunkorrak</string>
     <string name="events_special_section_title">Gertaera bereziak</string>
     <string name="reset_color">Berrezarri</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">Urtebetetzeak</string>
     <string name="event_1">1-Gertaera</string>
     <string name="event_2">2-Gertaera</string>
+    <string name="event_3">3-Gertaera</string>
+    <string name="event_4">4-Gertaera</string>
+    <string name="event_5">5-Gertaera</string>
     <string name="calendar_background">Egutegiaren atzeko planoa</string>
     <string name="effect">Efektua</string>
     <string name="current_month_cell">Hilabeteko gela</string>

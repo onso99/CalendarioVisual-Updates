@@ -119,7 +119,6 @@
     <string name="no_events_this_month">No hay eventos para este mes.</string>
     <string name="widget_no_events">No hay eventos</string>
     <string name="theme_section_title">Tema</string>
-    <string name="propios_section_title">Propios</string>
     <string name="permanentes_section_title">Permanentes</string>
     <string name="events_special_section_title">Eventos especiales</string>
     <string name="reset_color">Restablecer</string>

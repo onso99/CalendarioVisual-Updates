@@ -117,7 +117,6 @@
     <string name="no_events_this_month">Il n\'y a aucun événement pour ce mois.</string>
     <string name="widget_no_events">Aucun événement</string>
     <string name="theme_section_title">Thème</string>
-    <string name="propios_section_title">Propres</string>
     <string name="permanentes_section_title">Permanents</string>
     <string name="events_special_section_title">Événements spéciaux</string>
     <string name="reset_color">Réinitialiser</string>
@@ -139,6 +138,9 @@
     <string name="birthdays">Anniversaires</string>
     <string name="event_1">Événement-1</string>
     <string name="event_2">Événement-2</string>
+    <string name="event_3">Événement-3</string>
+    <string name="event_4">Événement-4</string>
+    <string name="event_5">Événement-5</string>
     <string name="calendar_background">Fond du calendrier</string>
     <string name="effect">Effet</string>
     <string name="current_month_cell">Cellule du mois</string>
