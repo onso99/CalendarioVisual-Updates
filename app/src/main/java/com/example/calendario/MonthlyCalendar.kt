@@ -417,7 +417,7 @@ private fun MonthlyDayCell(
                             val baseColor = if (period.customColor != null) Color(period.customColor)
                                        else if (cal != null) Color(cal.color)
                                        else themeColors.textSystem
-                            val color = if (isInactive) baseColor.copy(alpha = 0.4f) else baseColor
+                            val color = if (isInactive) baseColor.copy(alpha = 0.60f) else baseColor
 
                             Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
                                 if (period.currentDay > 1) {
@@ -576,7 +576,7 @@ private fun MonthlyDayCell(
                             .size(5.dp)
                             .clip(CircleShape)
                             .graphicsLayer {
-                                alpha = if (isPulsing) pulseAlpha else 1f
+                                alpha = if (isPulsing) pulseAlpha else if (isInactive) 0.60f else 1f
                             }
                             .background(color)
                     )
