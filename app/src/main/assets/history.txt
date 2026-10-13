@@ -1,3 +1,4 @@
+2026-10-13 - v3.8.12 Eventos especiales F3.1: Nueva paleta de colores para los evento-x
 2026-10-12 - v3.8.11 Eventos especiales F2: Integración Completa de los Eventos 3, 4 y 5
 2026-10-12 - v3.8.10 Eventos especiales F1: Ampliación de constantes y Colores permenantes invariantes
 2026-10-12 - v3.8.09 Corrección de warnings
