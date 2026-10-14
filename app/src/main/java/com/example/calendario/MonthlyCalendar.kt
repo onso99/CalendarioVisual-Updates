@@ -70,6 +70,16 @@ private object PastDayStyle {
         return if (state == DayCellState.PAST_DAY) color.copy(alpha = ELEMENT_ALPHA) else color
     }
 
+    const val LANE_ALPHA_BOOST = 0.10f
+    const val MAX_ELEMENT_ALPHA = 0.90f
+
+    fun applyLaneAlpha(color: Color, state: DayCellState): Color {
+        return if (state == DayCellState.PAST_DAY) {
+            val boostedAlpha = (ELEMENT_ALPHA + LANE_ALPHA_BOOST).coerceAtMost(MAX_ELEMENT_ALPHA)
+            color.copy(alpha = boostedAlpha)
+        } else color
+    }
+
     fun applyTextAlpha(baseColor: Color, state: DayCellState): Color {
         return when (state) {
             DayCellState.PAST_DAY -> baseColor.copy(alpha = PAST_TEXT_ALPHA)
@@ -450,7 +460,7 @@ private fun MonthlyDayCell(
                             val baseColor = if (period.customColor != null) Color(period.customColor)
                                        else if (cal != null) Color(cal.color)
                                        else themeColors.textSystem
-                            val color = PastDayStyle.applyElementAlpha(baseColor, dayState)
+                            val color = PastDayStyle.applyLaneAlpha(baseColor, dayState)
 
                             Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
                                 if (period.currentDay > 1) {
@@ -609,7 +619,7 @@ private fun MonthlyDayCell(
                             .size(5.dp)
                             .clip(CircleShape)
                             .graphicsLayer {
-                                alpha = if (isPulsing) pulseAlpha else if (dayState == DayCellState.PAST_DAY) PastDayStyle.ELEMENT_ALPHA else 1f
+                                alpha = if (dayState == DayCellState.PAST_DAY) PastDayStyle.ELEMENT_ALPHA else if (isPulsing) pulseAlpha else 1f
                             }
                             .background(color)
                     )

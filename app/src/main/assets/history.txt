@@ -1,4 +1,4 @@
-2026-10-14 - v3.8.19 Opacidad centralizada de elementos en días pasados
+2026-10-14 - v3.8.19 Opacidad centralizada al 50% en los elementos de días pasados
 2026-10-13 - v3.8.18 Opacidad de carriles y puntos de color al 60% en días pasados
 2026-10-13 - v3.8.17 Corrección de warnings
 2026-10-13 - v3.8.16 Carriles de eventos largos descartan el punto gris
