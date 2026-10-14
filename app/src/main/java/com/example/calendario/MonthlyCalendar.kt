@@ -53,6 +53,47 @@ import java.time.YearMonth
 import java.time.temporal.WeekFields
 import java.time.format.TextStyle
 
+private enum class DayCellState {
+    CURRENT_ACTIVE, // Día presente o futuro del mes actual
+    PAST_DAY,       // Día pasado del mes actual
+    OUT_OF_MONTH    // Día de otro mes (anterior/siguiente)
+}
+
+private object PastDayStyle {
+    const val PAST_TEXT_ALPHA = 0.50f
+    const val OUT_OF_MONTH_TEXT_ALPHA = 0.38f
+    const val ELEMENT_ALPHA = 0.50f
+    const val PAST_CELL_OVERLAY_ALPHA = 0.04f
+    const val OUT_OF_MONTH_CELL_OVERLAY_ALPHA = 0.10f
+
+    fun applyElementAlpha(color: Color, state: DayCellState): Color {
+        return if (state == DayCellState.PAST_DAY) color.copy(alpha = ELEMENT_ALPHA) else color
+    }
+
+    fun applyTextAlpha(baseColor: Color, state: DayCellState): Color {
+        return when (state) {
+            DayCellState.PAST_DAY -> baseColor.copy(alpha = PAST_TEXT_ALPHA)
+            DayCellState.OUT_OF_MONTH -> baseColor.copy(alpha = OUT_OF_MONTH_TEXT_ALPHA)
+            DayCellState.CURRENT_ACTIVE -> baseColor
+        }
+    }
+
+    fun calculateCellBackground(baseBackground: Color, state: DayCellState): Color {
+        return when (state) {
+            DayCellState.PAST_DAY -> {
+                val overlay = baseBackground.getContrastColor(Color.Black)
+                val alpha = if (overlay == Color.White) PAST_CELL_OVERLAY_ALPHA else (PAST_CELL_OVERLAY_ALPHA / 2f)
+                overlay.copy(alpha = alpha).compositeOver(baseBackground)
+            }
+            DayCellState.OUT_OF_MONTH -> {
+                val overlay = baseBackground.getContrastColor(Color.Black)
+                overlay.copy(alpha = OUT_OF_MONTH_CELL_OVERLAY_ALPHA).compositeOver(baseBackground)
+            }
+            DayCellState.CURRENT_ACTIVE -> baseBackground
+        }
+    }
+}
+
 private data class EventKeywordSettings(
     val norm1: String = "",
     val norm2: String = "",
@@ -285,29 +326,21 @@ private fun MonthGridView(
             week.forEachIndexed { indexInWeek, (date, isCurrentMonth) ->
                 val isToday = date == today && isCurrentMonth
                 val isPastDay = isCurrentMonth && date.isBefore(today)
-                val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
-
-                // SUAVIZADO DE FONDO (RESTAURADO EXACTO V3.8.11)
-                val cellBackground = remember(isPastDay, isCurrentMonth, baseCellBackground) {
-                    when {
-                        isPastDay -> {
-                            val overlay = baseCellBackground.getContrastColor(Color.Black)
-                            val alpha = if (overlay == Color.White) 0.04f else 0.02f
-                            overlay.copy(alpha = alpha).compositeOver(baseCellBackground)
-                        }
-                        !isCurrentMonth -> {
-                            val overlay = baseCellBackground.getContrastColor(Color.Black)
-                            overlay.copy(alpha = 0.10f).compositeOver(baseCellBackground)
-                        }
-                        else -> baseCellBackground
-                    }
+                val dayState = when {
+                    !isCurrentMonth -> DayCellState.OUT_OF_MONTH
+                    isPastDay -> DayCellState.PAST_DAY
+                    else -> DayCellState.CURRENT_ACTIVE
                 }
 
-                val isInactive = !isCurrentMonth || isPastDay
+                val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
+                val cellBackground = remember(dayState, baseCellBackground) {
+                    PastDayStyle.calculateCellBackground(baseCellBackground, dayState)
+                }
+
                 val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()
                 val dayHasEventsWithTitle = remember(dayEvents) { dayEvents.any { it.title.isNotBlank() } }
 
-                val dayColor = remember(date, isInactive, dayEvents, workingDayDates, themeColors) {
+                val dayColor = remember(date, dayState, dayEvents, workingDayDates, themeColors) {
                     val isForcedWorkingDay = workingDayDates.contains(date)
                     val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
                     val isSunday = date.dayOfWeek == DayOfWeek.SUNDAY
@@ -317,7 +350,7 @@ private fun MonthGridView(
                         else -> themeColors.textSystem
                     }
 
-                    if (isInactive) baseColor.copy(alpha = 0.5f) else baseColor
+                    PastDayStyle.applyTextAlpha(baseColor, dayState)
                 }
 
                 val todayBorderColor = remember(cellBackground) { 
@@ -335,7 +368,7 @@ private fun MonthGridView(
                         date = date,
                         isCurrentMonth = isCurrentMonth,
                         isToday = isToday,
-                        isInactive = isInactive,
+                        dayState = dayState,
                         dayEvents = dayEvents,
                         dayHasEventsWithTitle = dayHasEventsWithTitle,
                         dailyNotes = dailyNotes,
@@ -364,7 +397,7 @@ private fun MonthlyDayCell(
     date: LocalDate,
     isCurrentMonth: Boolean,
     isToday: Boolean,
-    isInactive: Boolean,
+    dayState: DayCellState,
     dayEvents: List<Festivo>,
     dayHasEventsWithTitle: Boolean,
     dailyNotes: Map<String, DailyNote>,
@@ -417,7 +450,7 @@ private fun MonthlyDayCell(
                             val baseColor = if (period.customColor != null) Color(period.customColor)
                                        else if (cal != null) Color(cal.color)
                                        else themeColors.textSystem
-                            val color = if (isInactive) baseColor.copy(alpha = 0.60f) else baseColor
+                            val color = PastDayStyle.applyElementAlpha(baseColor, dayState)
 
                             Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
                                 if (period.currentDay > 1) {
@@ -498,7 +531,7 @@ private fun MonthlyDayCell(
 
         val hasNote = dailyNotes.containsKey(date.toString())
         if (isCurrentMonth && hasNote) {
-            val noteColor = themeColors.noteIconColor
+            val noteColor = PastDayStyle.applyElementAlpha(themeColors.noteIconColor, dayState)
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -576,7 +609,7 @@ private fun MonthlyDayCell(
                             .size(5.dp)
                             .clip(CircleShape)
                             .graphicsLayer {
-                                alpha = if (isPulsing) pulseAlpha else if (isInactive) 0.60f else 1f
+                                alpha = if (isPulsing) pulseAlpha else if (dayState == DayCellState.PAST_DAY) PastDayStyle.ELEMENT_ALPHA else 1f
                             }
                             .background(color)
                     )
