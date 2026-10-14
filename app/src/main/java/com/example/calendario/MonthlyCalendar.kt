@@ -66,8 +66,26 @@ private object PastDayStyle {
     const val PAST_CELL_OVERLAY_ALPHA = 0.04f
     const val OUT_OF_MONTH_CELL_OVERLAY_ALPHA = 0.10f
 
+    const val LANE_ALPHA_BOOST = 0.30f
+    const val NOTE_ALPHA_BOOST = 0.35f
+    const val MAX_ELEMENT_ALPHA = 0.90f
+
     fun applyElementAlpha(color: Color, state: DayCellState): Color {
         return if (state == DayCellState.PAST_DAY) color.copy(alpha = ELEMENT_ALPHA) else color
+    }
+
+    fun applyLaneAlpha(color: Color, state: DayCellState): Color {
+        return if (state == DayCellState.PAST_DAY) {
+            val boostedAlpha = (ELEMENT_ALPHA + LANE_ALPHA_BOOST).coerceAtMost(MAX_ELEMENT_ALPHA)
+            color.copy(alpha = boostedAlpha)
+        } else color
+    }
+
+    fun applyNoteAlpha(color: Color, state: DayCellState): Color {
+        return if (state == DayCellState.PAST_DAY) {
+            val boostedAlpha = (ELEMENT_ALPHA + NOTE_ALPHA_BOOST).coerceAtMost(MAX_ELEMENT_ALPHA)
+            color.copy(alpha = boostedAlpha)
+        } else color
     }
 
     fun applyTextAlpha(baseColor: Color, state: DayCellState): Color {
@@ -450,7 +468,7 @@ private fun MonthlyDayCell(
                             val baseColor = if (period.customColor != null) Color(period.customColor)
                                        else if (cal != null) Color(cal.color)
                                        else themeColors.textSystem
-                            val color = PastDayStyle.applyElementAlpha(baseColor, dayState)
+                            val color = PastDayStyle.applyLaneAlpha(baseColor, dayState)
 
                             Box(modifier = Modifier.fillMaxWidth().height(fixedLaneWidth)) {
                                 if (period.currentDay > 1) {
@@ -531,7 +549,7 @@ private fun MonthlyDayCell(
 
         val hasNote = dailyNotes.containsKey(date.toString())
         if (isCurrentMonth && hasNote) {
-            val noteColor = PastDayStyle.applyElementAlpha(themeColors.noteIconColor, dayState)
+            val noteColor = PastDayStyle.applyNoteAlpha(themeColors.noteIconColor, dayState)
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -609,7 +627,7 @@ private fun MonthlyDayCell(
                             .size(5.dp)
                             .clip(CircleShape)
                             .graphicsLayer {
-                                alpha = if (isPulsing) pulseAlpha else if (dayState == DayCellState.PAST_DAY) PastDayStyle.ELEMENT_ALPHA else 1f
+                                alpha = if (dayState == DayCellState.PAST_DAY) PastDayStyle.ELEMENT_ALPHA else if (isPulsing) pulseAlpha else 1f
                             }
                             .background(color)
                     )
