@@ -1,4 +1,4 @@
-2026-10-14 - v3.8.20 Opacidad carriles e icono Nota +25%. Puntos con pulso estático en días pasados
+2026-10-14 - v3.8.20 Opacidad de carriles +30%, icono Nota +35%. Puntos con pulso estático en días pasados
 2026-10-14 - v3.8.19 Opacidad centralizada al 50% en los elementos de días pasados
 2026-10-13 - v3.8.18 Opacidad de carriles y puntos de color al 60% en días pasados
 2026-10-13 - v3.8.17 Corrección de warnings

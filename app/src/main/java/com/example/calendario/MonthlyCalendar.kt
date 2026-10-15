@@ -70,10 +70,6 @@ private object PastDayStyle {
     const val NOTE_ALPHA_BOOST = 0.35f
     const val MAX_ELEMENT_ALPHA = 0.90f
 
-    fun applyElementAlpha(color: Color, state: DayCellState): Color {
-        return if (state == DayCellState.PAST_DAY) color.copy(alpha = ELEMENT_ALPHA) else color
-    }
-
     fun applyLaneAlpha(color: Color, state: DayCellState): Color {
         return if (state == DayCellState.PAST_DAY) {
             val boostedAlpha = (ELEMENT_ALPHA + LANE_ALPHA_BOOST).coerceAtMost(MAX_ELEMENT_ALPHA)
@@ -576,19 +572,28 @@ private fun MonthlyDayCell(
             
             if (filtered.isEmpty()) return@remember emptyList()
 
-            // 1. PRIORIDAD 1: Eventos especiales (1 al 5)
-            val specialPairs = listOf(
-                Pair(themeColors.textEvent1, eventSettings.norm1),
-                Pair(themeColors.textEvent2, eventSettings.norm2),
-                Pair(themeColors.textEvent3, eventSettings.norm3),
-                Pair(themeColors.textEvent4, eventSettings.norm4),
-                Pair(themeColors.textEvent5, eventSettings.norm5),
+            // 1. PRIORIDAD 1: Eventos especiales (1 al 5) ordenados CRONOLÓGICAMENTE por hora de inicio
+            val specialDefinitions = listOf(
+                Triple(1, themeColors.textEvent1, eventSettings.norm1),
+                Triple(2, themeColors.textEvent2, eventSettings.norm2),
+                Triple(3, themeColors.textEvent3, eventSettings.norm3),
+                Triple(4, themeColors.textEvent4, eventSettings.norm4),
+                Triple(5, themeColors.textEvent5, eventSettings.norm5),
             )
-            for ((color, norm) in specialPairs) {
-                if (norm.isNotBlank() && filtered.any { it.title.unaccent().lowercase().contains(norm) }) {
-                    if (indicators.size < 5) {
-                        indicators.add(color)
-                    }
+
+            val sortedSpecialMatched = specialDefinitions.mapNotNull { (slotIndex, color, norm) ->
+                if (norm.isNotBlank()) {
+                    val matchingEvent = filtered.find { it.title.unaccent().lowercase().contains(norm) }
+                    if (matchingEvent != null) {
+                        val time = matchingEvent.startTime ?: java.time.LocalTime.MIN
+                        Triple(time, slotIndex, color)
+                    } else null
+                } else null
+            }.sortedWith(compareBy({ it.first }, { it.second }))
+
+            for ((_, _, color) in sortedSpecialMatched) {
+                if (indicators.size < 5) {
+                    indicators.add(color)
                 }
             }
 
