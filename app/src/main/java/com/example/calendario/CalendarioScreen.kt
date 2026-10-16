@@ -629,7 +629,6 @@ fun CalendarioScreen(
             onNoteClick = { note -> 
                 selectedDateForDialog = LocalDate.parse(note.dateStr)
                 showDayEventsDialog = true
-                isSearchActive = false 
             },
             onDeleteNote = viewModel::deleteDailyNote,
             onOpenHolidayManager = { clicked ->

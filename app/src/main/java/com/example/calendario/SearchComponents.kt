@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
@@ -126,7 +126,7 @@ internal fun EventRow(
                     }
                 }
             )
-            .padding(horizontal = 8.dp, vertical = 10.dp),
+            .padding(horizontal = 8.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (searchScope != SearchScope.MONTH) {
@@ -139,7 +139,7 @@ internal fun EventRow(
         }
 
         Box(
-            modifier = Modifier.width(26.dp),
+            modifier = Modifier.width(20.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             val cal = availableCalendars.find { it.id == festivo.calendarId }
@@ -333,7 +333,7 @@ internal fun NoteRow(
                     onLongClick(note)
                 }
             )
-            .padding(horizontal = 8.dp, vertical = 10.dp)
+            .padding(horizontal = 8.dp, vertical = 7.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (searchScope != SearchScope.MONTH) {
@@ -346,16 +346,18 @@ internal fun NoteRow(
             }
 
             Box(
-                modifier = Modifier.width(26.dp),
+                modifier = Modifier.width(20.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.StickyNote2,
+                    imageVector = Icons.AutoMirrored.Outlined.StickyNote2,
                     contentDescription = null,
                     tint = CalendarioTheme.colors.cabecera.copy(alpha = 0.6f),
                     modifier = Modifier.size(16.dp)
                 )
             }
+
+            var hasOverflow by remember(note.content) { mutableStateOf(note.content.contains("\n")) }
 
             val topText = if (isExpanded && cutIndex != -1) {
                 note.content.take(cutIndex).replace("\n", " ")
@@ -370,27 +372,33 @@ internal fun NoteRow(
                 maxLines = 1,
                 overflow = if (isExpanded) TextOverflow.Clip else TextOverflow.Ellipsis,
                 onTextLayout = { layoutResult ->
-                    if (cutIndex == -1) {
-                        val end = layoutResult.getLineEnd(0, visibleEnd = true)
-                        val textBeforeCut = note.content.take(end)
-                        val lastSpace = textBeforeCut.lastIndexOf(' ')
-                        cutIndex = if (lastSpace > 0) lastSpace + 1 else end
+                    if (!isExpanded) {
+                        val isTruncated = layoutResult.hasVisualOverflow || note.content.contains("\n")
+                        hasOverflow = isTruncated
+                        if (isTruncated && cutIndex == -1) {
+                            val end = layoutResult.getLineEnd(0, visibleEnd = true)
+                            val textBeforeCut = note.content.take(end)
+                            val lastSpace = textBeforeCut.lastIndexOf(' ')
+                            cutIndex = if (lastSpace > 0) lastSpace + 1 else end
+                        }
                     }
                 },
                 modifier = Modifier.weight(1f),
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             )
 
-            IconButton(
-                onClick = { isExpanded = !isExpanded },
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = if (isExpanded) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                    contentDescription = "Previsualizar nota",
-                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                    modifier = Modifier.size(20.dp)
-                )
+            if (hasOverflow) {
+                IconButton(
+                    onClick = { isExpanded = !isExpanded },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                        contentDescription = "Previsualizar nota",
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
         
