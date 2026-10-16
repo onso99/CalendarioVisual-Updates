@@ -347,7 +347,7 @@
     <string name="lang_ru">Ruso (Русский)</string>
     <string name="lang_zh">Chino (中文)</string>
     <string name="lang_ja">Japonés (日本語)</string>
-    <string name="edit_all_events_option">Todos los eventos de la serie</string>
+    <string name="edit_all_events_option">Toda la serie</string>
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
 </resources>
 
