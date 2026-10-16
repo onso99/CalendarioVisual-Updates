@@ -158,12 +158,6 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun updateMainSearchResults() {
         val state = _uiState.value
-        
-        // REGLA: No mostrar nada hasta que el usuario escriba
-        if (state.mainSearchQuery.isBlank()) {
-            _uiState.update { it.copy(mainSearchResults = emptyMap()) }
-            return
-        }
 
         val normalizedQuery = state.mainSearchQuery.unaccent().lowercase()
         

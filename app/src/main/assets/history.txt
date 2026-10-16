@@ -1,3 +1,4 @@
+2026-10-16 - v3.8.21.2 Buscar: Espacio vertical 7dp. Plegado de Notas y cambio de icono. Mantenimiento de la Pantalla de Búsqueda de Origen
 2026-10-16 - v3.8.21.1 Editar evento recurrente: texto modificado
 2026-10-15 - v3.8.21 Orden cronológico en los puntos de Eventos especiales
 2026-10-14 - v3.8.20 Opacidad de carriles +30%, icono Nota +35%. Puntos con pulso estático en días pasados
