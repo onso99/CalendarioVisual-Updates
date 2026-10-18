@@ -224,11 +224,23 @@ class AlarmReceiver : BroadcastReceiver() {
             context.getString(R.string.upcoming_alarm_title)
         }
 
+        val contentIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("event_id", eventId)
+        }
+        val contentPendingIntent = PendingIntent.getActivity(
+            context,
+            ((eventId.toInt() % 10000) * 1000) + 888,
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_notification_icon)
+            .setSmallIcon(R.drawable.ic_chameleon_notification)
             .setColor("#0077C2".toColorInt())
             .setContentTitle(contentTitle)
             .setContentText(title)
+            .setContentIntent(contentPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
