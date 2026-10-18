@@ -332,7 +332,15 @@ object SettingsManager {
         return if (!adn.isNullOrBlank()) getEventAlarmOffsetByAdn(context, adn) else null
     }
 
+    fun clearDismissedAlarm(context: Context, eventId: Long) {
+        val prefs = dismissedAlarmsPrefs(context)
+        prefs.edit {
+            prefs.all.keys.filter { it.startsWith("${eventId}_") }.forEach { remove(it) }
+        }
+    }
+
     fun saveEventAlarmOffset(context: Context, eventId: Long, offset: Int?, adn: String? = null) {
+        clearDismissedAlarm(context, eventId)
         alarmPrefs(context).edit {
             if (offset == null) remove(eventId.toString()) else putInt(eventId.toString(), offset)
         }

@@ -100,6 +100,7 @@ fun updateEvent(
     }
 
     return try {
+        SettingsManager.clearDismissedAlarm(context, eventId)
         val operations = ArrayList<ContentProviderOperation>()
         val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
@@ -150,6 +151,7 @@ fun updateSingleEventInSeries(
     isAllDay: Boolean
 ): Long? {
     return try {
+        SettingsManager.clearDismissedAlarm(context, originalEvent.id)
         val originalInstanceStartTime = if (originalEvent.isAllDay) {
             originalEvent.date.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
         } else {

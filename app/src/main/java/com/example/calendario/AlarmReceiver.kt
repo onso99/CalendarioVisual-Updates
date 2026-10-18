@@ -9,6 +9,7 @@ import android.media.RingtoneManager
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.toColorInt
 import com.example.calendario.database.AppDatabase
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -49,6 +50,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.cancel(eventId.toInt())
+                notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
+
+                WidgetStateManager.refreshWithCurrentEvents(context)
             }
             ACTION_STOP -> {
                 LogCollector.addLog("ALARMA: Detenida desde notificación ('$eventTitle')")
@@ -222,7 +226,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification_icon)
-            .setColor(android.graphics.Color.parseColor("#0077C2"))
+            .setColor("#0077C2".toColorInt())
             .setContentTitle(contentTitle)
             .setContentText(title)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

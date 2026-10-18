@@ -1,3 +1,5 @@
+2026-10-18 - v3.8.24 Notificación de alarma que se ha apagado vuelve a mostrarse de nuevo cuando se edita la hora de alarma
+2026-10-18 - v3.8.23 Notificación de alarma pendiente (2 horas antes). Apagar alarma
 2026-10-17 - v3.8.22 Búsqueda mejorada
 2026-10-16 - v3.8.21.3 Buscar: por defecto se muestran los eventos y notas del rango de tiempo seleccionado
 2026-10-16 - v3.8.21.2 Buscar: Espacio vertical 7dp. Plegado de Notas y cambio de icono. Mantenimiento de la Pantalla de Búsqueda de Origen
