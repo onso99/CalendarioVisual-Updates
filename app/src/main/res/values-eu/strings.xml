@@ -349,6 +349,8 @@
     <string name="agenda_file_detected_message">Fitxategiak gertaerak eta oharrak ditu jaiegunen ordez. Inportazioarekin jarraitu?</string>
     <string name="continue_button">Jarraitu</string>
     <string name="edit_all_events_option">Serie osoa</string>
+    <string name="stop_upcoming_alarm">Itzali alarma</string>
+    <string name="upcoming_alarm_title">Hurrengo alarma</string>
     <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
 
 </resources>

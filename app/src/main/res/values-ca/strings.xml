@@ -351,6 +351,8 @@
     <string name="agenda_file_detected_message">El fitxer conté esdeveniments i notes en lloc de festius. Voleu continuar amb la importació?</string>
     <string name="continue_button">Continuar</string>
     <string name="edit_all_events_option">Tota la sèrie</string>
+    <string name="stop_upcoming_alarm">Apagar alarma</string>
+    <string name="upcoming_alarm_title">Pròxima alarma</string>
     <string name="unknown_elements_warning">Elements desconeguts en aquest esdeveniment *</string>
 </resources>
 

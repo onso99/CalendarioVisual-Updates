@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -198,6 +199,11 @@ fun DayEventsDialog(
                         }
                         val timeText = displayTime?.format(AppFormats.TimeShort)
                         
+                        val isAlarmDismissed = remember(festivo.id, date) {
+                            SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
+                        }
+                        val timeColor = if (isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else neutralColor
+
                         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {
                             Box(Modifier.padding(top = 8.dp, start = 2.dp)) {
                                 val calendarForEvent = availableCalendars.find { it.id == festivo.calendarId }
@@ -207,15 +213,22 @@ fun DayEventsDialog(
                             }
                             Spacer(Modifier.width(4.dp))
                             Text(buildAnnotatedString {
-                                if (timeText != null) withStyle(SpanStyle(color = neutralColor)) { append("$timeText ") }
+                                if (timeText != null) withStyle(SpanStyle(color = timeColor)) { append("$timeText ") }
                                 withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) }) }
                                 if (festivo.age != null) withStyle(SpanStyle(color = titleColor)) { append(" (${festivo.age})") }
                                 if (festivo.isLongPeriod) withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) { append(" (${festivo.currentDay}/${festivo.totalDays})") }
                             }, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
                             
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                // ICONO ALARMA (v3.1.64 - Outlined y mayor)
-                                if (AlarmUtils.shouldShowAlarmIcon(context, festivo)) {
+                                // ICONO ALARMA
+                                if (isAlarmDismissed) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.NotificationsOff,
+                                        contentDescription = "Alarma apagada",
+                                        tint = Color.Gray.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(20.dp).padding(top = 2.dp)
+                                    )
+                                } else if (AlarmUtils.shouldShowAlarmIcon(context, festivo)) {
                                     Icon(
                                         imageVector = Icons.Outlined.NotificationsActive,
                                         contentDescription = null,

@@ -15,6 +15,8 @@ class AlarmReceiver : BroadcastReceiver() {
     companion object {
         const val ACTION_STOP = "com.example.calendario.ACTION_STOP_ALARM"
         const val ACTION_SNOOZE = "com.example.calendario.ACTION_SNOOZE_ALARM"
+        const val ACTION_DISMISS_UPCOMING = "com.example.calendario.ACTION_DISMISS_UPCOMING"
+        const val ACTION_PRE_ALARM_NOTICE = "com.example.calendario.ACTION_PRE_ALARM_NOTICE"
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -27,6 +29,27 @@ class AlarmReceiver : BroadcastReceiver() {
         val eventTitle = intent.getStringExtra("event_title") ?: "Evento"
 
         when (intent.action) {
+            ACTION_PRE_ALARM_NOTICE -> {
+                val dateStr = intent.getStringExtra("event_date") ?: ""
+                val timeStr = intent.getStringExtra("event_time_str") ?: ""
+                if (eventId != -1L && dateStr.isNotBlank() && SettingsManager.isAlarmDismissed(context, eventId, dateStr)) {
+                    LogCollector.addLog("AVISO PREVIO: Omitido -> '$eventTitle' (Alarma apagada previamente)")
+                    return
+                }
+                showPreAlarmNotification(context, eventId, eventTitle, dateStr, timeStr)
+            }
+            ACTION_DISMISS_UPCOMING -> {
+                val dateStr = intent.getStringExtra("event_date") ?: ""
+                LogCollector.addLog("ALARMA: Apagada por adelantado desde notificación ('$eventTitle' $dateStr)")
+                if (eventId != -1L) {
+                    AlarmUtils.cancelAlarm(context, eventId)
+                    if (dateStr.isNotBlank()) {
+                        SettingsManager.saveDismissedAlarm(context, eventId, dateStr)
+                    }
+                }
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(eventId.toInt())
+            }
             ACTION_STOP -> {
                 LogCollector.addLog("ALARMA: Detenida desde notificación ('$eventTitle')")
                 stopAlarmGlobally(context, eventId)
@@ -166,5 +189,49 @@ class AlarmReceiver : BroadcastReceiver() {
             .build()
 
         notificationManager.notify(eventId.toInt(), notification)
+    }
+
+    private fun showPreAlarmNotification(context: Context, eventId: Long, title: String, dateStr: String, timeStr: String) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "upcoming_alarm_channel_v1"
+        val channel = NotificationChannel(
+            channelId,
+            "Avisos de Alarma Próxima",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        notificationManager.createNotificationChannel(channel)
+
+        val dismissIntent = Intent(context, AlarmReceiver::class.java).apply {
+            action = ACTION_DISMISS_UPCOMING
+            putExtra("event_id", eventId)
+            putExtra("event_title", title)
+            putExtra("event_date", dateStr)
+        }
+        val dismissPendingIntent = PendingIntent.getBroadcast(
+            context,
+            ((eventId.toInt() % 10000) * 1000) + 777,
+            dismissIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val contentTitle = if (timeStr.isNotBlank()) {
+            "${context.getString(R.string.upcoming_alarm_title)}: $timeStr"
+        } else {
+            context.getString(R.string.upcoming_alarm_title)
+        }
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.ic_notification_icon)
+            .setColor(android.graphics.Color.parseColor("#0077C2"))
+            .setContentTitle(contentTitle)
+            .setContentText(title)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .addAction(0, context.getString(R.string.stop_upcoming_alarm), dismissPendingIntent)
+            .build()
+
+        notificationManager.notify(((eventId.toInt() % 10000) * 1000) + 777, notification)
     }
 }

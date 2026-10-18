@@ -348,6 +348,8 @@
     <string name="lang_zh">Chino (中文)</string>
     <string name="lang_ja">Japonés (日本語)</string>
     <string name="edit_all_events_option">Toda la serie</string>
+    <string name="stop_upcoming_alarm">Apagar alarma</string>
+    <string name="upcoming_alarm_title">Próxima alarma</string>
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
 </resources>
 

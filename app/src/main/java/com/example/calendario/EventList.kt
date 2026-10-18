@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -98,6 +99,9 @@ fun MonthlyEventList(
                             }
                             
                             key(eventKey) {
+                                val isAlarmDismissed = remember(festivo.id, date) {
+                                    SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
+                                }
                                 val normalizedTitle = remember(festivo.title) { festivo.title.unaccent().lowercase() }
                                 val esEvento1 = normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)
                                 val esEvento2 = normEvent2.isNotBlank() && normalizedTitle.contains(normEvent2)
@@ -249,7 +253,7 @@ fun MonthlyEventList(
                                                     if (timePrefix != null) {
                                                         Text(
                                                             text = "$timePrefix ",
-                                                            color = neutralColor,
+                                                            color = if (isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else neutralColor,
                                                             fontSize = 16.sp,
                                                             maxLines = 1
                                                         )
@@ -287,7 +291,26 @@ fun MonthlyEventList(
                                                         AlarmUtils.getAlarmTimeString(context, festivo) 
                                                     }
                                                     
-                                                    if (alarmTime != null) {
+                                                    if (isAlarmDismissed) {
+                                                        Row(
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            modifier = Modifier.padding(start = 4.dp)
+                                                        ) {
+                                                            Icon(
+                                                                imageVector = Icons.Outlined.NotificationsOff,
+                                                                contentDescription = "Alarma apagada",
+                                                                tint = Color.Gray.copy(alpha = 0.6f),
+                                                                modifier = Modifier.size(14.dp)
+                                                            )
+                                                            if (alarmTime != null) {
+                                                                Text(
+                                                                    text = alarmTime,
+                                                                    color = Color.Gray.copy(alpha = 0.6f),
+                                                                    fontSize = 12.sp
+                                                                )
+                                                            }
+                                                        }
+                                                    } else if (alarmTime != null) {
                                                         // Caso 1: Tiene Alarma (Dato prioritario)
                                                         Row(
                                                             verticalAlignment = Alignment.CenterVertically,

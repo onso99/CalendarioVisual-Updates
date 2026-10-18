@@ -537,4 +537,16 @@ object SettingsManager {
             putStringSet(WidgetConstants.KEY_WIDGET_SELECTED_CALENDARS, ids.map { it.toString() }.toSet())
         }
     }
+
+    private fun dismissedAlarmsPrefs(context: Context) = getPrefs(context, "dismissed_alarms_prefs")
+
+    fun saveDismissedAlarm(context: Context, eventId: Long, dateStr: String) {
+        val key = "${eventId}_$dateStr"
+        dismissedAlarmsPrefs(context).edit { putBoolean(key, true) }
+    }
+
+    fun isAlarmDismissed(context: Context, eventId: Long, dateStr: String): Boolean {
+        val key = "${eventId}_$dateStr"
+        return dismissedAlarmsPrefs(context).getBoolean(key, false)
+    }
 }

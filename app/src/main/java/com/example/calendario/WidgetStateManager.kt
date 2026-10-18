@@ -88,7 +88,21 @@ object WidgetStateManager {
             .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
             .take(limit)
             .map { event ->
-                WidgetEvent(event.title, event.date.toEpochDay(), event.startTime?.toString(), event.isAllDay, event.isBirthday, event.age, event.isLongPeriod, event.currentDay, event.totalDays, AlarmUtils.getAlarmTimeString(context, event))
+                val isDismissed = SettingsManager.isAlarmDismissed(context, event.id, event.date.toString())
+                WidgetEvent(
+                    id = event.id,
+                    title = event.title,
+                    dateEpochDay = event.date.toEpochDay(),
+                    startTimeStr = event.startTime?.toString(),
+                    isAllDay = event.isAllDay,
+                    isBirthday = event.isBirthday,
+                    age = event.age,
+                    isLongPeriod = event.isLongPeriod,
+                    currentDay = event.currentDay,
+                    totalDays = event.totalDays,
+                    alarmTimeStr = AlarmUtils.getAlarmTimeString(context, event),
+                    isAlarmDismissed = isDismissed
+                )
             }
             .toList()
     }
@@ -128,7 +142,20 @@ object WidgetStateManager {
         } catch (_: Exception) { }
     }
 
-    data class WidgetEvent(val title: String, val dateEpochDay: Long, val startTimeStr: String?, val isAllDay: Boolean, val isBirthday: Boolean, val age: Int?, val isLongPeriod: Boolean, val currentDay: Int, val totalDays: Int, val alarmTimeStr: String?)
+    data class WidgetEvent(
+        val id: Long = -1L,
+        val title: String,
+        val dateEpochDay: Long,
+        val startTimeStr: String?,
+        val isAllDay: Boolean,
+        val isBirthday: Boolean,
+        val age: Int?,
+        val isLongPeriod: Boolean,
+        val currentDay: Int,
+        val totalDays: Int,
+        val alarmTimeStr: String?,
+        val isAlarmDismissed: Boolean = false
+    )
 
     /**
      * Fallback mejorado: Lee directamente de Room de forma síncrona

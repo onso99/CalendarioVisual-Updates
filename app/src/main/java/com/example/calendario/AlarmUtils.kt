@@ -47,12 +47,10 @@ object AlarmUtils {
         try {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             
-            // Verificación de permiso de sistema (Android 12+)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                if (!alarmManager.canScheduleExactAlarms()) {
-                    LogCollector.addLog("ALARMA: Sin permiso EXACT_ALARM para '${event.title}'")
-                    return
-                }
+            // Si la alarma fue apagada previamente para esta fecha, la omitimos
+            if (SettingsManager.isAlarmDismissed(context, event.id, event.date.toString())) {
+                LogCollector.addLog("ALARMA: Omitida para '${event.title}' (Apagada previamente)")
+                return
             }
 
             val requestCode = getUniqueRequestCode(event.id, event.date)
@@ -104,6 +102,30 @@ object AlarmUtils {
             
             val timeStr = alarmDateTime.toLocalTime().toString().take(5)
             LogCollector.addLog("ALARMA: SISTEMA -> '${event.title}' ($timeStr) [Icono solicitado]")
+
+            // 3. Programación de Notificación Previa (2 horas antes - Estilo Reloj de Google)
+            val preAlarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = AlarmReceiver.ACTION_PRE_ALARM_NOTICE
+                putExtra("event_id", event.id)
+                putExtra("event_title", event.title)
+                putExtra("event_date", event.date.toString())
+                putExtra("event_time_str", timeStr)
+            }
+            val preAlarmPendingIntent = PendingIntent.getBroadcast(
+                context,
+                requestCode + 50000,
+                preAlarmIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val preAlarmMillis = alarmMillis - (2 * 3600 * 1000L)
+            val nowMillis = System.currentTimeMillis()
+
+            if (preAlarmMillis > nowMillis) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, preAlarmMillis, preAlarmPendingIntent)
+            } else if (alarmMillis > nowMillis) {
+                context.sendBroadcast(preAlarmIntent)
+            }
             
         } catch (e: Exception) {
             LogCollector.addLog("ALARMA: ERROR en ID ${event.id}: ${e.message}")

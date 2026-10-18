@@ -351,6 +351,8 @@
     <string name="agenda_file_detected_message">Questo file contiene eventi e note invece di festività. Continuare con l\'importazione?</string>
     <string name="continue_button">Continua</string>
     <string name="edit_all_events_option">Tutta la serie</string>
+    <string name="stop_upcoming_alarm">Spegni allarme</string>
+    <string name="upcoming_alarm_title">Prossima sveglia</string>
     <string name="unknown_elements_warning">Elementi sconosciuti in questo evento *</string>
 
 </resources>

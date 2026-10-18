@@ -195,43 +195,62 @@ class ModernCalendarWidget : GlanceAppWidget() {
             val timePart = event.startTimeStr?.let { "${it.substring(0, 5)} " } ?: ""
             val agePart = event.age?.let { " ($it)" } ?: ""
             val progressPart = if (event.isLongPeriod) " (${event.currentDay}/${event.totalDays})" else ""
+
+            val timeColor = if (event.isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else color
+            val timeColorProvider = ColorProvider(timeColor)
+
+            if (timePart.isNotBlank()) {
+                Text(
+                    text = timePart,
+                    style = TextStyle(color = timeColorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight),
+                    maxLines = 1
+                )
+            }
             
-            Text(text = "$timePart${event.title}$agePart$progressPart", modifier = GlanceModifier.defaultWeight(), style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), maxLines = 1)
+            Text(
+                text = "${event.title}$agePart$progressPart", 
+                modifier = GlanceModifier.defaultWeight(), 
+                style = TextStyle(color = colorProvider, fontSize = baseFontSize.sp, fontFamily = fontFamily, fontWeight = fontWeight), 
+                maxLines = 1
+            )
             
-            if (event.alarmTimeStr != null) {
+            val showAlarm = event.alarmTimeStr != null || event.isAlarmDismissed
+            if (showAlarm) {
                 Spacer(modifier = GlanceModifier.width(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // ALGORITMO DE OPACIDAD ADAPTATIVA
-                    // Compensamos la delgadez del icono con una curva no lineal.
-                    val rawAlpha = color.alpha
+                    val targetColor = if (event.isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else color
+                    val alarmColorProvider = ColorProvider(targetColor)
+
+                    val rawAlpha = targetColor.alpha
                     val adjustedAlpha = if (rawAlpha > 0f) {
                         (rawAlpha * 0.7f + 0.3f).coerceAtMost(1f)
                     } else 0f
                     
                     val mixedColor = Color(
-                        red = color.red * adjustedAlpha + bgColor.red * (1f - adjustedAlpha),
-                        green = color.green * adjustedAlpha + bgColor.green * (1f - adjustedAlpha),
-                        blue = color.blue * adjustedAlpha + bgColor.blue * (1f - adjustedAlpha),
+                        red = targetColor.red * adjustedAlpha + bgColor.red * (1f - adjustedAlpha),
+                        green = targetColor.green * adjustedAlpha + bgColor.green * (1f - adjustedAlpha),
+                        blue = targetColor.blue * adjustedAlpha + bgColor.blue * (1f - adjustedAlpha),
                         alpha = 1f
                     )
                     
                     Image(
-                        provider = ImageProvider(R.drawable.ic_alarm_bell_outlined), 
+                        provider = ImageProvider(if (event.isAlarmDismissed) R.drawable.ic_alarm_bell_off else R.drawable.ic_alarm_bell_outlined), 
                         contentDescription = null, 
                         modifier = GlanceModifier.size(14.dp),
                         colorFilter = ColorFilter.tint(ColorProvider(mixedColor))
                     )
-                    Text(
-                        text = event.alarmTimeStr, 
-                        style = TextStyle(
-                            color = colorProvider,
-                            // ESCALADO PROPORCIONAL: 20% más pequeño para jerarquía visual.
-                            fontSize = (baseFontSize * 0.80f).sp,
-                            fontFamily = fontFamily, 
-                            fontWeight = fontWeight
-                        ), 
-                        modifier = GlanceModifier.padding(start = 1.dp)
-                    )
+                    if (event.alarmTimeStr != null) {
+                        Text(
+                            text = event.alarmTimeStr, 
+                            style = TextStyle(
+                                color = alarmColorProvider,
+                                fontSize = (baseFontSize * 0.80f).sp,
+                                fontFamily = fontFamily, 
+                                fontWeight = fontWeight
+                            ), 
+                            modifier = GlanceModifier.padding(start = 1.dp)
+                        )
+                    }
                 }
             }
         }
