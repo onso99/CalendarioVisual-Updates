@@ -337,6 +337,11 @@ object SettingsManager {
         prefs.edit {
             prefs.all.keys.filter { it.startsWith("${eventId}_") }.forEach { remove(it) }
         }
+        try {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
+            notificationManager.cancel(eventId.toInt())
+        } catch (_: Exception) {}
     }
 
     fun saveEventAlarmOffset(context: Context, eventId: Long, offset: Int?, adn: String? = null) {

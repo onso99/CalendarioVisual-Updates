@@ -107,6 +107,7 @@ class AlarmReceiver : BroadcastReceiver() {
         // 1. Cancelamos la notificación
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(eventId.toInt())
+        notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
 
         // 2. Avisamos a la AlarmActivity (si está abierta) para que se cierre y pare el sonido
         val stopIntent = Intent("com.example.calendario.ALARM_STOP_SIGNAL").apply {
@@ -123,6 +124,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private fun showNotification(context: Context, eventId: Long, title: String) {
         val channelId = "event_alarms_v3" // Cambiamos ID para forzar el reset del sistema
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
 
         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
             putExtra("event_id", eventId)

@@ -112,6 +112,7 @@ class AlarmActivity : ComponentActivity() {
     private fun handleAlarmTrigger(eventId: Long) {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(eventId.toInt())
+        notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
         
         if ((ringtone == null) || (!ringtone!!.isPlaying)) {
             startAlarm()

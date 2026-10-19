@@ -1,3 +1,4 @@
+2026-10-18 - v3.8.25 Mini icono camaleón en la barra de estado con la notificación de alarma
 2026-10-18 - v3.8.24 Notificación de alarma que se ha apagado vuelve a mostrarse de nuevo cuando se edita la hora de alarma
 2026-10-18 - v3.8.23 Notificación de alarma pendiente (2 horas antes). Apagar alarma
 2026-10-17 - v3.8.22 Búsqueda mejorada
