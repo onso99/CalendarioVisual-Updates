@@ -1,3 +1,4 @@
+2026-10-20 - v3.8.29 Limpieza integral de alarmas y notificaciones huérfanas
 2026-10-20 - v3.8.28 Función Unificada de Alarmas Pasadas o Descartadas. Propagación a todo el sistema
 2026-10-20 - v3.8.27 Sincronizado el apagado de la alarma desde la Notificación y la lista de eventos
 2026-10-19 - v3.8.26 Notificación de alarma sincronizada con la edicióno o cambio de hora del evento. Se cancela la notificación si la alarma desaparece

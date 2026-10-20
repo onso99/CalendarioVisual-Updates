@@ -251,7 +251,7 @@ fun MonthlyEventList(
                                                     if (timePrefix != null) {
                                                         Text(
                                                             text = "$timePrefix ",
-                                                            color = if (isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else neutralColor,
+                                                            color = neutralColor,
                                                             fontSize = 16.sp,
                                                             maxLines = 1
                                                         )

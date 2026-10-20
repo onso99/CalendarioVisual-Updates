@@ -189,7 +189,7 @@ internal fun EventRow(
             if (timeText != null) {
                 Text(
                     text = "$timeText ",
-                    color = if (isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else neutralColor,
+                    color = neutralColor,
                     fontSize = 16.sp,
                     maxLines = 1
                 )

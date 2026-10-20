@@ -196,7 +196,7 @@ class ModernCalendarWidget : GlanceAppWidget() {
             val agePart = event.age?.let { " ($it)" } ?: ""
             val progressPart = if (event.isLongPeriod) " (${event.currentDay}/${event.totalDays})" else ""
 
-            val timeColor = if (event.isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else color
+            val timeColor = color
             val timeColorProvider = ColorProvider(timeColor)
 
             if (timePart.isNotBlank()) {

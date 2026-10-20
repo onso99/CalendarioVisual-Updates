@@ -174,27 +174,20 @@ object AlarmUtils {
         try {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             
-            // 1. Cancelar Alarma Normal (Iteramos por seguridad si no hay fecha)
-            // En Android, los PendingIntent se identifican por el par (RequestCode + Intent).
-            // Si no tenemos la fecha exacta, el sistema puede dejar alarmas vivas.
-            
             if (date != null) {
                 cancelAlarmInternal(context, alarmManager, eventId, date)
             } else {
-                // Si borramos el evento raíz (desde el listado o historial), 
-                // barremos una ventana razonable de 31 días para asegurar limpieza total.
                 val today = LocalDate.now()
                 for (i in -1..30) {
                     cancelAlarmInternal(context, alarmManager, eventId, today.plusDays(i.toLong()))
                 }
             }
 
-            // 2. Cancelar Snooze (si existiera)
+            // Cancelar Snooze
             val snoozeRequestCode = (eventId.toInt() % 10000) * 1000 + 999
             val snoozeIntent = Intent(context, AlarmReceiver::class.java).apply {
                 action = "com.example.calendario.ALARM_DISPARO_${eventId}_SNOOZE"
             }
-            // Eliminamos FLAG_IMMUTABLE aquí para asegurar que el sistema pueda encontrarlo para cancelar
             val snoozePendingIntent = PendingIntent.getBroadcast(
                 context, 
                 snoozeRequestCode, 
@@ -206,11 +199,21 @@ object AlarmUtils {
                 snoozePendingIntent.cancel()
             }
 
+            // Limpiar notificaciones activas en NotificationManager
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(eventId.toInt())
+            notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
+
+            // Limpiar estado de descarte
+            SettingsManager.clearDismissedAlarm(context, eventId)
+
         } catch (_: Exception) {}
     }
 
     private fun cancelAlarmInternal(context: Context, alarmManager: AlarmManager, eventId: Long, date: LocalDate) {
         val requestCode = getUniqueRequestCode(eventId, date)
+        
+        // 1. Cancelar disparo principal
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = "com.example.calendario.ALARM_DISPARO_${eventId}_$date"
         }
@@ -218,6 +221,16 @@ object AlarmUtils {
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
             pendingIntent.cancel()
+        }
+
+        // 2. Cancelar aviso previo de 2h antes
+        val preAlarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+            action = AlarmReceiver.ACTION_PRE_ALARM_NOTICE
+        }
+        val preAlarmPendingIntent = PendingIntent.getBroadcast(context, requestCode + 50000, preAlarmIntent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+        if (preAlarmPendingIntent != null) {
+            alarmManager.cancel(preAlarmPendingIntent)
+            preAlarmPendingIntent.cancel()
         }
     }
 
