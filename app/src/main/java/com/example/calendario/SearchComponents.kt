@@ -183,7 +183,7 @@ internal fun EventRow(
 
         Spacer(Modifier.width(1.dp))
 
-        val isAlarmDismissed = SettingsManager.isAlarmDismissed(context, festivo.id, festivo.date.toString())
+        val isAlarmDismissed = AlarmUtils.isAlarmPassedOrDismissed(context, festivo)
 
         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
             if (timeText != null) {

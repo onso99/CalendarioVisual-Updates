@@ -99,7 +99,7 @@ fun MonthlyEventList(
                             }
                             
                             key(eventKey) {
-                                val isAlarmDismissed = SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
+                                val isAlarmDismissed = AlarmUtils.isAlarmPassedOrDismissed(context, festivo)
                                 val normalizedTitle = remember(festivo.title) { festivo.title.unaccent().lowercase() }
                                 val esEvento1 = normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)
                                 val esEvento2 = normEvent2.isNotBlank() && normalizedTitle.contains(normEvent2)

@@ -283,13 +283,15 @@ fun AddEventScreen(
                 } else null
             }
 
-            val offset = SettingsManager.getEventAlarmOffset(context, localEventToEdit!!.id)
-            hasAlarm = offset != null
+            val offset = SettingsManager.getEventAlarmOffset(context, localEventToEdit!!.id, localEventToEdit!!.adn)
+            val hasSystemAlarm = AlarmUtils.shouldShowAlarmIcon(context, localEventToEdit!!)
+            hasAlarm = offset != null || hasSystemAlarm
             
-            alarmTime = if (offset != null) {
+            val effectiveOffset = offset ?: SettingsManager.getDefaultAlarmOffset(context)
+            alarmTime = if (hasAlarm) {
                 // SINCRO INTELIGENTE (v3.1.34): Usamos 'isAllDay' (forzado para largos) para calcular la hora real
-                if (isAllDay) LocalTime.MIDNIGHT.minusMinutes(offset.toLong())
-                else startDate.toLocalTime().minusMinutes(offset.toLong())
+                if (isAllDay) LocalTime.MIDNIGHT.minusMinutes(effectiveOffset.toLong())
+                else startDate.toLocalTime().minusMinutes(effectiveOffset.toLong())
             } else {
                 if (isAllDay) LocalTime.of(9, 0)
                 else startDate.toLocalTime().minusMinutes(defaultAlarmOffset.toLong())

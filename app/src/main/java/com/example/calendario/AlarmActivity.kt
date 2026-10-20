@@ -81,6 +81,15 @@ class AlarmActivity : ComponentActivity() {
                         title = currentEventTitle,
                         onStop = {
                             stopAlarm()
+                            if (currentEventId != -1L) {
+                                val todayStr = java.time.LocalDate.now().toString()
+                                SettingsManager.saveDismissedAlarm(this@AlarmActivity, currentEventId, todayStr)
+                                WidgetStateManager.refreshWithCurrentEvents(this@AlarmActivity)
+                                val updateIntent = Intent("com.example.calendario.ACTION_ALARM_STATE_CHANGED").apply {
+                                    setPackage(packageName)
+                                }
+                                sendBroadcast(updateIntent)
+                            }
                             finish()
                         },
                         onSnooze = {

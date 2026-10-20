@@ -60,8 +60,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 context.sendBroadcast(updateIntent)
             }
             ACTION_STOP -> {
+                val dateStr = intent.getStringExtra("event_date")
                 LogCollector.addLog("ALARMA: Detenida desde notificación ('$eventTitle')")
-                stopAlarmGlobally(context, eventId)
+                stopAlarmGlobally(context, eventId, dateStr)
             }
             ACTION_SNOOZE -> {
                 LogCollector.addLog("ALARMA: Pospuesta desde notificación ('$eventTitle')")
@@ -108,17 +109,30 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun stopAlarmGlobally(context: Context, eventId: Long) {
-        // 1. Cancelamos la notificación
+    private fun stopAlarmGlobally(context: Context, eventId: Long, dateStr: String? = null) {
+        // 1. Cancelamos las notificaciones
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(eventId.toInt())
         notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
 
-        // 2. Avisamos a la AlarmActivity (si está abierta) para que se cierre y pare el sonido
+        // 2. Registramos el apagado para la fecha si existe ID
+        if (eventId != -1L) {
+            val effectiveDateStr = dateStr?.takeIf { it.isNotBlank() } ?: java.time.LocalDate.now().toString()
+            SettingsManager.saveDismissedAlarm(context, eventId, effectiveDateStr)
+        }
+
+        // 3. Avisamos a la AlarmActivity (si está abierta) para que se cierre y pare el sonido
         val stopIntent = Intent("com.example.calendario.ALARM_STOP_SIGNAL").apply {
             setPackage(context.packageName)
         }
         context.sendBroadcast(stopIntent)
+
+        // 4. Refrescar el Widget y la interfaz en tiempo real
+        WidgetStateManager.refreshWithCurrentEvents(context)
+        val updateIntent = Intent("com.example.calendario.ACTION_ALARM_STATE_CHANGED").apply {
+            setPackage(context.packageName)
+        }
+        context.sendBroadcast(updateIntent)
     }
 
     private fun snoozeAlarmGlobally(context: Context, eventId: Long, title: String) {
@@ -204,12 +218,15 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun showPreAlarmNotification(context: Context, eventId: Long, title: String, dateStr: String, timeStr: String) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "upcoming_alarm_channel_v1"
+        val channelId = "upcoming_alarm_channel_v2"
         val channel = NotificationChannel(
             channelId,
             "Avisos de Alarma Próxima",
-            NotificationManager.IMPORTANCE_HIGH
-        )
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            setSound(null, null)
+            enableVibration(false)
+        }
         notificationManager.createNotificationChannel(channel)
 
         val dismissIntent = Intent(context, AlarmReceiver::class.java).apply {
@@ -248,7 +265,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle(contentTitle)
             .setContentText(title)
             .setContentIntent(contentPendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)

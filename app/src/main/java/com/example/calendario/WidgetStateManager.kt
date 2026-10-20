@@ -88,7 +88,7 @@ object WidgetStateManager {
             .sortedWith(compareBy({ it.date }, { it.startTime ?: java.time.LocalTime.MIN }))
             .take(limit)
             .map { event ->
-                val isDismissed = SettingsManager.isAlarmDismissed(context, event.id, event.date.toString())
+                val isDismissed = AlarmUtils.isAlarmPassedOrDismissed(context, event)
                 WidgetEvent(
                     id = event.id,
                     title = event.title,

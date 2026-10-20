@@ -1,3 +1,5 @@
+2026-10-20 - v3.8.28 Función Unificada de Alarmas Pasadas o Descartadas. Propagación a todo el sistema
+2026-10-20 - v3.8.27 Sincronizado el apagado de la alarma desde la Notificación y la lista de eventos
 2026-10-19 - v3.8.26 Notificación de alarma sincronizada con la edicióno o cambio de hora del evento. Se cancela la notificación si la alarma desaparece
 2026-10-18 - v3.8.25 Mini icono camaleón en la barra de estado con la notificación de alarma
 2026-10-18 - v3.8.24 Notificación de alarma que se ha apagado vuelve a mostrarse de nuevo cuando se edita la hora de alarma

@@ -347,4 +347,19 @@ object AlarmUtils {
         val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
         return alarmDateTime.toLocalTime().format(AppFormats.TimeShort)
     }
+
+    fun isAlarmPassedOrDismissed(context: Context, event: Festivo): Boolean {
+        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return false
+        val isDismissed = SettingsManager.isAlarmDismissed(context, event.id, event.date.toString())
+        if (isDismissed) return true
+
+        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+            event.date.atStartOfDay()
+        } else {
+            LocalDateTime.of(event.date, event.startTime)
+        }.withSecond(0).withNano(0)
+
+        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+        return !alarmDateTime.isAfter(LocalDateTime.now())
+    }
 }
