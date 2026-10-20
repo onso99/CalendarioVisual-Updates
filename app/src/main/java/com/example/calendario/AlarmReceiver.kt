@@ -53,6 +53,11 @@ class AlarmReceiver : BroadcastReceiver() {
                 notificationManager.cancel(((eventId.toInt() % 10000) * 1000) + 777)
 
                 WidgetStateManager.refreshWithCurrentEvents(context)
+
+                val updateIntent = Intent("com.example.calendario.ACTION_ALARM_STATE_CHANGED").apply {
+                    setPackage(context.packageName)
+                }
+                context.sendBroadcast(updateIntent)
             }
             ACTION_STOP -> {
                 LogCollector.addLog("ALARMA: Detenida desde notificación ('$eventTitle')")

@@ -199,9 +199,7 @@ fun DayEventsDialog(
                         }
                         val timeText = displayTime?.format(AppFormats.TimeShort)
                         
-                        val isAlarmDismissed = remember(festivo.id, date) {
-                            SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
-                        }
+                        val isAlarmDismissed = SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
                         val timeColor = if (isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else neutralColor
 
                         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {

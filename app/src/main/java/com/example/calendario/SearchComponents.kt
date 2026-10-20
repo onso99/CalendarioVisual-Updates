@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
@@ -182,11 +183,13 @@ internal fun EventRow(
 
         Spacer(Modifier.width(1.dp))
 
+        val isAlarmDismissed = SettingsManager.isAlarmDismissed(context, festivo.id, festivo.date.toString())
+
         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
             if (timeText != null) {
                 Text(
                     text = "$timeText ",
-                    color = neutralColor,
+                    color = if (isAlarmDismissed) Color.Gray.copy(alpha = 0.6f) else neutralColor,
                     fontSize = 16.sp,
                     maxLines = 1
                 )
@@ -222,9 +225,26 @@ internal fun EventRow(
                 )
             } else {
                 // --- PRIORIDAD VISUAL: Alarma > Repetición (v3.1.64) ---
-                val alarmTime = remember(festivo.id, festivo.date) { AlarmUtils.getAlarmTimeString(context, festivo) }
+                val alarmTime = AlarmUtils.getAlarmTimeString(context, festivo)
                 
-                if (alarmTime != null) {
+                if (isAlarmDismissed) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.NotificationsOff,
+                            contentDescription = null,
+                            tint = Color.Gray.copy(alpha = 0.6f),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        if (alarmTime != null) {
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                text = alarmTime,
+                                color = Color.Gray.copy(alpha = 0.6f),
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                } else if (alarmTime != null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,

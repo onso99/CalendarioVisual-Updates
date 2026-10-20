@@ -99,9 +99,7 @@ fun MonthlyEventList(
                             }
                             
                             key(eventKey) {
-                                val isAlarmDismissed = remember(festivo.id, date) {
-                                    SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
-                                }
+                                val isAlarmDismissed = SettingsManager.isAlarmDismissed(context, festivo.id, date.toString())
                                 val normalizedTitle = remember(festivo.title) { festivo.title.unaccent().lowercase() }
                                 val esEvento1 = normEvent1.isNotBlank() && normalizedTitle.contains(normEvent1)
                                 val esEvento2 = normEvent2.isNotBlank() && normalizedTitle.contains(normEvent2)
@@ -287,9 +285,7 @@ fun MonthlyEventList(
                                                     )
                                                 } else {
                                                     // --- PRIORIDAD VISUAL: Alarma > Repetición (v3.1.64) ---
-                                                    val alarmTime = remember(festivo.id, date) { 
-                                                        AlarmUtils.getAlarmTimeString(context, festivo) 
-                                                    }
+                                                    val alarmTime = AlarmUtils.getAlarmTimeString(context, festivo)
                                                     
                                                     if (isAlarmDismissed) {
                                                         Row(
