@@ -200,7 +200,6 @@ fun DayEventsDialog(
                         val timeText = displayTime?.format(AppFormats.TimeShort)
                         
                         val isAlarmDismissed = AlarmUtils.isAlarmPassedOrDismissed(context, festivo)
-                        val timeColor = neutralColor
 
                         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(if (isToday) Modifier.background(CalendarioTheme.colors.todayHighlightColor) else Modifier).clickable { onEventClick(festivo) }.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {
                             Box(Modifier.padding(top = 8.dp, start = 2.dp)) {
@@ -211,7 +210,7 @@ fun DayEventsDialog(
                             }
                             Spacer(Modifier.width(4.dp))
                             Text(buildAnnotatedString {
-                                if (timeText != null) withStyle(SpanStyle(color = timeColor)) { append("$timeText ") }
+                                if (timeText != null) withStyle(SpanStyle(color = neutralColor)) { append("$timeText ") }
                                 withStyle(SpanStyle(color = titleColor)) { append(festivo.title.ifEmpty { stringResource(R.string.no_title) }) }
                                 if (festivo.age != null) withStyle(SpanStyle(color = titleColor)) { append(" (${festivo.age})") }
                                 if (festivo.isLongPeriod) withStyle(SpanStyle(color = titleColor.copy(alpha = 0.8f), fontSize = 14.sp)) { append(" (${festivo.currentDay}/${festivo.totalDays})") }

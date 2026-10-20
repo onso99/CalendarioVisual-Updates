@@ -236,11 +236,11 @@ fun CalendarioScreen(
             }
         }
         val filter = IntentFilter("com.example.calendario.ACTION_ALARM_STATE_CHANGED")
-        androidx.core.content.ContextCompat.registerReceiver(
+        ContextCompat.registerReceiver(
             context,
             receiver,
             filter,
-            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
         onDispose {
             try { context.unregisterReceiver(receiver) } catch (_: Exception) {}
