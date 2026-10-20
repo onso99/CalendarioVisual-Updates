@@ -16,8 +16,10 @@ import android.os.VibratorManager
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -71,8 +73,7 @@ class AlarmActivity : ComponentActivity() {
         handleAlarmTrigger(currentEventId)
 
         setContent {
-            val isDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.settingsBackground.toArgb()) < 0.5
-            CalendarioTheme(darkTheme = isDark, themeUpdateTrigger = 0) {
+            CalendarioTheme(darkTheme = true, themeUpdateTrigger = 0) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = CalendarioTheme.colors.settingsBackground,
@@ -199,6 +200,12 @@ fun AlarmScreen(title: String, onStop: () -> Unit, onSnooze: () -> Unit) {
         verticalArrangement = Arrangement.SpaceAround,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier.size(96.dp)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = currentTime,
                 fontSize = 64.sp,
