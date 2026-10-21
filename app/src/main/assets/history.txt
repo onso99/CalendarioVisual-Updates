@@ -1,3 +1,5 @@
+2026-10-21 - v3.8.34 Centralización de Alarmas: F3-Refactorización y Limpieza de la Interfaz
+2026-10-21 - v3.8.33 Centralización de Alarmas: F1-Cálculo Centralizado de la Hora de Alarma, F2-Consolidación del Estado Pasado / Descartado
 2026-10-21 - Organización final: limpieza de .kotlin y commits.txt
 2026-10-21 - Eliminación definitiva de archivos basura
 2026-10-21 - Limpieza definitiva de archivos accidentales
