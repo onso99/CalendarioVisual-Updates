@@ -485,7 +485,10 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     fun removeOrphanEvent(event: Festivo) {
         viewModelScope.launch(Dispatchers.IO) {
+            deleteEvent(getApplication(), event)
             dao.markEventAsDeleted(event.id, System.currentTimeMillis())
+            SettingsManager.markEventAsDeleted(getApplication(), event.id)
+            updateMainSearchResults()
         }
     }
 

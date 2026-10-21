@@ -1,3 +1,5 @@
+2026-10-21 - v3.8.32 Borrado centralizado y diálogo de confirmación
+2026-10-20 - v3.8.31 Alarmas: Corrección de warnings
 2026-10-20 - v3.8.30 Pantalla Alarma: icono y fondo siempre oscuro del tema
 2026-10-20 - v3.8.29 Limpieza integral de alarmas y notificaciones huérfanas
 2026-10-20 - v3.8.28 Función Unificada de Alarmas Pasadas o Descartadas. Propagación a todo el sistema

@@ -147,6 +147,7 @@ fun CalendarioScreen(
     var lastCrashMessage by remember { mutableStateOf(SettingsManager.getLastCrashMessage(context)) }
     var isRepairingDatabase by remember { mutableStateOf(false) }
     var selectedMainEvents by remember { mutableStateOf(setOf<Festivo>()) }
+    var showDeleteSelectionDialog by remember { mutableStateOf(false) }
     val isMainSelectionMode = selectedMainEvents.isNotEmpty()
     
     var showCleaningDialog by remember { mutableStateOf(false) }
@@ -454,6 +455,23 @@ fun CalendarioScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
+        )
+    }
+
+    if (showDeleteSelectionDialog && selectedMainEvents.isNotEmpty()) {
+        ConfirmDeleteDialog(
+            onDismissRequest = { showDeleteSelectionDialog = false },
+            onConfirm = {
+                scope.launch {
+                    selectedMainEvents.forEach { event ->
+                        deleteEvent(context, event)
+                    }
+                    selectedMainEvents = emptySet()
+                    viewModel.refreshData()
+                }
+                showDeleteSelectionDialog = false
+            },
+            title = if (selectedMainEvents.size == 1) selectedMainEvents.first().title else "${selectedMainEvents.size} eventos"
         )
     }
 
@@ -971,14 +989,7 @@ fun CalendarioScreen(
                                         }) {
                                             Icon(painter = painterResource(id = R.drawable.ic_save_outlined), contentDescription = null, tint = Color.White)
                                         }
-                                        IconButton(onClick = {
-                                            scope.launch {
-                                                selectedMainEvents.forEach { event ->
-                                                    viewModel.removeOrphanEvent(event)
-                                                }
-                                                selectedMainEvents = emptySet()
-                                            }
-                                        }) {
+                                        IconButton(onClick = { showDeleteSelectionDialog = true }) {
                                             Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = stringResource(id = R.string.delete), tint = Color.White)
                                         }
                                     } else {

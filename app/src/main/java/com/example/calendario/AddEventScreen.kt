@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DatePicker
@@ -429,7 +428,7 @@ fun AddEventScreen(
                     
                     IconButton(onClick = {
                         if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
-                    }) { Icon(Icons.Default.Delete, stringResource(id = R.string.delete_event)) }
+                    }) { Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = stringResource(id = R.string.delete_event)) }
                 }
             }
         }
