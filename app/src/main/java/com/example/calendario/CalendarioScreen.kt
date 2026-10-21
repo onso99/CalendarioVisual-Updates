@@ -130,6 +130,7 @@ fun CalendarioScreen(
     var showAllEvents by remember { mutableStateOf(false) }
     val lazyListState = rememberLazyListState()
     var isSearchActive by remember { mutableStateOf(false) }
+    var openedFromSearch by remember { mutableStateOf(false) }
     var showReadOnlyDialog by remember { mutableStateOf(false) }
     var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
@@ -556,14 +557,28 @@ fun CalendarioScreen(
         }
 
         AddEventScreen(
-            onBackPress = { showAddEventScreen = false },
+            onBackPress = { 
+                showAddEventScreen = false
+                if (openedFromSearch) {
+                    isSearchActive = true
+                    openedFromSearch = false
+                }
+            },
             onSave = {
                 showAddEventScreen = false
                 viewModel.refreshData()
+                if (openedFromSearch) {
+                    isSearchActive = true
+                    openedFromSearch = false
+                }
             },
             onDelete = {
                 showAddEventScreen = false
                 viewModel.refreshData()
+                if (openedFromSearch) {
+                    isSearchActive = true
+                    openedFromSearch = false
+                }
             },
             editableCalendars = editableCalendars,
             initialDate = dateForNewEvent,
@@ -662,6 +677,7 @@ fun CalendarioScreen(
             searchResults = uiState.mainSearchResults,
             onClose = { isSearchActive = false },
             onEventClick = { clicked -> 
+                openedFromSearch = true
                 isSearchActive = false
                 onEventClickHandler(clicked)
             },
@@ -671,6 +687,7 @@ fun CalendarioScreen(
             },
             onDeleteNote = viewModel::deleteDailyNote,
             onOpenHolidayManager = { clicked ->
+                openedFromSearch = true
                 isSearchActive = false
                 onEventClickHandler(clicked)
             },

@@ -104,7 +104,7 @@ internal fun EventRow(
     val timeText = displayTime?.format(AppFormats.TimeShort)
 
     val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
-    val ageText = if (festivo.age != null && festivo.age > 0) " (${festivo.age})" else ""
+    val ageText = festivo.displayAge
 
     val locale = LocalConfiguration.current.locales[0]
 
@@ -207,7 +207,7 @@ internal fun EventRow(
 
             if (festivo.isLongPeriod) {
                 Text(
-                    " (${festivo.currentDay}/${festivo.totalDays})",
+                    festivo.displayProgress,
                     color = titleColor.copy(alpha = 0.8f),
                     fontSize = 14.sp,
                     maxLines = 1

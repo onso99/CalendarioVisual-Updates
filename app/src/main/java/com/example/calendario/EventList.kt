@@ -168,9 +168,7 @@ fun MonthlyEventList(
                                 
                                 val titleText = festivo.title.ifEmpty { if (festivo.isAllDay) allDayEvent else noTitle }
 
-                                val ageText = if (festivo.age != null && festivo.age > 0) {
-                                    " (${festivo.age})"
-                                } else ""
+                                val ageText = festivo.displayAge
 
                                 if (titleText.isNotBlank()) {
                                     Row(
@@ -267,7 +265,7 @@ fun MonthlyEventList(
                                                     )
                                                     if (festivo.isLongPeriod) {
                                                         Text(
-                                                            " (${festivo.currentDay}/${festivo.totalDays})",
+                                                            festivo.displayProgress,
                                                             color = titleColor,
                                                             fontSize = 16.sp,
                                                             maxLines = 1

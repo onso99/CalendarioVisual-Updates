@@ -43,6 +43,11 @@ data class Festivo(
     val isDeleted: Boolean = false,
     val isGhost: Boolean = false
 ) {
+    val displayAge: String
+        get() = if (age != null && age > 0) " ($age)" else ""
+
+    val displayProgress: String
+        get() = if (isLongPeriod) " ($currentDay/$totalDays)" else ""
     /**
      * Serializa el objeto a JSON (Fase 4 v3.1.34)
      * @param forExport Si es true, omite datos técnicos como IDs reales y reglas de repetición
