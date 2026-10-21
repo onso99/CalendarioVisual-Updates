@@ -325,54 +325,35 @@ object AlarmUtils {
         return purgedCount
     }
 
+    fun getAlarmDateTime(context: Context, event: Festivo): LocalDateTime? {
+        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return null
+        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
+            event.date.atStartOfDay()
+        } else {
+            LocalDateTime.of(event.date, event.startTime)
+        }.withSecond(0).withNano(0)
+        return referenceDateTime.minusMinutes(offset.toLong())
+    }
+
     /**
      * Determina si se debe mostrar el icono de campana.
      * Criterio: Switch ON Y (Es futuro O es serie recurrente que aún no ha pasado en el día)
      */
     fun shouldShowAlarmIcon(context: Context, event: Festivo): Boolean {
-        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return false
-        
-        // SINCRO INTELIGENTE (v3.1.34): En periodos largos, si el ajuste existe en Prefs, 
-        // mostramos la campana en todos los días del bloque para dar confianza al usuario.
         if (event.isLongPeriod) return true
-
-        val referenceDateTime = if ((event.isAllDay) || (event.startTime == null)) {
-            event.date.atStartOfDay()
-        } else {
-            LocalDateTime.of(event.date, event.startTime)
-        }.withSecond(0).withNano(0)
-
-        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
-        
-        // Solo mostramos si la alarma está en el futuro
+        val alarmDateTime = getAlarmDateTime(context, event) ?: return false
         return alarmDateTime.isAfter(LocalDateTime.now())
     }
 
     fun getAlarmTimeString(context: Context, event: Festivo): String? {
-        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return null
-        
-        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
-            event.date.atStartOfDay()
-        } else {
-            LocalDateTime.of(event.date, event.startTime)
-        }.withSecond(0).withNano(0)
-
-        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+        val alarmDateTime = getAlarmDateTime(context, event) ?: return null
         return alarmDateTime.toLocalTime().format(AppFormats.TimeShort)
     }
 
     fun isAlarmPassedOrDismissed(context: Context, event: Festivo): Boolean {
-        val offset = SettingsManager.getEventAlarmOffset(context, event.id, event.adn) ?: return false
         val isDismissed = SettingsManager.isAlarmDismissed(context, event.id, event.date.toString())
         if (isDismissed) return true
-
-        val referenceDateTime = if (event.isAllDay || event.startTime == null) {
-            event.date.atStartOfDay()
-        } else {
-            LocalDateTime.of(event.date, event.startTime)
-        }.withSecond(0).withNano(0)
-
-        val alarmDateTime = referenceDateTime.minusMinutes(offset.toLong())
+        val alarmDateTime = getAlarmDateTime(context, event) ?: return false
         return !alarmDateTime.isAfter(LocalDateTime.now())
     }
 }

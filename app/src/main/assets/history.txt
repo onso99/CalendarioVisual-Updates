@@ -1,3 +1,6 @@
+2026-10-21 - Organización final: limpieza de .kotlin y commits.txt
+2026-10-21 - Eliminación definitiva de archivos basura
+2026-10-21 - Limpieza definitiva de archivos accidentales
 2026-10-21 - v3.8.32 Borrado centralizado y diálogo de confirmación
 2026-10-20 - v3.8.31 Alarmas: Corrección de warnings
 2026-10-20 - v3.8.30 Pantalla Alarma: icono y fondo siempre oscuro del tema
