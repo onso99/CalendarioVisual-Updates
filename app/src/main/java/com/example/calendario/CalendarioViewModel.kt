@@ -130,9 +130,9 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
 
     fun applySearchTimeShortcut(shortcut: String) {
         _uiState.update { state ->
-            // LÓGICA DE TOGGLE: Si ya está activo, lo quitamos
+            // REGLA: Uno de los rangos ("MONTH", "YEAR", "ALWAYS") debe estar SIEMPRE activo
             if (state.mainSearchTimeShortcut == shortcut) {
-                return@update state.copy(mainSearchTimeShortcut = null)
+                return@update state
             }
 
             // Mantenemos las fechas actuales si el nuevo modo es ALWAYS (v3.2.14.5)
