@@ -265,7 +265,6 @@ fun WarningDialog(
     message: String,
     confirmText: String = stringResource(id = R.string.accept),
     dismissText: String = stringResource(id = R.string.cancel),
-    confirmColor: Color = CalendarioTheme.colors.cabecera,
     icon: (@Composable () -> Unit)? = null
 ) {
     AppDialog(
@@ -278,7 +277,7 @@ fun WarningDialog(
                 dismissText = dismissText,
                 onConfirm = onConfirm,
                 onDismiss = onDismissRequest,
-                confirmColor = confirmColor
+                confirmColor = Color.Red
             )
         }
     ) {

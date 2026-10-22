@@ -1,6 +1,11 @@
 package com.example.calendario
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
@@ -16,6 +21,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 /**
  * Motor de datos del Widget Moderno.
@@ -32,9 +38,9 @@ object WidgetStateManager {
     
     private val gson = Gson()
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private var updateJob: Job? = null
 
     fun refreshWithCurrentEvents(context: Context, providedEvents: List<Festivo>? = null) {
+        scheduleWidgetRefreshWorker(context)
         scope.launch(Dispatchers.IO) {
             val events = providedEvents ?: try {
                 val selectedIds = SettingsManager.getSelectedCalendarIds(context)
@@ -46,6 +52,24 @@ object WidgetStateManager {
             }
             performUpdate(context, events)
         }
+    }
+
+    fun scheduleWidgetRefreshWorker(context: Context) {
+        try {
+            val constraints = androidx.work.Constraints.Builder()
+                .setRequiredNetworkType(androidx.work.NetworkType.NOT_REQUIRED)
+                .build()
+
+            val workRequest = androidx.work.PeriodicWorkRequestBuilder<WidgetRefreshWorker>(15, java.util.concurrent.TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .build()
+
+            androidx.work.WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                "widget_periodic_refresh_work",
+                androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+            )
+        } catch (_: Exception) {}
     }
 
     private fun cleanAndFilterEvents(context: Context, events: List<Festivo>): List<WidgetEvent> {
@@ -142,7 +166,49 @@ object WidgetStateManager {
                 }
             }
             ModernCalendarWidget().updateAll(context)
+            calculateAndScheduleNextRefresh(context, events)
         } catch (_: Exception) { }
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    fun calculateAndScheduleNextRefresh(context: Context, events: List<Festivo>) {
+        try {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                return
+            }
+
+            val now = LocalDateTime.now()
+            val today = LocalDate.now()
+            
+            val nextExpirationMillis = events.asSequence()
+                .filter { it.date.isEqual(today) && !it.isAllDay }
+                .mapNotNull { event ->
+                    val eventEndTime = event.endTime ?: event.startTime?.plusHours(1)
+                    if (eventEndTime != null) {
+                        val endDt = LocalDateTime.of(event.date, eventEndTime)
+                        if (endDt.isAfter(now)) {
+                            endDt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                        } else null
+                    } else null
+                }
+                .minOrNull() ?: run {
+                    val midnight = today.plusDays(1).atStartOfDay().plusSeconds(1)
+                    midnight.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                }
+
+            val intent = Intent(context, ModernCalendarWidgetReceiver::class.java).apply {
+                action = ModernCalendarWidgetReceiver.ACTION_REFRESH_WIDGET
+            }
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                88888,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextExpirationMillis, pendingIntent)
+        } catch (_: Exception) {}
     }
 
     data class WidgetEvent(

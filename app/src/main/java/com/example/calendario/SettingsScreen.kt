@@ -688,8 +688,7 @@ fun SettingsScreen(
                 title = stringResource(id = R.string.discard_changes_title),
                 message = stringResource(id = R.string.discard_changes_confirmation),
                 confirmText = stringResource(id = R.string.discard),
-                dismissText = stringResource(id = R.string.cancel),
-                confirmColor = Color.Red
+                dismissText = stringResource(id = R.string.cancel)
             )
         }
         if (showExportDialog) { 
