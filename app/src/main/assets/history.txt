@@ -1,3 +1,5 @@
+2026-10-22 - v3.8.37 Centralización de Diálogos de Advertencia/Confirmación Genéricos
+2026-10-21 - v3.8.36 Buscar: Mantenimiento Obligatorio de Rango Temporal Activo
 2026-10-21 - v3.8.35 Flecha de retorno: Rastreador de Origen y Retorno Inteligente
 2026-10-21 - v3.8.34 Centralización de Alarmas: F3-Refactorización y Limpieza de la Interfaz
 2026-10-21 - v3.8.33 Centralización de Alarmas: F1-Cálculo Centralizado de la Hora de Alarma, F2-Consolidación del Estado Pasado / Descartado

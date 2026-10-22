@@ -34,11 +34,14 @@ object WidgetStateManager {
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var updateJob: Job? = null
 
-    fun refreshWithCurrentEvents(context: Context) {
-        updateJob?.cancel()
-        updateJob = scope.launch {
-            val database = AppDatabase.getDatabase(context)
-            val events = withContext(Dispatchers.IO) {
+    fun refreshWithCurrentEvents(context: Context, providedEvents: List<Festivo>? = null) {
+        scope.launch(Dispatchers.IO) {
+            val events = providedEvents ?: try {
+                val selectedIds = SettingsManager.getSelectedCalendarIds(context)
+                val eventsMap = readFestivosFromCalendarsSync(context, selectedIds)
+                eventsMap.values.flatten()
+            } catch (_: Exception) {
+                val database = AppDatabase.getDatabase(context)
                 database.calendarDao().getAllEventsSync().map { it.toFestivo() }
             }
             performUpdate(context, events)

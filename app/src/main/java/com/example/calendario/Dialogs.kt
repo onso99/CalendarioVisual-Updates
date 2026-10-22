@@ -257,6 +257,41 @@ fun ConfirmDeleteDialog(
     }
 }
 
+@Composable
+fun WarningDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+    title: String,
+    message: String,
+    confirmText: String = stringResource(id = R.string.accept),
+    dismissText: String = stringResource(id = R.string.cancel),
+    confirmColor: Color = CalendarioTheme.colors.cabecera,
+    icon: (@Composable () -> Unit)? = null
+) {
+    AppDialog(
+        onDismissRequest = onDismissRequest,
+        title = title,
+        icon = icon,
+        confirmButton = {
+            AdaptiveDialogButtons(
+                confirmText = confirmText,
+                dismissText = dismissText,
+                onConfirm = onConfirm,
+                onDismiss = onDismissRequest,
+                confirmColor = confirmColor
+            )
+        }
+    ) {
+        Text(
+            text = message,
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 15.sp,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = if (icon != null) TextAlign.Center else TextAlign.Start
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerDialog(

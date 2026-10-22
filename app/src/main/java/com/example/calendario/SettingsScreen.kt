@@ -679,14 +679,18 @@ fun SettingsScreen(
         if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; SettingsManager.saveWidgetTodayEventColor(context, it); refreshUI(); showWidgetTodayEventColorPalette = false }) }
         if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; SettingsManager.saveWidgetBackgroundColor(context, it); refreshUI(); showWidgetBackgroundColorPalette = false }) }
         if (showDiscardChangesDialog) { 
-            AppDialog(
+            WarningDialog(
                 onDismissRequest = { showDiscardChangesDialog = false },
+                onConfirm = { 
+                    showDiscardChangesDialog = false
+                    onBackPress() 
+                },
                 title = stringResource(id = R.string.discard_changes_title),
-                confirmButton = { DialogConfirmButton(text = stringResource(id = R.string.discard), onClick = { showDiscardChangesDialog = false; onBackPress() }, color = Color.Red) },
-                dismissButton = { DialogDismissButton(onDismiss = { showDiscardChangesDialog = false }) }
-            ) {
-                Text(stringResource(id = R.string.discard_changes_confirmation))
-            }
+                message = stringResource(id = R.string.discard_changes_confirmation),
+                confirmText = stringResource(id = R.string.discard),
+                dismissText = stringResource(id = R.string.cancel),
+                confirmColor = Color.Red
+            )
         }
         if (showExportDialog) { 
             val cleanId = lightThemeName.removeSuffix("***")
