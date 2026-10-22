@@ -208,6 +208,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
             .setColor(android.graphics.Color.RED) // Color de acento para la notificación
             .addAction(0, context.getString(R.string.snooze_alarm), snoozeBtnPendingIntent) // Izquierda
             .addAction(0, context.getString(R.string.stop_alarm), stopBtnPendingIntent) // Derecha
@@ -218,11 +219,11 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun showPreAlarmNotification(context: Context, eventId: Long, title: String, dateStr: String, timeStr: String) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "upcoming_alarm_channel_v2"
+        val channelId = "upcoming_alarm_channel_v4"
         val channel = NotificationChannel(
             channelId,
             "Avisos de Alarma Próxima",
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         ).apply {
             setSound(null, null)
             enableVibration(false)
@@ -265,10 +266,11 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle(contentTitle)
             .setContentText(title)
             .setContentIntent(contentPendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
             .addAction(0, context.getString(R.string.stop_upcoming_alarm), dismissPendingIntent)
             .build()
 
