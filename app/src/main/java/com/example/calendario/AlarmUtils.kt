@@ -12,6 +12,7 @@ import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.provider.CalendarContract
 import androidx.core.content.edit
+import androidx.core.graphics.toColorInt
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -103,28 +104,68 @@ object AlarmUtils {
             val timeStr = alarmDateTime.toLocalTime().toString().take(5)
             LogCollector.addLog("ALARMA: SISTEMA -> '${event.title}' ($timeStr) [Icono solicitado]")
 
-            // 3. Programación de Notificación Previa (2 horas antes - Estilo Reloj de Google)
-            val preAlarmIntent = Intent(context, AlarmReceiver::class.java).apply {
-                action = AlarmReceiver.ACTION_PRE_ALARM_NOTICE
+            // 3. Publicación de Notificación Persistente de Alarma Próxima (Estilo Reloj de Google - Entrada Silenciosa)
+            val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channelId = "upcoming_alarm_channel_v7"
+            val preAlarmChannel = NotificationChannel(
+                channelId,
+                "Avisos de Alarma Próxima",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                setSound(null, null)
+                enableVibration(false)
+            }
+            notifManager.createNotificationChannel(preAlarmChannel)
+
+            val dismissIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = AlarmReceiver.ACTION_DISMISS_UPCOMING
                 putExtra("event_id", event.id)
                 putExtra("event_title", event.title)
                 putExtra("event_date", event.date.toString())
-                putExtra("event_time_str", timeStr)
             }
-            val preAlarmPendingIntent = PendingIntent.getBroadcast(
+            val dismissPendingIntent = PendingIntent.getBroadcast(
                 context,
-                requestCode + 50000,
-                preAlarmIntent,
+                ((event.id.toInt() % 10000) * 1000) + 777,
+                dismissIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val preAlarmMillis = alarmMillis - (2 * 3600 * 1000L)
-            val nowMillis = System.currentTimeMillis()
+            val contentIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                putExtra("event_id", event.id)
+            }
+            val contentPendingIntent = PendingIntent.getActivity(
+                context,
+                ((event.id.toInt() % 10000) * 1000) + 888,
+                contentIntent ?: Intent(),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
-            if (preAlarmMillis > nowMillis) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, preAlarmMillis, preAlarmPendingIntent)
-            } else if (alarmMillis > nowMillis) {
-                context.sendBroadcast(preAlarmIntent)
+            val contentTitle = if (timeStr.isNotBlank()) {
+                "${context.getString(R.string.upcoming_alarm_title)}: $timeStr"
+            } else {
+                context.getString(R.string.upcoming_alarm_title)
+            }
+
+            val notification = androidx.core.app.NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_chameleon_notification)
+                .setColor("#0077C2".toColorInt())
+                .setContentTitle(contentTitle)
+                .setContentText(event.title)
+                .setContentIntent(contentPendingIntent)
+                .setPriority(androidx.core.app.NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(androidx.core.app.NotificationCompat.CATEGORY_ALARM)
+                .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .addAction(0, context.getString(R.string.stop_upcoming_alarm), dismissPendingIntent)
+                .build()
+
+            val notificationId = ((event.id.toInt() % 10000) * 1000) + 777
+            val alreadyPosted = SettingsManager.hasPostedPreAlarm(context, event.id, event.date.toString())
+            if (!alreadyPosted) {
+                notifManager.notify(notificationId, notification)
+                SettingsManager.setPostedPreAlarm(context, event.id, event.date.toString(), true)
             }
             
         } catch (e: Exception) {

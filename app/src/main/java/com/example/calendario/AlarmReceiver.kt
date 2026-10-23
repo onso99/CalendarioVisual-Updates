@@ -219,11 +219,11 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun showPreAlarmNotification(context: Context, eventId: Long, title: String, dateStr: String, timeStr: String) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "upcoming_alarm_channel_v4"
+        val channelId = "upcoming_alarm_channel_v7"
         val channel = NotificationChannel(
             channelId,
             "Avisos de Alarma Próxima",
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
             setSound(null, null)
             enableVibration(false)
@@ -266,7 +266,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle(contentTitle)
             .setContentText(title)
             .setContentIntent(contentPendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)

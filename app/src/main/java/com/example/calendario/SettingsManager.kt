@@ -335,7 +335,7 @@ object SettingsManager {
     fun clearDismissedAlarm(context: Context, eventId: Long) {
         val prefs = dismissedAlarmsPrefs(context)
         prefs.edit {
-            prefs.all.keys.filter { it.startsWith("${eventId}_") }.forEach { remove(it) }
+            prefs.all.keys.filter { it.startsWith("${eventId}_") || it.startsWith("posted_pre_${eventId}_") }.forEach { remove(it) }
         }
         try {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
@@ -561,5 +561,15 @@ object SettingsManager {
     fun isAlarmDismissed(context: Context, eventId: Long, dateStr: String): Boolean {
         val key = "${eventId}_$dateStr"
         return dismissedAlarmsPrefs(context).getBoolean(key, false)
+    }
+
+    fun hasPostedPreAlarm(context: Context, eventId: Long, dateStr: String): Boolean {
+        val key = "posted_pre_${eventId}_$dateStr"
+        return dismissedAlarmsPrefs(context).getBoolean(key, false)
+    }
+
+    fun setPostedPreAlarm(context: Context, eventId: Long, dateStr: String, posted: Boolean) {
+        val key = "posted_pre_${eventId}_$dateStr"
+        dismissedAlarmsPrefs(context).edit { putBoolean(key, posted) }
     }
 }
