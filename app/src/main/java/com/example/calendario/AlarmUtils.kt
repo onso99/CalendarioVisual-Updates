@@ -104,68 +104,85 @@ object AlarmUtils {
             val timeStr = alarmDateTime.toLocalTime().toString().take(5)
             LogCollector.addLog("ALARMA: SISTEMA -> '${event.title}' ($timeStr) [Icono solicitado]")
 
-            // 3. Publicación de Notificación Persistente de Alarma Próxima (Estilo Reloj de Google - Entrada Silenciosa)
-            val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channelId = "upcoming_alarm_channel_v7"
-            val preAlarmChannel = NotificationChannel(
-                channelId,
-                "Avisos de Alarma Próxima",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                setSound(null, null)
-                enableVibration(false)
-            }
-            notifManager.createNotificationChannel(preAlarmChannel)
+            // 3. Programación y Publicación de Notificación Previa (Restringido estrictamente a <= 2 horas)
+            val preAlarmMillis = alarmMillis - (2 * 3600 * 1000L)
+            val nowMillis = System.currentTimeMillis()
 
-            val dismissIntent = Intent(context, AlarmReceiver::class.java).apply {
-                action = AlarmReceiver.ACTION_DISMISS_UPCOMING
-                putExtra("event_id", event.id)
-                putExtra("event_title", event.title)
-                putExtra("event_date", event.date.toString())
-            }
-            val dismissPendingIntent = PendingIntent.getBroadcast(
-                context,
-                ((event.id.toInt() % 10000) * 1000) + 777,
-                dismissIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+            if (preAlarmMillis > nowMillis) {
+                // Faltan más de 2 horas (ej. evento de mañana): Programamos AlarmManager a futuro
+                val preAlarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+                    action = AlarmReceiver.ACTION_PRE_ALARM_NOTICE
+                    putExtra("event_id", event.id)
+                    putExtra("event_title", event.title)
+                    putExtra("event_date", event.date.toString())
+                    putExtra("event_time_str", timeStr)
+                }
+                val preAlarmPendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    requestCode + 50000,
+                    preAlarmIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, preAlarmMillis, preAlarmPendingIntent)
+            } else if (alarmMillis > nowMillis) {
+                // Estamos dentro de la ventana de las 2 horas previas a la alarma
+                val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val channelId = "upcoming_alarm_channel_v8"
+                val preAlarmChannel = NotificationChannel(
+                    channelId,
+                    "Avisos de Alarma Próxima",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    setSound(null, null)
+                    enableVibration(false)
+                }
+                notifManager.createNotificationChannel(preAlarmChannel)
 
-            val contentIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                putExtra("event_id", event.id)
-            }
-            val contentPendingIntent = PendingIntent.getActivity(
-                context,
-                ((event.id.toInt() % 10000) * 1000) + 888,
-                contentIntent ?: Intent(),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+                val dismissIntent = Intent(context, AlarmReceiver::class.java).apply {
+                    action = AlarmReceiver.ACTION_DISMISS_UPCOMING
+                    putExtra("event_id", event.id)
+                    putExtra("event_title", event.title)
+                    putExtra("event_date", event.date.toString())
+                }
+                val dismissPendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    ((event.id.toInt() % 10000) * 1000) + 777,
+                    dismissIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
 
-            val contentTitle = if (timeStr.isNotBlank()) {
-                "${context.getString(R.string.upcoming_alarm_title)}: $timeStr"
-            } else {
-                context.getString(R.string.upcoming_alarm_title)
-            }
+                val contentIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra("event_id", event.id)
+                }
+                val contentPendingIntent = PendingIntent.getActivity(
+                    context,
+                    ((event.id.toInt() % 10000) * 1000) + 888,
+                    contentIntent ?: Intent(),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
 
-            val notification = androidx.core.app.NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_chameleon_notification)
-                .setColor("#0077C2".toColorInt())
-                .setContentTitle(contentTitle)
-                .setContentText(event.title)
-                .setContentIntent(contentPendingIntent)
-                .setPriority(androidx.core.app.NotificationCompat.PRIORITY_DEFAULT)
-                .setCategory(androidx.core.app.NotificationCompat.CATEGORY_ALARM)
-                .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC)
-                .setOngoing(true)
-                .setOnlyAlertOnce(true)
-                .addAction(0, context.getString(R.string.stop_upcoming_alarm), dismissPendingIntent)
-                .build()
+                val contentTitle = if (timeStr.isNotBlank()) {
+                    "${context.getString(R.string.upcoming_alarm_title)}: $timeStr"
+                } else {
+                    context.getString(R.string.upcoming_alarm_title)
+                }
 
-            val notificationId = ((event.id.toInt() % 10000) * 1000) + 777
-            val alreadyPosted = SettingsManager.hasPostedPreAlarm(context, event.id, event.date.toString())
-            if (!alreadyPosted) {
-                notifManager.notify(notificationId, notification)
-                SettingsManager.setPostedPreAlarm(context, event.id, event.date.toString(), true)
+                val notification = androidx.core.app.NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_chameleon_notification)
+                    .setColor("#0077C2".toColorInt())
+                    .setContentTitle(contentTitle)
+                    .setContentText(event.title)
+                    .setContentIntent(contentPendingIntent)
+                    .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(androidx.core.app.NotificationCompat.CATEGORY_ALARM)
+                    .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC)
+                    .setOngoing(true)
+                    .setOnlyAlertOnce(true)
+                    .addAction(0, context.getString(R.string.stop_upcoming_alarm), dismissPendingIntent)
+                    .build()
+
+                notifManager.notify(((event.id.toInt() % 10000) * 1000) + 777, notification)
             }
             
         } catch (e: Exception) {
@@ -352,9 +369,8 @@ object AlarmUtils {
                     LocalDateTime.of(event.date, event.startTime)
                 }
                 
-                // Solo programamos si es futuro (la función scheduleAlarm ya filtrará las 2h para el icono)
+                // Solo programamos si es futuro (scheduleAlarm actualizará los temporizadores sin parpadear la notificación)
                 if (referenceDateTime.isAfter(now)) {
-                    cancelAlarm(context, event.id, event.date)
                     scheduleAlarm(context, event)
                     count++
                 }
