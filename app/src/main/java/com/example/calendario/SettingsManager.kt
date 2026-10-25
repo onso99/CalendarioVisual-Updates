@@ -562,14 +562,4 @@ object SettingsManager {
         val key = "${eventId}_$dateStr"
         return dismissedAlarmsPrefs(context).getBoolean(key, false)
     }
-
-    fun hasPostedPreAlarm(context: Context, eventId: Long, dateStr: String): Boolean {
-        val key = "posted_pre_${eventId}_$dateStr"
-        return dismissedAlarmsPrefs(context).getBoolean(key, false)
-    }
-
-    fun setPostedPreAlarm(context: Context, eventId: Long, dateStr: String, posted: Boolean) {
-        val key = "posted_pre_${eventId}_$dateStr"
-        dismissedAlarmsPrefs(context).edit { putBoolean(key, posted) }
-    }
 }
