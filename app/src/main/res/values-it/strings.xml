@@ -353,6 +353,7 @@
     <string name="edit_all_events_option">Tutta la serie</string>
     <string name="stop_upcoming_alarm">Spegni allarme</string>
     <string name="upcoming_alarm_title">Prossima sveglia</string>
+    <string name="export_filename_local_holidays">FesteLocali</string>
     <string name="unknown_elements_warning">Elementi sconosciuti in questo evento *</string>
 
 </resources>

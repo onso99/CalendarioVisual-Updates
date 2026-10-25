@@ -352,6 +352,7 @@
     <string name="edit_all_events_option">Вся серия</string>
     <string name="stop_upcoming_alarm">Выключить будильник</string>
     <string name="upcoming_alarm_title">Предстоящий будильник</string>
+    <string name="export_filename_local_holidays">LocalHolidays</string>
     <string name="unknown_elements_warning">Неизвестные элементы в этом событии *</string>
 
 </resources>

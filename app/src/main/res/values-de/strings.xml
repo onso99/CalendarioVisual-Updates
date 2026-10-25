@@ -352,6 +352,7 @@
     <string name="edit_all_events_option">Ganze Serie</string>
     <string name="stop_upcoming_alarm">Alarm ausschalten</string>
     <string name="upcoming_alarm_title">Nächster Alarm</string>
+    <string name="export_filename_local_holidays">LokaleFeiertage</string>
     <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
 
 </resources>

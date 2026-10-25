@@ -353,6 +353,7 @@
     <string name="edit_all_events_option">Tota la sèrie</string>
     <string name="stop_upcoming_alarm">Apagar alarma</string>
     <string name="upcoming_alarm_title">Pròxima alarma</string>
+    <string name="export_filename_local_holidays">FestesLocals</string>
     <string name="unknown_elements_warning">Elements desconeguts en aquest esdeveniment *</string>
 </resources>
 

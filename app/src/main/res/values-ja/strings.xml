@@ -352,6 +352,7 @@
     <string name="edit_all_events_option">シリーズ全体</string>
     <string name="stop_upcoming_alarm">アラームをオフ</string>
     <string name="upcoming_alarm_title">次のアラーム</string>
+    <string name="export_filename_local_holidays">LocalHolidays</string>
     <string name="unknown_elements_warning">このイベント内の不明な要素 *</string>
 
 </resources>

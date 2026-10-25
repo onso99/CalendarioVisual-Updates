@@ -89,6 +89,35 @@ object CvoHelper {
         }
     }
 
+    fun exportHolidaysPackageToUri(
+        context: Context,
+        uri: android.net.Uri,
+        adjustments: List<HolidayAdjustment>
+    ) {
+        if (adjustments.isEmpty()) return
+        try {
+            val currentYear = java.time.LocalDate.now().year
+            val exportable = adjustments.filter { it.date.year >= currentYear }
+            
+            val root = JSONObject()
+            root.put("tipo", "CVO_HOLIDAYS")
+            root.put("version", 1)
+            root.put("fecha_creacion", System.currentTimeMillis())
+            
+            val dataArray = JSONArray()
+            exportable.forEach { adj -> dataArray.put(adj.toJson()) }
+            root.put("ajustes", dataArray)
+
+            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(root.toString(4).toByteArray())
+            }
+            context.showToast("Exportación completada")
+        } catch (e: Exception) {
+            Log.e("CvoHelper", "Error exportando CVO: ${e.message}")
+            context.showToast("Error al exportar archivo")
+        }
+    }
+
     private fun shareFile(context: Context, file: File, chooserTitle: String, text: String) {
         val contentUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
         

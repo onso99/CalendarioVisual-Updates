@@ -352,6 +352,7 @@
     <string name="edit_all_events_option">整个系列</string>
     <string name="stop_upcoming_alarm">关闭闹钟</string>
     <string name="upcoming_alarm_title">下一个闹钟</string>
+    <string name="export_filename_local_holidays">LocalHolidays</string>
     <string name="unknown_elements_warning">此事件中的未知元素 *</string>
 
 </resources>
