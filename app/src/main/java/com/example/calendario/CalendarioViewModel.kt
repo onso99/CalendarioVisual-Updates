@@ -43,7 +43,7 @@ data class CalendarioUiState(
     val mainSearchStartDate: LocalDate = LocalDate.now().withDayOfMonth(1),
     val mainSearchEndDate: LocalDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()),
     val mainSearchFilters: Set<String> = setOf("EVENT", "NOTE"), // Restaurado a seleccionados por defecto (v3.2.16.2)
-    val mainSearchTimeShortcut: String? = "MONTH", // Mes por defecto (v3.2.14.1)
+    val mainSearchTimeShortcut: String = "MONTH", // Mes por defecto (v3.2.14.1)
     val mainSearchResults: Map<LocalDate, List<SearchItem>> = emptyMap()
 )
 
@@ -105,13 +105,39 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
     fun updateSearchStartDate(date: LocalDate) {
         _uiState.update { state ->
             val newEndDate = if (state.mainSearchEndDate.isBefore(date)) date.plusYears(1) else state.mainSearchEndDate
-            state.copy(mainSearchStartDate = date, mainSearchEndDate = newEndDate, mainSearchTimeShortcut = null)
+            val today = LocalDate.now()
+            val monthStart = today.withDayOfMonth(1)
+            val monthEnd = today.withDayOfMonth(today.lengthOfMonth())
+            val yearStart = today.withDayOfYear(1)
+            val yearEnd = today.withDayOfYear(today.lengthOfYear())
+
+            val shortcut = when {
+                date == monthStart && newEndDate == monthEnd -> "MONTH"
+                date == yearStart && newEndDate == yearEnd -> "YEAR"
+                else -> state.mainSearchTimeShortcut.ifEmpty { "MONTH" }
+            }
+
+            state.copy(mainSearchStartDate = date, mainSearchEndDate = newEndDate, mainSearchTimeShortcut = shortcut)
         }
         updateMainSearchResults()
     }
 
     fun updateSearchEndDate(date: LocalDate) {
-        _uiState.update { it.copy(mainSearchEndDate = date, mainSearchTimeShortcut = null) }
+        _uiState.update { state ->
+            val today = LocalDate.now()
+            val monthStart = today.withDayOfMonth(1)
+            val monthEnd = today.withDayOfMonth(today.lengthOfMonth())
+            val yearStart = today.withDayOfYear(1)
+            val yearEnd = today.withDayOfYear(today.lengthOfYear())
+
+            val shortcut = when {
+                state.mainSearchStartDate == monthStart && date == monthEnd -> "MONTH"
+                state.mainSearchStartDate == yearStart && date == yearEnd -> "YEAR"
+                else -> state.mainSearchTimeShortcut.ifEmpty { "MONTH" }
+            }
+
+            state.copy(mainSearchEndDate = date, mainSearchTimeShortcut = shortcut)
+        }
         updateMainSearchResults()
     }
 

@@ -1,3 +1,4 @@
+2026-10-25 - v3.8.42 Corrección de warnings
 2026-10-25 - v3.8.41 Gestor de festivos: Multiselección estandar como en Buscar y Lista de eventos
 2026-10-23 - v3.8.40.1 Alarmas: correcciones
 2026-10-23 - v3.8.40 Alarmas: comportamiento similar al reloj del sistema
