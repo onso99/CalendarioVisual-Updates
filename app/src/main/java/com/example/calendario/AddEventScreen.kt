@@ -325,10 +325,13 @@ fun AddEventScreen(
 
             initialTitle = ""
             initialIsAllDay = true
+            initialSelectedCalendar = selectedCalendar
             initialStartDate = startDate
             initialEndDate = endDate
             initialRepetitionRule = repetitionRule
             initialRepeatUntilDate = null
+            initialHasAlarm = hasAlarm
+            initialAlarmTime = alarmTime
         }
     }
 
