@@ -31,6 +31,7 @@ object AppConstants {
     const val KEY_LAST_BACKUP_TIME = "last_backup_timestamp_key"
     const val KEY_LAST_BACKUP_COUNT = "last_backup_count_key"
     const val KEY_LAST_BACKUP_SIZE = "last_backup_size_key"
+    const val KEY_DRIVE_CHECKED_AFTER_INSTALL = "drive_checked_after_install_key"
     const val KEY_MONTHLY_CALENDAR_EFFECT_TYPE = "monthly_calendar_effect_type"
     const val KEY_FAVORITE_CALENDAR_ID = "favorite_calendar_id"
     const val KEY_LOGGING_ENABLED = "logging_enabled_key"

@@ -39,6 +39,27 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
      */
     suspend fun syncHistoryWithDrive(): SyncResult = withContext(Dispatchers.IO) {
         try {
+            // Si el historial local está vacío (reinstalación), comprobamos si existe copia previa en Drive
+            val localEntries = BackupHistoryManager.loadEntries(context)
+            if (localEntries.isEmpty() || SettingsManager.getLastBackupTime(context) == 0L) {
+                val remoteInfo = checkRemoteBackupInfo()
+                if (remoteInfo != null) {
+                    SettingsManager.saveLastBackupTimestamp(context, remoteInfo.first)
+                    if (remoteInfo.second > 0L) {
+                        SettingsManager.saveLastBackupTimestampAndSize(context, remoteInfo.first, remoteInfo.second)
+                    }
+                    if (localEntries.isEmpty()) {
+                        BackupHistoryManager.addEntry(context, BackupHistoryEntry(
+                            timestamp = remoteInfo.first,
+                            source = BackupSource.DRIVE,
+                            action = BackupAction.RESTORE,
+                            isSuccess = true,
+                            sizeBytes = remoteInfo.second
+                        ))
+                    }
+                }
+            }
+
             val remoteContent = downloadFileContent()
             
             // Si hay datos remotos, los procesamos para fusión incremental antes de subir el nuevo estado
@@ -131,6 +152,25 @@ class GoogleDriveHelper(private val context: Context, account: GoogleSignInAccou
         } catch (e: Exception) {
             Log.e("DriveHelper", "Error en restauración selectiva nube", e)
             false
+        }
+    }
+
+    suspend fun checkRemoteBackupInfo(): Pair<Long, Long>? = withContext(Dispatchers.IO) {
+        try {
+            val result = driveService.files().list()
+                .setSpaces("appDataFolder")
+                .setQ("name = '$backupFileName'")
+                .setFields("files(id, modifiedTime)")
+                .execute()
+            val files = result.files
+            if (files.isNullOrEmpty()) return@withContext null
+
+            val remoteFile = files[0]
+            val modifiedTime = remoteFile.modifiedTime?.value ?: System.currentTimeMillis()
+            Pair(modifiedTime, 0L)
+        } catch (e: Exception) {
+            Log.e("DriveHelper", "Error comprobando metadatos remotos", e)
+            null
         }
     }
 

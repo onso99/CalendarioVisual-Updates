@@ -93,6 +93,34 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
                 }
             }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                if (SettingsManager.getLastBackupTime(application) == 0L && !SettingsManager.hasCheckedDriveAfterInstall(application)) {
+                    SettingsManager.setCheckedDriveAfterInstall(application, true)
+                    val account = com.google.android.gms.auth.api.signin.GoogleSignIn.getLastSignedInAccount(application)
+                    if (account != null) {
+                        val helper = GoogleDriveHelper(application, account)
+                        val remoteInfo = helper.checkRemoteBackupInfo()
+                        if (remoteInfo != null) {
+                            SettingsManager.saveLastBackupTimestamp(application, remoteInfo.first)
+                            if (remoteInfo.second > 0L) {
+                                SettingsManager.saveLastBackupTimestampAndSize(application, remoteInfo.first, remoteInfo.second)
+                            }
+                            val localEntries = BackupHistoryManager.loadEntries(application)
+                            if (localEntries.isEmpty()) {
+                                BackupHistoryManager.addEntry(application, BackupHistoryEntry(
+                                    timestamp = remoteInfo.first,
+                                    source = BackupSource.DRIVE,
+                                    action = BackupAction.RESTORE,
+                                    isSuccess = true,
+                                    sizeBytes = remoteInfo.second
+                                ))
+                            }
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+        }
         loadAllData()
     }
 

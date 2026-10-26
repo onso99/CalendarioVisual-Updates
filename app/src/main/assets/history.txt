@@ -1,3 +1,5 @@
+2026-10-26 - v3.8.45 Copia de seguridad/Ultima: si no hay datos de la última copia comprueba Drive para verificarlo
+2026-10-26 - v3.8.44 Nuevo evento: salir sin cambios ni confirmación "Descartar cambios"
 2026-10-26 - v3.8.43 Buscar: chip Mensual seleccionado por defecto
 2026-10-25 - v3.8.42 Corrección de warnings
 2026-10-25 - v3.8.41 Gestor de festivos: Multiselección estandar como en Buscar y Lista de eventos

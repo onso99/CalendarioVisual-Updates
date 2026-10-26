@@ -216,6 +216,28 @@ object SettingsManager {
         }
     }
 
+    fun saveLastBackupTimestamp(context: Context, timestamp: Long) {
+        appPrefs(context).edit {
+            putLong(AppConstants.KEY_LAST_BACKUP_TIME, timestamp)
+        }
+    }
+
+    fun saveLastBackupTimestampAndSize(context: Context, timestamp: Long, sizeBytes: Long) {
+        appPrefs(context).edit {
+            putLong(AppConstants.KEY_LAST_BACKUP_TIME, timestamp)
+            putLong(AppConstants.KEY_LAST_BACKUP_SIZE, sizeBytes)
+        }
+    }
+
+    fun hasCheckedDriveAfterInstall(context: Context): Boolean =
+        getSafeBoolean(appPrefs(context), AppConstants.KEY_DRIVE_CHECKED_AFTER_INSTALL, false)
+
+    fun setCheckedDriveAfterInstall(context: Context, checked: Boolean) {
+        appPrefs(context).edit {
+            putBoolean(AppConstants.KEY_DRIVE_CHECKED_AFTER_INSTALL, checked)
+        }
+    }
+
     fun saveBackupFrequency(context: Context, frequency: String) {
         val isAuto = frequency != "manual"
         appPrefs(context).edit {
