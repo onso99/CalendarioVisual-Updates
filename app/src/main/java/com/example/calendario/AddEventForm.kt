@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -250,6 +251,14 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+
                     val repetitionText = stringResource(id = repetitionRule.displayNameRes)
                     val countSuffix = if (repetitionRule != RepetitionRule.NONE && repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
                     
@@ -355,6 +364,14 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_alarm_bell_outlined),
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+
                     if (hasAlarm) {
                         Text(
                             text = alarmTime.format(timeFormatter),
