@@ -1,3 +1,4 @@
+2026-10-27 - v3.8.50 PDF: corregida la repetición de fecha. Buscar: ajuste de línea divisoria
 2026-10-27 - v3.8.49 PDF y Buscar unificados en estilo
 2026-10-27 - v3.8.48 Gestor de festivos: unificado estilo con Nuevo evento
 2026-10-27 - v3.8.47 Alarma cancelada con mucha anticipación no vuelve a replicarse
