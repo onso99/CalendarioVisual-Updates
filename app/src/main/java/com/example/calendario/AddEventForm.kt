@@ -223,20 +223,15 @@ fun AddEventForm(
                 }
 
                 if (!isAllDay) {
-                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    // Fila 2: Hora de fin justo debajo
+                    // Fila 2: Hora de fin justo debajo (sin divisor ni etiqueta "Fin")
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(onClick = onEndTimeClick)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.end_time),
-                            color = CalendarioTheme.colors.textSystem,
-                            modifier = Modifier.weight(1f)
-                        )
+                        Spacer(modifier = Modifier.weight(1f))
                         Text(
                             text = endDate.format(timeFormatter), 
                             color = CalendarioTheme.colors.textSystem, 
@@ -256,7 +251,7 @@ fun AddEventForm(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val repetitionText = stringResource(id = repetitionRule.displayNameRes)
-                    val countSuffix = if (repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
+                    val countSuffix = if (repetitionRule != RepetitionRule.NONE && repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
                     
                     Text(
                         text = "$repetitionText$countSuffix",

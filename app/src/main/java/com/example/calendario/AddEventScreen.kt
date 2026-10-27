@@ -809,8 +809,13 @@ fun AddEventScreen(
             currentDays = selectedDays.ifEmpty { setOf(startDate.dayOfWeek) }, // Garantizar siempre un dÃ­a (v3.2.08)
             onConfirm = { rule, until, count, days ->
                 repetitionRule = rule
-                repeatUntilDate = until
-                repeatCount = count
+                if (rule == RepetitionRule.NONE) {
+                    repeatUntilDate = null
+                    repeatCount = null
+                } else {
+                    repeatUntilDate = until
+                    repeatCount = count
+                }
                 selectedDays = days
                 showRepetitionDialog = false
             },
