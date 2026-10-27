@@ -261,6 +261,14 @@ fun SearchScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(10.dp))
+            HorizontalDivider(
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f),
+                thickness = 1.dp,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(0.dp))
+
             if (searchResults.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(

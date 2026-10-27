@@ -257,7 +257,7 @@ fun HolidayManagerScreen(
                     val locale = LocalConfiguration.current.locales[0]
                     val dateFormatter = remember(locale) { AppFormats.dayDateAbbr(locale) }
                     val dateText = remember(date, locale) {
-                        "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${date.format(dateFormatter)}"
+                        date.format(dateFormatter).replaceFirstChar { it.uppercase(locale) }
                     }
                     Text(
                         text = dateText,
