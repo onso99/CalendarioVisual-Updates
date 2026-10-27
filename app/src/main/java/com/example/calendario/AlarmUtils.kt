@@ -275,21 +275,17 @@ object AlarmUtils {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = "com.example.calendario.ALARM_DISPARO_${eventId}_$date"
         }
-        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
-        if (pendingIntent != null) {
-            alarmManager.cancel(pendingIntent)
-            pendingIntent.cancel()
-        }
+        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
 
         // 2. Cancelar aviso previo de 2h antes
         val preAlarmIntent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmReceiver.ACTION_PRE_ALARM_NOTICE
         }
-        val preAlarmPendingIntent = PendingIntent.getBroadcast(context, requestCode + 50000, preAlarmIntent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
-        if (preAlarmPendingIntent != null) {
-            alarmManager.cancel(preAlarmPendingIntent)
-            preAlarmPendingIntent.cancel()
-        }
+        val preAlarmPendingIntent = PendingIntent.getBroadcast(context, requestCode + 50000, preAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        alarmManager.cancel(preAlarmPendingIntent)
+        preAlarmPendingIntent.cancel()
     }
 
     private fun isEventInSystemCalendar(context: Context, eventId: Long): Boolean {
