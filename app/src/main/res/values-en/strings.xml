@@ -206,6 +206,7 @@
 
 
     <string name="alarm">Alarm</string>
+    <string name="no_alarm_label">No alarm</string>
     <string name="stop_alarm">STOP</string>
     <string name="snooze_alarm">SNOOZE</string>
     <string name="alarm_anticipation_label">Anticipation</string>

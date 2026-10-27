@@ -126,17 +126,10 @@ fun AddEventForm(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(id = R.string.calendar_label),
-                    color = CalendarioTheme.colors.textSystem,
-                )
-                
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Text(
                     text = selectedCalendar?.displayName ?: stringResource(id = R.string.no_editable_calendars),
                     color = CalendarioTheme.colors.textSystem,
                     fontWeight = if (selectedCalendar != null) FontWeight.Medium else FontWeight.Normal,
-                    textAlign = TextAlign.End,
+                    textAlign = TextAlign.Start,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -201,8 +194,11 @@ fun AddEventForm(
                     fontScale = fontScale
                 )
             } else {
-                // --- VISTA SOLICITADA PARA EVENTOS NORMALES: MODO COMPACTO ---
-                // Fila 1: Fecha
+                val dateText = remember(startDate, locale) {
+                    "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
+                }
+                
+                // Fila 1: Fecha (Alineada a la izquierda) + Hora de Inicio si no es Todo el día
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -210,64 +206,42 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(id = R.string.date), color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(1f))
-                    val dateText = remember(startDate, locale) {
-                        "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
+                    Text(
+                        text = dateText, 
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (!isAllDay) {
+                        Text(
+                            text = startDate.format(timeFormatter), 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable(onClick = onStartTimeClick)
+                        )
                     }
-                    Text(text = dateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
                 }
 
                 if (!isAllDay) {
                     HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    // Fila 2: Inicio y Fin compartidos
+                    // Fila 2: Hora de fin justo debajo
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable(onClick = onEndTimeClick)
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Bloque Inicio
-                        Row(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable(onClick = onStartTimeClick)
-                                .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(stringResource(id = R.string.start), color = CalendarioTheme.colors.textSystem)
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = startDate.format(timeFormatter), 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(end = 20.dp)
-                            )
-                        }
-                        
-                        // Icono Reloj Separador
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_clock_custom_24),
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                            modifier = Modifier.size(26.dp)
+                        Text(
+                            text = stringResource(id = R.string.end_time),
+                            color = CalendarioTheme.colors.textSystem,
+                            modifier = Modifier.weight(1f)
                         )
-
-                        // Bloque Fin
-                        Row(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable(onClick = onEndTimeClick)
-                                .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.end_time), 
-                                color = CalendarioTheme.colors.textSystem,
-                                modifier = Modifier.padding(start = 20.dp)
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(text = endDate.format(timeFormatter), color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium)
-                        }
+                        Text(
+                            text = endDate.format(timeFormatter), 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
@@ -285,15 +259,17 @@ fun AddEventForm(
                     val countSuffix = if (repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
                     
                     Text(
-                        text = stringResource(id = R.string.select_repetition),
-                        color = CalendarioTheme.colors.textSystem,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
                         text = "$repetitionText$countSuffix",
                         color = CalendarioTheme.colors.textSystem,
                         fontWeight = if (repetitionRule != RepetitionRule.NONE) FontWeight.Medium else FontWeight.Normal,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             } else {
@@ -384,14 +360,16 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.alarm), 
-                        modifier = Modifier.weight(1f), 
-                        color = CalendarioTheme.colors.textSystem
-                    )
-                    
                     if (hasAlarm) {
-                        // Botón X para eliminar
+                        Text(
+                            text = alarmTime.format(timeFormatter),
+                            color = CalendarioTheme.colors.textSystem,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp
+                        )
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+
                         IconButton(
                             onClick = { onHasAlarmChange(false) },
                             modifier = Modifier.size(28.dp)
@@ -404,20 +382,15 @@ fun AddEventForm(
                             )
                         }
                         
-                        Spacer(modifier = Modifier.width(16.dp))
-                        
-                        // Valor de la hora (v3.1.34)
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else {
                         Text(
-                            text = alarmTime.format(timeFormatter),
-                            color = CalendarioTheme.colors.textSystem,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 16.sp
+                            text = stringResource(id = R.string.no_alarm_label), 
+                            modifier = Modifier.weight(1f), 
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                         )
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
 
-                    // Flecha indicadora (v3.1.34: Siempre visible como en otras secciones)
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,

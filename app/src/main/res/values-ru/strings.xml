@@ -206,6 +206,7 @@
 
 
     <string name="alarm">Будильник</string>
+    <string name="no_alarm_label">Без будильника</string>
     <string name="stop_alarm">СТОП</string>
     <string name="snooze_alarm">ПОЗЖЕ</string>
     <string name="alarm_anticipation_label">Опережение</string>

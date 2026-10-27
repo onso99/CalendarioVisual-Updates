@@ -206,6 +206,7 @@
 
 
     <string name="alarm">Alarma</string>
+    <string name="no_alarm_label">Alarmarik gabe</string>
     <string name="stop_alarm">GELDITU</string>
     <string name="snooze_alarm">ATZERATU</string>
     <string name="alarm_anticipation_label">Aurrerapena</string>
