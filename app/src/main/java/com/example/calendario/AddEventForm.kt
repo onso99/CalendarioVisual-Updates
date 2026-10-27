@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -150,26 +151,31 @@ fun AddEventForm(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    .height(48.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Chip: Periodo Largo
                 EventModeChip(
                     text = stringResource(id = R.string.long_period_switch),
                     iconResId = R.drawable.ic_long_period_24,
                     isSelected = isLongPeriod,
                     onClick = { onLongPeriodChange(!isLongPeriod) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).fillMaxHeight()
                 )
 
-                // Chip: Todo el dÃ­a
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(CalendarioTheme.colors.textSystem.copy(alpha = 0.15f))
+                )
+
                 EventModeChip(
                     text = stringResource(id = R.string.all_day_switch),
                     iconResId = R.drawable.ic_all_day_24,
                     isSelected = isAllDay,
                     onClick = { onAllDayChange(!isAllDay) },
-                    enabled = !isLongPeriod, // Bloqueado si es periodo largo
-                    modifier = Modifier.weight(1f)
+                    enabled = !isLongPeriod,
+                    modifier = Modifier.weight(1f).fillMaxHeight()
                 )
             }
 
@@ -552,36 +558,26 @@ private fun EventModeChip(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     
-    // AnimaciÃ³n de color para el flash parpadeante
     val backgroundColor by animateColorAsState(
         targetValue = when {
             !enabled -> Color.Transparent
-            isPressed -> CalendarioTheme.colors.cabecera.copy(alpha = 0.28f)
-            isSelected -> CalendarioTheme.colors.cabecera.copy(alpha = 0.12f)
+            isPressed -> CalendarioTheme.colors.cabecera.copy(alpha = 0.35f)
+            isSelected -> CalendarioTheme.colors.cabecera.copy(alpha = 0.25f)
             else -> Color.Transparent
         },
-        animationSpec = if (isPressed) snap() else tween(durationMillis = 400),
-        label = "chipFlash"
+        animationSpec = if (isPressed) snap() else tween(durationMillis = 250),
+        label = "segmentFlash"
     )
 
     val contentColor = when {
         !enabled -> CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
         isSelected -> CalendarioTheme.colors.cabecera
-        else -> CalendarioTheme.colors.textSystem
-    }
-
-    val borderColor = when {
-        !enabled -> CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
-        isSelected -> CalendarioTheme.colors.cabecera
-        else -> CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
+        else -> CalendarioTheme.colors.textSystem.copy(alpha = 0.8f)
     }
 
     Box(
         modifier = modifier
-            .height(40.dp)
-            .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
-            .border(1.dp, borderColor, RoundedCornerShape(10.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -605,8 +601,8 @@ private fun EventModeChip(
             Text(
                 text = text,
                 color = contentColor,
-                fontSize = 14.sp,
-                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                fontSize = 15.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
             )
         }
     }
