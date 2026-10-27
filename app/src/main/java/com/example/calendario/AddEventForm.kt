@@ -181,25 +181,32 @@ fun AddEventForm(
 
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
 
-            val fontScale = LocalConfiguration.current.fontScale
-            
             if (isLongPeriod) {
-                // --- VISTA PARA PERIODOS LARGOS: FILAS SEPARADAS ---
-                AdaptiveDateTimeRow(
-                    label = stringResource(id = R.string.start),
-                    date = startDate,
-                    onDateClick = onStartDateClick,
-                    onTimeClick = onStartTimeClick,
-                    fontScale = fontScale
-                )
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                AdaptiveDateTimeRow(
-                    label = stringResource(id = R.string.end),
-                    date = endDate,
-                    onDateClick = onEndDateClick,
-                    onTimeClick = onEndTimeClick,
-                    fontScale = fontScale
-                )
+                // --- VISTA PARA PERIODOS LARGOS: FILAS SEPARADAS (Sin etiquetas ni divisor) ---
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onStartDateClick)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val startDateText = remember(startDate, locale) {
+                        "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
+                    }
+                    Text(text = startDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onEndDateClick)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val endDateText = remember(endDate, locale) {
+                        "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
+                    }
+                    Text(text = endDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                }
             } else {
                 val dateText = remember(startDate, locale) {
                     "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
@@ -283,76 +290,72 @@ fun AddEventForm(
                     )
                 }
             } else {
-                // --- COLOR SELECTOR (Solo para periodos largos) ---
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                Column(modifier = Modifier.padding(16.dp)) {
+                // --- COLOR SELECTOR (Solo para periodos largos con altura estándar) ---
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     val periodColors = listOf(
                         0xFFE91E63.toInt(), // Rosa
                         0xFF2196F3.toInt(), // Azul
                         0xFFFF9800.toInt(), // Naranja
                         0xFF4CAF50.toInt(), // Verde
                         0xFF9C27B0.toInt(), // Morado
-                        0xFF795548.toInt(), // MarrÃ³n
+                        0xFF795548.toInt(), // Marrón
                         0xFF607D8B.toInt(), // Gris
                         0xFF009688.toInt()  // Cyan
                     )
+                    
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Column {
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                for (i in 0..3) {
-                                    ColorCircle(
-                                        colorInt = periodColors[i],
-                                        isSelected = selectedColorInt == periodColors[i],
-                                        onClick = { onColorSelect(periodColors[i]) }
-                                    )
-                                    ColorCircle(
-                                        colorInt = periodColors[i + 4],
-                                        isSelected = selectedColorInt == periodColors[i + 4],
-                                        onClick = { onColorSelect(periodColors[i + 4]) }
-                                    )
-                                }
-                            }
-                        }
-
-                        // Separador sutil
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .width(1.dp)
-                                .height(64.dp)
-                                .background(CalendarioTheme.colors.textSystem.copy(alpha = 0.1f))
-                        )
-
-                        // Quinta Columna: Paleta (Selector personalizado)
-                        val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp) // Un poco más grande para destacar
-                                .clip(CircleShape)
-                                .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
-                                .border(
-                                    width = if (isCustomColor) 3.dp else 1.dp,
-                                    color = if (isCustomColor) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                                    shape = CircleShape
-                                )
-                                .clickable { onPaletteClick() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Palette,
-                                contentDescription = null,
-                                modifier = Modifier.size(22.dp),
-                                tint = if (isCustomColor) {
-                                    Color(selectedColorInt).getContrastColor(Color.White)
-                                } else {
-                                    CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                                }
+                        for (i in 0..3) {
+                            ColorCircle(
+                                colorInt = periodColors[i],
+                                isSelected = selectedColorInt == periodColors[i],
+                                onClick = { onColorSelect(periodColors[i]) }
                             )
                         }
+                        for (i in 4..7) {
+                            ColorCircle(
+                                colorInt = periodColors[i],
+                                isSelected = selectedColorInt == periodColors[i],
+                                onClick = { onColorSelect(periodColors[i]) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
+                            .border(
+                                width = if (isCustomColor) 2.dp else 1.dp,
+                                color = if (isCustomColor) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                                shape = CircleShape
+                            )
+                            .clickable { onPaletteClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = if (isCustomColor) {
+                                Color(selectedColorInt).getContrastColor(Color.White)
+                            } else {
+                                CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                            }
+                        )
                     }
                 }
             }
@@ -627,93 +630,4 @@ private fun ColorCircle(
     )
 }
 
-@Composable
-private fun AdaptiveDateTimeRow(
-    label: String,
-    date: LocalDateTime,
-    onDateClick: () -> Unit,
-    onTimeClick: () -> Unit,
-    fontScale: Float,
-    isAllDay: Boolean = true,
-    hideDate: Boolean = false
-) {
-    val configuration = LocalConfiguration.current
-    val locale = configuration.locales[0]
-    val showTwoLines = fontScale > 1.1f
-    val dateText = remember(date, locale) {
-        "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${date.format(dateFormatter)}"
-    }
 
-    if (showTwoLines) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Text(label, color = CalendarioTheme.colors.textSystem)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (!hideDate) {
-                    Text(
-                        text = dateText,
-                        modifier = Modifier.clickable(onClick = onDateClick),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                
-                if (!isAllDay) {
-                    Text(
-                        text = date.format(timeFormatter),
-                        modifier = Modifier.clickable(onClick = onTimeClick),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    } else {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(label, color = CalendarioTheme.colors.textSystem, modifier = Modifier.weight(0.25f))
-            Row(modifier = Modifier.weight(0.75f), horizontalArrangement = Arrangement.End) {
-                if (!hideDate) {
-                    Text(
-                        text = dateText,
-                        modifier = Modifier.clickable(onClick = onDateClick),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (!isAllDay) {
-                        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-                    }
-                }
-                
-                if (!isAllDay) {
-                    Text(
-                        text = date.format(timeFormatter),
-                        modifier = Modifier.clickable(onClick = onTimeClick),
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    }
-}
