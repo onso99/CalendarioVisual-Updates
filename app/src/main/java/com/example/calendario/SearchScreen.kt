@@ -176,7 +176,7 @@ fun SearchScreen(
                 keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = CalendarioTheme.colors.cabecera,
-                    unfocusedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f),
+                    unfocusedBorderColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.7f),
                     focusedContainerColor = CalendarioTheme.colors.fondoSecciones,
                     unfocusedContainerColor = CalendarioTheme.colors.fondoSecciones,
                     focusedTextColor = CalendarioTheme.colors.textSystem,
@@ -253,11 +253,11 @@ fun SearchScreen(
                 val dateFmt = AppFormats.DateAbbr
                 
                 TextButton(onClick = { showStartDatePicker = true }, enabled = !isAlways) {
-                    Text(startDate.format(dateFmt), color = CalendarioTheme.colors.textSystem.copy(alpha = dateAlpha), fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    Text(startDate.format(dateFmt), color = CalendarioTheme.colors.textSystem.copy(alpha = dateAlpha), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f * dateAlpha), modifier = Modifier.size(14.dp))
                 TextButton(onClick = { showEndDatePickerDialog = true }, enabled = !isAlways) {
-                    Text(endDate.format(dateFmt), color = CalendarioTheme.colors.textSystem.copy(alpha = dateAlpha), fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    Text(endDate.format(dateFmt), color = CalendarioTheme.colors.textSystem.copy(alpha = dateAlpha), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
             }
 

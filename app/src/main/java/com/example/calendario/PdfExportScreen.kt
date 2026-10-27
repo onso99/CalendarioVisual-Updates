@@ -224,12 +224,18 @@ fun PdfExportScreen(
             OutlinedTextField(
                 value = displayTitle,
                 onValueChange = { customTitleText = it },
-                label = { Text("Título del PDF") },
+                placeholder = { Text("Título del PDF", color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                 singleLine = true,
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = CalendarioTheme.colors.cabecera,
-                    focusedLabelColor = CalendarioTheme.colors.cabecera
+                    unfocusedBorderColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.7f),
+                    focusedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    unfocusedContainerColor = CalendarioTheme.colors.fondoSecciones,
+                    focusedTextColor = CalendarioTheme.colors.textSystem,
+                    unfocusedTextColor = CalendarioTheme.colors.textSystem,
+                    cursorColor = CalendarioTheme.colors.cabecera
                 )
             )
 
@@ -279,7 +285,7 @@ fun PdfExportScreen(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(onClick = {
                     targetMonth = targetMonth.minusMonths(1)
@@ -289,9 +295,10 @@ fun PdfExportScreen(
                 }
                 Text(
                     text = defaultMonthName,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = CalendarioTheme.colors.textSystem
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = CalendarioTheme.colors.textSystem,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
                 IconButton(onClick = {
                     targetMonth = targetMonth.plusMonths(1)
@@ -372,10 +379,10 @@ private fun PdfOptionIconChip(
 
     Box(
         modifier = modifier
-            .size(44.dp)
+            .size(40.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .border(1.5.dp, borderColor, RoundedCornerShape(12.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
