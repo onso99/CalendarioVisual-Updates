@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.platform.LocalConfiguration
+import java.time.format.TextStyle
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -206,56 +211,81 @@ fun HolidayManagerScreen(
         scrollable = false 
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
-            // --- Editor Section ---
+            // --- Editor Section (Estilo Tarjeta Unificada AddEventForm) ---
             Column(
-                modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones).padding(16.dp)
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(CalendarioTheme.colors.fondoSecciones)
             ) {
-                OutlinedTextField(
+                TextField(
                     value = title,
                     onValueChange = { if (!isFromExistingGoogleEvent) title = it },
-                    label = { Text(stringResource(id = R.string.title)) },
+                    placeholder = { Text(stringResource(id = R.string.title), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     readOnly = isFromExistingGoogleEvent,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                        focusedTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
+                        unfocusedTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem
+                    ),
                     trailingIcon = {
                         if (title.isNotBlank() && !isFromExistingGoogleEvent) {
                             IconButton(onClick = { title = "" }) {
                                 Icon(Icons.Default.Clear, contentDescription = stringResource(id = R.string.clear))
                             }
                         }
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = if (isFromExistingGoogleEvent) Color.Transparent else CalendarioTheme.colors.cabecera,
-                        unfocusedBorderColor = if (isFromExistingGoogleEvent) Color.Transparent else CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        focusedTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
-                        unfocusedTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem,
-                        disabledTextColor = if (isFromExistingGoogleEvent) CalendarioTheme.colors.textSystem.copy(alpha = 0.5f) else CalendarioTheme.colors.textSystem
-                    )
+                    }
                 )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
+
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+
                 Row(
-                    modifier = Modifier.fillMaxWidth().clickable(enabled = !isFromExistingGoogleEvent) { showDatePicker = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = !isFromExistingGoogleEvent) { showDatePicker = true }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val locale = LocalConfiguration.current.locales[0]
+                    val dateFormatter = remember(locale) { AppFormats.dayDateAbbr(locale) }
+                    val dateText = remember(date, locale) {
+                        "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${date.format(dateFormatter)}"
+                    }
                     Text(
-                        text = date.format(AppFormats.DateFull),
+                        text = dateText,
                         modifier = Modifier.weight(1f),
                         color = if (isFromExistingGoogleEvent) Color.Gray else CalendarioTheme.colors.textSystem,
-                        fontSize = 18.sp
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
                     )
                 }
                 
                 if (isFromExistingGoogleEvent) {
-                    Text(text = stringResource(id = R.string.read_only), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                    Text(text = stringResource(id = R.string.read_only), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 12.sp, modifier = Modifier.padding(start = 16.dp, bottom = 4.dp))
                 }
-                
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(id = if (isHoliday) R.string.festivo else R.string.laborable), modifier = Modifier.weight(1f), color = if (isHoliday) festivoColor else CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Bold)
+
+                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(id = if (isHoliday) R.string.festivo else R.string.laborable), 
+                        modifier = Modifier.weight(1f), 
+                        color = if (isHoliday) festivoColor else CalendarioTheme.colors.textSystem, 
+                        fontWeight = FontWeight.Bold
+                    )
                     Switch(checked = isHoliday, onCheckedChange = { isHoliday = it })
                 }
             }
