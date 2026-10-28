@@ -12,12 +12,6 @@ interface CalendarDao {
     @Query("SELECT * FROM events WHERE isDeleted = 0")
     fun getAllEventsSync(): List<EventEntity>
 
-    @Query("SELECT * FROM events WHERE date = :date AND isDeleted = 0")
-    fun getEventsByDate(date: String): Flow<List<EventEntity>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEvent(event: EventEntity): Long
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvents(events: List<EventEntity>)
 
@@ -42,12 +36,6 @@ interface CalendarDao {
         }
     }
 
-    @Transaction
-    suspend fun refreshEvents(events: List<EventEntity>) {
-        clearAllEvents()
-        insertEvents(events)
-    }
-
     @Query("UPDATE events SET isDeleted = 1, lastModified = :timestamp WHERE googleId = :googleId")
     suspend fun markEventAsDeleted(googleId: Long, timestamp: Long)
 
@@ -56,9 +44,6 @@ interface CalendarDao {
 
     @Query("SELECT * FROM events WHERE adn = :adn LIMIT 1")
     fun getEventByAdn(adn: String): EventEntity?
-
-    @Query("DELETE FROM events WHERE googleId = :googleId")
-    suspend fun deleteEventPermanently(googleId: Long)
 
     // --- NOTAS ---
     @Query("SELECT * FROM notes WHERE isDeleted = 0")
@@ -78,7 +63,4 @@ interface CalendarDao {
 
     @Query("DELETE FROM notes")
     suspend fun clearAllNotes()
-
-    @Query("DELETE FROM notes WHERE dateStr = :dateStr")
-    suspend fun deleteNotePermanently(dateStr: String)
 }

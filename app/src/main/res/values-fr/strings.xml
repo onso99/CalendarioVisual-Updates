@@ -37,8 +37,6 @@
 
 
     <string name="long_period_switch">Longue période</string>
-    <string name="date">Date</string>
-    <string name="end_time">Fin</string>
     <string name="lanes_full_error">Le jour %1$s a dépassé la limite de 5 événements longs.</string>
     <string name="select_calendar_title">Calendrier</string>
     <string name="select_time_title">Heure</string>
@@ -53,11 +51,9 @@
     <string name="delete_event">Supprimer l\'événement</string>
     <string name="title">Titre</string>
     <string name="no_editable_calendars">Aucun calendrier modifiable</string>
-    <string name="calendar_label">Calendrier</string>
     <string name="all_day_switch">Toute la journée</string>
     <string name="start">Début</string>
     <string name="end">Fin</string>
-    <string name="select_repetition">Répétition</string>
     <string name="summary">Résumé :</string>
     <string name="summary_title">Titre : %1$s</string>
     <string name="summary_calendar">Calendrier : %1$s</string>

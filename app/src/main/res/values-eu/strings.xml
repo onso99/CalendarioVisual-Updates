@@ -37,8 +37,6 @@
 
 
     <string name="long_period_switch">Aldi luzea</string>
-    <string name="date">Data</string>
-    <string name="end_time">Amaiera</string>
     <string name="lanes_full_error">%1$s egunak 5 ekitaldi luzeen muga gainditu du.</string>
     <string name="select_calendar_title">Egutegia</string>
     <string name="select_time_title">Ordua</string>
@@ -53,11 +51,9 @@
     <string name="delete_event">Ezabatu gertaera</string>
     <string name="title">Izenburua</string>
     <string name="no_editable_calendars">Ez dago egutegi editagarririk</string>
-    <string name="calendar_label">Egutegia</string>
     <string name="all_day_switch">Egun osoa</string>
     <string name="start">Hasiera</string>
     <string name="end">Amaiera</string>
-    <string name="select_repetition">Errepikapena</string>
     <string name="summary">Laburpena:</string>
     <string name="summary_title">Izenburua: %1$s</string>
     <string name="summary_calendar">Egutegia: %1$s</string>

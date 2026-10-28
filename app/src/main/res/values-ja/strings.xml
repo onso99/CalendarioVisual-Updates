@@ -37,8 +37,6 @@
 
 
     <string name="long_period_switch">長期期間</string>
-    <string name="date">日付</string>
-    <string name="end_time">終了</string>
     <string name="lanes_full_error">%1$s日は、長いイベントの制限（5つ）を超えました。</string>
     <string name="select_calendar_title">カレンダー</string>
     <string name="select_time_title">時間</string>
@@ -53,11 +51,9 @@
     <string name="delete_event">イベントを削除</string>
     <string name="title">タイトル</string>
     <string name="no_editable_calendars">編集可能なカレンダーはありません</string>
-    <string name="calendar_label">カレンダー</string>
     <string name="all_day_switch">終日</string>
     <string name="start">開始</string>
     <string name="end">終了</string>
-    <string name="select_repetition">繰り返し</string>
     <string name="summary">概要：</string>
     <string name="summary_title">タイトル：%1$s</string>
     <string name="summary_calendar">カレンダー：%1$s</string>

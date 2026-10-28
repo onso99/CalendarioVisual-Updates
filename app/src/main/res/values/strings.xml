@@ -39,8 +39,6 @@
     <string name="monthly_view">Mensual</string>
     <string name="yearly_view" tools:ignore="Typos">Anual</string>
     <string name="long_period_switch">Periodo largo</string>
-    <string name="date">Fecha</string>
-    <string name="end_time">Fin</string>
     <string name="lanes_full_error">El día %1$s ha excedido el límite de 5 eventos largos.</string>
     <string name="select_calendar_title">Calendario</string>
     <string name="select_time_title">Hora</string>
@@ -55,11 +53,9 @@
     <string name="delete_event">Borrar evento</string>
     <string name="title">Título</string>
     <string name="no_editable_calendars">No hay calendarios editables</string>
-    <string name="calendar_label">Calendario</string>
     <string name="all_day_switch">Todo el día</string>
     <string name="start">Inicio</string>
     <string name="end">Fin</string>
-    <string name="select_repetition">Repetición</string>
     <string name="summary">Resumen:</string>
     <string name="summary_title">Título: %1$s</string>
     <string name="summary_calendar">Calendario: %1$s</string>

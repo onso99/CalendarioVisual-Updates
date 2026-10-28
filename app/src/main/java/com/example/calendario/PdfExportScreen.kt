@@ -362,19 +362,19 @@ private fun PdfOptionIconChip(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (isSelected) {
-        CalendarioTheme.colors.cabecera.copy(alpha = 0.15f)
+        CalendarioTheme.colors.cabecera.copy(alpha = 0.12f)
     } else {
-        CalendarioTheme.colors.fondoSecciones
+        Color.Transparent
     }
     val borderColor = if (isSelected) {
         CalendarioTheme.colors.cabecera
     } else {
-        CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+        CalendarioTheme.colors.textSystem.copy(alpha = 0.1f)
     }
     val iconColor = if (isSelected) {
         CalendarioTheme.colors.cabecera
     } else {
-        CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)
+        CalendarioTheme.colors.textSystem.copy(alpha = 0.4f)
     }
 
     Box(

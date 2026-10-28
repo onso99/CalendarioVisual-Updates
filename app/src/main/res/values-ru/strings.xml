@@ -37,8 +37,6 @@
 
 
     <string name="long_period_switch">Длительный период</string>
-    <string name="date">Дата</string>
-    <string name="end_time">Конец</string>
     <string name="lanes_full_error">В день %1$s превышен лимит в 5 длинных событий.</string>
     <string name="select_calendar_title">Календарь</string>
     <string name="select_time_title">Время</string>
@@ -53,11 +51,9 @@
     <string name="delete_event">Удалить событие</string>
     <string name="title">Название</string>
     <string name="no_editable_calendars">Нет редактируемых календарей</string>
-    <string name="calendar_label">Календарь</string>
     <string name="all_day_switch">Весь день</string>
     <string name="start">Начало</string>
     <string name="end">Конец</string>
-    <string name="select_repetition">Повторение</string>
     <string name="summary">Сводка:</string>
     <string name="summary_title">Название: %1$s</string>
     <string name="summary_calendar">Календарь: %1$s</string>

@@ -37,8 +37,6 @@
 
 
     <string name="long_period_switch">Període llarg</string>
-    <string name="date">Data</string>
-    <string name="end_time">Fi</string>
     <string name="lanes_full_error">El dia %1$s ha excedit el límit de 5 esdeveniments llargs.</string>
     <string name="select_calendar_title">Calendari</string>
     <string name="select_time_title">Hora</string>
@@ -53,11 +51,9 @@
     <string name="delete_event">Eliminar esdeveniment</string>
     <string name="title">Títol</string>
     <string name="no_editable_calendars">No hi ha calendaris editables</string>
-    <string name="calendar_label">Calendari</string>
     <string name="all_day_switch">Tot el dia</string>
     <string name="start">Inici</string>
     <string name="end">Fi</string>
-    <string name="select_repetition">Repetició</string>
     <string name="summary">Resum:</string>
     <string name="summary_title">Títol: %1$s</string>
     <string name="summary_calendar">Calendari: %1$s</string>

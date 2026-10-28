@@ -37,8 +37,6 @@
 
 
     <string name="long_period_switch">Long period</string>
-    <string name="date">Date</string>
-    <string name="end_time">End</string>
     <string name="lanes_full_error">The day %1$s has exceeded the limit of 5 long events.</string>
     <string name="select_calendar_title">Calendar</string>
     <string name="select_time_title">Time</string>
@@ -53,11 +51,9 @@
     <string name="delete_event">Delete event</string>
     <string name="title">Title</string>
     <string name="no_editable_calendars">No editable calendars</string>
-    <string name="calendar_label">Calendar</string>
     <string name="all_day_switch">All day</string>
     <string name="start">Start</string>
     <string name="end">End</string>
-    <string name="select_repetition">Repetition</string>
     <string name="summary">Summary:</string>
     <string name="summary_title">Title: %1$s</string>
     <string name="summary_calendar">Calendar: %1$s</string>
