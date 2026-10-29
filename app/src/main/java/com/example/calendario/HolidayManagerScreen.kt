@@ -192,10 +192,12 @@ fun HolidayManagerScreen(
                     Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = "Borrar", tint = Color.White)
                 }
             } else {
-                IconButton(onClick = { importLauncher.launch(arrayOf("*/*")) }) {
-                    Icon(painter = painterResource(id = R.drawable.ic_folder_open_custom), contentDescription = stringResource(id = R.string.cargar_label))
+                if (!hasChanges) {
+                    IconButton(onClick = { importLauncher.launch(arrayOf("*/*")) }) {
+                        Icon(painter = painterResource(id = R.drawable.ic_folder_open_custom), contentDescription = stringResource(id = R.string.cargar_label))
+                    }
                 }
-                if (editingAdjustment != null || isFromExistingGoogleEvent) {
+                if (hasChanges && (editingAdjustment != null || isFromExistingGoogleEvent)) {
                     IconButton(onClick = { resetForm() }) { Icon(Icons.Default.Close, contentDescription = "Cancelar edición") }
                 }
                 if (title.isNotBlank() && hasChanges) {
@@ -296,11 +298,25 @@ fun HolidayManagerScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(adjustments.sortedByDescending { it.date }) { adj ->
-                    val isGoogleAdjustment = adj.originalEventId != null && adj.originalEventId >= 0L
+                    val isGoogleAdjustment = adj.originalEventId != null
                     val isSelected = selectedAdjustments.contains(adj)
+                    val isEditing = editingAdjustment == adj
+
+                    val calendarName = remember(adj, uiState.eventsByDate, uiState.availableCalendars) {
+                        if (isGoogleAdjustment) {
+                            val matchingEvent = uiState.eventsByDate.values.flatten().find { it.id == adj.originalEventId }
+                            val cal = uiState.availableCalendars.find { it.id == matchingEvent?.calendarId }
+                            cal?.displayName ?: "Google Calendar"
+                        } else {
+                            null
+                        }
+                    }
+
                     HolidayAdjustmentItem(
                         adjustment = adj,
                         isSelected = isSelected,
+                        isEditing = isEditing,
+                        calendarName = calendarName,
                         onSelectToggle = {
                             selectedAdjustments = if (isSelected) {
                                 selectedAdjustments - adj
@@ -436,6 +452,8 @@ fun HolidayManagerScreen(
 fun HolidayAdjustmentItem(
     adjustment: HolidayAdjustment,
     isSelected: Boolean,
+    isEditing: Boolean = false,
+    calendarName: String? = null,
     onSelectToggle: () -> Unit,
     onClick: () -> Unit,
     festivoColor: Color
@@ -447,9 +465,19 @@ fun HolidayAdjustmentItem(
         adjustment.date.format(dateFormatter).replaceFirstChar { it.uppercase(locale) } 
     }
     
-    val typeLabel = stringResource(id = if (adjustment.type == HolidayAdjustmentType.HOLIDAY) R.string.festivo else R.string.laborable)
-    val itemBg = if (isSelected) CalendarioTheme.colors.todayHighlightColor else Color.Transparent
+    val itemBg = when {
+        isSelected -> CalendarioTheme.colors.todayHighlightColor
+        isEditing -> CalendarioTheme.colors.fondoSecciones.copy(alpha = 0.6f)
+        else -> Color.Transparent
+    }
+    
     val itemBorder = if (isSelected) Modifier.border(1.dp, CalendarioTheme.colors.cabecera, RoundedCornerShape(12.dp)) else Modifier
+
+    val subText = if (!calendarName.isNullOrBlank()) {
+        "$formattedDate • $calendarName"
+    } else {
+        formattedDate
+    }
 
     Row(
         modifier = Modifier
@@ -476,13 +504,13 @@ fun HolidayAdjustmentItem(
                     adjustment.type == HolidayAdjustmentType.HOLIDAY -> festivoColor
                     else -> CalendarioTheme.colors.textSystem
                 },
-                fontWeight = if (isSelected) FontWeight.Bold else if (isPastYear) FontWeight.Normal else FontWeight.Medium,
+                fontWeight = if (isSelected || isEditing) FontWeight.Bold else if (isPastYear) FontWeight.Normal else FontWeight.Medium,
                 fontStyle = if (isPastYear) FontStyle.Italic else FontStyle.Normal,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "$formattedDate • $typeLabel",
+                text = subText,
                 fontSize = 12.sp,
                 color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
                 maxLines = 1,
