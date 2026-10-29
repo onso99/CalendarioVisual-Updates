@@ -267,9 +267,7 @@ fun HolidayManagerScreen(
                     )
                 }
                 
-                if (isFromExistingGoogleEvent) {
-                    Text(text = stringResource(id = R.string.read_only), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f), fontSize = 12.sp, modifier = Modifier.padding(start = 16.dp, bottom = 4.dp))
-                }
+
 
                 HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
 
@@ -304,7 +302,7 @@ fun HolidayManagerScreen(
                     val isSelected = selectedAdjustments.contains(adj)
                     val isEditing = editingAdjustment == adj
 
-                    val calendarName = remember<String?>(adj, uiState.eventsByDate, uiState.availableCalendars) {
+                    val calendarName = remember(adj, uiState.eventsByDate, uiState.availableCalendars) {
                         if (adj.isManual) {
                             null // Creado explícitamente a mano -> Sin calendario
                         } else if (adj.originalEventId != null) {

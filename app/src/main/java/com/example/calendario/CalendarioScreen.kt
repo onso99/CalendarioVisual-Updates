@@ -1035,11 +1035,7 @@ fun CalendarioScreen(
                 ) {
                     if (viewMode == CalendarViewMode.MONTHLY) {
                         val effectType = SettingsManager.getMonthlyEffectType(context)
-                        
-                        val endColor = when (effectType) {
-                            "gradient" -> CalendarioTheme.colors.monthlyCalendarGridEffect
-                            else -> CalendarioTheme.colors.monthlyCalendarGridBackground
-                        }
+                        val endColor = if (effectType == "gradient") CalendarioTheme.colors.monthlyCalendarGridEffect else CalendarioTheme.colors.monthlyCalendarGridBackground
 
                         val monthlyCalendarGridBrush = when (effectType) {
                             "gradient" -> Brush.verticalGradient(listOf(CalendarioTheme.colors.monthlyCalendarGridBackground, endColor))
