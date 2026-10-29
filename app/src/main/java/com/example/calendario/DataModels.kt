@@ -156,7 +156,8 @@ data class HolidayAdjustment(
     val date: LocalDate,
     val title: String,
     val type: HolidayAdjustmentType,
-    val originalEventId: Long? = null
+    val originalEventId: Long? = null,
+    val isManual: Boolean = false
 ) {
     /**
      * Serializa el ajuste a JSON (Fase 4 v3.1.34)
@@ -166,6 +167,7 @@ data class HolidayAdjustment(
         put("titulo", title)
         put("tipo", type.name)
         originalEventId?.let { put("originalEventId", it) }
+        put("isManual", isManual)
     }
 
     companion object {
@@ -174,7 +176,8 @@ data class HolidayAdjustment(
                 date = LocalDate.parse(obj.getString("fecha")),
                 title = obj.getString("titulo"),
                 type = HolidayAdjustmentType.valueOf(obj.getString("tipo")),
-                originalEventId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null
+                originalEventId = if (obj.has("originalEventId") && !obj.isNull("originalEventId")) obj.getLong("originalEventId") else null,
+                isManual = obj.optBoolean("isManual", false)
             )
         }
     }
@@ -197,7 +200,8 @@ data class HolidayAdjustmentDto(
     val dateStr: String,
     val title: String,
     val type: String,
-    val originalEventId: Long? = null
+    val originalEventId: Long? = null,
+    val isManual: Boolean = false
 )
 
 // --- Modelos para Notas Diarias ---

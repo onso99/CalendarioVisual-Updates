@@ -498,7 +498,8 @@ object SettingsManager {
                     date = LocalDate.parse(dto.dateStr),
                     title = dto.title,
                     type = try { HolidayAdjustmentType.valueOf(dto.type) } catch (_: Exception) { HolidayAdjustmentType.HOLIDAY },
-                    originalEventId = dto.originalEventId
+                    originalEventId = dto.originalEventId,
+                    isManual = dto.isManual
                 )
             } catch (_: Exception) {
                 null
@@ -507,7 +508,7 @@ object SettingsManager {
     }
 
     fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {
-        val json = Gson().toJson(adjustments.map { HolidayAdjustmentDto(it.date.toString(), it.title, it.type.name, it.originalEventId) })
+        val json = Gson().toJson(adjustments.map { HolidayAdjustmentDto(it.date.toString(), it.title, it.type.name, it.originalEventId, it.isManual) })
         holidayPrefs(context).edit { putString("adjustments", json) }
     }
 

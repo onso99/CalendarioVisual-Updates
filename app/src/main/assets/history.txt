@@ -1,3 +1,4 @@
+2026-10-29 - v3.8.53 Gestor de festivos: mejorada la usabilidad de la pantalla
 2026-10-28 - v3.8.52 Unificación de estilo en chips de Buscar y PDF
 2026-10-27 - v3.8.51 Limpieza de código y corrección de warnings
 2026-10-27 - v3.8.50 PDF: corregida la repetición de fecha. Buscar: ajuste de línea divisoria

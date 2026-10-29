@@ -138,13 +138,15 @@ fun HolidayManagerScreen(
         currentAdjustments.removeAll { it.date == date }
         
         val shouldAdd = !isFromExistingGoogleEvent || !isHoliday
+        val isManual = (currentOriginalEventId == null) && !isFromExistingGoogleEvent
         if (shouldAdd) {
             currentAdjustments.add(
                 HolidayAdjustment(
                     date = date,
                     type = if (isHoliday) HolidayAdjustmentType.HOLIDAY else HolidayAdjustmentType.WORKING_DAY,
                     title = title,
-                    originalEventId = if (isFromExistingGoogleEvent) currentOriginalEventId else null
+                    originalEventId = if (isFromExistingGoogleEvent) currentOriginalEventId else null,
+                    isManual = isManual
                 )
             )
         }
@@ -302,12 +304,25 @@ fun HolidayManagerScreen(
                     val isSelected = selectedAdjustments.contains(adj)
                     val isEditing = editingAdjustment == adj
 
-                    val calendarName = remember(adj, uiState.eventsByDate, uiState.availableCalendars) {
-                        if (isGoogleAdjustment) {
-                            val matchingEvent = uiState.eventsByDate.values.flatten().find { it.id == adj.originalEventId }
-                            val cal = uiState.availableCalendars.find { it.id == matchingEvent?.calendarId }
+                    val calendarName = remember<String?>(adj, uiState.eventsByDate, uiState.availableCalendars) {
+                        if (adj.isManual) {
+                            null // Creado explícitamente a mano -> Sin calendario
+                        } else if (adj.originalEventId != null) {
+                            // Tiene ID original de Google explícito
+                            val allEvents = uiState.eventsByDate.values.flatten()
+                            val matchingEvent = allEvents.find { it.id == adj.originalEventId }
+                            val cal = if (matchingEvent != null) {
+                                uiState.availableCalendars.find { it.id == matchingEvent.calendarId }
+                            } else {
+                                uiState.availableCalendars.find { 
+                                    it.accountName.contains("holiday", ignoreCase = true) || 
+                                    it.displayName.contains("Festivo", ignoreCase = true) || 
+                                    it.displayName.contains("Holiday", ignoreCase = true) 
+                                }
+                            }
                             cal?.displayName ?: "Google Calendar"
                         } else {
+                            // Registros antiguos sin marcas nuevas -> Sin información de origen por seguridad
                             null
                         }
                     }
