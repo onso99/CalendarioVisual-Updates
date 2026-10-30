@@ -1,6 +1,12 @@
 package com.example.calendario
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -38,8 +44,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -91,6 +100,11 @@ fun AddEventForm(
 ) {
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
+
+    var isInitialized by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isInitialized = true
+    }
 
     Column {
         // --- First Block ---
@@ -146,6 +160,7 @@ fun AddEventForm(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
+                .then(if (isInitialized) Modifier.animateContentSize() else Modifier)
         ) {
             // Fila de Chips: Periodo Largo y Todo el dÃ­a
             Row(
@@ -181,63 +196,74 @@ fun AddEventForm(
 
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
 
-            if (isLongPeriod) {
-                // --- VISTA PARA PERIODOS LARGOS: FILAS SEPARADAS (Sin etiquetas ni divisor) ---
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onStartDateClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val startDateText = remember(startDate, locale) {
-                        "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
-                    }
-                    Text(text = startDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+            val dateText = remember(startDate, locale) {
+                "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
+            }
+            
+            // Fila 1: Fecha (Alineada a la izquierda) + Hora de Inicio si no es Todo el día ni Periodo largo
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onStartDateClick)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = dateText, 
+                    color = CalendarioTheme.colors.textSystem, 
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f)
+                )
+                if (!isLongPeriod && !isAllDay) {
+                    Text(
+                        text = startDate.format(timeFormatter), 
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable(onClick = onStartTimeClick)
+                    )
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onEndDateClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val endDateText = remember(endDate, locale) {
-                        "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
+            }
+
+            // Fila de Fecha de Fin (Solo para Periodo largo, se desliza hacia abajo)
+            if (!isInitialized) {
+                if (isLongPeriod) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onEndDateClick)
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val endDateText = remember(endDate, locale) {
+                            "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
+                        }
+                        Text(text = endDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
                     }
-                    Text(text = endDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
                 }
             } else {
-                val dateText = remember(startDate, locale) {
-                    "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
-                }
-                
-                // Fila 1: Fecha (Alineada a la izquierda) + Hora de Inicio si no es Todo el día
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onStartDateClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                AnimatedVisibility(
+                    visible = isLongPeriod,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
                 ) {
-                    Text(
-                        text = dateText, 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    if (!isAllDay) {
-                        Text(
-                            text = startDate.format(timeFormatter), 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable(onClick = onStartTimeClick)
-                        )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onEndDateClick)
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val endDateText = remember(endDate, locale) {
+                            "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
+                        }
+                        Text(text = endDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
                     }
                 }
+            }
 
-                if (!isAllDay) {
-                    // Fila 2: Hora de fin justo debajo (sin divisor ni etiqueta "Fin")
+            // Fila de Hora de Fin (Para evento normal con hora)
+            if (!isLongPeriod && !isAllDay) {
+                if (!isInitialized) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -252,11 +278,32 @@ fun AddEventForm(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                } else {
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = onEndTimeClick)
+                                .padding(horizontal = 16.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = endDate.format(timeFormatter), 
+                                color = CalendarioTheme.colors.textSystem, 
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
 
-            if (!isLongPeriod) {
-                HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+            @Composable
+            fun RepetitionRow() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -289,8 +336,10 @@ fun AddEventForm(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-            } else {
-                // --- COLOR SELECTOR (Solo para periodos largos con altura estándar) ---
+            }
+
+            @Composable
+            fun ColorSelectorRow() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -356,6 +405,37 @@ fun AddEventForm(
                                 CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
                             }
                         )
+                    }
+                }
+            }
+
+            if (!isInitialized) {
+                if (!isLongPeriod) {
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                    RepetitionRow()
+                } else {
+                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                    ColorSelectorRow()
+                }
+            } else {
+                AnimatedVisibility(
+                    visible = !isLongPeriod,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                        RepetitionRow()
+                    }
+                }
+                AnimatedVisibility(
+                    visible = isLongPeriod,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+                        ColorSelectorRow()
                     }
                 }
             }
@@ -490,11 +570,11 @@ fun AddEventForm(
                 if (isAllDay) {
                     if (!isSameDay) {
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.from) + ": ", fontWeight = FontWeight.Medium)
+                            Text(stringResource(id = R.string.from) + " ", fontWeight = FontWeight.Medium)
                             Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.to) + ": ", fontWeight = FontWeight.Medium)
+                            Text(stringResource(id = R.string.to) + " ", fontWeight = FontWeight.Medium)
                             Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                         }
                     } else {
@@ -511,11 +591,11 @@ fun AddEventForm(
                             Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
                             Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                             Spacer(modifier = Modifier.weight(1f))
-                            Text(startDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                            Text(startDate.format(timeOnlyFormatter))
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Spacer(modifier = Modifier.weight(1f))
-                            Text(endDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                            Text(endDate.format(timeOnlyFormatter))
                         }
                     } else {
                         // DÍAS DISTINTOS: Fecha y hora en cada línea
@@ -523,13 +603,13 @@ fun AddEventForm(
                             Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
                             Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                             Spacer(modifier = Modifier.weight(1f))
-                            Text(startDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                            Text(startDate.format(timeOnlyFormatter))
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(id = R.string.end) + ": ", fontWeight = FontWeight.Medium)
                             Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
                             Spacer(modifier = Modifier.weight(1f))
-                            Text(endDate.format(timeOnlyFormatter), fontWeight = FontWeight.Bold)
+                            Text(endDate.format(timeOnlyFormatter))
                         }
                     }
                 }
