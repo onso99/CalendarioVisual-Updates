@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 
@@ -536,4 +537,30 @@ suspend fun mergeHistoryWithSystemData(
             } else event
         }
         .toList()
+}
+
+fun getSmartInitialStartDate(baseDate: LocalDate? = null): LocalDateTime {
+    val now = LocalDateTime.now()
+    val targetDate = baseDate ?: now.toLocalDate()
+    val isToday = targetDate == now.toLocalDate()
+    
+    val timeToUse = if (isToday) {
+        val totalMinutes = now.hour * 60 + now.minute
+        val remainder = totalMinutes % 15
+        val minutesToAdd = if (remainder == 0) 15 else (15 - remainder)
+        val futureMinutes = totalMinutes + minutesToAdd
+        
+        val hour = (futureMinutes / 60) % 24
+        val minute = futureMinutes % 60
+        
+        if (futureMinutes >= 24 * 60) {
+            LocalTime.of(23, 45)
+        } else {
+            LocalTime.of(hour, minute)
+        }
+    } else {
+        LocalTime.of(9, 0)
+    }
+    
+    return LocalDateTime.of(targetDate, timeToUse)
 }

@@ -175,8 +175,8 @@ fun AddEventScreen(
     var isAllDay by remember { mutableStateOf(false) }
     var selectedCalendar by remember { mutableStateOf<CalendarInfo?>(null) }
     var showCalendarDialog by remember { mutableStateOf(false) }
-    var startDate by remember { mutableStateOf(LocalDateTime.now()) }
-    var endDate by remember { mutableStateOf(LocalDateTime.now().plusMinutes(30)) }
+    var startDate by remember { mutableStateOf(if (eventToEdit == null) getSmartInitialStartDate(initialDate) else LocalDateTime.now()) }
+    var endDate by remember { mutableStateOf(if (eventToEdit == null) getSmartInitialStartDate(initialDate).plusMinutes(30) else LocalDateTime.now().plusMinutes(30)) }
     var repetitionRule by remember { mutableStateOf(RepetitionRule.NONE) }
     var repeatUntilDate by remember { mutableStateOf<LocalDate?>(null) }
     var repeatCount by remember { mutableStateOf<Int?>(null) }
@@ -311,20 +311,19 @@ fun AddEventScreen(
             val now = LocalDateTime.now().withSecond(0).withNano(0)
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             title = ""
-            isAllDay = true // Por defecto: Todo el día
-            startDate = effectiveInitialDateTime
-            endDate = effectiveInitialDateTime.plusMinutes(30) // Margen de 30 min (v3.0.24)
+            isAllDay = false
+            startDate = getSmartInitialStartDate(initialDate)
+            endDate = getSmartInitialStartDate(initialDate).plusMinutes(30)
             selectedCalendar = initialCalendar
             repetitionRule = RepetitionRule.NONE
             repeatUntilDate = null
             repeatCount = null
-            selectedDays = setOf(effectiveInitialDateTime.dayOfWeek) // Inicializar con el día actual (v3.2.08)
+            selectedDays = setOf(effectiveInitialDateTime.dayOfWeek)
             hasAlarm = false
-            // Alarma a las 09:00 AM por defecto para Todo el día
             alarmTime = LocalTime.of(9, 0)
 
             initialTitle = ""
-            initialIsAllDay = true
+            initialIsAllDay = false
             initialSelectedCalendar = selectedCalendar
             initialStartDate = startDate
             initialEndDate = endDate
