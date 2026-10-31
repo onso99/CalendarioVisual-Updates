@@ -1010,9 +1010,6 @@ fun CalendarioScreen(
                                             Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = stringResource(id = R.string.delete), tint = Color.White)
                                         }
                                     } else {
-                                        IconButton(onClick = { launchAddEditScreen(null, null) }) {
-                                            Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(id = R.string.create_event))
-                                        }
                                         IconButton(onClick = { isSearchActive = true }) {
                                             Icon(
                                                 imageVector = Icons.Default.Search,
@@ -1025,6 +1022,22 @@ fun CalendarioScreen(
                         }
                     }
                 },
+                floatingActionButton = {
+                    if (!isMainSelectionMode && !isSearchActive) {
+                        FloatingActionButton(
+                            onClick = { launchAddEditScreen(null, null) },
+                            containerColor = CalendarioTheme.colors.cabecera,
+                            contentColor = Color.White,
+                            shape = CircleShape
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = R.string.create_event)
+                            )
+                        }
+                    }
+                },
+                floatingActionButtonPosition = FabPosition.End,
                 containerColor = CalendarioTheme.colors.settingsBackground
             ) { paddingValues ->
                 Column(

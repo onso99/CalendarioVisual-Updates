@@ -1,3 +1,4 @@
+2026-10-31 - v3.8.57.2 Nuevo evento Fase 2: Mejoras de Lógica Temporal en el Formulario
 2026-10-31 - v3.8.57.1 Nuevo evento Fase 1: Redondeo inteligente y Unificación de puntos de entrada
 2026-10-30 - v3.8.56 Nuevo evento: efecto slide en chips Todo el día y Periodo largo
 2026-10-29 - v3.8.55 Gestor de festivos: eliminado el texto "solo lectura" en la edición de festivo
