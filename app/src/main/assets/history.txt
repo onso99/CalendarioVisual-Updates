@@ -1,5 +1,7 @@
-2026-10-31 - v3.8.57.2 Nuevo evento Fase 2: Mejoras de Lógica Temporal en el Formulario
-2026-10-31 - v3.8.57.1 Nuevo evento Fase 1: Redondeo inteligente y Unificación de puntos de entrada
+2026-10-31 - v3.8.58 Optimización de código y corrección de warnings.
+2026-10-31 - v3.8.57.3 Nuevo evento Fase 3: Sustitución del icono + superior por el Botón Flotante (FAB) estándar inferior derecho.
+2026-10-31 - v3.8.57.2 Nuevo evento Fase 2: Mantenimiento dinámico de duración al cambiar inicio, cruce automático de medianoche y fila fin unificada.
+2026-10-31 - v3.8.57.1 Nuevo evento Fase 1: Fábrica de estado limpio por defecto (con hora por defecto) y redondeo inteligente al futuro.
 2026-10-30 - v3.8.56 Nuevo evento: efecto slide en chips Todo el día y Periodo largo
 2026-10-29 - v3.8.55 Gestor de festivos: eliminado el texto "solo lectura" en la edición de festivo
 2026-10-29 - v3.8.54 Gestor de festivos: listado de festivos con marcas explícitas: ad.isManual y adj.originalEventId

@@ -585,19 +585,4 @@ object SettingsManager {
         val key = "${eventId}_$dateStr"
         return dismissedAlarmsPrefs(context).getBoolean(key, false)
     }
-
-    // --- Sticky State (Memoria Inteligente para Nuevo Evento) ---
-    private fun stickyPrefs(context: Context) = getPrefs(context, "sticky_event_prefs")
-
-    fun getLastUsedIsAllDay(context: Context): Boolean =
-        stickyPrefs(context).getBoolean("last_is_all_day", false)
-
-    fun saveLastUsedIsAllDay(context: Context, value: Boolean) =
-        stickyPrefs(context).edit { putBoolean("last_is_all_day", value) }
-
-    fun getLastUsedIsLongPeriod(context: Context): Boolean =
-        stickyPrefs(context).getBoolean("last_is_long_period", false)
-
-    fun saveLastUsedIsLongPeriod(context: Context, value: Boolean) =
-        stickyPrefs(context).edit { putBoolean("last_is_long_period", value) }
 }
