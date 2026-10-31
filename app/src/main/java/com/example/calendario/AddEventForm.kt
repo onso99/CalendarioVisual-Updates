@@ -218,64 +218,91 @@ fun AddEventForm(
                     Text(
                         text = startDate.format(timeFormatter), 
                         color = CalendarioTheme.colors.textSystem, 
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         modifier = Modifier.clickable(onClick = onStartTimeClick)
                     )
                 }
             }
 
-            // Fila de Fecha de Fin (Solo para Periodo largo, se desliza hacia abajo)
+            val isCrossMidnight = !isAllDay && endDate.toLocalDate().isAfter(startDate.toLocalDate())
+            val showEndDateRow = isLongPeriod || isCrossMidnight
+
+            // Fila de Fecha de Fin unificada (Fecha a la izquierda, Hora a la derecha si no es todo el día)
             if (!isInitialized) {
-                if (isLongPeriod) {
+                if (showEndDateRow) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(onClick = onEndDateClick)
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val endDateText = remember(endDate, locale) {
                             "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
                         }
-                        Text(text = endDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                        Text(
+                            text = endDateText, 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontWeight = FontWeight.Medium, 
+                            modifier = Modifier.weight(1f).clickable(onClick = onEndDateClick)
+                        )
+                        if (!isAllDay) {
+                            Text(
+                                text = endDate.format(timeFormatter), 
+                                color = CalendarioTheme.colors.textSystem, 
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.clickable(onClick = onEndTimeClick)
+                            )
+                        }
                     }
                 }
             } else {
                 AnimatedVisibility(
-                    visible = isLongPeriod,
+                    visible = showEndDateRow,
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(onClick = onEndDateClick)
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val endDateText = remember(endDate, locale) {
                             "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
                         }
-                        Text(text = endDateText, color = CalendarioTheme.colors.textSystem, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                        Text(
+                            text = endDateText, 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontWeight = FontWeight.Medium, 
+                            modifier = Modifier.weight(1f).clickable(onClick = onEndDateClick)
+                        )
+                        if (!isAllDay) {
+                            Text(
+                                text = endDate.format(timeFormatter), 
+                                color = CalendarioTheme.colors.textSystem, 
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.clickable(onClick = onEndTimeClick)
+                            )
+                        }
                     }
                 }
             }
 
-            // Fila de Hora de Fin (Para evento normal con hora)
-            if (!isLongPeriod && !isAllDay) {
+            // Fila de Hora de Fin separada (SOLO para eventos normales el mismo día)
+            if (!isLongPeriod && !isAllDay && !isCrossMidnight) {
                 if (!isInitialized) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(onClick = onEndTimeClick)
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                            .padding(horizontal = 16.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
                             text = endDate.format(timeFormatter), 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontWeight = FontWeight.Bold
+                            color = CalendarioTheme.colors.textSystem,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 } else {
@@ -288,14 +315,14 @@ fun AddEventForm(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(onClick = onEndTimeClick)
-                                .padding(horizontal = 16.dp, vertical = 6.dp),
+                                .padding(horizontal = 16.dp, vertical = 2.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = endDate.format(timeFormatter), 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontWeight = FontWeight.Bold
+                                color = CalendarioTheme.colors.textSystem,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
@@ -565,7 +592,7 @@ fun AddEventForm(
     val timeOnlyFormatter = remember(locale) { AppFormats.TimeShort }
                 
                 // FASE 3: LÓGICA DE DÍA ÚNICO: Si no es periodo largo, el resumen ignora el salto de fecha técnico
-                val isSameDay = !isLongPeriod || (startDate.toLocalDate() == endDate.toLocalDate())
+                val isSameDay = startDate.toLocalDate() == endDate.toLocalDate()
 
                 if (isAllDay) {
                     if (!isSameDay) {

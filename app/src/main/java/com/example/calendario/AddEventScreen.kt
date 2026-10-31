@@ -717,7 +717,12 @@ fun AddEventScreen(
                                 // Forzamos margen de seguridad de 30 min por si desactiva 'Todo el día'
                                 endDate = startDate.plusMinutes(30)
                             } else {
-                                endDate = LocalDateTime.of(selectedLocalDate, endDate.toLocalTime())
+                                val proposedEndDate = LocalDateTime.of(selectedLocalDate, endDate.toLocalTime())
+                                endDate = if (proposedEndDate.isBefore(startDate) || proposedEndDate.isEqual(startDate)) {
+                                    startDate.plusMinutes(30)
+                                } else {
+                                    proposedEndDate
+                                }
                             }
                         }
                         showEndDatePickerDialog = false 
