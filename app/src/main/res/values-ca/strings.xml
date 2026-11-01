@@ -41,10 +41,10 @@
     <string name="select_calendar_title">Calendari</string>
     <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">No es repeteix</string>
-    <string name="every_day">Cada dia</string>
-    <string name="every_week">Cada setmana</string>
-    <string name="every_month">Cada mes</string>
-    <string name="every_year">Cada any</string>
+    <string name="every_day">Diari</string>
+    <string name="every_week">Setmanal</string>
+    <string name="every_month">Mensual</string>
+    <string name="every_year">Anual</string>
     <string name="edit_event">Editar esdeveniment</string>
     <string name="new_event">Nou esdeveniment</string>
     <string name="back">Tornar</string>

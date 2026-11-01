@@ -43,10 +43,10 @@
     <string name="select_calendar_title">Calendario</string>
     <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">No se repite</string>
-    <string name="every_day">Cada día</string>
-    <string name="every_week">Cada semana</string>
-    <string name="every_month">Cada mes</string>
-    <string name="every_year">Cada año</string>
+    <string name="every_day">Diario</string>
+    <string name="every_week">Semanal</string>
+    <string name="every_month">Mensual</string>
+    <string name="every_year">Anual</string>
     <string name="edit_event">Editar evento</string>
     <string name="new_event">Nuevo evento</string>
     <string name="back">Volver</string>

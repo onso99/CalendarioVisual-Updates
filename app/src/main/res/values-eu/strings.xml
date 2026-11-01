@@ -41,10 +41,10 @@
     <string name="select_calendar_title">Egutegia</string>
     <string name="select_time_title">Ordua</string>
     <string name="does_not_repeat">Ez da errepikatzen</string>
-    <string name="every_day">Egunero</string>
-    <string name="every_week">Astero</string>
-    <string name="every_month">Hilero</string>
-    <string name="every_year">Urtero</string>
+    <string name="every_day">Egunekoa</string>
+    <string name="every_week">Astekoa</string>
+    <string name="every_month">Hilabetekoa</string>
+    <string name="every_year">Urterokoa</string>
     <string name="edit_event">Editatu gertaera</string>
     <string name="new_event">Gertaera berria</string>
     <string name="back">Atzera</string>

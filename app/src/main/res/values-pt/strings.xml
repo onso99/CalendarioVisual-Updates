@@ -41,10 +41,10 @@
     <string name="select_calendar_title">Calendário</string>
     <string name="select_time_title">Hora</string>
     <string name="does_not_repeat">Não se repete</string>
-    <string name="every_day">Todos os dias</string>
-    <string name="every_week">Todas as semanas</string>
-    <string name="every_month">Todos os meses</string>
-    <string name="every_year">Todos os anos</string>
+    <string name="every_day">Diário</string>
+    <string name="every_week">Semanal</string>
+    <string name="every_month">Mensal</string>
+    <string name="every_year">Anual</string>
     <string name="edit_event">Editar evento</string>
     <string name="new_event">Novo evento</string>
     <string name="back">Voltar</string>

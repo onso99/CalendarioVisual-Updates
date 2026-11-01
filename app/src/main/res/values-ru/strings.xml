@@ -41,10 +41,10 @@
     <string name="select_calendar_title">Календарь</string>
     <string name="select_time_title">Время</string>
     <string name="does_not_repeat">Не повторяется</string>
-    <string name="every_day">Каждый день</string>
-    <string name="every_week">Каждую неделю</string>
-    <string name="every_month">Каждый месяц</string>
-    <string name="every_year">Каждый год</string>
+    <string name="every_day">Ежедневно</string>
+    <string name="every_week">Еженедельно</string>
+    <string name="every_month">Ежемесячно</string>
+    <string name="every_year">Ежегодно</string>
     <string name="edit_event">Редактировать событие</string>
     <string name="new_event">Новое событие</string>
     <string name="back">Назад</string>

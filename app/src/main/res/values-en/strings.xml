@@ -41,10 +41,10 @@
     <string name="select_calendar_title">Calendar</string>
     <string name="select_time_title">Time</string>
     <string name="does_not_repeat">Does not repeat</string>
-    <string name="every_day">Every day</string>
-    <string name="every_week">Every week</string>
-    <string name="every_month">Every month</string>
-    <string name="every_year">Every year</string>
+    <string name="every_day">Daily</string>
+    <string name="every_week">Weekly</string>
+    <string name="every_month">Monthly</string>
+    <string name="every_year">Yearly</string>
     <string name="edit_event">Edit event</string>
     <string name="new_event">New event</string>
     <string name="back">Back</string>

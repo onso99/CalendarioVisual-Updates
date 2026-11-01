@@ -1,3 +1,5 @@
+2026-11-01 - v3.8.61 Nuevo evento: cambio de texto en Repeticiones y propagación al resto de idiomas
+2026-11-01 - v3.8.60 Nuevo evento: unificación de iconos y ajuste de valores Repetición y Alarma
 2026-11-01 - v3.8.59 Centro de datos: unificación de estilo. Iconos > de color verde/rojo para verificación de resultado
 2026-10-31 - v3.8.58 Botón flotante (FAB). Optimización de código y corrección de warnings.
 2026-10-31 - v3.8.57.3 Nuevo evento Fase 3: Sustitución del icono + superior por el Botón Flotante (FAB) estándar inferior derecho.
