@@ -585,4 +585,17 @@ object SettingsManager {
         val key = "${eventId}_$dateStr"
         return dismissedAlarmsPrefs(context).getBoolean(key, false)
     }
+
+    // --- Persistencia de Estados de Copia/Restauración ---
+    fun getLastSyncStatus(context: Context): String =
+        appPrefs(context).getString("last_sync_status", "IDLE") ?: "IDLE"
+
+    fun saveLastSyncStatus(context: Context, status: String) =
+        appPrefs(context).edit { putString("last_sync_status", status) }
+
+    fun getLastRestoreStatus(context: Context): String =
+        appPrefs(context).getString("last_restore_status", "IDLE") ?: "IDLE"
+
+    fun saveLastRestoreStatus(context: Context, status: String) =
+        appPrefs(context).edit { putString("last_restore_status", status) }
 }

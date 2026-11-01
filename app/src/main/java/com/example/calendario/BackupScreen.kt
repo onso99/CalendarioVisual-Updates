@@ -21,10 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,6 +37,12 @@ import com.google.api.services.drive.DriveScopes
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
+
+enum class ActionStatus {
+    IDLE,
+    SUCCESS,
+    ERROR
+}
 
 @Composable
 fun BackupScreen(
@@ -61,6 +65,26 @@ fun BackupScreen(
     var showCleaningDialog by remember { mutableStateOf(false) }
     var isScanningCleaning by remember { mutableStateOf(false) }
     var cleaningStatusMessage by remember { mutableStateOf<String?>(null) }
+
+    var syncStatus by remember { 
+        val saved = SettingsManager.getLastSyncStatus(context)
+        val initial = when (saved) {
+            "SUCCESS" -> ActionStatus.SUCCESS
+            "ERROR" -> ActionStatus.ERROR
+            else -> ActionStatus.IDLE
+        }
+        mutableStateOf(initial)
+    }
+
+    var restoreStatus by remember { 
+        val saved = SettingsManager.getLastRestoreStatus(context)
+        val initial = when (saved) {
+            "SUCCESS" -> ActionStatus.SUCCESS
+            "ERROR" -> ActionStatus.ERROR
+            else -> ActionStatus.IDLE
+        }
+        mutableStateOf(initial)
+    }
 
     // --- Launchers ---
     val googleSignInLauncher = rememberLauncherForActivityResult(
@@ -189,18 +213,41 @@ fun BackupScreen(
 
                     BackupActionRow(
                         text = stringResource(id = R.string.sincronizar_label),
-                        icon = Icons.Default.Sync,
-                        isRotating = isSyncing,
-                        onClick = { viewModel.syncHistoryToDrive(context) { if (it.success) { permissionsUpdateTrigger++; context.showToast(context.applicationContext.getString(R.string.sync_success_detailed, it.totalEvents), Toast.LENGTH_LONG) } else { context.showToast(R.string.sync_error_drive) } } }
+                        enabled = !isSyncing,
+                        onClick = {
+                            viewModel.syncHistoryToDrive(context) { result ->
+                                if (result.success) {
+                                    permissionsUpdateTrigger++
+                                    context.showToast(context.applicationContext.getString(R.string.sync_success_detailed, result.totalEvents), Toast.LENGTH_LONG)
+                                    syncStatus = ActionStatus.SUCCESS
+                                    SettingsManager.saveLastSyncStatus(context, "SUCCESS")
+                                } else {
+                                    context.showToast(R.string.sync_error_drive)
+                                    syncStatus = ActionStatus.ERROR
+                                    SettingsManager.saveLastSyncStatus(context, "ERROR")
+                                }
+                            }
+                        },
+                        trailingContent = {
+                            ActionTrailingContent(
+                                isRotating = isSyncing,
+                                status = syncStatus
+                            )
+                        }
                     )
 
                     HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
                     BackupActionRow(
                         text = stringResource(id = R.string.restaurar_label),
-                        icon = painterResource(id = R.drawable.ic_restore_custom),
-                        isRotating = isRestoring,
-                        onClick = { showConfirmRestoreDialog = true }
+                        enabled = !isRestoring,
+                        onClick = { showConfirmRestoreDialog = true },
+                        trailingContent = {
+                            ActionTrailingContent(
+                                isRotating = isRestoring,
+                                status = restoreStatus
+                            )
+                        }
                     )
                 }
             }
@@ -210,7 +257,6 @@ fun BackupScreen(
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 BackupActionRow(
                     text = stringResource(id = R.string.import_cvo_option_label),
-                    icon = painterResource(id = R.drawable.ic_folder_open_custom),
                     onClick = { importCvoLauncher.launch(arrayOf("*/*")) }
                 )
 
@@ -218,7 +264,6 @@ fun BackupScreen(
 
                 BackupActionRow(
                     text = "Optimizar",
-                    icon = Icons.Default.CleaningServices,
                     onClick = { showCleaningDialog = true }
                 )
             }
@@ -271,9 +316,12 @@ fun BackupScreen(
                     val callback: (Boolean) -> Unit = { success -> 
                         if (success) { 
                             context.applicationContext.showToast(R.string.restore_success)
-                            (context as? Activity)?.let { a -> a.finish(); a.startActivity(a.intent) } 
+                            restoreStatus = ActionStatus.SUCCESS
+                            SettingsManager.saveLastRestoreStatus(context, "SUCCESS")
                         } else {
                             context.showToast(R.string.restore_error, Toast.LENGTH_LONG) 
+                            restoreStatus = ActionStatus.ERROR
+                            SettingsManager.saveLastRestoreStatus(context, "ERROR")
                         }
                     }
                     viewModel.restoreHistoryFromDrive(
@@ -312,46 +360,65 @@ fun BackupScreen(
 @Composable
 private fun BackupActionRow(
     text: String,
-    icon: Any,
-    isRotating: Boolean = false,
-    @Suppress("SAME_PARAMETER_VALUE")
-    reverseRotation: Boolean = true,
-    onClick: () -> Unit
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+    trailingContent: @Composable () -> Unit = {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+            modifier = Modifier.size(24.dp)
+        )
+    }
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1200, easing = LinearEasing)
-        ),
-        label = "angle"
-    )
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
-            .clickable(enabled = !isRotating, onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = text, color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
-        
-        val iconModifier = Modifier
-            .size(24.dp)
-            .graphicsLayer {
-                if (isRotating) rotationZ = if (reverseRotation) -rotation else rotation
-            }
+        trailingContent()
+    }
+}
 
-        when (icon) {
-            is androidx.compose.ui.graphics.vector.ImageVector -> {
-                Icon(imageVector = icon, contentDescription = null, modifier = iconModifier, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
-            }
-            is Painter -> {
-                Icon(painter = icon, contentDescription = null, modifier = iconModifier, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f))
-            }
+@Composable
+private fun ActionTrailingContent(
+    isRotating: Boolean,
+    status: ActionStatus
+) {
+    if (isRotating) {
+        val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+        val rotation by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1200, easing = LinearEasing)
+            ),
+            label = "angle"
+        )
+        Icon(
+            imageVector = Icons.Default.Sync,
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+            modifier = Modifier
+                .size(24.dp)
+                .graphicsLayer { rotationZ = -rotation }
+        )
+    } else {
+        val color = when (status) {
+            ActionStatus.SUCCESS -> Color(0xFF4CAF50)
+            ActionStatus.ERROR -> Color(0xFFE53935)
+            ActionStatus.IDLE -> CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
         }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }
 

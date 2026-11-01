@@ -1,4 +1,5 @@
-2026-10-31 - v3.8.58 Optimización de código y corrección de warnings.
+2026-11-01 - v3.8.59 Centro de datos: unificación de estilo. Iconos > de color verde/rojo para verificación de resultado
+2026-10-31 - v3.8.58 Botón flotante (FAB). Optimización de código y corrección de warnings.
 2026-10-31 - v3.8.57.3 Nuevo evento Fase 3: Sustitución del icono + superior por el Botón Flotante (FAB) estándar inferior derecho.
 2026-10-31 - v3.8.57.2 Nuevo evento Fase 2: Mantenimiento dinámico de duración al cambiar inicio, cruce automático de medianoche y fila fin unificada.
 2026-10-31 - v3.8.57.1 Nuevo evento Fase 1: Fábrica de estado limpio por defecto (con hora por defecto) y redondeo inteligente al futuro.
