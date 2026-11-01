@@ -470,7 +470,13 @@ fun AddEventScreen(
                 },
                 startDate = startDate, onStartDateClick = { showStartDatePickerDialog = true }, onStartTimeClick = { showStartTimePickerDialog = true },
                 endDate = endDate, onEndDateClick = { showEndDatePickerDialog = true }, onEndTimeClick = { showEndTimePickerDialog = true },
-                repetitionRule = repetitionRule, onRepetitionClick = { showRepetitionDialog = true },
+                repetitionRule = repetitionRule, 
+                onRepetitionClick = { showRepetitionDialog = true },
+                onRepetitionClear = { 
+                    repetitionRule = RepetitionRule.NONE
+                    repeatUntilDate = null
+                    repeatCount = null
+                },
                 repeatUntilDate = repeatUntilDate,
                 repeatCount = repeatCount,
                 isLongPeriod = isLongPeriod,

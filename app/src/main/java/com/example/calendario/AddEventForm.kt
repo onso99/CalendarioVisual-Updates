@@ -29,10 +29,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -86,6 +84,7 @@ fun AddEventForm(
     onEndTimeClick: () -> Unit,
     repetitionRule: RepetitionRule,
     onRepetitionClick: () -> Unit,
+    onRepetitionClear: () -> Unit = {},
     repeatUntilDate: java.time.LocalDate?,
     repeatCount: Int?,
     isLongPeriod: Boolean,
@@ -338,30 +337,54 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    val repetitionText = stringResource(id = repetitionRule.displayNameRes)
-                    val countSuffix = if (repetitionRule != RepetitionRule.NONE && repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
-                    
                     Text(
-                        text = "$repetitionText$countSuffix",
+                        text = stringResource(id = R.string.repeat_event_title),
                         color = CalendarioTheme.colors.textSystem,
-                        fontWeight = if (repetitionRule != RepetitionRule.NONE) FontWeight.Medium else FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.weight(1f)
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f).padding(end = 8.dp)
                     )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
+
+                    if (repetitionRule != RepetitionRule.NONE) {
+                        val repetitionText = stringResource(id = repetitionRule.displayNameRes)
+                        val countSuffix = if (repeatCount != null && repeatCount > 0) " ($repeatCount)" else ""
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Text(
+                                text = "$repetitionText$countSuffix",
+                                color = CalendarioTheme.colors.textSystem,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            IconButton(
+                                onClick = onRepetitionClear,
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.does_not_repeat),
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 15.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
 
@@ -467,12 +490,18 @@ fun AddEventForm(
                 }
             }
 
-            // --- Alarm Section (Nuevo diseño compacto) ---
+            // --- Alarm Section ---
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = onAlarmTimeClick)
+                    .clickable(onClick = {
+                        if (!hasAlarm) {
+                            onHasAlarmChange(true)
+                        } else {
+                            onAlarmTimeClick()
+                        }
+                    })
             ) {
                 Row(
                     modifier = Modifier
@@ -480,51 +509,41 @@ fun AddEventForm(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_alarm_bell_outlined),
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                        modifier = Modifier.size(20.dp)
+                    Text(
+                        text = stringResource(id = R.string.alarm),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
 
                     if (hasAlarm) {
                         Text(
                             text = alarmTime.format(timeFormatter),
                             color = CalendarioTheme.colors.textSystem,
                             fontWeight = FontWeight.Medium,
-                            fontSize = 16.sp
+                            fontSize = 15.sp
                         )
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-
+                        Spacer(modifier = Modifier.width(6.dp))
                         IconButton(
                             onClick = { onHasAlarmChange(false) },
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = null,
-                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                        
-                        Spacer(modifier = Modifier.weight(1f))
                     } else {
                         Text(
-                            text = stringResource(id = R.string.no_alarm_label), 
-                            modifier = Modifier.weight(1f), 
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
+                            text = stringResource(id = R.string.no_alarm_label),
+                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 15.sp
                         )
                     }
-
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                        modifier = Modifier.size(24.dp)
-                    )
                 }
 
                 // Aviso de Alarma Posterior (Solo para eventos con hora)
