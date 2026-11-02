@@ -217,6 +217,7 @@ fun AddEventScreen(
     var initialHasAlarm by remember { mutableStateOf(false) }
     var initialAlarmTime by remember { mutableStateOf(LocalTime.of(9, 0)) }
     var isLongPeriod by remember { mutableStateOf(false) }
+    var previousIsAllDay by remember { mutableStateOf(false) }
     var selectedColorInt by remember { mutableStateOf<Int?>(null) }
     var showCustomColorPicker by remember { mutableStateOf(false) }
 
@@ -483,6 +484,7 @@ fun AddEventScreen(
                 onLongPeriodChange = { 
                     isLongPeriod = it 
                     if (it) {
+                        previousIsAllDay = isAllDay
                         repetitionRule = RepetitionRule.NONE
                         isAllDay = true // REGLA: Periodo largo SIEMPRE es todo el día
                         if (endDate.toLocalDate() == startDate.toLocalDate()) {
@@ -493,7 +495,8 @@ fun AddEventScreen(
                             selectedColorInt = 0xFF4C58D8.toInt()
                         }
                     } else {
-                        // Al desactivar, el evento se encoge a un solo día para evitar errores
+                        isLongPeriod = false
+                        isAllDay = previousIsAllDay
                         endDate = startDate.plusMinutes(30)
                     }
                 },

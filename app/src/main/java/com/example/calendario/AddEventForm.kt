@@ -188,11 +188,14 @@ fun AddEventForm(
 
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
 
-            val dateText = remember(startDate, locale) {
+            val startDateText = remember(startDate, locale) {
                 "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
             }
-            
-            // Fila 1: Fecha (Alineada a la izquierda) + Hora de Inicio si no es Todo el día ni Periodo largo
+            val endDateText = remember(endDate, locale) {
+                "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
+            }
+
+            // Fila 1: Fecha de Inicio + Hora de Inicio (si no es Todo el día)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,12 +205,12 @@ fun AddEventForm(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = dateText, 
+                    text = startDateText, 
                     color = CalendarioTheme.colors.textSystem, 
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.weight(1f)
                 )
-                if (!isLongPeriod && !isAllDay) {
+                if (!isAllDay) {
                     Text(
                         text = startDate.format(timeFormatter), 
                         color = CalendarioTheme.colors.textSystem, 
@@ -217,53 +220,27 @@ fun AddEventForm(
                 }
             }
 
-            val isCrossMidnight = !isAllDay && endDate.toLocalDate().isAfter(startDate.toLocalDate())
-            val showEndDateRow = isLongPeriod || isCrossMidnight
-
-            // Fila de Fecha de Fin unificada (Fecha a la izquierda, Hora a la derecha si no es todo el día)
-            if (showEndDateRow) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val endDateText = remember(endDate, locale) {
-                        "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
-                    }
-                    Text(
-                        text = endDateText, 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontWeight = FontWeight.Medium, 
-                        modifier = Modifier.weight(1f).clickable(onClick = onEndDateClick)
-                    )
-                    if (!isAllDay) {
-                        Text(
-                            text = endDate.format(timeFormatter), 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.clickable(onClick = onEndTimeClick)
-                        )
-                    }
-                }
-            }
-
-            // Fila de Hora de Fin separada (SOLO para eventos normales el mismo día)
-            if (!isLongPeriod && !isAllDay && !isCrossMidnight) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .clickable(onClick = onEndTimeClick)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
+            // Fila 2: Fecha de Fin + Hora de Fin (si no es Todo el día)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clickable(onClick = onEndDateClick)
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = endDateText, 
+                    color = CalendarioTheme.colors.textSystem, 
+                    fontWeight = FontWeight.Medium, 
+                    modifier = Modifier.weight(1f)
+                )
+                if (!isAllDay) {
                     Text(
                         text = endDate.format(timeFormatter), 
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = FontWeight.Medium
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.clickable(onClick = onEndTimeClick)
                     )
                 }
             }
