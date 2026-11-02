@@ -1,3 +1,4 @@
+2026-11-02 - v3.8.62.2 Nuevo evento/Bloque Fechas: chips sin iconos y círculos de color disminuidos
 2026-11-02 - v3.8.62.1 Nuevo evento/Bloque Fechas: doble fecha y restauración del estado anterior a periodo largo
 2026-11-02 - v3.8.62 Nuevo evento/Bloque Fechas: mejoras de interface
 2026-11-01 - v3.8.61 Nuevo evento: cambio de texto en Repeticiones y propagación al resto de idiomas

@@ -388,6 +388,7 @@ fun AddEventScreen(
     var showRepetitionDialog by remember { mutableStateOf(false) }
 
     val isImported = localEventToEdit?.id == 0L
+    val headerColor = CalendarioTheme.colors.cabecera
 
     AppScreen(
         title = if (localEventToEdit != null && !isImported) stringResource(id = R.string.edit_event) else stringResource(id = R.string.new_event),
@@ -492,7 +493,7 @@ fun AddEventScreen(
                         }
                         // Si no hay color elegido, ponemos el Azul Especial por defecto
                         if (selectedColorInt == null) {
-                            selectedColorInt = 0xFF4C58D8.toInt()
+                            selectedColorInt = headerColor.toArgb()
                         }
                     } else {
                         isLongPeriod = false

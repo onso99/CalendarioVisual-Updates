@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -92,6 +95,7 @@ fun AddEventForm(
 ) {
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
+    val rowHeight = 52.dp
 
     var isInitialized by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -153,26 +157,21 @@ fun AddEventForm(
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
         ) {
-            // Fila de Chips: Periodo Largo y Todo el dÃ­a
+            // Fila de Chips: Periodo Largo y Todo el día
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 EventModeChip(
                     text = stringResource(id = R.string.long_period_switch),
                     isSelected = isLongPeriod,
                     showLanes = true,
+                    laneColorInt = selectedColorInt,
                     onClick = { onLongPeriodChange(!isLongPeriod) },
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                )
-
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(CalendarioTheme.colors.textSystem.copy(alpha = 0.15f))
+                    modifier = Modifier.weight(1f).height(38.dp)
                 )
 
                 EventModeChip(
@@ -181,11 +180,10 @@ fun AddEventForm(
                     showLanes = false,
                     onClick = { onAllDayChange(!isAllDay) },
                     enabled = !isLongPeriod,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    modifier = Modifier.weight(1f).height(38.dp)
                 )
             }
 
-            HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
             Spacer(modifier = Modifier.height(10.dp))
 
             val startDateText = remember(startDate, locale) {
@@ -199,7 +197,7 @@ fun AddEventForm(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(rowHeight)
                     .clickable(onClick = onStartDateClick)
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -224,7 +222,7 @@ fun AddEventForm(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(rowHeight)
                     .clickable(onClick = onEndDateClick)
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -250,7 +248,7 @@ fun AddEventForm(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(44.dp)
+                        .height(rowHeight)
                         .clickable(onClick = onRepetitionClick)
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -311,19 +309,19 @@ fun AddEventForm(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(44.dp)
+                        .height(rowHeight)
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val periodColors = listOf(
+                        CalendarioTheme.colors.cabecera.toArgb(),
                         0xFFE91E63.toInt(), // Rosa
                         0xFF2196F3.toInt(), // Azul
                         0xFFFF9800.toInt(), // Naranja
                         0xFF4CAF50.toInt(), // Verde
                         0xFF9C27B0.toInt(), // Morado
                         0xFF795548.toInt(), // Marrón
-                        0xFF607D8B.toInt(), // Gris
                         0xFF009688.toInt()  // Cyan
                     )
                     
@@ -336,28 +334,15 @@ fun AddEventForm(
                     }
 
                     val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
-                    Box(
-                        modifier = Modifier
-                            .size(26.dp)
-                            .clip(CircleShape)
-                            .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
-                            .border(
-                                width = if (isCustomColor) 2.dp else 1.dp,
-                                color = if (isCustomColor) CalendarioTheme.colors.textSystem else CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                                shape = CircleShape
-                            )
-                            .clickable { onPaletteClick() },
-                        contentAlignment = Alignment.Center
+                    IconButton(
+                        onClick = onPaletteClick,
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Palette,
                             contentDescription = null,
-                            modifier = Modifier.size(15.dp),
-                            tint = if (isCustomColor) {
-                                Color(selectedColorInt).getContrastColor(Color.White)
-                            } else {
-                                CalendarioTheme.colors.textSystem.copy(alpha = 0.6f)
-                            }
+                            modifier = Modifier.size(26.dp),
+                            tint = if (isCustomColor) Color(selectedColorInt) else CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -373,7 +358,7 @@ fun AddEventForm(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(rowHeight)
                     .clickable(onClick = {
                         if (!hasAlarm) {
                             onHasAlarmChange(true)
@@ -566,66 +551,66 @@ private fun EventModeChip(
     text: String,
     isSelected: Boolean,
     showLanes: Boolean = false,
+    laneColorInt: Int? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    
-    val backgroundColor by animateColorAsState(
-        targetValue = when {
-            !enabled -> Color.Transparent
-            isPressed -> CalendarioTheme.colors.cabecera.copy(alpha = 0.35f)
-            isSelected -> CalendarioTheme.colors.cabecera.copy(alpha = 0.25f)
-            else -> Color.Transparent
-        },
-        animationSpec = if (isPressed) snap() else tween(durationMillis = 250),
-        label = "segmentFlash"
-    )
-
+    val brandColor = CalendarioTheme.colors.cabecera
+    val chipBg = when {
+        !enabled -> Color.Transparent
+        isSelected -> brandColor.copy(alpha = 0.12f)
+        else -> Color.Transparent
+    }
+    val chipBorder = when {
+        !enabled -> CalendarioTheme.colors.textSystem.copy(alpha = 0.08f)
+        isSelected -> brandColor
+        else -> CalendarioTheme.colors.textSystem.copy(alpha = 0.15f)
+    }
     val contentColor = when {
         !enabled -> CalendarioTheme.colors.textSystem.copy(alpha = 0.3f)
-        isSelected -> CalendarioTheme.colors.cabecera
-        else -> CalendarioTheme.colors.textSystem.copy(alpha = 0.8f)
+        isSelected -> brandColor
+        else -> CalendarioTheme.colors.textSystem.copy(alpha = 0.7f)
     }
 
-    Box(
+    val laneColor = if (laneColorInt != null) Color(laneColorInt) else contentColor
+
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(10.dp),
+        color = chipBg,
+        border = androidx.compose.foundation.BorderStroke(1.dp, chipBorder),
         modifier = modifier
-            .background(backgroundColor)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                enabled = enabled,
-                onClick = onClick
-            ),
-        contentAlignment = Alignment.Center
     ) {
-        if (showLanes && isSelected) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = 2.dp)
-                    .width(8.dp)
-                    .height(3.dp)
-                    .background(contentColor.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
-            )
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 2.dp)
-                    .width(8.dp)
-                    .height(3.dp)
-                    .background(contentColor.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (showLanes && isSelected) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .width(8.dp)
+                        .height(3.dp)
+                        .background(laneColor, RoundedCornerShape(topStart = 0.dp, bottomStart = 0.dp, topEnd = 1.dp, bottomEnd = 1.dp))
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(8.dp)
+                        .height(3.dp)
+                        .background(laneColor, RoundedCornerShape(topStart = 1.dp, bottomStart = 1.dp, topEnd = 0.dp, bottomEnd = 0.dp))
+                )
+            }
+
+            Text(
+                text = text,
+                color = contentColor,
+                fontSize = 15.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
             )
         }
-
-        Text(
-            text = text,
-            color = contentColor,
-            fontSize = 15.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-        )
     }
 }
 
@@ -635,11 +620,22 @@ private fun ColorCircle(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val displayColor = remember(colorInt, isDark) {
+        if (!isDark) Color(colorInt)
+        else {
+            val hsl = FloatArray(3)
+            androidx.core.graphics.ColorUtils.colorToHSL(colorInt, hsl)
+            hsl[2] = (hsl[2] + 0.12f).coerceAtMost(0.85f)
+            Color(androidx.core.graphics.ColorUtils.HSLToColor(hsl))
+        }
+    }
+
     Box(
         modifier = Modifier
             .size(26.dp)
             .clip(CircleShape)
-            .background(Color(colorInt))
+            .background(displayColor)
             .border(
                 width = if (isSelected) 2.5.dp else 0.dp,
                 color = if (isSelected) CalendarioTheme.colors.textSystem else Color.Transparent,
