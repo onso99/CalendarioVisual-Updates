@@ -95,7 +95,7 @@ fun AddEventForm(
 ) {
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
-    val rowHeight = 52.dp
+    val rowHeight = 50.dp
 
     var isInitialized by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -322,7 +322,7 @@ fun AddEventForm(
                         0xFF4CAF50.toInt(), // Verde
                         0xFF9C27B0.toInt(), // Morado
                         0xFF795548.toInt(), // Marrón
-                        0xFF009688.toInt()  // Cyan
+                        0xFFFF53FF.toInt()  // Nuevo color
                     )
                     
                     for (i in 0..7) {
@@ -459,89 +459,6 @@ fun AddEventForm(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // --- Third Block (Summary) ---
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(CalendarioTheme.colors.fondoSecciones)
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            CompositionLocalProvider(LocalContentColor provides CalendarioTheme.colors.textSystem) {
-                Text(stringResource(id = R.string.summary), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(id = R.string.summary_title, title.ifBlank { stringResource(id = R.string.no_title) }))
-                val calendarName = selectedCalendar?.displayName ?: stringResource(id = R.string.not_applicable)
-                Text(stringResource(id = R.string.summary_calendar, calendarName))
-
-                val summaryFormatter = remember(locale) { AppFormats.dayDateAbbr(locale) }
-    val timeOnlyFormatter = remember(locale) { AppFormats.TimeShort }
-                
-                // FASE 3: LÓGICA DE DÍA ÚNICO: Si no es periodo largo, el resumen ignora el salto de fecha técnico
-                val isSameDay = startDate.toLocalDate() == endDate.toLocalDate()
-
-                if (isAllDay) {
-                    if (!isSameDay) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.from) + " ", fontWeight = FontWeight.Medium)
-                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.to) + " ", fontWeight = FontWeight.Medium)
-                            Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                        }
-                    } else {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
-                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                        }
-                    }
-                    Text(stringResource(id = R.string.all_day_switch), fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, fontSize = 12.sp)
-                } else {
-                    if (isSameDay) {
-                        // MISMO DÍA: Fecha una vez, horas a la derecha
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
-                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(startDate.format(timeOnlyFormatter))
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(endDate.format(timeOnlyFormatter))
-                        }
-                    } else {
-                        // DÍAS DISTINTOS: Fecha y hora en cada línea
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.start) + ": ", fontWeight = FontWeight.Medium)
-                            Text(startDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(startDate.format(timeOnlyFormatter))
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.end) + ": ", fontWeight = FontWeight.Medium)
-                            Text(endDate.format(summaryFormatter).replaceFirstChar { it.titlecase(locale) })
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(endDate.format(timeOnlyFormatter))
-                        }
-                    }
-                }
-                if (repetitionRule != RepetitionRule.NONE) {
-                    Text(stringResource(id = R.string.repeat_event_title) + ": " + stringResource(id = repetitionRule.displayNameRes))
-                    if (repeatUntilDate != null) {
-                        Text(stringResource(id = R.string.repeat_until) + ": " + repeatUntilDate.format(summaryFormatter).replaceFirstChar { char -> char.titlecase(locale) })
-                    } else if (repeatCount != null && repeatCount > 0) {
-                        Text(stringResource(id = R.string.repeat_until) + ": " + repeatCount + " " + stringResource(id = R.string.repeat_after).lowercase(locale))
-                    }
-                }
-                if (hasAlarm) {
-                    Text(stringResource(id = R.string.alarm) + ": " + alarmTime.format(timeFormatter))
-                }
-            }
         }
     }
 }
