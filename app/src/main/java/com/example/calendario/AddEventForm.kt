@@ -46,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -163,8 +162,8 @@ fun AddEventForm(
             ) {
                 EventModeChip(
                     text = stringResource(id = R.string.long_period_switch),
-                    iconResId = R.drawable.ic_long_period_24,
                     isSelected = isLongPeriod,
+                    showLanes = true,
                     onClick = { onLongPeriodChange(!isLongPeriod) },
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 )
@@ -178,8 +177,8 @@ fun AddEventForm(
 
                 EventModeChip(
                     text = stringResource(id = R.string.all_day_switch),
-                    iconResId = R.drawable.ic_all_day_24,
                     isSelected = isAllDay,
+                    showLanes = false,
                     onClick = { onAllDayChange(!isAllDay) },
                     enabled = !isLongPeriod,
                     modifier = Modifier.weight(1f).fillMaxHeight()
@@ -187,6 +186,7 @@ fun AddEventForm(
             }
 
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
+            Spacer(modifier = Modifier.height(10.dp))
 
             val startDateText = remember(startDate, locale) {
                 "${startDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${startDate.format(dateFormatter)}"
@@ -327,33 +327,18 @@ fun AddEventForm(
                         0xFF009688.toInt()  // Cyan
                     )
                     
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        for (i in 0..3) {
-                            ColorCircle(
-                                colorInt = periodColors[i],
-                                isSelected = selectedColorInt == periodColors[i],
-                                onClick = { onColorSelect(periodColors[i]) }
-                            )
-                        }
-                        for (i in 4..7) {
-                            ColorCircle(
-                                colorInt = periodColors[i],
-                                isSelected = selectedColorInt == periodColors[i],
-                                onClick = { onColorSelect(periodColors[i]) }
-                            )
-                        }
+                    for (i in 0..7) {
+                        ColorCircle(
+                            colorInt = periodColors[i],
+                            isSelected = selectedColorInt == periodColors[i],
+                            onClick = { onColorSelect(periodColors[i]) }
+                        )
                     }
-
-                    Spacer(modifier = Modifier.width(8.dp))
 
                     val isCustomColor = selectedColorInt != null && selectedColorInt !in periodColors
                     Box(
                         modifier = Modifier
-                            .size(32.dp)
+                            .size(26.dp)
                             .clip(CircleShape)
                             .background(if (isCustomColor) Color(selectedColorInt) else Color.Transparent)
                             .border(
@@ -367,7 +352,7 @@ fun AddEventForm(
                         Icon(
                             imageVector = Icons.Default.Palette,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(15.dp),
                             tint = if (isCustomColor) {
                                 Color(selectedColorInt).getContrastColor(Color.White)
                             } else {
@@ -579,8 +564,8 @@ fun AddEventForm(
 @Composable
 private fun EventModeChip(
     text: String,
-    iconResId: Int,
     isSelected: Boolean,
+    showLanes: Boolean = false,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
@@ -616,25 +601,31 @@ private fun EventModeChip(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = iconResId),
-                contentDescription = null,
-                tint = contentColor,
-                modifier = Modifier.size(18.dp)
+        if (showLanes && isSelected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 2.dp)
+                    .width(8.dp)
+                    .height(3.dp)
+                    .background(contentColor.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
             )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = text,
-                color = contentColor,
-                fontSize = 15.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 2.dp)
+                    .width(8.dp)
+                    .height(3.dp)
+                    .background(contentColor.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
             )
         }
+
+        Text(
+            text = text,
+            color = contentColor,
+            fontSize = 15.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+        )
     }
 }
 
@@ -646,10 +637,11 @@ private fun ColorCircle(
 ) {
     Box(
         modifier = Modifier
-            .size(32.dp)
-            .background(Color(colorInt), CircleShape)
+            .size(26.dp)
+            .clip(CircleShape)
+            .background(Color(colorInt))
             .border(
-                width = if (isSelected) 3.dp else 1.dp,
+                width = if (isSelected) 2.5.dp else 0.dp,
                 color = if (isSelected) CalendarioTheme.colors.textSystem else Color.Transparent,
                 shape = CircleShape
             )
