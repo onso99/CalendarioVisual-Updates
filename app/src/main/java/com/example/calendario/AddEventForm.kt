@@ -1,12 +1,6 @@
 package com.example.calendario
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -159,7 +153,6 @@ fun AddEventForm(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
-                .then(if (isInitialized) Modifier.animateContentSize() else Modifier)
         ) {
             // Fila de Chips: Periodo Largo y Todo el dÃ­a
             Row(
@@ -203,8 +196,9 @@ fun AddEventForm(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(44.dp)
                     .clickable(onClick = onStartDateClick)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -227,104 +221,50 @@ fun AddEventForm(
             val showEndDateRow = isLongPeriod || isCrossMidnight
 
             // Fila de Fecha de Fin unificada (Fecha a la izquierda, Hora a la derecha si no es todo el día)
-            if (!isInitialized) {
-                if (showEndDateRow) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val endDateText = remember(endDate, locale) {
-                            "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
-                        }
-                        Text(
-                            text = endDateText, 
-                            color = CalendarioTheme.colors.textSystem, 
-                            fontWeight = FontWeight.Medium, 
-                            modifier = Modifier.weight(1f).clickable(onClick = onEndDateClick)
-                        )
-                        if (!isAllDay) {
-                            Text(
-                                text = endDate.format(timeFormatter), 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.clickable(onClick = onEndTimeClick)
-                            )
-                        }
-                    }
-                }
-            } else {
-                AnimatedVisibility(
-                    visible = showEndDateRow,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
+            if (showEndDateRow) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val endDateText = remember(endDate, locale) {
-                            "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
-                        }
+                    val endDateText = remember(endDate, locale) {
+                        "${endDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale).replaceFirstChar { it.uppercase(locale) }} ${endDate.format(dateFormatter)}"
+                    }
+                    Text(
+                        text = endDateText, 
+                        color = CalendarioTheme.colors.textSystem, 
+                        fontWeight = FontWeight.Medium, 
+                        modifier = Modifier.weight(1f).clickable(onClick = onEndDateClick)
+                    )
+                    if (!isAllDay) {
                         Text(
-                            text = endDateText, 
+                            text = endDate.format(timeFormatter), 
                             color = CalendarioTheme.colors.textSystem, 
-                            fontWeight = FontWeight.Medium, 
-                            modifier = Modifier.weight(1f).clickable(onClick = onEndDateClick)
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.clickable(onClick = onEndTimeClick)
                         )
-                        if (!isAllDay) {
-                            Text(
-                                text = endDate.format(timeFormatter), 
-                                color = CalendarioTheme.colors.textSystem, 
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.clickable(onClick = onEndTimeClick)
-                            )
-                        }
                     }
                 }
             }
 
             // Fila de Hora de Fin separada (SOLO para eventos normales el mismo día)
             if (!isLongPeriod && !isAllDay && !isCrossMidnight) {
-                if (!isInitialized) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onEndTimeClick)
-                            .padding(horizontal = 16.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = endDate.format(timeFormatter), 
-                            color = CalendarioTheme.colors.textSystem,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                } else {
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(onClick = onEndTimeClick)
-                                .padding(horizontal = 16.dp, vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = endDate.format(timeFormatter), 
-                                color = CalendarioTheme.colors.textSystem,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp)
+                        .clickable(onClick = onEndTimeClick)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = endDate.format(timeFormatter), 
+                        color = CalendarioTheme.colors.textSystem,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
 
@@ -333,8 +273,9 @@ fun AddEventForm(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(44.dp)
                         .clickable(onClick = onRepetitionClick)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -354,15 +295,6 @@ fun AddEventForm(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Text(
-                                text = "$repetitionText$countSuffix",
-                                color = CalendarioTheme.colors.textSystem,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 15.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
                             IconButton(
                                 onClick = onRepetitionClear,
                                 modifier = Modifier.size(24.dp)
@@ -374,6 +306,15 @@ fun AddEventForm(
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "$repetitionText$countSuffix",
+                                color = CalendarioTheme.colors.textSystem,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     } else {
                         Text(
@@ -393,7 +334,8 @@ fun AddEventForm(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .height(44.dp)
+                        .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -459,42 +401,17 @@ fun AddEventForm(
                 }
             }
 
-            if (!isInitialized) {
-                if (!isLongPeriod) {
-                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    RepetitionRow()
-                } else {
-                    HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                    ColorSelectorRow()
-                }
+            if (!isLongPeriod) {
+                RepetitionRow()
             } else {
-                AnimatedVisibility(
-                    visible = !isLongPeriod,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    Column {
-                        HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                        RepetitionRow()
-                    }
-                }
-                AnimatedVisibility(
-                    visible = isLongPeriod,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    Column {
-                        HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
-                        ColorSelectorRow()
-                    }
-                }
+                ColorSelectorRow()
             }
 
             // --- Alarm Section ---
-            HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(44.dp)
                     .clickable(onClick = {
                         if (!hasAlarm) {
                             onHasAlarmChange(true)
@@ -506,7 +423,8 @@ fun AddEventForm(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .fillMaxHeight()
+                        .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -518,22 +436,27 @@ fun AddEventForm(
                     )
 
                     if (hasAlarm) {
-                        Text(
-                            text = alarmTime.format(timeFormatter),
-                            color = CalendarioTheme.colors.textSystem,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 15.sp
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        IconButton(
-                            onClick = { onHasAlarmChange(false) },
-                            modifier = Modifier.size(24.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
-                                modifier = Modifier.size(18.dp)
+                            IconButton(
+                                onClick = { onHasAlarmChange(false) },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = alarmTime.format(timeFormatter),
+                                color = CalendarioTheme.colors.textSystem,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 15.sp
                             )
                         }
                     } else {
@@ -588,6 +511,7 @@ fun AddEventForm(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))

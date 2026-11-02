@@ -1,3 +1,4 @@
+2026-11-02 - v3.8.62 Nuevo evento/Bloque Fechas: mejoras de interface
 2026-11-01 - v3.8.61 Nuevo evento: cambio de texto en Repeticiones y propagación al resto de idiomas
 2026-11-01 - v3.8.60 Nuevo evento: unificación de iconos y ajuste de valores Repetición y Alarma
 2026-11-01 - v3.8.59 Centro de datos: unificación de estilo. Iconos > de color verde/rojo para verificación de resultado
