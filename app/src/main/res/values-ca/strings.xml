@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">Confirmar eliminació</string>
     <string name="confirm_deletion_message">Segur que vols eliminar aquest esdeveniment: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetició</string>
-    <string name="repeat_until">Finalitza</string>
     <string name="repeat_indefinite">Indefinidament</string>
     <string name="repeat_on_date">Fins a la data</string>
     <string name="repeat_after">Repeticions</string>
@@ -52,13 +51,6 @@
     <string name="title">Títol</string>
     <string name="no_editable_calendars">No hi ha calendaris editables</string>
     <string name="all_day_switch">Tot el dia</string>
-    <string name="start">Inici</string>
-    <string name="end">Fi</string>
-    <string name="summary">Resum:</string>
-    <string name="summary_title">Títol: %1$s</string>
-    <string name="summary_calendar">Calendari: %1$s</string>
-    <string name="from">Del:</string>
-    <string name="to">Al:</string>
     <string name="save">Desar</string>
     <string name="end_time_before_start_time_error">L\'hora de fi no pot ser anterior a la d\'inici</string>
     <string name="system_default">Sistema</string>
@@ -283,7 +275,6 @@
     <string name="last_backup_label">Última</string>
     <string name="never">Mai</string>
     <string name="confirm_delete_adjustment">Vols eliminar aquest ajust? Es restaurarà l\'estat original del calendari.</string>
-    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">aniversari,aniversaris</string>
     <string name="greeting_keywords">felicitats,enhorabona</string>

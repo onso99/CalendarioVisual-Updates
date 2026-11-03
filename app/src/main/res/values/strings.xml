@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">¿Seguro que quieres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetición</string>
-    <string name="repeat_until">Finaliza</string>
     <string name="repeat_indefinite">Indefinidamente</string>
     <string name="repeat_on_date">Hasta la fecha</string>
     <string name="repeat_after">Repeticiones</string>
@@ -54,13 +53,6 @@
     <string name="title">Título</string>
     <string name="no_editable_calendars">No hay calendarios editables</string>
     <string name="all_day_switch">Todo el día</string>
-    <string name="start">Inicio</string>
-    <string name="end">Fin</string>
-    <string name="summary">Resumen:</string>
-    <string name="summary_title">Título: %1$s</string>
-    <string name="summary_calendar">Calendario: %1$s</string>
-    <string name="from">Del:</string>
-    <string name="to">Al:</string>
     <string name="save">Guardar</string>
     <string name="end_time_before_start_time_error">La hora de fin no puede ser anterior a la de inicio</string>
     <string name="system_default">Sistema</string>
@@ -267,7 +259,6 @@
     <string name="last_backup_label">Última</string>
     <string name="never">Nunca</string>
     <string name="confirm_delete_adjustment">¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.</string>
-    <string name="not_applicable">N/A</string>
 
     <string name="backup_section_title_label">Copia de seguridad</string>
     <string name="data_center_screen_title">Centro de datos</string>

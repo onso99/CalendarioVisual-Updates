@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">Löschen bestätigen</string>
     <string name="confirm_deletion_message">Sind Sie sicher, dass Sie dieses Ereignis löschen möchten: \"%1$s\"?</string>
     <string name="repeat_event_title">Wiederholung</string>
-    <string name="repeat_until">Endet am</string>
     <string name="repeat_indefinite">Unbefristet</string>
     <string name="repeat_on_date">Bis zum Datum</string>
     <string name="repeat_after">Wiederholungen</string>
@@ -52,13 +51,6 @@
     <string name="title">Titel</string>
     <string name="no_editable_calendars">Keine bearbeitbaren Kalender</string>
     <string name="all_day_switch">Ganztägig</string>
-    <string name="start">Start</string>
-    <string name="end">Ende</string>
-    <string name="summary">Zusammenfassung:</string>
-    <string name="summary_title">Titel: %1$s</string>
-    <string name="summary_calendar">Kalender: %1$s</string>
-    <string name="from">Von:</string>
-    <string name="to">Bis:</string>
     <string name="save">Speichern</string>
     <string name="end_time_before_start_time_error">Endzeit darf nicht vor Startzeit liegen</string>
     <string name="system_default">System</string>
@@ -282,7 +274,6 @@
     <string name="last_backup_label">Zuletzt</string>
     <string name="never">Nie</string>
     <string name="confirm_delete_adjustment">Möchten Sie diese Anpassung löschen? Der ursprüngliche Zustand des Kalenders wird wiederhergestellt.</string>
-    <string name="not_applicable">N. v.</string>
 
     <string name="birthday_keywords">geburtstag,jahrestag</string>
     <string name="greeting_keywords">glückwunsch,gratulation,herzlichen</string>

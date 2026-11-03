@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">确认删除</string>
     <string name="confirm_deletion_message">您确定要删除此事件吗：\"%1$s\"？</string>
     <string name="repeat_event_title">重复</string>
-    <string name="repeat_until">结束于</string>
     <string name="repeat_indefinite">无限期</string>
     <string name="repeat_on_date">直到日期</string>
     <string name="repeat_after">重复次数</string>
@@ -52,13 +51,6 @@
     <string name="title">标题</string>
     <string name="no_editable_calendars">无待编辑日历</string>
     <string name="all_day_switch">全天</string>
-    <string name="start">开始</string>
-    <string name="end">结束</string>
-    <string name="summary">摘要：</string>
-    <string name="summary_title">标题：%1$s</string>
-    <string name="summary_calendar">日历：%1$s</string>
-    <string name="from">从：</string>
-    <string name="to">到：</string>
     <string name="save">保存</string>
     <string name="end_time_before_start_time_error">结束时间不能早于开始时间</string>
     <string name="system_default">系统</string>
@@ -282,7 +274,6 @@
     <string name="last_backup_label">上次</string>
     <string name="never">从未</string>
     <string name="confirm_delete_adjustment">要删除此调整吗？日历将恢复到原始状态。</string>
-    <string name="not_applicable">无</string>
 
     <string name="birthday_keywords">生日,纪念日</string>
     <string name="greeting_keywords">快乐,恭喜,祝贺</string>

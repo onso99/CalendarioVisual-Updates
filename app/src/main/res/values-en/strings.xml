@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">Confirm deletion</string>
     <string name="confirm_deletion_message">Are you sure you want to delete this event: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetition</string>
-    <string name="repeat_until">Ends</string>
     <string name="repeat_indefinite">Indefinitely</string>
     <string name="repeat_on_date">Until date</string>
     <string name="repeat_after">Repetitions</string>
@@ -52,13 +51,6 @@
     <string name="title">Title</string>
     <string name="no_editable_calendars">No editable calendars</string>
     <string name="all_day_switch">All day</string>
-    <string name="start">Start</string>
-    <string name="end">End</string>
-    <string name="summary">Summary:</string>
-    <string name="summary_title">Title: %1$s</string>
-    <string name="summary_calendar">Calendar: %1$s</string>
-    <string name="from">From:</string>
-    <string name="to">To:</string>
     <string name="save">Save</string>
     <string name="end_time_before_start_time_error">End time cannot be before start time</string>
     <string name="system_default">System</string>
@@ -283,7 +275,6 @@
     <string name="last_backup_label">Last</string>
     <string name="never">Never</string>
     <string name="confirm_delete_adjustment">Do you want to delete this adjustment? The original state of the calendar will be restored.</string>
-    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">birthday,anniversary</string>
     <string name="greeting_keywords">happy,congratulations,congrats</string>

@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">Conferma eliminazione</string>
     <string name="confirm_deletion_message">Sei sicuro di voler eliminare questo evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Ripetizione</string>
-    <string name="repeat_until">Termina il</string>
     <string name="repeat_indefinite">Indefinitamente</string>
     <string name="repeat_on_date">Fino alla data</string>
     <string name="repeat_after">Ripetizioni</string>
@@ -52,13 +51,6 @@
     <string name="title">Titolo</string>
     <string name="no_editable_calendars">Nessun calendario modificabile</string>
     <string name="all_day_switch">Tutto il giorno</string>
-    <string name="start">Inizio</string>
-    <string name="end">Fine</string>
-    <string name="summary">Riepilogo:</string>
-    <string name="summary_title">Titolo: %1$s</string>
-    <string name="summary_calendar">Calendario: %1$s</string>
-    <string name="from">Dal:</string>
-    <string name="to">Al:</string>
     <string name="save">Salva</string>
     <string name="end_time_before_start_time_error">L\'ora di fine non può essere precedente a quella di inizio</string>
     <string name="system_default">Sistema</string>
@@ -283,7 +275,6 @@
     <string name="last_backup_label">Ultima</string>
     <string name="never">Mai</string>
     <string name="confirm_delete_adjustment">Vuoi eliminare questa regolazione? Verrà ripristinato lo stato originale del calendario.</string>
-    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">compleanno,anniversario</string>
     <string name="greeting_keywords">felice,auguri,felicitazioni,congratulazioni</string>

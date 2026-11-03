@@ -30,7 +30,6 @@
     <string name="confirm_deletion_title">Baieztatu ezabatzea</string>
     <string name="confirm_deletion_message">Ziur al zaude gertaera hau ezabatu nahi duzula: \"%1$s\"?</string>
     <string name="repeat_event_title">Errepikapena</string>
-    <string name="repeat_until">Noiz amaitu</string>
     <string name="repeat_indefinite">Mugagabe</string>
     <string name="repeat_on_date">Data arte</string>
     <string name="repeat_after">Errepikapenak</string>
@@ -52,13 +51,6 @@
     <string name="title">Izenburua</string>
     <string name="no_editable_calendars">Ez dago egutegi editagarririk</string>
     <string name="all_day_switch">Egun osoa</string>
-    <string name="start">Hasiera</string>
-    <string name="end">Amaiera</string>
-    <string name="summary">Laburpena:</string>
-    <string name="summary_title">Izenburua: %1$s</string>
-    <string name="summary_calendar">Egutegia: %1$s</string>
-    <string name="from">Hasiera:</string>
-    <string name="to">Amaiera:</string>
     <string name="save">Gorde</string>
     <string name="end_time_before_start_time_error">Amaiera-ordua ezin da hasiera-ordua baino lehenago izan</string>
     <string name="system_default">Sistema</string>
@@ -281,7 +273,6 @@
     <string name="last_backup_label">Azkena</string>
     <string name="never">Inoiz ez</string>
     <string name="confirm_delete_adjustment">Doitzea ezabatu nahi duzu? Egutegiaren jatorrizko egoera berrezarriko da.</string>
-    <string name="not_applicable">N/A</string>
 
     <string name="birthday_keywords">urtebetetze,urtebetetzeak</string>
     <string name="greeting_keywords">zorionak</string>
