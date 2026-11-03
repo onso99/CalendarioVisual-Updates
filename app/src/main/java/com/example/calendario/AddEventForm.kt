@@ -72,8 +72,6 @@ fun AddEventForm(
     onEndTimeClick: () -> Unit,
     repetitionRule: RepetitionRule,
     onRepetitionClick: () -> Unit,
-    onRepetitionClear: () -> Unit = {},
-    repeatUntilDate: java.time.LocalDate?,
     repeatCount: Int?,
     isLongPeriod: Boolean,
     onLongPeriodChange: (Boolean) -> Unit,
@@ -83,7 +81,9 @@ fun AddEventForm(
     hasAlarm: Boolean,
     onHasAlarmChange: (Boolean) -> Unit,
     alarmTime: java.time.LocalTime,
-    onAlarmTimeClick: () -> Unit
+    onAlarmTimeClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onRepetitionClear: () -> Unit = {}
 ) {
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
@@ -94,7 +94,7 @@ fun AddEventForm(
         isInitialized = true
     }
 
-    Column {
+    Column(modifier = modifier) {
         // --- First Block ---
         Column(
             modifier = Modifier
@@ -459,10 +459,10 @@ fun AddEventForm(
 private fun EventModeChip(
     text: String,
     isSelected: Boolean,
-    showLanes: Boolean = false,
-    laneColorInt: Int? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showLanes: Boolean = false,
+    laneColorInt: Int? = null,
     enabled: Boolean = true
 ) {
     val brandColor = CalendarioTheme.colors.cabecera

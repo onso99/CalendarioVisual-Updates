@@ -479,7 +479,6 @@ fun AddEventScreen(
                     repeatUntilDate = null
                     repeatCount = null
                 },
-                repeatUntilDate = repeatUntilDate,
                 repeatCount = repeatCount,
                 isLongPeriod = isLongPeriod,
                 onLongPeriodChange = { 
