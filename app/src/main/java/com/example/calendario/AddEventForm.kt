@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -82,6 +83,8 @@ fun AddEventForm(
     onHasAlarmChange: (Boolean) -> Unit,
     alarmTime: java.time.LocalTime,
     onAlarmTimeClick: () -> Unit,
+    description: String,
+    onDescriptionChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     onRepetitionClear: () -> Unit = {}
 ) {
@@ -451,6 +454,39 @@ fun AddEventForm(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // --- Third Block (Description) ---
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(CalendarioTheme.colors.fondoSecciones)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxWidth()
+        ) {
+            TextField(
+                value = description,
+                onValueChange = { if (it.length <= 1000) onDescriptionChange(it) },
+                placeholder = { Text(stringResource(id = R.string.description), color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f)) },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    errorContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                textStyle = LocalTextStyle.current.copy(
+                    color = CalendarioTheme.colors.textSystem,
+                    fontSize = 16.sp
+                ),
+                minLines = 3,
+                maxLines = 6,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

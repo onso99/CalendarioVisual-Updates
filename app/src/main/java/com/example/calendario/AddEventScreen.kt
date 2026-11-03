@@ -219,12 +219,16 @@ fun AddEventScreen(
     var isLongPeriod by remember { mutableStateOf(false) }
     var previousIsAllDay by remember { mutableStateOf(false) }
     var selectedColorInt by remember { mutableStateOf<Int?>(null) }
+    var description by remember { mutableStateOf(eventToEdit?.description ?: "") }
+    var initialDescription by remember { mutableStateOf(eventToEdit?.description ?: "") }
     var showCustomColorPicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = localEventToEdit, key2 = editableCalendars) {
         if (localEventToEdit != null && !isCopying) {
             isLongPeriod = localEventToEdit!!.isLongPeriod
             title = localEventToEdit!!.title
+            description = localEventToEdit?.description ?: ""
+            initialDescription = localEventToEdit?.description ?: ""
             // REGLA DE HIERRO (v3.1.34): Al editar, si es periodo largo forzamos Todo el día
             isAllDay = localEventToEdit!!.isAllDay || isLongPeriod
             selectedCalendar = editableCalendars.find { it.id == localEventToEdit!!.calendarId }
@@ -312,6 +316,8 @@ fun AddEventScreen(
             val now = LocalDateTime.now().withSecond(0).withNano(0)
             val effectiveInitialDateTime = initialDate?.atTime(now.toLocalTime()) ?: now
             title = ""
+            description = ""
+            initialDescription = ""
             isAllDay = false
             startDate = getSmartInitialStartDate(initialDate)
             endDate = getSmartInitialStartDate(initialDate).plusMinutes(30)
@@ -335,15 +341,15 @@ fun AddEventScreen(
         }
     }
 
-    val hasChanges by remember(title, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, repeatUntilDate, repeatCount, isLongPeriod, selectedColorInt, hasAlarm, alarmTime, selectedDays) {
+    val hasChanges by remember(title, description, isAllDay, selectedCalendar, startDate, endDate, repetitionRule, repeatCount, isLongPeriod, selectedColorInt, hasAlarm, alarmTime, selectedDays) {
         derivedStateOf {
             title != initialTitle ||
+            description != initialDescription ||
             isAllDay != initialIsAllDay ||
             selectedCalendar?.id != initialSelectedCalendar?.id ||
             startDate != initialStartDate ||
             endDate != initialEndDate ||
             repetitionRule != initialRepetitionRule ||
-            repeatUntilDate != initialRepeatUntilDate ||
             repeatCount != localEventToEdit?.repeatCount ||
             isLongPeriod != (localEventToEdit?.isLongPeriod ?: false) ||
             selectedColorInt != localEventToEdit?.customColor ||
@@ -366,9 +372,9 @@ fun AddEventScreen(
                 saveError = SaveEventError.LANES_FULL
             } else {
                 val createdEventId = if (localEventToEdit != null && localEventToEdit!!.id != 0L) {
-                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, isLongPeriod)
+                    updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, null, repeatCount, selectedColorInt, isLongPeriod, emptySet(), description)
                 } else {
-                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, isLongPeriod)
+                    createEvent(context, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, null, repeatCount, selectedColorInt, isLongPeriod, emptySet(), description)
                 }
 
                 if (createdEventId != null) {
@@ -503,6 +509,8 @@ fun AddEventScreen(
                 selectedColorInt = selectedColorInt,
                 onColorSelect = { selectedColorInt = it },
                 onPaletteClick = { showCustomColorPicker = true },
+                description = description,
+                onDescriptionChange = { description = it },
                 hasAlarm = hasAlarm, 
                 onHasAlarmChange = { 
                     hasAlarm = it

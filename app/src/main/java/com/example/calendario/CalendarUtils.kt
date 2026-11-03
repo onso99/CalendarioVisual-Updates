@@ -26,6 +26,7 @@ fun createEvent(
     customColor: Int? = null,
     isLongPeriod: Boolean = false,
     selectedDays: Set<java.time.DayOfWeek> = emptySet(),
+    description: String? = null,
     showToast: Boolean = true
 ): Long? {
     if (calendarId == null) {
@@ -39,7 +40,7 @@ fun createEvent(
 
     return try {
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays, description)
         
         val eventInsertOperation = ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI).withValues(values)
         operations.add(eventInsertOperation.build())
@@ -88,7 +89,8 @@ fun updateEvent(
     repeatCount: Int? = null,
     customColor: Int? = null,
     isLongPeriod: Boolean = false,
-    selectedDays: Set<java.time.DayOfWeek> = emptySet()
+    selectedDays: Set<java.time.DayOfWeek> = emptySet(),
+    description: String? = null
 ): Long? {
      if (calendarId == null) {
         context.showToast(R.string.no_calendar_selected_error, Toast.LENGTH_LONG)
@@ -102,7 +104,7 @@ fun updateEvent(
     return try {
         SettingsManager.clearDismissedAlarm(context, eventId)
         val operations = ArrayList<ContentProviderOperation>()
-        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays)
+        val values = createEventValues(startDate, endDate, isAllDay, title, calendarId, repetitionRule, repeatUntil, repeatCount, customColor, isLongPeriod, selectedDays, description)
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         operations.add(ContentProviderOperation.newUpdate(updateUri).withValues(values).build())
 
@@ -295,7 +297,8 @@ private fun createEventValues(
     repeatCount: Int? = null,
     customColor: Int? = null,
     isLongPeriod: Boolean = false,
-    selectedDays: Set<java.time.DayOfWeek> = emptySet()
+    selectedDays: Set<java.time.DayOfWeek> = emptySet(),
+    description: String? = null
 ): ContentValues {
     val timezone = if (isAllDay) TimeZone.getTimeZone("UTC").id else TimeZone.getDefault().id
     val startMillis = if (isAllDay) {
@@ -313,6 +316,12 @@ private fun createEventValues(
         put(CalendarContract.Events.EVENT_TIMEZONE, timezone)
         put(CalendarContract.Events.EVENT_LOCATION, "") // Limpiar ubicación para estandarizar (v3.2.06)
         
+        if (!description.isNullOrBlank()) {
+            put(CalendarContract.Events.DESCRIPTION, description)
+        } else {
+            putNull(CalendarContract.Events.DESCRIPTION)
+        }
+
         if (customColor != null) {
             put(CalendarContract.Events.EVENT_COLOR, customColor)
         }
