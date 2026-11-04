@@ -318,6 +318,8 @@ fun BackupScreen(
                             context.applicationContext.showToast(R.string.restore_success)
                             restoreStatus = ActionStatus.SUCCESS
                             SettingsManager.saveLastRestoreStatus(context, "SUCCESS")
+                            viewModel.refreshData()
+                            (context as? Activity)?.recreate()
                         } else {
                             context.showToast(R.string.restore_error, Toast.LENGTH_LONG) 
                             restoreStatus = ActionStatus.ERROR
