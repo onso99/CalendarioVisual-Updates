@@ -1,3 +1,4 @@
+2026-11-03 - v3.8.64 Nuevo evento: Añadido Bloque de Descripción
 2026-11-03 - v3.8.63 Pantalla Nuevo evento reformada
 2026-11-03 - v3.8.62.6 Corrección de warnings: AddEventForm y AddEventScreen
 2026-11-03 - v3.8.62.5 Corrección de warnings: Strings y resto de idiomas actualizados sin cadenas de Resumen. Imports

@@ -65,6 +65,9 @@ private fun processAlarmForEvent(
     repetitionRule: RepetitionRule,
     repeatUntil: LocalDate?
 ) {
+    // BLINDAJE: Cancelar siempre cualquier alarma previa en cualquier fecha anterior para este eventId
+    AlarmUtils.cancelAlarm(context, eventId)
+
     if (hasAlarm) {
         val finalRrule = if (repetitionRule != RepetitionRule.NONE && repeatUntil != null) {
             val untilStr = repeatUntil.format(AppFormats.IcsDateTime)
@@ -95,7 +98,6 @@ private fun processAlarmForEvent(
     } else {
         val eventAdn = Festivo.generateAdn(startDate.toLocalDate(), title, if (isAllDay) null else startDate.toLocalTime())
         SettingsManager.saveEventAlarmOffset(context, eventId, null, eventAdn)
-        AlarmUtils.cancelAlarm(context, eventId, startDate.toLocalDate())
     }
 }
 
