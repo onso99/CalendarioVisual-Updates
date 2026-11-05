@@ -213,7 +213,7 @@ fun AddEventForm(
                 }
             }
 
-            // Fila 2: Fecha de Fin + Hora de Fin (si no es Todo el día)
+            // Fila 2: Fecha de Fin + Hora de Fin (si no es Todo el día) o Duración (si es Periodo largo)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -234,6 +234,15 @@ fun AddEventForm(
                         color = CalendarioTheme.colors.textSystem, 
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.clickable(onClick = onEndTimeClick)
+                    )
+                } else if (isLongPeriod) {
+                    val daysDiff = java.time.temporal.ChronoUnit.DAYS.between(startDate.toLocalDate(), endDate.toLocalDate()) + 1
+                    val durationStr = stringResource(id = R.string.event_duration_days, daysDiff.toInt())
+                    Text(
+                        text = "($durationStr)",
+                        color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal
                     )
                 }
             }

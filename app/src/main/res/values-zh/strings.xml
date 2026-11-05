@@ -342,7 +342,7 @@
     <string name="upcoming_alarm_title">下一个闹钟</string>
     <string name="export_filename_local_holidays">LocalHolidays</string>
     <string name="unknown_elements_warning">此事件中的未知元素 *</string>
-
+    <string name="event_duration_days">%1$d天</string>
 </resources>
 
 

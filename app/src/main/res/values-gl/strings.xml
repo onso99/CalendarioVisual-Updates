@@ -343,7 +343,7 @@
     <string name="upcoming_alarm_title">Próxima alarma</string>
     <string name="export_filename_local_holidays">FestasLocais</string>
     <string name="unknown_elements_warning">Elementos descoñecidos neste evento *</string>
-
+    <string name="event_duration_days">%1$d días</string>
 </resources>
 
 

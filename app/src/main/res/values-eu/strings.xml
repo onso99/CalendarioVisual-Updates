@@ -341,7 +341,7 @@
     <string name="upcoming_alarm_title">Hurrengo alarma</string>
     <string name="export_filename_local_holidays">TokikoJaiak</string>
     <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
-
+    <string name="event_duration_days">%1$d egun</string>
 </resources>
 
 

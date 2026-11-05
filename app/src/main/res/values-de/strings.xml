@@ -342,7 +342,7 @@
     <string name="upcoming_alarm_title">Nächster Alarm</string>
     <string name="export_filename_local_holidays">LokaleFeiertage</string>
     <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
-
+    <string name="event_duration_days">%1$d Tage</string>
 </resources>
 
 

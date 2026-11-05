@@ -266,6 +266,7 @@
     <string name="drive_label">Drive</string>
     <string name="database_section_label">Base de datos</string>
     <string name="description" tools:ignore="MissingTranslation">Descripción</string>
+    <string name="event_duration_days">%1$d días</string>
     <string name="import_cvo_option_label">Importar archivo .cvo</string>
     <string name="check_updates_label">Buscar actualizaciones</string>
     <string name="checking_updates">Buscando actualizaciones…</string>
