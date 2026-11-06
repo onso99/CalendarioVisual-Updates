@@ -214,7 +214,14 @@ class AlarmReceiver : BroadcastReceiver() {
             .addAction(0, context.getString(R.string.stop_alarm), stopBtnPendingIntent) // Derecha
             .build()
 
-        notificationManager.notify(eventId.toInt(), notification)
+        val notificationId = eventId.toInt()
+        val isAlreadyActive = try {
+            notificationManager.activeNotifications?.any { it.id == notificationId } == true
+        } catch (_: Exception) { false }
+
+        if (isAlreadyActive) return
+
+        notificationManager.notify(notificationId, notification)
     }
 
     private fun showPreAlarmNotification(context: Context, eventId: Long, title: String, dateStr: String, timeStr: String) {
@@ -274,6 +281,13 @@ class AlarmReceiver : BroadcastReceiver() {
             .addAction(0, context.getString(R.string.stop_upcoming_alarm), dismissPendingIntent)
             .build()
 
-        notificationManager.notify(((eventId.toInt() % 10000) * 1000) + 777, notification)
+        val preAlarmId = ((eventId.toInt() % 10000) * 1000) + 777
+        val isAlreadyActive = try {
+            notificationManager.activeNotifications?.any { it.id == preAlarmId } == true
+        } catch (_: Exception) { false }
+
+        if (isAlreadyActive) return
+
+        notificationManager.notify(preAlarmId, notification)
     }
 }

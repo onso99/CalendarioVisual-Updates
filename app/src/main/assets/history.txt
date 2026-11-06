@@ -1,3 +1,4 @@
+2026-11-05 - v3.8.67 Indicador de Duración para Periodos Largos
 2026-11-04 - v3.8.66 Recreación Limpia de la Actividad (recreate()) tras la Restauración.
 2026-11-04 - v3.8.65 Nuevo evento: ajuste de la alarma en un evento cambiado de fecha
 2026-11-03 - v3.8.64 Nuevo evento: Añadido Bloque de Descripción
