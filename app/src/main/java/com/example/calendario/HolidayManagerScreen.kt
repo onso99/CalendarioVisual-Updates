@@ -69,7 +69,7 @@ fun HolidayManagerScreen(
     val uiState by viewModel.uiState.collectAsState()
     var adjustments by remember { mutableStateOf(SettingsManager.getHolidayAdjustments(context)) }
     
-    LaunchedEffect(uiState.workingDayDates) {
+    LaunchedEffect(uiState.workingDayDates, uiState.eventsByDate) {
         adjustments = SettingsManager.getHolidayAdjustments(context)
     }
     

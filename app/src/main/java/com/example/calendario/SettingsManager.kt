@@ -10,6 +10,8 @@ import androidx.core.content.edit
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDate
 
 /**
@@ -488,23 +490,64 @@ object SettingsManager {
     private fun holidayPrefs(context: Context) = getPrefs(context, AppConstants.HOLIDAY_ADJUSTMENTS_PREFS_NAME)
 
     fun getHolidayAdjustments(context: Context): List<HolidayAdjustment> {
-        val json = holidayPrefs(context).getString("adjustments", null) ?: return emptyList()
-        val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
-        val dtoList: List<HolidayAdjustmentDto> = try { Gson().fromJson(json, type) } catch (_: Exception) { emptyList() }
-        return dtoList.mapNotNull { dto ->
-            try {
-                if (dto.dateStr.isBlank()) return@mapNotNull null
-                HolidayAdjustment(
-                    date = LocalDate.parse(dto.dateStr),
-                    title = dto.title,
-                    type = try { HolidayAdjustmentType.valueOf(dto.type) } catch (_: Exception) { HolidayAdjustmentType.HOLIDAY },
-                    originalEventId = dto.originalEventId,
-                    isManual = dto.isManual
+        val jsonStr = holidayPrefs(context).getString("adjustments", null) ?: return emptyList()
+        val result = mutableListOf<HolidayAdjustment>()
+        try {
+            val jsonArray = JSONArray(jsonStr)
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.optJSONObject(i) ?: continue
+                val dateStr = obj.optString("dateStr").takeIf { it.isNotBlank() } ?: obj.optString("a")
+                val title = obj.optString("title").ifBlank { obj.optString("b") }
+                val typeStr = obj.optString("type").ifBlank { obj.optString("c") }
+                
+                val originalEventId = when {
+                    obj.has("originalEventId") && !obj.isNull("originalEventId") -> obj.optLong("originalEventId")
+                    obj.has("d") && !obj.isNull("d") -> obj.optLong("d")
+                    else -> null
+                }
+                
+                val isManual = when {
+                    obj.has("isManual") -> obj.optBoolean("isManual")
+                    obj.has("e") -> obj.optBoolean("e")
+                    else -> false
+                }
+
+                if (dateStr.isBlank()) continue
+
+                val date = try { LocalDate.parse(dateStr) } catch (_: Exception) { continue }
+                val type = try { HolidayAdjustmentType.valueOf(typeStr) } catch (_: Exception) { HolidayAdjustmentType.HOLIDAY }
+
+                result.add(
+                    HolidayAdjustment(
+                        date = date,
+                        title = title,
+                        type = type,
+                        originalEventId = originalEventId,
+                        isManual = isManual
+                    )
                 )
-            } catch (_: Exception) {
-                null
             }
+        } catch (_: Exception) {
+            // Fallback a Gson si el parseo manual falla
+            try {
+                val type = object : TypeToken<List<HolidayAdjustmentDto>>() {}.type
+                val dtoList: List<HolidayAdjustmentDto> = Gson().fromJson(jsonStr, type)
+                dtoList.forEach { dto ->
+                    if (dto.dateStr.isNotBlank()) {
+                        result.add(
+                            HolidayAdjustment(
+                                date = LocalDate.parse(dto.dateStr),
+                                title = dto.title,
+                                type = try { HolidayAdjustmentType.valueOf(dto.type) } catch (_: Exception) { HolidayAdjustmentType.HOLIDAY },
+                                originalEventId = dto.originalEventId,
+                                isManual = dto.isManual
+                            )
+                        )
+                    }
+                }
+            } catch (_: Exception) {}
         }
+        return result
     }
 
     fun saveHolidayAdjustments(context: Context, adjustments: List<HolidayAdjustment>) {

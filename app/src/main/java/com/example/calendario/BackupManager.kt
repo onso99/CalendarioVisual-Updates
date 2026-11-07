@@ -213,6 +213,7 @@ object BackupManager {
                     ?: json.optJSONObject(AppConstants.HOLIDAY_PREFS_NAME)
                     ?: json.optJSONObject("holiday_adjustments_prefs")
 
+                LogCollector.addLog("RESTORE: holidaysJson encontrado = ${holidaysJson != null}, contenido = $holidaysJson")
                 restorePrefs(SettingsManager.getPrefs(context, AppConstants.HOLIDAY_PREFS_NAME), holidaysJson)
             }
 
