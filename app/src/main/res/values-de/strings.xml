@@ -343,6 +343,15 @@
     <string name="export_filename_local_holidays">LokaleFeiertage</string>
     <string name="unknown_elements_warning">Unbekannte Elemente in diesem Ereignis *</string>
     <string name="event_duration_days">%1$d Tage</string>
+    <string name="today_border_color">Heutiger Rand</string>
+    <string name="description">Beschreibung</string>
+    <string name="appearance">Erscheinungsbild</string>
+    <string name="special_events">Besondere Ereignisse</string>
+    <string name="festivities_section_title">Feiertage</string>
+    <string name="highlights_section_title">Highlights</string>
+    <string name="backgrounds_section_title">Hintergründe</string>
+    <string name="cells_section_title">Zellen</string>
+    <string name="gradient_label">Farbverlauf</string>
 </resources>
 
 

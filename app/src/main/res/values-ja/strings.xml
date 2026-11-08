@@ -343,6 +343,15 @@
     <string name="export_filename_local_holidays">LocalHolidays</string>
     <string name="unknown_elements_warning">このイベント内の不明な要素 *</string>
     <string name="event_duration_days">%1$d日</string>
+    <string name="today_border_color">今日の枠線</string>
+    <string name="description">説明</string>
+    <string name="appearance">外観</string>
+    <string name="special_events">特別なイベント</string>
+    <string name="festivities_section_title">祝祭日</string>
+    <string name="highlights_section_title">ハイライト</string>
+    <string name="backgrounds_section_title">背景</string>
+    <string name="cells_section_title">セル</string>
+    <string name="gradient_label">グラデーション</string>
 </resources>
 
 

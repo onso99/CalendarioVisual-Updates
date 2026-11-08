@@ -265,15 +265,16 @@
     <string name="pdf_print_title">PDF / Imprimir</string>
     <string name="drive_label">Drive</string>
     <string name="database_section_label">Base de datos</string>
-    <string name="description" tools:ignore="MissingTranslation">Descripción</string>
+    <string name="description">Descripción</string>
     <string name="event_duration_days">%1$d días</string>
-    <string name="appearance" tools:ignore="MissingTranslation">Apariencia</string>
-    <string name="special_events" tools:ignore="MissingTranslation">Eventos especiales</string>
-    <string name="festivities_section_title" tools:ignore="MissingTranslation">Festividades</string>
-    <string name="highlights_section_title" tools:ignore="MissingTranslation">Destacados</string>
-    <string name="backgrounds_section_title" tools:ignore="MissingTranslation">Fondos</string>
-    <string name="cells_section_title" tools:ignore="MissingTranslation">Celdas</string>
-    <string name="gradient_label" tools:ignore="MissingTranslation">Degradado</string>
+    <string name="appearance">Apariencia</string>
+    <string name="special_events">Eventos especiales</string>
+    <string name="festivities_section_title">Festividades</string>
+    <string name="highlights_section_title">Destacados</string>
+    <string name="backgrounds_section_title">Fondos</string>
+    <string name="cells_section_title">Celdas</string>
+    <string name="today_border_color">Borde de Hoy</string>
+    <string name="gradient_label">Degradado</string>
     <string name="import_cvo_option_label">Importar archivo .cvo</string>
     <string name="check_updates_label">Buscar actualizaciones</string>
     <string name="checking_updates">Buscando actualizaciones…</string>

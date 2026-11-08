@@ -367,9 +367,7 @@ private fun MonthGridView(
                     PastDayStyle.applyTextAlpha(baseColor, dayState)
                 }
 
-                val todayBorderColor = remember(cellBackground) { 
-                    if (ColorUtils.calculateLuminance(cellBackground.toArgb()) > 0.5) Color.Black else Color.White 
-                }
+                val todayBorderColor = themeColors.todayBorderColor
 
                 Box(
                     modifier = Modifier

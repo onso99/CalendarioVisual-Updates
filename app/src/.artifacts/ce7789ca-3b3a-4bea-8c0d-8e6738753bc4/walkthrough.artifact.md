@@ -1,19 +1,15 @@
-# Walkthrough - Fase 3 Pantalla "Eventos Especiales" Completado
+# Walkthrough - Propagación Completa de Cadenas Completado
 
-Se han aplicado los cambios de la Fase 3 en [SpecialEventsScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/SpecialEventsScreen.kt), [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CalendarioScreen.kt#L135) y [strings.xml](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/res/values/strings.xml).
+Se han añadido todas las traducciones nativas en los 12 archivos `strings.xml` del proyecto.
 
 ## Cambios Realizados
 
-1. **Creación de la Pantalla `SpecialEventsScreen.kt`:**
-   - Se estructuró la nueva pantalla de *Eventos Especiales* en dos secciones independientes:
-     - **Festividades:** Para configurar los colores de *Domingos y Festivos* y *Cumpleaños*.
-     - **Destacados:** Para configurar las palabras clave y colores de los *Eventos 1 al 5*.
-2. **Conexión de Navegación:**
-   - Se enlazó el botón *"Eventos especiales"* de la pantalla de Ajustes (dentro del bloque *Apariencia*) para abrir `SpecialEventsScreen`.
+1. **Localización Multilingüe Total (`strings.xml` en 12 idiomas):**
+   - Se propagaron las 8 cadenas recientes (`description`, `appearance`, `special_events`, `festivities_section_title`, `highlights_section_title`, `backgrounds_section_title`, `cells_section_title` y `gradient_label`) a todos los ficheros de idioma con sus traducciones nativas correspondientes.
+   - **Resultado:** La app ofrece soporte multilingüe 100% completo, uniforme y profesional sin cadenas en inglés/español mezcladas ni avisos de Lint.
 
 ---
 
 ## Verificación Realizada
 
 - **Compilación de Gradle:** Se ejecutó `gradle_build("app:assembleDebug")` obteniendo `BUILD SUCCESSFUL`.
-- **Inspección de Análisis:** Se analizó el código con `analyze_file` obteniendo 0 errores.

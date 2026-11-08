@@ -344,6 +344,15 @@
     <string name="export_filename_local_holidays">FestesLocals</string>
     <string name="unknown_elements_warning">Elements desconeguts en aquest esdeveniment *</string>
     <string name="event_duration_days">%1$d dies</string>
+    <string name="today_border_color">Vora d\'avui</string>
+    <string name="description">Descripció</string>
+    <string name="appearance">Aparença</string>
+    <string name="special_events">Esdeveniments especials</string>
+    <string name="festivities_section_title">Festivitats</string>
+    <string name="highlights_section_title">Destacats</string>
+    <string name="backgrounds_section_title">Fons</string>
+    <string name="cells_section_title">Cel·lules</string>
+    <string name="gradient_label">Degradat</string>
 </resources>
 
 

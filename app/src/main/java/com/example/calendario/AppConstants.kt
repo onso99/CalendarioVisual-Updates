@@ -56,6 +56,7 @@ object AppConstants {
         const val LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND = "light_monthly_calendar_grid_background"
         const val LIGHT_MONTHLY_CALENDAR_GRID_EFFECT = "light_monthly_calendar_grid_effect"
         const val LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "light_monthly_calendar_day_cell_background"
+        const val LIGHT_TODAY_BORDER_COLOR = "light_today_border_color"
 
         // Dark Theme
         const val DARK_CABECERA = "dark_cabecera"
@@ -65,6 +66,7 @@ object AppConstants {
         const val DARK_MONTHLY_CALENDAR_GRID_BACKGROUND = "dark_monthly_calendar_grid_background"
         const val DARK_MONTHLY_CALENDAR_GRID_EFFECT = "dark_monthly_calendar_grid_effect"
         const val DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND = "dark_monthly_calendar_day_cell_background"
+        const val DARK_TODAY_BORDER_COLOR = "dark_today_border_color"
     }
 
     object LightColors {
@@ -82,6 +84,7 @@ object AppConstants {
         val monthlyCalendarGridBackground = Color(0xFF0077C2)
         val monthlyCalendarGridEffect = Color(0xFF38A391)
         val monthlyCalendarDayCellBackground = Color(0xFFFFFFFF)
+        val todayBorderColor = Color(0xFF000000)
     }
 
     object DarkColors {
@@ -92,5 +95,6 @@ object AppConstants {
         val monthlyCalendarGridBackground = Color(0xFF006064)
         val monthlyCalendarGridEffect = Color(0xFF01579B)
         val monthlyCalendarDayCellBackground = Color(0xFF003341)
+        val todayBorderColor = Color(0xFFFFFFFF)
     }
 }

@@ -342,6 +342,15 @@
     <string name="export_filename_local_holidays">TokikoJaiak</string>
     <string name="unknown_elements_warning">Elementu ezezagunak ekitaldi honetan *</string>
     <string name="event_duration_days">%1$d egun</string>
+    <string name="today_border_color">Gaurko ertza</string>
+    <string name="description">Deskribapena</string>
+    <string name="appearance">Itxura</string>
+    <string name="special_events">Ekitaldi bereziak</string>
+    <string name="festivities_section_title">Jaialdiak</string>
+    <string name="highlights_section_title">Nabarmenduak</string>
+    <string name="backgrounds_section_title">Atzealdeak</string>
+    <string name="cells_section_title">Gelaxkak</string>
+    <string name="gradient_label">Gradientea</string>
 </resources>
 
 
