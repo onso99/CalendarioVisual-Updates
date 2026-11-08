@@ -90,6 +90,7 @@ fun SettingsScreen(
     themeManager: ThemeManager,
     viewModel: CalendarioViewModel,
     onColorThemeClick: () -> Unit,
+    onSpecialEventsClick: () -> Unit,
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {}
@@ -323,8 +324,10 @@ fun SettingsScreen(
                     val langSetting = AppLanguageSetting.fromCode(if (curLangs.isEmpty) null else curLangs.get(0)?.language)
                     Text(text = stringResource(id = langSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
                 }
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+            }
 
+            SectionTitle(text = stringResource(id = R.string.appearance))
+            Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showThemeDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(id = R.string.mode), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp)
                     Spacer(modifier = Modifier.weight(1f))
@@ -342,6 +345,8 @@ fun SettingsScreen(
                 }
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                 ActionRow(text = stringResource(id = R.string.customize_colors), onClick = onColorThemeClick)
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                ActionRow(text = stringResource(id = R.string.special_events), onClick = onSpecialEventsClick)
             }
 
             // --- BLOQUE WIDGET (Sincronizado v3.2.12.4) ---

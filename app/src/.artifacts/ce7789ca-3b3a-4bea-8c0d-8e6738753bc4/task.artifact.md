@@ -1,8 +1,8 @@
-# Tareas de Implementación - Ajuste de Márgenes y Tipografía en Descripción
+# Tareas de Implementación - Fase 2 (Ajuste del Efecto y Degradado sin Slide)
 
-- `[x]` **Fase única: Actualizar márgenes y tamaño de fuente (15.sp) en Bloque 3 (`AddEventForm.kt`)**
-  - `[x]` Remover padding horizontal de la tarjeta contenedora de la descripción para igualarla al bloque de título
-  - `[x]` Reducir el tamaño del texto a `15.sp`
+- `[x]` **Fase 2 completada: Reemplazar efecto desplegable por filas fijas `EffectSelectorRow` y `GradientColorsRow` (`ColorThemeScreen.kt`)**
+  - `[x]` Añadir cadena `gradient_label` en `strings.xml`
+  - `[x]` Reemplazar `EffectColorThemeRow` (con acordeón desplegable) por dos filas fijas y visibles dentro de la sección *Fondos*: **Efecto** y **Degradado**
   - `[x]` Verificación con `analyze_file` y Gradle (`BUILD SUCCESSFUL`)
-- `[x]` **Fase 2: Verificación Final**
+- `[x]` **Fase 2 de Verificación Final**
   - `[x]` Compilación final con Gradle (`BUILD SUCCESSFUL`)

@@ -655,6 +655,7 @@ fun CalendarioScreen(
             themeManager = themeManager,
             viewModel = viewModel,
             onColorThemeClick = { showColorThemeScreen = true },
+            onSpecialEventsClick = { showHolidayManagerScreen = true },
             onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
             onThemeUpdated = onThemeUpdated
