@@ -134,6 +134,7 @@ fun CalendarioScreen(
     var showReadOnlyDialog by remember { mutableStateOf(false) }
     var eventForReadOnlyDialog by remember { mutableStateOf<Festivo?>(null) }
     var showHolidayManagerScreen by remember { mutableStateOf(false) }
+    var showSpecialEventsScreen by remember { mutableStateOf(false) }
     var showWidgetLogScreen by remember { mutableStateOf(false) }
     var showBackupHistoryScreen by remember { mutableStateOf(false) }
     var showDeleteOrphanDialog by remember { mutableStateOf(false) }
@@ -532,6 +533,14 @@ fun CalendarioScreen(
         )
     }
 
+    if (showSpecialEventsScreen) {
+        SpecialEventsScreen(
+            onBackPress = { showSpecialEventsScreen = false },
+            onThemeModified = onThemeUpdated
+        )
+        return
+    }
+
     if (showHolidayManagerScreen) {
         HolidayManagerScreen(
             onBackPress = { 
@@ -655,7 +664,7 @@ fun CalendarioScreen(
             themeManager = themeManager,
             viewModel = viewModel,
             onColorThemeClick = { showColorThemeScreen = true },
-            onSpecialEventsClick = { showHolidayManagerScreen = true },
+            onSpecialEventsClick = { showSpecialEventsScreen = true },
             onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
             onThemeUpdated = onThemeUpdated

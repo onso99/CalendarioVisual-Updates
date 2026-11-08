@@ -1,12 +1,15 @@
-# Walkthrough - Espaciado a 24.dp en Efecto Completado
+# Walkthrough - Fase 3 Pantalla "Eventos Especiales" Completado
 
-Se ha incrementado el espaciado en [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt#L318).
+Se han aplicado los cambios de la Fase 3 en [SpecialEventsScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/SpecialEventsScreen.kt), [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CalendarioScreen.kt#L135) y [strings.xml](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/res/values/strings.xml).
 
 ## Cambios Realizados
 
-1. **Aumento de Espaciado a 24.dp (`ColorThemeScreen.kt`):**
-   - Se incrementó el `spacedBy` de `16.dp` a `24.dp` entre el cuadrado de previsualización y el selector numérico `[0 1 2]` dentro de la fila de efectos.
-   - **Resultado:** Mayor separación visual entre ambos componentes.
+1. **Creación de la Pantalla `SpecialEventsScreen.kt`:**
+   - Se estructuró la nueva pantalla de *Eventos Especiales* en dos secciones independientes:
+     - **Festividades:** Para configurar los colores de *Domingos y Festivos* y *Cumpleaños*.
+     - **Destacados:** Para configurar las palabras clave y colores de los *Eventos 1 al 5*.
+2. **Conexión de Navegación:**
+   - Se enlazó el botón *"Eventos especiales"* de la pantalla de Ajustes (dentro del bloque *Apariencia*) para abrir `SpecialEventsScreen`.
 
 ---
 

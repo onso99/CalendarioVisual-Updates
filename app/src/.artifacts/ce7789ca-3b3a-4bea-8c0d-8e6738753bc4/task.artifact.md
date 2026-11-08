@@ -1,8 +1,8 @@
-# Tareas de Implementación - Fase 2 (Ajuste del Efecto y Degradado sin Slide)
+# Tareas de Implementación - Fase 3 (Pantalla "Eventos Especiales")
 
-- `[x]` **Fase 2 completada: Reemplazar efecto desplegable por filas fijas `EffectSelectorRow` y `GradientColorsRow` (`ColorThemeScreen.kt`)**
-  - `[x]` Añadir cadena `gradient_label` en `strings.xml`
-  - `[x]` Reemplazar `EffectColorThemeRow` (con acordeón desplegable) por dos filas fijas y visibles dentro de la sección *Fondos*: **Efecto** y **Degradado**
+- `[x]` **Fase 3 completada: Crear `SpecialEventsScreen.kt` y conectarla en la app**
+  - `[x]` Añadir strings `festivities_section_title` y `highlights_section_title` en `strings.xml`
+  - `[x]` Crear la pantalla `SpecialEventsScreen.kt` con las dos secciones: **Festividades** (Domingos/Festivos y Cumpleaños) y **Destacados** (Evento-1 a Evento-5)
+  - `[x]` Conectar la navegación en `CalendarioScreen.kt` y `SettingsScreen.kt`
   - `[x]` Verificación con `analyze_file` y Gradle (`BUILD SUCCESSFUL`)
-- `[x]` **Fase 2 de Verificación Final**
-  - `[x]` Compilación final con Gradle (`BUILD SUCCESSFUL`)
+- `[x]` **Fase 2 y Fase 3 Completadas Exitosamente**

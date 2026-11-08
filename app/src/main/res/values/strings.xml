@@ -269,6 +269,8 @@
     <string name="event_duration_days">%1$d días</string>
     <string name="appearance" tools:ignore="MissingTranslation">Apariencia</string>
     <string name="special_events" tools:ignore="MissingTranslation">Eventos especiales</string>
+    <string name="festivities_section_title" tools:ignore="MissingTranslation">Festividades</string>
+    <string name="highlights_section_title" tools:ignore="MissingTranslation">Destacados</string>
     <string name="backgrounds_section_title" tools:ignore="MissingTranslation">Fondos</string>
     <string name="cells_section_title" tools:ignore="MissingTranslation">Celdas</string>
     <string name="gradient_label" tools:ignore="MissingTranslation">Degradado</string>

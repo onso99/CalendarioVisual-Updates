@@ -1,3 +1,4 @@
+2026-11-08 - v3.8.72 Reorganización de la Pantalla de Ajustes. Reestructuración de "Personalizar colores". Estructuración de la Pantalla "Eventos Especiales"
 2026-11-08 - v3.8.71 Gestor de festivos: corregidos los calendarios anual y mensual.
 2026-11-08 - v3.8.70 Campo Descripción: mejora de márgenes y texto
 2026-11-07 - v3.8.69 Gestor de festivos muestra los festivos tras una Restauración de datos
