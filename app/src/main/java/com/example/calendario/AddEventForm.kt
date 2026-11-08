@@ -472,7 +472,6 @@ fun AddEventForm(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(CalendarioTheme.colors.fondoSecciones)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxWidth()
         ) {
             TextField(
@@ -489,7 +488,7 @@ fun AddEventForm(
                 ),
                 textStyle = LocalTextStyle.current.copy(
                     color = CalendarioTheme.colors.textSystem,
-                    fontSize = 16.sp
+                    fontSize = 15.sp
                 ),
                 minLines = 3,
                 maxLines = 6,
