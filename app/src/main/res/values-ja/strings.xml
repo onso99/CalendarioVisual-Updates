@@ -104,9 +104,6 @@
     <string name="no_pending_events_this_month">今月の予定はありません。</string>
     <string name="no_events_this_month">今月のイベントはありません。</string>
     <string name="widget_no_events">イベントなし</string>
-    <string name="theme_section_title">テーマ</string>
-    <string name="permanentes_section_title">永続</string>
-    <string name="events_special_section_title">特別イベント</string>
     <string name="reset_color">リセット</string>
     <string name="theme_exported_successfully">テーマをエクスポートしました</string>
     <string name="error_exporting_theme">テーマのエクスポート中にエラーが発生しました: %1$s</string>
