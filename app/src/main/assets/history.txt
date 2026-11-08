@@ -1,3 +1,4 @@
+2026-11-09 - v3.8.73 Borde de hoy: independiente del tema seleccionado
 2026-11-08 - v3.8.72.1 Pantalla Eventos especiales completada
 2026-11-08 - v3.8.72 Reorganización de la Pantalla de Ajustes. Reestructuración de "Personalizar colores". Estructuración de la Pantalla "Eventos Especiales"
 2026-11-08 - v3.8.71 Gestor de festivos: corregidos los calendarios anual y mensual.
