@@ -1,13 +1,16 @@
-# Plan de Implementación: Diagnóstico de Restauración de Festivos
+# Plan de Implementación: Respeto a isForcedWorkingDay en isSunday (MonthlyCalendar y YearlyCalendar)
 
-Este plan añade trazas de depuración en [BackupManager.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/BackupManager.kt) para comprobar exactamente qué JSON de festivos llega durante la restauración desde Google Drive.
+Este plan actualiza [MonthlyCalendar.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/MonthlyCalendar.kt) y [YearlyCalendar.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/YearlyCalendar.kt) para que `isSunday` compruebe `!isForcedWorkingDay`, permitiendo que los festivos de Google Calendar marcados como laborables se pinten con el color de día normal.
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Añadir Log en `BackupManager.kt`
-- Registrar en `LogCollector` si `holidaysJson` fue encontrado y qué contenido posee al restaurar.
+### 1. Actualizar `isSunday` en `MonthlyCalendar.kt`
+- Definir `val isSunday = !isForcedWorkingDay && (date.dayOfWeek == DayOfWeek.SUNDAY)`.
+
+### 2. Actualizar `isSunday` en `YearlyCalendar.kt`
+- Definir `val isSunday = !isForcedWorkingDay && (date.dayOfWeek == DayOfWeek.SUNDAY)`.
 
 ---
 
@@ -15,4 +18,4 @@ Este plan añade trazas de depuración en [BackupManager.kt](file:///C:/Users/on
 
 - Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Restaurar copia y revisar los logs de la app para ver el estado de `holidaysJson`.
+- Verificar en pantalla que los festivos de Google Calendar marcados como laborables se muestran con el color de día normal en las vistas mensual y anual.

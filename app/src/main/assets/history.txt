@@ -1,3 +1,4 @@
+2026-11-08 - v3.8.70 Campo Descripción: mejora de márgenes y texto
 2026-11-07 - v3.8.69 Gestor de festivos muestra los festivos tras una Restauración de datos
 2026-11-06 - v3.8.68 Comprobación de Notificaciones Activas (activeNotifications)
 2026-11-05 - v3.8.67 Indicador de Duración para Periodos Largos

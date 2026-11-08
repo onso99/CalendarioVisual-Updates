@@ -278,7 +278,7 @@ class CalendarioViewModel(application: Application) : AndroidViewModel(applicati
         val context = getApplication<Application>()
         val adjustments = SettingsManager.getHolidayAdjustments(context)
         val workingDates = adjustments.asSequence()
-            .filter { (it.type == HolidayAdjustmentType.WORKING_DAY) && (it.originalEventId == null) }
+            .filter { it.type == HolidayAdjustmentType.WORKING_DAY }
             .map { it.date }
             .toSet()
         _uiState.update { it.copy(workingDayDates = workingDates) }

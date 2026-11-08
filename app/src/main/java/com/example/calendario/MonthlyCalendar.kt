@@ -357,7 +357,7 @@ private fun MonthGridView(
                 val dayColor = remember(date, dayState, dayEvents, workingDayDates, themeColors) {
                     val isForcedWorkingDay = workingDayDates.contains(date)
                     val isHoliday = !isForcedWorkingDay && dayEvents.any { it.isFromHolidaySource && it.title.isNotBlank() }
-                    val isSunday = date.dayOfWeek == DayOfWeek.SUNDAY
+                    val isSunday = !isForcedWorkingDay && (date.dayOfWeek == DayOfWeek.SUNDAY)
 
                     val baseColor = when {
                         isHoliday || isSunday -> themeColors.textSundayHoliday
