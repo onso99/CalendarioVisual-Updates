@@ -116,8 +116,8 @@
     <string name="invalid_color_in_theme">テーマの「%1$s」に無効な色が含まれています。</string>
     <string name="light_theme">ライト</string>
     <string name="dark_theme">ダーク</string>
-    <string name="header_background">ヘッダー背景</string>
-    <string name="screen_background">画面背景</string>
+    <string name="header_background">ヘッダー</string>
+    <string name="screen_background">画面</string>
     <string name="sundays_and_holidays">日曜・祝日</string>
     <string name="today_highlight_list">今日のイベント</string>
     <string name="birthdays">誕生日</string>

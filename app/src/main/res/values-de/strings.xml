@@ -116,8 +116,8 @@
     <string name="invalid_color_in_theme">Das Design enthält eine ungültige Farbe in \"%1$s\".</string>
     <string name="light_theme">Hell</string>
     <string name="dark_theme">Dunkel</string>
-    <string name="header_background">Kopfzeilenhintergrund</string>
-    <string name="screen_background">Bildschirmhintergrund</string>
+    <string name="header_background">Kopfzeile</string>
+    <string name="screen_background">Bildschirme</string>
     <string name="sundays_and_holidays">Sonn-/Feiertage</string>
     <string name="today_highlight_list">Heutige Ereignisse</string>
     <string name="birthdays">Geburtstage</string>

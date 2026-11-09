@@ -116,8 +116,8 @@
     <string name="invalid_color_in_theme">Il tema contiene un colore non valido in \"%1$s\".</string>
     <string name="light_theme">Chiaro</string>
     <string name="dark_theme">Scuro</string>
-    <string name="header_background">Sfondo intestazione</string>
-    <string name="screen_background">Sfondo schermate</string>
+    <string name="header_background">Intestazione</string>
+    <string name="screen_background">Schermate</string>
     <string name="sundays_and_holidays">Domeniche/Festivi</string>
     <string name="today_highlight_list">Eventi di oggi</string>
     <string name="birthdays">Compleanni</string>

@@ -116,8 +116,8 @@
     <string name="invalid_color_in_theme">Тема содержит неверный цвет в \"%1$s\".</string>
     <string name="light_theme">Светлая</string>
     <string name="dark_theme">Темная</string>
-    <string name="header_background">Фон заголовка</string>
-    <string name="screen_background">Фон экранов</string>
+    <string name="header_background">Заголовок</string>
+    <string name="screen_background">Экраны</string>
     <string name="sundays_and_holidays">Вскр/Праздники</string>
     <string name="today_highlight_list">События сегодня</string>
     <string name="birthdays">Дни рождения</string>

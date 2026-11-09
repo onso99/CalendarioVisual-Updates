@@ -116,8 +116,8 @@
     <string name="invalid_color_in_theme">Gaiak kolore baliogabea dauka hemen: \"%1$s\".</string>
     <string name="light_theme">Argia</string>
     <string name="dark_theme">Iluna</string>
-    <string name="header_background">Goiburuko atzeko planoa</string>
-    <string name="screen_background">Pantailen atzeko planoa</string>
+    <string name="header_background">Goiburukoa</string>
+    <string name="screen_background">Pantailak</string>
     <string name="sundays_and_holidays">Igandeak/Jaiegunak</string>
     <string name="today_highlight_list">Gaurko gertaerak</string>
     <string name="birthdays">Urtebetetzeak</string>

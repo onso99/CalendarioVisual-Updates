@@ -116,8 +116,8 @@
     <string name="invalid_color_in_theme">主题在 \"%1$s\" 中包含无效颜色。</string>
     <string name="light_theme">浅色</string>
     <string name="dark_theme">深色</string>
-    <string name="header_background">标题背景</string>
-    <string name="screen_background">屏幕背景</string>
+    <string name="header_background">标题</string>
+    <string name="screen_background">屏幕</string>
     <string name="sundays_and_holidays">周日/节假日</string>
     <string name="today_highlight_list">今日事件</string>
     <string name="birthdays">生日</string>
