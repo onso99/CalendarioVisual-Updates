@@ -269,7 +269,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">Ultima</string>
+    <string name="last_backup_label">Cronologia</string>
     <string name="never">Mai</string>
     <string name="confirm_delete_adjustment">Vuoi eliminare questa regolazione? Verrà ripristinato lo stato originale del calendario.</string>
 

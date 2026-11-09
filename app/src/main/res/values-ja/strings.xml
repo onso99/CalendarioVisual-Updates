@@ -268,7 +268,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">最終</string>
+    <string name="last_backup_label">履歴</string>
     <string name="never">未実行</string>
     <string name="confirm_delete_adjustment">この設定を削除しますか？カレンダーの元の状態に戻ります。</string>
 

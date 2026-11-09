@@ -268,7 +268,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">Dernière</string>
+    <string name="last_backup_label">Historique</string>
     <string name="never">Jamais</string>
     <string name="confirm_delete_adjustment">Voulez-vous supprimer ce réglage ? L\'état original du calendrier sera restauré.</string>
 

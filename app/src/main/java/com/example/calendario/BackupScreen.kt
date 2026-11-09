@@ -193,19 +193,12 @@ fun BackupScreen(
 
                         Text(
                             text = "$lastStr$sizeStr", 
-                            color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f), 
-                            fontSize = 13.sp, 
+                            color = CalendarioTheme.colors.textSystem, 
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.End,
                             maxLines = 1, 
                             overflow = TextOverflow.Ellipsis
-                        )
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-                        
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
-                            modifier = Modifier.size(24.dp)
                         )
                     }
                     

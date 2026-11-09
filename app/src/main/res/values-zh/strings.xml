@@ -268,7 +268,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">上次</string>
+    <string name="last_backup_label">历史记录</string>
     <string name="never">从未</string>
     <string name="confirm_delete_adjustment">要删除此调整吗？日历将恢复到原始状态。</string>
 

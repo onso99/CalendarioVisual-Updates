@@ -1,3 +1,4 @@
+2026-11-09 - v3.8.77 Centro de datos: Historial sustituye a Última
 2026-11-09 - v3.8.76 Propagación de cambios al resto de idiomas
 2026-11-09 - v3.8.75 Personalizar colores: Renombrado y reordenación de las opciones de la sección Fondos
 2026-11-09 - v3.8.74 Widget: Fusión Unificada de Eventos en Segundo Plano. Se actualizó el método refreshWithCurrentEvents para que, cuando el Widget se refresca automáticamente en segundo plano (sin la app abierta), combine las instancias del sistema con el historial guardado en la base de datos Room (cachedHistory) usando la función maestra mergeHistoryWithSystemData(...).

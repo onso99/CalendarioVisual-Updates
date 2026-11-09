@@ -269,7 +269,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">Last</string>
+    <string name="last_backup_label">History</string>
     <string name="never">Never</string>
     <string name="confirm_delete_adjustment">Do you want to delete this adjustment? The original state of the calendar will be restored.</string>
 

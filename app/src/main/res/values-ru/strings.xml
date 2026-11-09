@@ -268,7 +268,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">Последняя</string>
+    <string name="last_backup_label">История</string>
     <string name="never">Никогда</string>
     <string name="confirm_delete_adjustment">Удалить эту настройку? Будет восстановлено исходное состояние календаря.</string>
 

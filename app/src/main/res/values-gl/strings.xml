@@ -269,7 +269,7 @@
     <string name="color_green_label">G</string>
     <string name="color_blue_label">B</string>
     <string name="color_lightness_label">L</string>
-    <string name="last_backup_label">Última</string>
+    <string name="last_backup_label">Historial</string>
     <string name="never">Nunca</string>
     <string name="confirm_delete_adjustment">Desexas eliminar este axuste? Restaurarase o estado orixinal do calendario.</string>
 

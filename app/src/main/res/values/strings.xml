@@ -253,7 +253,7 @@
     <string name="restore_notes_label">Notas</string>
     <string name="restore_events_label">Personalizaciones</string>
     <string name="restore_total_confirmation">Restauración total de notas, alarmas, temas y preferencias.</string>
-    <string name="last_backup_label">Última</string>
+    <string name="last_backup_label">Historial</string>
     <string name="never">Nunca</string>
     <string name="confirm_delete_adjustment">¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.</string>
 
