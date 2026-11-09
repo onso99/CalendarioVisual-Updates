@@ -76,19 +76,6 @@ fun ColorThemeScreen(
                         val backgroundItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.calendar_background }!!
                         val color1 = getThemeColor(prefs, if (darkTheme) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey, if (darkTheme) backgroundItem.defaultDark else backgroundItem.defaultLight)
 
-                        EffectSelectorRow(
-                            label = stringResource(id = item.labelRes),
-                            color1 = color1,
-                            color2 = currentColor,
-                            effectType = effectType,
-                            onEffectChange = { newType ->
-                                prefs.edit { putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, newType) }
-                                ThemePersistence.markThemeAsModified(prefs)
-                                onThemeModified()
-                                updateTrigger++
-                            }
-                        )
-                        HorizontalDivider(color = dividerColor, thickness = dividerThickness)
                         GradientColorsRow(
                             label = stringResource(id = R.string.gradient_label),
                             color1 = color1,
@@ -110,6 +97,17 @@ fun ColorThemeScreen(
                                     putInt(key1, c2)
                                     putInt(key2, c1)
                                 }
+                                ThemePersistence.markThemeAsModified(prefs)
+                                onThemeModified()
+                                updateTrigger++
+                            }
+                        )
+                        EffectSelectorRow(
+                            color1 = color1,
+                            color2 = currentColor,
+                            effectType = effectType,
+                            onEffectChange = { newType ->
+                                prefs.edit { putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, newType) }
                                 ThemePersistence.markThemeAsModified(prefs)
                                 onThemeModified()
                                 updateTrigger++
@@ -295,7 +293,6 @@ private fun SingleColorThemeRow(
 
 @Composable
 private fun EffectSelectorRow(
-    label: String,
     color1: Color,
     color2: Color,
     effectType: String,
@@ -308,17 +305,11 @@ private fun EffectSelectorRow(
             .height(52.dp)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.End
     ) {
-        Text(
-            text = label,
-            color = CalendarioTheme.colors.textSystem,
-            fontSize = 16.sp
-        )
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
+            horizontalArrangement = Arrangement.spacedBy(36.dp)
         ) {
             // 1. Simulación (Izquierda)
             val previewBrush = when (effectType) {
@@ -339,7 +330,6 @@ private fun EffectSelectorRow(
             val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
             val baseColor = CalendarioTheme.colors.fondoSecciones
             val activeColor = CalendarioTheme.colors.cabecera
-            val innerHeight = 32.dp
 
             Row(
                 modifier = Modifier
@@ -399,7 +389,8 @@ private fun GradientColorsRow(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             ColorBox(color = color1, onClick = onColor1Click)
-            IconButton(onClick = onExchange, modifier = Modifier.padding(horizontal = 2.dp).size(32.dp)) {
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = onExchange, modifier = Modifier.size(32.dp)) {
                 Icon(
                     imageVector = Icons.Default.SwapHoriz,
                     contentDescription = null,
@@ -407,6 +398,7 @@ private fun GradientColorsRow(
                     modifier = Modifier.size(20.dp)
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
             ColorBox(color = color2, onClick = onColor2Click)
         }
     }

@@ -1,3 +1,4 @@
+2026-11-09 - v3.8.74 Widget: Fusión Unificada de Eventos en Segundo Plano. Se actualizó el método refreshWithCurrentEvents para que, cuando el Widget se refresca automáticamente en segundo plano (sin la app abierta), combine las instancias del sistema con el historial guardado en la base de datos Room (cachedHistory) usando la función maestra mergeHistoryWithSystemData(...).
 2026-11-09 - v3.8.73.2 Eliminación de cadenas sin uso en strings y en el resto de idiomas
 2026-11-09 - v3.8.73.1 Corrección de warnings
 2026-11-09 - v3.8.73 Borde de hoy: independiente del tema seleccionado
