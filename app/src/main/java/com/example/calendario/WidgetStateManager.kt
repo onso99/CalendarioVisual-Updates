@@ -45,7 +45,11 @@ object WidgetStateManager {
             val events = providedEvents ?: try {
                 val selectedIds = SettingsManager.getSelectedCalendarIds(context)
                 val eventsMap = readFestivosFromCalendarsSync(context, selectedIds)
-                eventsMap.values.flatten()
+                val systemEvents = eventsMap.values.flatten()
+                val database = AppDatabase.getDatabase(context)
+                val cachedHistory = database.calendarDao().getAllEventsSync().map { it.toFestivo() }
+                val availableCalendars = loadAvailableCalendarsSync(context)
+                mergeHistoryWithSystemData(context, cachedHistory, systemEvents, availableCalendars)
             } catch (_: Exception) {
                 val database = AppDatabase.getDatabase(context)
                 database.calendarDao().getAllEventsSync().map { it.toFestivo() }
