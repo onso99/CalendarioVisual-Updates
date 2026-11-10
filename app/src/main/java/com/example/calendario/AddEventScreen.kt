@@ -439,7 +439,7 @@ fun AddEventScreen(
                     }) { Icon(Icons.Default.ContentCopy, stringResource(id = R.string.copy_event)) }
                     
                     IconButton(onClick = {
-                        if (event.rrule != null) showDeleteRecurringDialog = true else showDeleteDialog = true
+                        if (event.rrule != null || event.originalId != null) showDeleteRecurringDialog = true else showDeleteDialog = true
                     }) { Icon(painter = painterResource(id = R.drawable.ic_delete_outlined), contentDescription = stringResource(id = R.string.delete_event)) }
                 }
             }
@@ -598,9 +598,10 @@ fun AddEventScreen(
                         }
                     }
                     EditRecurringOption.ALL_EVENTS -> {
-                        val success = updateEvent(context, localEventToEdit!!.id, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, selectedDays = selectedDays)
+                        val targetId = localEventToEdit?.originalId ?: localEventToEdit!!.id
+                        val success = updateEvent(context, targetId, title, selectedCalendar?.id, startDate, endDate, isAllDay, repetitionRule, repeatUntilDate, repeatCount, selectedColorInt, selectedDays = selectedDays)
                         if (success != null) {
-                            processAlarmForEvent(context, localEventToEdit!!.id, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule, repeatUntilDate)
+                            processAlarmForEvent(context, targetId, hasAlarm, alarmTime, startDate, title, isAllDay, selectedCalendar?.id, repetitionRule, repeatUntilDate)
                             onSave()
                         }
                     }
@@ -670,7 +671,12 @@ fun AddEventScreen(
             localEventToEdit?.let { event ->
                 when (option) {
                     DeleteRecurringOption.SINGLE_EVENT -> { cancelEventInstance(context, event); onDelete() }
-                    DeleteRecurringOption.ALL_EVENTS -> { deleteEvent(context, event); onDelete() }
+                    DeleteRecurringOption.ALL_EVENTS -> { 
+                        val targetId = event.originalId ?: event.id
+                        val masterEvent = event.copy(id = targetId)
+                        deleteEvent(context, masterEvent)
+                        onDelete() 
+                    }
                 }
             }
         })

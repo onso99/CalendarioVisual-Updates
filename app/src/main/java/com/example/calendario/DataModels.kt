@@ -33,6 +33,7 @@ data class Festivo(
     val adn: String = "", // Huella digital única para deduplicación y refresco
     val repeatIndex: Int? = null, // Índice ordinal para eventos repetidos (v3.1.64)
     val hasIncident: Boolean = false, // Marca para eventos con datos extra/complejos (v3.2.06)
+    val originalId: Long? = null,
     
     // --- Campos de Optimización Punto 1 ---
     val cleanTitle: String = title.unaccent().trim().lowercase(),

@@ -24,14 +24,19 @@ fun removeEventFromHistory(context: Context, eventAdn: String) {
     }
 }
 
-fun removeSeriesFromHistory(context: Context, eventId: Long) {
-    if (eventId <= 0) return 
+fun removeSeriesFromHistory(context: Context, eventId: Long, exceptionIds: List<Long> = emptyList()) {
+    if (eventId <= 0 && exceptionIds.isEmpty()) return 
     
     // Limpieza ROOM (Motor principal)
     @Suppress("OPT_IN_USAGE")
     kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
         val database = com.example.calendario.database.AppDatabase.getDatabase(context)
-        database.calendarDao().markEventAsDeleted(eventId, System.currentTimeMillis())
+        if (eventId > 0) {
+            database.calendarDao().markEventAsDeleted(eventId, System.currentTimeMillis())
+        }
+        exceptionIds.forEach { exId ->
+            database.calendarDao().markEventAsDeleted(exId, System.currentTimeMillis())
+        }
     }
 }
 
@@ -421,6 +426,7 @@ fun readFestivosFromCalendarsSync(
                         repeatCount = repeatCountMap[seriesId] ?: repeatCountMap[eventId], // Heredar conteo (v3.1.64)
                         repeatIndex = staticRepeatIndex,
                         hasIncident = isIncident,
+                        originalId = originalIdMap[eventId]?.takeIf { it > 0 },
                         adn = Festivo.generateAdn(currentLoopDate, title, startTimeForAdn)
                     ))
                     currentLoopDate = currentLoopDate.plusDays(1)

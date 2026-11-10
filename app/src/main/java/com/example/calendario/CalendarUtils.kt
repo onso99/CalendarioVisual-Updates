@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
 import android.widget.Toast
+import com.example.calendario.database.AppDatabase
 import java.text.Normalizer
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -168,6 +169,14 @@ fun updateSingleEventInSeries(
         val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
         
         if (uri != null) {
+            // Marcar la instancia antigua como borrada en Room para evitar duplicados en el historial
+            try {
+                val database = AppDatabase.getDatabase(context)
+                kotlinx.coroutines.runBlocking {
+                    database.calendarDao().markEventAsDeletedByAdn(originalEvent.adn, System.currentTimeMillis())
+                }
+            } catch (_: Exception) {}
+
             // Forzar actualización del widget para asegurar sincronización en dispositivos como Xiaomi
             WidgetStateManager.refreshWithCurrentEvents(context)
             
@@ -192,22 +201,42 @@ fun deleteEvent(context: Context, event: Festivo) {
     val eventDate = event.date
     
     try {
+        val exceptionIds = mutableListOf<Long>()
+        // 1. Consultar y borrar eventos de excepción/modificados de esta serie (ORIGINAL_ID = eventId)
+        try {
+            val exceptionSelection = "${CalendarContract.Events.ORIGINAL_ID} = ?"
+            val exceptionArgs = arrayOf(eventId.toString())
+            val projection = arrayOf(CalendarContract.Events._ID)
+            context.contentResolver.query(
+                CalendarContract.Events.CONTENT_URI,
+                projection,
+                exceptionSelection,
+                exceptionArgs,
+                null
+            )?.use { cursor ->
+                val idCol = cursor.getColumnIndexOrThrow(CalendarContract.Events._ID)
+                while (cursor.moveToNext()) {
+                    val exceptionId = cursor.getLong(idCol)
+                    exceptionIds.add(exceptionId)
+                    val exceptionUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, exceptionId)
+                    context.contentResolver.delete(exceptionUri, null, null)
+                }
+            }
+        } catch (_: Exception) {}
+
+        // 2. Borrar el evento maestro de la serie
         val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         val rows = context.contentResolver.delete(deleteUri, null, null)
 
         if (rows > 0 || eventId > 0) {
-            // Si el sistema lo borró (rows > 0) O si el sistema no lo encontró (rows == 0)
-            // pero es un evento que debería estar ahí (eventId > 0), limpiamos nuestro historial.
-            
-            // Registrar borrado para sincronización futura
+            // Registrar borrado para sincronización futura y limpieza en Room
             SettingsManager.markEventAsDeleted(context, eventId)
-            // LIMPIEZA TOTAL: Borramos todas las instancias que compartan este ID (incluyendo excepciones)
-            removeSeriesFromHistory(context, eventId)
+            exceptionIds.forEach { SettingsManager.markEventAsDeleted(context, it) }
+            
+            removeSeriesFromHistory(context, eventId, exceptionIds)
 
-            // Forzar actualización del widget tras eliminar un evento
             WidgetStateManager.refreshWithCurrentEvents(context)
             
-            // Cancelamos la alarma asociada si existe
             AlarmUtils.cancelAlarm(context, eventId)
             SettingsManager.saveEventAlarmOffset(context, eventId, null)
             SettingsManager.savePeriodColor(context, eventId, null)

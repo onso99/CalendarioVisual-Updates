@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [EventEntity::class, NoteEntity::class], version = 8, exportSchema = false)
+@Database(entities = [EventEntity::class, NoteEntity::class], version = 9, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun calendarDao(): CalendarDao
 
@@ -22,6 +22,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // Migración de 8 a 9: Añadir columna originalId a la tabla events
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE events ADD COLUMN originalId INTEGER")
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -29,7 +36,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "calendario_database"
                 )
-                .addMigrations(MIGRATION_7_8)
+                .addMigrations(MIGRATION_7_8, MIGRATION_8_9)
                 // Eliminamos la migración destructiva automática para proteger los datos (Fase 4.2)
                 // .fallbackToDestructiveMigration() 
                 .allowMainThreadQueries() 
