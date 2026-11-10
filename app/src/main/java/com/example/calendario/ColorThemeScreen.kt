@@ -302,25 +302,33 @@ private fun UnifiedGradientEffectRow(
     val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
     val baseColor = CalendarioTheme.colors.fondoSecciones
     val activeColor = CalendarioTheme.colors.cabecera
+    var labelFontSize by remember { mutableStateOf(16.sp) }
 
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(104.dp)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
+        // 1. Etiqueta "Degradado" (Arriba a la izquierda)
         Text(
             text = label,
             color = CalendarioTheme.colors.textSystem,
-            fontSize = 16.sp,
-            modifier = Modifier.align(Alignment.Top).padding(top = 14.dp)
+            fontSize = labelFontSize,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            onTextLayout = { textLayoutResult ->
+                if (textLayoutResult.hasVisualOverflow && labelFontSize > 12.sp) {
+                    labelFontSize = (labelFontSize.value - 1f).sp
+                }
+            },
+            modifier = Modifier.align(Alignment.TopStart)
         )
 
+        // 2. Previsualización + Selector [0 1 2] (Centrados verticalmente y desplazados ligeramente a la derecha)
         Row(
-            modifier = Modifier
-                .align(Alignment.CenterVertically),
+            modifier = Modifier.align(Alignment.Center).padding(start = 64.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -369,9 +377,9 @@ private fun UnifiedGradientEffectRow(
             }
         }
 
+        // 3. Círculos de color + SwapVert (Alineados a la derecha, centrados verticalmente)
         Column(
-            modifier = Modifier
-                .align(Alignment.CenterVertically),
+            modifier = Modifier.align(Alignment.CenterEnd),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {

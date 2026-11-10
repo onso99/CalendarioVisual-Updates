@@ -1,17 +1,16 @@
-# Walkthrough - Ajustes Finos en UnifiedGradientEffectRow Completado
+# Walkthrough - Desplazamiento Hacia la Derecha en Degradado Completado
 
-Se han aplicado los ajustes de precisión en [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt#L80).
+Se ha actualizado el desplazamiento en [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt#L327).
 
 ## Cambios Realizados
 
-1. **Alineación y Espaciado Ajustados (`ColorThemeScreen.kt`):**
-   - **Alineación Derecha:** Se configuró `Arrangement.SpaceBetween` en el contenedor principal de la fila unificada para alinear perfectamente los círculos de color del extremo derecho con las demás filas de la sección *Fondos*.
-   - **Distancia Vertical Reducida:** Se redujo el espacio entre los círculos y el icono central `SwapVert` a `2.dp`.
-   - **Proximidad Numérica:** Se acercó el selector numérico `[0 1 2]` al cuadrado de previsualización (separación de `16.dp`), manteniendo idénticos radios de esquina (`12.dp`) y bordes en ambos.
+1. **Desplazamiento Horizontal hacia la Derecha (`ColorThemeScreen.kt`):**
+   - Se añadió `.padding(start = 28.dp)` al contenedor de la previsualización y el selector numérico `[0 1 2]`.
+   - **Resultado:** El bloque central se mantiene centrado verticalmente pero se desplaza ligeramente hacia la derecha, aproximándose de manera más equilibrada hacia los círculos de color del extremo derecho.
 
 ---
 
 ## Verificación Realizada
 
 - **Compilación de Gradle:** Se ejecutó `gradle_build("app:assembleDebug")` obteniendo `BUILD SUCCESSFUL`.
-- **Inspección de Análisis:** Se analizó el código con `analyze_file` obteniendo 0 errores.
+- **Inspección de Análisis:** Se analizó el código con `analyze_file` comprobando 0 errores.
