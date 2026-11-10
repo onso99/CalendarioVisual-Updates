@@ -1,18 +1,17 @@
-# Walkthrough - Persistencia de originalId en Room Completado
+# Walkthrough - Ajustes Finos en UnifiedGradientEffectRow Completado
 
-Se han aplicado los cambios en [Entities.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/database/Entities.kt#L25), [Mappers.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/database/Mappers.kt#L30) y [AppDatabase.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/database/AppDatabase.kt#L10).
+Se han aplicado los ajustes de precisión en [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt#L80).
 
 ## Cambios Realizados
 
-1. **Persistencia de `originalId` en Room (`Entities.kt`, `Mappers.kt`, `AppDatabase.kt`):**
-   - Se añadió la columna `originalId` a la entidad `EventEntity`.
-   - Se actualizaron los mappers `toFestivo()` y `toEntity()` para serializar y deserializar correctamente el `originalId`.
-   - Se incrementó la versión de la base de datos Room a **9** y se añadió la migración `MIGRATION_8_9` (`ALTER TABLE events ADD COLUMN originalId INTEGER`).
-   - **Resultado:** Las excepciones e instancias modificadas de eventos recurrentes guardan ahora su enlace maestro de serie en la base de datos local Room, asegurando que al pulsar sobre cualquier evento modificado, la app reconozca correctamente la serie y ofrezca el borrado/edición completa de toda la serie.
+1. **Alineación y Espaciado Ajustados (`ColorThemeScreen.kt`):**
+   - **Alineación Derecha:** Se configuró `Arrangement.SpaceBetween` en el contenedor principal de la fila unificada para alinear perfectamente los círculos de color del extremo derecho con las demás filas de la sección *Fondos*.
+   - **Distancia Vertical Reducida:** Se redujo el espacio entre los círculos y el icono central `SwapVert` a `2.dp`.
+   - **Proximidad Numérica:** Se acercó el selector numérico `[0 1 2]` al cuadrado de previsualización (separación de `16.dp`), manteniendo idénticos radios de esquina (`12.dp`) y bordes en ambos.
 
 ---
 
 ## Verificación Realizada
 
 - **Compilación de Gradle:** Se ejecutó `gradle_build("app:assembleDebug")` obteniendo `BUILD SUCCESSFUL`.
-- **Inspección de Análisis:** Se analizó el código con `analyze_file` comprobando 0 errores.
+- **Inspección de Análisis:** Se analizó el código con `analyze_file` obteniendo 0 errores.

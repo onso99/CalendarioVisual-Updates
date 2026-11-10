@@ -31,7 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -76,10 +76,17 @@ fun ColorThemeScreen(
                         val backgroundItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.calendar_background }!!
                         val color1 = getThemeColor(prefs, if (darkTheme) backgroundItem.darkThemeKey else backgroundItem.lightThemeKey, if (darkTheme) backgroundItem.defaultDark else backgroundItem.defaultLight)
 
-                        GradientColorsRow(
+                        UnifiedGradientEffectRow(
                             label = stringResource(id = R.string.gradient_label),
                             color1 = color1,
                             color2 = currentColor,
+                            effectType = effectType,
+                            onEffectChange = { newType ->
+                                prefs.edit { putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, newType) }
+                                ThemePersistence.markThemeAsModified(prefs)
+                                onThemeModified()
+                                updateTrigger++
+                            },
                             onColor1Click = {
                                 pendingItem = backgroundItem
                                 showColorPicker = true
@@ -97,17 +104,6 @@ fun ColorThemeScreen(
                                     putInt(key1, c2)
                                     putInt(key2, c1)
                                 }
-                                ThemePersistence.markThemeAsModified(prefs)
-                                onThemeModified()
-                                updateTrigger++
-                            }
-                        )
-                        EffectSelectorRow(
-                            color1 = color1,
-                            color2 = currentColor,
-                            effectType = effectType,
-                            onEffectChange = { newType ->
-                                prefs.edit { putString(AppConstants.KEY_MONTHLY_CALENDAR_EFFECT_TYPE, newType) }
                                 ThemePersistence.markThemeAsModified(prefs)
                                 onThemeModified()
                                 updateTrigger++
@@ -292,26 +288,42 @@ private fun SingleColorThemeRow(
 }
 
 @Composable
-private fun EffectSelectorRow(
+private fun UnifiedGradientEffectRow(
+    label: String,
     color1: Color,
     color2: Color,
     effectType: String,
-    onEffectChange: (String) -> Unit
+    onEffectChange: (String) -> Unit,
+    onColor1Click: () -> Unit,
+    onColor2Click: () -> Unit,
+    onExchange: () -> Unit
 ) {
     val innerHeight = 32.dp
+    val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
+    val baseColor = CalendarioTheme.colors.fondoSecciones
+    val activeColor = CalendarioTheme.colors.cabecera
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(104.dp)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        Text(
+            text = label,
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.Top).padding(top = 14.dp)
+        )
+
         Row(
+            modifier = Modifier
+                .align(Alignment.CenterVertically),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(36.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // 1. Simulación (Izquierda)
             val previewBrush = when (effectType) {
                 "gradient" -> Brush.verticalGradient(listOf(color1, color2))
                 "sweep" -> Brush.verticalGradient(listOf(color1, color2, color1))
@@ -321,15 +333,10 @@ private fun EffectSelectorRow(
             Box(
                 modifier = Modifier
                     .size(innerHeight)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(previewBrush)
-                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
             )
-
-            // 2. Selector de efecto [0 1 2] (Derecha)
-            val options = listOf("none" to "0", "gradient" to "1", "sweep" to "2")
-            val baseColor = CalendarioTheme.colors.fondoSecciones
-            val activeColor = CalendarioTheme.colors.cabecera
 
             Row(
                 modifier = Modifier
@@ -361,44 +368,22 @@ private fun EffectSelectorRow(
                 }
             }
         }
-    }
-}
 
-@Composable
-private fun GradientColorsRow(
-    label: String,
-    color1: Color,
-    color2: Color,
-    onColor1Click: () -> Unit,
-    onColor2Click: () -> Unit,
-    onExchange: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            color = CalendarioTheme.colors.textSystem,
-            fontSize = 16.sp
-        )
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
             ColorBox(color = color1, onClick = onColor1Click)
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = onExchange, modifier = Modifier.size(32.dp)) {
+            IconButton(onClick = onExchange, modifier = Modifier.size(28.dp)) {
                 Icon(
-                    imageVector = Icons.Default.SwapHoriz,
+                    imageVector = Icons.Default.SwapVert,
                     contentDescription = null,
                     tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(8.dp))
             ColorBox(color = color2, onClick = onColor2Click)
         }
     }
