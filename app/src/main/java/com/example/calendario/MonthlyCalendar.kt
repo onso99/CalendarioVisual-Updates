@@ -346,7 +346,7 @@ private fun MonthGridView(
                     else -> DayCellState.CURRENT_ACTIVE
                 }
 
-                val baseCellBackground = themeColors.monthlyCalendarDayCellBackground
+                val baseCellBackground = if (isToday) themeColors.monthlyCalendarTodayCellBackground else themeColors.monthlyCalendarDayCellBackground
                 val cellBackground = remember(dayState, baseCellBackground) {
                     PastDayStyle.calculateCellBackground(baseCellBackground, dayState)
                 }

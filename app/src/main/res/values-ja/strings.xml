@@ -348,6 +348,7 @@
     <string name="highlights_section_title">ハイライト</string>
     <string name="backgrounds_section_title">背景</string>
     <string name="cells_section_title">セル</string>
+    <string name="today_cell_background">今日のセル</string>
     <string name="gradient_label">グラデーション</string>
 </resources>
 

@@ -25,6 +25,7 @@ object ColorThemeConfig {
 
         // --- CATEGORÍA: CELDAS ---
         ColorThemeItem(R.string.current_month_cell, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground, AppConstants.DarkColors.monthlyCalendarDayCellBackground, "Celdas"),
+        ColorThemeItem(R.string.today_cell_background, AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BACKGROUND, AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarTodayCellBackground, AppConstants.DarkColors.monthlyCalendarTodayCellBackground, "Celdas"),
         ColorThemeItem(R.string.today_border_color, AppConstants.ColorKeys.LIGHT_TODAY_BORDER_COLOR, AppConstants.ColorKeys.DARK_TODAY_BORDER_COLOR, AppConstants.LightColors.todayBorderColor, AppConstants.DarkColors.todayBorderColor, "Celdas", isIndependent = true),
         ColorThemeItem(R.string.note_icon_color, AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.ColorKeys.LIGHT_NOTE_ICON_COLOR, AppConstants.LightColors.noteIconColor, AppConstants.LightColors.noteIconColor, "Celdas", isIndependent = true)
     )

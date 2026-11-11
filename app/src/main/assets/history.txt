@@ -1,3 +1,4 @@
+2026-11-11 - v3.8.81 Personalizar colores/Celdas: Celda de hoy. Cadena propagada al resto de idiomas
 2026-11-11 - v3.8.80.2 Degradado: Icono de previsualización pulsable
 2026-11-11 - v3.8.80.1 Degradado: Reemplazo por Icon Directo Nítido y Clicable
 2026-11-10 - v3.8.80 Degradado: Protección de Texto Dinámico (Auto-Shrink)

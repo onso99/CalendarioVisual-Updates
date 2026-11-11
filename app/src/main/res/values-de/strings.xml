@@ -348,6 +348,7 @@
     <string name="highlights_section_title">Highlights</string>
     <string name="backgrounds_section_title">Hintergründe</string>
     <string name="cells_section_title">Zellen</string>
+    <string name="today_cell_background">Heutige Zelle</string>
     <string name="gradient_label">Farbverlauf</string>
 </resources>
 

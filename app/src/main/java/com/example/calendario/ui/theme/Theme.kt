@@ -35,6 +35,7 @@ data class CustomColors(
     val monthlyCalendarGridBackground: Color,
     val monthlyCalendarGridEffect: Color,
     val monthlyCalendarDayCellBackground: Color,
+    val monthlyCalendarTodayCellBackground: Color,
     val todayBorderColor: Color,
 ) {
     // Cálculo automático del borde del día actual en el calendario anual
@@ -90,6 +91,7 @@ val LocalCustomColors = staticCompositionLocalOf {
         monthlyCalendarGridBackground = AppConstants.LightColors.monthlyCalendarGridBackground,
         monthlyCalendarGridEffect = AppConstants.LightColors.monthlyCalendarGridEffect,
         monthlyCalendarDayCellBackground = AppConstants.LightColors.monthlyCalendarDayCellBackground,
+        monthlyCalendarTodayCellBackground = AppConstants.LightColors.monthlyCalendarTodayCellBackground,
         todayBorderColor = AppConstants.LightColors.todayBorderColor
     )
 }
@@ -199,6 +201,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.DarkColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.DarkColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.DarkColors.monthlyCalendarDayCellBackground.toArgb())),
+            monthlyCalendarTodayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.DARK_MONTHLY_CALENDAR_TODAY_CELL_BACKGROUND, AppConstants.DarkColors.monthlyCalendarTodayCellBackground.toArgb())),
             todayBorderColor = Color(getSafeInt(AppConstants.ColorKeys.DARK_TODAY_BORDER_COLOR, AppConstants.DarkColors.todayBorderColor.toArgb()))
         )
     } else {
@@ -217,6 +220,7 @@ fun getThemeColors(context: Context, darkTheme: Boolean): CustomColors {
             monthlyCalendarGridBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_BACKGROUND, AppConstants.LightColors.monthlyCalendarGridBackground.toArgb())),
             monthlyCalendarGridEffect = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_GRID_EFFECT, AppConstants.LightColors.monthlyCalendarGridEffect.toArgb())),
             monthlyCalendarDayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_DAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarDayCellBackground.toArgb())),
+            monthlyCalendarTodayCellBackground = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_MONTHLY_CALENDAR_TODAY_CELL_BACKGROUND, AppConstants.LightColors.monthlyCalendarTodayCellBackground.toArgb())),
             todayBorderColor = Color(getSafeInt(AppConstants.ColorKeys.LIGHT_TODAY_BORDER_COLOR, AppConstants.LightColors.todayBorderColor.toArgb()))
         )
     }

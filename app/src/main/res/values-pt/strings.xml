@@ -349,6 +349,7 @@
     <string name="highlights_section_title">Destaques</string>
     <string name="backgrounds_section_title">Fundo</string>
     <string name="cells_section_title">Células</string>
+    <string name="today_cell_background">Célula de hoje</string>
     <string name="gradient_label">Degradê</string>
 </resources>
 

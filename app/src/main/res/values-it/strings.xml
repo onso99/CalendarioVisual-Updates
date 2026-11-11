@@ -349,6 +349,7 @@
     <string name="highlights_section_title">In evidenza</string>
     <string name="backgrounds_section_title">Sfondi</string>
     <string name="cells_section_title">Celle</string>
+    <string name="today_cell_background">Cella di oggi</string>
     <string name="gradient_label">Sfumatura</string>
 </resources>
 

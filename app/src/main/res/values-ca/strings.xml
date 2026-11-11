@@ -349,6 +349,7 @@
     <string name="highlights_section_title">Destacats</string>
     <string name="backgrounds_section_title">Fons</string>
     <string name="cells_section_title">Cel·lules</string>
+    <string name="today_cell_background">Cel·la d\'avui</string>
     <string name="gradient_label">Degradat</string>
 </resources>
 

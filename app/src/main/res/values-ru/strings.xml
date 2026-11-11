@@ -348,6 +348,7 @@
     <string name="highlights_section_title">Избранное</string>
     <string name="backgrounds_section_title">Фоны</string>
     <string name="cells_section_title">Ячейки</string>
+    <string name="today_cell_background">Ячейка сегодняшнего дня</string>
     <string name="gradient_label">Градиент</string>
 </resources>
 

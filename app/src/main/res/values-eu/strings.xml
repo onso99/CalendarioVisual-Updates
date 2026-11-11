@@ -347,6 +347,7 @@
     <string name="highlights_section_title">Nabarmenduak</string>
     <string name="backgrounds_section_title">Atzealdeak</string>
     <string name="cells_section_title">Gelaxkak</string>
+    <string name="today_cell_background">Gaurko gelaxka</string>
     <string name="gradient_label">Gradientea</string>
 </resources>
 
