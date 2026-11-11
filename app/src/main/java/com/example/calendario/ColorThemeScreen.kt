@@ -2,6 +2,7 @@ package com.example.calendario
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.core.graphics.ColorUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -350,40 +351,15 @@ private fun UnifiedGradientEffectRow(
             ColorBox(color = color2, onClick = onColor2Click)
         }
 
-        // 3. Icono SwapVert nítido y centrado exactamente entre ambos círculos sobre el mismo eje vertical
-        Icon(
-            imageVector = Icons.Default.SwapVert,
-            contentDescription = null,
-            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 18.dp)
-                .size(20.dp)
-                .clickable { onExchange() }
-        )
-
-        // 4. Previsualización + Selector [0 1 2] centrados vertical y horizontalmente y desplazados a la derecha (56.dp)
+        // 3. Selector [0 1 2] a la izquierda + Previsualización con SwapVert integrado a la derecha (centrados verticalmente)
         Row(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(start = 56.dp),
+                .padding(start = 74.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val previewBrush = when (effectType) {
-                "gradient" -> Brush.verticalGradient(listOf(color1, color2))
-                "sweep" -> Brush.verticalGradient(listOf(color1, color2, color1))
-                else -> androidx.compose.ui.graphics.SolidColor(color1)
-            }
-            
-            Box(
-                modifier = Modifier
-                    .size(innerHeight)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(previewBrush)
-                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
-            )
-
+            // A) Selector [0 1 2]
             Row(
                 modifier = Modifier
                     .height(innerHeight)
@@ -412,6 +388,33 @@ private fun UnifiedGradientEffectRow(
                         Text(text, color = textColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
                 }
+            }
+
+            // B) Previsualización con icono SwapVert fusionado en el centro
+            val previewBrush = when (effectType) {
+                "gradient" -> Brush.verticalGradient(listOf(color1, color2))
+                "sweep" -> Brush.verticalGradient(listOf(color1, color2, color1))
+                else -> androidx.compose.ui.graphics.SolidColor(color1)
+            }
+
+            val avgLum = (ColorUtils.calculateLuminance(color1.toArgb()) + ColorUtils.calculateLuminance(color2.toArgb())) / 2.0
+            val arrowTint = if (avgLum > 0.45) Color.Black.copy(alpha = 0.8f) else Color.White
+
+            Box(
+                modifier = Modifier
+                    .size(innerHeight)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(previewBrush)
+                    .border(1.dp, CalendarioTheme.colors.textSystem.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                    .clickable(onClick = onExchange),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.SwapVert,
+                    contentDescription = "Intercambiar colores",
+                    tint = arrowTint,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
     }
