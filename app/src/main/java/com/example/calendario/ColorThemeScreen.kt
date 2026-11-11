@@ -308,27 +308,65 @@ private fun UnifiedGradientEffectRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(104.dp)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        // 1. Etiqueta "Degradado" (Arriba a la izquierda)
-        Text(
-            text = label,
-            color = CalendarioTheme.colors.textSystem,
-            fontSize = labelFontSize,
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            onTextLayout = { textLayoutResult ->
-                if (textLayoutResult.hasVisualOverflow && labelFontSize > 12.sp) {
-                    labelFontSize = (labelFontSize.value - 1f).sp
-                }
-            },
-            modifier = Modifier.align(Alignment.TopStart)
+        // 1. Fila 1 (52.dp) arriba: Label "Degradado" a la izquierda, Círculo 1 a la derecha
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .align(Alignment.TopStart)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                color = CalendarioTheme.colors.textSystem,
+                fontSize = labelFontSize,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                onTextLayout = { textLayoutResult ->
+                    if (textLayoutResult.hasVisualOverflow && labelFontSize > 12.sp) {
+                        labelFontSize = (labelFontSize.value - 1f).sp
+                    }
+                },
+                modifier = Modifier.weight(1f).padding(end = 8.dp)
+            )
+
+            ColorBox(color = color1, onClick = onColor1Click)
+        }
+
+        // 2. Fila 2 (52.dp) abajo: Círculo 2 a la derecha
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .align(Alignment.BottomStart)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            ColorBox(color = color2, onClick = onColor2Click)
+        }
+
+        // 3. Icono SwapVert nítido y centrado exactamente entre ambos círculos sobre el mismo eje vertical
+        Icon(
+            imageVector = Icons.Default.SwapVert,
+            contentDescription = null,
+            tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 18.dp)
+                .size(20.dp)
+                .clickable { onExchange() }
         )
 
-        // 2. Previsualización + Selector [0 1 2] (Centrados verticalmente y desplazados ligeramente a la derecha)
+        // 4. Previsualización + Selector [0 1 2] centrados vertical y horizontalmente y desplazados a la derecha (56.dp)
         Row(
-            modifier = Modifier.align(Alignment.Center).padding(start = 64.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(start = 56.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -375,24 +413,6 @@ private fun UnifiedGradientEffectRow(
                     }
                 }
             }
-        }
-
-        // 3. Círculos de color + SwapVert (Alineados a la derecha, centrados verticalmente)
-        Column(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            ColorBox(color = color1, onClick = onColor1Click)
-            IconButton(onClick = onExchange, modifier = Modifier.size(28.dp)) {
-                Icon(
-                    imageVector = Icons.Default.SwapVert,
-                    contentDescription = null,
-                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.6f),
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-            ColorBox(color = color2, onClick = onColor2Click)
         }
     }
 }
