@@ -64,7 +64,6 @@ private object PastDayStyle {
     const val OUT_OF_MONTH_TEXT_ALPHA = 0.38f
     const val ELEMENT_ALPHA = 0.50f
     const val PAST_CELL_OVERLAY_ALPHA = 0.04f
-    const val OUT_OF_MONTH_CELL_OVERLAY_ALPHA = 0.10f
 
     const val LANE_ALPHA_BOOST = 0.30f
     const val NOTE_ALPHA_BOOST = 0.35f
@@ -100,8 +99,7 @@ private object PastDayStyle {
                 overlay.copy(alpha = alpha).compositeOver(baseBackground)
             }
             DayCellState.OUT_OF_MONTH -> {
-                val overlay = baseBackground.getContrastColor(Color.Black)
-                overlay.copy(alpha = OUT_OF_MONTH_CELL_OVERLAY_ALPHA).compositeOver(baseBackground)
+                baseBackground.copy(alpha = 0.20f)
             }
             DayCellState.CURRENT_ACTIVE -> baseBackground
         }
