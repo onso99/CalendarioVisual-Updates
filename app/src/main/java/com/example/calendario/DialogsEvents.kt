@@ -1200,7 +1200,8 @@ fun EventInfoDialog(
     canEdit: Boolean,
     onDismissRequest: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onShare: () -> Unit
 ) {
     AppDialog(
         onDismissRequest = onDismissRequest,
@@ -1225,27 +1226,49 @@ fun EventInfoDialog(
                 }
             }
         } else null,
-        titleTrailingContent = if (canEdit) {
-            {
-                val editCircleColor = CalendarioTheme.colors.cabecera
-                val contentColor = editCircleColor.getContrastColor(Color.White)
+        titleTrailingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val circleColor = CalendarioTheme.colors.cabecera
+                val contentColor = circleColor.getContrastColor(Color.White)
+
                 Box(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(editCircleColor)
-                        .clickable(onClick = onEdit),
+                        .background(circleColor)
+                        .clickable(onClick = onShare),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(id = R.string.edit_event),
+                        imageVector = Icons.Default.Share,
+                        contentDescription = stringResource(id = R.string.share_event),
                         tint = contentColor,
                         modifier = Modifier.size(20.dp)
                     )
                 }
+
+                if (canEdit) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(circleColor)
+                            .clickable(onClick = onEdit),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(id = R.string.edit_event),
+                            tint = contentColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
-        } else null,
+        },
         confirmButton = {
             DialogConfirmButton(
                 text = stringResource(id = R.string.accept),

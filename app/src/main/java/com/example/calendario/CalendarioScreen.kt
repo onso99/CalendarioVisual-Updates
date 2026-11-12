@@ -566,6 +566,9 @@ fun CalendarioScreen(
                     eventToDeleteSingle = event
                     showDeleteSingleDialog = true
                 }
+            },
+            onShare = {
+                IcsHelper.shareEvent(context, event)
             }
         )
     }

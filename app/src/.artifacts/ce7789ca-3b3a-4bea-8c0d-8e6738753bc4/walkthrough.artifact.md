@@ -1,14 +1,12 @@
-# Walkthrough - Botones Circulares de Cabecera y Aproximación Vertical Completado
+# Walkthrough - Unificación de Estilo en Botones de Cabecera Completado
 
-Se han aplicado los cambios visuales en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1210).
+Se han igualado los botones en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1230).
 
 ## Cambios Realizados
 
 1. **Unificación Estética de Botones de Cabecera (`DialogsEvents.kt`):**
-   - **Botón Borrar (Izquierda):** Se estilizó como un botón circular relleno (`36.dp`, `CircleShape`) de color rojo (`#D32F2F`) con el icono de papelera en blanco.
-   - **Botón Editar (Derecha):** Se estilizó como un botón circular relleno (`36.dp`, `CircleShape`) con el color de la cabecera del tema y el icono de lápiz en blanco, **replicando fielmente el diseño del botón `+`** que se utiliza en los diálogos de las celdas del día.
-2. **Aproximación Vertical:**
-   - Se aplicó un desplazamiento `.offset(y = (-10).dp)` al cuerpo del diálogo para situar el título y los datos visualmente más cerca de los botones de la cabecera.
+   - Se configuró el botón de **Compartir 📤** con la misma estética circular de fondo relleno en color cabecera del tema (`circleColor = CalendarioTheme.colors.cabecera`) y tinte de icono en blanco que utiliza el botón de **Editar ✏️**.
+   - **Resultado:** Ambos botones de utilidad en la esquina superior derecha lucen exactamente idénticos en tamaño (`36.dp`), forma (`CircleShape`), fondo y contraste.
 
 ---
 
