@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -120,14 +122,28 @@ fun SpecialEventsScreen(
                         else -> null
                     }
 
-                    val isPulsing = pulseKey?.let { prefs.getBoolean(it, false) } ?: false
-                    val currentLabel = keywordKey?.let { prefs.getString(it, "") }?.takeIf { it.isNotBlank() }
-                                       ?: stringResource(id = item.labelRes)
+                    val isPulsing = updateTrigger.let { pulseKey?.let { prefs.getBoolean(it, false) } ?: false }
+                    val defaultLabel = stringResource(id = item.labelRes)
+                    val customKeyword = updateTrigger.let { keywordKey?.let { prefs.getString(it, "") } ?: "" }
+                    val hasCustomKeyword = customKeyword.isNotBlank() && customKeyword != defaultLabel
+                    val currentLabel = if (hasCustomKeyword) customKeyword else defaultLabel
 
                     SpecialEventThemeRow(
                         label = currentLabel,
                         color = currentColor,
                         isPulsing = isPulsing,
+                        isDefault = !hasCustomKeyword,
+                        hasCustomKeyword = hasCustomKeyword,
+                        onClearKeyword = if (hasCustomKeyword) {
+                            {
+                                keywordKey?.let { key ->
+                                    prefs.edit { remove(key) }
+                                    ThemePersistence.markThemeAsModified(prefs)
+                                    onThemeModified()
+                                    updateTrigger++
+                                }
+                            }
+                        } else null,
                         onPulseClick = if (pulseKey != null) { {
                             when (pulseKey) {
                                 AppConstants.KEY_EVENT_1_PULSE -> SettingsManager.saveEvent1Pulse(context, !isPulsing)
@@ -229,12 +245,15 @@ private fun SpecialEventThemeRow(
     label: String,
     color: Color,
     isPulsing: Boolean = false,
+    isDefault: Boolean = false,
+    hasCustomKeyword: Boolean = false,
+    onClearKeyword: (() -> Unit)? = null,
     onPulseClick: (() -> Unit)? = null,
     onLabelClick: (() -> Unit)? = null,
     onReset: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
-    var labelFontSize by remember { mutableStateOf(16.sp) }
+    var labelFontSize by remember(label) { mutableStateOf(16.sp) }
 
     Row(
         modifier = Modifier
@@ -246,7 +265,7 @@ private fun SpecialEventThemeRow(
     ) {
         Text(
             text = label,
-            color = CalendarioTheme.colors.textSystem,
+            color = if (isDefault) CalendarioTheme.colors.textSystem.copy(alpha = 0.45f) else CalendarioTheme.colors.textSystem,
             fontSize = labelFontSize,
             modifier = Modifier.weight(1f),
             maxLines = 1,
@@ -259,12 +278,27 @@ private fun SpecialEventThemeRow(
             }
         )
 
+        if (onClearKeyword != null) {
+            IconButton(onClick = onClearKeyword, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Limpiar palabra clave",
+                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
         if (onPulseClick != null) {
-            IconButton(onClick = onPulseClick, modifier = Modifier.size(32.dp)) {
+            IconButton(
+                onClick = if (hasCustomKeyword) onPulseClick else ({}),
+                enabled = hasCustomKeyword,
+                modifier = Modifier.size(32.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.WbSunny,
                     contentDescription = "Activar parpadeo",
-                    tint = if (isPulsing) CalendarioTheme.colors.cabecera else Color.Gray.copy(alpha = 0.4f),
+                    tint = if (hasCustomKeyword && isPulsing) CalendarioTheme.colors.cabecera else Color.Gray.copy(alpha = if (hasCustomKeyword) 0.4f else 0.2f),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -291,6 +325,7 @@ private fun SpecialEventThemeRow(
 @Composable
 private fun SpecialEventRenameDialog(initialName: String, onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
     var text by remember { mutableStateOf(initialName) }
+    val charLimit = 24
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = stringResource(id = R.string.special_events),
@@ -299,9 +334,16 @@ private fun SpecialEventRenameDialog(initialName: String, onDismissRequest: () -
     ) {
         OutlinedTextField(
             value = text,
-            onValueChange = { text = it },
+            onValueChange = { if (it.length <= charLimit) text = it },
             label = { Text(stringResource(id = R.string.title)) },
             singleLine = true,
+            supportingText = {
+                Text(
+                    text = "${text.length}/$charLimit",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End
+                )
+            },
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth()
         )

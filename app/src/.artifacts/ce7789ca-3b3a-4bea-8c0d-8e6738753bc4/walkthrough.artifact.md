@@ -1,12 +1,14 @@
-# Walkthrough - Unificación de Estilo en Botones de Cabecera Completado
+# Walkthrough - Botón "X" y Límite de 24 Caracteres en Destacados Completado
 
-Se han igualado los botones en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1230).
+Se han aplicado los cambios en [SpecialEventsScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/SpecialEventsScreen.kt#L125).
 
 ## Cambios Realizados
 
-1. **Unificación Estética de Botones de Cabecera (`DialogsEvents.kt`):**
-   - Se configuró el botón de **Compartir 📤** con la misma estética circular de fondo relleno en color cabecera del tema (`circleColor = CalendarioTheme.colors.cabecera`) y tinte de icono en blanco que utiliza el botón de **Editar ✏️**.
-   - **Resultado:** Ambos botones de utilidad en la esquina superior derecha lucen exactamente idénticos en tamaño (`36.dp`), forma (`CircleShape`), fondo y contraste.
+1. **Botón "X" de Limpieza en la Sección Destacados (`SpecialEventsScreen.kt`):**
+   - Se añadió un botón con icono "X" (`Icons.Default.Close`) situado a la izquierda del icono de luz pulsante (`WbSunny`) en los elementos de la sección *Destacados* que contienen un texto personalizado introducido por el usuario.
+   - Al pulsar la "X", se limpia el texto personalizado y la ranura recupera su nombre por defecto ("Evento-1", etc.).
+2. **Límite de 24 Caracteres y Contador (`SpecialEventsScreen.kt`):**
+   - Se actualizó `SpecialEventRenameDialog` para limitar la longitud del texto a un máximo de **24 caracteres** (`maxChars = 24`) e incorporar un contador visual discreto (`X/24`) en la parte inferior del campo de texto.
 
 ---
 
