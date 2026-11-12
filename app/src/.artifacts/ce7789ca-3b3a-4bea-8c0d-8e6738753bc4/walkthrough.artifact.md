@@ -1,12 +1,15 @@
-# Walkthrough - Corrección de Warning con `mutableFloatStateOf` Completado
+# Walkthrough - Confirmación Unificada de Borrado Seguro Completado
 
-Se ha aplicado la optimización en [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt#L181).
+Se ha unificado la confirmación de borrado en [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CalendarioScreen.kt#L560).
 
 ## Cambios Realizados
 
-1. **Optimización de Estado Primitivo (`ColorThemeScreen.kt`):**
-   - Se reemplazó `mutableStateOf(...)` por `mutableFloatStateOf(...)` para la variable de estado `pendingOthersStep`.
-   - **Resultado:** Se eliminó por completo el warning del compilador acerca del *autoboxing* de valores Float en Compose, mejorando el rendimiento y la limpieza del código.
+1. **Unificación y Borrado Seguro en `EventInfoDialog` (`CalendarioScreen.kt`):**
+   - Se unificó la lógica de borrado compartida con `AddEventScreen`.
+   - Al pulsar la papelera en `EventInfoDialog`:
+     - **Para eventos simples:** Abre `ConfirmDeleteDialog` (*"¿Deseas eliminar este evento?"*), requiriendo confirmación explícita del usuario antes de eliminar.
+     - **Para eventos recurrentes o excepciones:** Abre `DeleteRecurringEventDialog` (*"¿Eliminar solo este evento o toda la serie?"*).
+   - **Resultado:** Se elimina el riesgo de borrados accidentales y se garantiza una experiencia de borrado 100% segura y consistente en toda la aplicación.
 
 ---
 

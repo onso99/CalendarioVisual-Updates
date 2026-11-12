@@ -140,6 +140,11 @@ fun CalendarioScreen(
     var showDeleteOrphanDialog by remember { mutableStateOf(false) }
     var eventToDeleteOrphan by remember { mutableStateOf<Festivo?>(null) }
     var holidayForManager by remember { mutableStateOf<Festivo?>(null) }
+    var eventForInfoDialog by remember { mutableStateOf<Festivo?>(null) }
+    var showDeleteRecurringDialog by remember { mutableStateOf(false) }
+    var eventToDeleteRecurring by remember { mutableStateOf<Festivo?>(null) }
+    var showDeleteSingleDialog by remember { mutableStateOf(false) }
+    var eventToDeleteSingle by remember { mutableStateOf<Festivo?>(null) }
     var showHistoryScreen by remember { mutableStateOf(false) }
     var showManageCalendarsScreen by remember { mutableStateOf(false) }
     var showPdfExportScreen by remember { mutableStateOf(false) }
@@ -308,28 +313,11 @@ fun CalendarioScreen(
     }
 
     val onEventClickHandler = { event: Festivo ->
-        val calendar = uiState.availableCalendars.find { it.id == event.calendarId }
-        val canEdit = calendar?.canModify == true && !event.isGhost
-
         if (event.calendarId == -1L && event.isFromHolidaySource) {
-            // Es un festivo local (manual) -> Abrir Gestor
             holidayForManager = event
             showHolidayManagerScreen = true
-        } else if (event.isGhost) {
-            // Es un evento fantasma (está en historial pero no en Google)
-            eventForReadOnlyDialog = event
-            showReadOnlyDialog = true
-        } else if (event.isBirthday && !canEdit) {
-            // Es un cumpleaños de SOLO LECTURA (sincronizado de contactos)
-            eventForReadOnlyDialog = event
-            showReadOnlyDialog = true
-        } else if (canEdit) {
-            // Es un evento normal o un cumpleaños en un calendario propio -> Editable
-            launchAddEditScreen(event.date, event)
         } else {
-            // Todo lo demás que no sea editable (calendarios compartidos lectura, etc.)
-            eventForReadOnlyDialog = event
-            showReadOnlyDialog = true
+            eventForInfoDialog = event
         }
     }
 
@@ -554,6 +542,73 @@ fun CalendarioScreen(
             viewModel = viewModel // Pasamos el ViewModel para unificar importación (v3.1.34)
         )
         return
+    }
+
+    if (eventForInfoDialog != null) {
+        val event = eventForInfoDialog!!
+        val calendar = uiState.availableCalendars.find { it.id == event.calendarId }
+        val canEdit = calendar?.canModify == true && !event.isGhost
+
+        EventInfoDialog(
+            event = event,
+            canEdit = canEdit,
+            onDismissRequest = { eventForInfoDialog = null },
+            onEdit = {
+                eventForInfoDialog = null
+                launchAddEditScreen(event.date, event)
+            },
+            onDelete = {
+                eventForInfoDialog = null
+                if (event.rrule != null || event.originalId != null) {
+                    eventToDeleteRecurring = event
+                    showDeleteRecurringDialog = true
+                } else {
+                    eventToDeleteSingle = event
+                    showDeleteSingleDialog = true
+                }
+            }
+        )
+    }
+
+    if (showDeleteSingleDialog && eventToDeleteSingle != null) {
+        ConfirmDeleteDialog(
+            onDismissRequest = {
+                showDeleteSingleDialog = false
+                eventToDeleteSingle = null
+            },
+            onConfirm = {
+                showDeleteSingleDialog = false
+                eventToDeleteSingle?.let {
+                    deleteEvent(context, it)
+                    viewModel.refreshData()
+                }
+                eventToDeleteSingle = null
+            },
+            title = eventToDeleteSingle!!.title
+        )
+    }
+
+    if (showDeleteRecurringDialog) {
+        DeleteRecurringEventDialog(
+            onDismissRequest = { showDeleteRecurringDialog = false },
+            onConfirm = { option ->
+                showDeleteRecurringDialog = false
+                eventToDeleteRecurring?.let { event ->
+                    when (option) {
+                        DeleteRecurringOption.SINGLE_EVENT -> {
+                            cancelEventInstance(context, event)
+                            viewModel.refreshData()
+                        }
+                        DeleteRecurringOption.ALL_EVENTS -> {
+                            val targetId = event.originalId ?: event.id
+                            val masterEvent = event.copy(id = targetId)
+                            deleteEvent(context, masterEvent)
+                            viewModel.refreshData()
+                        }
+                    }
+                }
+            }
+        )
     }
 
     if (showAddEventScreen) {

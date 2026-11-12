@@ -1191,3 +1191,88 @@ fun StartupRecoveryDialog(
         }
     }
 }
+
+@Composable
+fun EventInfoDialog(
+    event: Festivo,
+    canEdit: Boolean,
+    onDismissRequest: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismissRequest,
+        title = "",
+        icon = if (canEdit) {
+            {
+                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_delete_outlined),
+                        contentDescription = stringResource(id = R.string.delete_event),
+                        tint = Color.Red.copy(alpha = 0.8f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        } else null,
+        titleTrailingContent = if (canEdit) {
+            {
+                IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(id = R.string.edit_event),
+                        tint = CalendarioTheme.colors.cabecera,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        } else null,
+        confirmButton = {
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
+                onClick = onDismissRequest
+            )
+        },
+        dismissButton = {}
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Título del evento
+            Text(
+                text = event.title,
+                color = CalendarioTheme.colors.textSystem,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            // Fecha y hora
+            val dateStr = event.date.format(AppFormats.DateFull)
+            val timeStr = if (event.isAllDay) {
+                stringResource(id = R.string.all_day_switch)
+            } else if (event.startTime != null && event.endTime != null) {
+                "${event.startTime} - ${event.endTime}"
+            } else if (event.startTime != null) {
+                event.startTime.toString()
+            } else ""
+
+            Text(
+                text = "$dateStr${if (timeStr.isNotBlank()) " • $timeStr" else ""}",
+                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                fontSize = 14.sp
+            )
+
+            // Descripción si existe
+            if (!event.description.isNullOrBlank()) {
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Text(
+                    text = event.description,
+                    color = CalendarioTheme.colors.textSystem,
+                    fontSize = 15.sp,
+                    lineHeight = 22.sp
+                )
+            }
+        }
+    }
+}

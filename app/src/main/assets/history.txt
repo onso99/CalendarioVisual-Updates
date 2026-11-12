@@ -1,3 +1,4 @@
+2026-11-12 - v3.8.82.3 Corrección de warnings y optimización de código
 2026-11-12 - v3.8.82.2 Celdas: Transparencia de Otros con slider 0 a 5
 2026-11-12 - v3.8.82.1 Celdas: renombradas opciones Mes y Hoy
 2026-11-11 - v3.8.82 Celdas de otros meses: (alpha = 0.20f)
