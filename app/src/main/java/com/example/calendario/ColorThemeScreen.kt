@@ -3,6 +3,7 @@ package com.example.calendario
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
+import kotlin.math.roundToInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +34,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -129,8 +133,12 @@ fun ColorThemeScreen(
             // --- BLOQUE 2: CELDAS ---
             SectionTitle(stringResource(id = R.string.cells_section_title))
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
-                val cellItems = ColorThemeConfig.colorThemeItems.filter { it.category == "Celdas" }
-                cellItems.forEachIndexed { index, item ->
+                val monthCellItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.current_month_cell }
+                val todayCellItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.today_cell_background }
+                val todayBorderItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.today_border_color }
+                val noteIconItem = ColorThemeConfig.colorThemeItems.find { it.labelRes == R.string.note_icon_color }
+
+                val renderCellItem: @Composable (ColorThemeItem) -> Unit = { item ->
                     val key = if (darkTheme) item.darkThemeKey else item.lightThemeKey
                     val defaultColor = if (darkTheme) item.defaultDark else item.defaultLight
                     val currentColor = getThemeColor(prefs, key, defaultColor)
@@ -154,9 +162,88 @@ fun ColorThemeScreen(
                             showColorPicker = true
                         }
                     )
-                    if (index < cellItems.size - 1) {
-                        HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                }
+
+                // 1. Mes
+                if (monthCellItem != null) {
+                    renderCellItem(monthCellItem)
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                }
+
+                // 2. Hoy
+                if (todayCellItem != null) {
+                    renderCellItem(todayCellItem)
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                }
+
+                // 3. Transparencia de Otros (Slider row, SIN divisor interno)
+                var showOthersExpand by remember { mutableStateOf(false) }
+                var pendingOthersStep by remember { mutableStateOf(SettingsManager.getOutOfMonthOpacityStep(context).toFloat()) }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable { showOthersExpand = !showOthersExpand }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.others_cell_label),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = if (showOthersExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                if (showOthersExpand) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Slider(
+                                value = pendingOthersStep,
+                                onValueChange = { 
+                                    pendingOthersStep = it
+                                    SettingsManager.saveOutOfMonthOpacityStep(context, it.roundToInt())
+                                    ThemePersistence.markThemeAsModified(prefs)
+                                    onThemeModified()
+                                    updateTrigger++
+                                },
+                                valueRange = 0f..5f,
+                                steps = 4,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = CalendarioTheme.colors.cabecera,
+                                    activeTrackColor = CalendarioTheme.colors.cabecera,
+                                    inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+                                )
+                            )
+                            Text(
+                                text = pendingOthersStep.roundToInt().toString(),
+                                modifier = Modifier.width(40.dp).padding(start = 8.dp),
+                                color = CalendarioTheme.colors.textSystem,
+                                textAlign = TextAlign.End,
+                                fontSize = 16.sp
+                            )
+                        }
                     }
+                }
+
+                HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+
+                // 4. Borde de Hoy
+                if (todayBorderItem != null) {
+                    renderCellItem(todayBorderItem)
+                    HorizontalDivider(color = dividerColor, thickness = dividerThickness)
+                }
+
+                // 5. Icono Nota
+                if (noteIconItem != null) {
+                    renderCellItem(noteIconItem)
                 }
             }
         }

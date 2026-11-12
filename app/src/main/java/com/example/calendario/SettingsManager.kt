@@ -25,6 +25,14 @@ object SettingsManager {
     // --- 1. AJUSTES GENERALES (App Preferences) ---
     private fun appPrefs(context: Context) = getPrefs(context, AppConstants.APP_SETTINGS_PREFS_NAME)
 
+    const val KEY_OUT_OF_MONTH_OPACITY_STEP = "out_of_month_opacity_step"
+
+    fun getOutOfMonthOpacityStep(context: Context): Int =
+        appPrefs(context).getInt(KEY_OUT_OF_MONTH_OPACITY_STEP, 1)
+
+    fun saveOutOfMonthOpacityStep(context: Context, step: Int) =
+        appPrefs(context).edit { putInt(KEY_OUT_OF_MONTH_OPACITY_STEP, step) }
+
     fun getEvent1Keyword(context: Context): String =
         appPrefs(context).getString(AppConstants.KEY_EVENT_1_KEYWORD, "") ?: ""
 

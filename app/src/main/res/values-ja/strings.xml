@@ -349,6 +349,7 @@
     <string name="backgrounds_section_title">背景</string>
     <string name="cells_section_title">セル</string>
     <string name="today_cell_background">今日</string>
+    <string name="others_cell_label">その他の透明度</string>
     <string name="gradient_label">グラデーション</string>
 </resources>
 

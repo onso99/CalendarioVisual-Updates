@@ -350,6 +350,7 @@
     <string name="backgrounds_section_title">Fondos</string>
     <string name="cells_section_title">Células</string>
     <string name="today_cell_background">Hoxe</string>
+    <string name="others_cell_label">Transparencia doutros</string>
     <string name="gradient_label">Degradado</string>
 </resources>
 
