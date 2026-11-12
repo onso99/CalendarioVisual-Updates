@@ -350,6 +350,7 @@
     <string name="backgrounds_section_title">Backgrounds</string>
     <string name="cells_section_title">Cells</string>
     <string name="today_cell_background">Today</string>
+    <string name="others_cell_label">Others transparency</string>
     <string name="gradient_label">Gradient</string>
 </resources>
 

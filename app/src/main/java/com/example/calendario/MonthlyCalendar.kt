@@ -1,5 +1,6 @@
 package com.example.calendario
 
+import android.content.Context
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -91,7 +92,7 @@ private object PastDayStyle {
         }
     }
 
-    fun calculateCellBackground(baseBackground: Color, state: DayCellState): Color {
+    fun calculateCellBackground(ctx: Context, baseBackground: Color, state: DayCellState): Color {
         return when (state) {
             DayCellState.PAST_DAY -> {
                 val overlay = baseBackground.getContrastColor(Color.Black)
@@ -99,7 +100,9 @@ private object PastDayStyle {
                 overlay.copy(alpha = alpha).compositeOver(baseBackground)
             }
             DayCellState.OUT_OF_MONTH -> {
-                baseBackground.copy(alpha = 0.20f)
+                val step = SettingsManager.getOutOfMonthOpacityStep(ctx)
+                val alpha = step * 0.20f
+                baseBackground.copy(alpha = alpha)
             }
             DayCellState.CURRENT_ACTIVE -> baseBackground
         }
@@ -149,26 +152,26 @@ fun MonthlyCalendar(
     dailyNotes: Map<String, DailyNote> = emptyMap(),
     workingDayDates: Set<LocalDate> = emptySet()
 ) {
-    val context = LocalContext.current
+    val localCtx = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
     val themeColors = CalendarioTheme.colors
     val eventSettings = remember(themeColors) {
         EventKeywordSettings(
-            norm1 = SettingsManager.getEvent1Keyword(context).unaccent().lowercase(),
-            norm2 = SettingsManager.getEvent2Keyword(context).unaccent().lowercase(),
-            norm3 = SettingsManager.getEvent3Keyword(context).unaccent().lowercase(),
-            norm4 = SettingsManager.getEvent4Keyword(context).unaccent().lowercase(),
-            norm5 = SettingsManager.getEvent5Keyword(context).unaccent().lowercase(),
-            pulse1 = SettingsManager.isEvent1PulseEnabled(context),
-            pulse2 = SettingsManager.isEvent2PulseEnabled(context),
-            pulse3 = SettingsManager.isEvent3PulseEnabled(context),
-            pulse4 = SettingsManager.isEvent4PulseEnabled(context),
-            pulse5 = SettingsManager.isEvent5PulseEnabled(context)
+            norm1 = SettingsManager.getEvent1Keyword(localCtx).unaccent().lowercase(),
+            norm2 = SettingsManager.getEvent2Keyword(localCtx).unaccent().lowercase(),
+            norm3 = SettingsManager.getEvent3Keyword(localCtx).unaccent().lowercase(),
+            norm4 = SettingsManager.getEvent4Keyword(localCtx).unaccent().lowercase(),
+            norm5 = SettingsManager.getEvent5Keyword(localCtx).unaccent().lowercase(),
+            pulse1 = SettingsManager.isEvent1PulseEnabled(localCtx),
+            pulse2 = SettingsManager.isEvent2PulseEnabled(localCtx),
+            pulse3 = SettingsManager.isEvent3PulseEnabled(localCtx),
+            pulse4 = SettingsManager.isEvent4PulseEnabled(localCtx),
+            pulse5 = SettingsManager.isEvent5PulseEnabled(localCtx)
         )
     }
 
-    val effectType = remember(themeColors) { SettingsManager.getMonthlyEffectType(context) }
-    val showWeekNumber = remember(themeColors) { SettingsManager.isWeekNumberVisible(context) }
+    val effectType = remember(themeColors) { SettingsManager.getMonthlyEffectType(localCtx) }
+    val showWeekNumber = remember(themeColors) { SettingsManager.isWeekNumberVisible(localCtx) }
     val weekFields = remember(locale) { WeekFields.of(locale) }
     val isAppDark = ColorUtils.calculateLuminance(themeColors.settingsBackground.toArgb()) < 0.5
 
@@ -328,6 +331,7 @@ private fun MonthGridView(
     onDayClick: (LocalDate, List<Festivo>) -> Unit,
     onEmptyDayClick: (LocalDate) -> Unit
 ) {
+    val context = LocalContext.current
     weeksToDisplay.forEach { week ->
         val weekContainsToday = week.any { it.first == today && it.second }
         Row(
@@ -345,8 +349,8 @@ private fun MonthGridView(
                 }
 
                 val baseCellBackground = if (isToday) themeColors.monthlyCalendarTodayCellBackground else themeColors.monthlyCalendarDayCellBackground
-                val cellBackground = remember(dayState, baseCellBackground) {
-                    PastDayStyle.calculateCellBackground(baseCellBackground, dayState)
+                val cellBackground = remember(dayState, baseCellBackground, context) {
+                    PastDayStyle.calculateCellBackground(context, baseCellBackground, dayState)
                 }
 
                 val dayEvents = if (isCurrentMonth) eventsByDate[date].orEmpty() else emptyList()

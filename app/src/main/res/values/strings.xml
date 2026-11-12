@@ -272,6 +272,7 @@
     <string name="cells_section_title">Celdas</string>
     <string name="today_cell_background">Hoy</string>
     <string name="today_border_color">Borde de Hoy</string>
+    <string name="others_cell_label">Transparencia de Otros</string>
     <string name="gradient_label">Degradado</string>
     <string name="import_cvo_option_label">Importar archivo .cvo</string>
     <string name="check_updates_label">Buscar actualizaciones</string>
