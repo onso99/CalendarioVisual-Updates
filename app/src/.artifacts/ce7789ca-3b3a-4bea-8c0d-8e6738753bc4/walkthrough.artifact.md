@@ -1,20 +1,14 @@
-# Walkthrough - Fases 2 y 3 Acciones Inteligentes Completado
+# Walkthrough - Botones Circulares de Cabecera y Aproximación Vertical Completado
 
-Se han implementado las Fases 2 y 3 en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1290).
+Se han aplicado los cambios visuales en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1210).
 
 ## Cambios Realizados
 
-1. **Detector de Acciones Inteligentes (`SmartActionDetector` en `DialogsEvents.kt`):**
-   - Se añadió un analizador mediante expresiones regulares (*Regex*) que escanea el título y descripción del evento buscando:
-     1. **Teléfonos** (`tel:`)
-     2. **Emails** (`mailto:`)
-     3. **Enlaces Web** (`https://`)
-     4. **Ubicaciones/Mapas** (`geo:`)
-   - Mantiene la jerarquía estricta acordada (*1º Teléfono, 2º Email, 3º Web, 4º Mapas*).
-
-2. **Chips de Acción Compactos (`SmartActionChipRow` en `DialogsEvents.kt`):**
-   - Cada acción detectada se renderiza como un chip elegante con su icono encajado en un círculo cromático distintivo (`[ 📞 ]`, `[ ✉️ ]`, `[ 🌐 ]`, `[ 📍 ]`) y su texto contiguo con `maxLines = 1` y `overflow = TextOverflow.Ellipsis`.
-   - Al pulsar un chip, la app lanza instantáneamente la aplicación nativa correspondiente del sistema Android.
+1. **Unificación Estética de Botones de Cabecera (`DialogsEvents.kt`):**
+   - **Botón Borrar (Izquierda):** Se estilizó como un botón circular relleno (`36.dp`, `CircleShape`) de color rojo (`#D32F2F`) con el icono de papelera en blanco.
+   - **Botón Editar (Derecha):** Se estilizó como un botón circular relleno (`36.dp`, `CircleShape`) con el color de la cabecera del tema y el icono de lápiz en blanco, **replicando fielmente el diseño del botón `+`** que se utiliza en los diálogos de las celdas del día.
+2. **Aproximación Vertical:**
+   - Se aplicó un desplazamiento `.offset(y = (-10).dp)` al cuerpo del diálogo para situar el título y los datos visualmente más cerca de los botones de la cabecera.
 
 ---
 

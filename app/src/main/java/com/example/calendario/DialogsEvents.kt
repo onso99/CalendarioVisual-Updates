@@ -1207,11 +1207,19 @@ fun EventInfoDialog(
         title = "",
         icon = if (canEdit) {
             {
-                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                val deleteCircleColor = Color(0xFFD32F2F)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(deleteCircleColor)
+                        .clickable(onClick = onDelete),
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete_outlined),
                         contentDescription = stringResource(id = R.string.delete_event),
-                        tint = Color.Red.copy(alpha = 0.8f),
+                        tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1219,11 +1227,20 @@ fun EventInfoDialog(
         } else null,
         titleTrailingContent = if (canEdit) {
             {
-                IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                val editCircleColor = CalendarioTheme.colors.cabecera
+                val contentColor = editCircleColor.getContrastColor(Color.White)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(editCircleColor)
+                        .clickable(onClick = onEdit),
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(id = R.string.edit_event),
-                        tint = CalendarioTheme.colors.cabecera,
+                        tint = contentColor,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1238,7 +1255,9 @@ fun EventInfoDialog(
         dismissButton = {}
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = (-10).dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Título del evento
