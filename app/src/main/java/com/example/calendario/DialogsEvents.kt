@@ -1,5 +1,7 @@
 package com.example.calendario
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -1273,6 +1275,139 @@ fun EventInfoDialog(
                     lineHeight = 22.sp
                 )
             }
+
+            // Acciones Inteligentes (Fases 2 y 3: Teléfono, Email, Web, Mapas)
+            val context = LocalContext.current
+            val detectedActions = remember(event.title, event.description) {
+                SmartActionDetector.detectActions(event.title, event.description)
+            }
+
+            if (detectedActions.isNotEmpty()) {
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    detectedActions.forEach { action ->
+                        SmartActionChipRow(
+                            action = action,
+                            onExecuteAction = {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(action.value))
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {
+                                    context.showToast(R.string.permission_denied_calendar)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
         }
+    }
+}
+
+object SmartActionDetector {
+    private val PHONE_REGEX = Regex("(?:\\+?\\d{1,3}[- .]?)?(?:\\(?\\d{2,4}\\)?[- .]?)?\\d{3,4}[- .]?\\d{3,4}")
+    private val EMAIL_REGEX = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
+    private val URL_REGEX = Regex("(?:https?://|www\\.)[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:/[^\\s]*)?")
+    private val MAP_KEYWORDS = listOf("calle ", "c/ ", "avda ", "avenida ", "plaza ", "plza ", "paseo ", "pº ", "road ", "street ", "st. ", "ave. ")
+
+    data class SmartAction(
+        val type: ActionType,
+        val value: String,
+        val displayValue: String
+    )
+
+    enum class ActionType {
+        PHONE,   // 1º
+        EMAIL,   // 2º
+        WEB,     // 3º
+        MAP      // 4º
+    }
+
+    fun detectActions(title: String, description: String?): List<SmartAction> {
+        val fullText = "$title ${description ?: ""}"
+        val actions = mutableListOf<SmartAction>()
+
+        // 1. Teléfono
+        PHONE_REGEX.find(fullText)?.value?.let { raw ->
+            val digits = raw.filter { it.isDigit() || it == '+' }
+            if (digits.length >= 7) {
+                actions.add(SmartAction(ActionType.PHONE, "tel:$digits", raw.trim()))
+            }
+        }
+
+        // 2. Email
+        EMAIL_REGEX.find(fullText)?.value?.let { email ->
+            actions.add(SmartAction(ActionType.EMAIL, "mailto:$email", email.trim()))
+        }
+
+        // 3. Web
+        URL_REGEX.find(fullText)?.value?.let { url ->
+            val fullUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) "https://$url" else url
+            actions.add(SmartAction(ActionType.WEB, fullUrl, url.trim()))
+        }
+
+        // 4. Mapas
+        val lowerText = fullText.lowercase()
+        if (MAP_KEYWORDS.any { lowerText.contains(it) }) {
+            val address = title.takeIf { t -> MAP_KEYWORDS.any { t.lowercase().contains(it) } }
+                ?: description?.takeIf { d -> MAP_KEYWORDS.any { d.lowercase().contains(it) } }
+                ?: title
+            actions.add(SmartAction(ActionType.MAP, "geo:0,0?q=${Uri.encode(address)}", address.trim()))
+        }
+
+        return actions.sortedBy { it.type.ordinal }
+    }
+}
+
+@Composable
+private fun SmartActionChipRow(
+    action: SmartActionDetector.SmartAction,
+    onExecuteAction: () -> Unit
+) {
+    val (iconRes, tintColor) = when (action.type) {
+        SmartActionDetector.ActionType.PHONE -> Icons.Default.Phone to Color(0xFF4CAF50)
+        SmartActionDetector.ActionType.EMAIL -> Icons.Default.Email to Color(0xFF2196F3)
+        SmartActionDetector.ActionType.WEB -> Icons.Default.Language to Color(0xFFFF9800)
+        SmartActionDetector.ActionType.MAP -> Icons.Default.Place to Color(0xFFE91E63)
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(CalendarioTheme.colors.fondoSecciones)
+            .clickable(onClick = onExecuteAction)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(tintColor.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = iconRes,
+                contentDescription = null,
+                tint = tintColor,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Text(
+            text = action.displayValue,
+            color = CalendarioTheme.colors.textSystem,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
     }
 }

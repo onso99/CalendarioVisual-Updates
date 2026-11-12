@@ -1,3 +1,4 @@
+2026-11-12 - v3.9.00 Eventos con chips de acción: Fase-1 Diálogo de Información del Evento. Borrar evento centralizado
 2026-11-12 - v3.8.82.3 Corrección de warnings y optimización de código
 2026-11-12 - v3.8.82.2 Celdas: Transparencia de Otros con slider 0 a 5
 2026-11-12 - v3.8.82.1 Celdas: renombradas opciones Mes y Hoy
