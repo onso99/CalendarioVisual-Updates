@@ -128,7 +128,7 @@
     <string name="event_5">Esdeveniment-5</string>
     <string name="calendar_background">Fons calendari</string>
     <string name="effect">Efecte</string>
-    <string name="current_month_cell">Cel·la del mes</string>
+    <string name="current_month_cell">Mes</string>
     <string name="note_icon_color">Icona de nota</string>
     <string name="calendar_source">Calendari: %1$s</string>
     <string name="predefined_themes">Temes</string>
@@ -349,7 +349,7 @@
     <string name="highlights_section_title">Destacats</string>
     <string name="backgrounds_section_title">Fons</string>
     <string name="cells_section_title">Cel·lules</string>
-    <string name="today_cell_background">Cel·la d\'avui</string>
+    <string name="today_cell_background">Avui</string>
     <string name="gradient_label">Degradat</string>
 </resources>
 

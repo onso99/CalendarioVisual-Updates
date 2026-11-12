@@ -135,7 +135,7 @@
     <string name="event_5">Evento-5</string>
     <string name="calendar_background">Fondo calendario</string>
     <string name="effect">Efecto</string>
-    <string name="current_month_cell">Celda del mes</string>
+    <string name="current_month_cell">Mes</string>
     <string name="note_icon_color">Icono Nota</string>
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temas</string>
@@ -270,7 +270,7 @@
     <string name="highlights_section_title">Destacados</string>
     <string name="backgrounds_section_title">Fondos</string>
     <string name="cells_section_title">Celdas</string>
-    <string name="today_cell_background">Celda de hoy</string>
+    <string name="today_cell_background">Hoy</string>
     <string name="today_border_color">Borde de Hoy</string>
     <string name="gradient_label">Degradado</string>
     <string name="import_cvo_option_label">Importar archivo .cvo</string>

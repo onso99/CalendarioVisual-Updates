@@ -128,7 +128,7 @@
     <string name="event_5">Событие-5</string>
     <string name="calendar_background">Фон календаря</string>
     <string name="effect">Эффект</string>
-    <string name="current_month_cell">Ячейка месяца</string>
+    <string name="current_month_cell">Месяц</string>
     <string name="note_icon_color">Иконка заметки</string>
     <string name="calendar_source">Календарь: %1$s</string>
     <string name="predefined_themes">Темы</string>
@@ -348,7 +348,7 @@
     <string name="highlights_section_title">Избранное</string>
     <string name="backgrounds_section_title">Фоны</string>
     <string name="cells_section_title">Ячейки</string>
-    <string name="today_cell_background">Ячейка сегодняшнего дня</string>
+    <string name="today_cell_background">Сегодня</string>
     <string name="gradient_label">Градиент</string>
 </resources>
 

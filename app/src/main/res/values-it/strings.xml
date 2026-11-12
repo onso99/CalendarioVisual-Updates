@@ -128,7 +128,7 @@
     <string name="event_5">Evento-5</string>
     <string name="calendar_background">Sfondo calendario</string>
     <string name="effect">Effetto</string>
-    <string name="current_month_cell">Cella del mese</string>
+    <string name="current_month_cell">Mese</string>
     <string name="note_icon_color">Icona nota</string>
     <string name="calendar_source">Calendario: %1$s</string>
     <string name="predefined_themes">Temi</string>
@@ -349,7 +349,7 @@
     <string name="highlights_section_title">In evidenza</string>
     <string name="backgrounds_section_title">Sfondi</string>
     <string name="cells_section_title">Celle</string>
-    <string name="today_cell_background">Cella di oggi</string>
+    <string name="today_cell_background">Oggi</string>
     <string name="gradient_label">Sfumatura</string>
 </resources>
 

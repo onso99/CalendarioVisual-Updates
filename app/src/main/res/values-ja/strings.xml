@@ -128,7 +128,7 @@
     <string name="event_5">イベント-5</string>
     <string name="calendar_background">カレンダー背景</string>
     <string name="effect">エフェクト</string>
-    <string name="current_month_cell">今月のセル</string>
+    <string name="current_month_cell">月</string>
     <string name="note_icon_color">メモアイコン</string>
     <string name="calendar_source">カレンダー: %1$s</string>
     <string name="predefined_themes">テーマ</string>
@@ -348,7 +348,7 @@
     <string name="highlights_section_title">ハイライト</string>
     <string name="backgrounds_section_title">背景</string>
     <string name="cells_section_title">セル</string>
-    <string name="today_cell_background">今日のセル</string>
+    <string name="today_cell_background">今日</string>
     <string name="gradient_label">グラデーション</string>
 </resources>
 

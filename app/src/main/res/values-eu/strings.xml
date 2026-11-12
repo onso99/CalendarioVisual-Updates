@@ -128,7 +128,7 @@
     <string name="event_5">5-Gertaera</string>
     <string name="calendar_background">Egutegiaren atzeko planoa</string>
     <string name="effect">Efektua</string>
-    <string name="current_month_cell">Hilabeteko gela</string>
+    <string name="current_month_cell">Hilabetea</string>
     <string name="note_icon_color">Oharraren ikonoa</string>
     <string name="calendar_source">Egutegia: %1$s</string>
     <string name="predefined_themes">Gaiak</string>
@@ -347,7 +347,7 @@
     <string name="highlights_section_title">Nabarmenduak</string>
     <string name="backgrounds_section_title">Atzealdeak</string>
     <string name="cells_section_title">Gelaxkak</string>
-    <string name="today_cell_background">Gaurko gelaxka</string>
+    <string name="today_cell_background">Gaur</string>
     <string name="gradient_label">Gradientea</string>
 </resources>
 
