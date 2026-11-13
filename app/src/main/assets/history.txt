@@ -1,3 +1,4 @@
+2026-11-13 - v3.9.09 Diálogos: Chips de acción igualados con los de la pantalla Buscar
 2026-11-13 - v3.9.08 Diálogos: suprimidas lineas divisorias. Iconos estilo tonal neutro unificado
 2026-11-13 - v3.9.07 Diálogos: ajuste del color de los botones Compartir, Editar, Borrar, Aceptar
 2026-11-13 - v3.9.06 Inclusión en el Selector de Compartir de Android. Captura y Pre-llenado de Eventos.

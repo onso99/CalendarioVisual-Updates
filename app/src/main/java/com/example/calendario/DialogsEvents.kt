@@ -1436,8 +1436,9 @@ private fun SmartActionChipRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .border(1.dp, CalendarioTheme.colors.cabecera.copy(alpha = 0.70f), RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .background(CalendarioTheme.colors.fondoSecciones)
+            .background(CalendarioTheme.colors.cabecera.copy(alpha = 0.12f))
             .clickable(onClick = onExecuteAction)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -1462,8 +1463,7 @@ private fun SmartActionChipRow(
         Text(
             text = action.displayValue,
             color = CalendarioTheme.colors.textSystem,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
