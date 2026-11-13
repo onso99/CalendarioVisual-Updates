@@ -1369,12 +1369,13 @@ object SmartActionDetector {
     enum class ActionType {
         PHONE,   // 1º
         EMAIL,   // 2º
-        WEB,     // 3º
-        MAP      // 4º
+        MAP,     // 3º
+        WEB      // 4º
     }
 
     fun detectActions(title: String, description: String?): List<SmartAction> {
         val fullText = "$title ${description ?: ""}"
+        val lowerText = fullText.lowercase()
         val actions = mutableListOf<SmartAction>()
 
         // 1. Teléfono
@@ -1390,19 +1391,29 @@ object SmartActionDetector {
             actions.add(SmartAction(ActionType.EMAIL, "mailto:$email", email.trim()))
         }
 
-        // 3. Web
-        URL_REGEX.find(fullText)?.value?.let { url ->
-            val fullUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) "https://$url" else url
-            actions.add(SmartAction(ActionType.WEB, fullUrl, url.trim()))
-        }
+        // 3. Mapas (Detectar enlaces de Google Maps o palabras clave de dirección)
+        val isMapLink = lowerText.contains("maps.google") || 
+                        lowerText.contains("goo.gl/maps") || 
+                        lowerText.contains("maps.app.goo.gl") || 
+                        lowerText.contains("google.com/maps")
 
-        // 4. Mapas
-        val lowerText = fullText.lowercase()
-        if (MAP_KEYWORDS.any { lowerText.contains(it) }) {
+        if (isMapLink) {
+            val mapUrl = URL_REGEX.find(fullText)?.value
+            val fullMapUrl = if (mapUrl != null && !mapUrl.startsWith("http://") && !mapUrl.startsWith("https://")) "https://$mapUrl" else (mapUrl ?: "https://maps.google.com")
+            actions.add(SmartAction(ActionType.MAP, fullMapUrl, mapUrl?.trim() ?: fullText.trim()))
+        } else if (MAP_KEYWORDS.any { lowerText.contains(it) }) {
             val address = title.takeIf { t -> MAP_KEYWORDS.any { t.lowercase().contains(it) } }
                 ?: description?.takeIf { d -> MAP_KEYWORDS.any { d.lowercase().contains(it) } }
                 ?: title
             actions.add(SmartAction(ActionType.MAP, "geo:0,0?q=${Uri.encode(address)}", address.trim()))
+        }
+
+        // 4. Web genérica (solo si no es un enlace de mapas)
+        if (!isMapLink) {
+            URL_REGEX.find(fullText)?.value?.let { url ->
+                val fullUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) "https://$url" else url
+                actions.add(SmartAction(ActionType.WEB, fullUrl, url.trim()))
+            }
         }
 
         return actions.sortedBy { it.type.ordinal }
