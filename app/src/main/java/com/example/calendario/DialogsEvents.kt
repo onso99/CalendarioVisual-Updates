@@ -2,6 +2,7 @@ package com.example.calendario
 
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -1335,7 +1336,7 @@ fun EventInfoDialog(
                             action = action,
                             onExecuteAction = {
                                 try {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(action.value))
+                                    val intent = Intent(Intent.ACTION_VIEW, action.value.toUri())
                                     context.startActivity(intent)
                                 } catch (_: Exception) {
                                     context.showToast(R.string.permission_denied_calendar)
