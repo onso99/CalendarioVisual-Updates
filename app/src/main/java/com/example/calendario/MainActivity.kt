@@ -106,6 +106,36 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: Intent?) {
         val action = intent?.action
+        val type = intent?.type
+
+        if (action == Intent.ACTION_SEND && type == "text/plain") {
+            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+            if (!sharedText.isNullOrBlank()) {
+                val now = LocalDate.now()
+                val favoriteCalendarId = SettingsManager.getFavoriteCalendarId(this)
+                val calendars = loadAvailableCalendarsSync(this)
+                val targetCalendarId = calendars.find { it.id == favoriteCalendarId && it.canModify }?.id 
+                    ?: calendars.find { it.canModify && it.isPrimary }?.id 
+                    ?: calendars.find { it.canModify }?.id 
+                    ?: -1L
+
+                val newEvent = Festivo(
+                    id = 0L,
+                    title = sharedText.take(100),
+                    description = if (sharedText.length > 100) sharedText else null,
+                    date = now,
+                    startTime = LocalTime.of(9, 0),
+                    endTime = LocalTime.of(10, 0),
+                    isAllDay = true,
+                    calendarId = targetCalendarId,
+                    isFromHolidaySource = false,
+                    rrule = null
+                )
+                calendarioViewModel.setImportedEvent(newEvent)
+                return
+            }
+        }
+
         val data: Uri? = if (action == Intent.ACTION_SEND) {
             IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
         } else {

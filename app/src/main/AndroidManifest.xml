@@ -94,6 +94,13 @@
                 <data android:mimeType="application/cvo" />
             </intent-filter>
 
+            <!-- Filtro 3: Captura de texto compartido (Google Maps, WhatsApp, etc.) -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
             <!-- Este filtro le dice al sistema que somos una app de alarmas -->
             <intent-filter>
                 <action android:name="android.intent.action.SET_ALARM" />
