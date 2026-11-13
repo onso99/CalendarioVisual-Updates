@@ -1,3 +1,4 @@
+2026-11-13 - v3.9.07 Diálogos: ajuste del color de los botones Compartir, Editar, Borrar, Aceptar
 2026-11-13 - v3.9.06 Inclusión en el Selector de Compartir de Android. Captura y Pre-llenado de Eventos.
 2026-11-13 - v3.9.05 Corrección de warnings
 2026-11-12 - v3.9.04 Destacados: Límite de 24 caracteres, contador, X cancelación de texto

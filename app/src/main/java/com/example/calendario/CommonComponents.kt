@@ -218,6 +218,7 @@ fun AppDialog(
     bannerIcon: ImageVector? = null,
     bannerIconColor: Color = Color.Unspecified,
     bannerTextAlign: TextAlign = TextAlign.Center, 
+    titleFontWeight: FontWeight = FontWeight.Bold,
     content: @Composable () -> Unit
 ) {
     AlertDialog(
@@ -242,7 +243,7 @@ fun AppDialog(
                     }
                     Text(
                         text = title,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = titleFontWeight,
                         fontSize = 20.sp,
                         color = CalendarioTheme.colors.cabecera,
                         modifier = Modifier.weight(1f),

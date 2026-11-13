@@ -1,14 +1,13 @@
-# Walkthrough - Botón "X" y Límite de 24 Caracteres en Destacados Completado
+# Walkthrough - Opacidad de Papelera y Unificación de DayEventsDialog Completado
 
-Se han aplicado los cambios en [SpecialEventsScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/SpecialEventsScreen.kt#L125).
+Se han aplicado los cambios en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L100).
 
 ## Cambios Realizados
 
-1. **Botón "X" de Limpieza en la Sección Destacados (`SpecialEventsScreen.kt`):**
-   - Se añadió un botón con icono "X" (`Icons.Default.Close`) situado a la izquierda del icono de luz pulsante (`WbSunny`) en los elementos de la sección *Destacados* que contienen un texto personalizado introducido por el usuario.
-   - Al pulsar la "X", se limpia el texto personalizado y la ranura recupera su nombre por defecto ("Evento-1", etc.).
-2. **Límite de 24 Caracteres y Contador (`SpecialEventsScreen.kt`):**
-   - Se actualizó `SpecialEventRenameDialog` para limitar la longitud del texto a un máximo de **24 caracteres** (`maxChars = 24`) e incorporar un contador visual discreto (`X/24`) en la parte inferior del campo de texto.
+1. **Ajuste de Opacidad del Botón de Borrar (Papelera):**
+   - Se ajustó el fondo del icono de papelera en `EventInfoDialog` a `Color.Red.copy(alpha = 0.25f)` (modo claro) y `0.32f` (modo oscuro), logrando que destaque de manera sutil pero clara contra el fondo del diálogo sin ser un rojo saturado total.
+2. **Unificación de Botones en `DayEventsDialog` (Diálogo de Día del Mes):**
+   - Se estilizaron los botones del diálogo de día del mes (el botón circular `+` de la cabecera y el botón inferior *"Aceptar"*) utilizando el mismo estilo tonal neutro (`textSystem.copy(alpha = 0.10f)`), manteniendo la fecha en título sin negrita.
 
 ---
 

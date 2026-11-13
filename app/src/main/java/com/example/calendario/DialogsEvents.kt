@@ -105,10 +105,10 @@ fun DayEventsDialog(
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = formattedDate,
+        titleFontWeight = FontWeight.Normal,
         titleTrailingContent = {
-            // RESTAURACIÓN BOTÓN (+) ORIGINAL (v3.2.11.1)
-            val circleColor = CalendarioTheme.colors.cabecera
-            val contentColor = circleColor.getContrastColor(Color.White)
+            val circleColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f)
+            val contentColor = CalendarioTheme.colors.textSystem
             Box(
                 modifier = Modifier
                     .size(36.dp)
@@ -147,14 +147,20 @@ fun DayEventsDialog(
                     )
                 }
 
-                // BOTÓN ACEPTAR (Derecha)
-                DialogConfirmButton(
-                    text = stringResource(id = R.string.accept),
-                    onClick = onDismissRequest
-                )
+                // BOTÓN ACEPTAR (Derecha - Estilo Tonal Neutro)
+                Button(
+                    onClick = onDismissRequest,
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f),
+                        contentColor = CalendarioTheme.colors.textSystem
+                    ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.accept), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                }
             }
-        }
-    ) {
+        },    ) {
         Column {
             // --- 1. LISTA DE EVENTOS ---
             if (events.isNotEmpty()) {
@@ -1204,24 +1210,27 @@ fun EventInfoDialog(
     onDelete: () -> Unit,
     onShare: () -> Unit
 ) {
+    val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
+    val deleteBg = if (isAppDark) Color.Red.copy(alpha = 0.32f) else Color.Red.copy(alpha = 0.25f)
+    val deleteTint = if (isAppDark) Color(0xFFEF9A9A) else Color(0xFFD32F2F)
+
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = "",
         icon = if (canEdit) {
             {
-                val deleteCircleColor = Color(0xFFD32F2F)
                 Box(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(deleteCircleColor)
+                        .background(deleteBg)
                         .clickable(onClick = onDelete),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete_outlined),
                         contentDescription = stringResource(id = R.string.delete_event),
-                        tint = Color.White,
+                        tint = deleteTint,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1232,8 +1241,8 @@ fun EventInfoDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val circleColor = CalendarioTheme.colors.cabecera
-                val contentColor = circleColor.getContrastColor(Color.White)
+                val circleColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f)
+                val contentColor = CalendarioTheme.colors.textSystem
 
                 Box(
                     modifier = Modifier
@@ -1271,10 +1280,17 @@ fun EventInfoDialog(
             }
         },
         confirmButton = {
-            DialogConfirmButton(
-                text = stringResource(id = R.string.accept),
-                onClick = onDismissRequest
-            )
+            Button(
+                onClick = onDismissRequest,
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f),
+                    contentColor = CalendarioTheme.colors.textSystem
+                ),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+            ) {
+                Text(text = stringResource(id = R.string.accept), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            }
         },
         dismissButton = {}
     ) {
