@@ -315,14 +315,28 @@ fun DialogConfirmButton(
     onOverflow: () -> Unit = {},
     onClick: () -> Unit,
     enabled: Boolean = true,
-    color: Color = CalendarioTheme.colors.cabecera
+    color: Color = CalendarioTheme.colors.cabecera,
+    isTonal: Boolean = false
 ) {
+    val containerColor = if (isTonal) {
+        CalendarioTheme.colors.textSystem.copy(alpha = 0.10f)
+    } else {
+        color
+    }
+
+    val contentColor = if (isTonal) {
+        CalendarioTheme.colors.textSystem
+    } else {
+        color.getContrastColor(Color.White)
+    }
+
     Button(
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(24.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = color,
+            containerColor = containerColor,
+            contentColor = contentColor,
             disabledContainerColor = Color.Gray.copy(alpha = 0.3f)
         )
     ) {

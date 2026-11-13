@@ -148,17 +148,11 @@ fun DayEventsDialog(
                 }
 
                 // BOTÓN ACEPTAR (Derecha - Estilo Tonal Neutro)
-                Button(
+                DialogConfirmButton(
+                    text = stringResource(id = R.string.accept),
                     onClick = onDismissRequest,
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f),
-                        contentColor = CalendarioTheme.colors.textSystem
-                    ),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                ) {
-                    Text(text = stringResource(id = R.string.accept), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                }
+                    isTonal = true
+                )
             }
         },    ) {
         Column {
@@ -1280,17 +1274,11 @@ fun EventInfoDialog(
             }
         },
         confirmButton = {
-            Button(
+            DialogConfirmButton(
+                text = stringResource(id = R.string.accept),
                 onClick = onDismissRequest,
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f),
-                    contentColor = CalendarioTheme.colors.textSystem
-                ),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-            ) {
-                Text(text = stringResource(id = R.string.accept), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            }
+                isTonal = true
+            )
         },
         dismissButton = {}
     ) {
