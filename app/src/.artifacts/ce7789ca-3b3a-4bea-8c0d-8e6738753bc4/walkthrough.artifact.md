@@ -1,13 +1,12 @@
-# Walkthrough - Opacidad de Papelera y Unificación de DayEventsDialog Completado
+# Walkthrough - Tinte Blanco en Papelera para Modo Oscuro Completado
 
-Se han aplicado los cambios en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L100).
+Se han aplicado los cambios en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1212).
 
 ## Cambios Realizados
 
-1. **Ajuste de Opacidad del Botón de Borrar (Papelera):**
-   - Se ajustó el fondo del icono de papelera en `EventInfoDialog` a `Color.Red.copy(alpha = 0.25f)` (modo claro) y `0.32f` (modo oscuro), logrando que destaque de manera sutil pero clara contra el fondo del diálogo sin ser un rojo saturado total.
-2. **Unificación de Botones en `DayEventsDialog` (Diálogo de Día del Mes):**
-   - Se estilizaron los botones del diálogo de día del mes (el botón circular `+` de la cabecera y el botón inferior *"Aceptar"*) utilizando el mismo estilo tonal neutro (`textSystem.copy(alpha = 0.10f)`), manteniendo la fecha en título sin negrita.
+1. **Configuración de Papelera en Modo Claro y Oscuro (`DialogsEvents.kt`):**
+   - **Modo Claro:** Fondo rojo con `alpha = 0.10f` e icono rojo (`#D32F2F`).
+   - **Modo Oscuro:** Fondo rojo con `alpha = 0.15f` e icono en **blanco puro** (`Color.White`), emparejándose perfectamente con el aspecto de los demás iconos de la cabecera.
 
 ---
 

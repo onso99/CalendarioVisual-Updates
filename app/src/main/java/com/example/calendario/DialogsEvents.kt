@@ -1211,8 +1211,8 @@ fun EventInfoDialog(
     onShare: () -> Unit
 ) {
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
-    val deleteBg = if (isAppDark) Color.Red.copy(alpha = 0.32f) else Color.Red.copy(alpha = 0.25f)
-    val deleteTint = if (isAppDark) Color(0xFFEF9A9A) else Color(0xFFD32F2F)
+    val deleteBg = if (isAppDark) Color.Red.copy(alpha = 0.15f) else Color.Red.copy(alpha = 0.10f)
+    val deleteTint = if (isAppDark) CalendarioTheme.colors.textSystem else Color(0xFFD32F2F)
 
     AppDialog(
         onDismissRequest = onDismissRequest,
@@ -1326,7 +1326,7 @@ fun EventInfoDialog(
 
             // Descripción si existe
             if (!event.description.isNullOrBlank()) {
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = event.description,
                     color = CalendarioTheme.colors.textSystem,
@@ -1342,7 +1342,7 @@ fun EventInfoDialog(
             }
 
             if (detectedActions.isNotEmpty()) {
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(2.dp))
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
