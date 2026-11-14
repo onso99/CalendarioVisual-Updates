@@ -23,7 +23,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.core.graphics.ColorUtils
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -318,17 +320,17 @@ fun DialogConfirmButton(
     color: Color = CalendarioTheme.colors.cabecera,
     isTonal: Boolean = false
 ) {
+    val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
+    val baseAlpha = 0.20f
+    val effectiveAlpha = if (isAppDark) (baseAlpha + 0.20f).coerceAtMost(0.80f) else baseAlpha
+
     val containerColor = if (isTonal) {
         CalendarioTheme.colors.textSystem.copy(alpha = 0.10f)
     } else {
-        color
+        color.copy(alpha = effectiveAlpha)
     }
 
-    val contentColor = if (isTonal) {
-        CalendarioTheme.colors.textSystem
-    } else {
-        color.getContrastColor(Color.White)
-    }
+    val contentColor = CalendarioTheme.colors.textSystem
 
     Button(
         onClick = onClick,
