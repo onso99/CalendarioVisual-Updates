@@ -26,7 +26,6 @@
     <string name="next_year">下一年</string>
     <string name="accept">确定</string>
     <string name="select_mode_title">模式</string>
-    <string name="custom_selected">已选择</string>
     <string name="confirm_deletion_title">确认删除</string>
     <string name="confirm_deletion_message">您确定要删除此事件吗：\"%1$s\"？</string>
     <string name="repeat_event_title">重复</string>

@@ -1,7 +1,6 @@
 package com.example.calendario
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -159,26 +156,11 @@ fun LanguageSelectionDialog(
     ) {
         LazyColumn(modifier = Modifier.heightIn(max = 400.dp).fillMaxWidth()) {
             items(AppLanguageSetting.entries) { lang ->
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { tempSelection = lang }
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val isSelected = lang == tempSelection
-                    Text(
-                        text = stringResource(id = lang.displayNameRes),
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp,
-                        color = CalendarioTheme.colors.textSystem,
-                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                    )
-                    if (isSelected) {
-                        val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                        Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
-                    }
-                }
+                DialogOptionRow(
+                    text = stringResource(id = lang.displayNameRes),
+                    isSelected = lang == tempSelection,
+                    onClick = { tempSelection = lang }
+                )
             }
         }
     }
@@ -208,22 +190,11 @@ fun ThemeSelectionDialog(
     ) {
         Column {
             ThemeSetting.entries.forEach { theme ->
-                Row(
-                    Modifier.fillMaxWidth().clickable { tempSelection = theme }.padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val isSelected = theme == tempSelection
-                    Text(
-                        text = stringResource(id = theme.displayNameRes),
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp,
-                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                    )
-                    if (isSelected) {
-                        val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                        Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.custom_selected), tint = checkColor)
-                    }
-                }
+                DialogOptionRow(
+                    text = stringResource(id = theme.displayNameRes),
+                    isSelected = theme == tempSelection,
+                    onClick = { tempSelection = theme }
+                )
             }
         }
     }

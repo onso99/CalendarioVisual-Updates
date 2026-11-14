@@ -1,16 +1,15 @@
-# Walkthrough - Tinte Blanco en Papelera para Modo Oscuro Completado
+# Walkthrough - Eliminación de Recurso Huérfano `custom_selected` Completado
 
-Se han aplicado los cambios en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L1212).
+Se han aplicado los cambios en los 12 archivos `strings.xml`.
 
 ## Cambios Realizados
 
-1. **Configuración de Papelera en Modo Claro y Oscuro (`DialogsEvents.kt`):**
-   - **Modo Claro:** Fondo rojo con `alpha = 0.10f` e icono rojo (`#D32F2F`).
-   - **Modo Oscuro:** Fondo rojo con `alpha = 0.15f` e icono en **blanco puro** (`Color.White`), emparejándose perfectamente con el aspecto de los demás iconos de la cabecera.
+1. **Eliminación de Recurso No Utilizado (`strings.xml` en 12 idiomas):**
+   - Se removió la cadena `custom_selected` de todos los archivos de recursos multilingües del proyecto.
+   - **Resultado:** Se eliminó por completo el warning de Android Lint sobre el recurso huérfano, manteniendo el código y los recursos 100% limpios.
 
 ---
 
 ## Verificación Realizada
 
 - **Compilación de Gradle:** Se ejecutó `gradle_build("app:assembleDebug")` obteniendo `BUILD SUCCESSFUL`.
-- **Inspección de Análisis:** Se analizó el código con `analyze_file` comprobando 0 errores.

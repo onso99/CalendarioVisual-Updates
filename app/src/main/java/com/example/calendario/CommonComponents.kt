@@ -410,6 +410,46 @@ fun AdaptiveDialogButtons(
 }
 
 @Composable
+fun DialogOptionRow(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
+    val selectedBg = if (isSelected) {
+        if (isAppDark) Color.White.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.05f)
+    } else {
+        Color.Transparent
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(selectedBg)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.weight(1f),
+            fontSize = 16.sp,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = CalendarioTheme.colors.textSystem
+        )
+        if (isSelected) {
+            val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = checkColor
+            )
+        }
+    }
+}
+
+@Composable
 fun SectionTitle(
     text: String, 
     modifier: Modifier = Modifier, 

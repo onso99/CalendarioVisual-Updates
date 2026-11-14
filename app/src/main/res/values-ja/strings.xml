@@ -26,7 +26,6 @@
     <string name="next_year">翌年</string>
     <string name="accept">OK</string>
     <string name="select_mode_title">モード</string>
-    <string name="custom_selected">選択済み</string>
     <string name="confirm_deletion_title">削除の確認</string>
     <string name="confirm_deletion_message">このイベントを削除してもよろしいですか：\"%1$s\"？</string>
     <string name="repeat_event_title">繰り返し</string>

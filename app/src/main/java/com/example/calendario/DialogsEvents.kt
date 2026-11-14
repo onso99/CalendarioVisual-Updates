@@ -483,28 +483,11 @@ fun DeleteRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (DeleteR
                 DeleteRecurringOption.SINGLE_EVENT to stringResource(R.string.delete_single_event_option), 
                 DeleteRecurringOption.ALL_EVENTS to stringResource(R.string.delete_all_events_option)
             ).forEach { (opt, txt) ->
-                val isSelected = selectedOption == opt
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { selectedOption = opt }
-                        .padding(vertical = 12.dp), 
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = txt, 
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp,
-                        color = CalendarioTheme.colors.textSystem
-                    )
-                    if (isSelected) {
-                        Icon(
-                            imageVector = Icons.Default.Check, 
-                            contentDescription = null, 
-                            tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                        )
-                    }
-                }
+                DialogOptionRow(
+                    text = txt,
+                    isSelected = selectedOption == opt,
+                    onClick = { selectedOption = opt }
+                )
             }
         }
     }
@@ -530,28 +513,11 @@ fun EditRecurringEventDialog(onDismissRequest: () -> Unit, onConfirm: (EditRecur
                 EditRecurringOption.SINGLE_EVENT to stringResource(R.string.edit_recurring_event_dialog_single_event), 
                 EditRecurringOption.ALL_EVENTS to stringResource(id = R.string.edit_all_events_option)
             ).forEach { (opt, txt) ->
-                val isSelected = selectedOption == opt
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { selectedOption = opt }
-                        .padding(vertical = 12.dp), 
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = txt, 
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp,
-                        color = CalendarioTheme.colors.textSystem
-                    )
-                    if (isSelected) {
-                        Icon(
-                            imageVector = Icons.Default.Check, 
-                            contentDescription = null, 
-                            tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                        )
-                    }
-                }
+                DialogOptionRow(
+                    text = txt,
+                    isSelected = selectedOption == opt,
+                    onClick = { selectedOption = opt }
+                )
             }
         }
     }

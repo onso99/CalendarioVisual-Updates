@@ -26,7 +26,6 @@
     <string name="next_year">Ano seguinte</string>
     <string name="accept">Aceptar</string>
     <string name="select_mode_title">Modo</string>
-    <string name="custom_selected">Seleccionado</string>
     <string name="confirm_deletion_title">Confirmar eliminación</string>
     <string name="confirm_deletion_message">Seguro que queres eliminar este evento: \"%1$s\"?</string>
     <string name="repeat_event_title">Repetición</string>
