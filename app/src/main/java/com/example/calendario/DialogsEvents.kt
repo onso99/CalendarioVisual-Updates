@@ -102,12 +102,16 @@ fun DayEventsDialog(
         }
     }
 
+    val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
+    val baseAlpha = 0.20f
+    val effectiveAlpha = if (isAppDark) (baseAlpha + 0.20f).coerceAtMost(0.80f) else baseAlpha
+
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = formattedDate,
         titleFontWeight = FontWeight.Normal,
         titleTrailingContent = {
-            val circleColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f)
+            val circleColor = CalendarioTheme.colors.cabecera.copy(alpha = effectiveAlpha)
             val contentColor = CalendarioTheme.colors.textSystem
             Box(
                 modifier = Modifier
@@ -147,11 +151,11 @@ fun DayEventsDialog(
                     )
                 }
 
-                // BOTÓN ACEPTAR (Derecha - Estilo Tonal Neutro)
+                // BOTÓN ACEPTAR (Derecha - Estilo Tonal Cabecera)
                 DialogConfirmButton(
                     text = stringResource(id = R.string.accept),
                     onClick = onDismissRequest,
-                    isTonal = true
+                    isTonal = false
                 )
             }
         },    ) {
@@ -1205,8 +1209,14 @@ fun EventInfoDialog(
     onShare: () -> Unit
 ) {
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
+    val baseAlpha = 0.20f
+    val effectiveAlpha = if (isAppDark) (baseAlpha + 0.20f).coerceAtMost(0.80f) else baseAlpha
+
     val deleteBg = if (isAppDark) Color.Red.copy(alpha = 0.15f) else Color.Red.copy(alpha = 0.10f)
     val deleteTint = if (isAppDark) CalendarioTheme.colors.textSystem else Color(0xFFD32F2F)
+
+    val circleColor = CalendarioTheme.colors.cabecera.copy(alpha = effectiveAlpha)
+    val contentColor = CalendarioTheme.colors.textSystem
 
     AppDialog(
         onDismissRequest = onDismissRequest,
@@ -1235,9 +1245,6 @@ fun EventInfoDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val circleColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.10f)
-                val contentColor = CalendarioTheme.colors.textSystem
-
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -1277,7 +1284,7 @@ fun EventInfoDialog(
             DialogConfirmButton(
                 text = stringResource(id = R.string.accept),
                 onClick = onDismissRequest,
-                isTonal = true
+                isTonal = false
             )
         },
         dismissButton = {}
