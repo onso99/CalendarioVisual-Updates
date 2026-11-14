@@ -1174,6 +1174,7 @@ fun EventInfoDialog(
     onDelete: () -> Unit,
     onShare: () -> Unit
 ) {
+    val context = LocalContext.current
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
     val baseAlpha = 0.20f
     val effectiveAlpha = if (isAppDark) (baseAlpha + 0.20f).coerceAtMost(0.80f) else baseAlpha
@@ -1284,6 +1285,54 @@ fun EventInfoDialog(
                 color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
                 fontSize = 14.sp
             )
+
+            val alarmTimeStr = remember(event) { AlarmUtils.getAlarmTimeString(context, event) }
+            val repetitionRule = remember(event.rrule) {
+                if (event.rrule != null) {
+                    RepetitionRule.entries.find { it.rrule != null && event.rrule.startsWith(it.rrule) }
+                } else null
+            }
+
+            if (alarmTimeStr != null || (repetitionRule != null && repetitionRule != RepetitionRule.NONE)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (alarmTimeStr != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.alarm) + ": $alarmTimeStr",
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+
+                    if (repetitionRule != null && repetitionRule != RepetitionRule.NONE) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Repeat,
+                                contentDescription = null,
+                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = repetitionRule.displayNameRes),
+                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+            }
 
             // Descripción si existe
             if (!event.description.isNullOrBlank()) {
