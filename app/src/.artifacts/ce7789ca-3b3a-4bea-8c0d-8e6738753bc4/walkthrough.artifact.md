@@ -1,12 +1,12 @@
-# Walkthrough - Reseteo de endMode al Seleccionar RepetitionRule.NONE Completado
+# Walkthrough - Sincronización del Switch en HolidayManagerScreen Completado
 
-Se han aplicado los cambios en [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt#L855).
+Se han aplicado los cambios en [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt#L75).
 
 ## Cambios Realizados
 
-1. **Reseteo de Estado e Interfaz al Seleccionar "No se repite" (`DialogsEvents.kt`):**
-   - Se actualizó el evento de clic en la regla de repetición `RepetitionRule.NONE` dentro de `RepetitionSelectionDialog` para que, además de borrar `tempUntil` y `tempCount`, restablezca `endMode = 2`.
-   - **Resultado:** Al marcar "No se repite", todo el bloque inferior de fin de repetición se desactiva y atenúa correctamente a gris (`activeAlpha`), reflejando un estado limpio y coherente.
+1. **Sincronización del Estado del Switch (`HolidayManagerScreen.kt`):**
+   - Al abrir `HolidayManagerScreen` con un festivo existente (`initialFestivo`), ahora se comprueba si ya existe un `HolidayAdjustment` guardado en SharedPreferences para esa fecha.
+   - **Resultado:** Si dicho festivo ya fue marcado previamente como laborable (`WORKING_DAY`), el switch `isHoliday` se inicializa correctamente como **desactivado (laborable)**, reflejando fielmente el estado real guardado.
 
 ---
 

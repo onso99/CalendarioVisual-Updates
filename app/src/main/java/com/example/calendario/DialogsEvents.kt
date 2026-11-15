@@ -1156,14 +1156,31 @@ fun StartupRecoveryDialog(
     }
 }
 
+private fun cleanHolidayDescription(desc: String?): String? {
+    if (desc.isNullOrBlank()) return null
+    return desc.lines()
+        .filter { line ->
+            val lower = line.lowercase()
+            !lower.contains("ocultar las celebraciones") &&
+            !lower.contains("hide celebrations") &&
+            !lower.contains("configuración en google calendar") &&
+            !lower.contains("google calendar settings")
+        }
+        .joinToString("\n")
+        .trim()
+        .takeIf { it.isNotBlank() }
+}
+
 @Composable
 fun EventInfoDialog(
     event: Festivo,
+    calendar: CalendarInfo?,
     canEdit: Boolean,
     onDismissRequest: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onShare: () -> Unit
+    onShare: () -> Unit,
+    onOpenHolidayManager: () -> Unit
 ) {
     val context = LocalContext.current
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
@@ -1179,7 +1196,7 @@ fun EventInfoDialog(
     AppDialog(
         onDismissRequest = onDismissRequest,
         title = "",
-        icon = if (canEdit) {
+        icon = if (!event.isFromHolidaySource && canEdit) {
             {
                 Box(
                     modifier = Modifier
@@ -1219,7 +1236,23 @@ fun EventInfoDialog(
                     )
                 }
 
-                if (canEdit) {
+                if (event.isFromHolidaySource) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(circleColor)
+                            .clickable(onClick = onOpenHolidayManager),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Celebration,
+                            contentDescription = stringResource(id = R.string.holiday_manager_title),
+                            tint = contentColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                } else if (canEdit) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
@@ -1277,89 +1310,110 @@ fun EventInfoDialog(
                 fontSize = 14.sp
             )
 
-            val alarmTimeStr = remember(event) { AlarmUtils.getAlarmTimeString(context, event) }
-            val repetitionRule = remember(event.rrule) {
-                if (event.rrule != null) {
-                    RepetitionRule.entries.find { it.rrule != null && event.rrule.startsWith(it.rrule) }
-                } else null
-            }
+            if (!event.isFromHolidaySource) {
+                val alarmTimeStr = remember(event) { AlarmUtils.getAlarmTimeString(context, event) }
+                val repetitionRule = remember(event.rrule) {
+                    if (event.rrule != null) {
+                        RepetitionRule.entries.find { it.rrule != null && event.rrule.startsWith(it.rrule) }
+                    } else null
+                }
 
-            if (alarmTimeStr != null || (repetitionRule != null && repetitionRule != RepetitionRule.NONE)) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    if (alarmTimeStr != null) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(id = R.string.alarm) + ": $alarmTimeStr",
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                                fontSize = 14.sp
-                            )
+                if (alarmTimeStr != null || (repetitionRule != null && repetitionRule != RepetitionRule.NONE)) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (alarmTimeStr != null) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Notifications,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(id = R.string.alarm) + ": $alarmTimeStr",
+                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            }
                         }
-                    }
 
-                    if (repetitionRule != null && repetitionRule != RepetitionRule.NONE) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Repeat,
-                                contentDescription = null,
-                                tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(id = repetitionRule.displayNameRes),
-                                color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
-                                fontSize = 14.sp
-                            )
+                        if (repetitionRule != null && repetitionRule != RepetitionRule.NONE) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Repeat,
+                                    contentDescription = null,
+                                    tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(id = repetitionRule.displayNameRes),
+                                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            }
                         }
                     }
                 }
             }
 
+            // Fuente del calendario
+            if (calendar != null) {
+                Spacer(modifier = Modifier.height(2.dp))
+                val isReadOnly = !calendar.canModify
+                val calendarName = calendar.displayName
+                val calendarInfoText = if (isReadOnly && !event.isFromHolidaySource) {
+                    stringResource(id = R.string.calendar_source, calendarName) + " " + stringResource(id = R.string.read_only).lowercase()
+                } else {
+                    stringResource(id = R.string.calendar_source, calendarName)
+                }
+                Text(
+                    text = calendarInfoText,
+                    color = CalendarioTheme.colors.textSystem.copy(alpha = 0.5f),
+                    fontSize = 12.sp
+                )
+            }
+
             // Descripción si existe
-            if (!event.description.isNullOrBlank()) {
+            val cleanedDesc = if (event.isFromHolidaySource) cleanHolidayDescription(event.description) else event.description
+            if (!cleanedDesc.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = event.description,
+                    text = cleanedDesc,
                     color = CalendarioTheme.colors.textSystem,
                     fontSize = 15.sp,
                     lineHeight = 22.sp
                 )
             }
 
-            // Acciones Inteligentes (Fases 2 y 3: Teléfono, Email, Web, Mapas)
-            val context = LocalContext.current
-            val detectedActions = remember(event.title, event.description) {
-                SmartActionDetector.detectActions(event.title, event.description)
-            }
+            // Acciones Inteligentes (solo para eventos normales)
+            if (!event.isFromHolidaySource) {
+                val detectedActions = remember(event.title, event.description) {
+                    SmartActionDetector.detectActions(event.title, event.description)
+                }
 
-            if (detectedActions.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    detectedActions.forEach { action ->
-                        SmartActionChipRow(
-                            action = action,
-                            onExecuteAction = {
-                                try {
-                                    val intent = Intent(Intent.ACTION_VIEW, action.value.toUri())
-                                    context.startActivity(intent)
-                                } catch (_: Exception) {
-                                    context.showToast(R.string.permission_denied_calendar)
+                if (detectedActions.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        detectedActions.forEach { action ->
+                            SmartActionChipRow(
+                                action = action,
+                                onExecuteAction = {
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW, action.value.toUri())
+                                        context.startActivity(intent)
+                                    } catch (_: Exception) {
+                                        context.showToast(R.string.permission_denied_calendar)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }

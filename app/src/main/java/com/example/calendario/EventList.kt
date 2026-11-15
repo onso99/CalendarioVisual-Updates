@@ -55,7 +55,8 @@ fun MonthlyEventList(
     onEventClick: (Festivo) -> Unit,
     onEventLongClick: (Festivo) -> Unit = {},
     selectedEvents: Set<Festivo> = emptySet(),
-    availableCalendars: List<CalendarInfo>
+    availableCalendars: List<CalendarInfo>,
+    workingDayDates: Set<LocalDate> = emptySet()
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -107,7 +108,8 @@ fun MonthlyEventList(
                                 val esEvento4 = normEvent4.isNotBlank() && normalizedTitle.contains(normEvent4)
                                 val esEvento5 = normEvent5.isNotBlank() && normalizedTitle.contains(normEvent5)
                                 val esCumpleanos = festivo.isBirthday
-                                val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank()
+                                val isForcedWorkingDay = workingDayDates.contains(date)
+                                val esFestivo = festivo.isFromHolidaySource && festivo.title.isNotBlank() && !isForcedWorkingDay
 
                                 // Determinamos el color base según el tipo de evento
                                 val eventSpecificColor = when {

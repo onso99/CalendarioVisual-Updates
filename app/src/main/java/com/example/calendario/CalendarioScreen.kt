@@ -551,6 +551,7 @@ fun CalendarioScreen(
 
         EventInfoDialog(
             event = event,
+            calendar = calendar,
             canEdit = canEdit,
             onDismissRequest = { eventForInfoDialog = null },
             onEdit = {
@@ -569,6 +570,11 @@ fun CalendarioScreen(
             },
             onShare = {
                 IcsHelper.shareEvent(context, event)
+            },
+            onOpenHolidayManager = {
+                eventForInfoDialog = null
+                holidayForManager = event
+                showHolidayManagerScreen = true
             }
         )
     }
@@ -1218,7 +1224,8 @@ fun CalendarioScreen(
                                         selectedMainEvents = set
                                     },
                                     selectedEvents = selectedMainEvents,
-                                    availableCalendars = uiState.availableCalendars
+                                    availableCalendars = uiState.availableCalendars,
+                                    workingDayDates = uiState.workingDayDates
                                 )
 
                                 val showTopShadow by remember {

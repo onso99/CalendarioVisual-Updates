@@ -77,7 +77,22 @@ fun HolidayManagerScreen(
     var currentOriginalEventId by remember { mutableStateOf(initialFestivo?.id) }
     var title by remember { mutableStateOf(initialFestivo?.title ?: "") }
     var date by remember { mutableStateOf(initialFestivo?.date ?: LocalDate.now()) }
-    var isHoliday by remember { mutableStateOf(initialFestivo?.isFromHolidaySource ?: true) }
+
+    val initialAdjustment = remember(initialFestivo) {
+        if (initialFestivo != null) {
+            SettingsManager.getHolidayAdjustments(context).find { it.date == initialFestivo.date }
+        } else null
+    }
+
+    var isHoliday by remember { 
+        mutableStateOf(
+            if (initialAdjustment != null) {
+                initialAdjustment.type == HolidayAdjustmentType.HOLIDAY
+            } else {
+                initialFestivo?.isFromHolidaySource ?: true
+            }
+        ) 
+    }
     
     val isFromExistingGoogleEvent = (currentOriginalEventId != null) && (currentOriginalEventId!! >= 0L)
 
@@ -114,7 +129,15 @@ fun HolidayManagerScreen(
     
     var refTitle by remember { mutableStateOf(initialFestivo?.title ?: "") }
     var refDate by remember { mutableStateOf(initialFestivo?.date ?: LocalDate.now()) }
-    var refIsHoliday by remember { mutableStateOf(initialFestivo?.isFromHolidaySource ?: true) }
+    var refIsHoliday by remember { 
+        mutableStateOf(
+            if (initialAdjustment != null) {
+                initialAdjustment.type == HolidayAdjustmentType.HOLIDAY
+            } else {
+                initialFestivo?.isFromHolidaySource ?: true
+            }
+        ) 
+    }
 
     val hasChanges by remember(title, date, isHoliday, refTitle, refDate, refIsHoliday) {
         derivedStateOf {
