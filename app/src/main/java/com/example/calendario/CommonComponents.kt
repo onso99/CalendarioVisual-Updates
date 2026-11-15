@@ -413,6 +413,7 @@ fun AdaptiveDialogButtons(
 fun DialogOptionRow(
     text: String,
     isSelected: Boolean,
+    fontFamily: androidx.compose.ui.text.font.FontFamily? = null,
     onClick: () -> Unit
 ) {
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
@@ -435,7 +436,8 @@ fun DialogOptionRow(
             text = text,
             modifier = Modifier.weight(1f),
             fontSize = 16.sp,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Normal,
             color = CalendarioTheme.colors.textSystem
         )
         if (isSelected) {

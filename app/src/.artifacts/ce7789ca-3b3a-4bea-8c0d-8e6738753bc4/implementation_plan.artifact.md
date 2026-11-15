@@ -1,23 +1,16 @@
-# Plan de Implementación: Opción "Borde de Hoy" en Celdas
+# Plan de Implementación: Correcciones en RepetitionSelectionDialog
 
-Este plan añade la personalización del color del borde del día actual ("Borde de Hoy") en la sección **Celdas** de la pantalla *Personalizar colores*, permitiendo configurarlo de forma independiente para modo claro y oscuro, y propagando la nueva cadena a todos los idiomas de la app.
+Este plan actualiza [DialogsEvents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/DialogsEvents.kt) para:
+1. Formatear la fecha seleccionada en "Hasta la fecha" con el formato compacto `EEE, dd/MM/yyyy` (ej. "Mar, 15/12/2026").
+2. Limpiar/reiniciar `tempUntil` y `tempCount` al seleccionar "No se repite" (`RepetitionRule.NONE`), evitando que persistan valores anteriores en pantalla.
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Recurso de Cadena (`strings.xml` y 11 idiomas)
-- Añadir `<string name="today_border_color">Borde de Hoy</string>` al archivo principal y su correspondiente traducción a los 11 archivos de localización.
-
-### 2. Constantes y Tema (`AppConstants.kt` y `Theme.kt`)
-- Añadir claves `LIGHT_TODAY_BORDER_COLOR` y `DARK_TODAY_BORDER_COLOR`.
-- Añadir `todayBorderColor` al modelo `CalendarioColors` leyendo desde SharedPreferences.
-
-### 3. Configuración de Color (`ColorThemeConfig.kt`)
-- Añadir `ColorThemeItem` para `today_border_color` bajo la categoría `"Celdas"`, justo debajo de `current_month_cell`.
-
-### 4. Uso en Vistas Mensual y Anual (`MonthlyCalendar.kt` y `YearlyCalendar.kt`)
-- Reemplazar el borde negro/blanco duro de la celda de "Hoy" por `themeColors.todayBorderColor`.
+### 1. Actualizar `RepetitionSelectionDialog` en `DialogsEvents.kt`
+- Cambiar el formateador de fecha a `DateTimeFormatter.ofPattern("EEE, dd/MM/yyyy", locale)`.
+- En el `onClick` de la regla de repetición, si `rule == RepetitionRule.NONE`, limpiar `tempUntil = null` y `tempCount = ""`.
 
 ---
 
@@ -25,4 +18,4 @@ Este plan añade la personalización del color del borde del día actual ("Borde
 
 - Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Verificar en pantalla que la opción aparece en Ajustes -> Personalizar colores -> Celdas y que afecta al borde del día actual en el calendario mensual y anual.
+- Verificar en emulador que la fecha se muestra de forma compacta y que al cambiar a "No se repite" se borra correctamente.

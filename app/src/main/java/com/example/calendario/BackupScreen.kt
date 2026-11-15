@@ -436,11 +436,11 @@ private fun BackupFrequencyDialog(selection: String, onConfirm: (String) -> Unit
     ) {
         Column { 
             options.forEach { (key, labelRes) -> 
-                Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
-                    val isSelected = key == tempSelection
-                    Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
-                    if (isSelected) Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)) 
-                } 
+                DialogOptionRow(
+                    text = stringResource(id = labelRes),
+                    isSelected = key == tempSelection,
+                    onClick = { tempSelection = key }
+                )
             } 
         } 
     }

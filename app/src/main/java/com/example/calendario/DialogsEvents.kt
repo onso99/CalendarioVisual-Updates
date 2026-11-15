@@ -3,6 +3,7 @@ package com.example.calendario
 import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toUri
+import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -849,37 +850,26 @@ fun RepetitionSelectionDialog(
             RepetitionRule.entries.forEach { rule ->
                 val isSelected = rule == tempSelection
                 Column {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { 
-                                tempSelection = rule 
-                                val limit = if (rule == RepetitionRule.DAILY) 3 else 2
-                                if (tempCount.length > limit) tempCount = tempCount.take(limit)
+                    DialogOptionRow(
+                        text = stringResource(id = rule.displayNameRes),
+                        isSelected = isSelected,
+                        onClick = { 
+                            tempSelection = rule 
+                            if (rule == RepetitionRule.NONE) {
+                                tempUntil = null
+                                tempCount = ""
+                                endMode = 2
                             }
-                            .padding(vertical = 10.dp), 
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = rule.displayNameRes), 
-                            modifier = Modifier.weight(1f),
-                            fontSize = 16.sp,
-                            color = CalendarioTheme.colors.textSystem
-                        )
-                        if (isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check, 
-                                contentDescription = null, 
-                                tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                            )
+                            val limit = if (rule == RepetitionRule.DAILY) 3 else 2
+                            if (tempCount.length > limit) tempCount = tempCount.take(limit)
                         }
-                    }
+                    )
                     
                     if (rule == RepetitionRule.WEEKLY && isSelected) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 12.dp, top = 4.dp),
+                                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             val days = listOf(
@@ -928,7 +918,7 @@ fun RepetitionSelectionDialog(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
                     .clickable(enabled = isRepetitionActive) { endMode = 2 }
-                    .padding(vertical = 10.dp),
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
@@ -976,10 +966,11 @@ fun RepetitionSelectionDialog(
                         if (tempUntil == null) tempUntil = LocalDate.now().plusMonths(1)
                         showDatePicker = true 
                     }
-                    .padding(vertical = 10.dp),
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(AppFormats.dayDateFull(locale)).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
+                val shortDateFmt = remember(locale) { DateTimeFormatter.ofPattern("EEE, dd/MM/yyyy", locale) }
+                val textToShow = if (endMode == 1 && tempUntil != null) tempUntil!!.format(shortDateFmt).replaceFirstChar { it.titlecase(locale) } else stringResource(id = R.string.repeat_on_date)
                 Text(
                     text = textToShow, 
                     modifier = Modifier.weight(1f),
@@ -999,7 +990,7 @@ fun RepetitionSelectionDialog(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
                     .clickable(enabled = isRepetitionActive) { endMode = 0 }
-                    .padding(vertical = 10.dp),
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

@@ -856,13 +856,12 @@ private fun FontFamilySelectionDialog(currentSelection: String, onConfirm: (Stri
                     WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
                     else -> FontFamily.Default 
                 }
-                Row(Modifier.fillMaxWidth().clickable { tempSelection = key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
-                    val isSelected = key == tempSelection
-                    Text(text = stringResource(id = labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontFamily = family, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
-                    if (isSelected) { 
-                        Icon(Icons.Default.Check, null, tint = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)) 
-                    } 
-                } 
+                DialogOptionRow(
+                    text = stringResource(id = labelRes),
+                    isSelected = key == tempSelection,
+                    fontFamily = family,
+                    onClick = { tempSelection = key }
+                )
             } 
         }
     }
@@ -932,17 +931,14 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
     ) {
         Column { 
             StartOfWeekOption.entries.forEach { option -> 
-                Row(Modifier.fillMaxWidth().clickable { tempKey = option.key }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) { 
-                    val isSelected = option.key == tempKey
-                    Text(text = stringResource(id = option.displayNameRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal)
-                    if (isSelected) { 
-                        val checkColor = CalendarioTheme.colors.cabecera.getCoherentColor(CalendarioTheme.colors.fondoDialogos)
-                        Icon(Icons.Default.Check, null, tint = checkColor) 
-                    } 
-                } 
+                DialogOptionRow(
+                    text = stringResource(id = option.displayNameRes),
+                    isSelected = option.key == tempKey,
+                    onClick = { tempKey = option.key }
+                )
             }
             HorizontalDivider(color = CalendarioTheme.colors.textSystem.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
-            Row(modifier = Modifier.fillMaxWidth().height(56.dp).clickable { tempShowWeek = !tempShowWeek }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { 
+            Row(modifier = Modifier.fillMaxWidth().height(56.dp).clickable { tempShowWeek = !tempShowWeek }.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { 
                 Text(stringResource(id = R.string.week_in_year_view), fontSize = 16.sp)
                 Switch(
                     checked = tempShowWeek, 
