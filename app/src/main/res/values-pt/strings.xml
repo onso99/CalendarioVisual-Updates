@@ -351,6 +351,7 @@
     <string name="today_cell_background">Hoje</string>
     <string name="others_cell_label">Transparência de outros</string>
     <string name="gradient_label">Degradê</string>
+    <string name="hint_long_press_multiselect">Pressione e segure para multisseleção</string>
 </resources>
 
 

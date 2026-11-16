@@ -1,13 +1,13 @@
-# Plan de Implementación: Unificación de onEventClickHandler para Festivos
+# Plan de Implementación: Color de Cabecera en Icono de Banner de HolidayManagerScreen
 
-Este plan actualiza [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CalendarioScreen.kt) para unificar la pulsación de cualquier festivo (`event.isFromHolidaySource == true`), abriendo directamente el Gestor de Festivos (`HolidayManagerScreen`) sin mostrar el diálogo informativo intermedio.
+Este plan actualiza [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt) para usar `bannerIconColor = CalendarioTheme.colors.cabecera`, unificándolo con el estilo de la pantalla de Calendarios.
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Actualizar `onEventClickHandler` en `CalendarioScreen.kt`
-- Cambiar `if (event.calendarId == -1L && event.isFromHolidaySource)` por `if (event.isFromHolidaySource)`.
+### 1. Actualizar `HolidayManagerScreen.kt`
+- Cambiar `bannerIconColor = festivoColor` por `bannerIconColor = CalendarioTheme.colors.cabecera`.
 
 ---
 
@@ -15,4 +15,4 @@ Este plan actualiza [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/Andro
 
 - Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Verificar que al pulsar cualquier festivo (local o de Google) en la lista de eventos se abre directamente el Gestor de Festivos.
+- Verificar en pantalla que el icono del banner usa el color de cabecera del tema activo.

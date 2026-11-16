@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LibraryAddCheck
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.outlined.Share
@@ -53,6 +54,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendario.ui.theme.CalendarioTheme
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -91,6 +94,20 @@ fun HolidayManagerScreen(
                 initialFestivo?.isFromHolidaySource ?: true
             }
         ) 
+    }
+    
+    var infoMessage by remember { mutableStateOf<String?>(null) }
+    val hintMsg = stringResource(id = R.string.hint_long_press_multiselect)
+
+    LaunchedEffect(Unit) {
+        infoMessage = hintMsg
+    }
+
+    LaunchedEffect(infoMessage) {
+        if (infoMessage != null) {
+            delay(5000.milliseconds)
+            infoMessage = null
+        }
     }
     
     val isFromExistingGoogleEvent = (currentOriginalEventId != null) && (currentOriginalEventId!! >= 0L)
@@ -189,6 +206,10 @@ fun HolidayManagerScreen(
         onBackClick = onBackPress,
         selectionCount = selectedAdjustments.size,
         onClearSelection = { selectedAdjustments = emptySet() },
+        bannerMessage = infoMessage,
+        isBannerVisible = infoMessage != null,
+        bannerIcon = Icons.Default.Info,
+        bannerIconColor = CalendarioTheme.colors.cabecera,
         actions = {
             if (isSelectionMode) {
                 IconButton(onClick = {

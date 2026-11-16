@@ -348,6 +348,7 @@
     <string name="upcoming_alarm_title">Próxima alarma</string>
     <string name="export_filename_local_holidays">FestivosLocales</string>
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
+    <string name="hint_long_press_multiselect">Pulsación larga para multiselección</string>
 </resources>
 
 
