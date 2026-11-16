@@ -205,16 +205,11 @@ fun HolidayManagerScreen(
     val listState = rememberLazyListState()
     val sortedAdjustments = remember(adjustments) { adjustments.sortedByDescending { it.date } }
 
-    LaunchedEffect(sortedAdjustments, initialFestivo) {
+    LaunchedEffect(sortedAdjustments) {
         if (sortedAdjustments.isNotEmpty()) {
-            val targetIndex = if (initialFestivo != null) {
-                val found = sortedAdjustments.indexOfFirst { it.date == initialFestivo.date }
-                if (found != -1) found else 0
-            } else {
-                val today = LocalDate.now()
-                val idx = sortedAdjustments.indexOfFirst { it.date <= today }
-                if (idx != -1) idx else 0
-            }
+            val today = LocalDate.now()
+            val idx = sortedAdjustments.indexOfFirst { it.date <= today }
+            val targetIndex = if (idx != -1) idx else 0
             if (targetIndex >= 0 && targetIndex < sortedAdjustments.size) {
                 listState.scrollToItem(targetIndex)
             }
