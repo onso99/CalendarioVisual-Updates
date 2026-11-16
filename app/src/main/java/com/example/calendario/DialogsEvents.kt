@@ -162,9 +162,18 @@ fun DayEventsDialog(
         },    ) {
         Column {
             // --- 1. LISTA DE EVENTOS ---
-            if (events.isNotEmpty()) {
-                val sortedEvents = remember(events) {
-                    events.sortedWith(
+            val workingDayDates = remember(date) {
+                SettingsManager.getHolidayAdjustments(context)
+                    .filter { it.type == HolidayAdjustmentType.WORKING_DAY }
+                    .map { it.date }
+                    .toSet()
+            }
+            val validEvents = remember(events, workingDayDates) {
+                events.filter { !(it.isFromHolidaySource && workingDayDates.contains(date)) }
+            }
+            if (validEvents.isNotEmpty()) {
+                val sortedEvents = remember(validEvents) {
+                    validEvents.sortedWith(
                         compareBy(
                             { !it.isAllDay && it.startTime != null },
                             { it.startTime ?: LocalTime.MIN },

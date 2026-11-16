@@ -126,12 +126,30 @@ fun SearchScreen(
         if (!isSelectionMode) focusRequester.requestFocus()
     }
 
+    var infoMessage by remember { mutableStateOf<String?>(null) }
+    val hintMsg = stringResource(id = R.string.hint_long_press_multiselect)
+
+    LaunchedEffect(Unit) {
+        infoMessage = hintMsg
+    }
+
+    LaunchedEffect(infoMessage) {
+        if (infoMessage != null) {
+            delay(5000.milliseconds)
+            infoMessage = null
+        }
+    }
+
     AppScreen(
         title = stringResource(id = R.string.search),
         onBackClick = onClose,
         scrollable = false, 
         selectionCount = selectedItems.size, 
         onClearSelection = { selectedItems = emptySet() },
+        bannerMessage = infoMessage,
+        isBannerVisible = infoMessage != null,
+        bannerIcon = Icons.Default.Info,
+        bannerIconColor = CalendarioTheme.colors.cabecera,
         actions = {
             if (isSelectionMode) {
                 IconButton(onClick = { 

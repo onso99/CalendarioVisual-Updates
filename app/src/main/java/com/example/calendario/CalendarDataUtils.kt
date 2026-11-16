@@ -106,7 +106,7 @@ fun readFestivosFromCalendarsSync(
     val finalMap = mutableMapOf<LocalDate, MutableList<Festivo>>()
     val holidayAdjustments = SettingsManager.getHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
-    val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
+    val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.map { it.date }.toSet()
     val manualHolidays = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }
 
     if (selectedCalendarIds.isEmpty() && manualHolidays.isEmpty()) return finalMap
@@ -481,7 +481,7 @@ suspend fun mergeHistoryWithSystemData(
     // Cargar ajustes para filtrado de laborables en la fusión
     val holidayAdjustments = SettingsManager.getHolidayAdjustments(context)
     val workingDayIds = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.mapNotNull { it.originalEventId }.toSet()
-    val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY && it.originalEventId == null }.map { it.date }.toSet()
+    val workingDayDates = holidayAdjustments.filter { it.type == HolidayAdjustmentType.WORKING_DAY }.map { it.date }.toSet()
     val manualHolidaysAdns = holidayAdjustments.filter { it.type == HolidayAdjustmentType.HOLIDAY && it.originalEventId == null }.associate { it.date to Festivo.generateAdn(it.date, it.title, null) }
 
     val systemKeys = systemEvents.asSequence().map { it.adn }.toSet()
@@ -498,7 +498,7 @@ suspend fun mergeHistoryWithSystemData(
             if (event.isDeleted || (event.id in deletedIds)) return@filter false
             
             // B) Filtro de Laborables
-            if (workingDayIds.contains(event.id) || workingDayDates.contains(event.date)) return@filter false
+            if (workingDayIds.contains(event.id) || (event.isFromHolidaySource && workingDayDates.contains(event.date))) return@filter false
 
             // C) SANEAMIENTO DE DUPLICADOS Y SEGMENTOS (v3.1.34):
             if (event.id > 0) {

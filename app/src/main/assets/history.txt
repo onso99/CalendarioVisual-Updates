@@ -1,3 +1,4 @@
+2026-11-16 - v3.9.17.2 Gestor de festivos: mensaje informativo Multiselección
 2026-11-16 - v3.9.17.1 Festivos en lista de eventos: unificada pulsación para abrir Gestor de festivos
 2026-11-16 - v3.9.17 Dialogo informativo de festivos en la lista de eventos
 2026-11-15 - v3.9.16 Unificación de Diálogos de selección excluyente

@@ -20,6 +20,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -201,6 +202,25 @@ fun HolidayManagerScreen(
     val isSelectionMode = selectedAdjustments.isNotEmpty()
     val allSelected = selectedAdjustments.size == adjustments.size && adjustments.isNotEmpty()
 
+    val listState = rememberLazyListState()
+    val sortedAdjustments = remember(adjustments) { adjustments.sortedByDescending { it.date } }
+
+    LaunchedEffect(sortedAdjustments, initialFestivo) {
+        if (sortedAdjustments.isNotEmpty()) {
+            val targetIndex = if (initialFestivo != null) {
+                val found = sortedAdjustments.indexOfFirst { it.date == initialFestivo.date }
+                if (found != -1) found else 0
+            } else {
+                val today = LocalDate.now()
+                val idx = sortedAdjustments.indexOfFirst { it.date <= today }
+                if (idx != -1) idx else 0
+            }
+            if (targetIndex >= 0 && targetIndex < sortedAdjustments.size) {
+                listState.scrollToItem(targetIndex)
+            }
+        }
+    }
+
     AppScreen(
         title = stringResource(id = R.string.holiday_manager_title),
         onBackClick = onBackPress,
@@ -347,10 +367,11 @@ fun HolidayManagerScreen(
             )
             
             LazyColumn(
+                state = listState,
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(adjustments.sortedByDescending { it.date }) { adj ->
+                items(sortedAdjustments) { adj ->
                     val isGoogleAdjustment = adj.originalEventId != null
                     val isSelected = selectedAdjustments.contains(adj)
                     val isEditing = editingAdjustment == adj
