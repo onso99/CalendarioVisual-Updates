@@ -1,14 +1,13 @@
-# Plan de Implementación: Sincronización del Switch en HolidayManagerScreen
+# Plan de Implementación: Unificación de onEventClickHandler para Festivos
 
-Este plan actualiza [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt) para que, al abrir el gestor de festivos con un festivo existente (`initialFestivo`), se compruebe si ya existe un `HolidayAdjustment` guardado para esa fecha y se inicialice correctamente el estado del switch (`isHoliday`) reflejando si es festivo o laborable.
+Este plan actualiza [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CalendarioScreen.kt) para unificar la pulsación de cualquier festivo (`event.isFromHolidaySource == true`), abriendo directamente el Gestor de Festivos (`HolidayManagerScreen`) sin mostrar el diálogo informativo intermedio.
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Actualizar `HolidayManagerScreen.kt`
-- Consultar si existe un ajuste previo para `initialFestivo?.date`.
-- Inicializar `isHoliday` y `refIsHoliday` usando el tipo del ajuste existente (`type == HolidayAdjustmentType.HOLIDAY`) si está presente, o `initialFestivo?.isFromHolidaySource ?: true` en su defecto.
+### 1. Actualizar `onEventClickHandler` en `CalendarioScreen.kt`
+- Cambiar `if (event.calendarId == -1L && event.isFromHolidaySource)` por `if (event.isFromHolidaySource)`.
 
 ---
 
@@ -16,4 +15,4 @@ Este plan actualiza [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/A
 
 - Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Verificar en pantalla que al abrir el gestor de festivos para un festivo marcado como laborable, el switch aparece desactivado (laborable).
+- Verificar que al pulsar cualquier festivo (local o de Google) en la lista de eventos se abre directamente el Gestor de Festivos.

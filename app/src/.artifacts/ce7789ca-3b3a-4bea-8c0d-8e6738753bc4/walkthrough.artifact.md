@@ -1,12 +1,12 @@
-# Walkthrough - Sincronización del Switch en HolidayManagerScreen Completado
+# Walkthrough - Mensaje de Borrado Contextual en HolidayManagerScreen Completado
 
-Se han aplicado los cambios en [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt#L75).
+Se han aplicado los cambios en [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt#L430).
 
 ## Cambios Realizados
 
-1. **Sincronización del Estado del Switch (`HolidayManagerScreen.kt`):**
-   - Al abrir `HolidayManagerScreen` con un festivo existente (`initialFestivo`), ahora se comprueba si ya existe un `HolidayAdjustment` guardado en SharedPreferences para esa fecha.
-   - **Resultado:** Si dicho festivo ya fue marcado previamente como laborable (`WORKING_DAY`), el switch `isHoliday` se inicializa correctamente como **desactivado (laborable)**, reflejando fielmente el estado real guardado.
+1. **Mensaje de Confirmación de Borrado Contextual (`HolidayManagerScreen.kt`):**
+   - Se actualizó el diálogo de confirmación de eliminación en `HolidayManagerScreen` para comprobar si el festivo a eliminar es manual (`originalEventId == null`).
+   - **Resultado:** Al eliminar un festivo local creado a mano, la app muestra el mensaje estándar de eliminación de evento (`confirm_deletion_message`), mientras que para los ajustes de festivos de Google muestra el mensaje de restauración original.
 
 ---
 

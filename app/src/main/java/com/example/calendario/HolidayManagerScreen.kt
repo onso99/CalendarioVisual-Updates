@@ -73,17 +73,16 @@ fun HolidayManagerScreen(
         adjustments = SettingsManager.getHolidayAdjustments(context)
     }
     
-    var editingAdjustment by remember { mutableStateOf<HolidayAdjustment?>(null) }
-    var currentOriginalEventId by remember { mutableStateOf(initialFestivo?.id) }
-    var title by remember { mutableStateOf(initialFestivo?.title ?: "") }
-    var date by remember { mutableStateOf(initialFestivo?.date ?: LocalDate.now()) }
-
-    val initialAdjustment = remember(initialFestivo) {
+    val initialAdjustment = remember(initialFestivo, adjustments) {
         if (initialFestivo != null) {
-            SettingsManager.getHolidayAdjustments(context).find { it.date == initialFestivo.date }
+            adjustments.find { it.date == initialFestivo.date }
         } else null
     }
 
+    var editingAdjustment by remember { mutableStateOf<HolidayAdjustment?>(initialAdjustment) }
+    var currentOriginalEventId by remember { mutableStateOf(initialAdjustment?.originalEventId ?: initialFestivo?.id) }
+    var title by remember { mutableStateOf(initialAdjustment?.title ?: initialFestivo?.title ?: "") }
+    var date by remember { mutableStateOf(initialAdjustment?.date ?: initialFestivo?.date ?: LocalDate.now()) }
     var isHoliday by remember { 
         mutableStateOf(
             if (initialAdjustment != null) {
@@ -219,14 +218,24 @@ fun HolidayManagerScreen(
             } else {
                 if (!hasChanges) {
                     IconButton(onClick = { importLauncher.launch(arrayOf("*/*")) }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_folder_open_custom), contentDescription = stringResource(id = R.string.cargar_label))
+                        Icon(painter = painterResource(id = R.drawable.ic_folder_open_custom), contentDescription = stringResource(id = R.string.cargar_label), tint = Color.White)
                     }
                 }
                 if (hasChanges && (editingAdjustment != null || isFromExistingGoogleEvent)) {
-                    IconButton(onClick = { resetForm() }) { Icon(Icons.Default.Close, contentDescription = "Cancelar edición") }
+                    IconButton(onClick = { resetForm() }) { Icon(Icons.Default.Close, contentDescription = "Cancelar edición", tint = Color.White) }
                 }
                 if (title.isNotBlank() && hasChanges) {
-                    IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save)) }
+                    IconButton(onClick = saveAction) { Icon(Icons.Default.Check, stringResource(id = R.string.save), tint = Color.White) }
+                }
+                val isLocalManualAdjustment = (editingAdjustment != null && editingAdjustment!!.originalEventId == null)
+                if (isLocalManualAdjustment) {
+                    IconButton(onClick = { adjustmentToDelete = editingAdjustment }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete_outlined),
+                            contentDescription = stringResource(id = R.string.delete),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         },
@@ -437,7 +446,16 @@ fun HolidayManagerScreen(
             },
             dismissButton = { DialogDismissButton(onDismiss = { adjustmentToDelete = null }) }
         ) {
-            Text(stringResource(id = R.string.confirm_delete_adjustment))
+            val deleteMessage = if (toDelete.originalEventId != null) {
+                stringResource(id = R.string.confirm_delete_adjustment)
+            } else {
+                stringResource(id = R.string.confirm_deletion_message, toDelete.title)
+            }
+            Text(
+                text = deleteMessage,
+                color = CalendarioTheme.colors.textSystem,
+                fontSize = 16.sp
+            )
         }
     }
 

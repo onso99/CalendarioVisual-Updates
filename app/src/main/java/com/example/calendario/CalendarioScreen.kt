@@ -313,7 +313,7 @@ fun CalendarioScreen(
     }
 
     val onEventClickHandler = { event: Festivo ->
-        if (event.calendarId == -1L && event.isFromHolidaySource) {
+        if (event.isFromHolidaySource) {
             holidayForManager = event
             showHolidayManagerScreen = true
         } else {
