@@ -351,6 +351,7 @@
     <string name="others_cell_label">其他透明度</string>
     <string name="gradient_label">渐变</string>
     <string name="hint_long_press_multiselect">长按进行多选</string>
+    <string name="show_series_counter">系列计数器 (1/8)</string>
 </resources>
 
 

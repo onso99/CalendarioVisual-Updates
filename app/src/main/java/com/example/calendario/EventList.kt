@@ -61,6 +61,7 @@ fun MonthlyEventList(
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
     val themeColors = CalendarioTheme.colors
+    val showSeriesCounter = remember(themeColors) { SettingsManager.getShowSeriesCounter(context) }
     val event1Keyword = remember(themeColors) { SettingsManager.getEvent1Keyword(context) }
     val event2Keyword = remember(themeColors) { SettingsManager.getEvent2Keyword(context) }
     val event3Keyword = remember(themeColors) { SettingsManager.getEvent3Keyword(context) }
@@ -324,7 +325,7 @@ fun MonthlyEventList(
                                                                 fontSize = 12.sp
                                                             )
                                                         }
-                                                    } else if (festivo.rrule != null && !festivo.isBirthday) {
+                                                    } else if (showSeriesCounter && festivo.rrule != null && !festivo.isBirthday) {
                                                         // Caso 2: No tiene alarma pero es repetido -> Mostrar contador (1/10)
                                                         Row(
                                                             verticalAlignment = Alignment.CenterVertically,

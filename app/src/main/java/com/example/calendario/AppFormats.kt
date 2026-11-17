@@ -27,9 +27,6 @@ object AppFormats {
     fun dayDateAbbr(locale: Locale): DateTimeFormatter = 
         DateTimeFormatter.ofPattern("EEE, d MMM yyyy", locale)
         
-    fun dayDateFull(locale: Locale): DateTimeFormatter = 
-        DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", locale)
-        
     fun monthYear(locale: Locale): DateTimeFormatter = 
         DateTimeFormatter.ofPattern("MMMM yyyy", locale)
 

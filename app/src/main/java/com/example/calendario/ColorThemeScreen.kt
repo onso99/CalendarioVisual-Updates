@@ -216,11 +216,7 @@ fun ColorThemeScreen(
                                 valueRange = 0f..5f,
                                 steps = 4,
                                 modifier = Modifier.weight(1f),
-                                colors = SliderDefaults.colors(
-                                    thumbColor = CalendarioTheme.colors.cabecera,
-                                    activeTrackColor = CalendarioTheme.colors.cabecera,
-                                    inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
-                                )
+                                colors = appSliderColors()
                             )
                             Text(
                                 text = pendingOthersStep.roundToInt().toString(),

@@ -352,6 +352,7 @@
     <string name="others_cell_label">Transparência de outros</string>
     <string name="gradient_label">Degradê</string>
     <string name="hint_long_press_multiselect">Pressione e segure para multisseleção</string>
+    <string name="show_series_counter">Contador séries (1/8)</string>
 </resources>
 
 

@@ -259,7 +259,7 @@ internal fun EventRow(
                             fontSize = 11.sp
                         )
                     }
-                } else if (festivo.rrule != null && !festivo.isBirthday) {
+                } else if (SettingsManager.getShowSeriesCounter(context) && festivo.rrule != null && !festivo.isBirthday) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(start = 8.dp)

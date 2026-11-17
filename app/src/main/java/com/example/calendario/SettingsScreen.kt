@@ -229,6 +229,9 @@ fun SettingsScreen(
     var pendingStartOfWeekKey by remember { 
         mutableStateOf(SettingsManager.getStartOfWeek(context).key)
     }
+    var pendingShowSeriesCounter by remember {
+        mutableStateOf(SettingsManager.getShowSeriesCounter(context))
+    }
     var pendingEventCount by remember { 
         mutableFloatStateOf(SettingsManager.getWidgetEventCount(context).toFloat())
     }
@@ -324,6 +327,37 @@ fun SettingsScreen(
                     val langSetting = AppLanguageSetting.fromCode(if (curLangs.isEmpty) null else curLangs.get(0)?.language)
                     Text(text = stringResource(id = langSetting.displayNameRes), color = CalendarioTheme.colors.textSystem, fontSize = 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
                 }
+                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clickable {
+                            val newVal = !pendingShowSeriesCounter
+                            pendingShowSeriesCounter = newVal
+                            SettingsManager.saveShowSeriesCounter(context, newVal)
+                            refreshUI()
+                        }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        stringResource(id = R.string.show_series_counter),
+                        color = CalendarioTheme.colors.textSystem,
+                        fontSize = 16.sp
+                    )
+                    Switch(
+                        checked = pendingShowSeriesCounter,
+                        onCheckedChange = { newVal ->
+                            pendingShowSeriesCounter = newVal
+                            SettingsManager.saveShowSeriesCounter(context, newVal)
+                            refreshUI()
+                        },
+                        colors = appSwitchColors()
+                    )
+                }
             }
 
             SectionTitle(text = stringResource(id = R.string.appearance))
@@ -372,11 +406,7 @@ fun SettingsScreen(
                             valueRange = 1f..12f, 
                             steps = 10, 
                             modifier = Modifier.weight(1f),
-                            colors = SliderDefaults.colors(
-                                thumbColor = CalendarioTheme.colors.cabecera,
-                                activeTrackColor = CalendarioTheme.colors.cabecera,
-                                inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
-                            )
+                            colors = appSliderColors()
                         )
                         Text(text = pendingEventCount.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
@@ -395,11 +425,7 @@ fun SettingsScreen(
                             valueRange = -4f..4f, 
                             steps = 7, 
                             modifier = Modifier.weight(1f),
-                            colors = SliderDefaults.colors(
-                                thumbColor = CalendarioTheme.colors.cabecera,
-                                activeTrackColor = CalendarioTheme.colors.cabecera,
-                                inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
-                            )
+                            colors = appSliderColors()
                         )
                         Text(text = (if (pendingTextBoost.roundToInt() > 0) "+" else "") + pendingTextBoost.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
                     }
@@ -888,11 +914,7 @@ private fun AlarmConfigDialog(anticipation: Float, snooze: Float, onConfirm: (Fl
                     valueRange = 0f..60f, 
                     steps = 5,
                     modifier = Modifier.weight(1f),
-                    colors = SliderDefaults.colors(
-                        thumbColor = CalendarioTheme.colors.cabecera,
-                        activeTrackColor = CalendarioTheme.colors.cabecera,
-                        inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
-                    )
+                    colors = appSliderColors()
                 )
                 Text(text = "${if (tempAnticipation.roundToInt() > 0) "-" else ""}${tempAnticipation.roundToInt()}'", modifier = Modifier.width(52.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) 
             }
@@ -905,11 +927,7 @@ private fun AlarmConfigDialog(anticipation: Float, snooze: Float, onConfirm: (Fl
                     valueRange = 10f..60f, 
                     steps = 4,
                     modifier = Modifier.weight(1f),
-                    colors = SliderDefaults.colors(
-                        thumbColor = CalendarioTheme.colors.cabecera,
-                        activeTrackColor = CalendarioTheme.colors.cabecera,
-                        inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
-                    )
+                    colors = appSliderColors()
                 )
                 Text(text = "${tempSnooze.roundToInt()}'", modifier = Modifier.width(44.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp, fontWeight = FontWeight.Medium) 
             }
@@ -943,15 +961,9 @@ private fun WeekConfigDialog(currentSelectionKey: String, showWeekNumber: Boolea
                 Switch(
                     checked = tempShowWeek, 
                     onCheckedChange = { tempShowWeek = it },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CalendarioTheme.colors.cabecera,
-                        uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
-                        uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.12f),
-                        uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
-                    )
+                    colors = appSwitchColors()
                 )
-            } 
+            }
         }
     }
 }

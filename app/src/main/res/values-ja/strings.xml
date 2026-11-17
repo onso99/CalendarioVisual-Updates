@@ -351,6 +351,7 @@
     <string name="others_cell_label">その他の透明度</string>
     <string name="gradient_label">グラデーション</string>
     <string name="hint_long_press_multiselect">長押しで複数選択</string>
+    <string name="show_series_counter">シリーズカウンター (1/8)</string>
 </resources>
 
 

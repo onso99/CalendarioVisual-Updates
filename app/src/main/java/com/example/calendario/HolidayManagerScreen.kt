@@ -83,7 +83,7 @@ fun HolidayManagerScreen(
         } else null
     }
 
-    var editingAdjustment by remember { mutableStateOf<HolidayAdjustment?>(initialAdjustment) }
+    var editingAdjustment by remember { mutableStateOf(initialAdjustment) }
     var currentOriginalEventId by remember { mutableStateOf(initialAdjustment?.originalEventId ?: initialFestivo?.id) }
     var title by remember { mutableStateOf(initialAdjustment?.title ?: initialFestivo?.title ?: "") }
     var date by remember { mutableStateOf(initialAdjustment?.date ?: initialFestivo?.date ?: LocalDate.now()) }
@@ -351,7 +351,11 @@ fun HolidayManagerScreen(
                         color = if (isHoliday) festivoColor else CalendarioTheme.colors.textSystem, 
                         fontWeight = FontWeight.Bold
                     )
-                    Switch(checked = isHoliday, onCheckedChange = { isHoliday = it })
+                    Switch(
+                        checked = isHoliday,
+                        onCheckedChange = { isHoliday = it },
+                        colors = appSwitchColors()
+                    )
                 }
             }
 

@@ -1,13 +1,16 @@
-# Plan de Implementación: Scroll Siempre al Festivo Más Próximo a Hoy
+# Plan de Implementación: Nomenclatura Minúscula para Composables que Retornan Valores
 
-Este plan actualiza [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt) para que el scroll automático de la lista de festivos siempre posicione la vista en el festivo más próximo a la fecha actual (`LocalDate.now()`), independientemente de si la pantalla fue abierta normalmente o pulsando un festivo.
+Este plan actualiza [CommonComponents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CommonComponents.kt), [SettingsScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/SettingsScreen.kt), [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt) y [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt) para renombrar `AppSwitchColors` a `appSwitchColors` y `AppSliderColors` a `appSliderColors`.
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Actualizar `HolidayManagerScreen.kt`
-- Simplificar `LaunchedEffect(sortedAdjustments)` para calcular siempre el índice del festivo más cercano a Hoy (`it.date <= today`).
+### 1. Actualizar `CommonComponents.kt`
+- Renombrar funciones a minúscula inicial.
+
+### 2. Actualizar llamadas en `SettingsScreen.kt`, `HolidayManagerScreen.kt` y `ColorThemeScreen.kt`
+- Actualizar referencias a `appSwitchColors()` y `appSliderColors()`.
 
 ---
 
@@ -15,4 +18,4 @@ Este plan actualiza [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/A
 
 - Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Verificar en pantalla que la lista siempre se posiciona en el festivo más cercano a Hoy.
+- Verificar compilación limpia sin warnings de nomenclatura de `@Composable`.

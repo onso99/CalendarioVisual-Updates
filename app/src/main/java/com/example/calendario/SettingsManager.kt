@@ -144,6 +144,12 @@ object SettingsManager {
     fun saveWeekNumberVisibility(context: Context, visible: Boolean) =
         appPrefs(context).edit { putBoolean(AppConstants.KEY_SHOW_WEEK_NUMBER_IN_YEAR_VIEW, visible) }
 
+    fun getShowSeriesCounter(context: Context): Boolean =
+        getSafeBoolean(appPrefs(context), AppConstants.KEY_SHOW_SERIES_COUNTER, true)
+
+    fun saveShowSeriesCounter(context: Context, show: Boolean) =
+        appPrefs(context).edit { putBoolean(AppConstants.KEY_SHOW_SERIES_COUNTER, show) }
+
     fun saveThemeSetting(context: Context, setting: ThemeSetting) =
         appPrefs(context).edit { putString(AppConstants.KEY_THEME_SETTING, setting.name) }
 

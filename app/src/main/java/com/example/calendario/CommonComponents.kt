@@ -452,6 +452,22 @@ fun DialogOptionRow(
 }
 
 @Composable
+fun appSwitchColors(): SwitchColors = SwitchDefaults.colors(
+    checkedThumbColor = Color.White,
+    checkedTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.70f),
+    uncheckedThumbColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.4f),
+    uncheckedTrackColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.12f),
+    uncheckedBorderColor = CalendarioTheme.colors.textSystem.copy(alpha = 0.2f)
+)
+
+@Composable
+fun appSliderColors(): SliderColors = SliderDefaults.colors(
+    thumbColor = CalendarioTheme.colors.cabecera,
+    activeTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.70f),
+    inactiveTrackColor = CalendarioTheme.colors.cabecera.copy(alpha = 0.24f)
+)
+
+@Composable
 fun SectionTitle(
     text: String, 
     modifier: Modifier = Modifier, 
