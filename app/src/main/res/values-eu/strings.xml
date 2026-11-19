@@ -242,9 +242,10 @@
     <string name="confirm_restore_title">Berrezarpena berretsi</string>
     <string name="restore_total_confirmation">Ohar, alarma, gai eta hobespenen berreskuratze osoa.</string>
     <string name="backup_section_title_label">Babes-kopia</string>
-    <string name="data_center_screen_title">Datu-zentroa</string>
+    <string name="data_center_screen_title">Sistema-erabilerraztasunak</string>
     <string name="drive_label">Drive</string>
-    <string name="database_section_label">Datu-basea</string>
+    <string name="database_section_label">Tokiko tresnak</string>
+    <string name="optimize_data">Datuak optimizatu</string>
     <string name="import_cvo_option_label">Inportatu .cvo fitxategia</string>
     <string name="check_updates_label">Eguneratzeak bilatu</string>
     <string name="checking_updates">Eguneratzeak bilatzen…</string>

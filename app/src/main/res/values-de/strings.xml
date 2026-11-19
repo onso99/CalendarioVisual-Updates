@@ -243,10 +243,11 @@
     <string name="confirm_restore_title">Wiederherstellung bestätigen</string>
     <string name="restore_total_confirmation">Vollständige Wiederherstellung von Notizen, Alarmen, Themen und Einstellungen.</string>
     <string name="backup_section_title_label">Sicherungskopie</string>
-    <string name="data_center_screen_title">Datenzentrum</string>
+    <string name="data_center_screen_title">Systemprogramme</string>
     <string name="pdf_print_title">PDF / Drucken</string>
     <string name="drive_label">Drive</string>
-    <string name="database_section_label">Datenbank</string>
+    <string name="database_section_label">Lokale Werkzeuge</string>
+    <string name="optimize_data">Daten optimieren</string>
     <string name="import_cvo_option_label">.cvo-Datei importieren</string>
     <string name="check_updates_label">Nach Updates suchen</string>
     <string name="checking_updates">Nach Updates suchen…</string>

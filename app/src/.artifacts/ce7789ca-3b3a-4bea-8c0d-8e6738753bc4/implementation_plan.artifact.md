@@ -1,16 +1,19 @@
-# Plan de Implementación: Nomenclatura Minúscula para Composables que Retornan Valores
+# Plan de Implementación: Renombrado a "Utilidades de sistema", "Herramientas locales" y "Optimizar datos"
 
-Este plan actualiza [CommonComponents.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CommonComponents.kt), [SettingsScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/SettingsScreen.kt), [HolidayManagerScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/HolidayManagerScreen.kt) y [ColorThemeScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/ColorThemeScreen.kt) para renombrar `AppSwitchColors` a `appSwitchColors` y `AppSliderColors` a `appSliderColors`.
+Este plan actualiza [BackupScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/BackupScreen.kt), [CalendarioScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/CalendarioScreen.kt) y los 12 archivos `strings.xml` para renombrar:
+1. Pantalla: "Centro de datos" -> "Utilidades de sistema" (`system_utilities`).
+2. Sección 2: "Base de datos" -> "Herramientas locales" (`local_tools_section`).
+3. Opción: "Optimizar" -> "Optimizar datos" (`optimize_data`).
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Actualizar `CommonComponents.kt`
-- Renombrar funciones a minúscula inicial.
+### 1. Actualizar `strings.xml` en 12 Idiomas
+- Añadir y traducir `system_utilities`, `local_tools_section` y `optimize_data`.
 
-### 2. Actualizar llamadas en `SettingsScreen.kt`, `HolidayManagerScreen.kt` y `ColorThemeScreen.kt`
-- Actualizar referencias a `appSwitchColors()` y `appSliderColors()`.
+### 2. Actualizar `BackupScreen.kt` y `CalendarioScreen.kt`
+- Usar las nuevas claves de recursos de cadena.
 
 ---
 
@@ -18,4 +21,4 @@ Este plan actualiza [CommonComponents.kt](file:///C:/Users/onso9/Documents/Andro
 
 - Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Verificar compilación limpia sin warnings de nomenclatura de `@Composable`.
+- Verificar en pantalla que la pantalla y secciones muestran los nuevos nombres unificados.

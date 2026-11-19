@@ -257,10 +257,11 @@
     <string name="confirm_delete_adjustment">¿Deseas eliminar este ajuste? Se restaurará el estado original del calendario.</string>
 
     <string name="backup_section_title_label">Copia de seguridad</string>
-    <string name="data_center_screen_title">Centro de datos</string>
+    <string name="data_center_screen_title">Utilidades de sistema</string>
     <string name="pdf_print_title">PDF / Imprimir</string>
     <string name="drive_label">Drive</string>
-    <string name="database_section_label">Base de datos</string>
+    <string name="database_section_label">Herramientas locales</string>
+    <string name="optimize_data">Optimizar datos</string>
     <string name="description">Descripción</string>
     <string name="event_duration_days">%1$d días</string>
     <string name="appearance">Apariencia</string>

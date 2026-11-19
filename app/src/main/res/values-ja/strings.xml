@@ -243,9 +243,10 @@
     <string name="confirm_restore_title">復元の確認</string>
     <string name="restore_total_confirmation">メモ、アラーム、テーマ、設定の完全な復元。</string>
     <string name="backup_section_title_label">バックアップ</string>
-    <string name="data_center_screen_title">データセンター</string>
+    <string name="data_center_screen_title">システムユーティリティ</string>
     <string name="drive_label">Drive</string>
-    <string name="database_section_label">データベース</string>
+    <string name="database_section_label">ローカルツール</string>
+    <string name="optimize_data">データを最適化</string>
     <string name="import_cvo_option_label">.cvoファイルをインポート</string>
     <string name="check_updates_label">更新を確認</string>
     <string name="checking_updates">更新を確認中…</string>

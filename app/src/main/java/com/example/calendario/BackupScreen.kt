@@ -256,7 +256,7 @@ fun BackupScreen(
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
 
                 BackupActionRow(
-                    text = "Optimizar",
+                    text = stringResource(id = R.string.optimize_data),
                     onClick = { showCleaningDialog = true }
                 )
             }

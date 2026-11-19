@@ -244,9 +244,10 @@
     <string name="confirm_restore_title">Confirmar restauração</string>
     <string name="restore_total_confirmation">Restauração total de notas, alarmes, temas e preferências.</string>
     <string name="backup_section_title_label">Cópia de segurança</string>
-    <string name="data_center_screen_title">Centro de dados</string>
+    <string name="data_center_screen_title">Utilitários do sistema</string>
     <string name="drive_label">Drive</string>
-    <string name="database_section_label">Base de dados</string>
+    <string name="database_section_label">Ferramentas locais</string>
+    <string name="optimize_data">Otimizar dados</string>
     <string name="import_cvo_option_label">Importar ficheiro .cvo</string>
     <string name="check_updates_label">Procurar atualizações</string>
     <string name="checking_updates">A procurar atualizações…</string>

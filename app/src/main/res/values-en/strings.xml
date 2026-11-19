@@ -244,9 +244,10 @@
     <string name="confirm_restore_title">Confirm restoration</string>
     <string name="restore_total_confirmation">Total restore of notes, alarms, themes, and preferences.</string>
     <string name="backup_section_title_label">Backup</string>
-    <string name="data_center_screen_title">Data Center</string>
+    <string name="data_center_screen_title">System Utilities</string>
     <string name="drive_label">Drive</string>
-    <string name="database_section_label">Database</string>
+    <string name="database_section_label">Local Tools</string>
+    <string name="optimize_data">Optimize data</string>
     <string name="import_cvo_option_label">Import .cvo file</string>
     <string name="check_updates_label">Check for updates</string>
     <string name="checking_updates">Checking for updates…</string>
