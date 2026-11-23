@@ -414,6 +414,8 @@ fun DialogOptionRow(
     text: String,
     isSelected: Boolean,
     fontFamily: androidx.compose.ui.text.font.FontFamily? = null,
+    fontSize: TextUnit = 16.sp,
+    maxLines: Int = 1,
     onClick: () -> Unit
 ) {
     val isAppDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoDialogos.toArgb()) < 0.5
@@ -435,8 +437,10 @@ fun DialogOptionRow(
         Text(
             text = text,
             modifier = Modifier.weight(1f),
-            fontSize = 16.sp,
+            fontSize = fontSize,
             fontFamily = fontFamily,
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Normal,
             color = CalendarioTheme.colors.textSystem
         )
