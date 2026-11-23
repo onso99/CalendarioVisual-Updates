@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -59,7 +58,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import androidx.core.graphics.ColorUtils
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -111,7 +109,6 @@ fun SettingsScreen(
     var showWeekConfigDialog by remember { mutableStateOf(false) }
     var showAlarmConfigDialog by remember { mutableStateOf(false) }
     var showBundledThemesDialog by remember { mutableStateOf(false) }
-    var showFontFamilyDialog by remember { mutableStateOf(false) }
     var showWidgetCalendarDialog by remember { mutableStateOf(false) }
     var showPermissionsDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
@@ -234,22 +231,6 @@ fun SettingsScreen(
     var pendingEventCount by remember { 
         mutableFloatStateOf(SettingsManager.getWidgetEventCount(context).toFloat())
     }
-    var pendingTextBoost by remember {
-        mutableFloatStateOf(SettingsManager.getWidgetTextBoost(context))
-    }
-    var pendingEventColor by remember { 
-        mutableStateOf(SettingsManager.getWidgetEventColor(context))
-    }
-    var pendingTodayEventColor by remember {
-        mutableStateOf(SettingsManager.getWidgetTodayEventColor(context))
-    }
-    var pendingWidgetBackgroundColor by remember {
-        mutableStateOf(SettingsManager.getWidgetBackgroundColor(context))
-    }
-    var pendingFontFamily by remember { mutableStateOf(SettingsManager.getWidgetFontFamily(context)) }
-    var pendingFontBold by remember { 
-        mutableStateOf(SettingsManager.isWidgetFontBold(context)) 
-    }
     var pendingWidgetCalendarIds by remember {
         mutableStateOf(SettingsManager.getWidgetSelectedCalendarIds(context))
     }
@@ -262,10 +243,6 @@ fun SettingsScreen(
     var pendingSnoozeInterval by remember { 
         mutableFloatStateOf(SettingsManager.getDefaultSnoozeInterval(context).toFloat()) 
     }
-
-    var showWidgetEventColorPalette by remember { mutableStateOf(false) }
-    var showWidgetTodayEventColorPalette by remember { mutableStateOf(false) }
-    var showWidgetBackgroundColorPalette by remember { mutableStateOf(false) }
 
     val refreshUI = {
         WidgetStateManager.refreshWithCurrentEvents(context)
@@ -566,21 +543,6 @@ fun SettingsScreen(
         if (showThemeDialog) { ThemeSelectionDialog(currentTheme = themeSetting, onThemeSelected = { themeManager.setTheme(it); showThemeDialog = false }, onDismiss = { showThemeDialog = false }) }
         if (showWeekConfigDialog) { WeekConfigDialog(currentSelectionKey = pendingStartOfWeekKey, showWeekNumber = pendingShowWeekNumber, onConfirm = { key, show -> pendingStartOfWeekKey = key; pendingShowWeekNumber = show; SettingsManager.saveStartOfWeek(context, StartOfWeekOption.fromKey(key)); SettingsManager.saveWeekNumberVisibility(context, show); refreshUI(); showWeekConfigDialog = false }, onDismiss = { showWeekConfigDialog = false }) }
         if (showAlarmConfigDialog) { AlarmConfigDialog(anticipation = pendingAlarmOffset, snooze = pendingSnoozeInterval, onConfirm = { offset, interval -> pendingAlarmOffset = offset; pendingSnoozeInterval = interval; SettingsManager.saveDefaultAlarmOffset(context, offset.roundToInt()); SettingsManager.saveDefaultSnoozeInterval(context, interval.roundToInt()); refreshUI(); showAlarmConfigDialog = false }, onDismiss = { showAlarmConfigDialog = false }) }
-        if (showFontFamilyDialog) { 
-            FontFamilySelectionDialog(
-                currentSelection = pendingFontFamily, 
-                currentBold = pendingFontBold,
-                onConfirm = { family, bold -> 
-                    pendingFontFamily = family
-                    pendingFontBold = bold
-                    SettingsManager.saveWidgetFontFamily(context, family)
-                    SettingsManager.saveWidgetFontBold(context, bold)
-                    refreshUI()
-                    showFontFamilyDialog = false 
-                }, 
-                onDismiss = { showFontFamilyDialog = false }
-            ) 
-        }
         if (showBundledThemesDialog) { 
             BundledThemesDialog(
                 currentThemeId = lightThemeName, 
@@ -605,9 +567,6 @@ fun SettingsScreen(
                 onSaveClick = { showExportDialog = true }
             ) 
         }
-        if (showWidgetEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingEventColor, onDismissRequest = { showWidgetEventColorPalette = false }, onColorConfirm = { pendingEventColor = it; SettingsManager.saveWidgetEventColor(context, it); refreshUI(); showWidgetEventColorPalette = false }) }
-        if (showWidgetTodayEventColorPalette) { AdvancedColorPickerDialog(initialColor = pendingTodayEventColor, onDismissRequest = { showWidgetTodayEventColorPalette = false }, onColorConfirm = { pendingTodayEventColor = it; SettingsManager.saveWidgetTodayEventColor(context, it); refreshUI(); showWidgetTodayEventColorPalette = false }) }
-        if (showWidgetBackgroundColorPalette) { AdvancedColorPickerDialog(initialColor = pendingWidgetBackgroundColor, onDismissRequest = { showWidgetBackgroundColorPalette = false }, onColorConfirm = { pendingWidgetBackgroundColor = it; SettingsManager.saveWidgetBackgroundColor(context, it); refreshUI(); showWidgetBackgroundColorPalette = false }) }
         if (showDiscardChangesDialog) { 
             WarningDialog(
                 onDismissRequest = { showDiscardChangesDialog = false },
@@ -1069,13 +1028,6 @@ private fun getFileName(context: Context, uri: Uri): String {
 }
 
 fun truncateThemeName(name: String, limit: Int): String = if (name.length > limit) name.take(limit - 3) + "..." else name
-
-@Composable
-private fun WidgetColorChip(label: String, color: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val textColor = color.getContrastColor(CalendarioTheme.colors.settingsBackground)
-    val borderColor = CalendarioTheme.colors.fondoSecciones.getContrastColor(Color.White).copy(alpha = 0.2f)
-    Box(modifier = modifier.height(44.dp).clip(RoundedCornerShape(10.dp)).background(color).border(0.5.dp, borderColor, RoundedCornerShape(10.dp)).clickable { onClick() }, contentAlignment = Alignment.Center) { Text(text = label, color = textColor, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 4.dp)) }
-}
 
 @Composable
 private fun PermissionsDialog(calStatus: PermissionStatus, notifStatus: PermissionStatus, alarmStatus: PermissionStatus, driveStatus: PermissionStatus, batteryStatus: PermissionStatus, installStatus: PermissionStatus, onDismiss: () -> Unit, onFix: (String) -> Unit) {

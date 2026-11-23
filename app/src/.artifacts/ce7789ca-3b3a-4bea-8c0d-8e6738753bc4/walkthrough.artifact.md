@@ -1,16 +1,15 @@
-# Walkthrough - Ajuste de Margen Superior Completado
+# Walkthrough - Eliminación de Recurso Obsoleto widget_color_screen_title Completado
 
-Se han aplicado los cambios en [WidgetStyleScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/WidgetStyleScreen.kt#L65).
+Se ha eliminado la cadena sin uso en [strings.xml](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/res/values/strings.xml#L350).
 
 ## Cambios Realizados
 
-1. **Alineación de Margen Superior (`WidgetStyleScreen.kt`):**
-   - Se eliminó el relleno superior extra en la columna contenedora de `WidgetStyleScreen`, configurando `padding(start = 16.dp, end = 16.dp, bottom = 16.dp)`.
-   - **Resultado:** La distancia entre la cabecera de la pantalla y el rectángulo de simulación del widget es ahora idéntica a la del resto de pantallas de la aplicación.
+1. **Eliminación de Recurso Obsoleto (`strings.xml`):**
+   - Se removió la cadena `widget_color_screen_title` que fue reemplazada por `widget_style_screen_title`.
+   - **Resultado:** Se eliminó la advertencia (*Unused resources*) reportada por el inspector de código en Android Studio.
 
 ---
 
 ## Verificación Realizada
 
 - **Compilación de Gradle:** Se ejecutó `gradle_build("app:assembleDebug")` obteniendo `BUILD SUCCESSFUL`.
-- **Inspección de Análisis:** Se analizó el código con `analyze_file` comprobando 0 errores.

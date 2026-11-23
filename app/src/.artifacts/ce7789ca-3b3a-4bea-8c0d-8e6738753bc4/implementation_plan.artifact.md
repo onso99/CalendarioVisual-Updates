@@ -1,18 +1,17 @@
-# Plan de Implementación: Patrón Ajedrezado Suave para Transparencia en WidgetStyleScreen
+# Plan de Implementación: Eliminación de Recurso Obsoleto `widget_color_screen_title`
 
-Este plan actualiza [WidgetStyleScreen.kt](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/java/com/example/calendario/WidgetStyleScreen.kt) para añadir un patrón ajedrezado sutil mediante `drawBehind` detrás del fondo del simulador del widget, permitiendo apreciar visualmente cualquier nivel de opacidad/transparencia seleccionado para el fondo.
+Este plan elimina el recurso no utilizado [strings.xml](file:///C:/Users/onso9/Documents/AndroidStudio/Calendario/app/src/main/res/values/strings.xml) (`widget_color_screen_title`) sustituido por `widget_style_screen_title`.
 
 ---
 
 ## Cambios Propuestos
 
-### 1. Actualizar `WidgetStyleScreen.kt`
-- Usar `drawBehind` en el recuadro de previsualización para dibujar cuadrículas alternadas de `8.dp` con `alpha = 0.08f` detrás de `backgroundColor`.
+### 1. Actualizar `res/values/strings.xml`
+- Remover la línea `<string name="widget_color_screen_title"...>`.
 
 ---
 
 ## Plan de Verificación
 
-- Inspeccionar con `analyze_file`.
 - Compilar con `gradle_build("app:assembleDebug")`.
-- Verificar en pantalla que al reducir la opacidad del fondo del widget en el selector, el patrón ajedrezado sutil se trasluce perfectamente.
+- Verificar compilación limpia sin warnings de recursos sin uso.
