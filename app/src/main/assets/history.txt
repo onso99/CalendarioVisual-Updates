@@ -1,3 +1,4 @@
+2026-11-23 - v3.9.21 Ajustes Widget: Pantalla Estilo del widget
 2026-11-23 - v3.9.20 Ajustes Widget: Fuente con diálogo directo
 2026-11-19 - v3.9.19 Utilidades de sistema. Herramientas locales. Optimizar datos.
 2026-11-17 - v3.9.18 Switch Contador de series (1/8). Opacidad 70% de switchs y sliders

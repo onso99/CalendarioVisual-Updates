@@ -351,6 +351,12 @@
     <string name="unknown_elements_warning">Elementos desconocidos en este evento *</string>
     <string name="hint_long_press_multiselect">Pulsación larga para multiselección</string>
     <string name="show_series_counter">Contador series (1/8)</string>
+    <string name="widget_color_screen_title" tools:ignore="MissingTranslation">Color del widget</string>
+    <string name="widget_style_screen_title">Estilo del widget</string>
+    <string name="widget_style_label">Estilo</string>
+    <string name="widget_color_today_event" tools:ignore="MissingTranslation">Evento Hoy</string>
+    <string name="widget_color_event" tools:ignore="MissingTranslation">Evento</string>
+    <string name="widget_color_background" tools:ignore="MissingTranslation">Fondo</string>
 </resources>
 
 

@@ -352,6 +352,8 @@
     <string name="gradient_label">Gradientea</string>
     <string name="hint_long_press_multiselect">Sakatu luze aukera anitzeko</string>
     <string name="show_series_counter">Serie kontagailua (1/8)</string>
+    <string name="widget_style_screen_title">Widget-aren estiloa</string>
+    <string name="widget_style_label">Estiloa</string>
 </resources>
 
 

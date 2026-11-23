@@ -354,6 +354,8 @@
     <string name="gradient_label">Degradat</string>
     <string name="hint_long_press_multiselect">Manté premut per a selecció múltiple</string>
     <string name="show_series_counter">Comptador sèries (1/8)</string>
+    <string name="widget_style_screen_title">Estil del widget</string>
+    <string name="widget_style_label">Estil</string>
 </resources>
 
 

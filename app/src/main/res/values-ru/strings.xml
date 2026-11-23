@@ -353,6 +353,8 @@
     <string name="gradient_label">Градиент</string>
     <string name="hint_long_press_multiselect">Долгое нажатие для выбора нескольких</string>
     <string name="show_series_counter">Счетчик серий (1/8)</string>
+    <string name="widget_style_screen_title">Стиль виджета</string>
+    <string name="widget_style_label">Стиль</string>
 </resources>
 
 

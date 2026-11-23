@@ -91,6 +91,7 @@ fun SettingsScreen(
     viewModel: CalendarioViewModel,
     onColorThemeClick: () -> Unit,
     onSpecialEventsClick: () -> Unit,
+    onWidgetColorClick: () -> Unit,
     onThemeUpdated: () -> Unit,
     onHistoryClick: () -> Unit = {},
     onLogClick: () -> Unit = {}
@@ -115,7 +116,6 @@ fun SettingsScreen(
     var showPermissionsDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var isChangingLanguage by remember { mutableStateOf(false) }
-    var showWidgetColorExpand by remember { mutableStateOf(false) }
 
     var isCheckingUpdates by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
@@ -382,7 +382,7 @@ fun SettingsScreen(
                 ActionRow(text = stringResource(id = R.string.special_events), onClick = onSpecialEventsClick)
             }
 
-            // --- BLOQUE WIDGET (Sincronizado v3.2.12.4) ---
+            // --- BLOQUE WIDGET ---
             WidgetSectionTitle()
             Column(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(CalendarioTheme.colors.fondoSecciones)) {
                 Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWidgetCalendarDialog = true }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -411,91 +411,21 @@ fun SettingsScreen(
                     }
                 }
                 HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Text(stringResource(id = R.string.widget_text_adjustment), fontSize = 16.sp, color = CalendarioTheme.colors.textSystem)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Slider(
-                            value = pendingTextBoost, 
-                            onValueChange = { 
-                                pendingTextBoost = it
-                                SettingsManager.saveWidgetTextBoost(context, it)
-                                refreshUI()
-                            }, 
-                            valueRange = -4f..4f, 
-                            steps = 7, 
-                            modifier = Modifier.weight(1f),
-                            colors = appSliderColors()
-                        )
-                        Text(text = (if (pendingTextBoost.roundToInt() > 0) "+" else "") + pendingTextBoost.roundToInt().toString(), modifier = Modifier.width(40.dp).padding(start = 8.dp), color = CalendarioTheme.colors.textSystem, textAlign = TextAlign.End, fontSize = 16.sp)
-                    }
-                }
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
-                        .clickable { showFontFamilyDialog = true }
+                        .clickable { onWidgetColorClick() }
                         .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        stringResource(id = R.string.font), 
-                        color = CalendarioTheme.colors.textSystem, 
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        modifier = Modifier.padding(end = 8.dp)
+                    Text(stringResource(id = R.string.widget_style_label), color = CalendarioTheme.colors.textSystem, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
                     )
-                    val fontDisplayName = when(pendingFontFamily) {
-                        WidgetConstants.FONT_FAMILY_SERIF -> stringResource(id = R.string.font_serif)
-                        WidgetConstants.FONT_FAMILY_MONOSPACE -> stringResource(id = R.string.font_monospace)
-                        WidgetConstants.FONT_FAMILY_CONDENSED -> stringResource(id = R.string.font_condensed)
-                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> stringResource(id = R.string.font_sans_serif)
-                        else -> stringResource(id = R.string.font_system)
-                    }
-                    val previewFontFamily = when(pendingFontFamily) {
-                        WidgetConstants.FONT_FAMILY_SERIF -> FontFamily.Serif
-                        WidgetConstants.FONT_FAMILY_MONOSPACE -> FontFamily.Monospace
-                        WidgetConstants.FONT_FAMILY_CONDENSED -> {
-                            val style = if (pendingFontBold) Typeface.BOLD else Typeface.NORMAL
-                            FontFamily(Typeface.create("sans-serif-condensed", style))
-                        }
-                        WidgetConstants.FONT_FAMILY_SANS_SERIF -> FontFamily.SansSerif
-                        else -> FontFamily.Default
-                    }
-                    Text(
-                        text = fontDisplayName,
-                        color = CalendarioTheme.colors.textSystem,
-                        fontSize = 14.sp,
-                        fontFamily = previewFontFamily,
-                        fontWeight = if (pendingFontBold) FontWeight.Bold else FontWeight.Normal,
-                        textAlign = TextAlign.End,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                HorizontalDivider(color = CalendarioTheme.colors.settingsBackground, thickness = 1.dp)
-                Column {
-                    Row(modifier = Modifier.fillMaxWidth().height(52.dp).clickable { showWidgetColorExpand = !showWidgetColorExpand }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(id = R.string.widget_colors_label), fontSize = 16.sp, modifier = Modifier.weight(1f), color = CalendarioTheme.colors.textSystem)
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            val isBgDark = ColorUtils.calculateLuminance(CalendarioTheme.colors.fondoSecciones.toArgb()) < 0.5
-                            val borderColor = if (isBgDark) Color.White.copy(alpha = 0.4f) else Color.Black.copy(alpha = 0.2f)
-                            
-                            Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(pendingWidgetBackgroundColor).border(0.5.dp, borderColor, CircleShape))
-                            Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(pendingEventColor).border(0.5.dp, borderColor, CircleShape))
-                            Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(pendingTodayEventColor).border(0.5.dp, borderColor, CircleShape))
-                        }
-                        Icon(if (showWidgetColorExpand) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = CalendarioTheme.colors.textSystem.copy(alpha = 0.3f), modifier = Modifier.padding(start = 8.dp).size(20.dp))
-                    }
-                    if (showWidgetColorExpand) {
-                        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            WidgetColorChip(stringResource(id = R.string.widget_color_fondo), pendingWidgetBackgroundColor, Modifier.weight(1f)) { showWidgetBackgroundColorPalette = true }
-                            WidgetColorChip(stringResource(id = R.string.widget_color_evento), pendingEventColor, Modifier.weight(1f)) { showWidgetEventColorPalette = true }
-                            WidgetColorChip(stringResource(id = R.string.widget_color_hoy), pendingTodayEventColor, Modifier.weight(1f)) { showWidgetTodayEventColorPalette = true }
-                        }
-                    }
                 }
             }
 
@@ -833,7 +763,7 @@ private fun ExportThemeDialog(initialName: String, onDismissRequest: () -> Unit,
 }
 
 @Composable
-private fun FontFamilySelectionDialog(
+fun FontFamilySelectionDialog(
     currentSelection: String, 
     currentBold: Boolean,
     onConfirm: (String, Boolean) -> Unit, 

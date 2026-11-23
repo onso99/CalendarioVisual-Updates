@@ -353,6 +353,8 @@
     <string name="gradient_label">渐变</string>
     <string name="hint_long_press_multiselect">长按进行多选</string>
     <string name="show_series_counter">系列计数器 (1/8)</string>
+    <string name="widget_style_screen_title">小部件样式</string>
+    <string name="widget_style_label">样式</string>
 </resources>
 
 

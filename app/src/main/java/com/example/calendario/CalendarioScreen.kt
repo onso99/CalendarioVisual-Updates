@@ -123,6 +123,7 @@ fun CalendarioScreen(
     var eventsForDialog by remember { mutableStateOf<List<Festivo>>(emptyList()) }
     var showSettingsScreen by remember { mutableStateOf(false) }
     var showColorThemeScreen by remember { mutableStateOf(false) }
+    var showWidgetStyleScreen by remember { mutableStateOf(false) }
     var showGoToYearDialog by remember { mutableStateOf(false) }
     var showAddEventScreen by remember { mutableStateOf(false) }
     var dateForNewEvent by remember { mutableStateOf<LocalDate?>(null) }
@@ -671,6 +672,15 @@ fun CalendarioScreen(
         return
     }
 
+    if (showWidgetStyleScreen) {
+        WidgetStyleScreen(
+            onBackPress = { showWidgetStyleScreen = false },
+            context = context,
+            refreshUI = { WidgetStateManager.refreshWithCurrentEvents(context) }
+        )
+        return
+    }
+
     if (showWidgetLogScreen) {
         LogScreen(
             onBack = { showWidgetLogScreen = false }
@@ -728,6 +738,7 @@ fun CalendarioScreen(
             themeManager = themeManager,
             viewModel = viewModel,
             onColorThemeClick = { showColorThemeScreen = true },
+            onWidgetColorClick = { showWidgetStyleScreen = true },
             onSpecialEventsClick = { showSpecialEventsScreen = true },
             onHistoryClick = { showHistoryScreen = true },
             onLogClick = { showWidgetLogScreen = true },
