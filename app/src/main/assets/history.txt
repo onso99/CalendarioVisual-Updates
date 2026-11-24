@@ -1,3 +1,4 @@
+2026-11-24 - v3.9.23 Ajustes del widget: previsualización mejorada del widget
 2026-11-23 - v3.9.22 Optimización de código y corrección de warnings
 2026-11-23 - v3.9.21 Ajustes Widget: Pantalla Estilo del widget
 2026-11-23 - v3.9.20 Ajustes Widget: Fuente con diálogo directo
